@@ -801,9 +801,9 @@ function QuizScreen({ profile, onFinish }) {
 
 // ─── APP ROOT ─────────────────────────────────────────────────────────────────
 function App() {
-  const [profile, setProfile] = useState(null);
-  if (!profile) return <ProfileScreen onStart={setProfile} />;
-  return <QuizScreen profile={profile} onFinish={()=>setProfile(null)} />;
+  const [key, setKey] = useState(0);
+  const profile = { name:"Alyssa", weakAreas:["Pharmacology","Management of Care","Pediatrics","OB/Maternity"], mode:"practice" };
+  return <QuizScreen key={key} profile={profile} onFinish={()=>setKey(k=>k+1)} />;
 }
 
 ReactDOM.render(<App />, document.getElementById("root"));
