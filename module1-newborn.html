@@ -1290,7 +1290,8 @@ function QuizScreen({ onFinish }) {
 
 // ─── APP ROOT ─────────────────────────────────────────────────────────────────
 function App() {
-  const [screen, setScreen] = useState("welcome");
+  const autoStart = new URLSearchParams(window.location.search).get('start') === '1';
+  const [screen, setScreen] = useState(autoStart ? "quiz" : "welcome");
   const [history, setHistory] = useState([]);
 
   if(screen==="welcome") return <WelcomeScreen onStart={()=>setScreen("quiz")} />;

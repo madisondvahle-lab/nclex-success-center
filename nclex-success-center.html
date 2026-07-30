@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCLEX Success Center · Study with Madison, RN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f8;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      padding: 56px 24px 52px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 40%, rgba(14,165,233,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.10) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 99px;
+      background: rgba(14,165,233,0.12);
+      border: 1px solid rgba(14,165,233,0.35);
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .site-header h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .site-header p {
+      font-size: 16px;
+      color: #94a3b8;
+      max-width: 480px;
+      margin: 0 auto 10px;
+      line-height: 1.65;
+      font-weight: 400;
+    }
+    .header-byline {
+      font-size: 13px;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* ── Module 1 featured card ── */
+    .module-card {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(15,23,42,0.10);
+      margin-bottom: 52px;
+    }
+    .module-card-accent {
+      height: 6px;
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    .module-card-body {
+      padding: 36px 40px 40px;
+    }
+
+    /* Module header row */
+    .module-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .module-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .module-emoji-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #86efac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .module-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      color: #10b981;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .module-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .active-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      background: #d1fae5;
+      border: 1px solid #6ee7b7;
+      font-size: 11px;
+      font-weight: 700;
+      color: #065f46;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .active-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .module-desc {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 28px;
+      font-weight: 400;
+    }
+
+    /* Study flow */
+    .flow-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .flow-steps {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .flow-step {
+      flex: 1;
+      min-width: 130px;
+      background: #f8fafc;
+      border: 1px solid #e8ecf2;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+    .flow-step-icon {
+      font-size: 18px;
+    }
+    .flow-step-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.45;
+    }
+    .flow-step.active {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+    .flow-step.active .flow-step-text {
+      color: #065f46;
+    }
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      color: #cbd5e1;
+      font-size: 18px;
+      font-weight: 700;
+      flex-shrink: 0;
+      align-self: center;
+      padding: 0 2px;
+    }
+
+    /* Module meta pills */
+    .module-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* Start button */
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+      transition: all 0.18s ease;
+      width: 100%;
+      justify-content: center;
+    }
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(16,185,129,0.40);
+      filter: brightness(1.06);
+    }
+    .start-btn:active {
+      transform: translateY(0);
+    }
+    .start-btn-arrow {
+      font-size: 20px;
+      transition: transform 0.18s ease;
+    }
+    .start-btn:hover .start-btn-arrow {
+      transform: translateX(3px);
+    }
+
+    /* ── Coming Soon section ── */
+    .coming-soon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .coming-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 20px;
+      border: 1px solid #e8ecf2;
+      opacity: 0.72;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      box-shadow: 0 1px 6px rgba(15,23,42,0.05);
+    }
+    .coming-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 10px,
+        rgba(241,245,249,0.5) 10px,
+        rgba(241,245,249,0.5) 11px
+      );
+      pointer-events: none;
+    }
+    .coming-card-icon {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+    .coming-card-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .coming-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .coming-soon-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+      color: #94a3b8;
+      border-top: 1px solid #e8ecf2;
+      background: #fff;
+    }
+    .site-footer strong {
+      color: #64748b;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .module-card-body { padding: 24px 20px 28px; }
+      .module-header { flex-direction: column; }
+      .flow-steps { flex-direction: column; gap: 0; }
+      .flow-arrow { display: none; }
+      .flow-step { flex: none; border-radius: 10px; }
+      .start-btn { padding: 15px 24px; font-size: 15px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-2 { animation: fadeUp 0.4s 0.12s cubic-bezier(0.22,1,0.36,1) both; }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-badge">Companion Practice · Study with Madison, RN</div>
+    <h1>NCLEX Success Center</h1>
+    <p>Strengthen your clinical judgment through targeted NCLEX practice.</p>
+    <div class="header-byline">Study guide → Practice quiz → Bootcamp/UWorld → Tutoring session</div>
+  </header>
+
+  <!-- ── MAIN ───────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Active Module -->
+    <div class="section-label fade-up">Available Now</div>
+
+    <div class="module-card fade-up">
+      <div class="module-card-accent"></div>
+      <div class="module-card-body">
+
+        <!-- Module header -->
+        <div class="module-header">
+          <div class="module-title-group">
+            <div class="module-emoji-wrap">🍼</div>
+            <div>
+              <div class="module-eyebrow">Module 1</div>
+              <div class="module-name">Newborn Care</div>
+            </div>
+          </div>
+          <span class="active-badge">
+            <span class="active-dot"></span>
+            Active
+          </span>
+        </div>
+
+        <p class="module-desc">
+          Master the essential newborn concepts every NCLEX student should know — from APGAR scoring and thermoregulation to respiratory distress, jaundice, and NGN clinical judgment.
+        </p>
+
+        <!-- Study flow -->
+        <div class="flow-label">Your Study Flow</div>
+        <div class="flow-steps">
+
+          <div class="flow-step">
+            <span class="flow-step-icon">📖</span>
+            <span class="flow-step-text">Read the Study Guide</span>
+          </div>
+
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-step active">
+            <span class="flow-step-icon">💻</span>
+            <span class="flow-step-text">Complete the Interactive Practice Quiz<br><span style="font-weight:500;color:#10b981;">25 Questions</span></span>
+          </div>
+
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-step">
+            <span class="flow-step-icon">📝</span>
+            <span class="flow-step-text">Complete 40–50 Bootcamp / UWorld Questions</span>
+          </div>
+
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-step">
+            <span class="flow-step-icon">👩‍🏫</span>
+            <span class="flow-step-text">Review with Madison</span>
+          </div>
+
+        </div>
+
+        <!-- Meta pills -->
+        <div class="module-meta">
+          <span class="meta-pill">🎯 25 Questions</span>
+          <span class="meta-pill">✏️ Practice Mode</span>
+          <span class="meta-pill">🍼 Newborn Care</span>
+          <span class="meta-pill">⚡ Includes NGN</span>
+        </div>
+
+        <!-- CTA -->
+        <a href="module1-newborn.html?start=1" class="start-btn">
+          Start Module 1 <span class="start-btn-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Coming Soon -->
+    <div class="section-label fade-up-2">Coming Soon</div>
+
+    <div class="coming-soon-grid fade-up-2">
+
+      <div class="coming-card">
+        <div class="coming-card-icon">🤰</div>
+        <div class="coming-card-num">Module 2</div>
+        <div class="coming-card-name">Maternal &amp; OB</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">💊</div>
+        <div class="coming-card-num">Module 3</div>
+        <div class="coming-card-name">Pharmacology</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">🧸</div>
+        <div class="coming-card-num">Module 4</div>
+        <div class="coming-card-name">Pediatrics</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">❤️</div>
+        <div class="coming-card-num">Module 5</div>
+        <div class="coming-card-name">Cardiac</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">🫁</div>
+        <div class="coming-card-num">Module 6</div>
+        <div class="coming-card-name">Respiratory</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">🧠</div>
+        <div class="coming-card-num">Module 7</div>
+        <div class="coming-card-name">Mental Health</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+      <div class="coming-card">
+        <div class="coming-card-icon">📋</div>
+        <div class="coming-card-num">Module 8</div>
+        <div class="coming-card-name">Prioritization &amp; Delegation</div>
+        <span class="coming-soon-badge">Coming Soon</span>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <strong>NCLEX Success Center</strong> · Study with Madison, RN · 2026
+  </footer>
+
+</body>
+</html>
