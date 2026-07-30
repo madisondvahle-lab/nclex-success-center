@@ -522,7 +522,7 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 const FOCUS_AREAS = ["Pharmacology","Management of Care","Pediatrics","OB/Maternity","Prioritization","Delegation","Safe Medication Administration","Fluid & Electrolytes"];
 
 function ProfileScreen({ onStart }) {
-  const [attempts,setAttempts]=useState("first"); const [weak,setWeak]=useState(["Pharmacology","Management of Care","Pediatrics","OB/Maternity"]); const [mode,setMode]=useState("practice");
+  const [weak,setWeak]=useState(["Pharmacology","Management of Care","Pediatrics","OB/Maternity"]); const [mode,setMode]=useState("practice");
   const inp={ width:"100%", padding:"10px 14px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, fontFamily:"Georgia,serif", color:"#0f172a", background:"#fff", outline:"none", boxSizing:"border-box" };
 
   function toggleWeak(area) {
@@ -536,15 +536,6 @@ function ProfileScreen({ onStart }) {
           <div style={{ fontSize:13, fontWeight:700, letterSpacing:2, color:"#0ea5e9", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
           <h1 style={{ fontSize:28, fontWeight:700, color:"#0f172a", marginBottom:6 }}>Hi, Alyssa! 👋</h1>
           <p style={{ color:"#64748b", fontSize:15 }}>Your personalized adaptive NCLEX quiz — focused on Pharmacology, Management of Care, and Peds/OB.</p>
-        </div>
-
-        <div style={{ marginBottom:22 }}>
-          <label style={{ fontWeight:700, fontSize:13, color:"#374151", display:"block", marginBottom:8 }}>NCLEX Attempt</label>
-          <div style={{ display:"flex", gap:10 }}>
-            {[["first","First Attempt"],["repeat","Repeat Attempt"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setAttempts(v)} style={{ flex:1, padding:"10px 0", borderRadius:9, border: attempts===v?"2px solid #0ea5e9":"1.5px solid #e2e8f0", background: attempts===v?"#f0f9ff":"#f8fafc", color: attempts===v?"#0369a1":"#475569", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"Georgia,serif" }}>{l}</button>
-            ))}
-          </div>
         </div>
 
         <div style={{ marginBottom:22 }}>
@@ -565,7 +556,7 @@ function ProfileScreen({ onStart }) {
           </div>
         </div>
 
-        <Btn onClick={()=>onStart({ name:"Alyssa", attempts, weakAreas:weak, mode })}>Start My Adaptive Quiz →</Btn>
+        <Btn onClick={()=>onStart({ name:"Alyssa", weakAreas:weak, mode })}>Start My Adaptive Quiz →</Btn>
 
         <div style={{ marginTop:20, padding:"14px 16px", background:"#f8fafc", borderRadius:10, border:"1px solid #e2e8f0", fontSize:12, color:"#64748b", lineHeight:1.6 }}>
           <strong>How this works:</strong> Questions adapt to your performance in real-time. Your focus areas (Pharmacology, Management of Care, Peds/OB) will appear more frequently. The quiz ends when the CAT engine is confident in your level.
