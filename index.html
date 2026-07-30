@@ -861,7 +861,7 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
 
 function ProfileScreen({ onStart }) {
-  const [name,setName]=useState(""); const [attempts,setAttempts]=useState("first"); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(""); const [mode,setMode]=useState("practice");
+  const [name,setName]=useState(""); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(""); const [mode,setMode]=useState("practice");
   const inp={ width:"100%", padding:"10px 14px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, fontFamily:"Georgia,serif", color:"#0f172a", background:"#fff", outline:"none", boxSizing:"border-box" };
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -875,10 +875,6 @@ function ProfileScreen({ onStart }) {
           <div style={{ display:"flex", gap:14 }}>
             <div style={{ flex:1 }}><label style={lbl}>Student Name</label><input style={inp} placeholder="e.g. Maria R." value={name} onChange={e=>setName(e.target.value)} /></div>
           </div>
-          <div style={{ display:"flex", gap:14 }}>
-            <div style={{ flex:1 }}><label style={lbl}>Attempt Number</label><select style={inp} value={attempts} onChange={e=>setAttempts(e.target.value)}><option value="first">First attempt</option><option value="second">Second attempt</option><option value="third+">Third attempt or more</option></select></div>
-          </div>
-
           {/* Mode Selection */}
           <div>
             <label style={lbl}>Session Mode</label>
@@ -919,13 +915,13 @@ function ProfileScreen({ onStart }) {
           </div>
         </div>
 
-        <StartButton name={name} mode={mode} weak={weak} attempts={attempts} notes={notes} onStart={onStart} />
+        <StartButton name={name} mode={mode} weak={weak} notes={notes} onStart={onStart} />
       </div>
     </div>
   );
 }
 
-function StartButton({ name, mode, weak, attempts, notes, onStart }) {
+function StartButton({ name, mode, weak, notes, onStart }) {
   const [qCount, setQCount] = useState(10);
   return (
     <div style={{ marginTop:24 }}>
@@ -939,7 +935,7 @@ function StartButton({ name, mode, weak, attempts, notes, onStart }) {
           </div>
         </div>
       )}
-      <button onClick={()=>name.trim()&&onStart({name,attempts,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:qCount,mode})}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:qCount,mode})}
         style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
         {name.trim() ? (mode==="nclex" ? "Begin NCLEX Simulation →" : "Start Practice Session →") : "Enter student name to continue"}
       </button>
