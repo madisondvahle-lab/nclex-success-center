@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 1 — Newborn Care · NCLEX Practice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f8; }
+    button:focus { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+
+    /* ── Entrance animation ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.82); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .fade-up  { animation: fadeUp  0.38s cubic-bezier(0.22,1,0.36,1) both; }
+    .scale-in { animation: scaleIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+    /* ── Button hover ── */
+    .btn-primary {
+      transition: all 0.18s ease;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15,23,42,0.28);
+      filter: brightness(1.08);
+    }
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-outline {
+      transition: all 0.18s ease;
+    }
+    .btn-outline:hover {
+      background: #f1f5f9 !important;
+      border-color: #94a3b8 !important;
+    }
+
+    /* ── Option button hover ── */
+    .opt-btn {
+      transition: all 0.18s ease;
+    }
+    .opt-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 12px rgba(15,23,42,0.10);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// ─── SECTION METADATA ─────────────────────────────────────────────────────────
+const SECTIONS = {
+  1: { label:"Section 1", title:"Concept Check", desc:"10 foundational questions — one concept at a time. Build your confidence before applying.", color:"#10b981", light:"#f0fdf4", border:"#86efac", emoji:"✏️" },
+  2: { label:"Section 2", title:"NCLEX Application", desc:"10 higher-difficulty questions — priority, teaching, first action, SATA, and clinical judgment.", color:"#f59e0b", light:"#fffbeb", border:"#fcd34d", emoji:"🧠" },
+  3: { label:"Section 3", title:"NGN", desc:"5 next-generation questions — Bow-Tie and Case Study integrating multiple concepts.", color:"#8b5cf6", light:"#faf5ff", border:"#c4b5fd", emoji:"🎯" },
+};
+
+// ─── CONCEPT GROUPS (for mastery display) ─────────────────────────────────────
+const CONCEPT_GROUPS = [
+  { num:1,      name:"APGAR Scores",                    ids:["q1","q11"] },
+  { num:2,      name:"Expected vs. Unexpected Findings", ids:["q2","q12"] },
+  { num:3,      name:"Newborn Circulation",              ids:["q3"] },
+  { num:4,      name:"Newborn Medications",              ids:["q4"] },
+  { num:5,      name:"Feeding & Wet Diapers",           ids:["q5","q18"] },
+  { num:6,      name:"Cold Stress",                     ids:["q6","q21"] },
+  { num:7,      name:"Respiratory Distress",            ids:["q7","q13","q23"] },
+  { num:8,      name:"Reflexes",                        ids:["q8"] },
+  { num:9,      name:"Weight Loss",                     ids:["q9"] },
+  { num:11,     name:"Thermoregulation",                ids:["q15"] },
+  { num:12,     name:"Jaundice",                        ids:["q10","q24"] },
+  { num:13,     name:"Hypoglycemia",                    ids:["q14","q22"] },
+  { num:14,     name:"Umbilical Cord Care",             ids:["q17"] },
+  { num:15,     name:"Safe Sleep",                      ids:["q16"] },
+  { num:17,     name:"Report Immediately",              ids:["q19"] },
+  { num:19,     name:"Common NCLEX Traps",              ids:["q20"] },
+  { num:"18/20",name:"Priority Assessments",            ids:["q25"] },
+];
+
+// ─── QUESTIONS (25, fixed order) ─────────────────────────────────────────────
+const QUESTIONS = [
+
+  // ══════════════════════════════════════════════════════════
+  // SECTION 1 — CONCEPT CHECK (Q1–Q10)
+  // ══════════════════════════════════════════════════════════
+
+  { id:"q1", section:1, type:"mcq", difficulty:1,
+    concept:{ num:1, name:"APGAR Scores" },
+    stem:"A newborn receives an APGAR score of 5 at 1 minute of life. How should the nurse interpret this finding and plan care?",
+    options:[
+      "Normal (7–10) — document and continue routine newborn care",
+      "Moderate difficulty (4–6) — stimulate the newborn and provide supplemental oxygen, reassess at 5 minutes",
+      "Severe distress (0–3) — begin immediate resuscitation",
+      "This score predicts the newborn's long-term neurological outcomes and intelligence"
+    ],
+    correct:[1],
+    rationale:{ correct:"APGAR 4–6 = moderate difficulty. Intervention includes stimulation, supplemental oxygen, and reassessment at 5 minutes. The APGAR is a snapshot of transition — it does NOT predict future intelligence or health.",
+      wrong:["A score of 7–10 is normal requiring no intervention beyond routine care.","A score of 0–3 indicates severe distress requiring immediate resuscitation.","APGAR does not predict long-term outcomes — this is a high-yield NCLEX pearl."]}},
+
+  { id:"q2", section:1, type:"mcq", difficulty:1,
+    concept:{ num:2, name:"Expected vs. Unexpected Findings" },
+    stem:"A nurse is assessing a newborn 4 hours after birth. Which finding should be reported to the provider immediately?",
+    options:[
+      "Acrocyanosis of the hands and feet",
+      "Vernix caseosa covering the skin",
+      "Central cyanosis of the lips and tongue",
+      "Mongolian spots on the lower back"
+    ],
+    correct:[2],
+    rationale:{ correct:"Central cyanosis (blue lips/tongue) is always an emergency — it indicates inadequate oxygenation and must be reported immediately.", wrong:["Acrocyanosis (blue hands/feet only) is a normal newborn finding — peripheral circulation is still adjusting.","Vernix caseosa is a normal protective coating on the skin at birth.","Mongolian spots are a normal, benign finding — not a safety concern."]}},
+
+  { id:"q3", section:1, type:"mcq", difficulty:1,
+    concept:{ num:3, name:"Newborn Circulation" },
+    stem:"A nurse is reviewing fetal circulation structures that close after birth. Which structure allows blood to bypass the fetal liver, shunting it directly from the umbilical vein to the inferior vena cava?",
+    options:[
+      "Ductus arteriosus",
+      "Foramen ovale",
+      "Ductus venosus",
+      "Umbilical artery"
+    ],
+    correct:[2],
+    rationale:{ correct:"The ductus venosus connects the umbilical vein to the inferior vena cava, bypassing the liver. Memory trick: A V A — Arteries = Away (from baby) = 2, Vein = Visits (baby) = 1.", wrong:["The ductus arteriosus connects the pulmonary artery to the aorta, bypassing the lungs — not the liver.","The foramen ovale is an opening between the right and left atria, allowing blood to bypass the fetal lungs.","Umbilical arteries carry deoxygenated blood away from the fetus — they do not bypass the liver."]}},
+
+  { id:"q4", section:1, type:"mcq", difficulty:1,
+    concept:{ num:4, name:"Newborn Medications" },
+    stem:"A parent asks the nurse why their newborn is receiving vitamin K immediately after birth. What is the nurse's best response?",
+    options:[
+      "'It prevents eye infections that the baby may have been exposed to during delivery.'",
+      "'Newborns are born with very low clotting factors. Vitamin K prevents hemorrhagic disease of the newborn.'",
+      "'It is required by law in all states — it is a standard procedure with no specific reason for your baby.'",
+      "'It prevents jaundice by helping the liver process bilirubin more efficiently.'"
+    ],
+    correct:[1],
+    rationale:{ correct:"Newborns lack sufficient vitamin K–dependent clotting factors at birth. Vitamin K prevents hemorrhagic disease of the newborn (HDN), which can cause serious or fatal bleeding.", wrong:["Erythromycin eye ointment prevents gonococcal ophthalmia neonatorum — not vitamin K.","While vitamin K is standard practice, parents deserve a clear clinical explanation.","Vitamin K is unrelated to jaundice or bilirubin processing."]}},
+
+  { id:"q5", section:1, type:"mcq", difficulty:1,
+    concept:{ num:5, name:"Feeding & Wet Diapers" },
+    stem:"A breastfeeding mother is concerned that her milk has not fully come in yet on day 2 postpartum. She asks how she will know if her newborn is getting enough. Which response by the nurse is most accurate?",
+    options:[
+      "'By day 2, your baby should have 6–8 wet diapers per day.'",
+      "'By day 2, your baby should have at least 2 wet diapers — wet diapers are one of the best signs that feeding is adequate.'",
+      "'Weight gain is the only reliable way to know — schedule a weight check tomorrow.'",
+      "'Your baby should be sleeping at least 4 hours between feeds if getting enough milk.'"
+    ],
+    correct:[1],
+    rationale:{ correct:"Wet diaper count by day: Day 1→1, Day 2→2, Day 3→3, Day 4+→6–8. Wet diapers are one of the best indicators of adequate intake. By day 2, at least 2 wet diapers is expected.", wrong:["6–8 wet diapers is the expectation starting on day 4+ — not day 2.","Weight is important but wet diapers are the most immediate and practical daily indicator.","Longer sleep stretches in newborns can indicate inadequate intake — this is a feeding concern, not reassurance."]}},
+
+  { id:"q6", section:1, type:"mcq", difficulty:1,
+    concept:{ num:6, name:"Cold Stress" },
+    stem:"A nurse is educating a nursing student about the dangers of cold stress in newborns. Which physiological consequence of cold stress is most important to understand?",
+    options:[
+      "Cold stress causes decreased oxygen consumption and slows metabolic rate",
+      "Cold stress increases surfactant production and stabilizes respiratory function",
+      "Cold stress increases blood glucose levels as the body burns fat for heat",
+      "Cold stress increases oxygen consumption and metabolic demand, which can cause hypoglycemia and respiratory distress"
+    ],
+    correct:[3],
+    rationale:{ correct:"Cold stress triggers nonshivering thermogenesis (brown fat metabolism), which increases oxygen consumption and metabolic demand — leading to hypoglycemia, decreased surfactant effectiveness, and respiratory distress. Cold babies become hypoglycemic babies.", wrong:["Cold stress increases — not decreases — oxygen consumption.","Cold stress actually decreases surfactant effectiveness, increasing respiratory risk.","Cold stress depletes glucose as it burns stored brown fat for heat — it causes hypoglycemia, not hyperglycemia."]}},
+
+  { id:"q7", section:1, type:"mcq", difficulty:1,
+    concept:{ num:7, name:"Respiratory Distress" },
+    stem:"A nurse assesses a 1-hour-old newborn and documents the following: grunting on expiration, nasal flaring, and visible intercostal retractions. How should the nurse interpret these findings?",
+    options:[
+      "These are normal transitional breathing patterns expected in the first hour of life",
+      "These are signs of respiratory distress requiring immediate nursing intervention",
+      "These findings are expected in a newborn who has been crying vigorously",
+      "These indicate the newborn is hungry and needs to be fed immediately"
+    ],
+    correct:[1],
+    rationale:{ correct:"Grunting, nasal flaring, and chest retractions are the classic warning signs of neonatal respiratory distress. The ABCs come first — Airway, Breathing, Circulation — and this newborn needs immediate assessment and intervention.", wrong:["These findings are NOT normal transitional breathing — they are distress signals that require action.","Crying produces these temporarily, but sustained grunting, flaring, and retractions at rest are always abnormal.","Hunger does not cause respiratory distress signs — this is not a feeding cue."]}},
+
+  { id:"q8", section:1, type:"mcq", difficulty:1,
+    concept:{ num:8, name:"Reflexes" },
+    stem:"A nurse strokes the outer edge of a newborn's foot from heel to toe and observes dorsiflexion of the big toe with fanning of the remaining toes. Which reflex has the nurse elicited?",
+    options:[
+      "Moro reflex",
+      "Palmar grasp reflex",
+      "Babinski reflex",
+      "Tonic neck (fencer) reflex"
+    ],
+    correct:[2],
+    rationale:{ correct:"The Babinski reflex is elicited by stroking the outer sole of the foot — resulting in dorsiflexion of the big toe and fanning of the others. This is a normal newborn finding (abnormal in adults).", wrong:["The Moro reflex is elicited by a sudden movement or sound — the newborn symmetrically extends arms, then brings them together as if embracing.","The palmar grasp is elicited by placing a finger in the newborn's palm — the fingers curl around the object.","The tonic neck reflex occurs when the head is turned to one side — the arm and leg on that side extend while the opposite side flexes ('fencer position')."]}},
+
+  { id:"q9", section:1, type:"mcq", difficulty:1,
+    concept:{ num:9, name:"Weight Loss" },
+    stem:"A new mother is tearful and tells the nurse, 'My baby has lost weight since birth — I must not be producing enough milk.' How should the nurse respond?",
+    options:[
+      "'You're right to be concerned — weight loss in a newborn is abnormal and I'll notify the provider.'",
+      "'Weight loss of up to 10% in the first few days is normal. Birth weight is typically regained by 10–14 days. Wet diapers and feeding cues are the best daily guides.'",
+      "'Any weight loss means we need to start formula supplementation right away.'",
+      "'Newborns should not lose any weight in the first 24 hours — this needs to be evaluated.'"
+    ],
+    correct:[1],
+    rationale:{ correct:"Weight loss up to 10% of birth weight in the first few days is physiologically normal as the newborn transitions from amniotic fluid and passes meconium. Birth weight should be regained by 10–14 days. Wet diaper count is the most practical daily indicator of adequacy.", wrong:["Weight loss up to 10% is expected — it is not abnormal in the first few days.","Formula supplementation is not automatically indicated for normal physiological weight loss.","Some weight loss in the first 24 hours is entirely expected."]}},
+
+  { id:"q10", section:1, type:"mcq", difficulty:1,
+    concept:{ num:12, name:"Jaundice" },
+    stem:"A nurse assesses a newborn and notes yellowing of the skin at 36 hours of age. The newborn is feeding well and appears otherwise healthy. How should the nurse classify this jaundice?",
+    options:[
+      "Pathological — report immediately; jaundice should not appear until after 48 hours",
+      "Physiological — this is an expected, normal finding; jaundice appearing after 24 hours is physiologic",
+      "Concerning — this timing suggests ABO blood type incompatibility",
+      "Normal — jaundice within the first 24 hours is always expected and reassuring"
+    ],
+    correct:[1],
+    rationale:{ correct:"Physiologic jaundice appears AFTER 24 hours (typically day 2–3), peaks on days 3–5, and resolves within 1–2 weeks. At 36 hours in a well-feeding newborn, this is physiologic. KEY PEARL: Jaundice in the FIRST 24 hours is ALWAYS pathological and must be reported.", wrong:["Physiologic jaundice can appear as early as 24–36 hours — not 48 hours.","ABO incompatibility causes pathological jaundice — which appears WITHIN the first 24 hours, not at 36 hours.","Jaundice within the first 24 hours is PATHOLOGICAL — this is the critical NCLEX distinction."]}},
+
+  // ══════════════════════════════════════════════════════════
+  // SECTION 2 — NCLEX APPLICATION (Q11–Q20)
+  // ══════════════════════════════════════════════════════════
+
+  { id:"q11", section:2, type:"mcq", difficulty:2,
+    concept:{ num:1, name:"APGAR Scores" },
+    stem:"A nurse assesses a newborn at 1 minute of life: heart rate 90 bpm, weak cry, some flexion of extremities, grimace only when stimulated, body pink with blue hands and feet. What is the APGAR score and the nurse's priority action?",
+    options:[
+      "Score 5 — provide stimulation and supplemental oxygen; reassess at 5 minutes",
+      "Score 7 — document findings and continue routine newborn care",
+      "Score 3 — initiate immediate resuscitation",
+      "Score 8 — reassure the parents; reassess at 5 minutes with no intervention needed"
+    ],
+    correct:[0],
+    rationale:{ correct:"HR 90 (score 1) + weak cry (1) + some flexion (1) + grimace (1) + acrocyanosis (1) = APGAR 5. Score 4–6 = moderate difficulty → stimulate and provide supplemental O₂, reassess at 5 minutes.", wrong:["A score of 7 requires a HR >100, good cry, active motion, cough/sneeze, and fully pink skin — this newborn does not meet those criteria.","Score 3 requires absent or barely present responses across all categories — this newborn has some response in every category.","Score 8 would require active motion, strong cry, and fully pink skin — none of which are present here."]}},
+
+  { id:"q12", section:2, type:"sata", difficulty:2,
+    concept:{ num:2, name:"Expected vs. Unexpected Findings" },
+    stem:"A nurse is assessing a 12-hour-old newborn during routine nursery rounds. Select ALL findings that require immediate provider notification.",
+    options:[
+      "Acrocyanosis of the hands and feet",
+      "Persistent nasal grunting between feedings",
+      "Central cyanosis of the lips and tongue",
+      "Vernix caseosa on the skin folds",
+      "Apnea episode lasting 20 seconds observed during assessment",
+      "Milia on the nose and chin"
+    ],
+    correct:[1,2,4],
+    rationale:{ correct:"Persistent grunting (respiratory distress sign), central cyanosis (oxygenation emergency), and apnea (always reportable) are all findings requiring immediate provider notification.", wrong:["Acrocyanosis (blue hands/feet) is a normal peripheral finding as circulation adjusts — not reportable.","Vernix caseosa is a normal protective coating present at birth.","Milia are tiny white epidermal cysts on the nose/chin — a normal, expected newborn finding."]}},
+
+  { id:"q13", section:2, type:"mcq", difficulty:2,
+    concept:{ num:7, name:"Respiratory Distress" },
+    stem:"A nurse assesses a 2-hour-old term newborn: respiratory rate 74 breaths/min, central cyanosis, intercostal retractions, and audible grunting. SpO₂ is 86% on room air. What is the nurse's priority action?",
+    options:[
+      "Document the findings thoroughly and reassess in 30 minutes",
+      "Ensure the airway is open, call for immediate assistance, and prepare supplemental oxygen",
+      "Warm the newborn under the radiant warmer to rule out cold stress first",
+      "Feed the newborn to provide glucose and stimulate respiratory effort"
+    ],
+    correct:[1],
+    rationale:{ correct:"ABCs come first — Airway, Breathing, Circulation. Central cyanosis with SpO₂ 86%, retractions, and grunting represent a respiratory emergency. The nurse must ensure the airway is patent and call for immediate help while preparing oxygen.", wrong:["A 30-minute delay in a newborn with SpO₂ of 86% and central cyanosis is dangerous — immediate action is required.","Warming is appropriate for temperature instability, but this newborn's priority is the failing respiratory system.","Feeding is contraindicated during respiratory distress — aspiration risk is high."]}},
+
+  { id:"q14", section:2, type:"mcq", difficulty:2,
+    concept:{ num:13, name:"Hypoglycemia" },
+    stem:"A 4-hour-old newborn is jittery, has a weak cry, and is difficult to arouse. Point-of-care blood glucose is 36 mg/dL. What is the nurse's first action?",
+    options:[
+      "Draw a full metabolic panel and wait for results before intervening",
+      "Feed the newborn (breast or formula) if feeding is appropriate, and follow facility hypoglycemia protocol",
+      "Immediately administer IV dextrose without attempting oral feeding first",
+      "Place the newborn under a radiant warmer and recheck glucose in 2 hours"
+    ],
+    correct:[1],
+    rationale:{ correct:"The first intervention for neonatal hypoglycemia is feeding if the newborn can tolerate oral intake — per infographic Concept #13 and standard facility protocols. After feeding, glucose is rechecked in 30 minutes to assess response.", wrong:["Waiting for full labs before treating symptomatic hypoglycemia delays necessary intervention.","IV dextrose is reserved for newborns who cannot tolerate oral feeding or who fail to respond to feeding — not the first-line intervention.","Warming addresses temperature, not hypoglycemia. A 2-hour wait with a glucose of 36 mg/dL and symptoms is unsafe."]}},
+
+  { id:"q15", section:2, type:"sata", difficulty:2,
+    concept:{ num:11, name:"Thermoregulation" },
+    stem:"A nurse is planning immediate care for a newborn following vaginal delivery. Select ALL interventions that prevent heat loss and support thermoregulation.",
+    options:[
+      "Dry the newborn immediately with warm blankets",
+      "Place the newborn on a cold infant scale for immediate birth weight",
+      "Maintain a warm, draft-free environment in the delivery room",
+      "Encourage skin-to-skin contact with the parent",
+      "Apply a knit hat to the newborn's head",
+      "Swaddle the newborn in pre-warmed blankets after assessment"
+    ],
+    correct:[0,2,3,4,5],
+    rationale:{ correct:"Drying (prevents evaporative loss), warm environment (prevents convective loss), skin-to-skin (provides warmth and regulates temp), hat (head loses significant heat), and swaddling (insulation) are all thermoregulation interventions from Concept #11.", wrong:["Placing a wet newborn on a cold metal scale causes significant conductive and evaporative heat loss — the baby should be dried and wrapped before weighing."]}},
+
+  { id:"q16", section:2, type:"mcq", difficulty:2,
+    concept:{ num:15, name:"Safe Sleep" },
+    stem:"A nurse is providing discharge teaching to parents about safe sleep practices. Which statement by a parent indicates a need for further teaching?",
+    options:[
+      "'I will always place my baby on her back to sleep.'",
+      "'We bought a firm, flat crib mattress with a fitted sheet.'",
+      "'I'll put a soft blanket in the crib at night so she stays warm.'",
+      "'She can sleep in our room in her own bassinet for the first few months.'"
+    ],
+    correct:[2],
+    rationale:{ correct:"Soft blankets, pillows, bumpers, and stuffed animals in the sleep space are suffocation hazards. The safe sleep environment includes: back to sleep, firm mattress, no soft objects, room sharing (not bed sharing). Safe sleep prevents SIDS.", wrong:["Back to sleep is the #1 safe sleep recommendation — correct understanding.","A firm, flat mattress with a fitted sheet is the correct sleep surface.","Room sharing (without bed sharing) is actually recommended for the first 6–12 months — correct statement."]}},
+
+  { id:"q17", section:2, type:"mcq", difficulty:2,
+    concept:{ num:14, name:"Umbilical Cord Care" },
+    stem:"A nurse is providing discharge teaching to parents about umbilical cord care. Which instruction should the nurse include?",
+    options:[
+      "'Apply antibiotic ointment to the cord stump daily to prevent infection.'",
+      "'Fold the diaper below the stump, keep it clean and dry, and expect it to fall off in 7–14 days.'",
+      "'Submerge the newborn in a tub bath daily — this will help soften and remove the cord faster.'",
+      "'The cord should fall off within 3–4 days. Call the provider immediately if it lasts longer.'"
+    ],
+    correct:[1],
+    rationale:{ correct:"Umbilical cord care: keep it clean and dry, fold the diaper below the stump to allow air exposure, and expect the stump to fall off in 7–14 days. Report redness, drainage, foul odor, or swelling.", wrong:["Antibiotic ointment is not routinely recommended — it may delay cord drying and separation.","Tub baths are avoided until after the cord falls off — immersion delays drying.","7–14 days is the normal timeline for cord separation — 3–4 days is too short and may cause unnecessary alarm."]}},
+
+  { id:"q18", section:2, type:"mcq", difficulty:2,
+    concept:{ num:5, name:"Feeding & Wet Diapers" },
+    stem:"A home health nurse visits a 5-day-old breastfed newborn. The mother reports the newborn had 4 wet diapers yesterday. How should the nurse interpret this?",
+    options:[
+      "Normal — 4 wet diapers is age-appropriate for a 5-day-old",
+      "Concerning — starting on day 4, newborns should have 6–8 wet diapers per day; 4 diapers suggests inadequate intake",
+      "Normal — wet diaper count peaks on day 3 and naturally decreases after that",
+      "Concerning — a 5-day-old should have at least 10 wet diapers per day"
+    ],
+    correct:[1],
+    rationale:{ correct:"Wet diaper milestone: Day 4+ → 6–8 wet diapers per day. At day 5, only 4 wet diapers suggests the newborn is not getting adequate milk — this warrants assessment of latch, feeding frequency, and a weight check.", wrong:["4 wet diapers at day 5 is below the expected 6–8 — this is not normal.","Wet diaper count increases and should remain high from day 4 onward — it does not peak and decline.","10 wet diapers per day exceeds the expected range — 6–8 is the guideline."]}},
+
+  { id:"q19", section:2, type:"sata", difficulty:2,
+    concept:{ num:17, name:"Report Immediately" },
+    stem:"A nurse is caring for newborns in the nursery. Select ALL findings that require immediate notification of the provider.",
+    options:[
+      "Mongolian spots on the sacral area",
+      "Central cyanosis of the lips and tongue",
+      "Apnea episode observed during assessment",
+      "Acrocyanosis of the hands and feet",
+      "Seizure activity",
+      "Temperature instability",
+      "Lanugo on the back and shoulders",
+      "Lethargy with poor feeding"
+    ],
+    correct:[1,2,4,5,7],
+    rationale:{ correct:"Central cyanosis, apnea, seizures, temperature instability, and lethargy/poor feeding are all findings from Concept #17 (Report Immediately) that require urgent provider notification.", wrong:["Mongolian spots are a benign, normal pigmentation finding — not a safety concern.","Acrocyanosis of the hands/feet is a normal peripheral finding — do not confuse with central cyanosis.","Lanugo is fine downy hair that is a normal finding in newborns, especially preterm."]}},
+
+  { id:"q20", section:2, type:"mcq", difficulty:3,
+    concept:{ num:19, name:"Common NCLEX Traps" },
+    stem:"A nursing student observes a newborn with blue discoloration of the hands and feet and asks the nurse, 'Should I report this? Is this a problem?' What is the nurse's best teaching response?",
+    options:[
+      "'Yes — any blue discoloration in a newborn is a cardiac emergency and must be reported immediately.'",
+      "'No — blue hands and feet (acrocyanosis) is a normal finding as peripheral circulation adjusts. Blue lips and tongue is the emergency we watch for.'",
+      "'Yes — this is central cyanosis and we need to prepare oxygen immediately.'",
+      "'No — newborns appear blue all over for the first 24 hours, so no assessment is needed.'"
+    ],
+    correct:[1],
+    rationale:{ correct:"This is one of the most common NCLEX traps on newborn care. Acrocyanosis (blue extremities) = NORMAL. Central cyanosis (blue lips/tongue/trunk) = EMERGENCY. The NCLEX tests whether you know the difference.", wrong:["Blue extremities alone is NOT an emergency — it's expected peripheral vasoconstriction.","The scenario describes acrocyanosis (peripheral), not central cyanosis.","Newborns are pink in the trunk and face — only the extremities may be transiently blue. Total body cyanosis is never normal."]}},
+
+  // ══════════════════════════════════════════════════════════
+  // SECTION 3 — NGN (Q21–Q25)
+  // ══════════════════════════════════════════════════════════
+
+  { id:"q21", section:3, type:"bowtie", difficulty:3,
+    concept:{ num:6, name:"Cold Stress" },
+    caseIntro:"A 30-minute-old newborn is being assessed in the delivery room. The infant was dried briefly but remains unwrapped on the warmer. VS: Temp 35.9°C (96.6°F), HR 176, RR 66. Point-of-care glucose is 36 mg/dL. The newborn is jittery and difficult to arouse.",
+    stem:"Complete the bow-tie clinical judgment item.",
+    leftLabel:"Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:[
+      "Dry the newborn thoroughly and swaddle in pre-warmed blankets",
+      "Initiate skin-to-skin contact with the parent",
+      "Give the newborn a tepid bath to stimulate temperature regulation",
+      "Restrict oral feeds until temperature normalizes to avoid aspiration"
+    ],
+    centerOptions:[
+      "Cold stress with resultant hypoglycemia",
+      "Normal newborn transition — no intervention needed",
+      "Neonatal sepsis requiring blood cultures",
+      "Respiratory distress syndrome"
+    ],
+    rightOptions:[
+      "Axillary temperature trend",
+      "Blood glucose level after intervention",
+      "Complete blood count and CRP",
+      "Bilirubin level and skin color"
+    ],
+    correctLeft:[0,1], correctCenter:[0], correctRight:[0,1],
+    rationale:{ condition:"Temp 35.9°C, tachycardia, tachypnea, glucose 36 mg/dL, and jitteriness in an unwrapped newborn confirm cold stress with resultant hypoglycemia. Cold babies become hypoglycemic babies.", actions:"Drying and swaddling prevent further evaporative and convective heat loss. Skin-to-skin is highly effective at rapidly warming the newborn and stabilizing glucose.", outcomes:"Temperature trend confirms warming is effective. Blood glucose trend after feeding/warming confirms hypoglycemia is resolving.", wrong:"A tepid bath dramatically worsens cold stress. Restricting feeds delays glucose correction — feeding is the first-line intervention for neonatal hypoglycemia."}},
+
+  { id:"q22", section:3, type:"bowtie", difficulty:3,
+    concept:{ num:13, name:"Hypoglycemia" },
+    caseIntro:"A 38-week large-for-gestational-age (LGA) newborn is 1 hour old. The mother has gestational diabetes. The nurse notes jitteriness, a weak cry, and poor feeding attempts. Point-of-care blood glucose: 34 mg/dL. The newborn is alert but tremulous.",
+    stem:"Complete the bow-tie clinical judgment item.",
+    leftLabel:"Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:[
+      "Feed the newborn (breast or formula) per facility hypoglycemia protocol",
+      "Restrict all oral feeds and await IV glucose access",
+      "Recheck blood glucose 30 minutes after feeding intervention",
+      "Place the newborn under phototherapy lights"
+    ],
+    centerOptions:[
+      "Neonatal hypoglycemia",
+      "Normal newborn jitteriness — no intervention needed",
+      "Neonatal hyperbilirubinemia",
+      "Cold stress"
+    ],
+    rightOptions:[
+      "Blood glucose trend (recheck 30 min after intervention)",
+      "Bilirubin level and skin color",
+      "Feeding tolerance and successful oral intake",
+      "Temperature and oxygen saturation"
+    ],
+    correctLeft:[0,2], correctCenter:[0], correctRight:[0,2],
+    rationale:{ condition:"LGA infants of diabetic mothers are at high risk for neonatal hypoglycemia due to fetal hyperinsulinism in response to elevated maternal glucose. Glucose of 34 mg/dL with jitteriness confirms symptomatic hypoglycemia.", actions:"Feeding is the first-line intervention for neonatal hypoglycemia in a newborn who can tolerate oral intake. Rechecking glucose 30 minutes after feeding confirms treatment response.", outcomes:"Blood glucose trend confirms whether the intervention worked. Feeding tolerance confirms the newborn can safely receive oral nutrition.", wrong:"Restricting feeds delays treatment. Phototherapy is for hyperbilirubinemia — not hypoglycemia. Monitoring bilirubin is not the priority for this diagnosis."}},
+
+  { id:"q23", section:3, type:"casestudy", difficulty:3,
+    concept:{ num:7, name:"Respiratory Distress" },
+    caseIntro:"A 2-hour-old term newborn is transferred to the nursery from the delivery room. The nurse notes the following: respiratory rate 78 breaths/min, audible grunting on expiration, nasal flaring, and intercostal retractions. SpO₂ is 86% on room air. The newborn has central cyanosis of the lips. Temp 37.0°C, HR 182 bpm.",
+    questions:[
+      { qid:"q23a", stem:"Which single finding in this assessment is the most immediately life-threatening and requires priority action?", type:"mcq",
+        options:[
+          "Heart rate of 182 bpm",
+          "Central cyanosis of the lips with SpO₂ of 86%",
+          "Respiratory rate of 78 breaths/min",
+          "Temperature of 37.0°C"
+        ],
+        correct:[1],
+        rationale:"Central cyanosis (blue lips) with SpO₂ of 86% indicates severe hypoxemia. This is the most immediately life-threatening finding — it reflects inadequate oxygenation and requires urgent airway and oxygen intervention. ABCs come first."},
+      { qid:"q23b", stem:"Select ALL findings in this assessment that are signs of neonatal respiratory distress.", type:"sata",
+        options:[
+          "Nasal flaring",
+          "Grunting on expiration",
+          "Pale skin color",
+          "Intercostal retractions",
+          "Temperature 37.0°C",
+          "Central cyanosis of the lips"
+        ],
+        correct:[0,1,3,5],
+        rationale:"Nasal flaring, grunting, chest retractions, and central cyanosis are the classic warning signs of neonatal respiratory distress (Concept #7). Pale skin is a concern but is not a listed RDS sign. Normal temperature is not a distress sign."},
+      { qid:"q23c", stem:"The charge nurse reminds the bedside nurse to follow the ABC framework. What is the nurse's FIRST priority action?", type:"mcq",
+        options:[
+          "Call the parents to inform them of the newborn's condition",
+          "Document all findings completely in the medical record",
+          "Ensure the airway is patent and call for immediate respiratory support",
+          "Obtain a point-of-care blood glucose to rule out hypoglycemia as the cause"
+        ],
+        correct:[2],
+        rationale:"ABCs — Airway, Breathing, Circulation — come first per Concept #7's NCLEX Pearl. Ensuring a patent airway and calling for respiratory support are the first priorities in a newborn with signs of respiratory failure. Documentation and glucose can follow."}
+    ]},
+
+  { id:"q24", section:3, type:"casestudy", difficulty:3,
+    concept:{ num:12, name:"Jaundice" },
+    caseIntro:"An 18-hour-old newborn is noted to have yellowing of the skin beginning at the head. The mother is blood type O positive; the newborn is blood type A positive. The newborn is feeding poorly with only 1 wet diaper since birth. The provider is notified.",
+    questions:[
+      { qid:"q24a", stem:"How should the nurse classify the jaundice in this newborn?", type:"mcq",
+        options:[
+          "Physiological — jaundice appearing after 12 hours is a normal expected finding",
+          "Pathological — jaundice appearing within the first 24 hours of life is always concerning",
+          "Normal — all newborns develop visible jaundice in the first 24 hours",
+          "Mild — monitor at home and reassess at the 2-week well visit"
+        ],
+        correct:[1],
+        rationale:"CRITICAL PEARL: Jaundice within the FIRST 24 hours is ALWAYS pathological. Physiologic jaundice appears AFTER 24 hours. This newborn has jaundice at 18 hours — this is pathological and requires immediate investigation."},
+      { qid:"q24b", stem:"Which clinical finding in this scenario is most consistent with the likely cause of this newborn's pathological jaundice?", type:"mcq",
+        options:[
+          "Blood type incompatibility — mother is O+ and newborn is A+",
+          "Lanugo present on the back and shoulders",
+          "Mongolian spots on the lower sacral area",
+          "Acrocyanosis of the hands and feet"
+        ],
+        correct:[0],
+        rationale:"ABO incompatibility (O+ mother, A+ or B+ newborn) is a common cause of pathological jaundice appearing within 24 hours. Maternal anti-A or anti-B antibodies cross the placenta and cause hemolysis of the newborn's red blood cells."},
+      { qid:"q24c", stem:"Select ALL appropriate nursing actions for this newborn at this time.", type:"sata",
+        options:[
+          "Notify the provider immediately",
+          "Monitor bilirubin levels closely per order",
+          "Reassure the parents this is normal physiologic jaundice that will resolve without treatment",
+          "Encourage frequent feeding to promote bilirubin excretion in stool",
+          "Assess for additional signs of hemolysis such as pallor and lethargy",
+          "Prepare for phototherapy if ordered by the provider"
+        ],
+        correct:[0,1,3,4,5],
+        rationale:"Pathological jaundice requires immediate provider notification, bilirubin monitoring, frequent feeding (promotes gut motility and bilirubin excretion), assessment for hemolysis, and readiness for phototherapy. Reassuring parents this is normal is INCORRECT — this is pathological jaundice."}
+    ]},
+
+  { id:"q25", section:3, type:"sata", difficulty:3,
+    concept:{ num:"18/20", name:"Priority Assessments" },
+    stem:"A nurse is making rounds in the newborn nursery and assessing several infants. Select ALL findings that require IMMEDIATE intervention — prioritized above documentation, family communication, or routine care.",
+    options:[
+      "Central cyanosis of the lips in a 3-hour-old newborn",
+      "Grunting and nasal flaring with respiratory rate of 78 in a 1-hour-old",
+      "Mongolian spots noted on the sacral area of a 2-day-old",
+      "Blood glucose 36 mg/dL with jitteriness in a 2-hour-old LGA infant",
+      "Acrocyanosis of the hands and feet in a healthy, pink, 6-hour-old",
+      "Axillary temperature 35.7°C with lethargy in a 4-hour-old",
+      "Vernix caseosa on the skin of a 30-minute-old newborn",
+      "Apnea episode observed during assessment of a 12-hour-old"
+    ],
+    correct:[0,1,3,5,7],
+    rationale:{ correct:"Central cyanosis (oxygenation emergency), respiratory distress signs (RDS), symptomatic hypoglycemia, hypothermia with lethargy (cold stress), and apnea (always report immediately) all require priority intervention.", wrong:["Mongolian spots are a normal benign pigmentation — not an emergency.","Acrocyanosis (blue hands/feet in an otherwise pink newborn) is NORMAL — this is the most common NCLEX trap. Blue lips = emergency; blue feet = normal.","Vernix caseosa is a normal protective coating present at birth — no intervention needed."]}},
+];
+
+// ─── UI ATOMS ─────────────────────────────────────────────────────────────────
+function Tag({ children, color, bg, border }) {
+  return (
+    <span style={{
+      fontSize: 11, fontWeight: 600, padding: "3px 11px", borderRadius: 99,
+      letterSpacing: 0.6, textTransform: "uppercase",
+      background: bg || "#f1f5f9", color: color || "#64748b",
+      border: border ? `1px solid ${border}` : "none",
+      whiteSpace: "nowrap", fontFamily: "'Inter',sans-serif"
+    }}>{children}</span>
+  );
+}
+
+function Btn({ children, onClick, disabled, variant="primary" }) {
+  const base = {
+    border: "none", borderRadius: 12, fontFamily: "'Inter',sans-serif",
+    fontWeight: 700, cursor: disabled ? "default" : "pointer",
+    letterSpacing: 0.3, padding: "13px 28px", fontSize: 15,
+  };
+  const styles = {
+    primary: {
+      background: disabled
+        ? "#e2e8f0"
+        : "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+      color: disabled ? "#94a3b8" : "#fff",
+      boxShadow: disabled ? "none" : "0 2px 8px rgba(15,23,42,0.18)",
+    },
+    outline: {
+      background: "#f8fafc", color: "#475569",
+      border: "1.5px solid #cbd5e1"
+    }
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={variant === "primary" ? "btn-primary" : "btn-outline"}
+      style={{ ...base, ...styles[variant] }}
+    >{children}</button>
+  );
+}
+
+function OptionBtn({ letter, text, state, onClick }) {
+  const base = {
+    display: "flex", alignItems: "flex-start", gap: 12,
+    padding: "13px 16px", borderRadius: 12,
+    border: "2px solid #e2e8f0", background: "#fafbfc",
+    cursor: "pointer", textAlign: "left", width: "100%",
+    fontFamily: "'Inter',sans-serif", fontSize: 15,
+  };
+  const stateStyles = {
+    selected: { border: "2.5px solid #0ea5e9", background: "#f0f9ff", borderLeft: "4px solid #0ea5e9" },
+    correct:  { border: "2px solid #10b981",  background: "#f0fdf4",  borderLeft: "4px solid #10b981",  cursor: "default" },
+    wrong:    { border: "2px solid #ef4444",  background: "#fef2f2",  borderLeft: "4px solid #ef4444",  cursor: "default" },
+    dim:      { border: "2px solid #f1f5f9",  background: "#fafbfc",  opacity: 0.42, cursor: "default" },
+    neutral:  {}
+  };
+
+  // Letter circle colors by state
+  const circleStyles = {
+    selected: { background: "#0ea5e9", color: "#fff" },
+    correct:  { background: "#10b981", color: "#fff" },
+    wrong:    { background: "#ef4444", color: "#fff" },
+    dim:      { background: "#e2e8f0", color: "#94a3b8" },
+    neutral:  { background: "#e2e8f0", color: "#475569" },
+  };
+  const cs = circleStyles[state || "neutral"] || circleStyles.neutral;
+
+  return (
+    <button
+      style={{ ...base, ...(stateStyles[state || "neutral"]) }}
+      className={(!state || state === "neutral" || state === "selected") ? "opt-btn" : ""}
+      onClick={onClick}
+    >
+      <span style={{
+        minWidth: 26, height: 26, borderRadius: "50%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+        transition: "all 0.18s ease",
+        ...cs
+      }}>{letter}</span>
+      <span style={{ flex: 1, color: "#1e293b", lineHeight: 1.6, fontWeight: 400 }}>{text}</span>
+      {state === "correct" && (
+        <span style={{
+          width: 22, height: 22, borderRadius: "50%", background: "#10b981",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontSize: 12, fontWeight: 700, flexShrink: 0
+        }}>✓</span>
+      )}
+      {state === "wrong" && (
+        <span style={{
+          width: 22, height: 22, borderRadius: "50%", background: "#ef4444",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontSize: 12, fontWeight: 700, flexShrink: 0
+        }}>✗</span>
+      )}
+    </button>
+  );
+}
+
+// ─── QUESTION RENDERERS ───────────────────────────────────────────────────────
+function MCQQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+      {q.options.map((opt,idx) => {
+        let state="neutral";
+        if(submitted){ if(idx===q.correct[0]) state="correct"; else if(idx===(selected||[])[0]&&idx!==q.correct[0]) state="wrong"; else state="dim"; }
+        else if((selected||[]).includes(idx)) state="selected";
+        return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+      })}
+    </div>
+  );
+}
+
+function SATAQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div>
+      <div style={{ fontSize:13, color:"#64748b", marginBottom:10, fontStyle:"italic", fontWeight:500 }}>Select all that apply — choose every correct option.</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+        {q.options.map((opt,idx) => {
+          let state="neutral";
+          if(submitted){ if(q.correct.includes(idx)) state="correct"; else if((selected||[]).includes(idx)) state="wrong"; else state="dim"; }
+          else if((selected||[]).includes(idx)) state="selected";
+          return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
+  const colLimit = { left:2, center:1, right:2 };
+  function BtOpt({ label, isSelected, isCorrect, isWrong, isDim, onClick }) {
+    let bg="#fafbfc", border="1.5px solid #e2e8f0", color="#1e293b";
+    if(isDim){ color="#cbd5e1"; border="1.5px solid #f1f5f9"; }
+    if(isSelected){ bg="#f0f9ff"; border="2px solid #0ea5e9"; }
+    if(isCorrect){ bg="#f0fdf4"; border="2px solid #10b981"; color="#065f46"; }
+    if(isWrong){ bg="#fef2f2"; border="2px solid #ef4444"; color="#991b1b"; }
+    return (
+      <button
+        onClick={onClick}
+        className={!isCorrect && !isWrong && !isDim ? "opt-btn" : ""}
+        style={{
+          padding:"9px 11px", borderRadius:10, border, background:bg, color,
+          fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer",
+          fontFamily:"'Inter',sans-serif", lineHeight:1.45, width:"100%",
+          transition:"all 0.18s ease"
+        }}
+      >
+        {isCorrect&&<span style={{color:"#10b981",fontWeight:700}}>✓ </span>}
+        {isWrong&&<span style={{color:"#ef4444",fontWeight:700}}>✗ </span>}
+        {label}
+      </button>
+    );
+  }
+  function handleSelect(key, idx) {
+    if(submitted) return;
+    const limit=colLimit[key], sel=btState[key]||[];
+    let next;
+    if(sel.includes(idx)) next=sel.filter(x=>x!==idx);
+    else if(sel.length<limit) next=[...sel,idx];
+    else next=limit===1?[idx]:sel;
+    onBTSelect(key,next);
+  }
+  function renderCol(options, correctArr, key) {
+    const sel=btState[key]||[], limit=colLimit[key];
+    return options.map((opt,idx)=>{
+      const isSel=sel.includes(idx), isCorr=submitted&&correctArr.includes(idx), isWrong=submitted&&isSel&&!correctArr.includes(idx), isDim=submitted&&!isCorr&&!isSel, isDisabled=!submitted&&!isSel&&sel.length>=limit;
+      return <BtOpt key={idx} label={opt} isSelected={!submitted&&isSel} isCorrect={isCorr} isWrong={isWrong} isDim={isDim||isDisabled} onClick={isDisabled?null:()=>handleSelect(key,idx)} />;
+    });
+  }
+  const col={display:"flex",flexDirection:"column",gap:6,flex:1,minWidth:150};
+  const leftSel=(btState.left||[]).length, centerSel=(btState.center||[]).length, rightSel=(btState.right||[]).length;
+
+  function CountPill({ current, total, color }) {
+    const done = current === total;
+    return (
+      <span style={{
+        display:"inline-flex", alignItems:"center", gap:4,
+        padding:"2px 8px", borderRadius:99, fontSize:11, fontWeight:700,
+        background: done ? "#d1fae5" : "#f1f5f9",
+        color: done ? "#065f46" : "#64748b",
+        marginBottom:6, transition:"all 0.2s"
+      }}>{current}/{total} selected</span>
+    );
+  }
+
+  return (
+    <div>
+      {!submitted&&(
+        <div style={{ fontSize:13, color:"#0c4a6e", marginBottom:14, fontWeight:500, background:"#f0f9ff", padding:"10px 14px", borderRadius:10, border:"1px solid #bae6fd", display:"flex", alignItems:"flex-start", gap:8 }}>
+          <span style={{fontSize:16}}>🎯</span>
+          <span><strong>Bow-Tie:</strong> Select <strong>2 nursing actions</strong> → <strong>1 condition</strong> → <strong>2 parameters to monitor</strong></span>
+        </div>
+      )}
+      <div style={{ display:"flex", gap:8, marginBottom:20, alignItems:"flex-start" }}>
+        <div style={col}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#10b981", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>⚕️ {q.leftLabel}</div>
+          <CountPill current={leftSel} total={2} />
+          {renderCol(q.leftOptions,q.correctLeft,"left")}
+        </div>
+        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
+          <div style={{ fontSize:22, color:"#0ea5e9", fontWeight:700 }}>→</div>
+        </div>
+        <div style={{ ...col, maxWidth:185 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#8b5cf6", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>🔍 {q.centerLabel}</div>
+          <CountPill current={centerSel} total={1} />
+          {renderCol(q.centerOptions,q.correctCenter,"center")}
+        </div>
+        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
+          <div style={{ fontSize:22, color:"#0ea5e9", fontWeight:700 }}>→</div>
+        </div>
+        <div style={col}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#f59e0b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>🎯 {q.rightLabel}</div>
+          <CountPill current={rightSel} total={2} />
+          {renderCol(q.rightOptions,q.correctRight,"right")}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+      {q.questions.map((sub,si)=>{
+        const sel=csAnswers[sub.qid]||[];
+        return (
+          <div key={sub.qid} style={{ background:"#fafbfc", borderRadius:12, padding:"16px 18px", border:"1px solid #e8ecf2" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+              <span style={{
+                width:26, height:26, borderRadius:"50%",
+                background:"linear-gradient(135deg,#1e293b,#0f172a)",
+                color:"#fff", fontSize:12, fontWeight:700,
+                display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0
+              }}>{si+1}</span>
+              <span style={{ fontSize:11, fontWeight:600, color:"#64748b", letterSpacing:0.4 }}>of {q.questions.length}</span>
+            </div>
+            <div style={{ fontFamily:"'Inter',sans-serif", fontSize:15, lineHeight:1.65, color:"#0f172a", marginBottom:12, fontWeight:500 }}>{sub.stem}</div>
+            {sub.type==="sata"&&<div style={{ fontSize:12, color:"#94a3b8", marginBottom:8, fontStyle:"italic" }}>Select all that apply</div>}
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {sub.options.map((opt,idx)=>{
+                let state="neutral";
+                if(submitted){ if(sub.correct.includes(idx)) state="correct"; else if(sel.includes(idx)) state="wrong"; else state="dim"; }
+                else if(sel.includes(idx)) state="selected";
+                return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const cur=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,cur.includes(idx)?cur.filter(x=>x!==idx):[...cur,idx]); }}} />;
+              })}
+            </div>
+            {submitted&&(
+              <div style={{ marginTop:12, padding:"12px 14px", background:"#fff", borderRadius:8, borderLeft:"3px solid #0ea5e9", border:"1px solid #e2e8f0", borderLeftWidth:3, fontSize:13, color:"#374151", lineHeight:1.65 }}>
+                <strong style={{color:"#0369a1"}}>Rationale:</strong> {sub.rationale}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── RATIONALE PANEL ─────────────────────────────────────────────────────────
+function RationalePanel({ q, isCorrect }) {
+  if(q.type==="casestudy") return null;
+
+  // Helper: detect NCLEX Pearl / Memory Trick in text
+  function extractPearl(text) {
+    if(!text) return { body: text, pearl: null };
+    const pearlMatch = text.match(/((?:KEY PEARL|NCLEX PEARL|PEARL|Memory trick)[:\s—–-]+.+?)(?:\.|$)/i);
+    if(!pearlMatch) return { body: text, pearl: null };
+    return { body: text.replace(pearlMatch[0], "").replace(/\s+/," ").trim(), pearl: pearlMatch[0] };
+  }
+
+  const statusColor = isCorrect ? "#10b981" : "#ef4444";
+  const statusBg    = isCorrect ? "#f0fdf4"  : "#fef2f2";
+  const statusBorder= isCorrect ? "#86efac"  : "#fca5a5";
+
+  return (
+    <div style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
+
+      {/* Status header */}
+      <div style={{
+        display:"flex", alignItems:"center", gap:10,
+        padding:"12px 16px", borderRadius:12,
+        background: statusBg, border:`1.5px solid ${statusBorder}`
+      }}>
+        <span style={{
+          width:28, height:28, borderRadius:"50%", background:statusColor,
+          display:"flex", alignItems:"center", justifyContent:"center",
+          color:"#fff", fontSize:14, fontWeight:700, flexShrink:0
+        }}>{isCorrect ? "✓" : "✗"}</span>
+        <span style={{ fontWeight:700, fontSize:15, color: isCorrect ? "#166534" : "#991b1b" }}>
+          {isCorrect ? "Correct!" : "Review This Concept"}
+        </span>
+      </div>
+
+      {/* Bow-tie: 2×2 grid */}
+      {q.type==="bowtie" && (
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+          {[
+            { label:"Condition",   icon:"🔍", text:q.rationale.condition, accent:"#8b5cf6" },
+            { label:"Actions",     icon:"⚕️", text:q.rationale.actions,   accent:"#10b981" },
+            { label:"Monitoring",  icon:"🎯", text:q.rationale.outcomes,  accent:"#f59e0b" },
+            { label:"Distractors", icon:"⚠️", text:q.rationale.wrong,    accent:"#ef4444" },
+          ].map(({ label, icon, text, accent })=>(
+            <div key={label} style={{
+              background:"#fff", borderRadius:10, padding:"12px 14px",
+              borderLeft:`4px solid ${accent}`, border:`1px solid #e8ecf2`,
+              borderLeftWidth:4, borderLeftColor:accent
+            }}>
+              <div style={{ fontSize:10, fontWeight:700, color:accent, letterSpacing:0.8, textTransform:"uppercase", marginBottom:6 }}>{icon} {label}</div>
+              <div style={{ fontSize:13, color:"#374151", lineHeight:1.6 }}>{text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* MCQ/SATA: Why Correct + Distractors */}
+      {q.type!=="bowtie" && (() => {
+        const { body, pearl } = extractPearl(q.rationale.correct);
+        return (
+          <>
+            {/* Why Correct */}
+            <div style={{
+              background:"#fff", borderRadius:10, padding:"14px 16px",
+              borderLeft:"4px solid #10b981", border:"1px solid #e8ecf2",
+              borderLeftWidth:4, borderLeftColor:"#10b981"
+            }}>
+              <div style={{ fontSize:10, fontWeight:700, color:"#10b981", letterSpacing:0.8, textTransform:"uppercase", marginBottom:8 }}>✓ Why Correct</div>
+              <div style={{ fontSize:13, color:"#374151", lineHeight:1.65 }}>{body || q.rationale.correct}</div>
+            </div>
+
+            {/* NCLEX Pearl / Memory Trick callout */}
+            {pearl && (
+              <div style={{
+                background:"#fffbeb", borderRadius:10, padding:"12px 14px",
+                border:"1.5px solid #f59e0b", display:"flex", gap:10, alignItems:"flex-start"
+              }}>
+                <span style={{fontSize:16, flexShrink:0}}>⭐</span>
+                <div style={{ fontSize:13, color:"#78350f", lineHeight:1.6, fontWeight:500 }}>{pearl}</div>
+              </div>
+            )}
+
+            {/* Distractor Analysis */}
+            {q.rationale.wrong && (
+              <div style={{
+                background:"#fff", borderRadius:10, padding:"14px 16px",
+                borderLeft:"4px solid #f59e0b", border:"1px solid #e8ecf2",
+                borderLeftWidth:4, borderLeftColor:"#f59e0b"
+              }}>
+                <div style={{ fontSize:10, fontWeight:700, color:"#92400e", letterSpacing:0.8, textTransform:"uppercase", marginBottom:10 }}>⚠️ Common Distractors</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                  {Array.isArray(q.rationale.wrong)
+                    ? q.rationale.wrong.map((w,i)=>(
+                        <div key={i} style={{ padding:"8px 12px", background:"#fffbeb", borderRadius:8, fontSize:12, color:"#78350f", lineHeight:1.6 }}>
+                          <span style={{fontWeight:700, color:"#ef4444", marginRight:6}}>✗</span>{w}
+                        </div>
+                      ))
+                    : (
+                        <div style={{ padding:"8px 12px", background:"#fffbeb", borderRadius:8, fontSize:12, color:"#78350f", lineHeight:1.6 }}>
+                          <span style={{fontWeight:700, color:"#ef4444", marginRight:6}}>✗</span>{q.rationale.wrong}
+                        </div>
+                      )
+                  }
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
+    </div>
+  );
+}
+
+// ─── WELCOME SCREEN ───────────────────────────────────────────────────────────
+function WelcomeScreen({ onStart }) {
+  const sectionQCounts = { 1:10, 2:10, 3:5 };
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"44px 40px", maxWidth:660, width:"100%", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+
+        {/* Header */}
+        <div style={{ textAlign:"center", marginBottom:30 }}>
+          <span style={{
+            display:"inline-block", padding:"4px 14px", borderRadius:99,
+            background:"rgba(14,165,233,0.1)", border:"1px solid rgba(14,165,233,0.35)",
+            fontSize:11, fontWeight:700, color:"#0ea5e9", letterSpacing:1.2,
+            textTransform:"uppercase", marginBottom:14
+          }}>NCLEX-RN · 2026 Blueprint</span>
+          <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:6, letterSpacing:2, textTransform:"uppercase" }}>Module 1</div>
+          <h1 style={{ fontSize:30, fontWeight:800, color:"#0f172a", marginBottom:10, lineHeight:1.2 }}>🍼 Newborn Care</h1>
+          <p style={{ color:"#64748b", fontSize:15, lineHeight:1.7, maxWidth:480, margin:"0 auto" }}>
+            25 targeted questions aligned to the <strong style={{color:"#0f172a"}}>20 Things the NCLEX Wants You to Know About Newborn Care</strong> infographic. Reinforce your content before completing Bootcamp/UWorld.
+          </p>
+        </div>
+
+        {/* Section cards */}
+        <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom:26 }}>
+          {Object.values(SECTIONS).map((s, i)=>(
+            <div key={s.label} style={{ display:"flex", gap:14, alignItems:"flex-start", background:s.light, border:`1px solid ${s.border}`, borderRadius:14, padding:"14px 16px", position:"relative" }}>
+              <div style={{ fontSize:22, flexShrink:0, marginTop:1 }}>{s.emoji}</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:700, fontSize:14, color:s.color, marginBottom:3 }}>{s.label} — {s.title}</div>
+                <div style={{ fontSize:13, color:"#374151", lineHeight:1.55 }}>{s.desc}</div>
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
+                <span style={{
+                  fontSize:13, fontWeight:800, color:"#fff",
+                  background: s.color, borderRadius:99,
+                  padding:"2px 9px", letterSpacing:0.3
+                }}>{String(i+1).padStart(2,"0")}</span>
+                <span style={{ fontSize:11, fontWeight:600, color:s.color, whiteSpace:"nowrap" }}>{sectionQCounts[i+1]} Qs</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Tip box */}
+        <div style={{ borderLeft:"4px solid #f59e0b", background:"#fffbeb", borderRadius:"0 10px 10px 0", padding:"12px 16px", marginBottom:26, fontSize:13, color:"#78350f", lineHeight:1.65 }}>
+          💡 <strong>Before you start:</strong> Review the Module 1 infographic. These questions reinforce — not replace — your content review. After this, complete 40–50 Bootcamp/UWorld newborn questions.
+        </div>
+
+        <button
+          onClick={onStart}
+          className="btn-primary"
+          style={{
+            width:"100%", padding:"16px", border:"none", borderRadius:14, fontSize:17,
+            fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", letterSpacing:0.3,
+            background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff",
+            boxShadow:"0 4px 16px rgba(15,23,42,0.25)"
+          }}
+        >
+          Begin Module 1 →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── SECTION INTRO SCREEN ────────────────────────────────────────────────────
+function SectionIntroScreen({ sectionNum, onContinue }) {
+  const s = SECTIONS[sectionNum];
+  const count = QUESTIONS.filter(q=>q.section===sectionNum).length;
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"44px 40px", maxWidth:520, width:"100%", textAlign:"center", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+
+        {/* Glow emoji */}
+        <div style={{
+          width:90, height:90, borderRadius:"50%", margin:"0 auto 20px",
+          background:`linear-gradient(135deg, ${s.light}, #fff)`,
+          border:`2px solid ${s.border}`,
+          boxShadow:`0 8px 28px ${s.color}44`,
+          display:"flex", alignItems:"center", justifyContent:"center", fontSize:44
+        }}>{s.emoji}</div>
+
+        {/* Section badge */}
+        <span style={{
+          display:"inline-block", padding:"3px 12px", borderRadius:99,
+          background: s.light, border:`1px solid ${s.border}`,
+          fontSize:10, fontWeight:700, color:s.color, letterSpacing:1.4,
+          textTransform:"uppercase", marginBottom:12
+        }}>Section {sectionNum} of 3</span>
+
+        <h2 style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:10 }}>{s.title}</h2>
+        <p style={{ fontSize:15, color:"#475569", lineHeight:1.7, marginBottom:22 }}>{s.desc}</p>
+
+        <div style={{ borderLeft:`4px solid ${s.color}`, background:s.light, borderRadius:"0 10px 10px 0", padding:"12px 16px", marginBottom:28, fontSize:13, color:"#374151", textAlign:"left" }}>
+          <strong>{count} questions</strong> · If you miss one, the rationale will tell you exactly which concept to review.
+        </div>
+
+        <button
+          onClick={onContinue}
+          className="btn-primary"
+          style={{
+            width:"100%", padding:"15px", border:"none", borderRadius:14, fontSize:15,
+            fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", letterSpacing:0.3,
+            background:`linear-gradient(135deg, ${s.color}dd, ${s.color})`, color:"#fff",
+            boxShadow:`0 4px 16px ${s.color}44`
+          }}
+        >
+          Start {s.label} →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── RESULTS SCREEN ───────────────────────────────────────────────────────────
+function ResultsScreen({ history, onRestart }) {
+  const total=history.length, correct=history.filter(h=>h.correct).length, pct=Math.round((correct/total)*100);
+  const masteryData = CONCEPT_GROUPS.map(g=>{
+    const qh=history.filter(h=>g.ids.includes(h.id));
+    if(!qh.length) return null;
+    const c=qh.filter(h=>h.correct).length;
+    const mastered=c>=Math.ceil(qh.length/2);
+    return { ...g, mastered, correct:c, total:qh.length };
+  }).filter(Boolean);
+  const needsReview=masteryData.filter(m=>!m.mastered);
+  const ringColor=pct>=80?"#10b981":pct>=60?"#f59e0b":"#ef4444";
+
+  // Per-section scores
+  const sectionScores = [1,2,3].map(sNum => {
+    const sh = history.filter(h=>h.section===sNum);
+    const sc = sh.filter(h=>h.correct).length;
+    return { sNum, correct:sc, total:sh.length, sec:SECTIONS[sNum] };
+  });
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+
+        {/* Header */}
+        <div style={{ textAlign:"center", marginBottom:22 }}>
+          <div style={{ fontSize:11, letterSpacing:2, color:"#94a3b8", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Module 1 Complete</div>
+          <h2 style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:4 }}>🍼 Newborn Care</h2>
+        </div>
+
+        {/* Score ring */}
+        <div className="scale-in" style={{ display:"flex", justifyContent:"center", marginBottom:20 }}>
+          <div style={{
+            width:160, height:160, borderRadius:"50%",
+            border:`8px solid ${ringColor}`,
+            boxShadow:`0 0 40px ${ringColor}44`,
+            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:2
+          }}>
+            <span style={{ fontSize:40, fontWeight:800, color:ringColor, lineHeight:1 }}>{pct}%</span>
+            <span style={{ fontSize:13, color:"#64748b", fontWeight:500 }}>{correct}/{total} correct</span>
+          </div>
+        </div>
+
+        {/* Section breakdown pills */}
+        <div style={{ display:"flex", justifyContent:"center", gap:10, marginBottom:24 }}>
+          {sectionScores.map(({ sNum, correct:sc, total:st, sec })=>(
+            <div key={sNum} style={{
+              padding:"6px 14px", borderRadius:10,
+              background: sec.light, border:`1px solid ${sec.border}`,
+              textAlign:"center"
+            }}>
+              <div style={{ fontSize:10, fontWeight:700, color:sec.color, letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>{sec.label}</div>
+              <div style={{ fontSize:15, fontWeight:800, color:"#0f172a" }}>{sc}<span style={{fontSize:12,color:"#94a3b8",fontWeight:500}}>/{st}</span></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Concept Mastery */}
+        <div style={{ marginBottom:22 }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#374151", letterSpacing:1, textTransform:"uppercase", marginBottom:12 }}>Concept Mastery</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+            {masteryData.map(m=>(
+              <div key={m.num} style={{
+                display:"flex", alignItems:"center", gap:10, padding:"10px 14px",
+                background:"#fff",
+                borderLeft:`4px solid ${m.mastered?"#10b981":"#f59e0b"}`,
+                border:`1px solid ${m.mastered?"#d1fae5":"#fde68a"}`,
+                borderLeftWidth:4,
+                borderRadius:"0 10px 10px 0"
+              }}>
+                <div style={{
+                  width:28, height:28, borderRadius:"50%", flexShrink:0,
+                  background: m.mastered ? "#d1fae5" : "#fef3c7",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize:12, fontWeight:800, color: m.mastered ? "#059669" : "#92400e"
+                }}>{m.num}</div>
+                <div style={{flex:1, minWidth:0}}>
+                  <div style={{ fontSize:12, fontWeight:600, color: m.mastered?"#166534":"#92400e", lineHeight:1.3 }}>{m.name}</div>
+                  <div style={{ fontSize:11, color:"#94a3b8", marginTop:2 }}>
+                    <span style={{fontWeight:700, color: m.mastered?"#10b981":"#f59e0b"}}>{m.correct}/{m.total}</span> correct
+                  </div>
+                </div>
+                <span style={{ fontSize:15, flexShrink:0 }}>{m.mastered?"✅":"⚠️"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Review reminder */}
+        {needsReview.length > 0 && (
+          <div style={{ background:"#fffbeb", border:"1px solid #fcd34d", borderLeft:"4px solid #f59e0b", borderRadius:"0 12px 12px 0", padding:"14px 18px", marginBottom:18, fontSize:13, color:"#78350f", lineHeight:1.65 }}>
+            <strong>⚠️ Before moving to Bootcamp/UWorld — review:</strong>
+            <div style={{ marginTop:8, display:"flex", flexWrap:"wrap", gap:6 }}>
+              {needsReview.map(m=>(
+                <span key={m.num} style={{ background:"#fef3c7", border:"1px solid #fcd34d", borderRadius:99, padding:"4px 11px", fontSize:12, fontWeight:600, color:"#92400e" }}>#{m.num} {m.name}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {needsReview.length === 0 && (
+          <div style={{ background:"#f0fdf4", border:"1px solid #86efac", borderLeft:"4px solid #10b981", borderRadius:"0 12px 12px 0", padding:"14px 18px", marginBottom:18, fontSize:13, color:"#166534", lineHeight:1.65 }}>
+            <strong>✅ Excellent work!</strong> You demonstrated mastery across all concept areas. You're ready for Bootcamp/UWorld.
+          </div>
+        )}
+
+        {/* Next steps */}
+        <div style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderLeft:"4px solid #0ea5e9", borderRadius:"0 12px 12px 0", padding:"14px 18px", marginBottom:24, fontSize:13, color:"#0c4a6e", lineHeight:1.65 }}>
+          <strong>📚 Next Step:</strong> Complete <strong>40–50 Bootcamp or UWorld questions</strong> on Newborn Care. Focus your review on your ⚠️ concepts first.
+        </div>
+
+        <button
+          onClick={onRestart}
+          className="btn-primary"
+          style={{
+            width:"100%", padding:"15px", border:"none", borderRadius:14, fontSize:15,
+            fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif",
+            background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff",
+            boxShadow:"0 4px 16px rgba(15,23,42,0.25)"
+          }}
+        >
+          Retake Module 1
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── QUIZ SCREEN ──────────────────────────────────────────────────────────────
+function QuizScreen({ onFinish }) {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [history, setHistory] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [showSectionIntro, setShowSectionIntro] = useState(true);
+  const [selected, setSelected] = useState([]);
+  const [btState, setBtState] = useState({left:[],center:[],right:[]});
+  const [csAnswers, setCsAnswers] = useState({});
+
+  const q = QUESTIONS[currentIdx];
+
+  if(!q) { onFinish(history); return null; }
+
+  if(showSectionIntro) {
+    return <SectionIntroScreen sectionNum={q.section} onContinue={()=>setShowSectionIntro(false)} />;
+  }
+
+  function isAnswerComplete() {
+    if(q.type==="mcq") return selected.length===1;
+    if(q.type==="sata") return selected.length>0;
+    if(q.type==="bowtie") return (btState.left||[]).length===2 && (btState.center||[]).length===1 && (btState.right||[]).length===2;
+    if(q.type==="casestudy") return q.questions.every(sq=>(csAnswers[sq.qid]||[]).length>0);
+    return false;
+  }
+
+  function calcCorrect() {
+    if(q.type==="mcq") return selected[0]===q.correct[0];
+    if(q.type==="sata") return [...selected].sort().join(",")===q.correct.slice().sort().join(",");
+    if(q.type==="bowtie") {
+      return [...(btState.left||[])].sort().join(",")===q.correctLeft.slice().sort().join(",") &&
+             (btState.center||[])[0]===q.correctCenter[0] &&
+             [...(btState.right||[])].sort().join(",")===q.correctRight.slice().sort().join(",");
+    }
+    if(q.type==="casestudy") return q.questions.every(sq=>[...(csAnswers[sq.qid]||[])].sort().join(",")===sq.correct.slice().sort().join(","));
+    return false;
+  }
+
+  function handleNext() {
+    const isCorrect = calcCorrect();
+    const newHistory = [...history, { id:q.id, correct:isCorrect, concept:q.concept, section:q.section }];
+    const nextIdx = currentIdx + 1;
+
+    if(nextIdx >= QUESTIONS.length) { onFinish(newHistory); return; }
+
+    const nextQ = QUESTIONS[nextIdx];
+    const sectionChanging = nextQ.section !== q.section;
+
+    setHistory(newHistory);
+    setCurrentIdx(nextIdx);
+    setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({});
+    setSubmitted(false);
+    if(sectionChanging) setShowSectionIntro(true);
+  }
+
+  const sec = SECTIONS[q.section];
+  const qInSection = QUESTIONS.filter(x=>x.section===q.section);
+  const qNumInSection = qInSection.findIndex(x=>x.id===q.id)+1;
+  const overallNum = currentIdx+1;
+  const isCorrect = submitted ? calcCorrect() : null;
+
+  const DIFF_LABELS={1:"Foundational",2:"Applying",3:"Analyzing"};
+  const DIFF_COLORS={1:{bg:"#d1fae5",text:"#065f46"},2:{bg:"#fef3c7",text:"#92400e"},3:{bg:"#fee2e2",text:"#991b1b"}};
+  const TYPE_LABELS={mcq:"MCQ",sata:"SATA",bowtie:"NGN · Bow-Tie",casestudy:"NGN · Case Study"};
+  const dc=DIFF_COLORS[q.difficulty];
+  const isNGN = q.type==="bowtie"||q.type==="casestudy";
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#f0f2f8", fontFamily:"'Inter',sans-serif" }}>
+
+      {/* Top bar */}
+      <div style={{ background:"#fff", borderBottom:"1px solid #e8ecf2", padding:"0 24px", height:60, display:"flex", alignItems:"center", gap:16, boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
+        {/* Section pill */}
+        <span style={{
+          padding:"4px 12px", borderRadius:99, fontSize:11, fontWeight:700,
+          background:sec.light, border:`1px solid ${sec.border}`, color:sec.color,
+          whiteSpace:"nowrap", letterSpacing:0.5
+        }}>{sec.label}</span>
+
+        {/* Progress bar */}
+        <div style={{ flex:1, background:"#e8ecf2", borderRadius:99, height:8 }}>
+          <div style={{
+            width:`${(overallNum/QUESTIONS.length)*100}%`,
+            background:`linear-gradient(90deg, ${sec.color}, ${sec.color}bb)`,
+            borderRadius:99, height:8, transition:"width 0.4s ease"
+          }} />
+        </div>
+
+        {/* Q counter */}
+        <div style={{ whiteSpace:"nowrap", fontSize:13, fontWeight:600 }}>
+          <span style={{color:"#0f172a"}}>Q{overallNum}</span>
+          <span style={{color:"#94a3b8"}}> / {QUESTIONS.length}</span>
+        </div>
+      </div>
+
+      <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
+        <div
+          className="fade-up"
+          style={{
+            background:"#fff", borderRadius:20, overflow:"hidden",
+            boxShadow:"0 2px 16px rgba(15,23,42,0.08)"
+          }}
+        >
+          {/* Section color accent bar */}
+          <div style={{ height:5, background:`linear-gradient(90deg, ${sec.color}, ${sec.color}99)` }} />
+
+          <div style={{ padding:"28px 32px" }}>
+
+            {/* Concept tag */}
+            <div style={{
+              display:"inline-flex", alignItems:"center", gap:8,
+              borderLeft:`4px solid ${sec.color}`,
+              background:sec.light, borderRadius:"0 8px 8px 0",
+              padding:"9px 14px", marginBottom:18
+            }}>
+              <span style={{
+                width:8, height:8, borderRadius:"50%",
+                background:sec.color, flexShrink:0
+              }}/>
+              <div>
+                <div style={{ fontSize:10, fontWeight:700, color:sec.color, letterSpacing:1.2, textTransform:"uppercase" }}>Concept #{q.concept.num}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:"#0f172a" }}>{q.concept.name}</div>
+              </div>
+            </div>
+
+            {/* Question tags */}
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:18 }}>
+              <Tag bg={dc.bg} color={dc.text}>{DIFF_LABELS[q.difficulty]}</Tag>
+              <Tag bg={isNGN?"#eef2ff":"#f1f5f9"} color={isNGN?"#6366f1":"#64748b"} border={isNGN?"#c7d2fe":undefined}>
+                {isNGN && <span style={{marginRight:4}}>⚡</span>}{TYPE_LABELS[q.type]}
+              </Tag>
+              <Tag bg={sec.light} color={sec.color} border={sec.border}>{sec.label} · Q{qNumInSection} of {qInSection.length}</Tag>
+            </div>
+
+            {/* Case intro */}
+            {q.caseIntro && (
+              <div style={{
+                borderLeft:"4px solid #0ea5e9", background:"#f0f9ff",
+                borderRadius:"0 10px 10px 0", padding:"14px 16px", marginBottom:18
+              }}>
+                <div style={{ fontSize:10, fontWeight:700, color:"#0369a1", letterSpacing:1, textTransform:"uppercase", marginBottom:6 }}>Clinical Scenario</div>
+                <div style={{ fontSize:14, lineHeight:1.7, color:"#0c4a6e", fontWeight:400 }}>{q.caseIntro}</div>
+              </div>
+            )}
+
+            {/* Stem */}
+            <div style={{ fontSize:16, lineHeight:1.7, color:"#0f172a", marginBottom:20, fontWeight:600 }}>{q.stem}</div>
+
+            {/* Question */}
+            {q.type==="mcq" && <MCQQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
+            {q.type==="sata" && <SATAQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
+            {q.type==="bowtie" && <BowTieQuestion q={q} submitted={submitted} btState={btState} onBTSelect={(key,val)=>setBtState(s=>({...s,[key]:val}))} />}
+            {q.type==="casestudy" && <CaseStudyQuestion q={q} submitted={submitted} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
+
+            {/* Rationale */}
+            {submitted && <RationalePanel q={q} isCorrect={isCorrect} />}
+
+            {/* Actions */}
+            <div style={{ display:"flex", justifyContent:"flex-end", gap:12 }}>
+              {!submitted ? (
+                <Btn onClick={()=>setSubmitted(true)} disabled={!isAnswerComplete()}>Submit Answer</Btn>
+              ) : (
+                <Btn onClick={handleNext}>
+                  {currentIdx+1 >= QUESTIONS.length ? "View Results →" : (QUESTIONS[currentIdx+1]?.section !== q.section ? `Continue to ${SECTIONS[QUESTIONS[currentIdx+1].section].label} →` : "Next Question →")}
+                </Btn>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── APP ROOT ─────────────────────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen] = useState("welcome");
+  const [history, setHistory] = useState([]);
+
+  if(screen==="welcome") return <WelcomeScreen onStart={()=>setScreen("quiz")} />;
+  if(screen==="quiz") return <QuizScreen onFinish={h=>{ setHistory(h); setScreen("results"); }} />;
+  if(screen==="results") return <ResultsScreen history={history} onRestart={()=>{ setHistory([]); setScreen("welcome"); }} />;
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
