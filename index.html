@@ -883,7 +883,7 @@ function ProfileScreen({ onStart }) {
           <div>
             <label style={lbl}>Session Mode</label>
             <div style={{ display:"flex", gap:10 }}>
-              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 NCLEX Simulation",sub:"85–150 questions · Pass/Fail only"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Mariam targeted weaknesses"}].map(m=>(
+              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 NCLEX Simulation",sub:"85–150 questions · Pass/Fail only"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
                 <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
