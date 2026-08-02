@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 2 — Maternal & OB · NCLEX Practice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f8; }
+    button:focus { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scaleIn { from { opacity:0; transform:scale(0.82); } to { opacity:1; transform:scale(1); } }
+    .fade-up  { animation: fadeUp  0.38s cubic-bezier(0.22,1,0.36,1) both; }
+    .scale-in { animation: scaleIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .btn-primary { transition: all 0.18s ease; }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,23,42,0.28); filter: brightness(1.08); }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .btn-outline { transition: all 0.18s ease; }
+    .btn-outline:hover { background: #f1f5f9 !important; border-color: #94a3b8 !important; }
+    .opt-btn { transition: all 0.18s ease; }
+    .opt-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(15,23,42,0.10); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const SECTIONS = {
+  1: { label:"Section 1", title:"Concept Check",     desc:"10 foundational questions — RH incompatibility, preeclampsia criteria, fetal heart rate patterns, normal labs, vaccines, and prenatal pearls.", color:"#10b981", light:"#f0fdf4", border:"#86efac", emoji:"✏️" },
+  2: { label:"Section 2", title:"NCLEX Application", desc:"10 higher-difficulty questions — obstetric emergencies, priority actions, normal vs. abnormal, medication management, and report-immediately scenarios.", color:"#f59e0b", light:"#fffbeb", border:"#fcd34d", emoji:"🧠" },
+  3: { label:"Section 3", title:"NGN",               desc:"5 next-generation questions — Bow-Tie and Case Study integrating preeclampsia management, cord prolapse, and obstetric emergency triage.", color:"#8b5cf6", light:"#faf5ff", border:"#c4b5fd", emoji:"🎯" },
+};
+
+const CONCEPT_GROUPS = [
+  { num:1,  name:"RH Incompatibility & RhoGAM",    ids:["q1","q2","q17"] },
+  { num:2,  name:"Preeclampsia Criteria",           ids:["q3","q19"] },
+  { num:3,  name:"Eclampsia & HELLP Syndrome",      ids:["q4"] },
+  { num:4,  name:"Fetal Heart Rate Patterns",       ids:["q5","q6","q14"] },
+  { num:5,  name:"Placenta Previa",                 ids:["q12","q21"] },
+  { num:6,  name:"Placental Abruption",             ids:["q11"] },
+  { num:7,  name:"Cord Prolapse & Uterine Rupture", ids:["q13","q22"] },
+  { num:8,  name:"Vaccines in Pregnancy",           ids:["q8"] },
+  { num:9,  name:"Fundal Height & GTPAL",           ids:["q7","q16"] },
+  { num:10, name:"Kick Counts & Fetal Well-being",  ids:["q9"] },
+  { num:11, name:"Labs in Pregnancy",               ids:["q10","q19"] },
+  { num:12, name:"Preeclampsia Treatment",          ids:["q15","q23"] },
+  { num:13, name:"Report Immediately",              ids:["q18","q20","q25"] },
+  { num:14, name:"Obstetric Emergency Triage",      ids:["q24"] },
+];
+
+const QUESTIONS = [
+
+  // ══════════════ SECTION 1 — CONCEPT CHECK ══════════════
+
+  { id:"q1", section:1, type:"mcq", difficulty:1,
+    concept:{ num:1, name:"RH Incompatibility & RhoGAM" },
+    stem:"A nurse is educating a group of prenatal patients about blood type incompatibility. Which scenario places a fetus at risk for hemolytic disease of the newborn?",
+    options:[
+      "Rh-positive mother carrying an Rh-positive fetus",
+      "Rh-negative mother carrying an Rh-positive fetus",
+      "Rh-positive mother carrying an Rh-negative fetus",
+      "Rh-negative mother carrying an Rh-negative fetus"
+    ],
+    correct:[1],
+    rationale:{ correct:"When an Rh-negative mother carries an Rh-positive fetus, fetal Rh-positive RBCs can cross the placenta, causing the mother to develop anti-Rh antibodies. In subsequent pregnancies, these antibodies attack the fetus's RBCs — causing hemolytic disease of the newborn. KEY PEARL: Rh– mom + Rh+ baby = risk. RhoGAM prevents sensitization.",
+      wrong:["If both mother and fetus are Rh-positive, there is no incompatibility and no risk of hemolytic disease.","When the mother is Rh-positive, she cannot develop anti-Rh antibodies — her own blood is Rh-positive, so there is no incompatibility regardless of fetal type.","When both mother and fetus are Rh-negative, no incompatibility exists — RhoGAM is not needed."]}},
+
+  { id:"q2", section:1, type:"mcq", difficulty:1,
+    concept:{ num:1, name:"RH Incompatibility & RhoGAM" },
+    stem:"An Rh-negative patient delivers an Rh-positive infant. The nurse knows that RhoGAM (Rho(D) immune globulin) must be administered within which timeframe postpartum?",
+    options:[
+      "Within 24 hours of delivery",
+      "Within 48 hours of delivery",
+      "Within 72 hours of delivery",
+      "Within 7 days of delivery"
+    ],
+    correct:[2],
+    rationale:{ correct:"RhoGAM must be administered within 72 hours (3 days) postpartum to prevent the Rh-negative mother from becoming sensitized to Rh-positive blood. It is also given routinely at 28 weeks gestation, and after any sensitizing event (miscarriage, amniocentesis, trauma, ectopic pregnancy, etc.).",
+      wrong:["24 and 48-hour windows are too narrow — the guideline is 72 hours postpartum.","7 days is too late — RhoGAM must be given within 72 hours to be effective in preventing sensitization."]}},
+
+  { id:"q3", section:1, type:"mcq", difficulty:1,
+    concept:{ num:2, name:"Preeclampsia Criteria" },
+    stem:"A nurse is reviewing the diagnostic criteria for preeclampsia with a student nurse. Which combination of findings establishes a diagnosis of preeclampsia?",
+    options:[
+      "Blood pressure ≥130/80 mmHg on one occasion after 16 weeks gestation",
+      "Blood pressure ≥140/90 mmHg on two occasions 4 hours apart, with proteinuria ≥300 mg/24 hours, after 20 weeks gestation",
+      "Any elevated blood pressure before 20 weeks gestation with headache and edema",
+      "Blood pressure ≥160/110 mmHg on one occasion with severe headache and visual changes"
+    ],
+    correct:[1],
+    rationale:{ correct:"Preeclampsia is diagnosed by BP ≥140/90 mmHg (measured on two occasions, at least 4 hours apart) WITH proteinuria ≥300 mg/24 hours (or 3+ on dipstick), occurring after 20 weeks gestation. NCLEX CLUE: Must be AFTER 20 weeks — before 20 weeks with hypertension suggests chronic hypertension, not preeclampsia.",
+      wrong:["The threshold is ≥140/90 on TWO occasions — not 130/80, and not a single reading.","Hypertension before 20 weeks is classified as chronic hypertension — preeclampsia, by definition, occurs after 20 weeks.","BP ≥160/110 describes SEVERE-RANGE preeclampsia with severe features — while this meets criteria, option B describes the standard diagnostic criteria more completely."]}},
+
+  { id:"q4", section:1, type:"mcq", difficulty:1,
+    concept:{ num:3, name:"Eclampsia & HELLP Syndrome" },
+    stem:"A nurse is reviewing a patient's labs and sees: low platelets, elevated liver enzymes, and indirect signs of hemolysis. The nurse recognizes these findings as consistent with which obstetric complication?",
+    options:[
+      "Gestational diabetes with hepatic involvement",
+      "HELLP syndrome — a severe variant of preeclampsia",
+      "Normal third-trimester lab changes related to increased blood volume",
+      "Preterm labor with associated inflammatory response"
+    ],
+    correct:[1],
+    rationale:{ correct:"HELLP syndrome = Hemolysis + Elevated Liver enzymes + Low Platelets. It is a severe, life-threatening variant of preeclampsia. MEMORY TRICK: H-E-L-L-P spells out the findings. These lab abnormalities combined in a pregnant patient require immediate provider notification — HELLP can rapidly progress to maternal and fetal death.",
+      wrong:["These findings are not consistent with gestational diabetes — HELLP involves hemolysis, hepatic damage, and thrombocytopenia.","Low platelets and elevated liver enzymes are NEVER normal in pregnancy — these are emergency findings.","HELLP is not related to preterm labor — it is a severe preeclampsia complication requiring emergent management."]}},
+
+  { id:"q5", section:1, type:"mcq", difficulty:1,
+    concept:{ num:4, name:"Fetal Heart Rate Patterns" },
+    stem:"A nurse observes early decelerations on the fetal monitor — the FHR dips symmetrically and returns to baseline with each contraction. What is the most appropriate nursing interpretation?",
+    options:[
+      "This is a late deceleration pattern — notify the provider immediately and prepare for emergency delivery",
+      "This pattern indicates cord compression — reposition the patient to the left lateral position",
+      "Early decelerations reflect head compression during contractions and are a normal, benign finding",
+      "This is minimal variability — a sign of possible fetal distress requiring immediate intervention"
+    ],
+    correct:[2],
+    rationale:{ correct:"Early decelerations are caused by vagal response to fetal HEAD COMPRESSION during contractions. They are BENIGN, symmetric, mirror contractions exactly, and require NO intervention. KEY PEARL: Early = head compression = benign = no action needed. Compare: Late = placental insufficiency = dangerous = act immediately.",
+      wrong:["Late decelerations begin AFTER the contraction peaks and are the dangerous pattern — early decelerations begin with and mirror contractions.","Cord compression causes VARIABLE decelerations — abrupt drops that vary in timing and shape relative to contractions.","Minimal variability refers to the baseline FHR amplitude — not the deceleration pattern described here."]}},
+
+  { id:"q6", section:1, type:"mcq", difficulty:1,
+    concept:{ num:4, name:"Fetal Heart Rate Patterns" },
+    stem:"A nurse is monitoring a laboring patient and notices recurrent decelerations that begin AFTER the peak of each contraction and return to baseline slowly. Which action is the nurse's PRIORITY?",
+    options:[
+      "Document the finding and continue routine monitoring — this is expected during active labor",
+      "Reposition the patient, apply oxygen, increase IV fluids, and notify the provider immediately",
+      "Encourage the patient to push with the next contraction to expedite delivery",
+      "Administer oxytocin to strengthen contractions and improve placental blood flow"
+    ],
+    correct:[1],
+    rationale:{ correct:"Late decelerations = placental insufficiency. They begin AFTER the contraction peak, indicate the fetus is not getting adequate oxygen through the placenta, and are NEVER normal. Nursing priorities: Reposition (left lateral), O₂ via face mask, IV fluids, stop oxytocin if running, and NOTIFY the provider. NCLEX PEARL: Late decelerations = dangerous = act immediately.",
+      wrong:["Late decelerations are NEVER a normal finding — documenting and continuing without intervention is inappropriate and dangerous.","Pushing increases intrauterine pressure, worsening placental perfusion — never encourage pushing with late decelerations.","Oxytocin INCREASES contractions, further reducing placental blood flow — stop oxytocin if running; never add more."]}},
+
+  { id:"q7", section:1, type:"mcq", difficulty:1,
+    concept:{ num:9, name:"Fundal Height & GTPAL" },
+    stem:"A nurse is performing fundal height assessments on three patients. Which finding correctly corresponds to gestational age based on standard fundal height landmarks?",
+    options:[
+      "At 12 weeks, fundal height is palpable at the umbilicus",
+      "At 20 weeks, fundal height is approximately at the umbilicus; at 36 weeks, it reaches the xiphoid process",
+      "At 28 weeks, the fundal height is at the umbilicus and does not change until term",
+      "Fundal height rises above the xiphoid process by 32 weeks, then remains at the same level"
+    ],
+    correct:[1],
+    rationale:{ correct:"Standard fundal height landmarks: 12 weeks = just above pubic symphysis; 20 weeks = at the umbilicus (and fundal height in cm ≈ gestational age in weeks); 36 weeks = at the xiphoid process. Lightening (fetal descent into the pelvis) drops the fundus before labor. NCLEX CLUE: 20 weeks at umbilicus is the most-tested landmark.",
+      wrong:["At 12 weeks, the uterus is just above the pubic symphysis — NOT at the umbilicus. The umbilicus is the 20-week landmark.","Fundal height continues to rise from 20 to 36 weeks — it does not plateau at the umbilicus.","The fundus reaches the xiphoid at 36 weeks, then DROPS (lightening) as the fetal head descends before labor — it does not stay above the xiphoid."]}},
+
+  { id:"q8", section:1, type:"sata", difficulty:1,
+    concept:{ num:8, name:"Vaccines in Pregnancy" },
+    stem:"A nurse is reviewing vaccine safety with a group of pregnant patients. Select ALL vaccines that are considered safe and recommended during pregnancy.",
+    options:[
+      "Tdap (27–36 weeks)",
+      "Influenza — injectable (inactivated)",
+      "MMR (measles, mumps, rubella)",
+      "COVID-19 vaccine",
+      "Varicella (chickenpox)",
+      "RSV vaccine (32–36 weeks in season)"
+    ],
+    correct:[0,1,3,5],
+    rationale:{ correct:"Safe/recommended in pregnancy: Tdap (27–36 weeks to protect newborn against pertussis), Influenza injectable/inactivated (live FluMist is NOT safe), COVID-19, and RSV (32–36 weeks seasonally). Hepatitis B is also safe if indicated.",
+      wrong:["MMR is a LIVE vaccine — contraindicated in pregnancy due to theoretical fetal risk. Administer postpartum.","Varicella is a LIVE vaccine — contraindicated in pregnancy. Administer postpartum.","NCLEX TRAP: Live vaccines (MMR, Varicella, FluMist, Zoster, Oral Typhoid) are NEVER given during pregnancy."]}},
+
+  { id:"q9", section:1, type:"mcq", difficulty:1,
+    concept:{ num:10, name:"Kick Counts & Fetal Well-being" },
+    stem:"A nurse is teaching a patient at 30 weeks gestation how to perform daily kick counts. Which instruction is most accurate?",
+    options:[
+      "Count fetal movements after each meal; report to the provider if you feel fewer than 5 movements per hour",
+      "After 28 weeks, count fetal movements daily. The fetus should move at least 10 times in 2 hours. Call the provider if fewer movements are felt.",
+      "Fetal movement is most active in the morning — always count before breakfast for best accuracy",
+      "Kick counts are only necessary in the third trimester if there are risk factors like gestational diabetes or preeclampsia"
+    ],
+    correct:[1],
+    rationale:{ correct:"Kick count guidelines: Begin after 28 weeks; count daily; the fetus should produce at least 10 movements in 2 hours. If fewer than 10 movements in 2 hours, call the provider. Decreased fetal movement can be an early sign of fetal distress and requires immediate evaluation.",
+      wrong:["The standard guideline is 10 movements in 2 hours — not 5 per hour. The timing is across 2 hours, not within a single hour.","Fetal movement is typically most active AFTER meals and in the evening when the mother is at rest — not necessarily before breakfast.","Kick counts are universally recommended for ALL patients after 28 weeks — not only high-risk pregnancies."]}},
+
+  { id:"q10", section:1, type:"mcq", difficulty:1,
+    concept:{ num:11, name:"Labs in Pregnancy" },
+    stem:"A student nurse asks about which lab finding is considered NORMAL during pregnancy. Which response by the charge nurse is most accurate?",
+    options:[
+      "Proteinuria of 1+ on dipstick is a normal finding in any trimester — document and monitor",
+      "WBC of 12,000/mm³ is highly abnormal in pregnancy and suggests active infection requiring immediate evaluation",
+      "Mild dilutional anemia and WBC up to 16,000/mm³ are normal adaptations; trace glucosuria may occur without indicating diabetes",
+      "Elevated uric acid and creatinine are expected changes from increased renal blood flow"
+    ],
+    correct:[2],
+    rationale:{ correct:"Normal pregnancy labs: WBC 5,000–16,000/mm³ (mild leukocytosis is normal); Hgb/Hct ↓ (dilutional anemia due to plasma volume expansion); Platelets 150,000–400,000; Glucose — trace ↑ after meals is OK (↑GFR exceeds reabsorption threshold); BUN/Creatinine ↓ (increased GFR); Coagulation → hypercoagulable (↑fibrinogen). NCLEX TRAP: Proteinuria is NEVER normal in pregnancy — it is always a red flag.",
+      wrong:["Proteinuria of 1+ (or more than trace) is NEVER normal in pregnancy — it is a key indicator of preeclampsia and requires immediate evaluation.","WBC up to 16,000/mm³ can be normal in pregnancy due to physiologic immune adaptation — it does not automatically indicate infection.","BUN and creatinine DECREASE in pregnancy due to increased GFR; uric acid also decreases. Elevated values are red flags for preeclampsia or renal disease."]}},
+
+  // ══════════════ SECTION 2 — NCLEX APPLICATION ══════════════
+
+  { id:"q11", section:2, type:"mcq", difficulty:2,
+    concept:{ num:6, name:"Placental Abruption" },
+    stem:"A nurse is triaging two laboring patients. Patient A reports sudden, severe abdominal pain with a rigid, board-like uterus and dark red vaginal bleeding. Patient B reports painless, bright red vaginal bleeding with no contractions. Which statement BEST distinguishes these two patients?",
+    options:[
+      "Both patients have placenta previa — the color difference is not clinically significant",
+      "Patient A has signs of placental abruption (painful, dark bleeding, rigid uterus); Patient B has signs of placenta previa (painless, bright red bleeding)",
+      "Patient B's bleeding is more dangerous because bright red blood indicates arterial hemorrhage",
+      "Patient A's rigid uterus indicates normal early labor — it does not require immediate intervention"
+    ],
+    correct:[1],
+    rationale:{ correct:"NCLEX PEARL to memorize: Abruption = Painful dark bleeding + rigid uterus (premature separation of placenta). Previa = Painless bright red bleeding (placenta over cervical os, disrupted by cervical changes). Both are emergencies — notify provider immediately for both. But the presentations are completely different and the NCLEX will test this distinction.",
+      wrong:["These are two different obstetric emergencies — placental abruption and placenta previa. The color and pain characteristics are clinically critical distinguishing features.","Bright red blood in placenta previa comes from the disrupted placental tissue, not arterial hemorrhage in the arterial sense — both are serious emergencies regardless of blood color.","A rigid, board-like uterus is NEVER normal in labor — it indicates concealed hemorrhage with placental abruption and requires immediate notification."]}},
+
+  { id:"q12", section:2, type:"mcq", difficulty:2,
+    concept:{ num:5, name:"Placenta Previa" },
+    stem:"A patient at 32 weeks gestation presents with sudden onset painless bright red vaginal bleeding. The nurse suspects placenta previa. Which nursing action is the PRIORITY?",
+    options:[
+      "Perform a vaginal examination to assess cervical dilation and determine if labor has begun",
+      "Administer oxytocin to prepare the cervix and facilitate safe delivery",
+      "Do NOT perform a vaginal examination — notify the provider immediately and monitor maternal and fetal status",
+      "Prepare the patient for amniotomy to reduce intrauterine pressure and slow the bleeding"
+    ],
+    correct:[2],
+    rationale:{ correct:"NEVER perform a vaginal examination with suspected or confirmed placenta previa — the examining finger can rupture the placental tissue over the cervical os, causing massive, life-threatening hemorrhage. Nursing priorities: NO vaginal exam, notify provider, continuous fetal monitoring, IV access, type and screen/crossmatch, keep NPO. NCLEX TRAP: This is the #1 tested contraindication for placenta previa.",
+      wrong:["Vaginal examination is ABSOLUTELY CONTRAINDICATED in placenta previa — it can cause catastrophic hemorrhage. This would be a serious nursing error.","Oxytocin causes uterine contractions — at 32 weeks with placenta previa, this could trigger massive hemorrhage and is contraindicated.","Amniotomy is also contraindicated — any instrumentation through the cervix in placenta previa risks rupturing the overlying placenta."]}},
+
+  { id:"q13", section:2, type:"mcq", difficulty:2,
+    concept:{ num:7, name:"Cord Prolapse & Uterine Rupture" },
+    stem:"A nurse assesses a patient whose membranes just ruptured and finds the umbilical cord visible at the vaginal introitus. Which nursing action is the PRIORITY?",
+    options:[
+      "Push the cord gently back into the uterus and prepare the patient for continued labor monitoring",
+      "Place the patient in knee-chest or Trendelenburg position and use two gloved fingers to lift the presenting part off the cord — do NOT push the cord back — call for help immediately",
+      "Administer oxytocin to strengthen contractions and accelerate delivery before cord compression occurs",
+      "Encourage the patient to push with the next contraction to facilitate rapid vaginal delivery"
+    ],
+    correct:[1],
+    rationale:{ correct:"Cord prolapse = obstetric emergency. Priority: (1) Call for emergency help, (2) Knee-chest or Trendelenburg position to use gravity to shift the fetus off the cord, (3) Two gloved fingers inside vagina to manually lift/hold the presenting part OFF the cord — maintain this until delivery. DO NOT push the cord back (causes vasospasm). Emergency cesarean is usually required. NCLEX PEARL: Preserve cord circulation until delivery — every second matters.",
+      wrong:["NEVER push the cord back — it causes vasospasm that completely cuts off fetal oxygen. This is a dangerous error.","Oxytocin increases uterine contractions, which increases pressure on the prolapsed cord, worsening fetal hypoxia — it is absolutely contraindicated here.","Encouraging pushing increases intrauterine pressure on the cord — this is dangerous. The priority is relieving cord compression, not facilitating vaginal delivery."]}},
+
+  { id:"q14", section:2, type:"mcq", difficulty:2,
+    concept:{ num:4, name:"Fetal Heart Rate Patterns" },
+    stem:"A nurse notices variable decelerations on the fetal monitor — abrupt drops in FHR that vary in timing and depth relative to contractions. What is the priority nursing action?",
+    options:[
+      "Notify the provider immediately for emergency cesarean delivery",
+      "Increase the oxytocin infusion rate to improve uteroplacental blood flow",
+      "Reposition the patient (left lateral or hands-and-knees), apply oxygen, and increase IV fluids; notify the provider if pattern persists",
+      "Variable decelerations are always benign — document and continue routine monitoring"
+    ],
+    correct:[2],
+    rationale:{ correct:"Variable decelerations = cord compression. They are characterized by abrupt drops, V-shape or U-shape pattern, varying in timing relative to contractions. Initial nursing actions: REPOSITION (left lateral, hands-and-knees, or Trendelenburg to relieve cord pressure), apply O₂ at 8–10 L/min via face mask, increase IV fluids. Notify provider if variables are severe (drop >60 bpm, lasting >60 seconds) or persist. NCLEX CLUE: Variable = cord compression.",
+      wrong:["Variable decelerations are concerning but not always an immediate cesarean indication — repositioning and oxygen are first-line interventions.","Oxytocin increases contractions, which can worsen cord compression — STOP oxytocin if running; never increase it for variable decelerations.","Variable decelerations can indicate cord compression and are NOT always benign — severe or persistent variables require intervention and provider notification."]}},
+
+  { id:"q15", section:2, type:"mcq", difficulty:2,
+    concept:{ num:12, name:"Preeclampsia Treatment" },
+    stem:"A patient with severe preeclampsia is receiving IV magnesium sulfate for seizure prophylaxis. The nurse assesses respirations of 10 breaths/min, absent deep tendon reflexes, and decreased urine output. Which action is the nurse's PRIORITY?",
+    options:[
+      "Increase the magnesium infusion rate — the patient's seizure risk is still elevated",
+      "Stop the magnesium infusion immediately and administer calcium gluconate — these findings indicate magnesium toxicity",
+      "Administer a bolus of IV fluid to increase urine output and dilute the magnesium level",
+      "These are expected side effects of magnesium — document and continue the infusion at the current rate"
+    ],
+    correct:[1],
+    rationale:{ correct:"Magnesium TOXICITY signs: respiratory rate <12 breaths/min, absent deep tendon reflexes (especially patellar reflex), decreased urine output (<30 mL/hr), and decreased LOC. ANTIDOTE: Calcium gluconate IV. Stop the infusion immediately. Keep calcium gluconate at the bedside for ALL patients on magnesium sulfate. NCLEX PEARL: Mag toxicity → STOP mag → GIVE calcium gluconate.",
+      wrong:["Increasing the infusion is dangerous — these findings indicate toxicity, not undertreated seizure risk.","Fluids alone will not reverse magnesium toxicity — calcium gluconate is the antidote and must be given immediately with infusion stopped.","Respiratory rate <12/min and absent reflexes are magnesium TOXICITY — these are never 'expected and acceptable' findings. This represents a medical emergency."]}},
+
+  { id:"q16", section:2, type:"mcq", difficulty:2,
+    concept:{ num:9, name:"Fundal Height & GTPAL" },
+    stem:"A patient's chart records her obstetric history as G4 T2 P1 A1 L2. How should the nurse correctly interpret this GTPAL notation?",
+    options:[
+      "4 total pregnancies; 2 term births; 1 preterm birth; 1 abortion/loss; 2 living children",
+      "4 term births; 2 preterm births; 1 abortion; 1 living child",
+      "4 total pregnancies; all at term; 2 living children; 1 miscarriage",
+      "Gravida 4 means she is currently 4 months pregnant; 2 previous term deliveries"
+    ],
+    correct:[0],
+    rationale:{ correct:"GTPAL: G = Gravida (total pregnancies, including current); T = Term births (≥37 weeks); P = Preterm births (20–36+6 weeks); A = Abortions/losses (spontaneous or induced, <20 weeks); L = Living children. So G4 T2 P1 A1 L2 = 4 pregnancies total; 2 term births; 1 preterm birth; 1 abortion; 2 living children. NCLEX TIP: L (living children) can be LESS than T+P if a child died.",
+      wrong:["The letters are G-T-P-A-L in order — not rearranged. G=Gravida (total pregnancies), not number of term births.","Each letter has a specific meaning — Gravida 4 means 4 total pregnancies ever (including the current one), not current months of pregnancy."]}},
+
+  { id:"q17", section:2, type:"mcq", difficulty:2,
+    concept:{ num:1, name:"RH Incompatibility & RhoGAM" },
+    stem:"An Rh-negative patient at 14 weeks gestation has a positive indirect Coombs test. What is the most important nursing implication?",
+    options:[
+      "Administer RhoGAM immediately — positive Coombs means she needs it now",
+      "Do NOT administer RhoGAM — a positive indirect Coombs indicates she is already sensitized; RhoGAM will not prevent further sensitization",
+      "Repeat the test at 28 weeks gestation before making any clinical decisions",
+      "Administer RhoGAM and schedule weekly fetal monitoring to detect antibody formation"
+    ],
+    correct:[1],
+    rationale:{ correct:"NCLEX TRAP: Do NOT give RhoGAM if the mother is already sensitized (positive indirect Coombs = maternal anti-Rh antibodies already present). RhoGAM PREVENTS sensitization — it cannot reverse it once it has occurred. Instead, these patients require serial fetal surveillance (middle cerebral artery Doppler studies, possible intrauterine transfusion) to monitor for fetal hemolytic disease.",
+      wrong:["Administering RhoGAM to an already-sensitized patient is pointless and a common NCLEX distractor — it will not prevent further antibody production or protect the fetus.","Repeating the test at 28 weeks will not change the clinical reality — she is already sensitized. Action is needed NOW, not deferred.","RhoGAM will not help an already-sensitized patient — fetal surveillance (not RhoGAM) is the appropriate intervention."]}},
+
+  { id:"q18", section:2, type:"sata", difficulty:2,
+    concept:{ num:13, name:"Report Immediately" },
+    stem:"A nurse is working on a prenatal unit. Select ALL findings that require IMMEDIATE provider notification.",
+    options:[
+      "Vaginal bleeding at any gestational age",
+      "Mild bilateral ankle edema at 36 weeks",
+      "Leaking fluid from the vagina before term",
+      "Fever and chills in a pregnant patient",
+      "Mild heartburn after meals in the second trimester",
+      "Severe swelling of the face and hands",
+      "Dizziness or syncope episode"
+    ],
+    correct:[0,2,3,5,6],
+    rationale:{ correct:"Report immediately: Vaginal bleeding (placenta previa, abruption, or other emergency); leaking fluid (premature rupture of membranes → infection/cord prolapse risk); fever/chills (chorioamnionitis or other infection); severe facial/hand swelling (preeclampsia sign); dizziness/syncope (possible hemodynamic compromise).",
+      wrong:["Mild bilateral ankle edema is a NORMAL finding in late pregnancy due to dependent venous pressure and fluid shifts — it is not an emergency unless severe or sudden.","Mild heartburn after meals is a normal GI change of pregnancy caused by progesterone relaxation of the lower esophageal sphincter — not an emergency."]}},
+
+  { id:"q19", section:2, type:"mcq", difficulty:2,
+    concept:{ num:2, name:"Preeclampsia Criteria" },
+    stem:"A nurse is reviewing urinalysis results for three pregnant patients. Which finding requires IMMEDIATE provider notification?",
+    options:[
+      "Trace glucosuria with a normal blood glucose in a 28-week patient",
+      "Trace proteinuria on a single dipstick reading in a 20-week patient with no other symptoms",
+      "3+ proteinuria on dipstick in a patient with BP 148/96 and severe headache",
+      "WBC 14,000/mm³ in a 32-week patient with no fever or symptoms"
+    ],
+    correct:[2],
+    rationale:{ correct:"3+ proteinuria + BP 148/96 + severe headache = preeclampsia with concerning features — this requires IMMEDIATE provider notification. NCLEX TRAP: While trace proteinuria can be normal, SIGNIFICANT proteinuria (>300 mg/24hr, or 2+ or more on dipstick) combined with hypertension is the diagnostic hallmark of preeclampsia. Proteinuria is NEVER written off when accompanied by elevated BP and symptoms.",
+      wrong:["Trace glucosuria with normal blood glucose is a NORMAL finding in pregnancy due to increased GFR exceeding the renal glucose reabsorption threshold — not an emergency.","A single trace proteinuria reading without hypertension or symptoms requires follow-up but not immediate notification — it may represent a normal physiologic finding. 3+ with hypertension is the emergency.","WBC 14,000/mm³ is within the normal pregnancy range (5,000–16,000) and does not require immediate notification in an asymptomatic patient."]}},
+
+  { id:"q20", section:2, type:"mcq", difficulty:3,
+    concept:{ num:13, name:"Report Immediately" },
+    stem:"A nurse receives four messages simultaneously. Which patient should the nurse assess FIRST?",
+    options:[
+      "A 38-week patient reporting irregular Braxton Hicks contractions every 20 minutes",
+      "A 30-week patient with 2+ ankle edema and mild lower back pain",
+      "A 34-week patient with BP 170/110, severe headache, and upper abdominal pain",
+      "A 24-week patient with round ligament pain and mild shortness of breath"
+    ],
+    correct:[2],
+    rationale:{ correct:"BP 170/110 = SEVERE-RANGE hypertension in pregnancy (≥160/110 requires treatment within 30–60 minutes). Combined with severe headache and upper abdominal pain (RUQ/epigastric pain = hepatic involvement → possible HELLP), this patient has preeclampsia with severe features — a life-threatening emergency. ALWAYS use the 'MOM FIRST' framework: most dangerous presentation first.",
+      wrong:["Irregular Braxton Hicks at 38 weeks are completely normal — they do not require priority assessment.","2+ ankle edema and back pain at 30 weeks may be concerning but are not immediately life-threatening — not the priority.","Mild round ligament pain and mild SOB at 24 weeks are expected, normal pregnancy discomforts — not the priority."]}},
+
+  // ══════════════ SECTION 3 — NGN ══════════════
+
+  { id:"q21", section:3, type:"bowtie", difficulty:3,
+    concept:{ num:5, name:"Placenta Previa" },
+    caseIntro:"A 29-year-old G2P1 at 31 weeks gestation presents to triage reporting three episodes of sudden, painless bright red vaginal bleeding in the past 4 hours. She denies contractions, pelvic pressure, or pain. FHR tracing shows baseline 148 bpm with good variability and accelerations. BP 122/78, HR 102, SpO₂ 97%.",
+    stem:"Complete the bow-tie clinical judgment item.",
+    leftLabel:"Priority Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:[
+      "Perform a vaginal examination to assess cervical dilation and rule out labor",
+      "Establish IV access, type and crossmatch blood, maintain bed rest — do NOT perform vaginal exam",
+      "Administer oxytocin to prepare the cervix for possible delivery",
+      "Place the patient on continuous fetal monitoring and notify the provider immediately"
+    ],
+    correctLeft:[1,3], correctCenter:[1], correctRight:[0,1],
+    centerOptions:[
+      "Placental abruption — painful dark bleeding with rigid uterus",
+      "Placenta previa — painless bright red bleeding without pain",
+      "Preterm labor with cervical change",
+      "Umbilical cord prolapse"
+    ],
+    rightOptions:[
+      "Amount and character of vaginal bleeding",
+      "Fetal heart rate pattern and variability",
+      "Blood glucose and HbA1c",
+      "Maternal weight and fundal height trend"
+    ],
+    rationale:{ condition:"Painless, bright red vaginal bleeding at 31 weeks without contractions or pain = placenta previa until proven otherwise. The placenta implanted over or near the cervical os bleeds painlessly when disrupted by cervical changes.", actions:"Absolute contraindication: NO vaginal exam (can rupture the overlying placenta → catastrophic hemorrhage). IV access for fluid/blood administration, type and crossmatch for transfusion readiness, bed rest to minimize further bleeding, and continuous fetal monitoring with immediate provider notification.", outcomes:"Bleeding amount and character guides transfusion and delivery decisions. Fetal heart rate pattern detects fetal compromise from maternal hemorrhage — tachycardia or decelerations indicate fetal distress.", wrong:"Vaginal exam is the most dangerous contraindicated action in placenta previa — it can cause massive fatal hemorrhage. Oxytocin is also contraindicated as it stimulates contractions that can worsen placental disruption."}},
+
+  { id:"q22", section:3, type:"bowtie", difficulty:3,
+    concept:{ num:7, name:"Cord Prolapse & Uterine Rupture" },
+    caseIntro:"A nurse is called to the room of a 38-week patient (G3P2) whose amniotomy was just performed. The patient suddenly screams in pain. On assessment, the nurse visualizes a loop of umbilical cord at the vaginal introitus. FHR drops from 150 to 78 bpm within 30 seconds. The patient reports severe pelvic pressure.",
+    stem:"Complete the bow-tie clinical judgment item.",
+    leftLabel:"Priority Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:[
+      "Push the prolapsed cord gently back into the uterus with sterile gloves",
+      "Call for emergency assistance and position the patient in knee-chest or Trendelenburg immediately",
+      "Encourage the patient to push with the next contraction to facilitate rapid vaginal delivery",
+      "Insert two gloved fingers into the vagina to manually lift and hold the presenting part off the cord — maintain until delivery"
+    ],
+    correctLeft:[1,3], correctCenter:[0], correctRight:[0,1],
+    centerOptions:[
+      "Umbilical cord prolapse",
+      "Placental abruption with fetal distress",
+      "Uterine rupture",
+      "Uterine atony"
+    ],
+    rightOptions:[
+      "Fetal heart rate — continuous monitoring for recovery or worsening",
+      "Maternal pain level and vital signs",
+      "Blood glucose and urine output",
+      "Maternal weight and contraction frequency"
+    ],
+    rationale:{ condition:"Visible loop of umbilical cord at the introitus immediately after amniotomy + acute FHR bradycardia = umbilical cord prolapse. The cord is compressed between the presenting part and the pelvic inlet, cutting off fetal oxygen supply.", actions:"Emergency response: (1) Call for help and activate emergency response immediately. (2) Knee-chest or Trendelenburg position uses gravity to shift the presenting part off the cord. (3) Manually lift the presenting part off the cord with gloved fingers — maintain this until emergency cesarean delivery. DO NOT push the cord back — causes vasospasm.", outcomes:"FHR recovery indicates successful cord decompression. Persistent bradycardia signals continued cord compression requiring immediate cesarean. Maternal vital signs and pain assessment monitor for additional complications (abruption, uterine rupture).", wrong:"Pushing the cord back causes vasospasm and complete fetal circulatory cutoff — this is the most dangerous wrong action. Encouraging pushing increases intrauterine pressure, worsening compression. Time is critical — every second of cord compression causes fetal hypoxia."}},
+
+  { id:"q23", section:3, type:"casestudy", difficulty:3,
+    concept:{ num:12, name:"Preeclampsia Treatment" },
+    caseIntro:"A 26-year-old G1P0 at 36+2 weeks gestation presents with BP 154/98 mmHg (two readings, 4 hours apart), persistent severe headache, visual disturbances (seeing spots), and 2+ pitting edema of the hands and face. Urinalysis shows 3+ protein. Deep tendon reflexes are 3+ (brisk). She is admitted and the provider orders IV magnesium sulfate.",
+    questions:[
+      { qid:"q23a", stem:"Which assessment finding requires PRIORITY nursing action before initiating the magnesium sulfate infusion?", type:"mcq",
+        options:[
+          "Establish IV access and obtain baseline weight",
+          "Assess and document baseline vital signs, DTRs, level of consciousness, urine output, and fetal heart rate — then initiate infusion per order",
+          "Obtain a 24-hour urine collection before starting any medications",
+          "Administer oral labetalol and reassess blood pressure before initiating magnesium"
+        ],
+        correct:[1],
+        rationale:"Before initiating magnesium sulfate, establish a complete BASELINE: vital signs, deep tendon reflexes (to detect toxicity progression), level of consciousness, urine output (≥30 mL/hr required — mag is renally cleared, so poor urine output = toxicity risk), and fetal heart rate. Without a documented baseline, toxicity assessment during the infusion has no comparison point."},
+      { qid:"q23b", stem:"One hour into the magnesium sulfate infusion, the nurse assesses the patient. Select ALL findings that indicate MAGNESIUM TOXICITY and require the infusion to be stopped.", type:"sata",
+        options:[
+          "Respiratory rate 10 breaths/min",
+          "Absent patellar (knee-jerk) reflex",
+          "Urine output 15 mL in the past hour",
+          "Deep tendon reflexes 3+ (brisk)",
+          "Blood pressure 148/94 mmHg",
+          "Patient reports feeling flushed and warm"
+        ],
+        correct:[0,1,2],
+        rationale:"Magnesium toxicity indicators: Respiratory rate <12/min (respiratory depression — the most dangerous sign), absent DTRs (loss of reflexes precedes respiratory arrest), and urine output <30 mL/hr (decreased renal clearance → accumulation). Stop the infusion and administer calcium gluconate IV. Flushing and warmth are COMMON EXPECTED side effects of magnesium — not toxicity."},
+      { qid:"q23c", stem:"The patient suddenly has a generalized tonic-clonic seizure. This confirms transition from preeclampsia to eclampsia. Which nursing action is the PRIORITY during the seizure?", type:"mcq",
+        options:[
+          "Restrain the patient and insert a tongue blade to prevent aspiration",
+          "Protect the patient from injury, turn to lateral position to prevent aspiration, maintain airway, and document seizure duration and characteristics",
+          "Immediately perform an emergency cesarean section at the bedside",
+          "Administer IV phenytoin for seizure control"
+        ],
+        correct:[1],
+        rationale:"During an eclamptic seizure: PROTECT from injury (do NOT restrain — causes injury), lateral position (prevents aspiration of vomitus), maintain/secure airway, time the seizure, document characteristics. NEVER insert a tongue blade. After seizure: O₂, ensure IV access, notify provider, prepare for emergency delivery. Magnesium sulfate is the treatment of choice for eclamptic seizures — NOT phenytoin."}
+    ]},
+
+  { id:"q24", section:3, type:"casestudy", difficulty:3,
+    concept:{ num:14, name:"Obstetric Emergency Triage" },
+    caseIntro:"A labor and delivery nurse is triaging four patients who arrive simultaneously. Patient A: 32 weeks, sudden severe abdominal pain, rigid uterus, dark red vaginal bleeding. Patient B: 34 weeks, painless bright red bleeding, no contractions. Patient C: 39 weeks, irregular Braxton Hicks every 25 minutes, mild back discomfort. Patient D: 28 weeks, regular contractions every 6 minutes with pelvic pressure and cervical changes.",
+    questions:[
+      { qid:"q24a", stem:"Using the 'MOM FIRST' priority framework, in what order should the nurse assess these patients? Select the patient who should be seen FIRST.", type:"mcq",
+        options:[
+          "Patient C — 39-week patient with irregular contractions is closest to term and most likely to deliver",
+          "Patient A — sudden severe pain, rigid uterus, and dark bleeding suggest placental abruption, which poses an immediate risk to both mother and fetus",
+          "Patient D — regular contractions at 28 weeks indicate preterm labor and require urgent tocolysis",
+          "Patient B — bright red bleeding is always the most emergent presentation"
+        ],
+        correct:[1],
+        rationale:"Patient A has classic placental abruption: sudden severe pain + rigid uterus + dark red bleeding = premature placental separation. Blood may be concealed behind the placenta — visible bleeding underestimates true hemorrhage. Maternal hemorrhagic shock and fetal death can occur rapidly. This is the highest-acuity patient: immediate assessment, large-bore IV access, type and crossmatch, continuous fetal monitoring, provider notification."},
+      { qid:"q24b", stem:"For Patient B (34-week patient with painless bright red bleeding and suspected placenta previa), which action is contraindicated?", type:"mcq",
+        options:[
+          "Establishing IV access and preparing for possible blood transfusion",
+          "Applying continuous external fetal monitoring",
+          "Performing a digital vaginal examination to assess cervical dilation",
+          "Notifying the provider and placing the patient on bed rest"
+        ],
+        correct:[2],
+        rationale:"Digital vaginal examination is ABSOLUTELY CONTRAINDICATED in suspected placenta previa. The placenta overlies the cervical os — a gloved finger can rupture placental tissue, causing catastrophic, potentially fatal hemorrhage. Diagnosis is confirmed by transabdominal ultrasound only. All other actions (IV access, fetal monitoring, provider notification, bed rest) are appropriate."},
+      { qid:"q24c", stem:"Patient D (28-week patient with regular contractions and cervical change) is diagnosed with preterm labor. Which medication would the nurse MOST likely anticipate administering?", type:"sata",
+        options:[
+          "Betamethasone (corticosteroid) to accelerate fetal lung maturity",
+          "Magnesium sulfate for fetal neuroprotection at <32 weeks",
+          "Oxytocin to augment contractions and facilitate delivery",
+          "Terbutaline or nifedipine as a tocolytic to slow or stop contractions",
+          "IV penicillin for GBS prophylaxis during delivery"
+        ],
+        correct:[0,1,3],
+        rationale:"For preterm labor at 28 weeks: (1) Betamethasone — antenatal corticosteroids to accelerate fetal lung surfactant production (given if <34 weeks and delivery expected within 7 days); (2) Magnesium sulfate for FETAL NEUROPROTECTION at <32 weeks (reduces risk of cerebral palsy); (3) Tocolytics (terbutaline, nifedipine, or indomethacin) to temporarily delay delivery to allow steroids to work. Oxytocin augments labor — it is NEVER used in preterm labor management."}
+    ]},
+
+  { id:"q25", section:3, type:"sata", difficulty:3,
+    concept:{ num:13, name:"Report Immediately" },
+    stem:"A nurse is conducting rounds on the antepartum unit. Select ALL findings that require IMMEDIATE provider notification — prioritized above all other tasks.",
+    options:[
+      "BP 172/114 with severe headache and RUQ pain in a 34-week patient",
+      "Mild ankle edema with trace glucosuria in a 32-week patient",
+      "Painless bright red vaginal bleeding at any gestational age",
+      "WBC 12,000 and Hgb 10.5 in a 28-week patient on prenatal vitamins",
+      "Patient reports no fetal movement for the past 5 hours after kick counts",
+      "Patient's urine output has been 20 mL/hr for the past 2 hours on magnesium sulfate",
+      "Mild constipation and heartburn in a 24-week patient"
+    ],
+    correct:[0,2,4,5],
+    rationale:{ correct:"BP 172/114 + headache + RUQ pain = severe preeclampsia/possible HELLP — life-threatening emergency; painless vaginal bleeding = possible placenta previa or other hemorrhagic emergency requiring immediate evaluation; no fetal movement for 5 hours after attempted kick counts = possible fetal compromise requiring immediate NST or BPP; urine output 20 mL/hr on magnesium = <30 mL/hr threshold indicates magnesium toxicity risk — infusion may need to be stopped.",
+      wrong:["Mild ankle edema with trace glucosuria are both NORMAL expected pregnancy findings — not emergencies.","WBC 12,000 and mild dilutional anemia are NORMAL pregnancy lab values — no immediate notification required in an asymptomatic patient on prenatal vitamins.","Mild constipation and heartburn are normal GI changes of pregnancy due to progesterone — not an emergency."]}}
+];
+
+// ─── UI ATOMS ─────────────────────────────────────────────────────────────────
+function Tag({ children, color, bg, border }) {
+  return <span style={{ fontSize:11, fontWeight:600, padding:"3px 11px", borderRadius:99, letterSpacing:0.6, textTransform:"uppercase", background:bg||"#f1f5f9", color:color||"#64748b", border:border?`1px solid ${border}`:"none", whiteSpace:"nowrap" }}>{children}</span>;
+}
+function Btn({ children, onClick, disabled, variant="primary" }) {
+  const base = { border:"none", borderRadius:12, fontFamily:"'Inter',sans-serif", fontWeight:700, cursor:disabled?"default":"pointer", letterSpacing:0.3, padding:"13px 28px", fontSize:15 };
+  const styles = {
+    primary: { background:disabled?"#e2e8f0":"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:disabled?"#94a3b8":"#fff", boxShadow:disabled?"none":"0 2px 8px rgba(15,23,42,0.18)" },
+    outline:  { background:"#f8fafc", color:"#475569", border:"1.5px solid #cbd5e1" }
+  };
+  return <button onClick={onClick} disabled={disabled} className={variant==="primary"?"btn-primary":"btn-outline"} style={{ ...base, ...styles[variant] }}>{children}</button>;
+}
+function OptionBtn({ letter, text, state, onClick }) {
+  const base = { display:"flex", alignItems:"flex-start", gap:12, padding:"13px 16px", borderRadius:12, border:"2px solid #e2e8f0", background:"#fafbfc", cursor:"pointer", textAlign:"left", width:"100%", fontFamily:"'Inter',sans-serif", fontSize:15 };
+  const ss = { selected:{ border:"2.5px solid #0ea5e9", background:"#f0f9ff", borderLeft:"4px solid #0ea5e9" }, correct:{ border:"2px solid #10b981", background:"#f0fdf4", borderLeft:"4px solid #10b981", cursor:"default" }, wrong:{ border:"2px solid #ef4444", background:"#fef2f2", borderLeft:"4px solid #ef4444", cursor:"default" }, dim:{ border:"2px solid #f1f5f9", background:"#fafbfc", opacity:0.42, cursor:"default" }, neutral:{} };
+  const cs = { selected:{ background:"#0ea5e9", color:"#fff" }, correct:{ background:"#10b981", color:"#fff" }, wrong:{ background:"#ef4444", color:"#fff" }, dim:{ background:"#e2e8f0", color:"#94a3b8" }, neutral:{ background:"#e2e8f0", color:"#475569" } };
+  const s = state||"neutral", c = cs[s]||cs.neutral;
+  return (
+    <button style={{ ...base, ...(ss[s]||{}) }} className={(!s||s==="neutral"||s==="selected")?"opt-btn":""} onClick={onClick}>
+      <span style={{ minWidth:26, height:26, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, flexShrink:0, marginTop:1, transition:"all 0.18s ease", ...c }}>{letter}</span>
+      <span style={{ flex:1, color:"#1e293b", lineHeight:1.6, fontWeight:400 }}>{text}</span>
+      {s==="correct"&&<span style={{ width:22, height:22, borderRadius:"50%", background:"#10b981", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:12, fontWeight:700, flexShrink:0 }}>✓</span>}
+      {s==="wrong"  &&<span style={{ width:22, height:22, borderRadius:"50%", background:"#ef4444", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:12, fontWeight:700, flexShrink:0 }}>✗</span>}
+    </button>
+  );
+}
+
+function MCQQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+      {q.options.map((opt,idx) => {
+        let s="neutral";
+        if(submitted){ if(idx===q.correct[0]) s="correct"; else if((selected||[])[0]===idx) s="wrong"; else s="dim"; }
+        else if((selected||[]).includes(idx)) s="selected";
+        return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={s} onClick={()=>!submitted&&onSelect(idx)} />;
+      })}
+    </div>
+  );
+}
+function SATAQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div>
+      <div style={{ fontSize:13, color:"#64748b", marginBottom:10, fontStyle:"italic", fontWeight:500 }}>Select all that apply — choose every correct option.</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+        {q.options.map((opt,idx) => {
+          let s="neutral";
+          if(submitted){ if(q.correct.includes(idx)) s="correct"; else if((selected||[]).includes(idx)) s="wrong"; else s="dim"; }
+          else if((selected||[]).includes(idx)) s="selected";
+          return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={s} onClick={()=>!submitted&&onSelect(idx)} />;
+        })}
+      </div>
+    </div>
+  );
+}
+function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
+  const limit={left:2,center:1,right:2};
+  function BtOpt({ label, isSelected, isCorrect, isWrong, isDim, onClick }) {
+    let bg="#fafbfc",border="1.5px solid #e2e8f0",color="#1e293b";
+    if(isDim){color="#cbd5e1";border="1.5px solid #f1f5f9";}
+    if(isSelected){bg="#f0f9ff";border="2px solid #0ea5e9";}
+    if(isCorrect){bg="#f0fdf4";border="2px solid #10b981";color="#065f46";}
+    if(isWrong){bg="#fef2f2";border="2px solid #ef4444";color="#991b1b";}
+    return <button onClick={onClick} className={!isCorrect&&!isWrong&&!isDim?"opt-btn":""} style={{ padding:"9px 11px", borderRadius:10, border, background:bg, color, fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", fontFamily:"'Inter',sans-serif", lineHeight:1.45, width:"100%", transition:"all 0.18s ease" }}>{isCorrect&&<span style={{color:"#10b981",fontWeight:700}}>✓ </span>}{isWrong&&<span style={{color:"#ef4444",fontWeight:700}}>✗ </span>}{label}</button>;
+  }
+  function handle(key,idx){ if(submitted)return; const lim=limit[key],sel=btState[key]||[]; let next; if(sel.includes(idx))next=sel.filter(x=>x!==idx); else if(sel.length<lim)next=[...sel,idx]; else next=lim===1?[idx]:sel; onBTSelect(key,next); }
+  function renderCol(opts,corr,key){ const sel=btState[key]||[],lim=limit[key]; return opts.map((opt,idx)=>{ const isSel=sel.includes(idx),isC=submitted&&corr.includes(idx),isW=submitted&&isSel&&!corr.includes(idx),isDm=submitted&&!isC&&!isSel,isDis=!submitted&&!isSel&&sel.length>=lim; return <BtOpt key={idx} label={opt} isSelected={!submitted&&isSel} isCorrect={isC} isWrong={isW} isDim={isDm||isDis} onClick={isDis?null:()=>handle(key,idx)} />; }); }
+  function Pill({cur,tot}){ return <span style={{ display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:99,fontSize:11,fontWeight:700,background:cur===tot?"#d1fae5":"#f1f5f9",color:cur===tot?"#065f46":"#64748b",marginBottom:6,transition:"all 0.2s" }}>{cur}/{tot}</span>; }
+  const col={display:"flex",flexDirection:"column",gap:6,flex:1,minWidth:150};
+  return (
+    <div>
+      {!submitted&&<div style={{ fontSize:13,color:"#0c4a6e",marginBottom:14,fontWeight:500,background:"#f0f9ff",padding:"10px 14px",borderRadius:10,border:"1px solid #bae6fd",display:"flex",alignItems:"flex-start",gap:8 }}><span style={{fontSize:16}}>🎯</span><span><strong>Bow-Tie:</strong> Select <strong>2 actions</strong> → <strong>1 condition</strong> → <strong>2 parameters</strong></span></div>}
+      <div style={{ display:"flex",gap:8,marginBottom:20,alignItems:"flex-start" }}>
+        <div style={col}><div style={{ fontSize:10,fontWeight:700,color:"#10b981",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>⚕️ {q.leftLabel}</div><Pill cur={(btState.left||[]).length} tot={2} />{renderCol(q.leftOptions,q.correctLeft,"left")}</div>
+        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
+        <div style={{ ...col,maxWidth:185 }}><div style={{ fontSize:10,fontWeight:700,color:"#8b5cf6",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🔍 {q.centerLabel}</div><Pill cur={(btState.center||[]).length} tot={1} />{renderCol(q.centerOptions,q.correctCenter,"center")}</div>
+        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
+        <div style={col}><div style={{ fontSize:10,fontWeight:700,color:"#f59e0b",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🎯 {q.rightLabel}</div><Pill cur={(btState.right||[]).length} tot={2} />{renderCol(q.rightOptions,q.correctRight,"right")}</div>
+      </div>
+    </div>
+  );
+}
+function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
+  return (
+    <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
+      {q.questions.map((sub,si) => {
+        const sel=csAnswers[sub.qid]||[];
+        return (
+          <div key={sub.qid} style={{ background:"#fafbfc",borderRadius:12,padding:"16px 18px",border:"1px solid #e8ecf2" }}>
+            <div style={{ display:"flex",alignItems:"center",gap:10,marginBottom:10 }}>
+              <span style={{ width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,#1e293b,#0f172a)",color:"#fff",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{si+1}</span>
+              <span style={{ fontSize:11,fontWeight:600,color:"#64748b",letterSpacing:0.4 }}>of {q.questions.length}</span>
+            </div>
+            <div style={{ fontFamily:"'Inter',sans-serif",fontSize:15,lineHeight:1.65,color:"#0f172a",marginBottom:12,fontWeight:500 }}>{sub.stem}</div>
+            {sub.type==="sata"&&<div style={{ fontSize:12,color:"#94a3b8",marginBottom:8,fontStyle:"italic" }}>Select all that apply</div>}
+            <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
+              {sub.options.map((opt,idx) => {
+                let s="neutral";
+                if(submitted){ if(sub.correct.includes(idx)) s="correct"; else if(sel.includes(idx)) s="wrong"; else s="dim"; }
+                else if(sel.includes(idx)) s="selected";
+                return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={s} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const c=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,c.includes(idx)?c.filter(x=>x!==idx):[...c,idx]); }}} />;
+              })}
+            </div>
+            {submitted&&<div style={{ marginTop:12,padding:"12px 14px",background:"#fff",borderRadius:8,borderLeft:"3px solid #0ea5e9",border:"1px solid #e2e8f0",borderLeftWidth:3,fontSize:13,color:"#374151",lineHeight:1.65 }}><strong style={{color:"#0369a1"}}>Rationale:</strong> {sub.rationale}</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function RationalePanel({ q, isCorrect }) {
+  if(q.type==="casestudy") return null;
+  function extractPearl(text) {
+    if(!text) return { body:text, pearl:null };
+    const m=text.match(/((?:KEY PEARL|NCLEX PEARL|PEARL|NCLEX CLUE|NCLEX TRAP|Memory trick)[:\s—–-]+.+?)(?:\.|$)/i);
+    if(!m) return { body:text, pearl:null };
+    return { body:text.replace(m[0],"").replace(/\s+/," ").trim(), pearl:m[0] };
+  }
+  const sc=isCorrect?"#10b981":"#ef4444", sb=isCorrect?"#f0fdf4":"#fef2f2", sbr=isCorrect?"#86efac":"#fca5a5";
+  return (
+    <div style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
+      <div style={{ display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:12,background:sb,border:`1.5px solid ${sbr}` }}>
+        <span style={{ width:28,height:28,borderRadius:"50%",background:sc,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:14,fontWeight:700,flexShrink:0 }}>{isCorrect?"✓":"✗"}</span>
+        <span style={{ fontWeight:700,fontSize:15,color:isCorrect?"#166534":"#991b1b" }}>{isCorrect?"Correct!":"Review This Concept"}</span>
+      </div>
+      {q.type==="bowtie"&&(
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:10 }}>
+          {[{label:"Condition",icon:"🔍",text:q.rationale.condition,accent:"#8b5cf6"},{label:"Actions",icon:"⚕️",text:q.rationale.actions,accent:"#10b981"},{label:"Monitoring",icon:"🎯",text:q.rationale.outcomes,accent:"#f59e0b"},{label:"Distractors",icon:"⚠️",text:q.rationale.wrong,accent:"#ef4444"}].map(({label,icon,text,accent})=>(
+            <div key={label} style={{ background:"#fff",borderRadius:10,padding:"12px 14px",border:`1px solid #e8ecf2`,borderLeftWidth:4,borderLeftColor:accent,borderLeft:`4px solid ${accent}` }}>
+              <div style={{ fontSize:10,fontWeight:700,color:accent,letterSpacing:0.8,textTransform:"uppercase",marginBottom:6 }}>{icon} {label}</div>
+              <div style={{ fontSize:13,color:"#374151",lineHeight:1.6 }}>{text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {q.type!=="bowtie"&&(()=>{
+        const {body,pearl}=extractPearl(q.rationale.correct);
+        return (<>
+          <div style={{ background:"#fff",borderRadius:10,padding:"14px 16px",border:"1px solid #e8ecf2",borderLeft:"4px solid #10b981" }}>
+            <div style={{ fontSize:10,fontWeight:700,color:"#10b981",letterSpacing:0.8,textTransform:"uppercase",marginBottom:8 }}>✓ Why Correct</div>
+            <div style={{ fontSize:13,color:"#374151",lineHeight:1.65 }}>{body||q.rationale.correct}</div>
+          </div>
+          {pearl&&<div style={{ background:"#fffbeb",borderRadius:10,padding:"12px 14px",border:"1.5px solid #f59e0b",display:"flex",gap:10,alignItems:"flex-start" }}><span style={{fontSize:16,flexShrink:0}}>⭐</span><div style={{ fontSize:13,color:"#78350f",lineHeight:1.6,fontWeight:500 }}>{pearl}</div></div>}
+          {q.rationale.wrong&&(
+            <div style={{ background:"#fff",borderRadius:10,padding:"14px 16px",border:"1px solid #e8ecf2",borderLeft:"4px solid #f59e0b" }}>
+              <div style={{ fontSize:10,fontWeight:700,color:"#92400e",letterSpacing:0.8,textTransform:"uppercase",marginBottom:10 }}>⚠️ Common Distractors</div>
+              <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
+                {Array.isArray(q.rationale.wrong)?q.rationale.wrong.map((w,i)=><div key={i} style={{ padding:"8px 12px",background:"#fffbeb",borderRadius:8,fontSize:12,color:"#78350f",lineHeight:1.6 }}><span style={{fontWeight:700,color:"#ef4444",marginRight:6}}>✗</span>{w}</div>):<div style={{ padding:"8px 12px",background:"#fffbeb",borderRadius:8,fontSize:12,color:"#78350f",lineHeight:1.6 }}><span style={{fontWeight:700,color:"#ef4444",marginRight:6}}>✗</span>{q.rationale.wrong}</div>}
+              </div>
+            </div>
+          )}
+        </>);
+      })()}
+    </div>
+  );
+}
+
+function WelcomeScreen({ onStart }) {
+  return (
+    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:660,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+        <div style={{ textAlign:"center",marginBottom:30 }}>
+          <span style={{ display:"inline-block",padding:"4px 14px",borderRadius:99,background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.35)",fontSize:11,fontWeight:700,color:"#0ea5e9",letterSpacing:1.2,textTransform:"uppercase",marginBottom:14 }}>NCLEX-RN · 2026 Blueprint</span>
+          <div style={{ fontSize:12,fontWeight:700,color:"#94a3b8",marginBottom:6,letterSpacing:2,textTransform:"uppercase" }}>Module 2</div>
+          <h1 style={{ fontSize:30,fontWeight:800,color:"#0f172a",marginBottom:10,lineHeight:1.2 }}>🤰 Maternal & OB</h1>
+          <p style={{ color:"#64748b",fontSize:15,lineHeight:1.7,maxWidth:480,margin:"0 auto" }}>25 targeted questions aligned to your study guide — covering RH incompatibility, preeclampsia/HELLP, fetal monitoring, obstetric emergencies, vaccines, and clinical priorities.</p>
+        </div>
+        <div style={{ display:"flex",flexDirection:"column",gap:10,marginBottom:26 }}>
+          {Object.values(SECTIONS).map((s,i)=>(
+            <div key={s.label} style={{ display:"flex",gap:14,alignItems:"flex-start",background:s.light,border:`1px solid ${s.border}`,borderRadius:14,padding:"14px 16px" }}>
+              <div style={{ fontSize:22,flexShrink:0,marginTop:1 }}>{s.emoji}</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:700,fontSize:14,color:s.color,marginBottom:3 }}>{s.label} — {s.title}</div>
+                <div style={{ fontSize:13,color:"#374151",lineHeight:1.55 }}>{s.desc}</div>
+              </div>
+              <div style={{ display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0 }}>
+                <span style={{ fontSize:13,fontWeight:800,color:"#fff",background:s.color,borderRadius:99,padding:"2px 9px" }}>{String(i+1).padStart(2,"0")}</span>
+                <span style={{ fontSize:11,fontWeight:600,color:s.color,whiteSpace:"nowrap" }}>{[10,10,5][i]} Qs</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ borderLeft:"4px solid #f59e0b",background:"#fffbeb",borderRadius:"0 10px 10px 0",padding:"12px 16px",marginBottom:26,fontSize:13,color:"#78350f",lineHeight:1.65 }}>
+          💡 <strong>Safety tip:</strong> Always assess MOM before FETUS. A stable mom = a stable baby.
+        </div>
+        <button onClick={onStart} className="btn-primary" style={{ width:"100%",padding:"16px",border:"none",borderRadius:14,fontSize:17,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:0.3,background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)" }}>Begin Module 2 →</button>
+      </div>
+    </div>
+  );
+}
+
+function SectionIntroScreen({ sectionNum, onContinue }) {
+  const s=SECTIONS[sectionNum], count=QUESTIONS.filter(q=>q.section===sectionNum).length;
+  return (
+    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:520,width:"100%",textAlign:"center",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+        <div style={{ width:90,height:90,borderRadius:"50%",margin:"0 auto 20px",background:`linear-gradient(135deg,${s.light},#fff)`,border:`2px solid ${s.border}`,boxShadow:`0 8px 28px ${s.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44 }}>{s.emoji}</div>
+        <span style={{ display:"inline-block",padding:"3px 12px",borderRadius:99,background:s.light,border:`1px solid ${s.border}`,fontSize:10,fontWeight:700,color:s.color,letterSpacing:1.4,textTransform:"uppercase",marginBottom:12 }}>Section {sectionNum} of 3</span>
+        <h2 style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:10 }}>{s.title}</h2>
+        <p style={{ fontSize:15,color:"#475569",lineHeight:1.7,marginBottom:22 }}>{s.desc}</p>
+        <div style={{ borderLeft:`4px solid ${s.color}`,background:s.light,borderRadius:"0 10px 10px 0",padding:"12px 16px",marginBottom:28,fontSize:13,color:"#374151",textAlign:"left" }}>
+          <strong>{count} questions</strong> · If you miss one, the rationale explains exactly which concept to review.
+        </div>
+        <button onClick={onContinue} className="btn-primary" style={{ width:"100%",padding:"15px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:`linear-gradient(135deg,${s.color}dd,${s.color})`,color:"#fff",boxShadow:`0 4px 16px ${s.color}44` }}>Start {s.label} →</button>
+      </div>
+    </div>
+  );
+}
+
+function ResultsScreen({ history, onRestart }) {
+  const total=history.length, correct=history.filter(h=>h.correct).length, pct=Math.round((correct/total)*100);
+  const masteryData=CONCEPT_GROUPS.map(g=>{ const qh=history.filter(h=>g.ids.includes(h.id)); if(!qh.length)return null; const c=qh.filter(h=>h.correct).length; return { ...g, mastered:c>=Math.ceil(qh.length/2), correct:c, total:qh.length }; }).filter(Boolean);
+  const needsReview=masteryData.filter(m=>!m.mastered);
+  const ringColor=pct>=80?"#10b981":pct>=60?"#f59e0b":"#ef4444";
+  const sectionScores=[1,2,3].map(sNum=>{ const sh=history.filter(h=>h.section===sNum); return {sNum,correct:sh.filter(h=>h.correct).length,total:sh.length,sec:SECTIONS[sNum]}; });
+  return (
+    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"36px 40px",maxWidth:700,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+        <div style={{ textAlign:"center",marginBottom:22 }}>
+          <div style={{ fontSize:11,letterSpacing:2,color:"#94a3b8",textTransform:"uppercase",marginBottom:6,fontWeight:600 }}>Module 2 Complete</div>
+          <h2 style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4 }}>🤰 Maternal & OB</h2>
+        </div>
+        <div className="scale-in" style={{ display:"flex",justifyContent:"center",marginBottom:20 }}>
+          <div style={{ width:160,height:160,borderRadius:"50%",border:`8px solid ${ringColor}`,boxShadow:`0 0 40px ${ringColor}44`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2 }}>
+            <span style={{ fontSize:40,fontWeight:800,color:ringColor,lineHeight:1 }}>{pct}%</span>
+            <span style={{ fontSize:13,color:"#64748b",fontWeight:500 }}>{correct}/{total} correct</span>
+          </div>
+        </div>
+        <div style={{ display:"flex",justifyContent:"center",gap:10,marginBottom:24 }}>
+          {sectionScores.map(({sNum,correct:sc,total:st,sec})=>(
+            <div key={sNum} style={{ padding:"6px 14px",borderRadius:10,background:sec.light,border:`1px solid ${sec.border}`,textAlign:"center" }}>
+              <div style={{ fontSize:10,fontWeight:700,color:sec.color,letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>{sec.label}</div>
+              <div style={{ fontSize:15,fontWeight:800,color:"#0f172a" }}>{sc}<span style={{fontSize:12,color:"#94a3b8",fontWeight:500}}>/{st}</span></div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginBottom:22 }}>
+          <div style={{ fontSize:11,fontWeight:700,color:"#374151",letterSpacing:1,textTransform:"uppercase",marginBottom:12 }}>Concept Mastery</div>
+          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:8 }}>
+            {masteryData.map(m=>(
+              <div key={m.num} style={{ display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"#fff",border:`1px solid ${m.mastered?"#d1fae5":"#fde68a"}`,borderLeft:`4px solid ${m.mastered?"#10b981":"#f59e0b"}`,borderRadius:"0 10px 10px 0" }}>
+                <div style={{ width:28,height:28,borderRadius:"50%",flexShrink:0,background:m.mastered?"#d1fae5":"#fef3c7",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:m.mastered?"#059669":"#92400e" }}>{m.num}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{ fontSize:12,fontWeight:600,color:m.mastered?"#166534":"#92400e",lineHeight:1.3 }}>{m.name}</div>
+                  <div style={{ fontSize:11,color:"#94a3b8",marginTop:2 }}><span style={{fontWeight:700,color:m.mastered?"#10b981":"#f59e0b"}}>{m.correct}/{m.total}</span> correct</div>
+                </div>
+                <span style={{ fontSize:15,flexShrink:0 }}>{m.mastered?"✅":"⚠️"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {needsReview.length>0&&<div style={{ background:"#fffbeb",border:"1px solid #fcd34d",borderLeft:"4px solid #f59e0b",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#78350f",lineHeight:1.65 }}><strong>⚠️ Before moving to Bootcamp/UWorld — review:</strong><div style={{ marginTop:8,display:"flex",flexWrap:"wrap",gap:6 }}>{needsReview.map(m=><span key={m.num} style={{ background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:99,padding:"4px 11px",fontSize:12,fontWeight:600,color:"#92400e" }}>#{m.num} {m.name}</span>)}</div></div>}
+        {needsReview.length===0&&<div style={{ background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #10b981",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#166534",lineHeight:1.65 }}><strong>✅ Excellent work!</strong> You demonstrated mastery across all concept areas. You're ready for Bootcamp/UWorld.</div>}
+        <div style={{ background:"#f0f9ff",border:"1px solid #bae6fd",borderLeft:"4px solid #0ea5e9",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:24,fontSize:13,color:"#0c4a6e",lineHeight:1.65 }}><strong>📚 Next Step:</strong> Complete <strong>40–50 Bootcamp or UWorld questions</strong> on Maternal & OB. Focus on your ⚠️ concepts first.</div>
+        <button onClick={onRestart} className="btn-primary" style={{ width:"100%",padding:"15px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)" }}>Retake Module 2</button>
+      </div>
+    </div>
+  );
+}
+
+function QuizScreen({ onFinish }) {
+  const [currentIdx,setCurrentIdx]=useState(0);
+  const [history,setHistory]=useState([]);
+  const [submitted,setSubmitted]=useState(false);
+  const [showIntro,setShowIntro]=useState(true);
+  const [selected,setSelected]=useState([]);
+  const [btState,setBtState]=useState({left:[],center:[],right:[]});
+  const [csAnswers,setCsAnswers]=useState({});
+  const q=QUESTIONS[currentIdx];
+  if(!q){ onFinish(history); return null; }
+  if(showIntro) return <SectionIntroScreen sectionNum={q.section} onContinue={()=>setShowIntro(false)} />;
+  function isComplete(){
+    if(q.type==="mcq") return selected.length===1;
+    if(q.type==="sata") return selected.length>0;
+    if(q.type==="bowtie") return (btState.left||[]).length===2&&(btState.center||[]).length===1&&(btState.right||[]).length===2;
+    if(q.type==="casestudy") return q.questions.every(sq=>(csAnswers[sq.qid]||[]).length>0);
+    return false;
+  }
+  function calcCorrect(){
+    if(q.type==="mcq") return selected[0]===q.correct[0];
+    if(q.type==="sata") return [...selected].sort().join(",")===q.correct.slice().sort().join(",");
+    if(q.type==="bowtie") return [...(btState.left||[])].sort().join(",")===q.correctLeft.slice().sort().join(",")&&(btState.center||[])[0]===q.correctCenter[0]&&[...(btState.right||[])].sort().join(",")===q.correctRight.slice().sort().join(",");
+    if(q.type==="casestudy") return q.questions.every(sq=>[...(csAnswers[sq.qid]||[])].sort().join(",")===sq.correct.slice().sort().join(","));
+    return false;
+  }
+  function handleNext(){
+    const isCorrect=calcCorrect();
+    const newHistory=[...history,{id:q.id,correct:isCorrect,concept:q.concept,section:q.section}];
+    const nextIdx=currentIdx+1;
+    if(nextIdx>=QUESTIONS.length){ onFinish(newHistory); return; }
+    const nextQ=QUESTIONS[nextIdx];
+    setHistory(newHistory); setCurrentIdx(nextIdx); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
+    if(nextQ.section!==q.section) setShowIntro(true);
+  }
+  const sec=SECTIONS[q.section];
+  const qInSec=QUESTIONS.filter(x=>x.section===q.section);
+  const qNumInSec=qInSec.findIndex(x=>x.id===q.id)+1;
+  const isCorrect=submitted?calcCorrect():null;
+  const DIFF={1:"Foundational",2:"Applying",3:"Analyzing"};
+  const DC={1:{bg:"#d1fae5",text:"#065f46"},2:{bg:"#fef3c7",text:"#92400e"},3:{bg:"#fee2e2",text:"#991b1b"}};
+  const TYPE={mcq:"MCQ",sata:"SATA",bowtie:"NGN · Bow-Tie",casestudy:"NGN · Case Study"};
+  const dc=DC[q.difficulty]; const isNGN=q.type==="bowtie"||q.type==="casestudy";
+  return (
+    <div style={{ minHeight:"100vh",background:"#f0f2f8",fontFamily:"'Inter',sans-serif" }}>
+      <div style={{ background:"#fff",borderBottom:"1px solid #e8ecf2",padding:"0 24px",height:60,display:"flex",alignItems:"center",gap:16,boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
+        <span style={{ padding:"4px 12px",borderRadius:99,fontSize:11,fontWeight:700,background:sec.light,border:`1px solid ${sec.border}`,color:sec.color,whiteSpace:"nowrap" }}>{sec.label}</span>
+        <div style={{ flex:1,background:"#e8ecf2",borderRadius:99,height:8 }}>
+          <div style={{ width:`${((currentIdx+1)/QUESTIONS.length)*100}%`,background:`linear-gradient(90deg,${sec.color},${sec.color}bb)`,borderRadius:99,height:8,transition:"width 0.4s ease" }} />
+        </div>
+        <div style={{ whiteSpace:"nowrap",fontSize:13,fontWeight:600 }}><span style={{color:"#0f172a"}}>Q{currentIdx+1}</span><span style={{color:"#94a3b8"}}> / {QUESTIONS.length}</span></div>
+      </div>
+      <div style={{ maxWidth:800,margin:"0 auto",padding:"24px 16px" }}>
+        <div className="fade-up" style={{ background:"#fff",borderRadius:20,overflow:"hidden",boxShadow:"0 2px 16px rgba(15,23,42,0.08)" }}>
+          <div style={{ height:5,background:`linear-gradient(90deg,${sec.color},${sec.color}99)` }} />
+          <div style={{ padding:"28px 32px" }}>
+            <div style={{ display:"inline-flex",alignItems:"center",gap:8,borderLeft:`4px solid ${sec.color}`,background:sec.light,borderRadius:"0 8px 8px 0",padding:"9px 14px",marginBottom:18 }}>
+              <span style={{ width:8,height:8,borderRadius:"50%",background:sec.color,flexShrink:0 }}/>
+              <div>
+                <div style={{ fontSize:10,fontWeight:700,color:sec.color,letterSpacing:1.2,textTransform:"uppercase" }}>Concept #{q.concept.num}</div>
+                <div style={{ fontSize:13,fontWeight:600,color:"#0f172a" }}>{q.concept.name}</div>
+              </div>
+            </div>
+            <div style={{ display:"flex",flexWrap:"wrap",gap:8,marginBottom:18 }}>
+              <Tag bg={dc.bg} color={dc.text}>{DIFF[q.difficulty]}</Tag>
+              <Tag bg={isNGN?"#eef2ff":"#f1f5f9"} color={isNGN?"#6366f1":"#64748b"} border={isNGN?"#c7d2fe":undefined}>{isNGN&&<span style={{marginRight:4}}>⚡</span>}{TYPE[q.type]}</Tag>
+              <Tag bg={sec.light} color={sec.color} border={sec.border}>{sec.label} · Q{qNumInSec} of {qInSec.length}</Tag>
+            </div>
+            {q.caseIntro&&<div style={{ borderLeft:"4px solid #0ea5e9",background:"#f0f9ff",borderRadius:"0 10px 10px 0",padding:"14px 16px",marginBottom:18 }}><div style={{ fontSize:10,fontWeight:700,color:"#0369a1",letterSpacing:1,textTransform:"uppercase",marginBottom:6 }}>Clinical Scenario</div><div style={{ fontSize:14,lineHeight:1.7,color:"#0c4a6e",fontWeight:400 }}>{q.caseIntro}</div></div>}
+            <div style={{ fontSize:16,lineHeight:1.7,color:"#0f172a",marginBottom:20,fontWeight:600 }}>{q.stem}</div>
+            {q.type==="mcq"       &&<MCQQuestion       q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
+            {q.type==="sata"      &&<SATAQuestion      q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
+            {q.type==="bowtie"    &&<BowTieQuestion    q={q} submitted={submitted} btState={btState} onBTSelect={(key,val)=>setBtState(s=>({...s,[key]:val}))} />}
+            {q.type==="casestudy"&&<CaseStudyQuestion  q={q} submitted={submitted} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
+            {submitted&&<RationalePanel q={q} isCorrect={isCorrect} />}
+            <div style={{ display:"flex",justifyContent:"flex-end",gap:12 }}>
+              {!submitted?<Btn onClick={()=>setSubmitted(true)} disabled={!isComplete()}>Submit Answer</Btn>:<Btn onClick={handleNext}>{currentIdx+1>=QUESTIONS.length?"View Results →":(QUESTIONS[currentIdx+1]?.section!==q.section?`Continue to ${SECTIONS[QUESTIONS[currentIdx+1].section].label} →`:"Next Question →")}</Btn>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const autoStart=new URLSearchParams(window.location.search).get('start')==='1';
+  const [screen,setScreen]=useState(autoStart?"quiz":"welcome");
+  const [history,setHistory]=useState([]);
+  if(screen==="welcome") return <WelcomeScreen onStart={()=>setScreen("quiz")} />;
+  if(screen==="quiz")    return <QuizScreen onFinish={h=>{ setHistory(h); setScreen("results"); }} />;
+  if(screen==="results") return <ResultsScreen history={history} onRestart={()=>{ setHistory([]); setScreen("welcome"); }} />;
+}
+ReactDOM.render(<App />, document.getElementById("root"));
+</script>
+</body>
+</html>
