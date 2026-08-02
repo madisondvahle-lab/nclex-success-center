@@ -148,6 +148,67 @@
     .coming-card-name { font-size:13px; font-weight:700; color:#64748b; margin-bottom:7px; line-height:1.3; }
     .coming-soon-badge { display:inline-block; padding:3px 9px; border-radius:99px; background:#f1f5f9; border:1px solid #e2e8f0; font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.8px; text-transform:uppercase; }
 
+    /* ── Study Plan ── */
+    .plan-card { background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 4px 24px rgba(15,23,42,0.09); margin-bottom:16px; }
+    .plan-accent { height:5px; background:linear-gradient(90deg,#0f172a,#1e3a5f,#0ea5e9); }
+    .plan-toggle {
+      width:100%; background:none; border:none; text-align:left; cursor:pointer;
+      padding:24px 34px; display:flex; align-items:center; justify-content:space-between;
+      font-family:'Inter',sans-serif;
+    }
+    .plan-toggle:hover { background:#fafbfc; }
+    .plan-toggle-left { display:flex; align-items:center; gap:14px; }
+    .plan-emoji-wrap { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border:1px solid #7dd3fc; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+    .plan-eyebrow { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#0ea5e9; margin-bottom:3px; }
+    .plan-title { font-size:19px; font-weight:800; color:#0f172a; }
+    .plan-chevron { font-size:20px; color:#94a3b8; transition:transform 0.22s ease; }
+    .plan-chevron.open { transform:rotate(180deg); }
+    .plan-body { padding:0 34px 32px; display:none; }
+    .plan-body.open { display:block; }
+
+    .plan-tabs { display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+    .plan-tab {
+      padding:7px 16px; border-radius:99px; border:1.5px solid #e2e8f0;
+      background:#f8fafc; font-size:12px; font-weight:700; color:#64748b;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s ease;
+    }
+    .plan-tab.active { background:#0f172a; color:#fff; border-color:#0f172a; }
+    .plan-tab-panel { display:none; }
+    .plan-tab-panel.active { display:block; }
+
+    /* time blocks */
+    .tb-list { display:flex; flex-direction:column; gap:8px; }
+    .tb-row { display:flex; align-items:stretch; gap:0; border-radius:12px; overflow:hidden; border:1px solid #e8ecf2; }
+    .tb-left { width:6px; flex-shrink:0; }
+    .tb-center { flex:1; padding:11px 14px; background:#f8fafc; }
+    .tb-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:2px; }
+    .tb-name { font-size:13px; font-weight:700; color:#0f172a; margin-bottom:2px; }
+    .tb-detail { font-size:12px; color:#64748b; line-height:1.5; }
+    .tb-right { display:flex; align-items:center; padding:0 14px; background:#f8fafc; }
+    .tb-duration { font-size:11px; font-weight:700; color:#94a3b8; white-space:nowrap; }
+    .tb-break { background:#f0fdf4; border-color:#86efac; }
+    .tb-break .tb-center { background:#f0fdf4; }
+    .tb-break .tb-right { background:#f0fdf4; }
+
+    /* weekly grid */
+    .week-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+    .day-card { border-radius:14px; overflow:hidden; border:1px solid #e8ecf2; }
+    .day-header { padding:10px 14px; }
+    .day-name { font-size:12px; font-weight:800; color:#fff; letter-spacing:0.5px; }
+    .day-focus { font-size:11px; color:rgba(255,255,255,0.75); margin-top:1px; }
+    .day-body { padding:10px 14px; background:#f8fafc; }
+    .day-item { font-size:11px; color:#475569; line-height:1.6; display:flex; gap:5px; align-items:baseline; }
+    .day-item::before { content:"·"; color:#94a3b8; flex-shrink:0; }
+    .day-rest { padding:14px; background:#f1f5f9; text-align:center; font-size:12px; color:#64748b; font-weight:600; }
+
+    /* rules */
+    .rules-list { display:flex; flex-direction:column; gap:8px; }
+    .rule-row { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:12px; background:#f8fafc; border:1px solid #e8ecf2; }
+    .rule-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+    .rule-text { font-size:13px; color:#1e293b; line-height:1.5; font-weight:500; }
+    .rule-row.highlight { background:#fff7ed; border-color:#fed7aa; }
+    .rule-row.highlight .rule-text { color:#9a3412; font-weight:700; }
+
     .site-footer { text-align:center; padding:28px 24px; font-size:13px; color:#94a3b8; border-top:1px solid #e8ecf2; background:#fff; }
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
@@ -303,6 +364,229 @@
     </div>
   </div>
 
+  <!-- ── STUDY PLAN ── -->
+  <div class="section-label fade-up-4" style="margin-top:40px;">📅 Your Study Plan</div>
+  <div class="plan-card fade-up-4">
+    <div class="plan-accent"></div>
+    <button class="plan-toggle" onclick="togglePlan(this)" aria-expanded="false">
+      <div class="plan-toggle-left">
+        <div class="plan-emoji-wrap">📅</div>
+        <div>
+          <div class="plan-eyebrow">Personalized by Madison</div>
+          <div class="plan-title">Your Daily NCLEX Study Plan</div>
+        </div>
+      </div>
+      <span class="plan-chevron">▾</span>
+    </button>
+    <div class="plan-body" id="plan-body">
+
+      <div class="plan-tabs">
+        <button class="plan-tab active" onclick="switchTab(this,'tab-daily')">⏰ Daily Schedule</button>
+        <button class="plan-tab" onclick="switchTab(this,'tab-weekly')">📆 Weekly Focus</button>
+        <button class="plan-tab" onclick="switchTab(this,'tab-rules')">📌 Madison's Rules</button>
+      </div>
+
+      <!-- Daily Schedule -->
+      <div class="plan-tab-panel active" id="tab-daily">
+        <div style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.6;">Every study day follows this same structure — only the <strong>content focus</strong> changes. 4–5 hours total.</div>
+        <div class="tb-list">
+          <div class="tb-row">
+            <div class="tb-left" style="background:#0ea5e9;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#0ea5e9;">Block 1</div>
+              <div class="tb-name">📖 Content Study</div>
+              <div class="tb-detail">Read today's study guide · Watch Bootcamp video(s) · Write key pearls in your notes</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">45–60 min</span></div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-left" style="background:#8b5cf6;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#8b5cf6;">Block 2</div>
+              <div class="tb-name">💻 Madison's Module Quiz</div>
+              <div class="tb-detail">Complete this week's assigned module · Review every rationale — even correct answers</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">45–60 min</span></div>
+          </div>
+          <div class="tb-row tb-break">
+            <div class="tb-left" style="background:#10b981;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#10b981;">BREAK</div>
+              <div class="tb-name">☕ Move Your Body</div>
+              <div class="tb-detail">Walk, stretch, hydrate — no phone. Non-negotiable.</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">15 min</span></div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-left" style="background:#f59e0b;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#f59e0b;">Block 3</div>
+              <div class="tb-name">📝 Bootcamp Targeted Questions</div>
+              <div class="tb-detail">40–50 questions in today's weak area · Pause after each wrong answer and review the rationale</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">60–75 min</span></div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-left" style="background:#6d28d9;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#6d28d9;">Block 4</div>
+              <div class="tb-name">🎯 Archer CAT Session</div>
+              <div class="tb-detail">Full adaptive session — let it run to completion · Focus on clinical judgment, not just the right answer</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">60–75 min</span></div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-left" style="background:#ef4444;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#ef4444;">Block 5</div>
+              <div class="tb-name">🔁 Deep Review</div>
+              <div class="tb-detail">Every missed question: content gap, distractor, or overthinking? Write your answer.</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">30–45 min</span></div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-left" style="background:#0f172a;"></div>
+            <div class="tb-center">
+              <div class="tb-label" style="color:#475569;">Wrap-Up</div>
+              <div class="tb-name">✏️ Daily Debrief</div>
+              <div class="tb-detail">Write 3 key takeaways · Note what to revisit tomorrow · You did the work — be proud.</div>
+            </div>
+            <div class="tb-right"><span class="tb-duration">10–15 min</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Focus -->
+      <div class="plan-tab-panel" id="tab-weekly">
+        <div style="font-size:13px;color:#475569;margin-bottom:14px;line-height:1.6;">6 study days, 1 mandatory rest day. Every day includes Archer CAT — only the content focus rotates.</div>
+        <div class="week-grid">
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+              <div class="day-name">MONDAY</div>
+              <div class="day-focus">🤰 Maternal &amp; OB</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Read Module 2 study guide</div>
+              <div class="day-item">Madison's Module 2 Quiz</div>
+              <div class="day-item">40–50 Bootcamp OB questions</div>
+              <div class="day-item">Archer CAT session</div>
+              <div class="day-item">Review all misses</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#be123c,#e11d48);">
+              <div class="day-name">TUESDAY</div>
+              <div class="day-focus">💊 Pharmacology</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Bootcamp Pharm videos</div>
+              <div class="day-item">40–50 Pharm questions</div>
+              <div class="day-item">Archer CAT session</div>
+              <div class="day-item">10-med high-yield flash review</div>
+              <div class="day-item">Review missed drug classes</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#0369a1,#0ea5e9);">
+              <div class="day-name">WEDNESDAY</div>
+              <div class="day-focus">📋 Management of Care</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Delegation &amp; priority review</div>
+              <div class="day-item">40–50 Bootcamp MOC questions</div>
+              <div class="day-item">Archer CAT session</div>
+              <div class="day-item">Madison's Targeted Practice</div>
+              <div class="day-item">Write missed priority rules</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#0f766e,#0d9488);">
+              <div class="day-name">THURSDAY</div>
+              <div class="day-focus">🧸 Pediatrics</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Bootcamp Peds videos + milestones</div>
+              <div class="day-item">40–50 Bootcamp Peds questions</div>
+              <div class="day-item">Archer CAT session</div>
+              <div class="day-item">Retake Module 1 (Newborn)</div>
+              <div class="day-item">Write missed milestone ages</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#b45309,#d97706);">
+              <div class="day-name">FRIDAY</div>
+              <div class="day-focus">🔀 Mixed Simulation Day</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Review week's notes &amp; misses</div>
+              <div class="day-item">Archer full-length simulation</div>
+              <div class="day-item">40 mixed Bootcamp questions</div>
+              <div class="day-item">Weekly review + top 5 pearls</div>
+              <div class="day-item">Send Madison your Archer stats</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:linear-gradient(135deg,#059669,#10b981);">
+              <div class="day-name">SATURDAY</div>
+              <div class="day-focus">🌿 Light Review Day</div>
+            </div>
+            <div class="day-body">
+              <div class="day-item">Read one confusing topic (no Qs)</div>
+              <div class="day-item">Any module on your hub</div>
+              <div class="day-item">Organize week's notes</div>
+              <div class="day-item">Text Madison an update ✉️</div>
+            </div>
+          </div>
+          <div class="day-card">
+            <div class="day-header" style="background:#475569;">
+              <div class="day-name">SUNDAY</div>
+              <div class="day-focus">🛌 Rest Day</div>
+            </div>
+            <div class="day-rest">No questions. No Archer. No guilt.<br>Rest IS part of the plan.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules -->
+      <div class="plan-tab-panel" id="tab-rules">
+        <div class="rules-list">
+          <div class="rule-row highlight">
+            <span class="rule-icon">☕</span>
+            <span class="rule-text">The break is non-negotiable. Your brain consolidates learning during rest. Skip it and Block 4 suffers. Take it.</span>
+          </div>
+          <div class="rule-row">
+            <span class="rule-icon">🚫</span>
+            <span class="rule-text">Do NOT look up answers mid-question. Trust the process, then review after.</span>
+          </div>
+          <div class="rule-row">
+            <span class="rule-icon">🛌</span>
+            <span class="rule-text">Sunday is a rest day — on purpose. Rest is recovery. No guilt.</span>
+          </div>
+          <div class="rule-row highlight">
+            <span class="rule-icon">📸</span>
+            <span class="rule-text">Send Madison your Archer screenshot every Friday. We'll adjust the plan based on your stats.</span>
+          </div>
+          <div class="rule-row">
+            <span class="rule-icon">❓</span>
+            <span class="rule-text">When you miss a question — ask WHY, not just what the right answer was.</span>
+          </div>
+          <div class="rule-row">
+            <span class="rule-icon">🎯</span>
+            <span class="rule-text">Let Archer run to completion — every session. Don't stop early. That's how the algorithm calibrates to you.</span>
+          </div>
+          <div class="rule-row">
+            <span class="rule-icon">💙</span>
+            <span class="rule-text">You're allowed to feel frustrated. You're not allowed to quit on yourself.</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px 14px;background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd;font-size:12px;color:#0369a1;font-weight:600;">
+          📧 Questions? Text or email Madison — studywithmadisonrn@gmail.com
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ── COMING SOON ── -->
   <div class="section-label fade-up-4" style="margin-top:40px;">More Modules Coming Soon</div>
   <div class="coming-soon-grid fade-up-4">
@@ -387,6 +671,21 @@
 </footer>
 
 <script>
+  // ── Study plan toggle ──
+  function togglePlan(btn) {
+    const body = document.getElementById('plan-body');
+    const chevron = btn.querySelector('.plan-chevron');
+    const open = body.classList.toggle('open');
+    chevron.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open);
+  }
+  function switchTab(btn, tabId) {
+    document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.plan-tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
   // ── Set student identity for quiz tracking ──
   localStorage.setItem('nclex_current_student', 'Alyssa');
 

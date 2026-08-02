@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courtney's NCLEX Practice · Study with Madison, RN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
+
+    .site-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      padding: 52px 24px 48px; text-align: center; position: relative; overflow: hidden;
+    }
+    .site-header::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 40%, rgba(251,146,60,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(244,63,94,0.10) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 99px;
+      background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.35);
+      font-size: 11px; font-weight: 700; color: #fb923c; letter-spacing: 1.4px;
+      text-transform: uppercase; margin-bottom: 16px;
+    }
+    .header-greeting { font-size: clamp(26px,5vw,40px); font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .header-sub { font-size: 15px; color: #94a3b8; max-width: 440px; margin: 0 auto 10px; line-height: 1.65; }
+    .header-byline { font-size: 13px; color: #475569; font-weight: 500; }
+
+    .main { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
+
+    .section-label {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px;
+    }
+
+    /* ── Module cards ── */
+    .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.09); margin-bottom: 16px; }
+    .card-accent-orange { height: 5px; background: linear-gradient(90deg, #ea580c, #fb923c); }
+    .card-accent-sky    { height: 5px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+    .card-accent-slate  { height: 5px; background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+    .card-body { padding: 28px 34px 32px; }
+
+    .module-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+    .module-title-group { display: flex; align-items: center; gap: 14px; }
+    .module-emoji-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .emoji-orange { background: linear-gradient(135deg,#fff7ed,#ffedd5); border: 1px solid #fdba74; }
+    .emoji-sky    { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border: 1px solid #7dd3fc; }
+    .module-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+    .eyebrow-orange { color: #ea580c; }
+    .eyebrow-sky    { color: #0ea5e9; }
+    .module-name { font-size: 19px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 99px;
+      font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+    }
+    .badge-orange { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; }
+    .badge-sky    { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
+    .badge-yellow { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+
+    .module-desc { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px; font-weight: 400; }
+
+    .flow-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 10px; }
+    .flow-steps { display: flex; align-items: stretch; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .flow-step {
+      flex: 1; min-width: 110px;
+      background: #f8fafc; border: 1px solid #e8ecf2;
+      border-radius: 12px; padding: 11px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .flow-step.active-orange { background: #fff7ed; border-color: #fdba74; }
+    .flow-step-icon { font-size: 15px; }
+    .flow-step-text { font-size: 11px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+    .flow-step.active-orange .flow-step-text { color: #7c2d12; }
+    .flow-step-sub { font-size: 10px; font-weight: 600; color: #ea580c; }
+    .flow-arrow { display: flex; align-items: center; color: #cbd5e1; font-size: 15px; font-weight: 700; flex-shrink: 0; align-self: center; }
+
+    .module-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+    .meta-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; color: #475569; }
+
+    .start-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 28px; border: none; border-radius: 14px;
+      font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; text-decoration: none; letter-spacing: 0.2px;
+      transition: all 0.18s ease; width: 100%;
+    }
+    .btn-orange { background: linear-gradient(135deg,#c2410c,#ea580c); color:#fff; box-shadow:0 4px 14px rgba(234,88,12,0.30); }
+    .btn-orange:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(234,88,12,0.36); filter:brightness(1.06); }
+    .btn-sky { background: linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
+    .btn-sky:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(14,165,233,0.36); filter:brightness(1.06); }
+    .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
+    .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
+
+    /* ── Info box ── */
+    .info-box {
+      background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 22px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .info-icon { font-size: 20px; flex-shrink: 0; }
+    .info-text { font-size: 13px; color: #7c2d12; line-height: 1.65; font-weight: 500; }
+    .info-text strong { font-weight: 700; }
+
+    /* ── Coming soon ── */
+    .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 11px; }
+    .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
+    .coming-card::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(241,245,249,0.5) 10px,rgba(241,245,249,0.5) 11px); pointer-events:none; }
+    .coming-card-icon { font-size:22px; margin-bottom:7px; }
+    .coming-card-num { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+    .coming-card-name { font-size:13px; font-weight:700; color:#64748b; margin-bottom:7px; line-height:1.3; }
+    .coming-soon-badge { display:inline-block; padding:3px 9px; border-radius:99px; background:#f1f5f9; border:1px solid #e2e8f0; font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.8px; text-transform:uppercase; }
+
+    .site-footer { text-align:center; padding:28px 24px; font-size:13px; color:#94a3b8; border-top:1px solid #e8ecf2; background:#fff; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up   { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-2 { animation: fadeUp 0.38s 0.08s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-3 { animation: fadeUp 0.38s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-4 { animation: fadeUp 0.38s 0.24s cubic-bezier(0.22,1,0.36,1) both; }
+
+    @media (max-width: 600px) {
+      .card-body { padding: 20px 16px 24px; }
+      .flow-steps { flex-direction: column; }
+      .flow-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
+  <h1 class="header-greeting">Hi, Courtney! 👋</h1>
+  <p class="header-sub">Welcome to your personalized NCLEX practice hub. Let's start by finding out where you're strongest — and where to focus first.</p>
+  <div class="header-byline">Diagnostic → Targeted modules → Bootcamp/Archer → Tutoring session</div>
+</header>
+
+<main class="main">
+
+  <!-- ── FIRST STEP: DIAGNOSTIC ── -->
+  <div class="section-label fade-up">📌 Your First Step</div>
+
+  <div class="card fade-up">
+    <div class="card-accent-orange"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-orange">🩺</div>
+          <div>
+            <div class="module-eyebrow eyebrow-orange">Start Here</div>
+            <div class="module-name">Full NCLEX Diagnostic</div>
+          </div>
+        </div>
+        <span class="badge badge-yellow">📌 Assigned</span>
+      </div>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <div class="info-text">
+          <strong>Why start with a diagnostic?</strong> This adaptive assessment identifies exactly where you're strong and where to focus your study time — so we don't waste a single hour on content you already know.
+        </div>
+      </div>
+
+      <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas: Pharmacology, Management of Care, OB/Maternity, Pediatrics, Cardiac, Respiratory, Mental Health, and more. The engine adjusts difficulty in real time based on your responses.</p>
+
+      <div class="flow-label">Your Study Flow — Starting Here</div>
+      <div class="flow-steps">
+        <div class="flow-step active-orange">
+          <span class="flow-step-icon">🩺</span>
+          <span class="flow-step-text">Complete the Diagnostic</span>
+          <span class="flow-step-sub">You are here</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-step-icon">📊</span>
+          <span class="flow-step-text">Madison reviews your results</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-step-icon">🎯</span>
+          <span class="flow-step-text">Get your personalized module assignments</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-step-icon">👩‍🏫</span>
+          <span class="flow-step-text">Tutoring session to build your plan</span>
+        </div>
+      </div>
+
+      <div class="module-meta">
+        <span class="meta-pill">🔄 Adaptive CAT Engine</span>
+        <span class="meta-pill">✏️ All Content Areas</span>
+        <span class="meta-pill">📊 35+ Questions</span>
+        <span class="meta-pill">⏱️ ~45 Minutes</span>
+      </div>
+
+      <a href="diagnostic.html?start=1" class="start-btn btn-orange">
+        Start My Diagnostic →
+      </a>
+    </div>
+  </div>
+
+  <!-- ── TARGETED PRACTICE (locked until after diagnostic) ── -->
+  <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
+
+  <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
+    <div class="card-accent-sky"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-sky">⚡</div>
+          <div>
+            <div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div>
+            <div class="module-name">Your Weak Areas</div>
+          </div>
+        </div>
+        <span class="badge badge-sky">🔒 Complete Diagnostic First</span>
+      </div>
+      <p class="module-desc">Once Madison reviews your diagnostic results, this section will be personalized to your specific weak areas with targeted questions calibrated to your level.</p>
+      <div class="module-meta">
+        <span class="meta-pill">🔄 Adaptive CAT Engine</span>
+        <span class="meta-pill">✏️ Practice Mode</span>
+        <span class="meta-pill">📊 35 Questions</span>
+      </div>
+      <div class="start-btn btn-outline" style="cursor:default;opacity:0.5;">Coming After Diagnostic</div>
+    </div>
+  </div>
+
+  <!-- ── COMING SOON ── -->
+  <div class="section-label fade-up-3" style="margin-top:40px;">Modules — Assigned After Diagnostic</div>
+  <div class="coming-soon-grid fade-up-3">
+    <div class="coming-card">
+      <div class="coming-card-icon">🍼</div>
+      <div class="coming-card-num">Module 1</div>
+      <div class="coming-card-name">Newborn Care</div>
+      <span class="coming-soon-badge">Pending Assignment</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🤰</div>
+      <div class="coming-card-num">Module 2</div>
+      <div class="coming-card-name">Maternal &amp; OB</div>
+      <span class="coming-soon-badge">Pending Assignment</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">💊</div>
+      <div class="coming-card-num">Module 3</div>
+      <div class="coming-card-name">Pharmacology</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🧸</div>
+      <div class="coming-card-num">Module 4</div>
+      <div class="coming-card-name">Pediatrics</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">❤️</div>
+      <div class="coming-card-num">Module 5</div>
+      <div class="coming-card-name">Cardiac</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🫁</div>
+      <div class="coming-card-num">Module 6</div>
+      <div class="coming-card-name">Respiratory</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🧠</div>
+      <div class="coming-card-num">Module 7</div>
+      <div class="coming-card-name">Mental Health</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">📋</div>
+      <div class="coming-card-num">Module 8</div>
+      <div class="coming-card-name">Prioritization &amp; Delegation</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <strong style="color:#64748b;">Study with Madison, RN</strong> · NCLEX Success Center · 2026
+</footer>
+
+<script>
+  localStorage.setItem('nclex_current_student', 'Courtney');
+</script>
+
+</body>
+</html>
