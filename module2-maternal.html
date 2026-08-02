@@ -33,7 +33,7 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const SECTIONS = {
   1: { label:"Section 1", title:"Concept Check",     desc:"10 foundational questions — RH incompatibility, preeclampsia criteria, fetal heart rate patterns, normal labs, vaccines, and prenatal pearls.", color:"#10b981", light:"#f0fdf4", border:"#86efac", emoji:"✏️" },
@@ -684,6 +684,24 @@ function ResultsScreen({ history, onRestart }) {
   const needsReview=masteryData.filter(m=>!m.mastered);
   const ringColor=pct>=80?"#10b981":pct>=60?"#f59e0b":"#ef4444";
   const sectionScores=[1,2,3].map(sNum=>{ const sh=history.filter(h=>h.section===sNum); return {sNum,correct:sh.filter(h=>h.correct).length,total:sh.length,sec:SECTIONS[sNum]}; });
+  const [copied,setCopied]=useState(false);
+
+  useEffect(()=>{
+    try {
+      const student=localStorage.getItem('nclex_current_student')||'Student';
+      const result={ moduleKey:'module2', moduleName:'Module 2 — Maternal & OB', moduleEmoji:'🤰', score:pct, correct, total, date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}), timestamp:Date.now(), concepts:masteryData.map(m=>({name:m.name,mastered:m.mastered,correct:m.correct,total:m.total})) };
+      const key=`nclex_results_${student.toLowerCase().replace(/\s+/g,'_')}`;
+      const existing=JSON.parse(localStorage.getItem(key)||'[]');
+      localStorage.setItem(key,JSON.stringify([result,...existing.filter(r=>r.moduleKey!=='module2')]));
+    } catch(e){}
+  },[]);
+
+  function handleShare(){
+    const student=localStorage.getItem('nclex_current_student')||'Student';
+    const conceptLines=masteryData.map(m=>`${m.mastered?'✅':'⚠️'} ${m.name} (${m.correct}/${m.total})`).join('\n');
+    const text=`📊 NCLEX Score Report — Study with Madison, RN\n${'─'.repeat(38)}\nStudent: ${student}\nModule: Module 2 — Maternal & OB 🤰\nDate: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}\nScore: ${pct}% (${correct}/${total} correct)\n${'─'.repeat(38)}\nCONCEPT MASTERY:\n${conceptLines}\n${'─'.repeat(38)}\nNext step: 40–50 Bootcamp/UWorld questions on Maternal & OB.`;
+    navigator.clipboard.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);}).catch(()=>{window.prompt('Copy your results:',text);});
+  }
   return (
     <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
       <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"36px 40px",maxWidth:700,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
@@ -723,7 +741,9 @@ function ResultsScreen({ history, onRestart }) {
         {needsReview.length>0&&<div style={{ background:"#fffbeb",border:"1px solid #fcd34d",borderLeft:"4px solid #f59e0b",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#78350f",lineHeight:1.65 }}><strong>⚠️ Before moving to Bootcamp/UWorld — review:</strong><div style={{ marginTop:8,display:"flex",flexWrap:"wrap",gap:6 }}>{needsReview.map(m=><span key={m.num} style={{ background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:99,padding:"4px 11px",fontSize:12,fontWeight:600,color:"#92400e" }}>#{m.num} {m.name}</span>)}</div></div>}
         {needsReview.length===0&&<div style={{ background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #10b981",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#166534",lineHeight:1.65 }}><strong>✅ Excellent work!</strong> You demonstrated mastery across all concept areas. You're ready for Bootcamp/UWorld.</div>}
         <div style={{ background:"#f0f9ff",border:"1px solid #bae6fd",borderLeft:"4px solid #0ea5e9",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:24,fontSize:13,color:"#0c4a6e",lineHeight:1.65 }}><strong>📚 Next Step:</strong> Complete <strong>40–50 Bootcamp or UWorld questions</strong> on Maternal & OB. Focus on your ⚠️ concepts first.</div>
-        <button onClick={onRestart} className="btn-primary" style={{ width:"100%",padding:"15px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)" }}>Retake Module 2</button>
+        <button onClick={handleShare} className="btn-primary" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:copied?"linear-gradient(135deg,#059669,#10b981)":"linear-gradient(135deg,#0369a1,#0ea5e9)",color:"#fff",boxShadow:"0 4px 16px rgba(14,165,233,0.28)",marginBottom:10,transition:"all 0.25s ease" }}>{copied?"✅ Copied! Send to Madison now.":"📤 Share Results with Madison"}</button>
+        <button onClick={onRestart} className="btn-primary" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)",marginBottom:10 }}>Retake Module 2</button>
+        <a href="alyssa-hub.html" style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px",borderRadius:14,border:"1.5px solid #e2e8f0",background:"#f8fafc",color:"#64748b",fontSize:14,fontWeight:600,textDecoration:"none",transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>← Back to My Hub</a>
       </div>
     </div>
   );

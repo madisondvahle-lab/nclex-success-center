@@ -66,7 +66,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect } = React;
 
 // ─── SECTION METADATA ─────────────────────────────────────────────────────────
 const SECTIONS = {
@@ -998,6 +998,36 @@ function ResultsScreen({ history, onRestart }) {
   }).filter(Boolean);
   const needsReview=masteryData.filter(m=>!m.mastered);
   const ringColor=pct>=80?"#10b981":pct>=60?"#f59e0b":"#ef4444";
+  const [copied, setCopied] = useState(false);
+
+  // Save results to localStorage for hub progress tracking
+  useEffect(() => {
+    try {
+      const student = localStorage.getItem('nclex_current_student') || 'Student';
+      const result = {
+        moduleKey: 'module1',
+        moduleName: 'Module 1 — Newborn Care',
+        moduleEmoji: '🍼',
+        score: pct, correct, total,
+        date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
+        timestamp: Date.now(),
+        concepts: masteryData.map(m=>({ name:m.name, mastered:m.mastered, correct:m.correct, total:m.total }))
+      };
+      const key = `nclex_results_${student.toLowerCase().replace(/\s+/g,'_')}`;
+      const existing = JSON.parse(localStorage.getItem(key)||'[]');
+      const filtered = existing.filter(r=>r.moduleKey!=='module1');
+      localStorage.setItem(key, JSON.stringify([result, ...filtered]));
+    } catch(e) {}
+  }, []);
+
+  function handleShare() {
+    const student = localStorage.getItem('nclex_current_student') || 'Student';
+    const conceptLines = masteryData.map(m=>`${m.mastered?'✅':'⚠️'} ${m.name} (${m.correct}/${m.total})`).join('\n');
+    const text = `📊 NCLEX Score Report — Study with Madison, RN\n${'─'.repeat(38)}\nStudent: ${student}\nModule: Module 1 — Newborn Care 🍼\nDate: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}\nScore: ${pct}% (${correct}/${total} correct)\n${'─'.repeat(38)}\nCONCEPT MASTERY:\n${conceptLines}\n${'─'.repeat(38)}\nNext step: 40–50 Bootcamp/UWorld questions on Newborn Care.`;
+    navigator.clipboard.writeText(text)
+      .then(()=>{ setCopied(true); setTimeout(()=>setCopied(false), 3000); })
+      .catch(()=>{ window.prompt('Copy your results:', text); });
+  }
 
   // Per-section scores
   const sectionScores = [1,2,3].map(sNum => {
@@ -1097,18 +1127,18 @@ function ResultsScreen({ history, onRestart }) {
           <strong>📚 Next Step:</strong> Complete <strong>40–50 Bootcamp or UWorld questions</strong> on Newborn Care. Focus your review on your ⚠️ concepts first.
         </div>
 
-        <button
-          onClick={onRestart}
-          className="btn-primary"
-          style={{
-            width:"100%", padding:"15px", border:"none", borderRadius:14, fontSize:15,
-            fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif",
-            background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff",
-            boxShadow:"0 4px 16px rgba(15,23,42,0.25)"
-          }}
-        >
+        {/* Share with Madison */}
+        <button onClick={handleShare} className="btn-primary" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background: copied ? "linear-gradient(135deg,#059669,#10b981)" : "linear-gradient(135deg,#0369a1,#0ea5e9)", color:"#fff", boxShadow:"0 4px 16px rgba(14,165,233,0.28)", marginBottom:10, transition:"all 0.25s ease" }}>
+          {copied ? "✅ Copied! Send to Madison now." : "📤 Share Results with Madison"}
+        </button>
+
+        <button onClick={onRestart} className="btn-primary" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff", boxShadow:"0 4px 16px rgba(15,23,42,0.25)", marginBottom:10 }}>
           Retake Module 1
         </button>
+
+        <a href="alyssa-hub.html" style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"13px", borderRadius:14, border:"1.5px solid #e2e8f0", background:"#f8fafc", color:"#64748b", fontSize:14, fontWeight:600, textDecoration:"none", transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>
+          ← Back to My Hub
+        </a>
       </div>
     </div>
   );
