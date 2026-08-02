@@ -11,6 +11,51 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
 
+    /* ── PIN Gate ── */
+    #pin-gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    #pin-gate::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 30%, rgba(14,165,233,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.10) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .pin-card {
+      background: #fff; border-radius: 24px; padding: 44px 40px 40px;
+      max-width: 380px; width: 100%; text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5); position: relative; z-index: 1;
+    }
+    .pin-avatar {
+      width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 20px;
+      background: linear-gradient(135deg,#e0f2fe,#bae6fd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #0369a1; letter-spacing: -1px;
+    }
+    .pin-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+    .pin-sub { font-size: 14px; color: #64748b; margin-bottom: 28px; line-height: 1.5; }
+    .pin-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+    .pin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #e2e8f0; transition: background 0.15s ease;
+    }
+    .pin-dot.filled { background: #0ea5e9; }
+    .pin-dot.error  { background: #ef4444; }
+    .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .pin-key {
+      padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0;
+      background: #f8fafc; font-size: 18px; font-weight: 700; color: #0f172a;
+      cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s ease;
+    }
+    .pin-key:hover  { background: #f0f9ff; border-color: #7dd3fc; color: #0369a1; }
+    .pin-key:active { transform: scale(0.95); background: #e0f2fe; }
+    .pin-key.del    { color: #94a3b8; font-size: 16px; }
+    .pin-error { font-size: 13px; color: #ef4444; font-weight: 600; min-height: 20px; margin-top: 4px; }
+    .pin-hint { font-size: 12px; color: #94a3b8; margin-top: 16px; }
+    body.locked { overflow: hidden; }
+
     .site-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
       padding: 52px 24px 48px; text-align: center; position: relative; overflow: hidden;
@@ -225,6 +270,36 @@
   </style>
 </head>
 <body>
+
+<!-- ── PIN GATE ── -->
+<div id="pin-gate">
+  <div class="pin-card">
+    <div class="pin-avatar">A</div>
+    <div class="pin-title">Alyssa's Hub</div>
+    <div class="pin-sub">Enter your PIN to access your personalized study hub.</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2;">0</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-hint">PIN provided by Madison 💙</div>
+  </div>
+</div>
 
 <header class="site-header">
   <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
@@ -671,6 +746,49 @@
 </footer>
 
 <script>
+  // ── PIN Gate ──
+  (function() {
+    const CORRECT = '7284'; // ← Alyssa's PIN
+    const STORE_KEY = 'nclex_pin_alyssa';
+    if (localStorage.getItem(STORE_KEY) === CORRECT) {
+      document.getElementById('pin-gate').style.display = 'none';
+      return;
+    }
+    document.body.classList.add('locked');
+  })();
+
+  let pinBuffer = '';
+  function pinKey(digit) {
+    if (pinBuffer.length >= 4) return;
+    pinBuffer += digit;
+    updateDots();
+    if (pinBuffer.length === 4) checkPin();
+  }
+  function pinDel() {
+    pinBuffer = pinBuffer.slice(0, -1);
+    document.getElementById('pin-error').textContent = '';
+    updateDots(false);
+  }
+  function updateDots(err) {
+    for (let i = 0; i < 4; i++) {
+      const d = document.getElementById('d' + i);
+      d.classList.toggle('filled', i < pinBuffer.length);
+      d.classList.toggle('error', !!err);
+    }
+  }
+  function checkPin() {
+    const CORRECT = '7284'; // ← Must match above
+    if (pinBuffer === CORRECT) {
+      localStorage.setItem('nclex_pin_alyssa', pinBuffer);
+      document.getElementById('pin-gate').style.display = 'none';
+      document.body.classList.remove('locked');
+    } else {
+      updateDots(true);
+      document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
+      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
+    }
+  }
+
   // ── Study plan toggle ──
   function togglePlan(btn) {
     const body = document.getElementById('plan-body');
