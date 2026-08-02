@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 2 Study Guide — Maternal &amp; OB · Study with Madison, RN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
+
+    .site-header {
+      background: linear-gradient(135deg, #0f172a 0%, #4c1d95 100%);
+      padding: 48px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    .site-header::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 40%, rgba(139,92,246,0.18) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(236,72,153,0.12) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .header-badge { display: inline-block; padding: 4px 14px; border-radius: 99px; background: rgba(139,92,246,0.18); border: 1px solid rgba(139,92,246,0.40); font-size: 11px; font-weight: 700; color: #c4b5fd; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 14px; }
+    .header-title { font-size: clamp(28px,5vw,44px); font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .header-sub { font-size: 16px; color: #c4b5fd; font-style: italic; margin-bottom: 12px; }
+    .header-byline { font-size: 13px; color: #6d28d9; font-weight: 600; background: rgba(196,181,253,0.15); display: inline-block; padding: 4px 14px; border-radius: 99px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; color: #a78bfa; font-size: 13px; font-weight: 600; text-decoration: none; opacity: 0.85; }
+    .back-link:hover { opacity: 1; }
+
+    .main { max-width: 940px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* Big Picture banner */
+    .big-picture { background: linear-gradient(135deg,#4c1d95,#6d28d9); border-radius: 20px; padding: 28px 32px; margin-bottom: 32px; color: #fff; }
+    .big-picture-title { font-size: 13px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: #c4b5fd; margin-bottom: 14px; }
+    .big-picture-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .big-picture-item { background: rgba(255,255,255,0.10); border-radius: 12px; padding: 14px 16px; }
+    .big-picture-item strong { display: block; font-size: 13px; font-weight: 700; color: #e9d5ff; margin-bottom: 4px; }
+    .big-picture-item p { font-size: 13px; color: #ddd6fe; line-height: 1.55; }
+
+    /* Section */
+    .section { margin-bottom: 28px; }
+    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .section-icon { font-size: 20px; }
+    .section-title { font-size: 15px; font-weight: 800; letter-spacing: 0.3px; }
+
+    /* Cards */
+    .card { background: #fff; border-radius: 18px; padding: 22px 24px; box-shadow: 0 2px 12px rgba(15,23,42,0.07); border: 1px solid #e8ecf2; margin-bottom: 12px; }
+    .card-title { font-size: 13px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 12px; }
+
+    /* Two-col grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Bullet lists */
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .bullet-list li { display: flex; gap: 8px; font-size: 13px; color: #334155; line-height: 1.55; }
+    .bullet-list li::before { content: "•"; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Check / X lists */
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .check-list li { display: flex; gap: 8px; font-size: 13px; color: #334155; line-height: 1.5; align-items: flex-start; }
+    .ck { color: #10b981; font-weight: 700; flex-shrink: 0; }
+    .cx { color: #ef4444; font-weight: 700; flex-shrink: 0; }
+    .cw { color: #f59e0b; font-weight: 700; flex-shrink: 0; }
+
+    /* Alert box */
+    .alert { border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+    .alert-red   { background: #fff1f2; border: 1px solid #fecdd3; }
+    .alert-amber { background: #fffbeb; border: 1px solid #fde68a; }
+    .alert-green { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .alert-purple{ background: #faf5ff; border: 1px solid #e9d5ff; }
+    .alert-icon  { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body  { flex: 1; }
+    .alert-title { font-size: 12px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 5px; }
+    .alert-red    .alert-title { color: #be123c; }
+    .alert-amber  .alert-title { color: #92400e; }
+    .alert-green  .alert-title { color: #065f46; }
+    .alert-purple .alert-title { color: #5b21b6; }
+    .alert-text { font-size: 13px; color: #334155; line-height: 1.6; }
+
+    /* Tag pills */
+    .tag { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+    .tag-purple { background: #ede9fe; color: #5b21b6; }
+    .tag-green  { background: #d1fae5; color: #065f46; }
+    .tag-red    { background: #fee2e2; color: #991b1b; }
+    .tag-amber  { background: #fef3c7; color: #92400e; }
+    .tag-sky    { background: #e0f2fe; color: #0369a1; }
+    .tag-rose   { background: #ffe4e6; color: #9f1239; }
+
+    /* FHR table */
+    .fhr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .fhr-table th { background: #f8fafc; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #64748b; padding: 8px 12px; text-align: left; border-bottom: 1px solid #e8ecf2; }
+    .fhr-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; line-height: 1.5; vertical-align: top; }
+    .fhr-table tr:last-child td { border-bottom: none; }
+
+    /* Lab table */
+    .lab-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .lab-table th { background: #f8fafc; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #64748b; padding: 8px 12px; text-align: left; border-bottom: 1px solid #e8ecf2; }
+    .lab-table td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: top; }
+    .lab-table tr:last-child td { border-bottom: none; }
+
+    /* GTPAL visual */
+    .gtpal-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .gtpal-box { flex: 1; min-width: 60px; text-align: center; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 10px 6px; }
+    .gtpal-letter { font-size: 20px; font-weight: 800; color: #7c3aed; display: block; }
+    .gtpal-word { font-size: 10px; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 2px; }
+
+    /* Rapid fire */
+    .rapid-fire { background: linear-gradient(135deg,#0f172a,#1e293b); border-radius: 18px; padding: 24px 28px; }
+    .rapid-fire-title { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #f59e0b; margin-bottom: 16px; }
+    .rf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .rf-item { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); border-radius: 12px; padding: 12px 14px; }
+    .rf-item p { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
+    .rf-item strong { color: #fbbf24; }
+
+    /* Memory trick */
+    .memory { background: linear-gradient(135deg,#be123c,#e11d48); border-radius: 16px; padding: 22px 28px; text-align: center; }
+    .memory-title { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #fda4af; margin-bottom: 8px; }
+    .memory-trick { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .memory-sub { font-size: 14px; color: #fecdd3; }
+
+    /* Quiz link */
+    .quiz-cta { background: linear-gradient(135deg,#6d28d9,#8b5cf6); border-radius: 18px; padding: 28px 32px; text-align: center; margin-top: 36px; }
+    .quiz-cta-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .quiz-cta-sub { font-size: 14px; color: #ddd6fe; margin-bottom: 20px; }
+    .quiz-btn { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #6d28d9; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800; padding: 14px 28px; border-radius: 14px; text-decoration: none; transition: all 0.18s ease; }
+    .quiz-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.20); }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-badge">Study with Madison, RN · Module 2</div>
+  <div class="header-title">🤰 Maternal &amp; OB</div>
+  <div class="header-sub">Normal Changes. Safe Care. Healthy Outcomes.</div>
+  <div class="header-byline">NCLEX High-Yield Review</div>
+  <br>
+  <a href="alyssa-hub.html" class="back-link">← Back to My Hub</a>
+</header>
+
+<main class="main">
+
+  <!-- INFOGRAPHIC -->
+  <div class="section fade-up" style="margin-bottom:32px;">
+    <div class="card" style="padding:20px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#8b5cf6;margin-bottom:12px;">📊 Madison's Module 2 Infographic</div>
+      <img src="module2-infographic.png" alt="Module 2 Maternal & OB Infographic" style="max-width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(15,23,42,0.12);" />
+      <div style="margin-top:12px;font-size:12px;color:#94a3b8;">Full study guide breakdown continues below ↓</div>
+    </div>
+  </div>
+
+  <!-- BIG PICTURE -->
+  <div class="big-picture fade-up">
+    <div class="big-picture-title">🎯 The Big Picture</div>
+    <div class="big-picture-grid">
+      <div class="big-picture-item"><strong>Pregnancy =</strong><p>Normal physiologic state — ask "Expected or dangerous?" for every finding</p></div>
+      <div class="big-picture-item"><strong>Priority Order</strong><p>❤️ Mom first → then fetus. A stable mom = a stable baby.</p></div>
+      <div class="big-picture-item"><strong>Always Ask</strong><p>Keep uteroplacental perfusion adequate — left lateral position is your best friend</p></div>
+    </div>
+  </div>
+
+  <!-- RH INCOMPATIBILITY -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">🩸</span>
+      <span class="section-title" style="color:#be123c;">RH Incompatibility</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">The Problem</div>
+        <ul class="bullet-list">
+          <li style="color:#334155;">Rh– mom + Rh+ baby = risk for hemolytic disease of the newborn</li>
+          <li style="color:#334155;"><strong>Indirect Coombs</strong> = tests MOM (antibodies in serum)</li>
+          <li style="color:#334155;"><strong>Direct Coombs</strong> = tests BABY (antibodies on RBCs)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#059669;">When to Give RhoGAM</div>
+        <ul class="check-list">
+          <li><span class="ck">✓</span> At 28 weeks gestation</li>
+          <li><span class="ck">✓</span> Within 72 hr postpartum if baby is Rh+</li>
+          <li><span class="ck">✓</span> After miscarriage, abortion, ectopic pregnancy</li>
+          <li><span class="ck">✓</span> After amniocentesis, CVS, trauma, abdominal surgery</li>
+          <li><span class="ck">✓</span> External cephalic version or fetomaternal hemorrhage</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-red">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-body">
+        <div class="alert-title">NCLEX Trap!</div>
+        <div class="alert-text">Do <strong>NOT</strong> give RhoGAM if the mother is already sensitized (positive antibody screen). RhoGAM prevents sensitization — it cannot treat it once it has occurred.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREECLAMPSIA / HELLP -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">🫀</span>
+      <span class="section-title" style="color:#7c3aed;">Preeclampsia / Eclampsia / HELLP</span>
+    </div>
+
+    <div class="alert alert-purple">
+      <span class="alert-icon">📅</span>
+      <div class="alert-body">
+        <div class="alert-title">Key Rule</div>
+        <div class="alert-text">All of these develop <strong>new onset after 20 weeks gestation</strong>.</div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title" style="color:#7c3aed;">Preeclampsia</div>
+        <ul class="bullet-list">
+          <li>HTN ≥140/90</li>
+          <li>Proteinuria ≥300 mg/24 hr</li>
+          <li>May have: headache, ↑ reflexes, visual changes, RUQ pain, edema</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">Eclampsia</div>
+        <ul class="bullet-list">
+          <li>Preeclampsia <strong>+ seizures</strong></li>
+          <li>Most dangerous complication</li>
+          <li>Magnesium sulfate = prevention &amp; treatment</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#d97706;">HELLP Syndrome</div>
+        <ul class="bullet-list">
+          <li><strong>H</strong>emolysis</li>
+          <li><strong>E</strong>levated <strong>L</strong>iver enzymes</li>
+          <li><strong>L</strong>ow <strong>P</strong>latelets</li>
+          <li>Emergency — may mimic GI illness</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:0;">
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">🚨 Red Flags — Report Immediately</div>
+        <ul class="check-list">
+          <li><span class="cx">!</span> Severe headache</li>
+          <li><span class="cx">!</span> Visual changes (blurry, spots)</li>
+          <li><span class="cx">!</span> RUQ / epigastric pain</li>
+          <li><span class="cx">!</span> Sudden swelling (face, hands)</li>
+          <li><span class="cx">!</span> Hyperreflexia (clonus)</li>
+          <li><span class="cx">!</span> Decreased urine output</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#059669;">Treatment Priorities</div>
+        <ul class="check-list">
+          <li><span class="ck">→</span> <strong>Magnesium sulfate</strong> — seizure prevention</li>
+          <li><span class="ck">→</span> Monitor reflexes, respirations, I&amp;O</li>
+          <li><span class="ck">→</span> <strong>Calcium gluconate</strong> = Mag antidote (keep at bedside)</li>
+          <li><span class="ck">→</span> Seizure precautions (dim lights, quiet room, padded rails)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FETAL HEART RATE -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">💓</span>
+      <span class="section-title" style="color:#0369a1;">Fetal Heart Rate Patterns</span>
+    </div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table class="fhr-table">
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Cause</th>
+            <th>Meaning</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-green">✅ Early Deceleration</span></td>
+            <td>Head compression</td>
+            <td>Usually benign — normal in active labor</td>
+            <td>No intervention needed</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-amber">⚠️ Variable Deceleration</span></td>
+            <td>Cord compression</td>
+            <td>Varies in shape &amp; timing</td>
+            <td>Reposition, O₂, IV fluids</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">🚨 Late Deceleration</span></td>
+            <td>Placental insufficiency</td>
+            <td>Begins AFTER contraction — ominous</td>
+            <td>Reposition (left side), O₂, IV fluids, notify provider, stop Pitocin</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-sky">😊 Accelerations</span></td>
+            <td>Fetal movement</td>
+            <td>"Happy baby!" — reassuring</td>
+            <td>↑ HR ≥15 bpm for ≥15 sec = reactive/normal</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-rose">❗ Minimal/Absent Variability</span></td>
+            <td>Possible fetal distress</td>
+            <td>Concerning — fetus may be hypoxic or sleeping</td>
+            <td>Notify provider immediately</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- OBSTETRIC EMERGENCIES -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <span class="section-title" style="color:#be123c;">Obstetric Emergencies</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">Placenta Previa</div>
+        <ul class="bullet-list">
+          <li>Placenta covers the cervical os (lower uterine segment)</li>
+          <li><strong>Painless, bright red bleeding</strong></li>
+          <li>Do <strong>NOT</strong> do vaginal exam</li>
+          <li>Notify provider — C-section likely</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">Placental Abruption</div>
+        <ul class="bullet-list">
+          <li>Premature separation of placenta from uterine wall</li>
+          <li><strong>Painful, dark red bleeding</strong></li>
+          <li>Rigid, board-like uterus</li>
+          <li>Fetal distress — notify provider immediately</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#7c3aed;">Umbilical Cord Prolapse</div>
+        <ul class="bullet-list">
+          <li>Cord descends past presenting part</li>
+          <li>Fetal distress (cord compression)</li>
+          <li><strong>Knee-chest position</strong></li>
+          <li>Do <strong>NOT</strong> push cord back in</li>
+          <li>Lift presenting part off cord — EMERGENCY</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#7c3aed;">Uterine Rupture</div>
+        <ul class="bullet-list">
+          <li>Tear in uterine wall</li>
+          <li>Sudden, severe pain then relief</li>
+          <li>Loss of fetal station</li>
+          <li>Fetal distress</li>
+          <li>Emergency surgery required</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- VACCINES -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">💉</span>
+      <span class="section-title" style="color:#059669;">Vaccines in Pregnancy</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#059669;">✅ Safe (Recommended)</div>
+        <ul class="check-list">
+          <li><span class="ck">✓</span> <strong>Tdap</strong> (27–36 weeks)</li>
+          <li><span class="ck">✓</span> <strong>Influenza</strong> (injectable only)</li>
+          <li><span class="ck">✓</span> <strong>COVID-19</strong></li>
+          <li><span class="ck">✓</span> <strong>RSV</strong> (32–36 weeks in season)</li>
+          <li><span class="ck">✓</span> <strong>Hepatitis B</strong> (if indicated)</li>
+        </ul>
+        <div style="margin-top:12px;font-size:12px;color:#475569;background:#f0fdf4;padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0;">
+          💡 Most live vaccines are compatible with breastfeeding — EXCEPT Smallpox (vaccinia) and Yellow Fever (caution if infant &lt;9 months).
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#be123c;">❌ Not Safe (Live Vaccines)</div>
+        <ul class="check-list">
+          <li><span class="cx">✗</span> MMR</li>
+          <li><span class="cx">✗</span> Varicella (chickenpox)</li>
+          <li><span class="cx">✗</span> Live Influenza (FluMist)</li>
+          <li><span class="cx">✗</span> Zoster (Shingles)</li>
+          <li><span class="cx">✗</span> Oral Typhoid</li>
+        </ul>
+        <div style="margin-top:12px;font-size:12px;color:#7c2d12;background:#fff1f2;padding:10px 12px;border-radius:10px;border:1px solid #fecdd3;">
+          ⚠️ Live vaccines carry risk of fetal infection — avoid throughout pregnancy.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRENATAL PEARLS -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">👶</span>
+      <span class="section-title" style="color:#7c3aed;">Prenatal Pearls</span>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title" style="color:#7c3aed;">Fundal Height</div>
+        <ul class="bullet-list">
+          <li><strong>12 wks</strong> — just above symphysis pubis</li>
+          <li><strong>20 wks</strong> — at umbilicus</li>
+          <li><strong>36 wks</strong> — xiphoid process</li>
+          <li>Drops (lightening) before labor</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#059669;">Kick Counts</div>
+        <ul class="bullet-list">
+          <li>Begin after <strong>28 weeks</strong></li>
+          <li>10 movements in 2 hours = normal</li>
+          <li>Call provider if fewer than 10</li>
+          <li>Assess after meals for best results</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#d97706;">Weight Gain (Recommended)</div>
+        <ul class="bullet-list">
+          <li><strong>Underweight</strong> (&lt;18.5): 28–40 lb</li>
+          <li><strong>Normal</strong> (18.5–24.9): 25–35 lb</li>
+          <li><strong>Overweight</strong> (25–29.9): 15–25 lb</li>
+          <li><strong>Obese</strong> (≥30): 11–20 lb</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GTPAL -->
+    <div class="card" style="margin-top:0;">
+      <div class="card-title" style="color:#7c3aed;">GTPAL — Obstetric History</div>
+      <div class="gtpal-grid">
+        <div class="gtpal-box"><span class="gtpal-letter">G</span><span class="gtpal-word">Gravida</span></div>
+        <div class="gtpal-box"><span class="gtpal-letter">T</span><span class="gtpal-word">Term</span></div>
+        <div class="gtpal-box"><span class="gtpal-letter">P</span><span class="gtpal-word">Preterm</span></div>
+        <div class="gtpal-box"><span class="gtpal-letter">A</span><span class="gtpal-word">Abortion</span></div>
+        <div class="gtpal-box"><span class="gtpal-letter">L</span><span class="gtpal-word">Living</span></div>
+      </div>
+      <div style="margin-top:14px;background:#faf5ff;border-radius:10px;padding:12px 14px;font-size:13px;color:#5b21b6;">
+        <strong>Example:</strong> G2 T1 P0 A0 L1 = 2 pregnancies, 1 term birth, 0 preterm, 0 abortions, 1 living child
+      </div>
+    </div>
+
+    <!-- Other Pearls -->
+    <div class="card" style="margin-top:0;">
+      <div class="card-title" style="color:#0369a1;">Other Pearls</div>
+      <ul class="bullet-list">
+        <li><strong>Left lateral position</strong> — best for uteroplacental perfusion (avoids vena cava compression)</li>
+        <li><strong>Supine hypotension syndrome</strong> — dizziness, low BP, ↓ fetal perfusion when lying flat → turn left side</li>
+        <li><strong>Mild leukocytosis</strong> (↑ WBC) and <strong>dilutional anemia</strong> are normal in pregnancy</li>
+        <li><strong>Proteinuria is NEVER normal</strong> — always report</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- LABS -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">🧪</span>
+      <span class="section-title" style="color:#0369a1;">Labs in Pregnancy — What's Normal?</span>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="lab-table">
+        <thead>
+          <tr><th>Lab</th><th>Normal in Pregnancy</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>WBC</strong></td><td>5,000–16,000</td><td>Mild leukocytosis is expected</td></tr>
+          <tr><td><strong>Hgb/Hct</strong></td><td>↓ (dilutional anemia)</td><td>Normal due to plasma volume expansion</td></tr>
+          <tr><td><strong>Platelets</strong></td><td>150,000–400,000</td><td>Low platelets = concerning (HELLP?)</td></tr>
+          <tr><td><strong>Glucose</strong></td><td>Normal (small ↑ after meals ok)</td><td>Gestational DM screening at 24–28 wks</td></tr>
+          <tr><td><strong>BUN/Creatinine</strong></td><td>↓ (GFR ↑)</td><td>Kidneys filter more in pregnancy</td></tr>
+          <tr><td><strong>Uric Acid</strong></td><td>↓</td><td>Elevated = concerning for preeclampsia</td></tr>
+          <tr><td><strong>Coagulation</strong></td><td>Hypercoagulable (↑ fibrinogen)</td><td>↑ DVT risk during pregnancy and postpartum</td></tr>
+          <tr><td><strong>Urine</strong></td><td>↑ frequency, glycosuria possible</td><td>Trace protein may be ok — more than trace is NOT normal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NURSING PRIORITIES -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-title" style="color:#059669;">Prenatal Care Priorities (Nursing Process)</span>
+    </div>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+          <div><strong style="font-size:13px;">Assess</strong> <span style="font-size:13px;color:#475569;">— History, VS, fetal heart tones, fetal movement</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+          <div><strong style="font-size:13px;">Identify Problems</strong> <span style="font-size:13px;color:#475569;">— Risk factors, abnormal findings, danger signs</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+          <div><strong style="font-size:13px;">Plan Care</strong> <span style="font-size:13px;color:#475569;">— Teach, prevent complications, set goals</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+          <div><strong style="font-size:13px;">Implement</strong> <span style="font-size:13px;color:#475569;">— Interventions, medications, position changes</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>
+          <div><strong style="font-size:13px;">Evaluate Response</strong> <span style="font-size:13px;color:#475569;">— Is mom stable? Is baby tolerating labor?</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>
+          <div><strong style="font-size:13px;">Document &amp; Communicate</strong> <span style="font-size:13px;color:#475569;">— SBAR to provider, escalate when needed</span></div>
+        </div>
+      </div>
+      <div class="alert alert-amber" style="margin-top:16px;margin-bottom:0;">
+        <span class="alert-icon">🛡️</span>
+        <div class="alert-body">
+          <div class="alert-title">Safety Tip</div>
+          <div class="alert-text">Always assess <strong>MOM before FETUS</strong>. A stable mom = a stable baby.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT IMMEDIATELY -->
+  <div class="section fade-up">
+    <div class="section-header">
+      <span class="section-icon">🚨</span>
+      <span class="section-title" style="color:#be123c;">Report Immediately — Not Normal!</span>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Vaginal bleeding</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Severe headache</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Leaking fluid</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Visual changes</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Regular contractions before 37 weeks</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> RUQ / epigastric pain</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Decreased fetal movement</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Fever / chills</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Severe swelling (face, hands)</div>
+        <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:center;"><span style="color:#ef4444;font-weight:700;">!</span> Dizziness / syncope</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAPID FIRE -->
+  <div class="section fade-up">
+    <div class="rapid-fire">
+      <div class="rapid-fire-title">⚡ NCLEX Rapid Fire — High-Yield Highlights</div>
+      <div class="rf-grid">
+        <div class="rf-item"><p>Leukocytosis (↑ WBC) can be <strong>NORMAL</strong> in pregnancy</p></div>
+        <div class="rf-item"><p>Mild dilutional anemia is <strong>EXPECTED</strong></p></div>
+        <div class="rf-item"><p>Proteinuria is <strong>NEVER NORMAL</strong></p></div>
+        <div class="rf-item"><p>Pregnancy is <strong>NOT "eating for two"</strong> — only ~300 extra cal/day</p></div>
+        <div class="rf-item"><p>Pregnancy is <strong>Hypercoagulable</strong> → DVT risk ↑</p></div>
+        <div class="rf-item"><p><strong>Assess Mom before Fetus</strong>. Always.</p></div>
+        <div class="rf-item"><p><strong>Left side</strong> improves placental perfusion</p></div>
+        <div class="rf-item"><p>Calcium gluconate = <strong>antidote for Mag toxicity</strong> — keep at bedside</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMORY TRICK -->
+  <div class="section fade-up">
+    <div class="memory">
+      <div class="memory-title">💙 Memory Trick</div>
+      <div class="memory-trick">"MOM FIRST"</div>
+      <div class="memory-sub">Then baby! Keep both safe.</div>
+    </div>
+  </div>
+
+  <!-- QUIZ CTA -->
+  <div class="quiz-cta fade-up">
+    <div class="quiz-cta-title">Ready to practice? 💻</div>
+    <div class="quiz-cta-sub">You've reviewed the content — now test yourself with 25 NCLEX-style questions.</div>
+    <a href="module2-maternal.html?start=1" class="quiz-btn">Start Module 2 Quiz →</a>
+  </div>
+
+</main>
+
+<footer style="text-align:center;padding:28px 24px;font-size:13px;color:#94a3b8;border-top:1px solid #e8ecf2;background:#fff;margin-top:40px;">
+  <strong style="color:#64748b;">Study with Madison, RN</strong> · Module 2 — Maternal &amp; OB · 2026
+</footer>
+
+</body>
+</html>
