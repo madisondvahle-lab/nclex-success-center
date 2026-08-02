@@ -11,229 +11,153 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
 
-    /* ── Header ── */
     .site-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
-      padding: 52px 24px 48px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      padding: 52px 24px 48px; text-align: center; position: relative; overflow: hidden;
     }
     .site-header::before {
-      content: "";
-      position: absolute;
-      inset: 0;
+      content: ""; position: absolute; inset: 0;
       background: radial-gradient(ellipse at 70% 40%, rgba(14,165,233,0.12) 0%, transparent 60%),
                   radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.10) 0%, transparent 55%);
       pointer-events: none;
     }
     .header-badge {
-      display: inline-block;
-      padding: 4px 14px;
-      border-radius: 99px;
-      background: rgba(14,165,233,0.12);
-      border: 1px solid rgba(14,165,233,0.35);
-      font-size: 11px;
-      font-weight: 700;
-      color: #38bdf8;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
+      display: inline-block; padding: 4px 14px; border-radius: 99px;
+      background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.35);
+      font-size: 11px; font-weight: 700; color: #38bdf8; letter-spacing: 1.4px;
+      text-transform: uppercase; margin-bottom: 16px;
     }
-    .header-greeting {
-      font-size: clamp(26px, 5vw, 40px);
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 10px;
-      letter-spacing: -0.5px;
-    }
-    .header-sub {
-      font-size: 15px;
-      color: #94a3b8;
-      max-width: 420px;
-      margin: 0 auto 10px;
-      line-height: 1.65;
-    }
-    .header-byline {
-      font-size: 13px;
-      color: #475569;
-      font-weight: 500;
-    }
+    .header-greeting { font-size: clamp(26px,5vw,40px); font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .header-sub { font-size: 15px; color: #94a3b8; max-width: 420px; margin: 0 auto 10px; line-height: 1.65; }
+    .header-byline { font-size: 13px; color: #475569; font-weight: 500; }
 
-    /* ── Main ── */
     .main { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
 
     .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
+      font-size: 11px; font-weight: 700; color: #64748b;
+      letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px;
     }
 
-    /* ── Cards ── */
-    .card {
-      background: #fff;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(15,23,42,0.09);
-      margin-bottom: 16px;
+    /* ── Progress History ── */
+    .progress-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 40px; }
+    .progress-card {
+      background: #fff; border-radius: 16px; padding: 18px 20px;
+      border: 1px solid #e8ecf2; box-shadow: 0 1px 6px rgba(15,23,42,0.05);
+      display: flex; flex-direction: column; gap: 8px;
     }
+    .progress-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .progress-card-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; }
+    .progress-score {
+      font-size: 26px; font-weight: 800; line-height: 1;
+    }
+    .progress-score.good  { color: #10b981; }
+    .progress-score.okay  { color: #f59e0b; }
+    .progress-score.needs { color: #ef4444; }
+    .progress-bar-track { height: 6px; background: #f1f5f9; border-radius: 99px; }
+    .progress-bar-fill  { height: 6px; border-radius: 99px; transition: width 0.6s ease; }
+    .progress-meta { font-size: 12px; color: #94a3b8; font-weight: 500; }
+    .concept-summary { display: flex; gap: 6px; flex-wrap: wrap; }
+    .concept-chip {
+      font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+    }
+    .chip-pass { background: #d1fae5; color: #065f46; }
+    .chip-fail { background: #fef3c7; color: #92400e; }
+
+    /* ── Module cards ── */
+    .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.09); margin-bottom: 16px; }
     .card-accent-green  { height: 5px; background: linear-gradient(90deg, #10b981, #34d399); }
+    .card-accent-purple { height: 5px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
     .card-accent-sky    { height: 5px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
-    .card-body { padding: 30px 36px 34px; }
+    .card-accent-slate  { height: 5px; background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+    .card-body { padding: 28px 34px 32px; }
 
-    /* ── Module card header ── */
-    .module-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
+    .module-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
     .module-title-group { display: flex; align-items: center; gap: 14px; }
-    .module-emoji-wrap {
-      width: 54px; height: 54px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px; flex-shrink: 0;
-    }
-    .emoji-green { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; }
-    .emoji-sky   { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 1px solid #7dd3fc; }
-    .module-eyebrow {
-      font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
-      text-transform: uppercase; margin-bottom: 3px;
-    }
-    .eyebrow-green { color: #10b981; }
-    .eyebrow-sky   { color: #0ea5e9; }
-    .module-name { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .module-emoji-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .emoji-green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1px solid #86efac; }
+    .emoji-purple { background: linear-gradient(135deg,#faf5ff,#ede9fe); border: 1px solid #c4b5fd; }
+    .emoji-sky    { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border: 1px solid #7dd3fc; }
+    .emoji-slate  { background: #f1f5f9; border: 1px solid #e2e8f0; }
+    .module-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
+    .eyebrow-green  { color: #10b981; }
+    .eyebrow-purple { color: #8b5cf6; }
+    .eyebrow-sky    { color: #0ea5e9; }
+    .eyebrow-slate  { color: #94a3b8; }
+    .module-name { font-size: 19px; font-weight: 800; color: #0f172a; line-height: 1.2; }
 
-    .assigned-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 99px;
-      background: #fef9c3; border: 1px solid #fde047;
-      font-size: 11px; font-weight: 700; color: #854d0e;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    .targeted-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 99px;
-      background: #f0f9ff; border: 1px solid #7dd3fc;
-      font-size: 11px; font-weight: 700; color: #0369a1;
-      white-space: nowrap; flex-shrink: 0;
-    }
-
-    .module-desc {
-      font-size: 14px; color: #475569; line-height: 1.7;
-      margin-bottom: 24px; font-weight: 400;
-    }
-
-    /* ── Study flow ── */
-    .flow-label {
-      font-size: 10px; font-weight: 700; color: #94a3b8;
-      letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 12px;
-    }
-    .flow-steps {
-      display: flex; align-items: stretch;
-      flex-wrap: wrap; gap: 6px; margin-bottom: 26px;
-    }
-    .flow-step {
-      flex: 1; min-width: 120px;
-      background: #f8fafc; border: 1px solid #e8ecf2;
-      border-radius: 12px; padding: 12px 14px;
-      display: flex; flex-direction: column; gap: 5px;
-    }
-    .flow-step.active {
-      background: #f0fdf4; border-color: #86efac;
-    }
-    .flow-step-icon { font-size: 16px; }
-    .flow-step-text { font-size: 12px; font-weight: 600; color: #1e293b; line-height: 1.4; }
-    .flow-step.active .flow-step-text { color: #065f46; }
-    .flow-step-sub { font-size: 11px; font-weight: 500; color: #10b981; }
-    .flow-arrow { display: flex; align-items: center; color: #cbd5e1; font-size: 16px; font-weight: 700; flex-shrink: 0; align-self: center; }
-
-    /* ── Meta pills ── */
-    .module-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-    .meta-pill {
+    .badge {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 5px 12px; border-radius: 99px;
-      background: #f1f5f9; border: 1px solid #e2e8f0;
-      font-size: 12px; font-weight: 600; color: #475569;
+      font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
     }
+    .badge-yellow   { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+    .badge-green    { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; }
+    .badge-purple   { background: #ede9fe; border: 1px solid #c4b5fd; color: #5b21b6; }
+    .badge-sky      { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
+    .badge-slate    { background: #f1f5f9; border: 1px solid #e2e8f0; color: #64748b; }
 
-    /* ── Weak areas ── */
-    .weak-areas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-    .weak-pill {
-      padding: 5px 13px; border-radius: 99px;
-      background: #f0f9ff; border: 1px solid #bae6fd;
-      font-size: 12px; font-weight: 600; color: #0369a1;
+    .module-desc { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px; font-weight: 400; }
+
+    .flow-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 10px; }
+    .flow-steps { display: flex; align-items: stretch; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .flow-step {
+      flex: 1; min-width: 110px;
+      background: #f8fafc; border: 1px solid #e8ecf2;
+      border-radius: 12px; padding: 11px 12px;
+      display: flex; flex-direction: column; gap: 4px;
     }
+    .flow-step.active-green  { background: #f0fdf4; border-color: #86efac; }
+    .flow-step.active-purple { background: #faf5ff; border-color: #c4b5fd; }
+    .flow-step-icon { font-size: 15px; }
+    .flow-step-text { font-size: 11px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+    .flow-step.active-green  .flow-step-text { color: #065f46; }
+    .flow-step.active-purple .flow-step-text { color: #5b21b6; }
+    .flow-step-sub { font-size: 10px; font-weight: 600; }
+    .sub-green  { color: #10b981; }
+    .sub-purple { color: #8b5cf6; }
+    .flow-arrow { display: flex; align-items: center; color: #cbd5e1; font-size: 15px; font-weight: 700; flex-shrink: 0; align-self: center; }
 
-    /* ── Buttons ── */
+    .module-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+    .meta-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; color: #475569; }
+
+    .weak-areas { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+    .weak-pill { padding: 4px 12px; border-radius: 99px; background: #f0f9ff; border: 1px solid #bae6fd; font-size: 11px; font-weight: 600; color: #0369a1; }
+
     .start-btn {
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 15px 32px; border: none; border-radius: 14px;
+      padding: 14px 28px; border: none; border-radius: 14px;
       font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700;
       cursor: pointer; text-decoration: none; letter-spacing: 0.2px;
       transition: all 0.18s ease; width: 100%;
     }
-    .btn-green {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-      color: #fff; box-shadow: 0 4px 16px rgba(16,185,129,0.32);
-    }
-    .btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(16,185,129,0.38); filter: brightness(1.06); }
-    .btn-sky {
-      background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
-      color: #fff; box-shadow: 0 4px 16px rgba(14,165,233,0.30);
-    }
-    .btn-sky:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(14,165,233,0.38); filter: brightness(1.06); }
+    .btn-green  { background: linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.30); }
+    .btn-green:hover  { transform:translateY(-2px); box-shadow:0 8px 24px rgba(16,185,129,0.36); filter:brightness(1.06); }
+    .btn-purple { background: linear-gradient(135deg,#6d28d9,#8b5cf6); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,0.30); }
+    .btn-purple:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(139,92,246,0.36); filter:brightness(1.06); }
+    .btn-sky    { background: linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
+    .btn-sky:hover    { transform:translateY(-2px); box-shadow:0 8px 24px rgba(14,165,233,0.36); filter:brightness(1.06); }
+    .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
+    .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
 
     /* ── Coming soon ── */
-    .coming-soon-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 12px;
-    }
-    .coming-card {
-      background: #fff; border-radius: 16px; padding: 20px 18px;
-      border: 1px solid #e8ecf2; opacity: 0.68;
-      cursor: default; box-shadow: 0 1px 6px rgba(15,23,42,0.04);
-      position: relative; overflow: hidden;
-    }
-    .coming-card::after {
-      content: "";
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(241,245,249,0.5) 10px, rgba(241,245,249,0.5) 11px);
-      pointer-events: none;
-    }
-    .coming-card-icon { font-size: 24px; margin-bottom: 8px; }
-    .coming-card-num { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-    .coming-card-name { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 8px; line-height: 1.3; }
-    .coming-soon-badge {
-      display: inline-block; padding: 3px 10px; border-radius: 99px;
-      background: #f1f5f9; border: 1px solid #e2e8f0;
-      font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 0.8px; text-transform: uppercase;
-    }
+    .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 11px; }
+    .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
+    .coming-card::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(241,245,249,0.5) 10px,rgba(241,245,249,0.5) 11px); pointer-events:none; }
+    .coming-card-icon { font-size:22px; margin-bottom:7px; }
+    .coming-card-num { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+    .coming-card-name { font-size:13px; font-weight:700; color:#64748b; margin-bottom:7px; line-height:1.3; }
+    .coming-soon-badge { display:inline-block; padding:3px 9px; border-radius:99px; background:#f1f5f9; border:1px solid #e2e8f0; font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.8px; text-transform:uppercase; }
 
-    /* ── Footer ── */
-    .site-footer {
-      text-align: center; padding: 28px 24px;
-      font-size: 13px; color: #94a3b8;
-      border-top: 1px solid #e8ecf2; background: #fff;
-    }
+    .site-footer { text-align:center; padding:28px 24px; font-size:13px; color:#94a3b8; border-top:1px solid #e8ecf2; background:#fff; }
 
-    /* ── Animations ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     .fade-up   { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
-    .fade-up-2 { animation: fadeUp 0.38s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-    .fade-up-3 { animation: fadeUp 0.38s 0.20s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-2 { animation: fadeUp 0.38s 0.08s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-3 { animation: fadeUp 0.38s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
+    .fade-up-4 { animation: fadeUp 0.38s 0.24s cubic-bezier(0.22,1,0.36,1) both; }
 
     @media (max-width: 600px) {
-      .card-body { padding: 22px 18px 26px; }
+      .card-body { padding: 20px 16px 24px; }
       .flow-steps { flex-direction: column; }
       .flow-arrow { display: none; }
     }
@@ -241,176 +165,291 @@
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
-  <header class="site-header">
-    <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
-    <h1 class="header-greeting">Hi, Alyssa! 👋</h1>
-    <p class="header-sub">Your personalized NCLEX practice hub — complete your assigned modules, then tackle your targeted weak areas.</p>
-    <div class="header-byline">Study guide → Practice quiz → Bootcamp/UWorld → Tutoring session</div>
-  </header>
+<header class="site-header">
+  <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
+  <h1 class="header-greeting">Hi, Alyssa! 👋</h1>
+  <p class="header-sub">Your personalized NCLEX practice hub — complete your assigned modules, then tackle your targeted weak areas.</p>
+  <div class="header-byline">Study guide → Practice quiz → Bootcamp/UWorld → Tutoring session</div>
+</header>
 
-  <!-- ── MAIN ── -->
-  <main class="main">
+<main class="main">
 
-    <!-- This Week's Assignment -->
-    <div class="section-label fade-up">📌 This Week's Assignment</div>
+  <!-- ── PROGRESS HISTORY (rendered by JS) ── -->
+  <div id="progress-section"></div>
 
-    <div class="card fade-up">
-      <div class="card-accent-green"></div>
-      <div class="card-body">
+  <!-- ── THIS WEEK'S ASSIGNMENT: MODULE 2 ── -->
+  <div class="section-label fade-up">📌 This Week's Assignment</div>
 
-        <div class="module-header">
-          <div class="module-title-group">
-            <div class="module-emoji-wrap emoji-green">🍼</div>
+  <div class="card fade-up">
+    <div class="card-accent-purple"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-purple">🤰</div>
+          <div>
+            <div class="module-eyebrow eyebrow-purple">Module 2</div>
+            <div class="module-name">Maternal &amp; OB</div>
+          </div>
+        </div>
+        <span class="badge badge-yellow">📌 Assigned This Week</span>
+      </div>
+
+      <p class="module-desc">RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy, and clinical priority actions.</p>
+
+      <div class="flow-label">Your Study Flow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="flow-step-icon">📖</span>
+          <span class="flow-step-text">Read the Module 2 Study Guide</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step active-purple">
+          <span class="flow-step-icon">💻</span>
+          <span class="flow-step-text">Complete the Practice Quiz</span>
+          <span class="flow-step-sub sub-purple">25 Questions — You are here</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-step-icon">📝</span>
+          <span class="flow-step-text">40–50 OB Questions in Bootcamp/UWorld</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <span class="flow-step-icon">👩‍🏫</span>
+          <span class="flow-step-text">Review with Madison</span>
+        </div>
+      </div>
+
+      <div class="module-meta">
+        <span class="meta-pill">🎯 25 Questions</span>
+        <span class="meta-pill">✏️ Practice Mode</span>
+        <span class="meta-pill">🤰 Maternal &amp; OB</span>
+        <span class="meta-pill">⚡ Includes NGN</span>
+      </div>
+
+      <a href="module2-maternal.html?start=1" class="start-btn btn-purple">
+        Start Module 2 →
+      </a>
+    </div>
+  </div>
+
+  <!-- ── MODULE 1 REVIEW ── -->
+  <div class="section-label fade-up-2" style="margin-top:36px;">✅ Completed — Review Anytime</div>
+
+  <div class="card fade-up-2">
+    <div class="card-accent-green"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-green">🍼</div>
+          <div>
+            <div class="module-eyebrow eyebrow-green">Module 1</div>
+            <div class="module-name">Newborn Care</div>
+          </div>
+        </div>
+        <span class="badge badge-green" id="m1-score-badge">✅ Completed</span>
+      </div>
+
+      <p class="module-desc">APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment. Retake anytime to strengthen weak concepts.</p>
+
+      <div class="module-meta">
+        <span class="meta-pill">🎯 25 Questions</span>
+        <span class="meta-pill">🍼 Newborn Care</span>
+        <span class="meta-pill">⚡ Includes NGN</span>
+      </div>
+
+      <a href="module1-newborn.html?start=1" class="start-btn btn-outline" style="font-size:14px;">
+        Retake Module 1 →
+      </a>
+    </div>
+  </div>
+
+  <!-- ── TARGETED PRACTICE ── -->
+  <div class="section-label fade-up-3" style="margin-top:36px;">🎯 Your Targeted Weak Area Practice</div>
+
+  <div class="card fade-up-3">
+    <div class="card-accent-sky"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-sky">⚡</div>
+          <div>
+            <div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div>
+            <div class="module-name">Your Weak Areas</div>
+          </div>
+        </div>
+        <span class="badge badge-sky">🎯 Personalized</span>
+      </div>
+
+      <p class="module-desc">Questions tailored to your weak areas. The adaptive engine adjusts difficulty in real time based on your performance.</p>
+
+      <div class="flow-label">Your Focus Areas</div>
+      <div class="weak-areas">
+        <span class="weak-pill">💊 Pharmacology</span>
+        <span class="weak-pill">📋 Management of Care</span>
+        <span class="weak-pill">🧸 Pediatrics</span>
+        <span class="weak-pill">🤰 OB/Maternity</span>
+      </div>
+
+      <div class="module-meta">
+        <span class="meta-pill">🔄 Adaptive CAT Engine</span>
+        <span class="meta-pill">✏️ Practice Mode</span>
+        <span class="meta-pill">📊 35 Questions</span>
+      </div>
+
+      <a href="alyssa.html" class="start-btn btn-sky">
+        Start My Targeted Practice →
+      </a>
+    </div>
+  </div>
+
+  <!-- ── COMING SOON ── -->
+  <div class="section-label fade-up-4" style="margin-top:40px;">More Modules Coming Soon</div>
+  <div class="coming-soon-grid fade-up-4">
+    <div class="coming-card">
+      <div class="coming-card-icon">💊</div>
+      <div class="coming-card-num">Module 3</div>
+      <div class="coming-card-name">Pharmacology</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🧸</div>
+      <div class="coming-card-num">Module 4</div>
+      <div class="coming-card-name">Pediatrics</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">❤️</div>
+      <div class="coming-card-num">Module 5</div>
+      <div class="coming-card-name">Cardiac</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🫁</div>
+      <div class="coming-card-num">Module 6</div>
+      <div class="coming-card-name">Respiratory</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🧠</div>
+      <div class="coming-card-num">Module 7</div>
+      <div class="coming-card-name">Mental Health</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">📋</div>
+      <div class="coming-card-num">Module 8</div>
+      <div class="coming-card-name">Prioritization &amp; Delegation</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🫃</div>
+      <div class="coming-card-num">Module 9</div>
+      <div class="coming-card-name">GI &amp; Hepatic</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🫘</div>
+      <div class="coming-card-num">Module 10</div>
+      <div class="coming-card-name">Renal &amp; Urinary</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🧠</div>
+      <div class="coming-card-num">Module 11</div>
+      <div class="coming-card-name">Neurological</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🦋</div>
+      <div class="coming-card-num">Module 12</div>
+      <div class="coming-card-name">Endocrine</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">🩸</div>
+      <div class="coming-card-num">Module 13</div>
+      <div class="coming-card-name">Hematology &amp; Oncology</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+    <div class="coming-card">
+      <div class="coming-card-icon">💧</div>
+      <div class="coming-card-num">Module 14</div>
+      <div class="coming-card-name">Fluid &amp; Electrolytes</div>
+      <span class="coming-soon-badge">Coming Soon</span>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <strong style="color:#64748b;">Study with Madison, RN</strong> · NCLEX Success Center · 2026
+</footer>
+
+<script>
+  // ── Set student identity for quiz tracking ──
+  localStorage.setItem('nclex_current_student', 'Alyssa');
+
+  // ── Read stored results and render progress section ──
+  (function() {
+    const key = 'nclex_results_alyssa';
+    let results = [];
+    try { results = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+
+    // Update Module 1 badge with score if available
+    const m1 = results.find(r => r.moduleKey === 'module1');
+    if (m1) {
+      const badge = document.getElementById('m1-score-badge');
+      if (badge) {
+        const color = m1.score >= 80 ? '#10b981' : m1.score >= 60 ? '#f59e0b' : '#ef4444';
+        badge.innerHTML = `✅ Completed · <strong style="color:${color}">${m1.score}%</strong>`;
+      }
+    }
+
+    if (!results.length) return;
+
+    // Build progress history section
+    const section = document.getElementById('progress-section');
+    const moduleOrder = ['module1','module2','module3','module4'];
+    const sorted = [...results].sort((a,b) => moduleOrder.indexOf(a.moduleKey) - moduleOrder.indexOf(b.moduleKey));
+
+    let html = `
+      <div class="section-label fade-up" style="margin-bottom:14px;">📊 Your Progress</div>
+      <div class="progress-grid fade-up" style="margin-bottom:40px;">
+    `;
+
+    sorted.forEach(r => {
+      const scoreClass = r.score >= 80 ? 'good' : r.score >= 60 ? 'okay' : 'needs';
+      const barColor   = r.score >= 80 ? '#10b981' : r.score >= 60 ? '#f59e0b' : '#ef4444';
+      const passed  = (r.concepts||[]).filter(c=>c.mastered).length;
+      const total   = (r.concepts||[]).length;
+      const weakOnes = (r.concepts||[]).filter(c=>!c.mastered).slice(0,3);
+
+      html += `
+        <div class="progress-card">
+          <div class="progress-card-top">
             <div>
-              <div class="module-eyebrow eyebrow-green">Module 1</div>
-              <div class="module-name">Newborn Care</div>
+              <div class="progress-card-label">${r.moduleEmoji || ''} ${r.moduleName}</div>
             </div>
+            <div class="progress-score ${scoreClass}">${r.score}%</div>
           </div>
-          <span class="assigned-badge">📌 Assigned This Week</span>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width:${r.score}%;background:${barColor};"></div>
+          </div>
+          <div class="progress-meta">${r.correct}/${r.total} correct · ${r.date}</div>
+          ${total > 0 ? `
+          <div class="concept-summary">
+            <span class="concept-chip chip-pass">✅ ${passed}/${total} mastered</span>
+            ${weakOnes.map(c=>`<span class="concept-chip chip-fail">⚠️ ${c.name}</span>`).join('')}
+          </div>` : ''}
         </div>
+      `;
+    });
 
-        <p class="module-desc">
-          Master the essential newborn concepts every NCLEX student should know — APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.
-        </p>
-
-        <div class="flow-label">Your Study Flow</div>
-        <div class="flow-steps">
-          <div class="flow-step">
-            <span class="flow-step-icon">📖</span>
-            <span class="flow-step-text">Read the Module 1 Study Guide</span>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step active">
-            <span class="flow-step-icon">💻</span>
-            <span class="flow-step-text">Complete the Practice Quiz</span>
-            <span class="flow-step-sub">25 Questions — You are here</span>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <span class="flow-step-icon">📝</span>
-            <span class="flow-step-text">40–50 Newborn Questions in Bootcamp/UWorld</span>
-          </div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-step">
-            <span class="flow-step-icon">👩‍🏫</span>
-            <span class="flow-step-text">Review with Madison</span>
-          </div>
-        </div>
-
-        <div class="module-meta">
-          <span class="meta-pill">🎯 25 Questions</span>
-          <span class="meta-pill">✏️ Practice Mode</span>
-          <span class="meta-pill">🍼 Newborn Care</span>
-          <span class="meta-pill">⚡ Includes NGN</span>
-        </div>
-
-        <a href="module1-newborn.html?start=1" class="start-btn btn-green">
-          Start Module 1 →
-        </a>
-
-      </div>
-    </div>
-
-    <!-- Targeted Practice -->
-    <div class="section-label fade-up-2" style="margin-top: 40px;">🎯 Your Targeted Weak Area Practice</div>
-
-    <div class="card fade-up-2">
-      <div class="card-accent-sky"></div>
-      <div class="card-body">
-
-        <div class="module-header">
-          <div class="module-title-group">
-            <div class="module-emoji-wrap emoji-sky">⚡</div>
-            <div>
-              <div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div>
-              <div class="module-name">Your Weak Areas</div>
-            </div>
-          </div>
-          <span class="targeted-badge">🎯 Personalized for You</span>
-        </div>
-
-        <p class="module-desc">
-          Questions tailored specifically to your weak areas. The adaptive engine prioritizes these topics and adjusts difficulty based on your performance in real time.
-        </p>
-
-        <div style="margin-bottom: 8px;">
-          <div class="flow-label">Your Focus Areas</div>
-          <div class="weak-areas">
-            <span class="weak-pill">💊 Pharmacology</span>
-            <span class="weak-pill">📋 Management of Care</span>
-            <span class="weak-pill">🧸 Pediatrics</span>
-            <span class="weak-pill">🤰 OB/Maternity</span>
-          </div>
-        </div>
-
-        <div class="module-meta" style="margin-bottom: 24px;">
-          <span class="meta-pill">🔄 Adaptive CAT Engine</span>
-          <span class="meta-pill">✏️ Practice Mode</span>
-          <span class="meta-pill">📊 35 Questions</span>
-        </div>
-
-        <a href="alyssa.html" class="start-btn btn-sky">
-          Start My Targeted Practice →
-        </a>
-
-      </div>
-    </div>
-
-    <!-- Coming Soon -->
-    <div class="section-label fade-up-3" style="margin-top: 40px;">More Modules Coming Soon</div>
-
-    <div class="coming-soon-grid fade-up-3">
-      <div class="coming-card">
-        <div class="coming-card-icon">🤰</div>
-        <div class="coming-card-num">Module 2</div>
-        <div class="coming-card-name">Maternal &amp; OB</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">💊</div>
-        <div class="coming-card-num">Module 3</div>
-        <div class="coming-card-name">Pharmacology</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">🧸</div>
-        <div class="coming-card-num">Module 4</div>
-        <div class="coming-card-name">Pediatrics</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">❤️</div>
-        <div class="coming-card-num">Module 5</div>
-        <div class="coming-card-name">Cardiac</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">🫁</div>
-        <div class="coming-card-num">Module 6</div>
-        <div class="coming-card-name">Respiratory</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">🧠</div>
-        <div class="coming-card-num">Module 7</div>
-        <div class="coming-card-name">Mental Health</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-      <div class="coming-card">
-        <div class="coming-card-icon">📋</div>
-        <div class="coming-card-num">Module 8</div>
-        <div class="coming-card-name">Prioritization &amp; Delegation</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ── FOOTER ── -->
-  <footer class="site-footer">
-    <strong style="color:#64748b;">Study with Madison, RN</strong> · NCLEX Success Center · 2026
-  </footer>
+    html += `</div>`;
+    section.innerHTML = html;
+  })();
+</script>
 
 </body>
 </html>
