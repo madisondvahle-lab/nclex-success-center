@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Module 4 – Cardiovascular Disorders | NCLEX Tutor</title>
+<style>
+:root{--brand:#dc2626;--brand-light:#fef2f2;--brand-mid:#f87171;--brand-dark:#7f1d1d;--text:#1f2937;--muted:#6b7280;--card:#fff;--bg:#f9fafb;--border:#e5e7eb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+.top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:2px solid var(--brand);padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.top-nav a{font-size:13px;color:var(--brand);text-decoration:none;font-weight:600;}
+.top-nav a:hover{text-decoration:underline;}
+.nav-title{font-weight:700;font-size:15px;color:var(--text);margin-right:auto;}
+.hero{background:linear-gradient(135deg,#7f1d1d 0%,#dc2626 60%,#f87171 100%);color:#fff;padding:48px 32px 40px;text-align:center;}
+.hero-emoji{font-size:64px;display:block;margin-bottom:12px;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:8px;}
+.hero-sub{font-size:1.05rem;opacity:.9;margin-bottom:16px;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 16px;font-size:.85rem;font-weight:600;letter-spacing:.5px;}
+.section-nav{background:#fff;border-bottom:1px solid var(--border);padding:0;overflow-x:auto;white-space:nowrap;display:flex;}
+.section-nav a{display:inline-block;padding:12px 16px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;transition:all .2s;}
+.section-nav a:hover,.section-nav a.active{color:var(--brand);border-bottom-color:var(--brand);}
+.section{padding:40px 24px;max-width:900px;margin:0 auto;}
+.section-title{font-size:1.4rem;font-weight:800;color:var(--brand);border-left:5px solid var(--brand);padding-left:14px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--brand-dark);}
+.card p,.card li{font-size:.95rem;color:var(--text);}
+.card ul{padding-left:18px;}
+.card li{margin-bottom:4px;}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.obj-list{list-style:none;padding:0;}
+.obj-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.obj-list li:last-child{border-bottom:none;}
+.obj-num{background:var(--brand);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.bp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;border-top:4px solid var(--brand);}
+.bp-card .icon{font-size:2rem;margin-bottom:8px;}
+.bp-card h3{font-size:.95rem;font-weight:700;color:var(--brand-dark);margin-bottom:6px;}
+.bp-card p{font-size:.85rem;color:var(--muted);}
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.tab-btn{background:#fff;border:2px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.tab-btn:hover{border-color:var(--brand);color:var(--brand);}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+.tab-panel{display:none;animation:fadeIn .3s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:16px;}
+.tbl th{background:var(--brand);color:#fff;padding:10px 12px;text-align:left;font-size:.85rem;}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.tbl tr:nth-child(even) td{background:#fff5f5;}
+.tbl tr:hover td{background:var(--brand-light);}
+.alert{border-radius:10px;padding:16px 18px;margin-bottom:12px;border-left:5px solid;}
+.alert-red{background:#fef2f2;border-color:#ef4444;color:#7f1d1d;}
+.alert-green{background:#f0fdf4;border-color:#22c55e;color:#14532d;}
+.alert-yellow{background:#fffbeb;border-color:#f59e0b;color:#78350f;}
+.alert-blue{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a;}
+.alert-purple{background:#f5f3ff;border-color:#8b5cf6;color:#4c1d95;}
+.alert strong{display:block;margin-bottom:4px;}
+.trick-card{background:linear-gradient(135deg,#fff5f5,#fef2f2);border:1px solid var(--brand-mid);border-radius:12px;padding:18px;margin-bottom:12px;}
+.trick-card .trick-label{font-size:.75rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.trick-card h3{font-size:1rem;font-weight:800;color:var(--brand-dark);margin-bottom:6px;}
+.trick-card p{font-size:.9rem;color:var(--text);}
+.pearl-list,.trap-list{list-style:none;padding:0;}
+.pearl-list li,.trap-list li{padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:.93rem;display:flex;gap:10px;align-items:flex-start;}
+.pearl-list li{background:#f0fdf4;border-left:4px solid #22c55e;}
+.trap-list li{background:#fef2f2;border-left:4px solid #ef4444;}
+.med-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.med-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.med-card-header{background:var(--brand);color:#fff;padding:14px 18px;}
+.med-card-header h3{font-size:1rem;font-weight:800;margin-bottom:2px;}
+.med-card-header .med-class{font-size:.8rem;opacity:.85;}
+.med-card-body{padding:14px 18px;}
+.med-row{display:flex;gap:8px;margin-bottom:8px;font-size:.88rem;}
+.med-row-label{font-weight:700;color:var(--brand-dark);min-width:80px;flex-shrink:0;}
+.med-danger{background:#fef2f2;border-left:3px solid #ef4444;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:.85rem;color:#7f1d1d;}
+.pq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pq-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.pq-counter{font-size:.85rem;color:var(--muted);font-weight:600;}
+.pq-type-badge{background:var(--brand-light);color:var(--brand-dark);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--brand-mid);}
+.pq-q{font-size:1rem;font-weight:700;margin-bottom:16px;line-height:1.5;}
+.pq-options{list-style:none;padding:0;}
+.pq-options li{padding:10px 14px;border:2px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:.93rem;transition:all .2s;}
+.pq-options li:hover{border-color:var(--brand);background:var(--brand-light);}
+.pq-options li.selected{border-color:var(--brand);background:var(--brand-light);}
+.pq-options li.correct{border-color:#22c55e;background:#f0fdf4;}
+.pq-options li.incorrect{border-color:#ef4444;background:#fef2f2;}
+.pq-rationale{background:#f9fafb;border-left:4px solid var(--brand);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;font-size:.9rem;display:none;}
+.pq-rationale.show{display:block;}
+.pq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap;gap:10px;}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-dark);}
+.btn-outline{background:#fff;border:2px solid var(--brand);color:var(--brand);}
+.btn-outline:hover{background:var(--brand-light);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.pq-progress{height:6px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden;}
+.pq-progress-fill{height:100%;background:var(--brand);border-radius:3px;transition:width .3s;}
+.pq-results{text-align:center;padding:24px;}
+.pq-score{font-size:3rem;font-weight:900;color:var(--brand);}
+.pq-score-label{font-size:1rem;color:var(--muted);margin-bottom:16px;}
+.sata-hint{font-size:.8rem;color:var(--brand);font-weight:600;margin-bottom:10px;}
+.case-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.case-header{background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.case-header h3{font-size:1rem;font-weight:800;}
+.case-toggle{font-size:1.2rem;transition:transform .3s;}
+.case-body{padding:20px 24px;display:none;}
+.case-body.open{display:block;}
+.case-scenario{background:#f9fafb;border-left:4px solid var(--brand-mid);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.93rem;}
+.case-question{font-weight:700;margin:14px 0 8px;font-size:.95rem;}
+.case-answer-btn{background:var(--brand-light);border:1px solid var(--brand-mid);color:var(--brand-dark);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;margin-bottom:8px;}
+.case-answer{background:#f9fafb;border-radius:8px;padding:14px;font-size:.9rem;margin-top:8px;display:none;}
+.case-answer.show{display:block;}
+.qq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.qq-q{font-size:1rem;font-weight:700;margin-bottom:14px;}
+.qq-options{list-style:none;padding:0;}
+.qq-options li{padding:10px 14px;border:2px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:.9rem;transition:all .2s;}
+.qq-options li:hover{border-color:var(--brand);background:var(--brand-light);}
+.qq-options li.qq-correct{border-color:#22c55e;background:#f0fdf4;font-weight:700;}
+.qq-options li.qq-incorrect{border-color:#ef4444;background:#fef2f2;}
+.qq-feedback{font-size:.88rem;margin-top:8px;padding:10px 14px;border-radius:8px;}
+.qq-feedback.correct{background:#f0fdf4;color:#166534;}
+.qq-feedback.incorrect{background:#fef2f2;color:#7f1d1d;}
+.qq-score{text-align:center;padding:24px;}
+.qq-score .score-num{font-size:3rem;font-weight:900;color:var(--brand);}
+.checklist{list-style:none;padding:0;}
+.checklist li{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:.93rem;}
+.checklist li:hover{border-color:var(--brand);}
+.checklist li.done{background:#f0fdf4;border-color:#22c55e;color:#166534;text-decoration:line-through;}
+.check-icon{font-size:1.2rem;flex-shrink:0;}
+.checklist-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:6px;}
+.checklist-fill{height:100%;background:var(--brand);border-radius:5px;transition:width .3s;}
+.remediation-box{background:#fff5f5;border:2px solid var(--brand-mid);border-radius:12px;padding:20px;margin-bottom:16px;}
+.remediation-box h3{color:var(--brand-dark);margin-bottom:12px;font-size:.95rem;}
+.write-line{border:none;border-bottom:1.5px solid var(--border);width:100%;padding:6px 0;margin-bottom:8px;background:transparent;font-size:.9rem;color:var(--text);}
+.write-line:focus{outline:none;border-bottom-color:var(--brand);}
+/* ECG rhythm strip style */
+.rhythm-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);}
+.rhythm-row:last-child{border-bottom:none;}
+.rhythm-name{font-weight:700;font-size:.9rem;min-width:160px;color:var(--brand-dark);}
+.rhythm-action{font-size:.88rem;color:var(--text);}
+.rhythm-badge{font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:6px;margin-left:6px;white-space:nowrap;}
+.badge-shock{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;}
+.badge-cpr{background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;}
+.badge-ok{background:#f0fdf4;color:#16a34a;border:1px solid #86efac;}
+@media print{
+  .top-nav,.section-nav,.tab-bar,.pq-container,.qq-container,.case-answer-btn,.case-header{display:none!important;}
+  .case-body{display:block!important;}
+  .section:not(#remediation){display:none!important;}
+  #remediation{display:block!important;}
+  body{background:#fff;}
+}
+@media(max-width:600px){.hero{padding:32px 16px;}.section{padding:28px 16px;}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-title">❤️ Module 4 · Cardiovascular Disorders</span>
+  <a href="alyssa-hub.html">← Hub</a>
+  <a href="module3-guide.html">← M3</a>
+  <a href="module5-guide.html">M5 →</a>
+</nav>
+
+<div class="section-nav">
+  <a href="#overview">Overview</a>
+  <a href="#objectives">Objectives</a>
+  <a href="#bigpicture">Big Picture</a>
+  <a href="#graphic">Graphic</a>
+  <a href="#deepdive">Deep Dive</a>
+  <a href="#memory">Memory</a>
+  <a href="#pearls">Pearls</a>
+  <a href="#traps">Traps</a>
+  <a href="#clinical">Clinical</a>
+  <a href="#priority">Priority</a>
+  <a href="#meds">Meds</a>
+  <a href="#questions">Questions</a>
+  <a href="#cases">Cases</a>
+  <a href="#remediation">Remediation</a>
+  <a href="#quiz">Quiz</a>
+  <a href="#checklist">Checklist</a>
+</div>
+
+<div class="hero">
+  <span class="hero-emoji">❤️</span>
+  <h1>Cardiovascular Disorders</h1>
+  <p class="hero-sub">Think Perfusion. Assess Early. Act Quickly. Keep the Patient Safe.</p>
+  <span class="hero-badge">Phase 1 · Foundations</span>
+</div>
+
+<!-- 1. OVERVIEW -->
+<section id="overview" class="section">
+  <h2 class="section-title">1 · Module Overview</h2>
+  <div class="card">
+    <p><strong>Why this module matters:</strong> Cardiovascular questions are woven throughout NCLEX. You must recognize poor perfusion early, know the difference between left and right heart failure, identify shockable rhythms, and know the safest nursing action before the patient deteriorates. The NCLEX isn't testing whether you can diagnose every heart disease — it's testing whether you can <em>recognize the danger and act.</em></p>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>🎯 What You'll Master</h3>
+      <ul>
+        <li>Cardiac output (CO = HR × SV) and what disrupts it</li>
+        <li>Left vs. right heart failure signs</li>
+        <li>Shockable vs. non-shockable rhythms</li>
+        <li>Acute MI recognition — typical AND atypical</li>
+        <li>Hypertensive urgency vs. emergency</li>
+        <li>Valvular disorders and their heart sounds</li>
+        <li>Cardiogenic shock: recognize and prioritize</li>
+        <li>Priority cardiac medications and their hold parameters</li>
+      </ul>
+    </div>
+    <div class="card"><h3>📊 NCLEX Weight</h3>
+      <p style="margin-bottom:10px">Cardiovascular is consistently one of the highest-yield content areas across NCLEX. Questions appear in physiological adaptation, pharmacology, and reduction of risk.</p>
+      <div class="alert alert-red"><strong>NCLEX Takeaway</strong> The NCLEX cares less about the diagnosis and more about whether you recognize poor perfusion early and know the safest nursing action before the patient deteriorates.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. OBJECTIVES -->
+<section id="objectives" class="section" style="padding-top:0">
+  <h2 class="section-title">2 · Learning Objectives</h2>
+  <ul class="obj-list">
+    <li><span class="obj-num">1</span>Calculate cardiac output and identify four factors that affect it (HR, contractility, preload, afterload).</li>
+    <li><span class="obj-num">2</span>Differentiate left-sided from right-sided heart failure by signs and symptoms.</li>
+    <li><span class="obj-num">3</span>Classify cardiac rhythms as shockable vs. non-shockable and state the priority intervention for each.</li>
+    <li><span class="obj-num">4</span>Recognize both typical and atypical MI presentation and apply the "Time = Muscle" principle.</li>
+    <li><span class="obj-num">5</span>Distinguish hypertensive urgency from hypertensive emergency and identify priority nursing actions.</li>
+    <li><span class="obj-num">6</span>Identify signs of cardiogenic shock and prioritize nursing interventions.</li>
+    <li><span class="obj-num">7</span>Apply cardiac medication hold parameters (digoxin, beta-blockers, nitroglycerin, diuretics, anticoagulants).</li>
+    <li><span class="obj-num">8</span>Describe valvular disorders and their associated heart sounds.</li>
+  </ul>
+</section>
+
+<!-- 3. BIG PICTURE -->
+<section id="bigpicture" class="section" style="padding-top:0">
+  <h2 class="section-title">3 · The Big Picture</h2>
+  <div class="grid-3">
+    <div class="bp-card"><div class="icon">💓</div><h3>Cardiac Output</h3><p>CO = HR × Stroke Volume. Everything else flows from this formula.</p></div>
+    <div class="bp-card"><div class="icon">🫁</div><h3>Left vs. Right HF</h3><p>Left = Lungs (crackles, SOB). Right = Rest of body (edema, JVD).</p></div>
+    <div class="bp-card"><div class="icon">⚡</div><h3>Shockable Rhythms</h3><p>VF and pulseless VT = SHOCK IT. PEA + Asystole = CPR only.</p></div>
+    <div class="bp-card"><div class="icon">🚨</div><h3>Acute MI</h3><p>Time = Muscle. MONA (not always current) → ABCs, 12-lead, troponin, IV access.</p></div>
+    <div class="bp-card"><div class="icon">💉</div><h3>Cardiac Meds</h3><p>Know the class, know the purpose, know when to HOLD.</p></div>
+    <div class="bp-card"><div class="icon">📉</div><h3>Poor Perfusion</h3><p>↓ CO → cold/clammy skin, ↓ UO, altered LOC, narrow pulse pressure.</p></div>
+  </div>
+  <div class="alert alert-red" style="margin-top:20px"><strong>The Central NCLEX Question for This Module</strong> "Can you recognize poor perfusion and fluid overload early, take the safest nursing action, and help prevent the patient from deteriorating?"</div>
+</section>
+
+<!-- 4. GRAPHIC -->
+<section id="graphic" class="section" style="padding-top:0">
+  <h2 class="section-title">4 · High-Yield Graphics</h2>
+  <div style="text-align:center;margin-bottom:24px;">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;font-weight:600;">MAIN INFOGRAPHIC — Study for 2–3 minutes before the deep dive</p>
+    <img src="module4-infographic.png" alt="Module 4 Cardiovascular Disorders Infographic" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+  <div style="text-align:center;margin-bottom:24px;">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;font-weight:600;">EXTENSION — Cardiac Output &amp; Heart Failure Deep Dive</p>
+    <img src="module4-infographic-extension.png" alt="Module 4 Extension: Cardiac Output & Heart Failure" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <!-- CO Formula box -->
+  <div class="card" style="border-top:4px solid var(--brand);text-align:center;padding:24px;">
+    <div style="font-size:1.8rem;font-weight:900;color:var(--brand);letter-spacing:2px;margin-bottom:8px;">CO = HR × SV</div>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:16px;">Cardiac Output = Heart Rate × Stroke Volume &nbsp;|&nbsp; Normal: 4–8 L/min</p>
+    <div class="grid-2" style="text-align:left;">
+      <div>
+        <p style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--brand-dark)">4 Factors That Affect CO:</p>
+        <ul style="font-size:.9rem;padding-left:18px;line-height:2;">
+          <li><strong>Heart Rate</strong> — how fast the heart beats</li>
+          <li><strong>Contractility</strong> — strength of the heart muscle</li>
+          <li><strong>Preload</strong> — how much blood stretches the ventricle before contraction (volume)</li>
+          <li><strong>Afterload</strong> — resistance the heart pumps against (SVR)</li>
+        </ul>
+      </div>
+      <div class="alert alert-yellow" style="margin-bottom:0"><strong>NCLEX Pearl</strong> Low cardiac output = poor perfusion. Signs: ↓ BP, cold/clammy skin, ↓ urine output (&lt;30 mL/hr), altered LOC, weak/thready pulses, narrow pulse pressure. These all = CALL THE PROVIDER.</div>
+    </div>
+  </div>
+</section>
+<!-- 5. DEEP DIVE -->
+<section id="deepdive" class="section" style="padding-top:0">
+  <h2 class="section-title">5 · Deep Dive Lessons</h2>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showLesson('co')">💓 Cardiac Output & HF</button>
+    <button class="tab-btn" onclick="showLesson('rhythms')">⚡ Dysrhythmias</button>
+    <button class="tab-btn" onclick="showLesson('mi')">🚨 Acute MI</button>
+    <button class="tab-btn" onclick="showLesson('htn')">📈 Hypertension</button>
+    <button class="tab-btn" onclick="showLesson('shock')">📉 Cardiogenic Shock</button>
+    <button class="tab-btn" onclick="showLesson('valvular')">🔊 Valvular Disorders</button>
+    <button class="tab-btn" onclick="showLesson('labs')">🧪 Cardiac Labs</button>
+  </div>
+
+  <!-- Cardiac Output & HF -->
+  <div id="tab-co" class="tab-panel active">
+    <div class="alert alert-red"><strong>Left = Lungs · Right = Rest of Body</strong> This is the #1 memory hook for heart failure. Know it cold.</div>
+    <table class="tbl">
+      <thead><tr><th>Feature</th><th>Left-Sided HF</th><th>Right-Sided HF</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mechanism</strong></td><td>LV can't pump → blood backs up into lungs</td><td>RV can't pump → blood backs up into body</td></tr>
+        <tr><td><strong>Key Signs</strong></td><td>Crackles, dyspnea, orthopnea, pink frothy sputum, pulmonary edema</td><td>JVD, peripheral edema, ascites, hepatomegaly, weight gain</td></tr>
+        <tr><td><strong>Position</strong></td><td>HOB elevated (easier to breathe)</td><td>Legs elevated (if no pulmonary edema)</td></tr>
+        <tr><td><strong>Priority Assessment</strong></td><td>Lung sounds, O₂ sat, RR</td><td>Daily weights, I&O, edema assessment</td></tr>
+        <tr><td><strong>Common Cause</strong></td><td>HTN, MI, aortic stenosis</td><td>Left HF (most common), COPD, pulmonary HTN</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="card"><h3>📊 HF by Ejection Fraction (EF)</h3>
+        <ul style="font-size:.88rem;line-height:2;">
+          <li><strong>HFrEF (EF &lt;40%):</strong> Heart can't SQUEEZE — systolic dysfunction. Treat with ACEi, beta-blockers, diuretics.</li>
+          <li><strong>HFpEF (EF ≥50%):</strong> Heart can't RELAX/FILL — diastolic dysfunction. Treat symptoms: diuretics, BP control.</li>
+          <li><strong>HFmrEF (EF 41–49%):</strong> Mid-range — features of both.</li>
+          <li><strong>EF = % of blood pumped out with each beat.</strong> Normal: 55–70%.</li>
+        </ul>
+      </div>
+      <div class="card"><h3>🏥 HF Priority Nursing Actions</h3>
+        <ol style="font-size:.88rem;line-height:2.1;padding-left:18px;">
+          <li>Auscultate lungs (crackles = fluid)</li>
+          <li>Daily weights — same time, same scale, same clothing</li>
+          <li>I&O every shift</li>
+          <li>Monitor VS and O₂ saturation</li>
+          <li>Assess edema (pitting?)</li>
+          <li>Administer meds as ordered (diuretics, ACEi)</li>
+          <li>Teach low-sodium diet (&lt;2 g/day) and fluid restriction</li>
+          <li>Report changes early — weight gain of 2–3 lbs in 1 day or 5 lbs in 1 week</li>
+        </ol>
+      </div>
+    </div>
+    <div class="alert alert-yellow"><strong>SNS &amp; RAAS Activation in HF</strong> When CO falls → SNS activates (↑HR, ↑contractility, vasoconstriction) → RAAS activates (kidneys retain Na+ &amp; water → ↑blood volume → ↑BP). This helps SHORT-TERM but long-term makes HF WORSE — that's why ACE inhibitors and beta-blockers (which block these responses) improve survival in HFrEF.</div>
+  </div>
+
+  <!-- Dysrhythmias -->
+  <div id="tab-rhythms" class="tab-panel">
+    <div class="alert alert-red"><strong>Rule #1: SHOCK IT if it's shockable. CPR if it's not.</strong> You must know which is which.</div>
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card" style="border-top:4px solid #dc2626">
+        <h3>⚡ SHOCKABLE (Defibrillate)</h3>
+        <ul style="font-size:.93rem;line-height:2;">
+          <li><strong>Ventricular Fibrillation (VF)</strong> — chaotic, no pulse</li>
+          <li><strong>Pulseless Ventricular Tachycardia (pVT)</strong> — fast, no pulse</li>
+        </ul>
+        <div class="alert alert-red" style="margin-top:10px;margin-bottom:0"><strong>Action:</strong> Immediate defibrillation (unsynchronized cardioversion) + CPR. VF and pulseless VT = SHOCK FIRST.</div>
+      </div>
+      <div class="card" style="border-top:4px solid #3b82f6">
+        <h3>🔵 NON-SHOCKABLE (CPR only)</h3>
+        <ul style="font-size:.93rem;line-height:2;">
+          <li><strong>Pulseless Electrical Activity (PEA)</strong> — organized rhythm, no pulse</li>
+          <li><strong>Asystole</strong> — flatline, no electrical activity</li>
+        </ul>
+        <div class="alert alert-blue" style="margin-top:10px;margin-bottom:0"><strong>Action:</strong> High-quality CPR + epinephrine q3–5 min + find/treat reversible causes (H's &amp; T's).</div>
+      </div>
+    </div>
+    <h3 style="font-weight:800;color:var(--brand-dark);margin-bottom:12px;">Common Rhythms — Know What's Normal, Know What's Not</h3>
+    <div class="card">
+      <div class="rhythm-row"><span class="rhythm-name">Normal Sinus Rhythm (NSR)</span><span class="rhythm-badge badge-ok">Normal</span><span class="rhythm-action">HR 60–100, regular — no action needed</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">Sinus Bradycardia</span><span class="rhythm-badge badge-ok">Monitor</span><span class="rhythm-action">HR &lt;60 — assess symptoms; atropine if symptomatic; hold beta-blockers/digoxin</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">Atrial Fibrillation (A-Fib)</span><span class="rhythm-badge" style="background:#fef9ee;color:#92400e;border:1px solid #fcd34d">Irregular</span><span class="rhythm-action">Irregularly irregular — rate control (beta-blocker/CCB) + anticoagulation (stroke risk!)</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">Atrial Flutter</span><span class="rhythm-badge" style="background:#fef9ee;color:#92400e;border:1px solid #fcd34d">Sawtooth</span><span class="rhythm-action">Regular sawtooth P waves (300 bpm atrial rate) — cardioversion or rate control</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">SVT (Supraventricular Tach)</span><span class="rhythm-badge" style="background:#fef9ee;color:#92400e;border:1px solid #fcd34d">Fast</span><span class="rhythm-action">HR 150–250, narrow QRS — vagal maneuvers first, then adenosine</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">V-Tach (with pulse)</span><span class="rhythm-badge badge-shock">URGENT</span><span class="rhythm-action">Wide QRS, regular, fast — amiodarone; synchronized cardioversion if unstable</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">V-Fib / Pulseless VT</span><span class="rhythm-badge badge-shock">SHOCK</span><span class="rhythm-action">No pulse — DEFIBRILLATE immediately, CPR, epinephrine, amiodarone</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">PEA / Asystole</span><span class="rhythm-badge badge-cpr">CPR ONLY</span><span class="rhythm-action">No shock — CPR + epinephrine + treat reversible causes (H's &amp; T's)</span></div>
+      <div class="rhythm-row"><span class="rhythm-name">3rd Degree (Complete) Heart Block</span><span class="rhythm-badge badge-shock">URGENT</span><span class="rhythm-action">P waves and QRS have NO relationship — atropine, transcutaneous pacing, transvenous pacemaker</span></div>
+    </div>
+    <div class="alert alert-yellow" style="margin-top:16px"><strong>H's and T's — Reversible Causes of PEA/Asystole</strong><br>
+    <strong>H's:</strong> Hypovolemia · Hypoxia · Hydrogen ion (acidosis) · Hypo/Hyperkalemia · Hypothermia<br>
+    <strong>T's:</strong> Tension pneumothorax · Tamponade (cardiac) · Toxins · Thrombosis (PE or MI)</div>
+  </div>
+
+  <!-- Acute MI -->
+  <div id="tab-mi" class="tab-panel">
+    <div class="alert alert-red"><strong>Time = Muscle.</strong> Every minute of untreated MI = more myocardium dies. Goal: door-to-balloon &lt;90 min for STEMI.</div>
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card" style="border-top:4px solid var(--brand)"><h3>⚠️ Typical MI Symptoms</h3>
+        <ul style="font-size:.9rem;line-height:2;">
+          <li>Crushing, pressure chest pain (may radiate jaw/arm)</li>
+          <li>Diaphoresis (sudden sweating)</li>
+          <li>Nausea/vomiting</li>
+          <li>Shortness of breath</li>
+          <li>Pallor, anxiety ("sense of doom")</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid #8b5cf6"><h3>🌸 Atypical MI Symptoms (Women/Elderly/Diabetics)</h3>
+        <ul style="font-size:.9rem;line-height:2;">
+          <li>Fatigue (only symptom sometimes)</li>
+          <li>Nausea without chest pain</li>
+          <li>Indigestion/heartburn feeling</li>
+          <li>Shortness of breath alone</li>
+          <li>Back or jaw pain without chest pain</li>
+        </ul>
+        <div class="alert alert-purple" style="margin-top:8px;margin-bottom:0"><strong>NCLEX Trap:</strong> Women having MIs are frequently undertreated because their symptoms are atypical. If a middle-aged woman presents with fatigue, nausea, and jaw pain — think MI until proven otherwise.</div>
+      </div>
+    </div>
+    <div class="card"><h3>🚨 Priority Actions for Suspected MI — ALWAYS:</h3>
+      <ol style="font-size:.93rem;line-height:2.2;padding-left:18px;">
+        <li><strong>ABCs</strong> — airway, breathing, circulation first</li>
+        <li><strong>Vital signs</strong> — BP, HR, RR, O₂ sat</li>
+        <li><strong>12-Lead ECG</strong> — within 10 minutes of arrival (ST elevation = STEMI)</li>
+        <li><strong>Troponin</strong> — most specific cardiac biomarker (rises in 3–6 hours)</li>
+        <li><strong>IV access</strong> — for medication administration</li>
+        <li><strong>O₂</strong> — if SpO₂ &lt;90%</li>
+        <li><strong>Aspirin</strong> — 325 mg chewed (unless contraindicated)</li>
+        <li><strong>Nitroglycerin</strong> — SL for chest pain (hold if SBP &lt;90 or if patient took sildenafil/tadalafil)</li>
+        <li>Notify provider/activate cath lab for STEMI</li>
+      </ol>
+    </div>
+    <div class="alert alert-yellow"><strong>MONA — Old School Memory Aid</strong> Morphine · Oxygen · Nitroglycerin · Aspirin. MONA is not always the current treatment order (oxygen only if SpO₂ &lt;90%, morphine use is now debated in STEMI), but still useful for NCLEX recall. The ABCs + ECG + Troponin + IV access framework is the priority.</div>
+  </div>
+
+  <!-- Hypertension -->
+  <div id="tab-htn" class="tab-panel">
+    <div class="alert alert-red"><strong>Assess. Recognize. Report.</strong> Know the stages and when it becomes a life threat.</div>
+    <table class="tbl">
+      <thead><tr><th>Classification</th><th>BP Reading</th><th>Nursing Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Normal</strong></td><td>&lt;120/&lt;80 mmHg</td><td>Maintain healthy lifestyle; recheck per guidelines</td></tr>
+        <tr><td><strong>Elevated</strong></td><td>120–129/&lt;80 mmHg</td><td>Lifestyle modifications; no medication yet</td></tr>
+        <tr><td><strong>Stage 1 HTN</strong></td><td>130–139/80–89 mmHg</td><td>Lifestyle + medication if 10-year CVD risk ≥10%</td></tr>
+        <tr><td><strong>Stage 2 HTN</strong></td><td>≥140/≥90 mmHg</td><td>2-drug combination + lifestyle</td></tr>
+        <tr><td><strong>Hypertensive URGENCY</strong></td><td>≥180/≥110 mmHg — NO organ damage</td><td>Oral antihypertensives, gradual reduction over hours-days; may treat outpatient</td></tr>
+        <tr><td><strong>Hypertensive EMERGENCY</strong></td><td>≥180/≥110 mmHg — WITH target organ damage</td><td>🚨 ICU admission · IV antihypertensives (nicardipine, labetalol) · Reduce MAP by ≤25% in first hour — NOT to normal (can cause ischemia)</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="card"><h3>🎯 Signs of Target Organ Damage (Emergency)</h3>
+        <ul style="font-size:.9rem;line-height:2;">
+          <li>Chest pain / acute MI</li>
+          <li>Stroke symptoms (slurred speech, facial droop)</li>
+          <li>Hypertensive encephalopathy (severe HA, confusion)</li>
+          <li>Acute kidney injury (↑ Cr, ↓ UO)</li>
+          <li>Aortic dissection (tearing chest/back pain)</li>
+          <li>Pulmonary edema</li>
+          <li>Retinal hemorrhage / papilledema</li>
+        </ul>
+      </div>
+      <div class="card"><h3>💊 First-Line HTN Medications</h3>
+        <ul style="font-size:.9rem;line-height:2;">
+          <li><strong>Thiazide diuretics</strong> (HCTZ) — most patients</li>
+          <li><strong>ACE inhibitors / ARBs</strong> — DM, CKD, HF</li>
+          <li><strong>CCBs (amlodipine)</strong> — elderly, isolated systolic HTN</li>
+          <li><strong>Beta-blockers</strong> — post-MI, HFrEF, A-fib (not first-line for HTN alone)</li>
+        </ul>
+        <div class="alert alert-yellow" style="margin-top:8px;margin-bottom:0"><strong>Never reduce BP too fast in emergency</strong> — ischemia risk to brain, heart, kidneys.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cardiogenic Shock -->
+  <div id="tab-shock" class="tab-panel">
+    <div class="alert alert-red"><strong>Cardiogenic Shock = Heart can't pump enough blood to meet the body's needs.</strong> Most common cause: massive MI. Think pump failure.</div>
+    <div class="card" style="margin-bottom:16px"><h3>🔻 Signs of Cardiogenic Shock</h3>
+      <div class="grid-2">
+        <ul style="font-size:.9rem;line-height:2;padding-left:18px;">
+          <li>Hypotension (SBP &lt;90 mmHg)</li>
+          <li>Cold, clammy, mottled skin</li>
+          <li>Weak, thready pulses</li>
+          <li>Altered LOC / confusion</li>
+        </ul>
+        <ul style="font-size:.9rem;line-height:2;padding-left:18px;">
+          <li>Low urine output (&lt;30 mL/hr)</li>
+          <li>Narrow pulse pressure</li>
+          <li>Pulmonary crackles (fluid backing up)</li>
+          <li>Tachycardia (compensatory)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card"><h3>🏥 Priority Interventions — Cardiogenic Shock</h3>
+      <ol style="font-size:.93rem;line-height:2.2;padding-left:18px;">
+        <li>Maintain oxygenation — O₂, possible intubation</li>
+        <li>IV access × 2 — large bore</li>
+        <li>Vasopressors as prescribed (dopamine, norepinephrine) to maintain perfusion pressure</li>
+        <li>Monitor hemodynamics closely (arterial line, CVP, pulmonary artery catheter)</li>
+        <li>Prepare for possible IABP (intra-aortic balloon pump) or PCI</li>
+        <li>Strict I&O — UO ≥30 mL/hr is the goal</li>
+        <li>Position: HOB low (unless pulmonary edema); legs elevated cautiously</li>
+        <li>Address underlying cause (MI → reperfusion therapy)</li>
+      </ol>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="alert alert-yellow"><strong>Perfusion Assessment (NCLEX favorite)</strong><br>
+        • Skin color &amp; temperature<br>
+        • Capillary refill &lt;3 sec = normal<br>
+        • Peripheral pulses<br>
+        • Level of consciousness<br>
+        • Urine output &gt;30 mL/hr<br>
+        • BP and MAP<br>
+        • Heart rate &amp; rhythm<br><br>
+        <strong>Poor perfusion = priority finding. Act immediately.</strong>
+      </div>
+      <div class="alert alert-blue"><strong>Normal vs. Abnormal — Know the Difference</strong><br>
+        ✅ Regular rhythm · Warm dry skin · Strong pulses · Normal BP · Clear lungs · No chest pain<br><br>
+        🚫 Chest pain · Irregular rhythm · Cool/pale skin · Weak pulses · Hypotension · Crackles · ↓ LOC · ↓ UO
+      </div>
+    </div>
+  </div>
+
+  <!-- Valvular Disorders -->
+  <div id="tab-valvular" class="tab-panel">
+    <div class="alert alert-blue"><strong>Same Valve, Different Sound, Different Problem.</strong> Know the disorder → know the murmur → know the NCLEX pearl.</div>
+    <table class="tbl">
+      <thead><tr><th>Disorder</th><th>Key Findings</th><th>Murmur Type</th><th>NCLEX Pearl</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Aortic Stenosis</strong></td><td>Systolic murmur radiating to carotids; syncope, angina, SOB triad</td><td>Systolic (crescendo-decrescendo)</td><td>Syncope + angina + SOB = severe AS — surgical priority. Classic triad = death sentence without valve replacement.</td></tr>
+        <tr><td><strong>Mitral Stenosis</strong></td><td>Opening snap + diastolic murmur; A-fib common; dyspnea</td><td>Diastolic (opening snap)</td><td>A-fib is common → anticoagulation needed. Rheumatic fever most common cause.</td></tr>
+        <tr><td><strong>Mitral Regurgitation</strong></td><td>Systolic murmur radiating to axilla; left-sided HF signs</td><td>Systolic (holosystolic)</td><td>Leads to left heart failure. Harsh holosystolic murmur at apex → axilla.</td></tr>
+        <tr><td><strong>Aortic Regurgitation</strong></td><td>Diastolic murmur; wide pulse pressure; bounding pulses</td><td>Diastolic (early)</td><td>Wide pulse pressure is hallmark. Can lead to left HF.</td></tr>
+      </tbody>
+    </table>
+    <h3 style="font-weight:800;color:var(--brand-dark);margin:20px 0 12px;">🔊 Heart Sounds</h3>
+    <div class="grid-2">
+      <div class="card">
+        <ul style="font-size:.9rem;line-height:2.2;">
+          <li><strong>S1 ("Lub")</strong> — closure of mitral &amp; tricuspid valves; start of systole — NORMAL</li>
+          <li><strong>S2 ("Dub")</strong> — closure of aortic &amp; pulmonic valves; end of systole — NORMAL</li>
+          <li><strong>S3 ("Ken-tucky")</strong> — early diastole; low-pitched; ABNORMAL in adults = ventricular overload / HF. Normal in children &amp; athletes.</li>
+          <li><strong>S4 ("Ten-nes-see")</strong> — late diastole; low-pitched; ALWAYS pathologic = stiff ventricle, HTN, MI</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📍 Auscultation Points (APTM)</h3>
+        <ul style="font-size:.9rem;line-height:2.2;">
+          <li><strong>A</strong>ortic — 2nd ICS, right sternal border</li>
+          <li><strong>P</strong>ulmonic — 2nd ICS, left sternal border</li>
+          <li><strong>T</strong>ricuspid — 4th ICS, left sternal border</li>
+          <li><strong>M</strong>itral (Apex) — 5th ICS, midclavicular line</li>
+        </ul>
+        <div class="alert alert-yellow" style="margin-top:8px;margin-bottom:0">S1, S2 = Normal. S3, S4 = May Not Be.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cardiac Labs -->
+  <div id="tab-labs" class="tab-panel">
+    <div class="alert alert-blue"><strong>Know what each lab tells you and what to do with the finding.</strong></div>
+    <table class="tbl">
+      <thead><tr><th>Lab</th><th>What It Measures</th><th>Clinical Meaning</th><th>NCLEX Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Troponin (I or T)</strong></td><td>Myocardial injury marker</td><td>Rises 3–6 hrs after MI, peaks 24 hrs, normalizes 7–10 days. Most specific for MI.</td><td>Serial troponins q6h × 3. Does NOT rise immediately — NCLEX trap: initial troponin can be normal in early MI.</td></tr>
+        <tr><td><strong>BNP / NT-proBNP</strong></td><td>Ventricular stretch / strain</td><td>↑ in heart failure. Used to diagnose HF and monitor treatment response.</td><td>BNP &gt;100 pg/mL = likely HF. Trend values to assess therapy effectiveness.</td></tr>
+        <tr><td><strong>CK-MB</strong></td><td>Cardiac isoenzyme</td><td>Rises 4–6 hrs after MI; less specific than troponin but useful for re-infarction detection.</td><td>Older marker; troponin now preferred. Know for NCLEX recognition.</td></tr>
+        <tr><td><strong>Potassium (K+)</strong></td><td>Electrolyte balance</td><td>Abnormal K+ → dysrhythmias. Hypokalemia ↑ digoxin toxicity. Hyperkalemia → peaked T waves, V-fib risk.</td><td>Monitor K+ on all cardiac patients. Correct before giving digoxin.</td></tr>
+        <tr><td><strong>Magnesium (Mg²+)</strong></td><td>Cardiac rhythm stability</td><td>Low Mg = dysrhythmias; check alongside K+ (hypokalemia often accompanies hypomagnesemia)</td><td>Replace both K+ and Mg+ when low — you can't fix hypokalemia if Mg is low.</td></tr>
+        <tr><td><strong>INR</strong></td><td>Warfarin therapy monitoring</td><td>Therapeutic 2–3 (A-fib); 2.5–3.5 (mechanical valves)</td><td>Hold warfarin if INR supratherapeutic; notify provider.</td></tr>
+        <tr><td><strong>aPTT</strong></td><td>Heparin therapy monitoring</td><td>Therapeutic 60–100 sec (1.5–2.5× normal); normal aPTT = 25–35 sec</td><td>Check aPTT 6 hours after any heparin dose change.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 6. MEMORY TRICKS -->
+<section id="memory" class="section" style="padding-top:0">
+  <h2 class="section-title">6 · Memory Tricks</h2>
+  <div class="grid-2">
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>Left = Lungs · Right = Rest</h3><p>Left HF → fluid backs into the LUNGS (crackles, SOB, pink frothy sputum). Right HF → fluid backs into the REST of the body (JVD, peripheral edema, ascites, hepatomegaly).</p></div>
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>SHOCK IT vs. CPR IT</h3><p><strong>VF + pVT = SHOCK IT</strong> (shockable). <strong>PEA + Asystole = CPR IT</strong> (not shockable). There are only 2 shockable rhythms. Everything else = CPR + epinephrine.</p></div>
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>Time = Muscle (for MI)</h3><p>Every minute without reperfusion = more cardiomyocytes die. Door-to-balloon goal: &lt;90 min for STEMI. Your job: 12-lead ECG within 10 minutes, activate the cath lab.</p></div>
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>S1S2 = Normal · S3S4 = May Not Be</h3><p><strong>S3</strong> = fluid overload/HF (abnormal in adults). <strong>S4</strong> = stiff ventricle from HTN or MI (always pathologic). Hear S3 → think HF.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>CO = HR × SV — The Foundation</h3><p>If HR ↓ or SV ↓ → CO ↓ → perfusion ↓. If CO is low, <em>everything</em> suffers: brain (LOC ↓), kidneys (UO ↓), skin (cold/clammy). These are your assessment targets.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Aortic Stenosis Triad = "SAS"</h3><p><strong>S</strong>yncope · <strong>A</strong>ngina · <strong>S</strong>hortness of breath. This classic triad in a patient with a systolic murmur radiating to the carotids = severe aortic stenosis → valve replacement needed.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Nitro Rules — 3 Before Call</h3><p>For stable angina: SL nitro q5 min × 3 doses. If pain NOT relieved after 3 doses → call 911/provider immediately. HOLD nitro if SBP &lt;90 OR patient took sildenafil/tadalafil within 24–48 hrs (severe hypotension).</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Daily Weights = Fluid Balance</h3><p>Weight gain of <strong>2–3 lbs in 1 day</strong> or <strong>5 lbs in 1 week</strong> = fluid retention → call provider. Same time, same scale, same amount of clothing. This is the earliest sign of worsening HF.</p></div>
+  </div>
+</section>
+
+<!-- 7. PEARLS -->
+<section id="pearls" class="section" style="padding-top:0">
+  <h2 class="section-title">7 · NCLEX Pearls</h2>
+  <ul class="pearl-list">
+    <li>✅ <span>Troponin does NOT rise immediately — initial troponin can be normal even in an MI. Always get serial troponins (q6h × 3).</span></li>
+    <li>✅ <span>Left HF = Lungs (crackles, SOB). Right HF = Rest of body (JVD, edema, ascites). When both sides fail = biventricular failure = signs of both.</span></li>
+    <li>✅ <span>VF and pulseless VT = the only 2 shockable rhythms. Defibrillate immediately.</span></li>
+    <li>✅ <span>Hold nitroglycerin if SBP &lt;90 OR patient took sildenafil (Viagra) or tadalafil (Cialis) — combination causes severe, potentially fatal hypotension.</span></li>
+    <li>✅ <span>Digoxin toxicity is worsened by hypokalemia — always check K+ before giving digoxin. Hold if apical pulse &lt;60.</span></li>
+    <li>✅ <span>A-fib = clot risk in the atria → stroke. All A-fib patients need anticoagulation assessment (CHADS-VASc score).</span></li>
+    <li>✅ <span>Daily weights are the EARLIEST sign of fluid retention in HF — 2–3 lbs/day or 5 lbs/week = call provider.</span></li>
+    <li>✅ <span>Hypertensive emergency (with organ damage): reduce MAP by ≤25% in the first hour — NOT to normal. Too-rapid reduction = ischemia.</span></li>
+    <li>✅ <span>Aortic stenosis triad: syncope + angina + SOB = severe stenosis requiring intervention. Murmur radiates to carotids.</span></li>
+    <li>✅ <span>Weight gain in HF occurs BEFORE shortness of breath — this is why daily weights matter so much.</span></li>
+    <li>✅ <span>Edema ≠ CHF every time (can be from venous insufficiency, low albumin, lymphedema). Always assess for the full picture.</span></li>
+    <li>✅ <span>PVCs after an MI can be normal — don't panic. But frequent multifocal PVCs or R-on-T phenomenon = concern.</span></li>
+  </ul>
+</section>
+
+<!-- 8. TRAPS -->
+<section id="traps" class="section" style="padding-top:0">
+  <h2 class="section-title">8 · NCLEX Traps</h2>
+  <ul class="trap-list">
+    <li>🚫 <span><strong>Trap:</strong> Giving nitroglycerin to a patient who took sildenafil. NEVER — causes severe hypotension. Always ask about ED medications.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Assuming the first troponin being normal rules out MI. Troponin takes 3–6 hours to rise. Serial testing is required.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Treating edema as always meaning CHF. Edema has many causes. Assess lung sounds, weight trend, and clinical context.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Reducing BP to normal in a hypertensive emergency. Reduce MAP ≤25% in the first hour — not all the way to normal (causes brain/heart/kidney ischemia).</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Thinking S3 is always pathologic. S3 is normal in children and athletes. Pathologic in adults ≥40 = suspect HF.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving K+ supplements to a patient on spironolactone AND an ACE inhibitor. Both raise K+ → dangerous hyperkalemia.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Not realizing women have atypical MI symptoms. Fatigue + nausea + jaw pain in a middle-aged woman = cardiac until proven otherwise.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Choosing to defibrillate PEA or asystole. These are NOT shockable. CPR + epinephrine + find reversible cause.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving digoxin when K+ is low without correcting it first. Hypokalemia potentiates digoxin toxicity → arrhythmias.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Abruptly stopping a beta-blocker. Always taper — sudden cessation causes rebound tachycardia and may precipitate MI.</span></li>
+  </ul>
+</section>
+
+<!-- 9. CLINICAL CONNECTIONS -->
+<section id="clinical" class="section" style="padding-top:0">
+  <h2 class="section-title">9 · Clinical Connections</h2>
+  <div class="grid-2">
+    <div class="card"><h3>🫀 Post-MI Patient</h3><p>After an MI: serial troponins, continuous cardiac monitoring, watch for extension of infarct (new ST changes), arrhythmias (most common cause of death post-MI = V-fib), cardiogenic shock signs (↓BP, ↓UO, altered LOC). Beta-blockers and ACE inhibitors reduce mortality post-MI.</p></div>
+    <div class="card"><h3>💧 HF Patient on Diuretics</h3><p>Furosemide → ↓ K+ → potentiates digoxin toxicity. Always check K+ and replace. Daily weights are mandatory. Fluid restriction + low-sodium diet. Watch for orthostatic hypotension (fall risk after diuretics).</p></div>
+    <div class="card"><h3>🔌 Patient with Pacemaker</h3><p>Avoid MRI (unless MRI-conditional device). No strong magnets near device. Assess pacemaker function: is it capturing (each pacer spike followed by a complex)? Pacemaker syndrome: dizziness, fatigue, palpitations = device may need adjustment.</p></div>
+    <div class="card"><h3>⚡ A-Fib Patient</h3><p>Irregularly irregular rhythm, no distinct P waves. High stroke risk — anticoagulation is key. Rate control with beta-blockers/CCBs. Rhythm control with amiodarone. Cardioversion possible but must rule out atrial clot first (TEE or 3 weeks of anticoagulation).</p></div>
+    <div class="card"><h3>🩺 Auscultation Finding</h3><p>If you hear an S3 in an adult with dyspnea, crackles, and peripheral edema → HF until proven otherwise. If you hear a systolic murmur radiating to carotids with syncope + angina → aortic stenosis → do NOT exercise this patient, prepare for valve replacement discussion.</p></div>
+    <div class="card"><h3>🧪 Critical Lab Values</h3><ul style="font-size:.88rem;line-height:1.8;">
+      <li>K+ &lt;3.0 → arrhythmia risk, hold digoxin, replace</li>
+      <li>BNP &gt;500 → severe HF exacerbation</li>
+      <li>Troponin any elevation → MI until proven otherwise</li>
+      <li>INR &gt;3.5 → hold warfarin, notify provider</li>
+      <li>aPTT &gt;100 sec → heparin toxicity, reduce rate</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- 10. PRIORITY FRAMEWORK -->
+<section id="priority" class="section" style="padding-top:0">
+  <h2 class="section-title">10 · Priority Framework</h2>
+  <div class="card" style="border-top:4px solid var(--brand)"><h3>❤️ NCLEX Cardiovascular Priority Order</h3>
+    <ol style="padding-left:18px;font-size:.93rem;line-height:2.4;">
+      <li><strong>Airway/Breathing/Circulation (ABCs)</strong> — always first</li>
+      <li><strong>Is there a pulse?</strong> No → CPR immediately. Shockable rhythm → defibrillate.</li>
+      <li><strong>Is there poor perfusion?</strong> (↓BP, ↓UO, ↓LOC, cold/clammy) → notify provider, prepare vasopressors</li>
+      <li><strong>Chest pain?</strong> → 12-lead ECG within 10 min, troponin, O₂, IV, aspirin</li>
+      <li><strong>Assess before any cardiac medication</strong> → check hold parameters (HR, BP, K+, INR/aPTT as appropriate)</li>
+      <li><strong>Monitor response</strong> → VS, UO, lung sounds, LOC, daily weights</li>
+    </ol>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="alert alert-red"><strong>Intervene Immediately</strong><br>
+      • Pulseless patient → CPR + defibrillate (if shockable)<br>
+      • VF or pulseless VT on monitor<br>
+      • SBP &lt;90 with shock signs<br>
+      • New ST elevation on 12-lead<br>
+      • Nitroglycerin contraindication (sildenafil use, SBP &lt;90)<br>
+      • Signs of digoxin toxicity (yellow halos, bradycardia, N/V)
+    </div>
+    <div class="alert alert-yellow"><strong>Hold the Drug and Notify Provider</strong><br>
+      • Digoxin: HR &lt;60 or K+ low<br>
+      • Beta-blocker: HR &lt;60 or SBP &lt;90<br>
+      • Nitroglycerin: SBP &lt;90<br>
+      • Anticoagulant: supratherapeutic INR/aPTT or active bleeding<br>
+      • Diuretic: severe dehydration or severe electrolyte imbalance<br>
+      • ACE inhibitor/ARB: angioedema or severe hypotension
+    </div>
+  </div>
+</section>
+
+<!-- 11. MEDICATION FOCUS -->
+<section id="meds" class="section" style="padding-top:0">
+  <h2 class="section-title">11 · Medication Focus</h2>
+  <div class="med-grid">
+    <div class="med-card">
+      <div class="med-card-header"><h3>Furosemide (Lasix)</h3><div class="med-class">Loop Diuretic</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Blocks Na-K-2Cl in loop of Henle → ↑ urine output → ↓ fluid overload</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>Heart failure, pulmonary edema, HTN, edema</span></div>
+        <div class="med-row"><span class="med-row-label">Before:</span><span>BP, K+, BUN/Cr, daily weight</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>K+ (hypokalemia → arrhythmias, ↑ digoxin toxicity), BP (hypotension), UO</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Daily weights; eat K+-rich foods or take supplement; fall risk (orthostatic hypotension); take in AM (nocturia)</span></div>
+        <div class="med-danger">⚠️ Monitor K+ closely · High-dose IV = ototoxicity · Sulfa allergy cross-reactivity possible</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Metoprolol (Lopressor)</h3><div class="med-class">Beta-1 Selective Beta-Blocker</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Blocks beta-1 receptors → ↓HR, ↓contractility, ↓BP</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>HTN, angina, HFrEF, post-MI, A-fib rate control, SVT</span></div>
+        <div class="med-row"><span class="med-row-label">Hold:</span><span>HR &lt;60 or SBP &lt;90</span></div>
+        <div class="med-row"><span class="med-row-label">Side Effects:</span><span>Bradycardia, hypotension, fatigue, bronchoconstriction (less with beta-1 selective)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Do NOT stop abruptly (rebound tachycardia/MI); monitor HR daily; avoid cold medications with pseudoephedrine</span></div>
+        <div class="med-danger">⚠️ Never stop abruptly · Use with caution in asthma/COPD · Masks hypoglycemia symptoms in diabetics</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Nitroglycerin (NTG)</h3><div class="med-class">Nitrate / Antianginal</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Vasodilates coronary arteries and veins → ↓ preload, ↓ afterload → ↓ O₂ demand</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>Angina (acute), ACS, HF (IV), HTN (IV)</span></div>
+        <div class="med-row"><span class="med-row-label">SL Dosing:</span><span>1 tab under tongue q5 min × 3; if pain unrelieved → call 911</span></div>
+        <div class="med-row"><span class="med-row-label">Hold:</span><span>SBP &lt;90 or patient took sildenafil/tadalafil/vardenafil within 24–48 hrs</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Store in dark glass bottle, away from heat; headache is common (vasodilation); sit/lie down after dose; burning under tongue = good (drug is potent)</span></div>
+        <div class="med-danger">⚠️ NEVER with sildenafil/tadalafil (Viagra/Cialis) → fatal hypotension · Hold if SBP &lt;90</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Lisinopril (Zestril)</h3><div class="med-class">ACE Inhibitor</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Inhibits ACE → ↓ angiotensin II → ↓ BP, ↓ afterload, ↓ aldosterone → ↓ Na/water retention</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>HTN, HFrEF, post-MI, diabetic nephropathy (renoprotective)</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>BP (first-dose hypotension), K+ (hyperkalemia), BUN/Cr, dry cough</span></div>
+        <div class="med-row"><span class="med-row-label">Stop If:</span><span>Angioedema (swelling of lips, tongue, throat = airway emergency)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Change positions slowly; dry cough is common → switch to ARB if intolerable; avoid NSAIDs; teratogenic — report pregnancy</span></div>
+        <div class="med-danger">⚠️ Angioedema = STOP drug immediately · Teratogenic (Category D) · Hyperkalemia risk with K-sparing diuretics/ARBs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. PRACTICE QUESTIONS -->
+<section id="questions" class="section" style="padding-top:0">
+  <h2 class="section-title">12 · Practice Questions</h2>
+  <div class="pq-container">
+    <div class="pq-progress"><div class="pq-progress-fill" id="pqFill" style="width:4%"></div></div>
+    <div id="pqArea"></div>
+  </div>
+</section>
+
+<script>
+function showLesson(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function toggleCase(header){
+  const body=header.nextElementSibling;
+  const icon=header.querySelector('.case-toggle');
+  body.classList.toggle('open');
+  icon.textContent=body.classList.contains('open')?'▲':'▼';
+}
+function toggleAnswer(btn){
+  const ans=btn.nextElementSibling;
+  ans.classList.toggle('show');
+  btn.textContent=ans.classList.contains('show')?'Hide Answer ▲':'Show Answer ▼';
+}
+
+const PQ=[
+  {q:"A patient arrives to the ED with crushing chest pain radiating to the left arm, diaphoresis, and nausea. Which action is the nurse's PRIORITY?",type:"MCQ",opts:["A. Administer aspirin 325 mg as ordered","B. Obtain a 12-lead ECG within 10 minutes","C. Draw troponin levels","D. Establish IV access"],ans:1,rat:"A 12-lead ECG within 10 minutes is the priority to identify STEMI. This determines the urgency of reperfusion therapy (door-to-balloon time goal &lt;90 min). All other actions are important but the ECG guides the entire care pathway."},
+  {q:"The nurse auscultates crackles bilaterally in the lung bases, notes 3+ pitting edema in both ankles, and observes JVD in a patient with heart failure. Which type of heart failure does this presentation represent?",type:"MCQ",opts:["A. Left-sided heart failure only","B. Right-sided heart failure only","C. Biventricular (both left and right) heart failure","D. Normal finding in a cardiac patient"],ans:2,rat:"Crackles = left HF (fluid backing into lungs). JVD + peripheral edema = right HF (fluid backing into body). Both present together = biventricular failure."},
+  {q:"A patient with heart failure is prescribed digoxin 0.125 mg PO daily. Before administering, the nurse checks the apical pulse and finds it is 56 bpm. Potassium is 3.1 mEq/L. What is the nurse's priority action?",type:"MCQ",opts:["A. Give the digoxin — the pulse is close to 60","B. Give the digoxin and monitor closely","C. Hold the digoxin, notify the provider, and document findings","D. Give half the dose and recheck the pulse in 30 minutes"],ans:2,rat:"Hold digoxin for HR &lt;60 AND notify the provider. Additionally, K+ of 3.1 is low (normal 3.5–5.0) — hypokalemia potentiates digoxin toxicity. Both findings require provider notification before any dose is given."},
+  {q:"The nurse is monitoring a patient's cardiac rhythm and observes a completely disorganized, chaotic waveform with no identifiable P waves or QRS complexes. The patient is unresponsive and has no pulse. What is the priority intervention?",type:"MCQ",opts:["A. Administer atropine 1 mg IV push","B. Begin CPR and prepare for immediate defibrillation","C. Perform synchronized cardioversion","D. Administer epinephrine and reassess rhythm"],ans:1,rat:"This describes ventricular fibrillation (VF) — a shockable rhythm. Priority: CPR immediately + defibrillation as soon as available. Synchronized cardioversion is for organized rhythms with a pulse (SVT, A-flutter). Atropine is for bradycardia. Epinephrine comes after the first shock."},
+  {q:"A patient with a history of erectile dysfunction takes sildenafil (Viagra). He arrives at the ED with angina. The provider orders sublingual nitroglycerin. What is the nurse's best action?",type:"MCQ",opts:["A. Administer the nitroglycerin as ordered","B. Administer only half the dose as a safety measure","C. Hold the nitroglycerin and notify the provider immediately","D. Give the nitroglycerin and monitor BP closely"],ans:2,rat:"NEVER give nitroglycerin to a patient who has taken sildenafil, tadalafil, or vardenafil. The combination causes severe, potentially fatal hypotension. Hold the drug and notify the provider for an alternative pain management strategy."},
+  {q:"A patient is admitted with left-sided heart failure. Which assessment finding does the nurse expect?",type:"MCQ",opts:["A. Jugular vein distension (JVD)","B. Bilateral dependent edema","C. Crackles in the lung bases bilaterally","D. Ascites and hepatomegaly"],ans:2,rat:"Left HF → blood backs up into the pulmonary circulation → fluid leaks into alveoli → crackles. JVD, dependent edema, ascites, and hepatomegaly are all signs of RIGHT-sided HF (fluid backing into the body)."},
+  {q:"A patient with atrial fibrillation is being discharged on warfarin. Which statement by the patient indicates a need for further teaching?",type:"MCQ",opts:["A. 'I will keep all my follow-up appointments to check my INR'","B. 'I need to stop eating all green vegetables since they affect warfarin'","C. 'I will use an electric razor to reduce my bleeding risk'","D. 'I should report any unusual bruising or bleeding to my doctor'"],ans:1,rat:"Patients on warfarin should maintain a CONSISTENT intake of vitamin K (green vegetables) — not eliminate them. Abrupt dietary changes cause INR fluctuations. The other statements are correct warfarin teaching."},
+  {q:"A patient presents to the ED with BP 210/118 mmHg and a sudden severe headache, slurred speech, and confusion. How does the nurse classify this finding?",type:"MCQ",opts:["A. Hypertensive urgency — no immediate intervention needed","B. Hypertensive emergency — requires immediate IV antihypertensives","C. Stage 2 hypertension — oral medications are appropriate","D. Normal variation — recheck in 30 minutes"],ans:1,rat:"BP ≥180/≥110 WITH target organ damage (neurologic symptoms = hypertensive encephalopathy/stroke) = hypertensive EMERGENCY. Requires ICU admission and IV antihypertensives. The goal is to reduce MAP by ≤25% in the first hour — not to normalize BP immediately."},
+  {q:"A nurse auscultates a low-pitched extra heart sound heard early in diastole (after S2) in a 68-year-old patient with shortness of breath and crackles. What does this finding suggest?",type:"MCQ",opts:["A. This is a normal finding in an elderly patient","B. This suggests ventricular overload consistent with heart failure (S3)","C. This is S4 indicating a stiff, non-compliant ventricle","D. This is a murmur indicating valvular disease"],ans:1,rat:"S3 (Kentucky sound) heard early in diastole in an adult = ventricular overload/heart failure — it's the sound of blood rapidly filling an already-distended ventricle. S3 is normal in children and athletes but pathologic in adults over 40."},
+  {q:"A patient with cardiogenic shock has BP 78/50, HR 118, cold clammy skin, urine output 12 mL/hr, and altered mental status. Which nursing intervention is the priority?",type:"MCQ",opts:["A. Elevate legs to 90 degrees to improve venous return","B. Maintain oxygenation and administer vasopressors as ordered","C. Administer oral fluids and reassess in 1 hour","D. Place in Trendelenburg position"],ans:1,rat:"Cardiogenic shock priority = maintain oxygenation + vasopressors (to maintain perfusion pressure). The heart is the problem — aggressive fluid resuscitation and Trendelenburg are contraindicated (worsen pulmonary edema). UO &lt;30 mL/hr = inadequate renal perfusion = critical finding."},
+  {q:"The nurse is teaching a patient newly diagnosed with heart failure. Which statement about daily weights BEST reflects accurate teaching?",type:"MCQ",opts:["A. 'Weigh yourself once a week, preferably in the evening'","B. 'Weigh yourself daily at the same time each morning, before breakfast, after urinating, and in the same clothes'","C. 'Weight gain of 5 pounds in one month should be reported to your doctor'","D. 'You only need to weigh yourself if you feel more swollen than usual'"],ans:1,rat:"Daily weights must be: same time (morning), same scale, same clothing, after urinating and before eating — to ensure consistency. Report: 2–3 lbs gained in 1 day OR 5 lbs gained in 1 week. Weight gain = fluid retention (earliest sign of HF exacerbation)."},
+  {q:"A patient with a systolic murmur radiating to the carotids presents with syncope, angina, and shortness of breath. What condition does the nurse recognize?",type:"MCQ",opts:["A. Mitral stenosis","B. Aortic regurgitation","C. Aortic stenosis with classic symptomatic triad","D. Mitral regurgitation"],ans:2,rat:"The classic triad of syncope + angina + shortness of breath with a systolic murmur radiating to the carotids = severe aortic stenosis. This triad indicates significant hemodynamic compromise. Untreated, survival averages 2–5 years. Valve replacement is required."},
+  {q:"A nurse is caring for a patient with atrial fibrillation. Which complication is the nurse most concerned about?",type:"MCQ",opts:["A. Hypoglycemia from cardiac medications","B. Stroke from atrial thrombus formation","C. Pulmonary embolism from deep vein thrombosis","D. Hypokalemia from the irregular rhythm"],ans:1,rat:"A-fib causes blood to pool in the atria (especially the left atrial appendage) → clot formation → clot can travel to the brain → stroke. This is why anticoagulation is critical in A-fib. CHADS-VASc score guides the decision."},
+  {q:"A patient who received furosemide 80 mg IV is reporting muscle cramps and weakness. The nurse checks the potassium level, which is 2.8 mEq/L. Which medication ordered for this patient is now a priority concern?",type:"MCQ",opts:["A. Lisinopril","B. Digoxin","C. Metoprolol","D. Aspirin"],ans:1,rat:"Hypokalemia (K+ &lt;3.5) potentiates digoxin toxicity — low K+ means more digoxin binds to heart receptors, increasing the risk of life-threatening dysrhythmias. Priority: hold digoxin, notify provider, replace K+ before giving digoxin."},
+  {q:"A patient with STEMI has a goal door-to-balloon time of less than 90 minutes. The patient arrived at 10:00 AM. It is now 10:52 AM and the patient is still in the ED waiting for the cath lab. What is the nurse's priority action?",type:"MCQ",opts:["A. Continue monitoring and document arrival time","B. Notify the provider and escalate urgency of cath lab activation","C. Reassure the patient that 90 minutes is just a guideline","D. Administer additional doses of nitroglycerin"],ans:1,rat:"Door-to-balloon goal of &lt;90 min is evidence-based — every minute = more myocardial damage. At 52 minutes elapsed, the window is narrowing. The nurse must escalate immediately — notify the provider, charge nurse, and cath lab team. This is a patient safety issue."},
+  {q:"A patient is being treated for hypertensive emergency with IV nicardipine. The initial BP was 220/130. After 1 hour of treatment, the BP is now 148/88. The provider has not given further orders. What should the nurse do?",type:"MCQ",opts:["A. Continue the current rate — this is an appropriate reduction","B. Increase the nicardipine rate to lower BP to normal more quickly","C. Stop the nicardipine since the BP is near normal","D. Switch to oral medications since the BP is controlled"],ans:0,rat:"Reducing MAP by ~25% in the first hour is the goal for hypertensive emergency — and this reduction is appropriate. Lowering BP too quickly can cause cerebral, cardiac, or renal ischemia. Continue the current rate and notify the provider of the current status."},
+  {q:"A patient is in ventricular tachycardia with a pulse and is alert and oriented with BP 106/68. Which intervention should the nurse anticipate?",type:"MCQ",opts:["A. Immediate unsynchronized defibrillation","B. Synchronized cardioversion","C. CPR and IV epinephrine","D. Vagal maneuvers (Valsalva)"],ans:1,rat:"Stable VT (pulse present, hemodynamically stable) = synchronized cardioversion or antiarrhythmic (amiodarone). Unstable VT with a pulse = synchronized cardioversion. Unsynchronized defibrillation is for pulseless VT/VF. CPR is not indicated when there IS a pulse."},
+  {q:"Which assessment finding in a patient on a continuous heparin infusion requires the nurse to notify the provider immediately?",type:"MCQ",opts:["A. aPTT of 75 seconds","B. Urine output of 45 mL/hr","C. New petechiae, ecchymosis, and a platelet count of 54,000 after 8 days of heparin","D. Heart rate of 88 bpm"],ans:2,rat:"Platelet count dropping significantly (from normal to 54,000) after 8 days of heparin with new bleeding signs = classic HIT (heparin-induced thrombocytopenia). STOP all heparin immediately and notify the provider. HIT paradoxically causes clotting despite low platelets."},
+  {q:"The nurse assesses a patient with right-sided heart failure. Which finding is MOST consistent with this diagnosis?",type:"MCQ",opts:["A. Bilateral crackles in the lung bases","B. Pink frothy sputum","C. Orthopnea requiring 3 pillows","D. Jugular vein distension (JVD) and 3+ pitting edema"],ans:3,rat:"Right HF = blood backs up into the systemic circulation = JVD + peripheral edema + ascites + hepatomegaly + weight gain. Crackles, pink frothy sputum, and orthopnea are all LEFT HF signs (pulmonary congestion)."},
+  {q:"A nurse is reviewing the concept of cardiac output. A patient has a heart rate of 90 bpm and a stroke volume of 60 mL. What is the cardiac output?",type:"MCQ",opts:["A. 3.6 L/min","B. 5.4 L/min","C. 6.0 L/min","D. 9.0 L/min"],ans:1,rat:"CO = HR × SV = 90 × 60 mL = 5,400 mL/min = 5.4 L/min. Normal CO = 4–8 L/min. This patient's CO is within normal range."},
+  {q:"A patient's telemetry shows P waves occurring regularly at approximately 300 bpm with a sawtooth pattern, and a ventricular rate of 75 bpm. What rhythm is this?",type:"MCQ",opts:["A. Atrial fibrillation","B. Ventricular tachycardia","C. Atrial flutter with 4:1 conduction","D. Supraventricular tachycardia"],ans:2,rat:"Atrial flutter: sawtooth P waves at ~300 bpm. With 4:1 conduction (every 4th flutter wave conducts): 300/4 = 75 bpm ventricular rate. A-fib = irregularly irregular with no distinct P waves. VT = wide QRS, no distinct P waves."},
+  {q:"The nurse is caring for a patient after a myocardial infarction. Which new development requires the MOST immediate intervention?",type:"MCQ",opts:["A. Troponin level of 2.1 ng/mL","B. Patient reports mild chest wall soreness from ECG leads","C. Telemetry shows new ventricular fibrillation","D. Patient's pain is now 2/10"],ans:2,rat:"New VF = pulseless, life-threatening arrhythmia = immediate CPR + defibrillation. This is the most common cause of death post-MI. Elevated troponin is expected post-MI. Mild chest wall soreness and improved pain are not emergencies."},
+  {q:"Which nursing actions are appropriate when caring for a patient in heart failure? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Weigh patient daily at the same time","B. Restrict sodium intake to less than 2 g/day","C. Encourage liberal fluid intake to prevent dehydration","D. Auscultate lung sounds each shift","E. Administer diuretics as prescribed","F. Teach patient to report weight gain of 2–3 lbs in one day"],ans:[0,1,3,4,5],rat:"All are correct EXCEPT C — fluid restriction (not liberal intake) is standard HF management. All other actions (daily weights, low-Na diet, lung assessment, diuretics, weight gain reporting) are core HF nursing interventions."},
+  {q:"A patient is admitted with chest pain. The nurse notes the following: HR 102, BP 88/54, RR 24, O₂ sat 89%, skin is cold and clammy, UO 18 mL/hr in the past hour. Which conditions does this clinical picture suggest? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Cardiogenic shock","B. Poor perfusion","C. Acute MI with hemodynamic compromise","D. Right-sided heart failure as the primary cause","E. Need for immediate provider notification","F. Patient is stable and can be monitored every 4 hours"],ans:[0,1,2,4],rat:"This picture = cardiogenic shock (hypotension + poor perfusion signs + possible MI context). Signs: cold/clammy, ↓BP, ↓UO (&lt;30 mL/hr), tachycardia, ↓O₂ sat. Immediate provider notification is required. Right HF alone doesn't explain this acute deterioration. The patient is NOT stable — reassessing q4h would be negligent."},
+  {q:"Which of the following are shockable cardiac rhythms requiring immediate defibrillation? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Ventricular fibrillation (VF)","B. Asystole","C. Pulseless ventricular tachycardia (pVT)","D. Pulseless electrical activity (PEA)","E. Atrial flutter","F. Normal sinus rhythm with hypotension"],ans:[0,2],rat:"ONLY VF (A) and pulseless VT (C) are shockable rhythms — defibrillate immediately. Asystole and PEA are NOT shockable (CPR + epinephrine + treat reversible causes). Atrial flutter is cardioverted (synchronized) if unstable, not defibrillated. NSR with hypotension is not a rhythm problem."}
+];
+
+let pqCurrent=0,pqSelected=null,pqSATASelected=[],pqAnswered=false,pqScore=0;
+function renderPQ(){
+  if(pqCurrent>=PQ.length){showPQResults();return;}
+  const q=PQ[pqCurrent];const isSATA=q.type==="SATA";
+  document.getElementById('pqFill').style.width=((pqCurrent/PQ.length)*100)+'%';
+  pqSelected=null;pqSATASelected=[];pqAnswered=false;
+  let html=`<div class="pq-header"><span class="pq-counter">Question ${pqCurrent+1} of ${PQ.length}</span><span class="pq-type-badge">${q.type}</span></div><div class="pq-q">${q.q}</div>`;
+  if(isSATA)html+=`<div class="sata-hint">Select all that apply — choose ALL correct answers before submitting.</div>`;
+  html+=`<ul class="pq-options">`;
+  q.opts.forEach((o,i)=>{html+=`<li id="pqOpt${i}" onclick="${isSATA?'pqToggleSATA('+i+')':'pqSelect('+i+')'}">${o}</li>`;});
+  html+=`</ul><div class="pq-rationale" id="pqRat"><strong>📝 Rationale:</strong> ${q.rat}</div><div class="pq-nav">`;
+  if(isSATA)html+=`<button class="btn btn-primary" onclick="pqSubmitSATA()">Submit Answer</button>`;
+  else html+=`<button class="btn btn-outline" id="pqSubmitBtn" disabled onclick="pqSubmitMCQ()">Submit</button>`;
+  html+=`<button class="btn btn-primary" id="pqNextBtn" disabled onclick="pqNext()">Next →</button></div>`;
+  document.getElementById('pqArea').innerHTML=html;
+}
+function pqSelect(i){if(pqAnswered)return;document.querySelectorAll('.pq-options li').forEach(l=>l.classList.remove('selected'));document.getElementById('pqOpt'+i).classList.add('selected');pqSelected=i;const sb=document.getElementById('pqSubmitBtn');if(sb)sb.disabled=false;}
+function pqSubmitMCQ(){if(pqSelected===null||pqAnswered)return;pqAnswered=true;const q=PQ[pqCurrent];if(pqSelected===q.ans){pqScore++;document.getElementById('pqOpt'+pqSelected).classList.add('correct');}else{document.getElementById('pqOpt'+pqSelected).classList.add('incorrect');document.getElementById('pqOpt'+q.ans).classList.add('correct');}document.getElementById('pqRat').classList.add('show');document.getElementById('pqNextBtn').disabled=false;const sb=document.getElementById('pqSubmitBtn');if(sb)sb.disabled=true;}
+function pqToggleSATA(i){if(pqAnswered)return;const el=document.getElementById('pqOpt'+i);if(pqSATASelected.includes(i)){pqSATASelected=pqSATASelected.filter(x=>x!==i);el.classList.remove('selected');}else{pqSATASelected.push(i);el.classList.add('selected');}}
+function pqSubmitSATA(){if(pqSATASelected.length===0||pqAnswered)return;pqAnswered=true;const q=PQ[pqCurrent];const correct=JSON.stringify(q.ans.slice().sort())===JSON.stringify(pqSATASelected.slice().sort());if(correct)pqScore++;q.ans.forEach(i=>document.getElementById('pqOpt'+i).classList.add('correct'));pqSATASelected.forEach(i=>{if(!q.ans.includes(i))document.getElementById('pqOpt'+i).classList.add('incorrect');});document.getElementById('pqRat').classList.add('show');const nb=document.getElementById('pqNextBtn');if(nb)nb.disabled=false;}
+function pqNext(){pqCurrent++;renderPQ();}
+function showPQResults(){document.getElementById('pqFill').style.width='100%';const pct=Math.round((pqScore/PQ.length)*100);document.getElementById('pqArea').innerHTML=`<div class="pq-results"><div class="pq-score">${pqScore}/${PQ.length}</div><div class="pq-score-label">${pct}% — ${pct>=80?'Great job! 🎉':pct>=60?'Good effort — review the rationales 📖':'Review the Deep Dive sections and retry 💪'}</div><button class="btn btn-primary" onclick="pqCurrent=0;pqScore=0;renderPQ()">Retake Questions</button></div>`;}
+renderPQ();
+</script>
+
+<!-- 13. CASE STUDIES -->
+<section id="cases" class="section" style="padding-top:0">
+  <h2 class="section-title">13 · NGN Case Studies</h2>
+
+  <div class="case-card">
+    <div class="case-header" onclick="toggleCase(this)">
+      <h3>📋 Case 1: "He Says His Heart Is Racing and He Can't Breathe"</h3>
+      <span class="case-toggle">▼</span>
+    </div>
+    <div class="case-body">
+      <div class="case-scenario">
+        Mr. Carter, 71 years old, is brought to the ED by his wife. He reports sudden onset of palpitations, shortness of breath, and mild chest discomfort for the past 2 hours. PMH: hypertension, type 2 diabetes. Vital signs: HR 148 (irregular), BP 104/68, RR 22, SpO₂ 91% on room air. His telemetry shows an irregularly irregular rhythm with no distinct P waves. He appears anxious and diaphoretic. He denies taking any medications for erectile dysfunction.
+      </div>
+      <div class="case-question">1. What rhythm does the nurse recognize, and what is the immediate nursing priority?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Atrial fibrillation (A-fib) — irregularly irregular with no distinct P waves. Immediate priorities: Apply O₂ (SpO₂ 91% is below goal of ≥94%), obtain 12-lead ECG, establish IV access, continuous cardiac monitoring, notify provider. This is hemodynamically borderline (BP 104/68) — prepare for possible rate control medications or cardioversion.</div>
+
+      <div class="case-question">2. The provider orders diltiazem IV for rate control. What assessment must the nurse perform BEFORE administering?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Before diltiazem (a calcium channel blocker): check BP and HR. Diltiazem decreases HR and BP — with BP already at 104/68 and HR 148, administering it could cause dangerous hypotension and/or excessive bradycardia. The nurse should notify the provider of the current BP and confirm it is safe to proceed. Also check for heart block (contraindication) and assess for HF (diltiazem reduces contractility).</div>
+
+      <div class="case-question">3. The team discusses cardioversion vs. anticoagulation first. Why does the sequence matter?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">In A-fib that has lasted &gt;48 hours (or unknown duration), blood can pool in the left atrial appendage and form a clot. Cardioverting the heart (restoring normal rhythm) can dislodge that clot → stroke. To safely cardiovert: either perform a transesophageal echocardiogram (TEE) first to rule out clot, OR anticoagulate for at least 3 weeks prior and 4 weeks after cardioversion. If the patient is hemodynamically unstable → emergency cardioversion regardless, with anticoagulation after.</div>
+
+      <div class="case-question">4. Before discharge, Mr. Carter is started on warfarin. What is the most important teaching point?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Most important: keep ALL INR follow-up appointments (INR goal 2–3 for A-fib). Additional teaching: use an electric razor; report unusual bleeding or bruising; maintain consistent (not eliminated) green vegetable intake; avoid NSAIDs (use acetaminophen instead); many drug interactions — always tell every provider he's on warfarin; carry a medical alert ID. Emphasize he's on anticoagulation because A-fib significantly increases stroke risk (5× higher).</div>
+    </div>
+  </div>
+
+  <div class="case-card">
+    <div class="case-header" onclick="toggleCase(this)">
+      <h3>📋 Case 2: "She Just Feels Tired — It's Probably Nothing"</h3>
+      <span class="case-toggle">▼</span>
+    </div>
+    <div class="case-body">
+      <div class="case-scenario">
+        Ms. Rivera, 58 years old, presents to the ED with her daughter who says "mom's just been really tired and nauseated for the past few hours, and she has some jaw pain — we think it's her acid reflux acting up." PMH: type 2 diabetes, hypertension, hyperlipidemia. She is post-menopausal. Vitals: HR 94, BP 142/88, RR 18, SpO₂ 96%. She denies crushing chest pain. She appears pale and slightly diaphoretic. The triage nurse documents "GI complaint" and places her in a lower-acuity area.
+      </div>
+      <div class="case-question">1. What does this clinical presentation suggest, and what is the error in the triage assessment?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">This presentation is highly suspicious for an acute MI with ATYPICAL symptoms — common in women, diabetics, and older adults. Atypical MI symptoms include: fatigue, nausea, jaw/back pain, indigestion — WITHOUT classic crushing chest pain. The triage error: dismissing the presentation as GI without a 12-lead ECG. Risk factors (female, diabetic, hypertensive, hyperlipidemic, post-menopausal) combined with diaphoresis and pallor should have triggered immediate cardiac workup.</div>
+
+      <div class="case-question">2. The nurse obtains a 12-lead ECG. It shows ST elevation in leads II, III, and aVF. What does this indicate and what happens next?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">ST elevation in II, III, aVF = inferior wall STEMI (right coronary artery territory). This is a STEMI — time = muscle. Immediate actions: Activate the cardiac catheterization lab (door-to-balloon goal &lt;90 min), obtain IV access ×2, administer aspirin 325 mg chewed (unless contraindicated), nitroglycerin SL (check BP first — hold if SBP &lt;90), continuous cardiac monitoring, draw troponin/CBC/BMP/coagulation labs, notify the cath team, prepare patient for emergent PCI.</div>
+
+      <div class="case-question">3. The initial troponin comes back normal. The provider wants to discharge the patient. What should the nurse do?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">The nurse should advocate for the patient and NOT allow discharge based on a single normal troponin. Troponin takes 3–6 hours to rise after myocardial injury. A normal initial troponin does NOT rule out MI. The standard of care is serial troponins (q6h × 3) along with clinical picture and ECG changes. The ST elevation on ECG is already diagnostic for STEMI — action should have been taken immediately regardless of the troponin result. The nurse should respectfully escalate to the provider and charge nurse.</div>
+
+      <div class="case-question">4. After PCI, Ms. Rivera is on the cardiac unit. What are the priority nursing assessments?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Post-PCI/post-MI nursing priorities:<br>
+      • Continuous cardiac monitoring — watch for reperfusion arrhythmias (PVCs, V-fib — most common cause of death post-MI)<br>
+      • Assess access site (femoral or radial): bleeding, hematoma, pulse check distal to site<br>
+      • Serial troponins to peak and trend<br>
+      • Monitor for cardiogenic shock: ↓BP, ↓UO, altered LOC, cold/clammy skin<br>
+      • Administer ordered medications: dual antiplatelet therapy (aspirin + P2Y12 inhibitor), beta-blocker, ACE inhibitor, statin<br>
+      • Mobility restrictions per protocol (especially if femoral access)<br>
+      • Begin cardiac rehabilitation education early</div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. REMEDIATION -->
+<section id="remediation" class="section" style="padding-top:0">
+  <h2 class="section-title">14 · Remediation Worksheet</h2>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;">Identify gaps and fill them in. <button onclick="window.print()" style="background:var(--brand);color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;margin-left:8px;">🖨️ Print Worksheet</button></p>
+
+  <div class="remediation-box"><h3>1. Cardiac Output Formula</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">Write the CO formula and calculate: HR = 72, SV = 70 mL</p>
+    <input class="write-line" placeholder="CO = _____ × _____ = _____ L/min"/>
+    <p style="font-size:.88rem;margin-bottom:8px">List 4 factors that affect cardiac output:</p>
+    <input class="write-line" placeholder="1."/><input class="write-line" placeholder="2."/><input class="write-line" placeholder="3."/><input class="write-line" placeholder="4."/>
+  </div>
+
+  <div class="remediation-box"><h3>2. Left vs. Right Heart Failure</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">Without looking, list 3 signs of each:</p>
+    <p style="font-size:.88rem"><strong>Left HF (Lungs):</strong></p>
+    <input class="write-line" placeholder="Sign 1:"/><input class="write-line" placeholder="Sign 2:"/><input class="write-line" placeholder="Sign 3:"/>
+    <p style="font-size:.88rem"><strong>Right HF (Rest of Body):</strong></p>
+    <input class="write-line" placeholder="Sign 1:"/><input class="write-line" placeholder="Sign 2:"/><input class="write-line" placeholder="Sign 3:"/>
+  </div>
+
+  <div class="remediation-box"><h3>3. Shockable vs. Non-Shockable Rhythms</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">List the 2 shockable rhythms and 2 non-shockable rhythms and the intervention for each:</p>
+    <p style="font-size:.88rem"><strong>Shockable (Defibrillate):</strong></p>
+    <input class="write-line" placeholder="1."/><input class="write-line" placeholder="2."/>
+    <p style="font-size:.88rem"><strong>Non-Shockable (CPR + Epi):</strong></p>
+    <input class="write-line" placeholder="1."/><input class="write-line" placeholder="2."/>
+  </div>
+
+  <div class="remediation-box"><h3>4. Medication Hold Parameters</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">Write the hold parameter for each drug:</p>
+    <p style="font-size:.88rem"><strong>Digoxin:</strong></p><input class="write-line" placeholder="Hold when..."/>
+    <p style="font-size:.88rem"><strong>Metoprolol:</strong></p><input class="write-line" placeholder="Hold when..."/>
+    <p style="font-size:.88rem"><strong>Nitroglycerin:</strong></p><input class="write-line" placeholder="Hold when..."/>
+    <p style="font-size:.88rem"><strong>Furosemide:</strong></p><input class="write-line" placeholder="Hold when..."/>
+  </div>
+
+  <div class="remediation-box"><h3>5. Atypical MI Symptoms</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">List 4 atypical MI symptoms and name two populations most likely to present atypically:</p>
+    <input class="write-line" placeholder="Symptom 1:"/><input class="write-line" placeholder="Symptom 2:"/><input class="write-line" placeholder="Symptom 3:"/><input class="write-line" placeholder="Symptom 4:"/>
+    <input class="write-line" placeholder="At-risk populations:"/>
+  </div>
+</section>
+
+<!-- 15. QUICK QUIZ -->
+<section id="quiz" class="section" style="padding-top:0">
+  <h2 class="section-title">15 · Quick Quiz</h2>
+  <div class="qq-container"><div id="qqArea"></div></div>
+</section>
+<script>
+const QQ=[
+  {q:"CO = HR × SV. A patient has HR 80 and SV 70 mL. What is the cardiac output?",opts:["4.8 L/min","5.6 L/min","6.4 L/min"],ans:1,exp:"CO = 80 × 70 = 5,600 mL/min = 5.6 L/min. Normal is 4–8 L/min."},
+  {q:"Left heart failure causes fluid to back up into the:",opts:["Body (JVD, edema)","Lungs (crackles, SOB)","Liver (ascites, hepatomegaly)"],ans:1,exp:"Left = Lungs. Blood backs up into the pulmonary circulation → crackles, dyspnea, orthopnea, pink frothy sputum."},
+  {q:"Which rhythms are shockable? (Choose the correct pair)",opts:["Asystole and PEA","VF and pulseless VT","SVT and atrial flutter"],ans:1,exp:"Only VF and pulseless VT are shockable. Asystole and PEA = CPR + epinephrine, no shock."},
+  {q:"A patient took sildenafil (Viagra) 12 hours ago and now has chest pain. The provider orders nitroglycerin. The nurse should:",opts:["Give it — 12 hours is long enough","Hold and notify provider — contraindicated","Give half dose and monitor BP"],ans:1,exp:"Never give nitroglycerin with sildenafil — the window is 24 hours (some guidelines say 48 hrs for tadalafil). Fatal hypotension risk."},
+  {q:"Digoxin must be held if apical HR is:",opts:["<70 bpm",">100 bpm","<60 bpm"],ans:2,exp:"Hold digoxin for apical HR <60 bpm. Notify the provider. Also hold if K+ is low (hypokalemia potentiates toxicity)."},
+  {q:"Daily weight gain of ___ lbs in 1 day should be reported in a heart failure patient:",opts:["5 lbs","2-3 lbs","10 lbs"],ans:1,exp:"Report: 2–3 lbs gained in 1 day OR 5 lbs in 1 week. Weight gain = fluid retention = early HF exacerbation sign."},
+  {q:"An S3 heart sound in a 65-year-old adult with dyspnea suggests:",opts:["Normal variant — no concern","Ventricular overload/heart failure","Atrial stenosis"],ans:1,exp:"S3 in adults >40 = ventricular overload (heart failure). It's the sound of blood rushing into a fluid-overloaded ventricle. Normal in children and athletes."},
+  {q:"Hypertensive emergency is treated by reducing MAP by:",opts:["25% in the first hour","50% in the first hour","To normal as fast as possible"],ans:0,exp:"Reduce MAP by ≤25% in the first hour. Too-rapid reduction = cerebral, cardiac, or renal ischemia."},
+  {q:"The classic triad of aortic stenosis is:",opts:["JVD, edema, ascites","Syncope, angina, shortness of breath","Palpitations, irregular pulse, stroke"],ans:1,exp:"Aortic stenosis: Syncope + Angina + Shortness of breath = severe AS requiring valve replacement. Murmur radiates to carotids."},
+  {q:"Troponin begins to rise after MI at:",opts:["Immediately (within 30 min)","3–6 hours","24–48 hours"],ans:1,exp:"Troponin rises 3–6 hours after MI onset, peaks at 24 hours, and remains elevated for 7–10 days. A normal initial troponin does NOT rule out MI — serial levels are needed."}
+];
+let qqIdx=0,qqScore=0,qqDone=false;
+function renderQQ(){
+  if(qqIdx>=QQ.length){const pct=Math.round((qqScore/QQ.length)*100);document.getElementById('qqArea').innerHTML=`<div class="qq-score"><div class="score-num">${qqScore}/${QQ.length}</div><p>${pct}% — ${pct>=80?'Excellent! 🎉':pct>=60?'Good — review misses 📖':'Review the module and retry 💪'}</p><button class="btn btn-primary" onclick="qqIdx=0;qqScore=0;renderQQ()">Retake Quiz</button></div>`;return;}
+  const q=QQ[qqIdx];
+  let html=`<div class="qq-q">Q${qqIdx+1}/${QQ.length}: ${q.q}</div><ul class="qq-options">`;
+  q.opts.forEach((o,i)=>html+=`<li id="qqOpt${i}" onclick="qqAnswer(${i})">${o}</li>`);
+  html+=`</ul><div id="qqFeedback"></div>`;
+  document.getElementById('qqArea').innerHTML=html;
+}
+function qqAnswer(i){if(qqDone)return;qqDone=true;const q=QQ[qqIdx];const fb=document.getElementById('qqFeedback');document.getElementById('qqOpt'+i).classList.add(i===q.ans?'qq-correct':'qq-incorrect');if(i!==q.ans)document.getElementById('qqOpt'+q.ans).classList.add('qq-correct');if(i===q.ans)qqScore++;fb.className='qq-feedback '+(i===q.ans?'correct':'incorrect');fb.innerHTML=(i===q.ans?'✅ Correct! ':'❌ Incorrect. ')+q.exp+` <button class="btn btn-outline" style="margin-top:10px;font-size:.8rem;padding:6px 14px" onclick="qqIdx++;qqDone=false;renderQQ()">Next →</button>`;}
+renderQQ();
+</script>
+
+<!-- 16. CHECKLIST -->
+<section id="checklist" class="section" style="padding-top:0;padding-bottom:60px">
+  <h2 class="section-title">16 · Module Checklist</h2>
+  <ul class="checklist" id="m4Checklist"></ul>
+  <div style="margin-top:10px"><span id="m4CheckPct" style="font-size:.9rem;color:var(--muted);font-weight:600"></span><div class="checklist-bar"><div class="checklist-fill" id="m4CheckFill"></div></div></div>
+  <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+    <a href="module3-guide.html" class="btn btn-outline">← Module 3</a>
+    <a href="alyssa-hub.html" class="btn btn-primary">Back to Hub 🏠</a>
+    <a href="module5-guide.html" class="btn btn-outline">Module 5 →</a>
+  </div>
+</section>
+<script>
+const M4_ITEMS=[
+  "I can calculate cardiac output (CO = HR × SV) and name the 4 factors that affect it",
+  "I know Left = Lungs and Right = Rest — and can list 3 signs of each",
+  "I can identify the 2 shockable rhythms and state the priority action for each",
+  "I recognize both typical and atypical MI presentations and know Time = Muscle",
+  "I know when to hold digoxin, metoprolol, nitroglycerin, and furosemide",
+  "I understand hypertensive urgency vs. emergency and how to safely manage each",
+  "I can recognize cardiogenic shock and prioritize nursing interventions",
+  "I know the 4 valvular disorders and their associated murmurs",
+  "I completed all 25 practice questions and reviewed incorrect rationales",
+  "I am confident with cardiovascular content and ready for Module 5"
+];
+const M4_KEY='nclex_m4_checklist';
+function renderChecklist(){
+  const saved=JSON.parse(localStorage.getItem(M4_KEY)||'[]');
+  const ul=document.getElementById('m4Checklist');ul.innerHTML='';
+  M4_ITEMS.forEach((item,i)=>{const done=saved.includes(i);const li=document.createElement('li');li.className=done?'done':'';li.innerHTML=`<span class="check-icon">${done?'✅':'⬜'}</span>${item}`;li.onclick=()=>toggleCheck(i);ul.appendChild(li);});
+  const pct=Math.round((saved.length/M4_ITEMS.length)*100);
+  document.getElementById('m4CheckPct').textContent=`${saved.length}/${M4_ITEMS.length} complete (${pct}%)`;
+  document.getElementById('m4CheckFill').style.width=pct+'%';
+}
+function toggleCheck(i){let saved=JSON.parse(localStorage.getItem(M4_KEY)||'[]');if(saved.includes(i))saved=saved.filter(x=>x!==i);else saved.push(i);localStorage.setItem(M4_KEY,JSON.stringify(saved));renderChecklist();}
+renderChecklist();
+</script>
+</body>
+</html>
+
