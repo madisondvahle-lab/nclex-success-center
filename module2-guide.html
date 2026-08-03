@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 2 — Maternal &amp; OB · Study with Madison, RN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #7c3aed; --purple-light: #ede9fe; --purple-mid: #c4b5fd;
+      --navy: #0f172a; --slate: #475569; --muted: #94a3b8;
+      --bg: #f0f4f8; --white: #ffffff;
+      --yellow: #f59e0b; --red: #ef4444; --green: #059669; --blue: #0ea5e9;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--navy); }
+
+    .top-bar { background: var(--navy); color: #fff; padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 52px; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .top-bar a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .top-bar a:hover { color: #fff; }
+    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; }
+    .top-bar-badge { background: var(--purple); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, #3b1071 100%); padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 60% 0%, rgba(139,92,246,0.15) 0%, transparent 60%); pointer-events: none; }
+    .hero-phase { display: inline-block; background: rgba(139,92,246,0.25); border: 1px solid rgba(139,92,246,0.5); color: var(--purple-mid); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 99px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .hero h1 { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .hero p { font-size: 15px; color: #94a3b8; max-width: 520px; margin: 0 auto 20px; line-height: 1.6; }
+    .hero-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .hero-meta span { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 5px; }
+
+    .progress-nav { background: var(--white); border-bottom: 1px solid #e2e8f0; overflow-x: auto; white-space: nowrap; padding: 0 20px; display: flex; gap: 4px; }
+    .progress-nav a { display: inline-block; padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--slate); text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; }
+    .progress-nav a:hover { color: var(--purple); border-bottom-color: var(--purple-mid); }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    .section-card { background: var(--white); border-radius: 18px; padding: 32px; margin-bottom: 20px; border: 1.5px solid #e2e8f0; box-shadow: 0 2px 12px rgba(15,23,42,0.04); }
+    .section-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+    .section-num { width: 36px; height: 36px; border-radius: 10px; background: var(--purple); color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .section-header h2 { font-size: 19px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+    .section-header p { font-size: 13px; color: var(--muted); }
+
+    .prose p { font-size: 14px; color: #334155; line-height: 1.75; margin-bottom: 12px; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--navy); }
+
+    .obj-list { display: flex; flex-direction: column; gap: 8px; }
+    .obj-item { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #334155; line-height: 1.6; }
+    .obj-check { width: 20px; height: 20px; background: var(--purple-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; color: var(--purple); font-weight: 800; margin-top: 1px; }
+
+    .bp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:580px){ .bp-grid { grid-template-columns: 1fr; } }
+    .bp-card { background: var(--bg); border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+    .bp-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+    .bp-card p { font-size: 13px; color: #334155; line-height: 1.6; }
+    .highlight-box { background: #faf5ff; border: 1.5px solid var(--purple-mid); border-radius: 12px; padding: 16px 20px; margin-top: 14px; }
+    .highlight-box p { font-size: 14px; color: #4c1d95; line-height: 1.65; margin: 0; }
+
+    .infographic-wrap { text-align: center; background: #f8fafc; border-radius: 14px; padding: 20px; border: 1px solid #e2e8f0; }
+    .infographic-wrap img { max-width: 100%; border-radius: 10px; }
+    .infographic-wrap p { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    .lesson-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+    .lesson-tab { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; border: 1.5px solid #e2e8f0; background: #f8fafc; color: var(--slate); cursor: pointer; transition: all 0.15s; }
+    .lesson-tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+    .lesson-panel { display: none; }
+    .lesson-panel.active { display: block; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+    .data-table th:first-child { border-radius: 8px 0 0 0; }
+    .data-table th:last-child { border-radius: 0 8px 0 0; }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: top; line-height: 1.5; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:nth-child(even) td { background: #f8fafc; }
+    .normal { color: #059669; font-weight: 600; }
+    .abnormal { color: #dc2626; font-weight: 600; }
+    .caution { color: #d97706; font-weight: 600; }
+
+    .mnemonic-grid { display: flex; flex-direction: column; gap: 8px; }
+    .mnemonic-row { display: flex; gap: 10px; align-items: flex-start; }
+    .mnemonic-letter { width: 32px; height: 32px; background: var(--navy); color: #fff; border-radius: 8px; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mnemonic-text strong { font-size: 14px; color: var(--navy); }
+    .mnemonic-text span { font-size: 13px; color: var(--slate); display: block; }
+
+    .pearl-list, .trap-list { display: flex; flex-direction: column; gap: 10px; }
+    .pearl-item, .trap-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; font-size: 14px; line-height: 1.55; }
+    .pearl-item { background: #faf5ff; border: 1px solid #ddd6fe; color: #4c1d95; }
+    .trap-item { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+    .pearl-icon, .trap-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    .cc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:580px){ .cc-grid { grid-template-columns: 1fr; } }
+    .cc-card { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+    .cc-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--purple); margin-bottom: 8px; }
+    .cc-card ul { padding-left: 16px; }
+    .cc-card li { font-size: 13px; color: #334155; line-height: 1.65; margin-bottom: 4px; }
+
+    .priority-steps { display: flex; flex-direction: column; gap: 6px; }
+    .p-step { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .p-step-num { width: 28px; height: 28px; border-radius: 8px; background: var(--purple); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .p-step-content strong { font-size: 14px; color: var(--navy); display: block; margin-bottom: 2px; }
+    .p-step-content span { font-size: 13px; color: var(--slate); }
+
+    .med-cards { display: flex; flex-direction: column; gap: 12px; }
+    .med-card { border-radius: 12px; border: 1.5px solid #e2e8f0; overflow: hidden; }
+    .med-header { background: var(--navy); color: #fff; padding: 10px 16px; font-size: 14px; font-weight: 700; }
+    .med-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media(max-width:500px){ .med-body { grid-template-columns: 1fr; } }
+    .med-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); display: block; margin-bottom: 3px; }
+    .med-field p { font-size: 13px; color: #334155; line-height: 1.5; }
+    .med-trap { grid-column: 1 / -1; background: #fff1f2; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #9f1239; border: 1px solid #fecdd3; }
+    .med-pearl { grid-column: 1 / -1; background: #faf5ff; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #4c1d95; border: 1px solid #ddd6fe; }
+
+    /* Practice Questions */
+    .pq-progress { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .pq-progress-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .pq-bar-wrap { flex: 1; height: 6px; background: #e2e8f0; border-radius: 99px; margin: 0 12px; }
+    .pq-bar { height: 6px; background: var(--purple); border-radius: 99px; transition: width 0.3s; }
+    .pq-score-badge { font-size: 12px; font-weight: 800; color: var(--purple); }
+    .pq-q-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .pq-type-tag { display: inline-flex; padding: 2px 9px; border-radius: 99px; font-size: 10px; font-weight: 700; margin-bottom: 10px; }
+    .pq-stem { font-size: 15px; color: var(--navy); line-height: 1.65; margin-bottom: 16px; font-weight: 500; }
+    .pq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .pq-option { padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; }
+    .pq-option:hover:not(:disabled) { border-color: var(--purple); background: #faf5ff; }
+    .pq-option.correct { background: #f0fdf4; border-color: #059669; color: #065f46; font-weight: 600; }
+    .pq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
+    .pq-option:disabled { cursor: default; }
+    .pq-sata-hint { font-size: 12px; color: var(--blue); font-weight: 600; margin-bottom: 8px; background: #eff6ff; padding: 6px 10px; border-radius: 8px; border: 1px solid #bfdbfe; }
+    .pq-rationale { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 13px; color: #334155; line-height: 1.65; margin-bottom: 14px; display: none; }
+    .pq-rationale.show { display: block; }
+    .pq-nav { display: flex; gap: 8px; align-items: center; }
+    .btn-pq { padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-pq-primary { background: var(--purple); color: #fff; }
+    .btn-pq-primary:hover { background: #6d28d9; }
+    .btn-pq-secondary { background: #f1f5f9; color: var(--slate); }
+    .pq-results { text-align: center; padding: 32px 20px; }
+    .pq-results-score { font-size: 52px; font-weight: 800; }
+    .pq-results-label { font-size: 16px; color: var(--slate); margin-bottom: 20px; }
+    .pq-restart { padding: 12px 28px; background: var(--purple); color: #fff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    .case-scenario { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+    .case-scenario-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #1d4ed8; margin-bottom: 8px; }
+    .case-scenario p { font-size: 14px; color: #1e3a8a; line-height: 1.65; }
+    .case-questions { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+    .case-q { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .case-q-header { padding: 12px 16px; background: #f8fafc; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .case-q-body { padding: 14px 16px; display: none; font-size: 13px; color: #334155; line-height: 1.65; }
+    .case-q-body.open { display: block; }
+    .case-answer { background: #f0fdf4; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-weight: 600; color: #065f46; font-size: 13px; }
+
+    .remed-section { margin-bottom: 18px; }
+    .remed-title { font-size: 13px; font-weight: 800; color: var(--navy); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 10px; }
+    .remed-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px; color: #334155; }
+    .remed-blank { width: 120px; border-bottom: 1.5px solid var(--navy); height: 18px; }
+    .btn-print { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+
+    .qq-option { padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+    .qq-option:hover:not(:disabled) { border-color: var(--purple); background: #faf5ff; }
+    .qq-option.correct { background: #f0fdf4; border-color: #059669; color: #065f46; font-weight: 600; }
+    .qq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
+    .qq-option:disabled { cursor: default; }
+    .qq-feedback { font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-top: 4px; margin-bottom: 10px; display: none; line-height: 1.55; }
+    .qq-feedback.correct { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+    .qq-feedback.incorrect { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .qq-results { text-align: center; padding: 24px; }
+    .qq-results-score { font-size: 42px; font-weight: 800; }
+    .qq-restart { padding: 10px 24px; background: var(--purple); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+
+    .checklist-items { display: flex; flex-direction: column; gap: 8px; }
+    .checklist-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
+    .checklist-item.checked { background: #faf5ff; border-color: var(--purple-mid); }
+    .checklist-box { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 1px; }
+    .checklist-item.checked .checklist-box { background: var(--purple); border-color: var(--purple); color: #fff; font-size: 12px; }
+    .checklist-label { font-size: 14px; color: #334155; line-height: 1.55; }
+    .checklist-item.checked .checklist-label { color: #4c1d95; text-decoration: line-through; text-decoration-color: var(--purple-mid); }
+    .checklist-bar-wrap { height: 8px; background: #e2e8f0; border-radius: 99px; margin: 12px 0 6px; }
+    .checklist-bar { height: 8px; background: var(--purple); border-radius: 99px; transition: width 0.3s; }
+    .checklist-progress { font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
+
+    .fhr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media(max-width:580px){ .fhr-grid { grid-template-columns: 1fr; } }
+    .fhr-card { border-radius: 12px; overflow: hidden; border: 1.5px solid #e2e8f0; }
+    .fhr-header { padding: 10px 14px; font-size: 13px; font-weight: 800; color: #fff; }
+    .fhr-body { padding: 12px 14px; background: #f8fafc; font-size: 12px; color: #334155; line-height: 1.65; }
+    .fhr-body strong { color: var(--navy); }
+
+    @media print {
+      .top-bar, .progress-nav, .hero, .section-card:not(#section-remediation) { display: none !important; }
+      #section-remediation { box-shadow: none; border: none; }
+    }
+    @media(max-width:480px) { .section-card { padding: 20px 16px; } .hero h1 { font-size: 24px; } }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="alyssa-hub.html">← Hub</a>
+  <div class="top-bar-title">Module 2 — Maternal &amp; OB</div>
+  <span class="top-bar-badge">Phase 1</span>
+</div>
+
+<div class="progress-nav">
+  <a href="#section-overview">Overview</a>
+  <a href="#section-objectives">Objectives</a>
+  <a href="#section-bigpicture">Big Picture</a>
+  <a href="#section-graphic">Graphic</a>
+  <a href="#section-deepdive">Deep Dive</a>
+  <a href="#section-memory">Memory Tricks</a>
+  <a href="#section-pearls">Pearls</a>
+  <a href="#section-traps">Traps</a>
+  <a href="#section-clinical">Clinical</a>
+  <a href="#section-priority">Priority</a>
+  <a href="#section-meds">Meds</a>
+  <a href="#section-practice">Practice Qs</a>
+  <a href="#section-cases">Cases</a>
+  <a href="#section-remediation">Remediation</a>
+  <a href="#section-quickquiz">Quick Quiz</a>
+  <a href="#section-checklist">Checklist</a>
+</div>
+
+<div class="hero">
+  <div class="hero-phase">Phase 1 · Foundations</div>
+  <h1>🤰 Maternal &amp; OB</h1>
+  <p>Master fetal heart rate patterns, hypertensive disorders, obstetric emergencies, and the NCLEX principle: Mom first, then baby.</p>
+  <div class="hero-meta">
+    <span>⏱ 2–3 hours</span>
+    <span>📋 25 Practice Questions</span>
+    <span>🔬 7 Lessons</span>
+    <span>✅ 10-Q Quick Quiz</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ① OVERVIEW -->
+<div class="section-card" id="section-overview">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div><h2>Module Overview</h2><p>What this module covers and why it matters</p></div>
+  </div>
+  <div class="prose">
+    <p>Maternal and OB nursing is one of the <strong>highest-yield areas on the NCLEX</strong>. It tests your ability to prioritize the mother's safety, interpret fetal monitoring strips, recognize obstetric emergencies, and act fast — before harm reaches mom or baby.</p>
+    <p>The guiding principle of this entire module is <strong>"Mom First, Then Baby."</strong> When you're unsure of the priority, start there. Assess, recognize, prioritize, and ACT.</p>
+  </div>
+  <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+    <div style="background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#7c3aed;margin-bottom:4px;">Prerequisite</div>
+      <div style="font-size:13px;color:#334155;">Module 1 — Newborn Care (fetal circulation)</div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1d4ed8;margin-bottom:4px;">Assigned Resources</div>
+      <div style="font-size:13px;color:#334155;">Archer CAT · Bootcamp OB Review · 40–50 Bootcamp OB Qs</div>
+    </div>
+  </div>
+</div>
+
+<!-- ② OBJECTIVES -->
+<div class="section-card" id="section-objectives">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div><h2>Learning Objectives</h2><p>By the end of this module, you will be able to:</p></div>
+  </div>
+  <div class="obj-list">
+    <div class="obj-item"><div class="obj-check">✓</div><span>Explain <strong>Rh incompatibility</strong>, identify when RhoGAM is indicated, and recognize when it is contraindicated</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Differentiate the 5 <strong>hypertensive disorders of pregnancy</strong> and select appropriate nursing interventions for each</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Interpret <strong>fetal heart rate patterns</strong> (early, late, variable decelerations, accelerations, variability) and prioritize nursing actions</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Recognize and respond to <strong>obstetric emergencies</strong>: placenta previa, abruption, cord prolapse, uterine rupture</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Apply GDM knowledge including <strong>risk factors, screening, maternal/baby risks, and treatment priorities</strong></span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Recall <strong>prenatal care pearls</strong>: fundal height landmarks, kick counts, GTPAL, weight gain guidelines, prenatal testing timeline</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Identify <strong>safe vs. contraindicated vaccines</strong> in pregnancy and list findings that require immediate provider notification</span></div>
+  </div>
+</div>
+
+<!-- ③ BIG PICTURE -->
+<div class="section-card" id="section-bigpicture">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div><h2>The Big Picture</h2><p>Frame the content before you dive in</p></div>
+  </div>
+  <div class="bp-grid">
+    <div class="bp-card">
+      <div class="bp-card-title">What the NCLEX tests</div>
+      <p>Fetal monitoring interpretation · When to notify the provider · Obstetric emergency priority actions · Medication safety (Mag sulfate) · Safe vs. live vaccines</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">The core concept</div>
+      <p>Pregnancy is a <strong>normal physiologic state</strong> — but complications develop fast. Your job is to recognize danger EARLY and intervene before mom or baby deteriorates.</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">The #1 rule</div>
+      <p><strong>Mom first, then baby.</strong> Stabilize the mother before shifting focus to the fetus. Every priority question in OB starts here.</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">The #1 NCLEX trap here</div>
+      <p>Confusing <strong>late decelerations</strong> (placental insufficiency = ominous) with <strong>early decelerations</strong> (head compression = benign). The timing is everything.</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <p>💡 <strong>Madison's Rule:</strong> When you see a fetal heart rate question, ask yourself — does the dip START with the contraction (early = benign) or AFTER the peak (late = emergency)? That one question will carry you through most FHR NCLEX questions.</p>
+  </div>
+</div>
+
+<!-- ④ GRAPHIC -->
+<div class="section-card" id="section-graphic">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div><h2>High-Yield Graphic</h2><p>Study this before reading the deep dive lessons</p></div>
+  </div>
+  <div class="infographic-wrap">
+    <img src="module2-infographic.png" alt="Module 2 Maternal & OB Infographic" onerror="this.parentElement.innerHTML='<div style=\'padding:40px;color:#94a3b8;font-size:14px;\'>📋 Upload <strong>module2-infographic.png</strong> to this folder to display the infographic here.</div>'" />
+    <p>Study this graphic for 2–3 minutes before moving on. It covers all 9 high-yield sections.</p>
+  </div>
+</div>
+
+<!-- ⑤ DEEP DIVE -->
+<div class="section-card" id="section-deepdive">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div><h2>Deep Dive Lessons</h2><p>Select a lesson to expand</p></div>
+  </div>
+  <div class="lesson-tabs">
+    <button class="lesson-tab active" onclick="showLesson('rh')">A · RH</button>
+    <button class="lesson-tab" onclick="showLesson('htn')">B · HTN Disorders</button>
+    <button class="lesson-tab" onclick="showLesson('fhr')">C · Fetal HR</button>
+    <button class="lesson-tab" onclick="showLesson('emerg')">D · Emergencies</button>
+    <button class="lesson-tab" onclick="showLesson('gdm')">E · GDM</button>
+    <button class="lesson-tab" onclick="showLesson('prenatal')">F · Prenatal Pearls</button>
+    <button class="lesson-tab" onclick="showLesson('vaccines')">G · Vaccines &amp; Report</button>
+  </div>
+
+  <!-- A: RH -->
+  <div id="lesson-rh" class="lesson-panel active">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;"><strong>Rh– mom + Rh+ baby = risk for hemolytic disease of the newborn (HDN).</strong> Maternal Rh– blood is exposed to fetal Rh+ blood → mom makes anti-D antibodies → in NEXT pregnancy, antibodies cross placenta and destroy fetal RBCs.</p>
+    <table class="data-table" style="margin-bottom:14px;">
+      <thead><tr><th>Test</th><th>Who It Tests</th><th>What It Detects</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Indirect Coombs</strong></td><td>Mom's blood</td><td>Mom's antibodies (Is mom sensitized?)</td></tr>
+        <tr><td><strong>Direct Coombs</strong></td><td>Baby's blood (cord blood)</td><td>Antibodies already attached to baby's RBCs</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px;">RhoGAM (Rh Immune Globulin) — When to Give:</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+      <div style="padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#065f46;">✓ 28 weeks gestation</div>
+      <div style="padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#065f46;">✓ Within 72 hours postpartum (if baby is Rh+)</div>
+      <div style="padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#065f46;">✓ After miscarriage, abortion, or ectopic pregnancy</div>
+      <div style="padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#065f46;">✓ Invasive procedures (amniocentesis, CVS)</div>
+      <div style="padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#065f46;">✓ Abdominal trauma · External cephalic version</div>
+      <div style="padding:9px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#9f1239;">⚠️ NCLEX TRAP: Do NOT give RhoGAM if mom already has a POSITIVE antibody screen (indirect Coombs+). She's already sensitized — RhoGAM can't reverse that.</div>
+    </div>
+  </div>
+
+  <!-- B: HTN -->
+  <div id="lesson-htn" class="lesson-panel">
+    <table class="data-table" style="margin-bottom:16px;">
+      <thead><tr><th>Disorder</th><th>Key Features</th><th>Clues</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Gestational HTN</strong></td><td>BP ≥140/90 after 20 wks · No proteinuria</td><td>No protein in urine</td></tr>
+        <tr><td><strong>Preeclampsia</strong></td><td>BP ≥140/90 after 20 wks + proteinuria ≥300 mg/24hr</td><td>Edema, HA, vision changes, RUQ pain</td></tr>
+        <tr><td><strong>Preeclampsia w/ Severe Features</strong></td><td>Any severe feature = high risk</td><td>Severe HTN, thrombocytopenia, ↑LFTs, renal impairment, pulmonary edema, severe HA, vision changes</td></tr>
+        <tr><td><strong>HELLP Syndrome</strong></td><td>Hemolysis + Elevated Liver enzymes + Low Platelets</td><td>RUQ pain, N/V, malaise — may occur WITHOUT severe HTN</td></tr>
+        <tr><td><strong>Eclampsia</strong></td><td>Seizures in a patient with preeclampsia</td><td>Seizure activity</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px;">Magnesium Sulfate (MgSO₄)</div>
+    <table class="data-table">
+      <thead><tr><th>Purpose</th><th>Monitor Closely</th><th>Antidote</th></tr></thead>
+      <tbody>
+        <tr><td>Prevents seizures in preeclampsia and eclampsia</td><td>Respirations ≥12/min · Deep tendon reflexes · Urine output ≥30 mL/hr</td><td><strong>Calcium Gluconate</strong> — keep at bedside</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:12px 14px;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;font-size:13px;color:#9f1239;">
+      <strong>Mag Toxicity Signs:</strong> Respirations &lt;12 · Absent deep tendon reflexes · Urine output &lt;30 mL/hr · Toxic Mag level (&gt;9 mEq/L)<br/>
+      <strong>Action:</strong> STOP infusion immediately + give calcium gluconate IV push
+    </div>
+  </div>
+
+  <!-- C: FHR -->
+  <div id="lesson-fhr" class="lesson-panel">
+    <div class="fhr-grid" style="margin-bottom:14px;">
+      <div class="fhr-card">
+        <div class="fhr-header" style="background:#059669;">⬇ Early Deceleration</div>
+        <div class="fhr-body">
+          <strong>Cause:</strong> Head compression<br/>
+          <strong>Pattern:</strong> Symmetric dip that mirrors contraction — starts and ends with the contraction<br/>
+          <strong>Action:</strong> <span style="color:#059669;font-weight:700;">Usually benign — no intervention needed</span>
+        </div>
+      </div>
+      <div class="fhr-card">
+        <div class="fhr-header" style="background:#d97706;">〜 Variable Deceleration</div>
+        <div class="fhr-body">
+          <strong>Cause:</strong> Cord compression<br/>
+          <strong>Pattern:</strong> Abrupt drops, varying in timing and depth<br/>
+          <strong>Action:</strong> Reposition · O₂ · IV fluids · Notify if persist
+        </div>
+      </div>
+      <div class="fhr-card">
+        <div class="fhr-header" style="background:#dc2626;">⬇ Late Deceleration</div>
+        <div class="fhr-body">
+          <strong>Cause:</strong> Placental insufficiency 🚨<br/>
+          <strong>Pattern:</strong> Begins AFTER the peak of contraction, slow to return<br/>
+          <strong>Action:</strong> <span style="color:#dc2626;font-weight:700;">OMINOUS — Reposition left · O₂ · IVF · STOP Pitocin · NOTIFY provider</span>
+        </div>
+      </div>
+      <div class="fhr-card">
+        <div class="fhr-header" style="background:#7c3aed;">↑ Acceleration</div>
+        <div class="fhr-body">
+          <strong>Meaning:</strong> "Happy baby" — well-oxygenated fetus<br/>
+          <strong>Pattern:</strong> FHR rises ≥15 bpm for ≥15 seconds<br/>
+          <strong>Action:</strong> <span style="color:#059669;font-weight:700;">Reassuring — no intervention needed</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 14px;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;font-size:13px;color:#9f1239;">
+      <strong>Minimal/Absent Variability:</strong> Concerning for fetal distress. Notify provider. Could indicate hypoxia, sleep cycle, or medications — context matters.
+    </div>
+  </div>
+
+  <!-- D: EMERGENCIES -->
+  <div id="lesson-emerg" class="lesson-panel">
+    <table class="data-table" style="margin-bottom:14px;">
+      <thead><tr><th>Emergency</th><th>Key Signs</th><th>Priority Action</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Placenta Previa</strong></td><td>Painless, bright red bleeding · Low-lying placenta</td><td><span class="abnormal">NO vaginal exam</span> · Bed rest · Monitor mom &amp; fetus · IV access</td></tr>
+        <tr><td><strong>Placental Abruption</strong></td><td>Sudden PAINFUL dark red bleeding · Rigid, tender uterus · Fetal distress</td><td>Notify provider · IV access · O₂ · Continuous FHR monitoring · Prepare for C-section</td></tr>
+        <tr><td><strong>Cord Prolapse</strong></td><td>Cord visible/palpable at introitus after ROM · FHR drops</td><td><span class="abnormal">Knee-chest position</span> · DO NOT push cord in · Lift presenting part off cord · Call for emergency help</td></tr>
+        <tr><td><strong>Uterine Rupture</strong></td><td>Sudden severe abdominal pain · Loss of contractions · Fetal distress · Maternal shock</td><td>Emergency surgical intervention · IV access · O₂ · Type &amp; crossmatch</td></tr>
+      </tbody>
+    </table>
+    <div style="padding:12px 14px;background:#fef3c7;border:1px solid #fde047;border-radius:10px;font-size:13px;color:#92400e;">
+      <strong>Memory Hook:</strong> Previa = Painless + Bright red. Abruption = Awful pain + dark red. Prolapse = Position (knee-chest) + don't Push cord. These 3 are the most-tested emergencies.
+    </div>
+  </div>
+
+  <!-- E: GDM -->
+  <div id="lesson-gdm" class="lesson-panel">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Risk Factors</div>
+        <ul style="padding-left:16px;font-size:12px;color:#334155;line-height:1.7;">
+          <li>Obesity</li><li>Age &gt;25</li><li>Family Hx DM</li>
+          <li>Previous GDM</li><li>PCOS</li>
+          <li>Ethnicity (Hispanic, Black, Asian, Native American)</li>
+        </ul>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Testing</div>
+        <ul style="padding-left:16px;font-size:12px;color:#334155;line-height:1.7;">
+          <li>24–28 weeks: 1-hr glucose screen</li>
+          <li>≥140 mg/dL = abnormal</li>
+          <li>If abnormal → 3-hr GTT (100 g glucose)</li>
+        </ul>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Treatment</div>
+        <ul style="padding-left:16px;font-size:12px;color:#334155;line-height:1.7;">
+          <li>Medical nutrition therapy</li>
+          <li>Exercise</li>
+          <li>Insulin preferred if meds needed</li>
+          <li>Oral meds not first-line in pregnancy</li>
+        </ul>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Maternal Risks</th><th>Baby Risks</th></tr></thead>
+      <tbody>
+        <tr><td>Preeclampsia · Polyhydramnios · C-section · Type 2 DM later</td><td>Macrosomia · Birth injury · Neonatal hypoglycemia · Jaundice</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;padding:10px 14px;background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;font-size:13px;color:#4c1d95;">
+      💡 <strong>NCLEX Pearl:</strong> Tight glucose control reduces risks for BOTH mom and baby. Insulin is preferred over oral agents in pregnancy.
+    </div>
+  </div>
+
+  <!-- F: PRENATAL PEARLS -->
+  <div id="lesson-prenatal" class="lesson-panel">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div>
+        <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">Fundal Height Landmarks</div>
+        <table class="data-table">
+          <thead><tr><th>Weeks</th><th>Fundal Height Location</th></tr></thead>
+          <tbody>
+            <tr><td>12 weeks</td><td>Just above symphysis pubis</td></tr>
+            <tr><td>20 weeks</td><td>At the umbilicus</td></tr>
+            <tr><td>36 weeks</td><td>Xiphoid process (3 fingerbreadths below)</td></tr>
+            <tr><td>Before labor</td><td>Drop (engagement/lightening)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">Weight Gain Guidelines (Pre-Pregnancy BMI)</div>
+        <table class="data-table">
+          <thead><tr><th>BMI Category</th><th>Total Gain</th></tr></thead>
+          <tbody>
+            <tr><td>Underweight (&lt;18.5)</td><td>28–40 lbs</td></tr>
+            <tr><td>Normal (18.5–24.9)</td><td>25–35 lbs</td></tr>
+            <tr><td>Overweight (25–29.9)</td><td>15–25 lbs</td></tr>
+            <tr><td>Obese (≥30)</td><td>11–20 lbs</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+        <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">Kick Counts</div>
+        <p style="font-size:13px;color:#334155;line-height:1.65;">Begin at <strong>28 weeks</strong> · Goal = 10 movements in 2 hours · Call provider if fewer than 10</p>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+        <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">GTPAL</div>
+        <p style="font-size:13px;color:#334155;line-height:1.65;"><strong>G</strong>ravida · <strong>T</strong>erm births · <strong>P</strong>reterm births · <strong>A</strong>bortions/losses · <strong>L</strong>iving children</p>
+        <p style="font-size:12px;color:#64748b;margin-top:4px;">Example: G2 T1 P0 A0 L1 = 2 pregnancies, 1 term birth, 0 preterm, 0 losses, 1 living child</p>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">Prenatal Testing Timeline</div>
+    <table class="data-table">
+      <thead><tr><th>Timing</th><th>Test</th></tr></thead>
+      <tbody>
+        <tr><td>First prenatal visit</td><td>Assess, history, labs, teach</td></tr>
+        <tr><td>10–13 weeks</td><td>Nuchal translucency (optional)</td></tr>
+        <tr><td>15–20 weeks</td><td>Maternal AFP (open neural tube screen)</td></tr>
+        <tr><td>24–28 weeks</td><td>Glucose screen (1-hr)</td></tr>
+        <tr><td>28 weeks</td><td>RhoGAM if Rh– (if not already given)</td></tr>
+        <tr><td>35–37 weeks</td><td>GBS screen</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- G: VACCINES & REPORT -->
+  <div id="lesson-vaccines" class="lesson-panel">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;">
+        <div style="font-size:12px;font-weight:800;color:#059669;margin-bottom:8px;">✅ SAFE in Pregnancy</div>
+        <ul style="padding-left:16px;font-size:13px;color:#334155;line-height:1.8;">
+          <li>Tdap (27–36 weeks)</li>
+          <li>Influenza — injectable only</li>
+          <li>COVID-19</li>
+          <li>RSV (32–36 weeks, in season)</li>
+          <li>Hepatitis B (if indicated)</li>
+        </ul>
+      </div>
+      <div style="background:#fff1f2;border:1.5px solid #fecdd3;border-radius:12px;padding:14px;">
+        <div style="font-size:12px;font-weight:800;color:#dc2626;margin-bottom:8px;">❌ AVOID (Live Vaccines)</div>
+        <ul style="padding-left:16px;font-size:13px;color:#334155;line-height:1.8;">
+          <li>MMR</li>
+          <li>Varicella (chickenpox)</li>
+          <li>Live Influenza (FluMist)</li>
+          <li>Zoster (Shingles)</li>
+          <li>Oral Typhoid</li>
+        </ul>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;">🚨 Report to Provider Immediately</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Vaginal bleeding</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Severe headache or visual changes</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">RUQ or epigastric pain</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Severe swelling (face, hands)</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Regular painful contractions before 37 weeks</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Decreased fetal movement (after 28 weeks)</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Leaking fluid or foul-smelling discharge</div>
+      <div style="padding:8px 12px;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;font-size:13px;color:#7f1d1d;">Dizziness or syncope · Shortness of breath or chest pain</div>
+    </div>
+    <div style="margin-top:10px;padding:10px 14px;background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;font-size:13px;color:#4c1d95;">
+      💡 <strong>NCLEX Pearl:</strong> Discuss vaccines during pregnancy, but live vaccines CANNOT be given until after birth. This is a common distractor question.
+    </div>
+  </div>
+</div>
+
+<!-- ⑥ MEMORY TRICKS -->
+<div class="section-card" id="section-memory">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div><h2>Memory Tricks</h2><p>Anchors built to stick</p></div>
+  </div>
+  <div class="mnemonic-grid">
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">L</div>
+      <div class="mnemonic-text"><strong>Late decels: "STOP the drip, LEFT side, O₂ and fluids"</strong><span>Stop Pitocin → Left lateral → O₂ → IVF → Notify provider. In that order, every time.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">P</div>
+      <div class="mnemonic-text"><strong>Previa vs. Abruption: "Previa = Painless + Pink (bright red). Abruption = Awful pain + dark"</strong><span>Previa = placenta is blocking the exit (painless bright bleeding). Abruption = placenta rips away (painful, dark, rigid uterus).</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">M</div>
+      <div class="mnemonic-text"><strong>Mag Toxicity: "RUO" — Respirations, Urinary output, DTRs (reflexes)</strong><span>If resp &lt;12, UO &lt;30 mL/hr, or DTRs absent → STOP mag + give calcium gluconate.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">H</div>
+      <div class="mnemonic-text"><strong>HELLP: "Hemolysis, Elevated Liver enzymes, Low Platelets"</strong><span>Think of the liver screaming: "HELL P!" — RUQ pain + nausea/vomiting + malaise are the classic symptoms.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">G</div>
+      <div class="mnemonic-text"><strong>GTPAL: "Got Tummy? Pretty Amazing Living children"</strong><span>Gravida · Term · Preterm · Abortions · Living. G = total pregnancies (includes current).</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">R</div>
+      <div class="mnemonic-text"><strong>RhoGAM: "72 hours — or it's too late to Rhogam"</strong><span>Must be given within 72 hours postpartum. Does NOT work if mom is already sensitized (positive antibody screen).</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ PEARLS -->
+<div class="section-card" id="section-pearls">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div><h2>NCLEX Pearls</h2><p>Always-true statements for the exam</p></div>
+  </div>
+  <div class="pearl-list">
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Early decelerations</strong> = head compression = benign. No intervention needed.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Late decelerations</strong> = placental insufficiency = OMINOUS. Reposition left lateral, O₂, IVF, stop Pitocin, notify provider.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Variable decelerations</strong> = cord compression. First action = reposition. Then O₂ and fluids if persistent.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Mag sulfate toxicity:</strong> Stop infusion + give calcium gluconate IV. Keep calcium gluconate at bedside for any patient on Mag.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Placenta previa:</strong> NEVER perform a vaginal exam — can cause massive hemorrhage. Bed rest, monitor, IV access.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Cord prolapse:</strong> Knee-chest position immediately. Manually lift presenting part off cord. DO NOT push cord back in.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>RhoGAM</strong> must be given within 72 hours postpartum. It is ineffective if mom is already sensitized (positive indirect Coombs).</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>GDM screening</strong> occurs at 24–28 weeks. 1-hr glucose screen ≥140 → 3-hr GTT. Insulin is preferred over oral agents in pregnancy.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Fundal height at umbilicus = 20 weeks.</strong> This is the one measurement the NCLEX always tests.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>20 weeks fundal height = 20 weeks gestation</strong> (in cm, fundal height roughly equals weeks from 20–36 weeks).</span></div>
+  </div>
+</div>
+
+<!-- ⑧ TRAPS -->
+<div class="section-card" id="section-traps">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div><h2>NCLEX Traps</h2><p>Where students go wrong — and why</p></div>
+  </div>
+  <div class="trap-list">
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Early vs. Late decelerations.</strong> Both dip during contractions — but early decels mirror the contraction, late decels lag behind. Timing = everything.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>RhoGAM when already sensitized.</strong> A positive indirect Coombs means mom is ALREADY sensitized — RhoGAM is contraindicated. It prevents sensitization, not treats it.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Vaginal exam with placenta previa.</strong> This is always WRONG. Any vaginal examination can rupture the placenta and cause fatal hemorrhage.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Pushing the cord back in during cord prolapse.</strong> Never do this — it causes vasospasm. Knee-chest + lift presenting part + emergent delivery.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>HELLP without severe HTN.</strong> HELLP can present WITHOUT markedly elevated BP. RUQ pain + malaise + low platelets = suspect HELLP regardless of BP.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Calcium gluconate vs. calcium chloride for Mag toxicity.</strong> The antidote is calcium GLUCONATE (not chloride). Calcium gluconate is what you keep at the bedside.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>FluMist in pregnancy.</strong> Injectable flu vaccine = safe. FluMist (live attenuated nasal spray) = AVOID in pregnancy. Live vaccines are always contraindicated.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>GTPAL: Gravida vs. Para.</strong> Gravida = total pregnancies (includes current). A woman at 30 weeks who has 2 living children and had 1 prior loss is G4 (current + 3 previous pregnancies).</span></div>
+  </div>
+</div>
+
+<!-- ⑨ CLINICAL -->
+<div class="section-card" id="section-clinical">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div><h2>Clinical Connections</h2><p>How this shows up at the bedside</p></div>
+  </div>
+  <div class="cc-grid">
+    <div class="cc-card">
+      <div class="cc-title">📞 Call the Provider When...</div>
+      <ul>
+        <li>BP ≥140/90 after 20 weeks</li>
+        <li>Severe headache or visual changes</li>
+        <li>RUQ or epigastric pain</li>
+        <li>Proteinuria 2+ or greater</li>
+        <li>Recurrent late decelerations</li>
+        <li>Any vaginal bleeding in pregnancy</li>
+        <li>Decreased fetal movement after 28 wks</li>
+        <li>Preterm contractions (&lt;37 weeks)</li>
+        <li>Signs of mag toxicity</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">⚡ Immediate Priority Actions</div>
+      <ul>
+        <li>Late decels → STOP Pitocin, left lateral, O₂</li>
+        <li>Cord prolapse → Knee-chest, lift presenting part</li>
+        <li>Mag toxicity → Stop infusion, calcium gluconate</li>
+        <li>Placenta previa → NO vaginal exam, bed rest</li>
+        <li>Eclamptic seizure → Side-lying, protect from injury, time it, call for help</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">🔬 Lab Values to Know</div>
+      <ul>
+        <li>Proteinuria ≥300 mg/24hr = preeclampsia</li>
+        <li>Platelets &lt;100,000 = HELLP concern</li>
+        <li>1-hr glucose ≥140 mg/dL = abnormal</li>
+        <li>Mag therapeutic level: 4–8 mEq/L</li>
+        <li>Mag toxic level: &gt;9 mEq/L</li>
+        <li>Dilutional anemia (↓ Hgb/Hct) = NORMAL in pregnancy</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">👶 Fetal Status Indicators</div>
+      <ul>
+        <li>Accelerations = reassuring ("happy baby")</li>
+        <li>Minimal/absent variability = concerning</li>
+        <li>Kick counts: 10 movements in 2 hrs</li>
+        <li>BPP score ≥8 = reassuring</li>
+        <li>Late decels + absent variability = highest priority</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ⑩ PRIORITY FRAMEWORK -->
+<div class="section-card" id="section-priority">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div><h2>Priority Framework</h2><p>How to sequence your thinking in OB NCLEX questions</p></div>
+  </div>
+  <div class="priority-steps">
+    <div class="p-step">
+      <div class="p-step-num">1</div>
+      <div class="p-step-content"><strong>Mom First</strong><span>Stabilize the mother before addressing fetal status. Assess maternal airway, BP, level of consciousness, and bleeding first.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">2</div>
+      <div class="p-step-content"><strong>Recognize the Emergency</strong><span>Is this cord prolapse? Abruption? Eclampsia? Mag toxicity? Naming the problem drives the action. Don't act before you know what you're treating.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">3</div>
+      <div class="p-step-content"><strong>Stop the Harm</strong><span>Stop Pitocin for late decels. Stop mag for toxicity. Stop vaginal exam for previa. Removing the cause comes before adding the intervention.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">4</div>
+      <div class="p-step-content"><strong>Position + Oxygenate</strong><span>Left lateral = relieves aorto-caval compression. O₂ by face mask = improves fetal and maternal oxygenation. These are almost always the next steps.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">5</div>
+      <div class="p-step-content"><strong>Notify + Prepare</strong><span>Notify the provider, establish IV access, draw labs, consent for potential C-section. These happen together, not sequentially.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑪ MEDICATION FOCUS -->
+<div class="section-card" id="section-meds">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div><h2>Medication Focus</h2><p>High-yield OB medications — know the purpose, monitoring, and antidote</p></div>
+  </div>
+  <div class="med-cards">
+    <div class="med-card">
+      <div class="med-header">Magnesium Sulfate (MgSO₄)</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Seizure prevention in preeclampsia/eclampsia · Fetal neuroprotection before 32 weeks · Tocolytic (preterm labor)</p></div>
+        <div class="med-field"><label>Route</label><p>IV — loading dose + continuous infusion. Always on a pump. Never push undiluted.</p></div>
+        <div class="med-field"><label>Monitor (the 3 R's)</label><p><strong>Respirations</strong> ≥12/min · <strong>Reflexes</strong> (DTRs present) · <strong>uRine</strong> output ≥30 mL/hr</p></div>
+        <div class="med-field"><label>Antidote</label><p>Calcium gluconate 1 g IV — keep at bedside for every patient on Mag</p></div>
+        <div class="med-trap">⚠️ TOXICITY: Resp &lt;12, absent DTRs, UO &lt;30 mL/hr → STOP infusion + give calcium gluconate immediately</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-header">Oxytocin (Pitocin)</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Labor induction/augmentation · Postpartum hemorrhage prevention (after delivery)</p></div>
+        <div class="med-field"><label>Route</label><p>IV infusion — titrated to contraction pattern. Never bolus for induction.</p></div>
+        <div class="med-field"><label>When to STOP</label><p>Late decelerations · Hyperstimulation (&gt;5 contractions in 10 min) · FHR abnormalities</p></div>
+        <div class="med-field"><label>Side Effects</label><p>Hyperstimulation · Water retention/hyponatremia · Hypotension</p></div>
+        <div class="med-trap">⚠️ NCLEX TRAP: Late decelerations → STOP Pitocin FIRST, then reposition and O₂. Students often skip stopping the Pitocin.</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-header">RhoGAM (Rho[D] Immune Globulin)</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Prevents Rh sensitization in Rh– mothers exposed to Rh+ fetal blood</p></div>
+        <div class="med-field"><label>Timing</label><p>28 weeks · Within 72 hours postpartum · After any pregnancy loss, invasive procedure, or trauma</p></div>
+        <div class="med-field"><label>Route</label><p>IM injection</p></div>
+        <div class="med-field"><label>Contraindication</label><p>Positive indirect Coombs test (mom already sensitized) — RhoGAM cannot reverse existing sensitization</p></div>
+        <div class="med-trap">⚠️ NCLEX TRAP: A positive indirect Coombs = sensitized = do NOT give RhoGAM. It prevents sensitization, not treats it.</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-header">Betamethasone (Corticosteroid)</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Accelerates fetal lung maturity — increases surfactant production in preterm fetuses</p></div>
+        <div class="med-field"><label>Indication</label><p>Given to mother when preterm delivery is anticipated (typically 24–34 weeks)</p></div>
+        <div class="med-field"><label>Route / Dosing</label><p>IM to mother · 2 doses, 24 hours apart</p></div>
+        <div class="med-field"><label>Key Point</label><p>Full effect in 24–48 hours. Reduces risk of RDS, IVH, and NEC in preterm newborn.</p></div>
+        <div class="med-pearl">💡 If preterm labor + &lt;34 weeks = anticipate betamethasone order. Also anticipate mag sulfate for neuroprotection if &lt;32 weeks.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑫ PRACTICE QUESTIONS -->
+<div class="section-card" id="section-practice">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div><h2>Practice Questions</h2><p>25 questions · All types · Rationale after each answer</p></div>
+  </div>
+  <div id="pq-container">
+    <div class="pq-progress">
+      <span class="pq-progress-label" id="pq-label">Question 1 of 25</span>
+      <div class="pq-bar-wrap"><div class="pq-bar" id="pq-bar" style="width:0%"></div></div>
+      <span class="pq-score-badge" id="pq-score">Score: 0</span>
+    </div>
+    <div id="pq-question-area"></div>
+  </div>
+</div>
+
+<!-- ⑬ CASE STUDIES -->
+<div class="section-card" id="section-cases">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div><h2>Case Studies</h2><p>NGN-style clinical scenarios — think through each before revealing the answer</p></div>
+  </div>
+
+  <div class="case-questions" style="margin-bottom:24px;">
+    <div class="case-scenario">
+      <div class="case-scenario-label">Case 1 · Preeclampsia with Severe Features</div>
+      <p>A 32-week patient is admitted with BP 162/110, severe headache, RUQ pain, and 3+ proteinuria on dipstick. Deep tendon reflexes are 3+. The provider orders IV magnesium sulfate. One hour into the infusion, the nurse assesses: respirations 9/min, DTRs absent, and urine output 18 mL/hr over the past hour.</p>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q1: Before starting Mag, what assessment is the priority? <span>▾</span></div>
+      <div class="case-q-body"><p>Establish a baseline of the three parameters used to monitor for mag toxicity: respiratory rate (must be ≥12), deep tendon reflexes (must be present), and urine output (must be ≥30 mL/hr). Without a baseline, you can't recognize toxicity.</p><div class="case-answer">✓ Baseline respirations, DTRs, and urine output</div></div>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q2: The 1-hour assessment shows RR 9, absent DTRs, UO 18 mL/hr. What does this indicate and what is the priority action? <span>▾</span></div>
+      <div class="case-q-body"><p>All three signs indicate magnesium toxicity (resp &lt;12, absent DTRs, UO &lt;30 mL/hr). Priority: STOP the infusion immediately, then administer calcium gluconate IV (the antidote). Call for help and prepare for respiratory support.</p><div class="case-answer">✓ Magnesium toxicity → STOP infusion + give calcium gluconate immediately</div></div>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q3: The patient then has a generalized tonic-clonic seizure (eclampsia). Priority nursing action during the seizure? <span>▾</span></div>
+      <div class="case-q-body"><p>During a seizure: protect from injury (pad rails, clear environment), turn to side-lying (protect airway, prevent aspiration), call for help, and time the seizure. Do NOT put anything in the mouth. Note: calcium gluconate is the Mag antidote, not the seizure treatment.</p><div class="case-answer">✓ Protect from injury · Side-lying for airway · Call for help · Time the seizure</div></div>
+    </div>
+  </div>
+
+  <div class="case-questions">
+    <div class="case-scenario">
+      <div class="case-scenario-label">Case 2 · Obstetric Emergency Triage</div>
+      <p>Four antepartum patients present simultaneously. Patient A: 38 weeks, Braxton Hicks every 15 min, no cervical change. Patient B: 32 weeks, BP 174/116, severe headache, visual changes, RUQ pain. Patient C: 30 weeks, painless bright red vaginal bleeding (suspected placenta previa). Patient D: 28 weeks, regular contractions every 5 min, cervix dilated to 3 cm.</p>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q1: Using "Mom First" — which patient is the priority? <span>▾</span></div>
+      <div class="case-q-body"><p>Patient B is the priority. BP 174/116 + severe headache + visual changes + RUQ pain = severe preeclampsia with imminent risk of eclampsia (seizure). This is the most immediately life-threatening presentation.</p><div class="case-answer">✓ Patient B — severe preeclampsia with imminent eclampsia risk</div></div>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q2: For Patient C (placenta previa), what is the CONTRAINDICATED action? <span>▾</span></div>
+      <div class="case-q-body"><p>Vaginal examination is absolutely contraindicated with placenta previa. The placenta overlies the cervical os — any digital examination can rupture vessels and cause massive, potentially fatal hemorrhage. Bed rest, fetal monitoring, and IV access are appropriate.</p><div class="case-answer">✓ Vaginal exam — NEVER with suspected placenta previa</div></div>
+    </div>
+    <div class="case-q">
+      <div class="case-q-header" onclick="toggleCase(this)">Q3: For Patient D (28 weeks, preterm labor), which medications would the nurse MOST LIKELY anticipate? <span>▾</span></div>
+      <div class="case-q-body"><p>Betamethasone (corticosteroid) to accelerate fetal lung maturity, and magnesium sulfate as a tocolytic and for fetal neuroprotection before 32 weeks. Pitocin would worsen labor. Calcium gluconate is Mag's antidote, not a treatment here.</p><div class="case-answer">✓ Betamethasone (lung maturity) + Magnesium sulfate (tocolytic + neuroprotection)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑭ REMEDIATION WORKSHEET -->
+<div class="section-card" id="section-remediation">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div><h2>Remediation Worksheet</h2><p>Fill in the blanks — print or complete digitally</p></div>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
+
+  <div class="remed-section">
+    <div class="remed-title">Hypertensive Disorders — Know the Differences</div>
+    <div class="remed-row"><span>Gestational HTN =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Preeclampsia =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>HELLP stands for:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Eclampsia =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Mag antidote =</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Fetal Heart Rate Patterns</div>
+    <div class="remed-row"><span>Early deceleration: cause =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Early deceleration: action =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Late deceleration: cause =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Late deceleration: action =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Variable deceleration: cause =</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Obstetric Emergencies</div>
+    <div class="remed-row"><span>Placenta Previa: key sign =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Placenta Previa: NEVER do =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Cord Prolapse: position =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Abruption: key signs =</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Prenatal Pearls</div>
+    <div class="remed-row"><span>Fundal height at umbilicus =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>GDM screening: when =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Kick counts: goal =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>RhoGAM: within __ hours postpartum =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>GTPAL: G = / T = / P = / A = / L =</span><div class="remed-blank"></div></div>
+  </div>
+</div>
+
+<!-- ⑮ QUICK QUIZ -->
+<div class="section-card" id="section-quickquiz">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <div><h2>Quick Quiz</h2><p>10 questions · Instant feedback</p></div>
+  </div>
+  <div id="qq-container"></div>
+</div>
+
+<!-- ⑯ CHECKLIST -->
+<div class="section-card" id="section-checklist">
+  <div class="section-header">
+    <div class="section-num">16</div>
+    <div><h2>Module Checklist</h2><p>Check off each item when you feel confident — saves automatically</p></div>
+  </div>
+  <div class="checklist-items" id="checklist-items"></div>
+  <div class="checklist-bar-wrap"><div class="checklist-bar" id="checklist-bar" style="width:0%"></div></div>
+  <div class="checklist-progress" id="checklist-progress">0 of 10 completed</div>
+</div>
+
+</div>
+
+<script>
+// ── LESSON TABS ──
+function showLesson(id) {
+  document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.lesson-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('lesson-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+function toggleCase(h) { h.nextElementSibling.classList.toggle('open'); }
+
+// ── PRACTICE QUESTIONS ──
+const PQ = [
+  { type:'MCQ', stem:"Which scenario places a fetus at risk for hemolytic disease of the newborn?", options:["Rh+ mother / Rh– baby","Rh– mother / Rh+ baby","Rh+ mother / Rh+ baby","Rh– mother / Rh– baby"], correct:[1], rationale:"Rh– mom + Rh+ baby = risk for HDN. Mom's anti-D antibodies cross the placenta and destroy fetal RBCs." },
+  { type:'MCQ', stem:"An Rh-negative patient delivers an Rh-positive infant. RhoGAM must be administered within which postpartum timeframe?", options:["24 hours","48 hours","72 hours","1 week"], correct:[2], rationale:"RhoGAM must be given within 72 hours postpartum to prevent sensitization in future pregnancies." },
+  { type:'MCQ', stem:"Which combination of findings establishes a diagnosis of preeclampsia?", options:["BP ≥140/90 after 20 weeks with no proteinuria","BP ≥140/90 after 20 weeks + proteinuria ≥300 mg/24 hr","Seizures in a patient with elevated BP","BP ≥120/80 with severe headache after 20 weeks"], correct:[1], rationale:"Preeclampsia = HTN ≥140/90 after 20 wks + proteinuria ≥300 mg/24hr. Without protein = gestational HTN only." },
+  { type:'MCQ', stem:"Low platelets, elevated liver enzymes, and signs of hemolysis are consistent with which complication?", options:["Gestational hypertension","Preeclampsia","HELLP syndrome","Eclampsia"], correct:[2], rationale:"HELLP = Hemolysis, Elevated Liver enzymes, Low Platelets. Classic presentation: RUQ pain, N/V, malaise." },
+  { type:'MCQ', stem:"Early decelerations — FHR dips symmetrically and returns to baseline with each contraction. Best nursing interpretation?", options:["Umbilical cord compression — reposition the patient","Placental insufficiency — notify provider immediately","Head compression — usually benign, no intervention needed","Fetal distress — prepare for emergency delivery"], correct:[2], rationale:"Early decels = head compression = benign. They mirror the contraction. No intervention needed." },
+  { type:'MCQ', stem:"Recurrent decelerations begin AFTER the peak of each contraction and return slowly. Priority action?", options:["Document and continue monitoring","Reposition to left lateral, O₂, IV fluids, notify provider, stop Pitocin","Increase Pitocin to strengthen contractions","Administer pain medication"], correct:[1], rationale:"Late decels = placental insufficiency = OMINOUS. Stop Pitocin, reposition left, O₂, IVF, notify provider." },
+  { type:'MCQ', stem:"Which fundal height finding correctly corresponds to gestational age?", options:["Fundal height at the umbilicus = 12 weeks","Fundal height at the umbilicus = 20 weeks","Fundal height at the xiphoid process = 28 weeks","Fundal height just above symphysis = 20 weeks"], correct:[1], rationale:"20 weeks = umbilicus. 12 weeks = just above symphysis pubis. 36 weeks = xiphoid process (3 fingerbreadths below)." },
+  { type:'SATA', stem:"Select ALL vaccines considered safe and recommended during pregnancy.", options:["Tdap (27–36 weeks)","MMR","Influenza (injectable)","Varicella (chickenpox)","COVID-19","Zoster (Shingles)","RSV (32–36 weeks in season)","Live Influenza (FluMist)"], correct:[0,2,4,6], rationale:"Safe in pregnancy: Tdap, injectable flu, COVID-19, RSV. Avoid live vaccines: MMR, Varicella, FluMist, Shingles." },
+  { type:'MCQ', stem:"Teaching a patient at 30 weeks about kick counts. Which instruction is most accurate?", options:["Count kicks starting at 20 weeks","Feel for 10 movements in 2 hours — call provider if fewer","Count only during morning hours for accuracy","5 movements per hour is the expected minimum"], correct:[1], rationale:"Kick counts begin at 28 weeks. Goal = 10 movements in 2 hours. Call provider if fewer than 10." },
+  { type:'MCQ', stem:"Which lab finding is considered NORMAL during pregnancy?", options:["Proteinuria ≥300 mg/24 hr","Platelet count of 80,000","Mild dilutional anemia (decreased Hgb/Hct)","Elevated creatinine"], correct:[2], rationale:"Dilutional anemia is NORMAL — plasma volume increases more than RBC mass. Proteinuria ≥300 mg, low platelets, elevated creatinine are concerning." },
+  { type:'MCQ', stem:"Patient A: sudden severe abdominal pain, rigid uterus, dark red bleeding. Patient B: painless bright red bleeding, no contractions. Which best distinguishes them?", options:["Patient A has placenta previa; Patient B has abruption","Patient A has placental abruption; Patient B has placenta previa","Both have the same condition — placenta previa","Both need vaginal exams to distinguish"], correct:[1], rationale:"Abruption = PAINFUL, dark red, rigid uterus. Previa = PAINLESS, bright red. NEVER do vaginal exam with previa." },
+  { type:'MCQ', stem:"32-week patient with painless bright red vaginal bleeding, suspected placenta previa. Priority nursing action?", options:["Perform a vaginal exam to assess cervical dilation","Apply fundal pressure","Do NOT perform vaginal exam — place on bed rest, notify provider, monitor mom and fetus","Encourage ambulation to stimulate contractions"], correct:[2], rationale:"Placenta previa: NO vaginal exam (can cause fatal hemorrhage). Bed rest, notify provider, monitor." },
+  { type:'MCQ', stem:"Umbilical cord is visible at the vaginal introitus after membrane rupture. Priority nursing action?", options:["Push the cord back into the vagina","Knee-chest position, do NOT push cord in, lift presenting part, call for emergency help","Place on her back and monitor fetal HR","Prepare for immediate vaginal delivery"], correct:[1], rationale:"Cord prolapse: Knee-chest position, NEVER push cord back, manually lift presenting part off cord, emergent delivery." },
+  { type:'MCQ', stem:"Variable decelerations — abrupt FHR drops varying in timing and depth. Priority action?", options:["Document and continue routine monitoring","Increase Pitocin rate","Reposition the patient, administer O₂, increase IV fluids","Notify provider to prepare for immediate C-section"], correct:[2], rationale:"Variable decels = cord compression. First: reposition (left lateral or knee-chest), O₂, IVF. Notify if persistent." },
+  { type:'MCQ', stem:"Patient on IV magnesium sulfate: respirations 10/min, absent DTRs, decreased urine output. Priority action?", options:["Increase the Mag drip rate to maintain therapeutic levels","Stop the infusion and administer calcium gluconate IV","Reposition to left lateral and increase fluids","Document and reassess in 30 minutes"], correct:[1], rationale:"Mag toxicity (resp &lt;12, absent DTRs, ↓UO) → STOP infusion + give calcium gluconate immediately." },
+  { type:'MCQ', stem:"Chart records G4 T2 P1 A1 L2. How should the nurse correctly interpret this GTPAL?", options:["4 pregnancies, 2 term births, 1 preterm, 1 abortion, 2 living children","4 deliveries, 2 premature, 1 term, 1 abortion, 2 living","4 pregnancies, 2 term, 1 stillbirth, 1 abortion, 2 living","4 pregnancies, 2 term, 1 preterm, 1 stillbirth, 2 living"], correct:[0], rationale:"GTPAL: G=Gravida(total), T=Term births, P=Preterm births, A=Abortions/losses, L=Living children." },
+  { type:'MCQ', stem:"An Rh-negative patient at 14 weeks has a positive indirect Coombs test. Most important nursing implication?", options:["Administer RhoGAM immediately","The patient is already sensitized — RhoGAM will NOT prevent further hemolysis","Schedule RhoGAM at 28 weeks as planned","Prepare for emergency delivery"], correct:[1], rationale:"Positive indirect Coombs = ALREADY sensitized. RhoGAM prevents sensitization — it cannot treat existing sensitization." },
+  { type:'SATA', stem:"Select ALL prenatal findings that require IMMEDIATE provider notification.", options:["Mild ankle edema at the end of a long day","Sudden severe headache at 32 weeks","Painless bright red vaginal bleeding at 30 weeks","Nausea in the first trimester","Visual changes and RUQ pain at 28 weeks","Decreased fetal movement after 28 weeks"], correct:[1,2,4,5], rationale:"Severe headache, bright red bleeding, visual changes + RUQ pain, decreased fetal movement = report immediately. Ankle edema and 1st trimester nausea = normal." },
+  { type:'MCQ', stem:"Which urinalysis finding requires IMMEDIATE provider notification in a pregnant patient?", options:["Trace protein on dipstick","Glycosuria in the absence of other symptoms","Proteinuria 2+ on dipstick at 28 weeks","↑ urinary frequency without dysuria"], correct:[2], rationale:"Proteinuria 2+ at 28 weeks = significant after 20 weeks — combined with HTN = preeclampsia. Always report." },
+  { type:'MCQ', stem:"Nurse receives four messages simultaneously. Which patient should be assessed FIRST?", options:["28-week patient reporting decreased fetal movement for 4 hours","36-week patient with mild ankle edema","32-week patient experiencing first-trimester-type nausea","38-week patient with Braxton Hicks every 20 minutes"], correct:[0], rationale:"Decreased fetal movement at 28 weeks = report immediately and assess. Kick counts goal is 10 movements in 2 hours." },
+  { type:'MCQ', stem:"34-week patient: BP 168/112, severe headache, 3+ proteinuria, RUQ pain, hyperreflexia. Which assessment is priority BEFORE starting Mag?", options:["Current blood pressure reading","Baseline respiratory rate, DTRs, and urine output","Fetal heart rate tracing","Severity of headache on 1–10 scale"], correct:[1], rationale:"Before starting Mag, establish baseline: respirations ≥12, DTRs present, UO ≥30 mL/hr. This is what you'll monitor for toxicity." },
+  { type:'SATA', stem:"1 hour into Mag infusion. Select ALL findings that indicate MAGNESIUM TOXICITY.", options:["Respirations 8 per minute","BP 150/100","Absent deep tendon reflexes","Urine output 15 mL/hr","Flushing and warmth (mild)","Serum Mag level 12 mEq/L"], correct:[0,2,3,5], rationale:"Mag toxicity: resp &lt;12, absent DTRs, UO &lt;30 mL/hr, toxic Mag level (&gt;9 mEq/L) → STOP infusion + calcium gluconate. Flushing/warmth = early therapeutic effect, not toxicity." },
+  { type:'MCQ', stem:"4 antepartum patients — which is MOST urgent? A: 38-wk Braxton Hicks. B: 32-wk BP 172/114, visual changes, RUQ pain. C: 34-wk painless bright red bleeding (previa). D: 28-wk contractions q5min, 3 cm dilated.", options:["Patient A — Braxton Hicks near term","Patient B — severe preeclampsia with imminent eclampsia","Patient C — placenta previa with active bleeding","Patient D — preterm labor with cervical change"], correct:[1], rationale:"Patient B has the most immediately life-threatening presentation: severe preeclampsia with visual changes + RUQ pain = imminent eclampsia risk." },
+  { type:'MCQ', stem:"For the placenta previa patient — which action is CONTRAINDICATED?", options:["Placing patient on bed rest","Monitoring fetal heart tones continuously","Performing a vaginal exam to assess dilation","Establishing IV access"], correct:[2], rationale:"NEVER do a vaginal exam with placenta previa. It can rupture vessels overlying the cervical os and cause fatal hemorrhage." },
+  { type:'SATA', stem:"Select ALL antepartum findings requiring IMMEDIATE provider notification.", options:["Vaginal bleeding at 28 weeks","Mild ankle edema at 36 weeks","Severe headache with visual changes at 30 weeks","Regular contractions at 33 weeks","Decreased fetal movement for 4 hours at 32 weeks","First-trimester nausea in a 10-week patient","Leaking fluid at 35 weeks","Dizziness and syncope at 24 weeks"], correct:[0,2,3,4,6,7], rationale:"Bleeding, severe HA+visual changes, preterm contractions, decreased FM, fluid leaking, dizziness/syncope = report immediately. Ankle edema and 1st trimester nausea are normal." }
+];
+
+let pqIdx=0, pqScore=0, pqAnswered=false, pqSelected=[];
+function renderPQ() {
+  if(pqIdx>=PQ.length){showPQResults();return;}
+  const q=PQ[pqIdx]; const isSATA=q.type==='SATA';
+  pqAnswered=false; pqSelected=[];
+  const tagColor=isSATA?'background:#ede9fe;color:#5b21b6;':'background:#e0f2fe;color:#0369a1;';
+  document.getElementById('pq-label').textContent=`Question ${pqIdx+1} of ${PQ.length}`;
+  document.getElementById('pq-bar').style.width=((pqIdx/PQ.length)*100)+'%';
+  const optHtml=q.options.map((o,i)=>`<button class="pq-option" id="pqo-${i}" onclick="pqSelect(${i})">${o}</button>`).join('');
+  document.getElementById('pq-question-area').innerHTML=`
+    <div class="pq-q-num">Question ${pqIdx+1} · ${q.type}</div>
+    <span class="pq-type-tag" style="${tagColor}">${q.type}</span>
+    ${isSATA?'<div class="pq-sata-hint">SATA — select all that apply, then click Submit</div>':''}
+    <div class="pq-stem">${q.stem}</div>
+    <div class="pq-options">${optHtml}</div>
+    <div class="pq-rationale" id="pq-rationale"><strong>Rationale:</strong> ${q.rationale}</div>
+    <div class="pq-nav">
+      ${isSATA?'<button class="btn-pq btn-pq-primary" id="pq-submit-btn" onclick="pqSubmitSATA()">Submit Answer</button>':''}
+      <button class="btn-pq btn-pq-secondary" id="pq-next-btn" onclick="pqNext()" style="display:none">Next →</button>
+    </div>`;
+}
+function pqSelect(i) {
+  if(pqAnswered)return;
+  const q=PQ[pqIdx]; const isSATA=q.type==='SATA';
+  if(!isSATA){
+    pqAnswered=true;
+    const correct=q.correct.includes(i);
+    if(correct)pqScore++;
+    document.getElementById('pq-score').textContent=`Score: ${pqScore}`;
+    q.options.forEach((_,j)=>{const btn=document.getElementById('pqo-'+j);btn.disabled=true;if(q.correct.includes(j))btn.classList.add('correct');else if(j===i&&!correct)btn.classList.add('incorrect');});
+    document.getElementById('pq-rationale').classList.add('show');
+    document.getElementById('pq-next-btn').style.display='inline-flex';
+  } else {
+    const btn=document.getElementById('pqo-'+i);
+    if(pqSelected.includes(i)){pqSelected=pqSelected.filter(x=>x!==i);btn.style.background='';btn.style.borderColor='';btn.style.fontWeight='';}
+    else{pqSelected.push(i);btn.style.background='#faf5ff';btn.style.borderColor='#7c3aed';btn.style.fontWeight='600';}
+  }
+}
+function pqSubmitSATA(){
+  if(pqAnswered)return;
+  const q=PQ[pqIdx];pqAnswered=true;
+  const correct=JSON.stringify(pqSelected.sort())===JSON.stringify([...q.correct].sort());
+  if(correct)pqScore++;
+  document.getElementById('pq-score').textContent=`Score: ${pqScore}`;
+  q.options.forEach((_,j)=>{const btn=document.getElementById('pqo-'+j);btn.disabled=true;btn.style.background='';btn.style.borderColor='';btn.style.fontWeight='';if(q.correct.includes(j))btn.classList.add('correct');else if(pqSelected.includes(j))btn.classList.add('incorrect');});
+  document.getElementById('pq-rationale').classList.add('show');
+  document.getElementById('pq-submit-btn').style.display='none';
+  document.getElementById('pq-next-btn').style.display='inline-flex';
+}
+function pqNext(){pqIdx++;renderPQ();}
+function showPQResults(){
+  const pct=Math.round((pqScore/PQ.length)*100);
+  const color=pct>=80?'#7c3aed':pct>=65?'#f59e0b':'#ef4444';
+  document.getElementById('pq-container').innerHTML=`<div class="pq-results"><div class="pq-results-score" style="color:${color}">${pqScore}/${PQ.length}</div><div class="pq-results-label">${pct}% · ${pct>=80?'Great work! Review any misses.':pct>=65?'Good effort — review the rationales for misses.':'Review the deep dive lessons and try again.'}</div><button class="pq-restart" onclick="pqIdx=0;pqScore=0;renderPQ()">Restart Practice Questions</button></div>`;
+}
+renderPQ();
+
+// ── QUICK QUIZ ──
+const QQ=[
+  {stem:"Early decelerations in fetal monitoring indicate:",options:["Placental insufficiency — notify provider","Head compression — usually benign","Cord compression — reposition","Fetal distress — prepare for delivery"],correct:1,fb:"Early decels = head compression = benign. They mirror the contraction pattern. No intervention needed."},
+  {stem:"A patient on Mag sulfate has respirations of 10/min and absent DTRs. Priority action:",options:["Increase the Mag rate","Stop infusion and give calcium gluconate","Reposition and reassess in 30 minutes","Give O₂ and continue monitoring"],correct:1,fb:"Mag toxicity: stop infusion + calcium gluconate immediately. Resp <12 + absent DTRs = toxicity."},
+  {stem:"A 30-week patient has painless, bright red vaginal bleeding. The nurse should first:",options:["Perform a vaginal exam to assess dilation","Do NOT do vaginal exam — bed rest, notify provider, monitor","Administer Pitocin","Prepare for immediate vaginal delivery"],correct:1,fb:"Placenta previa = NEVER vaginal exam. Bed rest + notify provider + continuous monitoring."},
+  {stem:"Cord prolapse is identified after membrane rupture. The FIRST priority action is:",options:["Push the cord back into the vagina","Knee-chest position and lift presenting part off cord","Call the provider and wait for orders","Prepare for immediate vaginal delivery"],correct:1,fb:"Knee-chest position immediately and manually lift the presenting part off the cord. NEVER push the cord back in."},
+  {stem:"RhoGAM is contraindicated when:",options:["The mother is Rh-negative","The infant is Rh-positive","The mother has a POSITIVE indirect Coombs test","It is given before 28 weeks"],correct:2,fb:"Positive indirect Coombs = already sensitized. RhoGAM prevents sensitization — it cannot reverse it."},
+  {stem:"HELLP syndrome is characterized by:",options:["Hypertension + edema + low platelets","Hemolysis + elevated liver enzymes + low platelets","Headache + elevated LFTs + low Hgb","Hyperglycemia + elevated liver enzymes + low potassium"],correct:1,fb:"HELLP = Hemolysis, Elevated Liver enzymes, Low Platelets. RUQ pain, N/V, malaise are classic symptoms."},
+  {stem:"GDM screening is performed at:",options:["10–13 weeks","15–20 weeks","24–28 weeks","35–37 weeks"],correct:2,fb:"GDM screening: 1-hour glucose challenge test at 24–28 weeks. ≥140 mg/dL = abnormal → 3-hour GTT."},
+  {stem:"Fundal height at the umbilicus corresponds to which gestational age?",options:["12 weeks","16 weeks","20 weeks","24 weeks"],correct:2,fb:"Umbilicus = 20 weeks. This is the one landmark tested most consistently on NCLEX."},
+  {stem:"Which vaccine is SAFE to administer during pregnancy?",options:["MMR","Varicella (chickenpox)","Tdap (at 27–36 weeks)","Live influenza (FluMist)"],correct:2,fb:"Tdap is safe and recommended in each pregnancy at 27–36 weeks. All live vaccines (MMR, Varicella, FluMist) are contraindicated."},
+  {stem:"A patient at 32 weeks reports feeling fewer than 10 fetal movements in 2 hours. The nurse should:",options:["Reassure her this is normal at 32 weeks","Instruct her to call back tomorrow if movements don't improve","Notify the provider — this requires further fetal assessment","Advise eating a snack and lying on her left side, then recount"]
+  ,correct:2,fb:"Fewer than 10 movements in 2 hours after 28 weeks = notify provider for further assessment (NST or BPP). Do not simply reassure or delay."}
+];
+let qqIdx=0, qqScore=0;
+function renderQQ(){
+  if(qqIdx>=QQ.length){
+    const pct=Math.round((qqScore/QQ.length)*100);const color=pct>=80?'#7c3aed':pct>=65?'#f59e0b':'#ef4444';
+    document.getElementById('qq-container').innerHTML=`<div class="qq-results"><div class="qq-results-score" style="color:${color}">${qqScore}/${QQ.length} · ${pct}%</div><p style="color:#475569;font-size:14px;margin-top:8px;">${pct>=80?'Excellent! You are solid on Maternal & OB.':pct>=65?'Good effort — review any questions you missed.':'Review the lessons and try again.'}</p><button class="qq-restart" onclick="qqIdx=0;qqScore=0;renderQQ()">Retake Quick Quiz</button></div>`;
+    return;
+  }
+  const q=QQ[qqIdx];
+  const opts=q.options.map((o,i)=>`<button class="qq-option" onclick="qqAnswer(${i})">${o}</button>`).join('');
+  document.getElementById('qq-container').innerHTML=`
+    <div class="pq-progress" style="margin-bottom:14px;">
+      <span class="pq-progress-label">Question ${qqIdx+1} of ${QQ.length}</span>
+      <div class="pq-bar-wrap"><div class="pq-bar" style="width:${(qqIdx/QQ.length)*100}%"></div></div>
+      <span class="pq-score-badge">${qqScore} correct</span>
+    </div>
+    <div class="pq-stem">${q.stem}</div>
+    ${opts}
+    <div class="qq-feedback" id="qq-fb"></div>
+    <div style="text-align:right;margin-top:8px;"><button class="btn-pq btn-pq-primary" id="qq-next" onclick="qqIdx++;renderQQ()" style="display:none">Next →</button></div>`;
+}
+function qqAnswer(i){
+  const q=QQ[qqIdx];
+  document.querySelectorAll('.qq-option').forEach((btn,j)=>{btn.disabled=true;if(j===q.correct)btn.classList.add('correct');else if(j===i&&i!==q.correct)btn.classList.add('incorrect');});
+  if(i===q.correct)qqScore++;
+  const fb=document.getElementById('qq-fb');fb.textContent=q.fb;fb.className='qq-feedback '+(i===q.correct?'correct':'incorrect');fb.style.display='block';
+  document.getElementById('qq-next').style.display='inline-flex';
+}
+renderQQ();
+
+// ── CHECKLIST ──
+const CHECKLIST_KEY='nclex_m2_checklist';
+const ITEMS=[
+  "I can differentiate all 5 hypertensive disorders of pregnancy",
+  "I know the 3 signs of Mag toxicity and the antidote (calcium gluconate)",
+  "I can interpret early, late, variable decelerations and state the priority action for each",
+  "I know why late decelerations are ominous and my FIRST action (stop Pitocin)",
+  "I can distinguish placenta previa from placental abruption by signs",
+  "I know that vaginal exam is CONTRAINDICATED with placenta previa",
+  "I know the cord prolapse position (knee-chest) and that I never push the cord back in",
+  "I understand RhoGAM indications and when it is contraindicated",
+  "I know the GDM screening timeline, testing cutoffs, and that insulin is preferred in pregnancy",
+  "I completed all 25 practice questions and reviewed rationales for any misses"
+];
+function loadChecklist(){try{return JSON.parse(localStorage.getItem(CHECKLIST_KEY)||'[]');}catch(e){return[];}}
+function saveChecklist(arr){localStorage.setItem(CHECKLIST_KEY,JSON.stringify(arr));}
+function renderChecklist(){
+  const checked=loadChecklist();
+  document.getElementById('checklist-items').innerHTML=ITEMS.map((item,i)=>{
+    const isChecked=checked.includes(i);
+    return `<div class="checklist-item ${isChecked?'checked':''}" onclick="toggleCheck(${i})"><div class="checklist-box">${isChecked?'✓':''}</div><div class="checklist-label">${item}</div></div>`;
+  }).join('');
+  const pct=Math.round((checked.length/ITEMS.length)*100);
+  document.getElementById('checklist-bar').style.width=pct+'%';
+  document.getElementById('checklist-progress').textContent=`${checked.length} of ${ITEMS.length} completed${pct===100?' · 🎉 Module Complete!':''}`;
+}
+function toggleCheck(i){let c=loadChecklist();if(c.includes(i))c=c.filter(x=>x!==i);else c.push(i);saveChecklist(c);renderChecklist();}
+renderChecklist();
+</script>
+</body>
+</html>
