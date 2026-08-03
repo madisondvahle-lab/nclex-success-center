@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 1 — Newborn Care · Study with Madison, RN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #059669; --green-light: #d1fae5; --green-mid: #6ee7b7;
+      --navy: #0f172a; --slate: #475569; --muted: #94a3b8;
+      --bg: #f0f4f8; --white: #ffffff;
+      --yellow: #f59e0b; --red: #ef4444; --blue: #0ea5e9; --purple: #7c3aed;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--navy); }
+
+    /* ── TOP NAV ── */
+    .top-bar {
+      background: var(--navy); color: #fff; padding: 0 24px;
+      display: flex; align-items: center; gap: 16px; height: 52px;
+      position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .top-bar a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .top-bar a:hover { color: #fff; }
+    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; }
+    .top-bar-badge { background: var(--green); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #064e3b 100%);
+      padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 0%, rgba(6,214,160,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-phase { display: inline-block; background: rgba(5,150,105,0.25); border: 1px solid rgba(5,150,105,0.5); color: var(--green-mid); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 99px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .hero h1 { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .hero p { font-size: 15px; color: #94a3b8; max-width: 520px; margin: 0 auto 20px; line-height: 1.6; }
+    .hero-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .hero-meta span { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 5px; }
+
+    /* ── PROGRESS NAV ── */
+    .progress-nav {
+      background: var(--white); border-bottom: 1px solid #e2e8f0;
+      overflow-x: auto; white-space: nowrap; padding: 0 20px;
+      display: flex; gap: 4px;
+    }
+    .progress-nav a {
+      display: inline-block; padding: 10px 14px; font-size: 12px; font-weight: 600;
+      color: var(--slate); text-decoration: none; border-bottom: 2px solid transparent;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .progress-nav a:hover { color: var(--green); border-bottom-color: var(--green-mid); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--white); border-radius: 18px; padding: 32px;
+      margin-bottom: 20px; border: 1.5px solid #e2e8f0;
+      box-shadow: 0 2px 12px rgba(15,23,42,0.04);
+    }
+    .section-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+    .section-num {
+      width: 36px; height: 36px; border-radius: 10px; background: var(--green); color: #fff;
+      font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 19px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+    .section-header p { font-size: 13px; color: var(--muted); }
+
+    /* ── TYPOGRAPHY ── */
+    .prose p { font-size: 14px; color: #334155; line-height: 1.75; margin-bottom: 12px; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--navy); }
+
+    ul.styled, ol.styled { padding-left: 20px; }
+    ul.styled li, ol.styled li { font-size: 14px; color: #334155; line-height: 1.7; margin-bottom: 6px; }
+    ul.styled li strong, ol.styled li strong { color: var(--navy); }
+
+    /* ── OBJECTIVE LIST ── */
+    .obj-list { display: flex; flex-direction: column; gap: 8px; }
+    .obj-item { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #334155; line-height: 1.6; }
+    .obj-check { width: 20px; height: 20px; background: var(--green-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; color: var(--green); font-weight: 800; margin-top: 1px; }
+
+    /* ── BIG PICTURE BOX ── */
+    .bp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:580px){ .bp-grid { grid-template-columns: 1fr; } }
+    .bp-card { background: var(--bg); border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+    .bp-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+    .bp-card p { font-size: 13px; color: #334155; line-height: 1.6; }
+    .highlight-box { background: #f0fdf4; border: 1.5px solid var(--green-mid); border-radius: 12px; padding: 16px 20px; margin-top: 14px; }
+    .highlight-box p { font-size: 14px; color: #065f46; line-height: 1.65; margin: 0; }
+
+    /* ── INFOGRAPHIC ── */
+    .infographic-wrap { text-align: center; background: #f8fafc; border-radius: 14px; padding: 20px; border: 1px solid #e2e8f0; }
+    .infographic-wrap img { max-width: 100%; border-radius: 10px; }
+    .infographic-wrap p { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    /* ── LESSON TABS ── */
+    .lesson-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+    .lesson-tab {
+      padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+      border: 1.5px solid #e2e8f0; background: #f8fafc; color: var(--slate);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .lesson-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .lesson-panel { display: none; }
+    .lesson-panel.active { display: block; }
+
+    /* ── LESSON TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+    .data-table th:first-child { border-radius: 8px 0 0 0; }
+    .data-table th:last-child { border-radius: 0 8px 0 0; }
+    .data-table td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: top; line-height: 1.5; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:nth-child(even) td { background: #f8fafc; }
+    .normal { color: #059669; font-weight: 600; }
+    .abnormal { color: #dc2626; font-weight: 600; }
+
+    /* ── MNEMONIC ── */
+    .mnemonic-grid { display: flex; flex-direction: column; gap: 8px; }
+    .mnemonic-row { display: flex; gap: 10px; align-items: flex-start; }
+    .mnemonic-letter { width: 32px; height: 32px; background: var(--navy); color: #fff; border-radius: 8px; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mnemonic-text strong { font-size: 14px; color: var(--navy); }
+    .mnemonic-text span { font-size: 13px; color: var(--slate); display: block; }
+
+    /* ── PEARL / TRAP ── */
+    .pearl-list, .trap-list { display: flex; flex-direction: column; gap: 10px; }
+    .pearl-item, .trap-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 14px; border-radius: 10px; font-size: 14px; line-height: 1.55;
+    }
+    .pearl-item { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; }
+    .trap-item { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+    .pearl-icon, .trap-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── CLINICAL CONNECTION ── */
+    .cc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:580px){ .cc-grid { grid-template-columns: 1fr; } }
+    .cc-card { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+    .cc-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--green); margin-bottom: 8px; }
+    .cc-card ul { padding-left: 16px; }
+    .cc-card li { font-size: 13px; color: #334155; line-height: 1.65; margin-bottom: 4px; }
+
+    /* ── PRIORITY FRAMEWORK ── */
+    .priority-steps { display: flex; flex-direction: column; gap: 6px; }
+    .p-step { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .p-step-num { width: 28px; height: 28px; border-radius: 8px; background: var(--green); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .p-step-content strong { font-size: 14px; color: var(--navy); display: block; margin-bottom: 2px; }
+    .p-step-content span { font-size: 13px; color: var(--slate); }
+
+    /* ── MED FOCUS ── */
+    .med-cards { display: flex; flex-direction: column; gap: 12px; }
+    .med-card { border-radius: 12px; border: 1.5px solid #e2e8f0; overflow: hidden; }
+    .med-header { background: var(--navy); color: #fff; padding: 10px 16px; font-size: 14px; font-weight: 700; }
+    .med-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media(max-width:500px){ .med-body { grid-template-columns: 1fr; } }
+    .med-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); display: block; margin-bottom: 3px; }
+    .med-field p { font-size: 13px; color: #334155; line-height: 1.5; }
+    .med-trap { grid-column: 1 / -1; background: #fff1f2; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #9f1239; border: 1px solid #fecdd3; }
+
+    /* ── PRACTICE QUIZ ── */
+    #pq-container { }
+    .pq-progress { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .pq-progress-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .pq-bar-wrap { flex: 1; height: 6px; background: #e2e8f0; border-radius: 99px; margin: 0 12px; }
+    .pq-bar { height: 6px; background: var(--green); border-radius: 99px; transition: width 0.3s; }
+    .pq-score-badge { font-size: 12px; font-weight: 800; color: var(--green); }
+    .pq-q-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .pq-type-tag { display: inline-flex; padding: 2px 9px; border-radius: 99px; font-size: 10px; font-weight: 700; margin-bottom: 10px; }
+    .pq-stem { font-size: 15px; color: var(--navy); line-height: 1.65; margin-bottom: 16px; font-weight: 500; }
+    .pq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .pq-option {
+      padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0;
+      background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155;
+      transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif;
+    }
+    .pq-option:hover:not(:disabled) { border-color: var(--green); background: #f0fdf4; }
+    .pq-option.correct { background: #f0fdf4; border-color: var(--green); color: #065f46; font-weight: 600; }
+    .pq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
+    .pq-option:disabled { cursor: default; }
+    .pq-sata-hint { font-size: 12px; color: var(--blue); font-weight: 600; margin-bottom: 8px; background: #eff6ff; padding: 6px 10px; border-radius: 8px; border: 1px solid #bfdbfe; }
+    .pq-rationale { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 13px; color: #334155; line-height: 1.65; margin-bottom: 14px; display: none; }
+    .pq-rationale strong { color: var(--navy); }
+    .pq-rationale.show { display: block; }
+    .pq-nav { display: flex; gap: 8px; align-items: center; }
+    .btn-pq { padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-pq-primary { background: var(--green); color: #fff; }
+    .btn-pq-primary:hover { background: #047857; }
+    .btn-pq-secondary { background: #f1f5f9; color: var(--slate); }
+    .btn-pq-secondary:hover { background: #e2e8f0; }
+    .pq-results { text-align: center; padding: 32px 20px; }
+    .pq-results-score { font-size: 52px; font-weight: 800; color: var(--green); }
+    .pq-results-label { font-size: 16px; color: var(--slate); margin-bottom: 20px; }
+    .pq-restart { padding: 12px 28px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    /* ── CASE STUDY ── */
+    .case-scenario { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+    .case-scenario-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #1d4ed8; margin-bottom: 8px; }
+    .case-scenario p { font-size: 14px; color: #1e3a8a; line-height: 1.65; }
+    .case-questions { display: flex; flex-direction: column; gap: 14px; }
+    .case-q { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .case-q-header { padding: 12px 16px; background: #f8fafc; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .case-q-body { padding: 14px 16px; display: none; font-size: 13px; color: #334155; line-height: 1.65; }
+    .case-q-body.open { display: block; }
+    .case-answer { background: #f0fdf4; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-weight: 600; color: #065f46; font-size: 13px; }
+
+    /* ── REMEDIATION ── */
+    .remed-section { margin-bottom: 18px; }
+    .remed-title { font-size: 13px; font-weight: 800; color: var(--navy); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 10px; }
+    .remed-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px; color: #334155; }
+    .remed-blank { width: 120px; border-bottom: 1.5px solid var(--navy); height: 18px; }
+    .btn-print { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+
+    /* ── QUICK QUIZ ── */
+    #qq-container { }
+    .qq-option { padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+    .qq-option:hover:not(:disabled) { border-color: var(--green); background: #f0fdf4; }
+    .qq-option.correct { background: #f0fdf4; border-color: var(--green); color: #065f46; font-weight: 600; }
+    .qq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
+    .qq-option:disabled { cursor: default; }
+    .qq-feedback { font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-top: 4px; margin-bottom: 10px; display: none; line-height: 1.55; }
+    .qq-feedback.correct { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+    .qq-feedback.incorrect { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .qq-results { text-align: center; padding: 24px; }
+    .qq-results-score { font-size: 42px; font-weight: 800; }
+    .qq-restart { padding: 10px 24px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+
+    /* ── CHECKLIST ── */
+    .checklist-items { display: flex; flex-direction: column; gap: 8px; }
+    .checklist-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
+    .checklist-item.checked { background: #f0fdf4; border-color: var(--green-mid); }
+    .checklist-box { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 1px; }
+    .checklist-item.checked .checklist-box { background: var(--green); border-color: var(--green); color: #fff; font-size: 12px; }
+    .checklist-label { font-size: 14px; color: #334155; line-height: 1.55; }
+    .checklist-item.checked .checklist-label { color: #065f46; text-decoration: line-through; text-decoration-color: var(--green-mid); }
+    .checklist-progress { margin-top: 16px; font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
+    .checklist-bar-wrap { height: 8px; background: #e2e8f0; border-radius: 99px; margin: 8px 0; }
+    .checklist-bar { height: 8px; background: var(--green); border-radius: 99px; transition: width 0.3s; }
+
+    @media print {
+      .top-bar, .progress-nav, .hero, .section-card:not(#section-remediation) { display: none !important; }
+      #section-remediation { box-shadow: none; border: none; }
+    }
+    @media(max-width:480px) {
+      .section-card { padding: 20px 16px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="alyssa-hub.html">← Hub</a>
+  <div class="top-bar-title">Module 1 — Newborn Care</div>
+  <span class="top-bar-badge">Phase 1</span>
+</div>
+
+<!-- SECTION NAV -->
+<div class="progress-nav">
+  <a href="#section-overview">Overview</a>
+  <a href="#section-objectives">Objectives</a>
+  <a href="#section-bigpicture">Big Picture</a>
+  <a href="#section-graphic">Graphic</a>
+  <a href="#section-deepdive">Deep Dive</a>
+  <a href="#section-memory">Memory Tricks</a>
+  <a href="#section-pearls">Pearls</a>
+  <a href="#section-traps">Traps</a>
+  <a href="#section-clinical">Clinical</a>
+  <a href="#section-priority">Priority</a>
+  <a href="#section-meds">Meds</a>
+  <a href="#section-practice">Practice Qs</a>
+  <a href="#section-cases">Cases</a>
+  <a href="#section-remediation">Remediation</a>
+  <a href="#section-quickquiz">Quick Quiz</a>
+  <a href="#section-checklist">Checklist</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-phase">Phase 1 · Foundations</div>
+  <h1>🍼 Newborn Care</h1>
+  <p>Master newborn assessment, APGAR scoring, fetal circulation, and the critical difference between normal and reportable findings.</p>
+  <div class="hero-meta">
+    <span>⏱ 2–3 hours</span>
+    <span>📋 25 Practice Questions</span>
+    <span>🔬 7 Lessons</span>
+    <span>✅ 10-Q Quick Quiz</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ① OVERVIEW -->
+<div class="section-card" id="section-overview">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div><h2>Module Overview</h2><p>What this module covers and why it matters</p></div>
+  </div>
+  <div class="prose">
+    <p>Newborn care appears on <strong>every NCLEX exam</strong>. Whether you're testing pediatrics, OB, or pharmacology, the newborn is always nearby. This module builds your foundation in neonatal assessment so you can confidently identify what's normal, what needs monitoring, and what requires immediate action.</p>
+    <p>The NCLEX loves testing the distinction between <strong>physiologic (normal) findings</strong> and <strong>pathologic (report immediately) findings</strong>. Mastering this distinction in the newborn is your highest-yield study move for this module.</p>
+  </div>
+  <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#059669;margin-bottom:4px;">Prerequisites</div>
+      <div style="font-size:13px;color:#334155;">None — this is the starting point</div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1d4ed8;margin-bottom:4px;">Assigned Resources</div>
+      <div style="font-size:13px;color:#334155;">Archer CAT · Bootcamp Review</div>
+    </div>
+  </div>
+</div>
+
+<!-- ② LEARNING OBJECTIVES -->
+<div class="section-card" id="section-objectives">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div><h2>Learning Objectives</h2><p>By the end of this module, you will be able to:</p></div>
+  </div>
+  <div class="obj-list">
+    <div class="obj-item"><div class="obj-check">✓</div><span>Score and interpret a 1-minute and 5-minute <strong>APGAR</strong> and identify the appropriate nursing response</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Distinguish <strong>normal newborn findings</strong> (acrocyanosis, vernix, Mongolian spots) from findings requiring immediate provider notification</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Explain the transition from <strong>fetal to extrauterine circulation</strong> including ductus venosus, ductus arteriosus, and foramen ovale</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Recognize signs of <strong>neonatal respiratory distress</strong> and select the priority nursing intervention</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Apply <strong>thermoregulation principles</strong> and explain why cold stress leads to hypoglycemia and respiratory distress</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Identify expected <strong>wet diaper counts</strong> by day of life and recognize signs of inadequate intake</span></div>
+    <div class="obj-item"><div class="obj-check">✓</div><span>Classify jaundice as <strong>physiologic vs. pathologic</strong> based on timing and teach families safe sleep and cord care</span></div>
+  </div>
+</div>
+
+<!-- ③ THE BIG PICTURE -->
+<div class="section-card" id="section-bigpicture">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div><h2>The Big Picture</h2><p>How to frame this content before you dive in</p></div>
+  </div>
+  <div class="bp-grid">
+    <div class="bp-card">
+      <div class="bp-card-title">What the NCLEX tests</div>
+      <p>Normal vs. abnormal findings · When to notify the provider · Priority action in respiratory distress · Teaching parents at discharge</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">The core concept</div>
+      <p>Newborns are transitioning from fetal to independent life. Most findings that look scary are normal. A few that look subtle are emergencies.</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">The #1 NCLEX trap here</div>
+      <p>Blue hands and feet = <strong>normal</strong> (acrocyanosis). Blue lips and tongue = <strong>emergency</strong>. Students mix these up constantly.</p>
+    </div>
+    <div class="bp-card">
+      <div class="bp-card-title">Your priority framework</div>
+      <p>Respiratory → Thermoregulation → Glucose → Feeding → Family teaching. Always in this order.</p>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <p>💡 <strong>Madison's Rule:</strong> When in doubt, ask — is the baby blue in the middle (emergency) or just at the edges (normal)? Is the jaundice before or after 24 hours (before = always pathological)? These two questions alone will carry you through most newborn NCLEX questions.</p>
+  </div>
+</div>
+
+<!-- ④ HIGH-YIELD GRAPHIC -->
+<div class="section-card" id="section-graphic">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div><h2>High-Yield Graphic</h2><p>Study this before reading the deep dive lessons</p></div>
+  </div>
+  <div class="infographic-wrap">
+    <img src="module1-infographic.png" alt="Module 1 Newborn Care Infographic" onerror="this.parentElement.innerHTML='<div style=\'padding:40px;color:#94a3b8;font-size:14px;\'>📋 Upload <strong>module1-infographic.png</strong> to this folder to display the infographic here.</div>'" />
+    <p>Study this graphic for 2–3 minutes before moving on. Look for patterns, not just facts.</p>
+  </div>
+</div>
+
+<!-- ⑤ DEEP DIVE LESSONS -->
+<div class="section-card" id="section-deepdive">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div><h2>Deep Dive Lessons</h2><p>Select a lesson to expand</p></div>
+  </div>
+  <div class="lesson-tabs">
+    <button class="lesson-tab active" onclick="showLesson('apgar')">A · APGAR</button>
+    <button class="lesson-tab" onclick="showLesson('findings')">B · Normal vs. Abnormal</button>
+    <button class="lesson-tab" onclick="showLesson('circulation')">C · Circulation</button>
+    <button class="lesson-tab" onclick="showLesson('thermo')">D · Thermoregulation</button>
+    <button class="lesson-tab" onclick="showLesson('feeding')">E · Feeding</button>
+    <button class="lesson-tab" onclick="showLesson('jaundice')">F · Jaundice</button>
+    <button class="lesson-tab" onclick="showLesson('safety')">G · Safety</button>
+  </div>
+
+  <div id="lesson-apgar" class="lesson-panel active">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">APGAR is scored at <strong>1 minute</strong> and <strong>5 minutes</strong> of life. It does <em>not</em> predict long-term neurological outcome — that's an NCLEX trap.</p>
+    <table class="data-table">
+      <thead><tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A</strong>ppearance</td><td>Blue all over</td><td>Blue extremities (pink body)</td><td>Pink all over</td></tr>
+        <tr><td><strong>P</strong>ulse</td><td>Absent</td><td>&lt;100 bpm</td><td>≥100 bpm</td></tr>
+        <tr><td><strong>G</strong>rimace</td><td>No response</td><td>Grimace only</td><td>Cry/cough/sneeze</td></tr>
+        <tr><td><strong>A</strong>ctivity</td><td>Limp/flaccid</td><td>Some flexion</td><td>Active motion</td></tr>
+        <tr><td><strong>R</strong>espirations</td><td>Absent</td><td>Slow/irregular</td><td>Strong cry</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+      <div style="padding:10px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>7–10:</strong> Normal — routine care</div>
+      <div style="padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #fde047;font-size:14px;color:#92400e;"><strong>4–6:</strong> Moderate difficulty — stimulate + supplemental O₂, reassess at 5 min</div>
+      <div style="padding:10px 14px;border-radius:10px;background:#fff1f2;border:1px solid #fecdd3;font-size:14px;color:#9f1239;"><strong>0–3:</strong> Severe distress — begin immediate resuscitation</div>
+    </div>
+  </div>
+
+  <div id="lesson-findings" class="lesson-panel">
+    <table class="data-table">
+      <thead><tr><th>Finding</th><th>Normal or Not?</th><th>Key Point</th></tr></thead>
+      <tbody>
+        <tr><td>Acrocyanosis (blue hands/feet)</td><td><span class="normal">Normal</span></td><td>Peripheral, not central. Goes away in days.</td></tr>
+        <tr><td>Central cyanosis (blue lips/tongue)</td><td><span class="abnormal">Report immediately</span></td><td>Cardiac or respiratory emergency</td></tr>
+        <tr><td>Vernix caseosa</td><td><span class="normal">Normal</span></td><td>Protective coating, especially in skin folds</td></tr>
+        <tr><td>Lanugo</td><td><span class="normal">Normal</span></td><td>Fine hair on back/shoulders, especially preterm</td></tr>
+        <tr><td>Mongolian spots</td><td><span class="normal">Normal</span></td><td>Blue-gray spots on lower back — NOT bruising</td></tr>
+        <tr><td>Milia</td><td><span class="normal">Normal</span></td><td>Tiny white dots on nose — clogged sebaceous glands</td></tr>
+        <tr><td>Erythema toxicum</td><td><span class="normal">Normal</span></td><td>Blotchy rash — appears 1–3 days, resolves quickly</td></tr>
+        <tr><td>Grunting, flaring, retractions</td><td><span class="abnormal">Report immediately</span></td><td>Signs of respiratory distress</td></tr>
+        <tr><td>Apnea &gt;20 seconds</td><td><span class="abnormal">Report immediately</span></td><td>Especially with bradycardia or color change</td></tr>
+        <tr><td>Jaundice in first 24 hours</td><td><span class="abnormal">Always pathological</span></td><td>May indicate hemolytic disease</td></tr>
+        <tr><td>Jaundice after 24 hours</td><td><span class="normal">Physiologic</span></td><td>Peaks days 3–5, resolves by 2 weeks</td></tr>
+        <tr><td>Weight loss up to 10%</td><td><span class="normal">Normal</span></td><td>Regained by day 10–14</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="lesson-circulation" class="lesson-panel">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">Three fetal structures close after birth. Know each one's job and what happens when they fail to close.</p>
+    <table class="data-table">
+      <thead><tr><th>Structure</th><th>Connects</th><th>Purpose</th><th>What closes it</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Ductus Venosus</strong></td><td>Umbilical vein → IVC</td><td>Bypasses liver</td><td>First breath / cord clamping</td></tr>
+        <tr><td><strong>Foramen Ovale</strong></td><td>Right atrium → Left atrium</td><td>Bypasses lungs</td><td>Increased left atrial pressure after birth</td></tr>
+        <tr><td><strong>Ductus Arteriosus</strong></td><td>Pulmonary artery → Aorta</td><td>Bypasses lungs</td><td>Increased O₂ tension after first breath</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:14px;">
+      <p>💡 If ductus arteriosus stays open (PDA), blood shunts left → right, causing pulmonary overcirculation. Treated with indomethacin (closes it) or surgery.</p>
+    </div>
+  </div>
+
+  <div id="lesson-thermo" class="lesson-panel">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:12px;">Newborns cannot shiver. They use <strong>nonshivering thermogenesis</strong> (burning brown adipose tissue) to generate heat — which consumes enormous amounts of oxygen and glucose.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+      <div style="padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #fde047;font-size:13px;color:#92400e;"><strong>Cold stress → </strong>↑ O₂ consumption → hypoxia → respiratory distress</div>
+      <div style="padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #fde047;font-size:13px;color:#92400e;"><strong>Cold stress → </strong>↑ glucose use → hypoglycemia → jitteriness/seizures</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Heat Loss Type</th><th>Example</th><th>Prevention</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Evaporation</strong></td><td>Wet baby after delivery</td><td>Dry immediately with warm blankets</td></tr>
+        <tr><td><strong>Conduction</strong></td><td>Cold scale or surface</td><td>Pre-warm all surfaces</td></tr>
+        <tr><td><strong>Convection</strong></td><td>Drafts, air conditioning</td><td>Keep room warm, no drafts</td></tr>
+        <tr><td><strong>Radiation</strong></td><td>Cold walls/windows nearby</td><td>Keep baby away from cold surfaces</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;font-size:13px;color:#334155;line-height:1.65;">Interventions: dry + swaddle, skin-to-skin, knit cap, radiant warmer, pre-warm blankets.</p>
+  </div>
+
+  <div id="lesson-feeding" class="lesson-panel">
+    <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">Wet diapers are your best daily indicator of adequate intake in breastfed newborns.</p>
+    <table class="data-table">
+      <thead><tr><th>Day of Life</th><th>Expected Wet Diapers</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1</td><td>1 wet diaper</td></tr>
+        <tr><td>Day 2</td><td>2 wet diapers</td></tr>
+        <tr><td>Day 3</td><td>3 wet diapers</td></tr>
+        <tr><td>Day 4+</td><td>6–8 wet diapers per day</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;font-size:14px;color:#334155;line-height:1.7;">
+      <strong>Weight loss:</strong> Up to <strong>10%</strong> of birth weight in first days is normal. Birth weight regained by <strong>day 10–14</strong>.<br/>
+      <strong>Feeding frequency:</strong> Every 2–3 hours, 8–12 times/day for breastfed newborns.<br/>
+      <strong>Hypoglycemia risk:</strong> LGA infants, infants of diabetic mothers, preterm, SGA. Check glucose in first hour.
+    </div>
+  </div>
+
+  <div id="lesson-jaundice" class="lesson-panel">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+      <div style="padding:14px 16px;border-radius:12px;background:#fff1f2;border:1.5px solid #fecdd3;">
+        <div style="font-size:12px;font-weight:800;color:#9f1239;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Pathological Jaundice</div>
+        <p style="font-size:14px;color:#7f1d1d;line-height:1.65;">Appears <strong>within the first 24 hours</strong> of life. Always investigate — may indicate ABO/Rh incompatibility, G6PD deficiency, or sepsis. Bilirubin rises rapidly (&gt;5 mg/dL/day).</p>
+      </div>
+      <div style="padding:14px 16px;border-radius:12px;background:#f0fdf4;border:1.5px solid #bbf7d0;">
+        <div style="font-size:12px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Physiological Jaundice</div>
+        <p style="font-size:14px;color:#064e3b;line-height:1.65;">Appears <strong>after 24 hours</strong>, typically peaks days 3–5, resolves by 2 weeks. Caused by normal RBC breakdown and immature liver. Encourage frequent feeding to promote excretion.</p>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#334155;line-height:1.65;"><strong>Treatment:</strong> Phototherapy (blue light breaks down bilirubin in skin). Eyes must be protected. Increase fluid intake. Monitor skin color head-to-toe (jaundice progresses cephalocaudally — head first, feet last).</p>
+  </div>
+
+  <div id="lesson-safety" class="lesson-panel">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Safe Sleep (ABCs):</strong> Alone · Back · Crib (firm, flat surface). No soft objects, no bed-sharing, room-sharing OK.</div>
+      <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Umbilical Cord:</strong> Keep dry and clean. Fold diaper below stump. Falls off in 7–14 days. No tub baths until it falls off. Report redness, foul odor, drainage.</div>
+      <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Car Seat:</strong> Rear-facing, never in front seat. Required before discharge. Always at 45-degree angle for newborns.</div>
+      <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Circumcision care:</strong> Yellow exudate = normal healing. Report bleeding &gt; quarter-sized spot, signs of infection, inability to void within 8 hrs post-procedure.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑥ MEMORY TRICKS -->
+<div class="section-card" id="section-memory">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div><h2>Memory Tricks</h2><p>Mnemonics and anchors built to stick</p></div>
+  </div>
+  <div class="mnemonic-grid">
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">A</div>
+      <div class="mnemonic-text"><strong>APGAR = Activity, Pulse, Grimace, Appearance, Respirations</strong><span>Each scored 0–2. Remember it backward: how ACTIVE is this baby?</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">J</div>
+      <div class="mnemonic-text"><strong>Jaundice Timing Rule: "First 24 = Bad, After 24 = Dad's fine"</strong><span>Before 24 hrs = pathological, always investigate. After 24 hrs = physiologic, monitor and feed.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">W</div>
+      <div class="mnemonic-text"><strong>Wet Diapers = Day of Life (up to day 4)</strong><span>Day 1 = 1 wet, Day 2 = 2 wet, Day 3 = 3 wet, Day 4+ = 6–8 wet. Easy.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">C</div>
+      <div class="mnemonic-text"><strong>Cold Stress Chain: Cold → Nonshiver thermo → Burns O₂ + Glucose → Hypoxia + Hypoglycemia</strong><span>One cold baby = two problems. Always check glucose AND respiratory status.</span></div>
+    </div>
+    <div class="mnemonic-row">
+      <div class="mnemonic-letter">3</div>
+      <div class="mnemonic-text"><strong>3 Fetal Shunts: "Vein-to-Vein, Right-to-Left, Pulm-to-Aorta"</strong><span>Ductus Venosus (liver bypass) · Foramen Ovale (heart bypass) · Ductus Arteriosus (lung bypass)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ NCLEX PEARLS -->
+<div class="section-card" id="section-pearls">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div><h2>NCLEX Pearls</h2><p>Always-true statements you can take to the exam</p></div>
+  </div>
+  <div class="pearl-list">
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>APGAR 4–6:</strong> Stimulate + supplemental O₂, reassess at 5 minutes</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>APGAR 0–3:</strong> Begin immediate resuscitation — do not wait for 5-minute score</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Jaundice within first 24 hours</strong> is ALWAYS pathological — never reassure, always notify</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Day 4+ breastfed newborn:</strong> 6–8 wet diapers expected. Fewer than 4 at day 5 = inadequate intake</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Weight loss up to 10%</strong> is physiologically normal. Regained by day 10–14.</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Cold stress increases</strong> O₂ consumption → causes hypoglycemia AND respiratory distress</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Vitamin K</strong> prevents hemorrhagic disease of the newborn — not jaundice, not eye infections</span></div>
+    <div class="pearl-item"><div class="pearl-icon">💎</div><span><strong>Erythromycin eye ointment</strong> prevents ophthalmia neonatorum (gonorrheal/chlamydial exposure at delivery)</span></div>
+  </div>
+</div>
+
+<!-- ⑧ NCLEX TRAPS -->
+<div class="section-card" id="section-traps">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div><h2>NCLEX Traps</h2><p>Where students get it wrong — and why</p></div>
+  </div>
+  <div class="trap-list">
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Acrocyanosis ≠ central cyanosis.</strong> Blue hands and feet are NORMAL. Only blue lips/tongue/trunk require action. Students confuse these constantly.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>APGAR does NOT predict long-term neurological outcomes.</strong> Common wrong answer: "This score indicates the child will have developmental delays."</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Mongolian spots are NOT bruising.</strong> Blue-gray sacral spots are normal in darker-skinned newborns. Document; do not treat or report as abuse.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Physiologic jaundice appears AFTER 24 hours, not before.</strong> "After 24 = fine to watch" — but don't say that if jaundice appears on day 12 without resolving.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Vitamin K is NOT for jaundice.</strong> It prevents bleeding. Phototherapy treats jaundice. These get swapped on exams.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Safe sleep: any soft object in crib = wrong answer.</strong> Blankets, bumpers, pillows, stuffed animals — all are SIDS risk factors. Room-sharing is OK; bed-sharing is not.</span></div>
+    <div class="trap-item"><div class="trap-icon">⚠️</div><span><strong>Umbilical cord: do NOT apply antibiotic ointment routinely.</strong> Keep it dry and clean. Ointment = wrong answer unless specifically ordered.</span></div>
+  </div>
+</div>
+
+<!-- ⑨ CLINICAL CONNECTIONS -->
+<div class="section-card" id="section-clinical">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div><h2>Clinical Connections</h2><p>How this shows up at the bedside</p></div>
+  </div>
+  <div class="cc-grid">
+    <div class="cc-card">
+      <div class="cc-title">📞 Call the Provider When...</div>
+      <ul>
+        <li>Central cyanosis (lips/tongue blue)</li>
+        <li>Grunting, flaring, retractions</li>
+        <li>Apnea &gt;20 seconds</li>
+        <li>Jaundice within first 24 hours</li>
+        <li>Glucose &lt;45 mg/dL despite feeding</li>
+        <li>Temperature instability</li>
+        <li>Seizure activity</li>
+        <li>Poor feeding + lethargy</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">🏠 Discharge Teaching Priorities</div>
+      <ul>
+        <li>Safe sleep (back, alone, firm surface)</li>
+        <li>Cord care (keep dry, fold diaper below)</li>
+        <li>Wet diaper count by day of life</li>
+        <li>Feeding frequency (8–12x/day)</li>
+        <li>When to call pediatrician</li>
+        <li>Car seat safety</li>
+        <li>Follow-up appointment in 2–3 days</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">⚡ Immediate Actions</div>
+      <ul>
+        <li>Respiratory distress → Airway, O₂, call for help</li>
+        <li>Hypoglycemia → Feed first, then recheck</li>
+        <li>Hypothermia → Dry, swaddle, skin-to-skin</li>
+        <li>Jaundice &lt;24hrs → Notify, draw bilirubin</li>
+      </ul>
+    </div>
+    <div class="cc-card">
+      <div class="cc-title">🔬 High-Risk Newborns</div>
+      <ul>
+        <li>LGA / Infant of diabetic mother → hypoglycemia</li>
+        <li>Preterm → hypothermia, RDS, NEC</li>
+        <li>SGA → hypoglycemia, polycythemia</li>
+        <li>Rh- mom + Rh+ baby → hemolytic disease</li>
+        <li>ABO incompatibility → pathologic jaundice</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ⑩ PRIORITY FRAMEWORK -->
+<div class="section-card" id="section-priority">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div><h2>Priority Framework</h2><p>How to sequence your thinking on NCLEX questions</p></div>
+  </div>
+  <div class="priority-steps">
+    <div class="p-step">
+      <div class="p-step-num">1</div>
+      <div class="p-step-content"><strong>Airway & Breathing</strong><span>Respiratory distress is always the first priority. Grunting + retractions + central cyanosis = act immediately.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">2</div>
+      <div class="p-step-content"><strong>Thermoregulation</strong><span>Hypothermia causes two downstream emergencies: hypoxia and hypoglycemia. Prevent cold stress first.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">3</div>
+      <div class="p-step-content"><strong>Glucose</strong><span>Check glucose in at-risk newborns (LGA, IDM, preterm, SGA) before first feeding. Feed if hypoglycemic and baby can swallow.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">4</div>
+      <div class="p-step-content"><strong>Feeding & Hydration</strong><span>Assess latch/feeding effectiveness. Monitor wet diapers daily. Weight loss &gt;10% or fewer wet diapers than expected = intervene.</span></div>
+    </div>
+    <div class="p-step">
+      <div class="p-step-num">5</div>
+      <div class="p-step-content"><strong>Family Education</strong><span>Discharge teaching is a nursing priority — but only after physiologic stability is confirmed. Assess parent readiness first.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑪ MEDICATION FOCUS -->
+<div class="section-card" id="section-meds">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div><h2>Medication Focus</h2><p>Key newborn medications — know the purpose, route, and traps</p></div>
+  </div>
+  <div class="med-cards">
+    <div class="med-card">
+      <div class="med-header">Phytonadione (Vitamin K₁) — AquaMEPHYTON</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Prevents hemorrhagic disease of the newborn (HDN) — newborns are born with sterile gut, no gut flora to produce Vitamin K</p></div>
+        <div class="med-field"><label>Route / Timing</label><p>IM injection, vastus lateralis · Given within 1–6 hours of birth</p></div>
+        <div class="med-field"><label>Dose</label><p>0.5–1 mg IM (single dose)</p></div>
+        <div class="med-field"><label>What it does NOT do</label><p>Does NOT prevent jaundice · Does NOT treat eye infections · Does NOT require consent in most states</p></div>
+        <div class="med-trap">⚠️ NCLEX TRAP: Parents ask "Why does my baby need a shot?" — answer is bleeding prevention (HDN), not jaundice.</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-header">Erythromycin Ophthalmic Ointment</div>
+      <div class="med-body">
+        <div class="med-field"><label>Purpose</label><p>Prevents ophthalmia neonatorum — eye infection from maternal gonorrhea or chlamydia exposure during delivery</p></div>
+        <div class="med-field"><label>Route / Timing</label><p>Topical eye ointment · Given within 1–2 hours of birth · Both eyes</p></div>
+        <div class="med-field"><label>Side Effects</label><p>Temporary blurred vision (chemical conjunctivitis) — normal, resolves in 24–48 hours</p></div>
+        <div class="med-field"><label>Parent Teaching</label><p>Baby's vision temporarily blurry — does not affect bonding long-term; brief delay in eye-to-eye contact is expected</p></div>
+        <div class="med-trap">⚠️ NCLEX TRAP: Erythromycin = eye infections, not bleeding. Vitamin K = bleeding. These are swapped on distractors constantly.</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-header">Hepatitis B Vaccine (HepB)</div>
+      <div class="med-body">
+        <div class="med-field"><label>Timing</label><p>First dose given within <strong>24 hours</strong> of birth (or before discharge for healthy newborns)</p></div>
+        <div class="med-field"><label>Route</label><p>IM · Vastus lateralis · 0.5 mL</p></div>
+        <div class="med-field"><label>Series</label><p>3-dose series: Birth, 1–2 months, 6 months</p></div>
+        <div class="med-field"><label>If Mom HBsAg+</label><p>Give HepB vaccine AND HepB Immune Globulin (HBIG) within 12 hours of birth</p></div>
+        <div class="med-trap">⚠️ NCLEX TRAP: If mom is HBsAg positive — BOTH HepB vaccine AND HBIG are required, not just the vaccine alone.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑫ PRACTICE QUESTIONS -->
+<div class="section-card" id="section-practice">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div><h2>Practice Questions</h2><p>25 questions · All types · Rationale after each answer</p></div>
+  </div>
+  <div id="pq-container">
+    <div class="pq-progress">
+      <span class="pq-progress-label" id="pq-label">Question 1 of 25</span>
+      <div class="pq-bar-wrap"><div class="pq-bar" id="pq-bar" style="width:0%"></div></div>
+      <span class="pq-score-badge" id="pq-score">Score: 0</span>
+    </div>
+    <div id="pq-question-area"></div>
+  </div>
+</div>
+
+<!-- ⑬ CASE STUDIES -->
+<div class="section-card" id="section-cases">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div><h2>Case Studies</h2><p>NGN-style clinical scenarios — think through each before revealing the answer</p></div>
+  </div>
+
+  <div style="margin-bottom:24px;">
+    <div class="case-scenario">
+      <div class="case-scenario-label">Case 1 · Respiratory Distress</div>
+      <p>A 2-hour-old newborn born at 38 weeks gestation develops grunting on expiration, nasal flaring, and intercostal retractions. SpO₂ is 86% on room air. The infant has central cyanosis of the lips and tongue. The mother received one dose of betamethasone 12 hours prior to delivery.</p>
+    </div>
+    <div class="case-questions">
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q1: Which finding is most immediately life-threatening? <span>▾</span></div>
+        <div class="case-q-body"><p>SpO₂ 86% with central cyanosis is the most immediately life-threatening finding. This indicates severe hypoxemia. Airway and oxygenation are always the first priority.</p><div class="case-answer">✓ Central cyanosis with SpO₂ 86% — ABCs first</div></div>
+      </div>
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q2: Select ALL signs of neonatal respiratory distress present in this case. <span>▾</span></div>
+        <div class="case-q-body"><p>Signs of RDS: nasal flaring, grunting on expiration, intercostal retractions, central cyanosis, low SpO₂. Normal temperature and HR (if normal) are not RDS signs. Peripheral cyanosis (acrocyanosis) alone would not count.</p><div class="case-answer">✓ Nasal flaring · Expiratory grunting · Intercostal retractions · Central cyanosis · SpO₂ 86%</div></div>
+      </div>
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q3: What is the nurse's FIRST priority action? <span>▾</span></div>
+        <div class="case-q-body"><p>Using the ABC framework: Airway → ensure patent airway and call for immediate respiratory assistance. Documentation and glucose assessment come after stabilizing the airway.</p><div class="case-answer">✓ Ensure airway patency and call for immediate respiratory support</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="case-scenario">
+      <div class="case-scenario-label">Case 2 · Jaundice</div>
+      <p>An 18-hour-old newborn is noted to have yellowing of the skin from face to upper abdomen. The mother is blood type O+ and the infant is A+. The infant has had only 1 wet diaper since birth and is latching poorly. Bilirubin is currently 9 mg/dL.</p>
+    </div>
+    <div class="case-questions">
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q1: How should the nurse classify this jaundice? <span>▾</span></div>
+        <div class="case-q-body"><p>Jaundice appearing within the first 24 hours of life is ALWAYS pathological. This is the critical NCLEX distinction. Physiologic jaundice does not appear until after 24 hours.</p><div class="case-answer">✓ Pathological — jaundice within 24 hours is always pathological</div></div>
+      </div>
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q2: What is the most likely cause? <span>▾</span></div>
+        <div class="case-q-body"><p>O+ mother with A+ infant = ABO incompatibility. Maternal anti-A antibodies cross the placenta and destroy fetal RBCs, causing hemolysis and elevated bilirubin.</p><div class="case-answer">✓ ABO incompatibility (O+ mother / A+ infant)</div></div>
+      </div>
+      <div class="case-q">
+        <div class="case-q-header" onclick="toggleCase(this)">Q3: Select ALL appropriate nursing actions. <span>▾</span></div>
+        <div class="case-q-body"><p>Actions: Notify provider immediately, monitor bilirubin levels per order, encourage frequent feeding (helps eliminate bilirubin via stool), assess for hemolysis signs (pallor, lethargy), prepare for phototherapy. Do NOT reassure parents this is normal — it is pathological.</p><div class="case-answer">✓ Notify provider · Monitor bilirubin · Encourage feeding · Assess for hemolysis · Prepare for phototherapy</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑭ REMEDIATION WORKSHEET -->
+<div class="section-card" id="section-remediation">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div><h2>Remediation Worksheet</h2><p>Fill in the blanks — print or complete digitally</p></div>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨️ Print Worksheet</button>
+
+  <div class="remed-section">
+    <div class="remed-title">APGAR Scoring</div>
+    <div class="remed-row"><span>APGAR 7–10 =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>APGAR 4–6 =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>APGAR 0–3 =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>APGAR does NOT predict:</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Normal vs. Abnormal</div>
+    <div class="remed-row"><span>Blue hands/feet (acrocyanosis) =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Blue lips/tongue =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Jaundice within 24 hrs =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Jaundice after 24 hrs =</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Mongolian spots =</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Wet Diapers by Day of Life</div>
+    <div class="remed-row"><span>Day 1:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Day 2:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Day 3:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Day 4+:</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Medications</div>
+    <div class="remed-row"><span>Vitamin K purpose:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Erythromycin eye ointment purpose:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>HepB vaccine timing:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>If mom is HBsAg+, also give:</span><div class="remed-blank"></div></div>
+  </div>
+
+  <div class="remed-section">
+    <div class="remed-title">Fetal Circulation Shunts</div>
+    <div class="remed-row"><span>Ductus Venosus connects:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Foramen Ovale connects:</span><div class="remed-blank"></div></div>
+    <div class="remed-row"><span>Ductus Arteriosus connects:</span><div class="remed-blank"></div></div>
+  </div>
+</div>
+
+<!-- ⑮ QUICK QUIZ -->
+<div class="section-card" id="section-quickquiz">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <div><h2>Quick Quiz</h2><p>10 questions · Instant feedback · No scrolling</p></div>
+  </div>
+  <div id="qq-container"></div>
+</div>
+
+<!-- ⑯ MODULE CHECKLIST -->
+<div class="section-card" id="section-checklist">
+  <div class="section-header">
+    <div class="section-num">16</div>
+    <div><h2>Module Checklist</h2><p>Check off each item when you feel confident — saves automatically</p></div>
+  </div>
+  <div class="checklist-items" id="checklist-items"></div>
+  <div class="checklist-bar-wrap"><div class="checklist-bar" id="checklist-bar" style="width:0%"></div></div>
+  <div class="checklist-progress" id="checklist-progress">0 of 10 completed</div>
+</div>
+
+</div><!-- end .page -->
+
+<script>
+// ═══════════════════════════════════════════
+// LESSON TABS
+// ═══════════════════════════════════════════
+function showLesson(id) {
+  document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.lesson-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('lesson-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+// CASE STUDY TOGGLES
+// ═══════════════════════════════════════════
+function toggleCase(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════
+// PRACTICE QUESTIONS DATA
+// ═══════════════════════════════════════════
+const PQ = [
+  { type:'MCQ', stem:"A newborn receives an APGAR score of 5 at 1 minute of life. How should the nurse interpret this finding and plan care?", options:["Normal (7–10) — document and continue routine newborn care","Moderate difficulty (4–6) — stimulate and provide supplemental oxygen, reassess at 5 minutes","Severe distress (0–3) — begin immediate resuscitation","This score predicts the newborn's long-term neurological outcomes"], correct:[1], rationale:"APGAR 4–6 = moderate difficulty. Stimulate + supplemental O₂, reassess at 5 min. APGAR does NOT predict future outcomes." },
+  { type:'MCQ', stem:"Which finding in a 4-hour-old newborn should the nurse report to the provider immediately?", options:["Acrocyanosis of the hands and feet","Vernix caseosa covering the skin","Central cyanosis of the lips and tongue","Mongolian spots on the lower back"], correct:[2], rationale:"Central cyanosis (blue lips/tongue) = cardiac/respiratory emergency. Acrocyanosis, vernix, and Mongolian spots are all normal findings." },
+  { type:'MCQ', stem:"Which structure allows blood to bypass the fetal liver, shunting it directly from the umbilical vein to the inferior vena cava?", options:["Ductus arteriosus","Foramen ovale","Ductus venosus","Umbilical artery"], correct:[2], rationale:"Ductus venosus = umbilical vein → IVC (bypasses liver). Ductus arteriosus = pulmonary artery → aorta (bypasses lungs). Foramen ovale = right atrium → left atrium." },
+  { type:'MCQ', stem:"A parent asks why their newborn is receiving vitamin K immediately after birth. What is the nurse's best response?", options:["'It prevents eye infections during delivery.'","'Newborns lack clotting factors — Vitamin K prevents hemorrhagic disease of the newborn.'","'It's required by law with no specific reason for your baby.'","'It prevents jaundice by helping the liver process bilirubin.'"], correct:[1], rationale:"Vit K prevents HDN (hemorrhagic disease of newborn) — newborns have sterile guts with no flora to produce Vit K. It does NOT prevent jaundice or eye infections." },
+  { type:'MCQ', stem:"A breastfeeding mother asks how she will know if her newborn is getting enough on day 2 postpartum. Which response is most accurate?", options:["'By day 2, your baby should have 6–8 wet diapers per day.'","'By day 2, at least 2 wet diapers per day — this is the best sign of adequate intake.'","'Weight gain is the only reliable way to know.'","'Your baby should sleep at least 4 hours between feeds.'"], correct:[1], rationale:"Day 2 = 2 wet diapers expected. The rule: day of life = number of wet diapers (up to day 4, then 6–8). Longer sleep = concern, not reassurance." },
+  { type:'MCQ', stem:"Which physiological consequence of cold stress in newborns is most important to understand?", options:["Cold stress decreases oxygen consumption","Cold stress increases surfactant production","Cold stress increases blood glucose","Cold stress increases oxygen consumption, causing hypoglycemia and respiratory distress"], correct:[3], rationale:"Cold stress → nonshivering thermogenesis → ↑ O₂ consumption, ↓ glucose, ↓ surfactant. Cold = hypoglycemia + respiratory risk." },
+  { type:'MCQ', stem:"A 1-hour-old newborn has grunting on expiration, nasal flaring, and intercostal retractions. How should these findings be interpreted?", options:["Normal transitional breathing in the first hour of life","Signs of respiratory distress requiring immediate intervention","Expected in a newborn who has been crying vigorously","Signs the newborn is hungry and needs to be fed"], correct:[1], rationale:"Grunting, flaring, retractions = respiratory distress triad. Always require immediate action." },
+  { type:'MCQ', stem:"The nurse strokes the outer edge of a newborn's foot from heel to toe and observes dorsiflexion of the big toe with fanning of the toes. Which reflex was elicited?", options:["Moro reflex","Palmar grasp reflex","Babinski reflex","Tonic neck reflex"], correct:[2], rationale:"Babinski = stroke outer sole → dorsiflexion of big toe + fanning of other toes. Normal in newborns (positive Babinski), abnormal in adults." },
+  { type:'MCQ', stem:"A new mother is tearful that her baby has lost weight. How should the nurse respond?", options:["'Weight loss is abnormal — I'll notify the provider immediately.'","'Weight loss up to 10% is normal. Birth weight is regained by 10–14 days. Use wet diapers as your daily guide.'","'Any weight loss means we need to start formula right away.'","'Newborns should not lose any weight in the first 24 hours.'"], correct:[1], rationale:"Up to 10% weight loss in first days = physiologically normal. Regained by day 10–14. Formula is not automatically indicated." },
+  { type:'MCQ', stem:"A nurse notes yellowing of a newborn's skin at 36 hours of age. The newborn is feeding well and has appropriate wet diapers. How should the nurse classify this?", options:["Pathological — jaundice should not appear until after 48 hours","Physiological — jaundice appearing after 24 hours is physiologic","Concerning — this suggests ABO incompatibility","Normal — jaundice in the first 24 hours is always expected"], correct:[1], rationale:"KEY PEARL: Jaundice AFTER 24 hrs = physiologic. Jaundice WITHIN first 24 hrs = ALWAYS pathological. At 36 hours with good feeding = monitor and encourage feeding." },
+  { type:'MCQ', stem:"APGAR at 1 min: HR 90, weak cry, some flexion, grimace only, acrocyanosis. What is the score and priority action?", options:["Score 5 — stimulate and supplemental O₂, reassess at 5 min","Score 7 — routine newborn care","Score 3 — immediate resuscitation","Score 8 — reassure parents and document"], correct:[0], rationale:"HR 90(1) + weak cry(1) + some flexion(1) + grimace(1) + acrocyanosis(1) = APGAR 5. Score 4–6 → stimulate + O₂." },
+  { type:'SATA', stem:"A nurse is assessing a 12-hour-old newborn. Select ALL findings that require IMMEDIATE provider notification.", options:["Acrocyanosis of the hands and feet","Persistent nasal grunting between feedings","Central cyanosis of the lips and tongue","Vernix caseosa on skin folds","Apnea episode lasting 20 seconds","Milia on the nose and chin"], correct:[1,2,4], rationale:"Persistent grunting, central cyanosis, and apnea = report immediately. Acrocyanosis, vernix, and milia are all normal newborn findings." },
+  { type:'MCQ', stem:"A 2-hour-old newborn has RR 74, central cyanosis, intercostal retractions, grunting, and SpO₂ 86%. Priority action?", options:["Document and reassess in 30 minutes","Ensure airway is open, call for immediate assistance, prepare O₂","Warm under radiant warmer to rule out cold stress","Feed to provide glucose and stimulate respiratory effort"], correct:[1], rationale:"SpO₂ 86% + central cyanosis + retractions = respiratory emergency. ABCs first — airway and immediate help. Do not wait, do not feed." },
+  { type:'MCQ', stem:"A 4-hour-old LGA newborn is jittery, has a weak cry, is difficult to arouse, and has blood glucose 36 mg/dL. First action?", options:["Draw full metabolic panel and wait for results","Feed the newborn (breast or formula) per hypoglycemia protocol","Administer IV dextrose immediately","Place under radiant warmer and recheck in 2 hours"], correct:[1], rationale:"Feed first if tolerated — oral feeding is first-line for neonatal hypoglycemia. IV glucose is reserved for failure to feed or failure to respond to feeding." },
+  { type:'SATA', stem:"Select ALL interventions that prevent heat loss and support thermoregulation after delivery.", options:["Dry newborn with warm blankets","Place on cold infant scale immediately","Maintain warm, draft-free delivery room","Encourage skin-to-skin contact","Apply knit hat to head","Swaddle in pre-warmed blankets"], correct:[0,2,3,4,5], rationale:"Drying, warm draft-free environment, skin-to-skin, knit hat, and warm swaddling all prevent heat loss. Cold scale causes conductive heat loss." },
+  { type:'MCQ', stem:"Which parent statement during discharge teaching indicates a need for further teaching?", options:["'I will always place my baby on her back to sleep.'","'We have a firm, flat crib mattress with a fitted sheet.'","'I'll put a soft blanket in the crib so she stays warm.'","'She can sleep in our room in her own bassinet.'"], correct:[2], rationale:"Soft blankets in sleep space = SIDS risk. Safe sleep: back to sleep, alone, firm surface, no soft objects. Room-sharing OK; bed-sharing is not." },
+  { type:'MCQ', stem:"Which instruction about umbilical cord care should the nurse include in discharge teaching?", options:["Apply antibiotic ointment daily to prevent infection","Fold diaper below stump, keep clean and dry, expect separation in 7–14 days","Submerge in tub bath daily to soften the cord","Cord should fall off in 3–4 days; call if it lasts longer"], correct:[1], rationale:"Keep dry and clean, fold diaper below stump, falls off in 7–14 days. No tub baths until cord falls off. No antibiotic ointment routinely." },
+  { type:'MCQ', stem:"Home health nurse visits a 5-day-old breastfed newborn. Mother reports 4 wet diapers yesterday. How should the nurse interpret this?", options:["Normal — 4 wet diapers is appropriate for a 5-day-old","Concerning — day 4+ should have 6–8 wet diapers; 4 suggests inadequate intake","Normal — wet diaper count peaks at day 3 and decreases after","Concerning — a 5-day-old should have at least 10 wet diapers"], correct:[1], rationale:"Day 4+ = 6–8 wet diapers expected. At day 5, only 4 = inadequate — assess latch, frequency, and weight trend." },
+  { type:'SATA', stem:"Select ALL newborn findings in the nursery that require IMMEDIATE provider notification.", options:["Mongolian spots on sacral area","Central cyanosis of lips and tongue","Apnea episode during assessment","Acrocyanosis of hands and feet","Seizure activity","Temperature instability","Lanugo on back and shoulders","Lethargy with poor feeding"], correct:[1,2,4,5,7], rationale:"Central cyanosis, apnea, seizures, temperature instability, and lethargy with poor feeding = report immediately. Mongolian spots, acrocyanosis, and lanugo are normal." },
+  { type:'MCQ', stem:"A nursing student sees blue discoloration of a newborn's hands and feet and asks if it should be reported. Best teaching response?", options:["'Yes — any blue discoloration is a cardiac emergency.'","'No — blue hands/feet (acrocyanosis) is normal. Blue lips/tongue is the emergency we watch for.'","'Yes — this is central cyanosis, prepare O₂ immediately.'","'No — newborns are blue all over for the first 24 hours.'"], correct:[1], rationale:"MOST COMMON NCLEX TRAP: Acrocyanosis (blue extremities) = NORMAL. Central cyanosis (lips/tongue/trunk) = EMERGENCY. Only the latter requires intervention." },
+  { type:'MCQ', stem:"Which finding in a newborn assessment is most consistent with physiologic jaundice?", options:["Jaundice noted at 10 hours of age with bilirubin 8 mg/dL","Jaundice noted at 36 hours of age with bilirubin 7 mg/dL, good feeding","Bilirubin rising more than 5 mg/dL in 24 hours","Mother is type O, infant is type B, jaundice at 18 hours"], correct:[1], rationale:"Physiologic: appears AFTER 24 hrs, gradual rise. Options A, C, D all describe pathological patterns (before 24 hrs, rapid rise, ABO incompatibility)." },
+  { type:'MCQ', stem:"An Rh-negative mother delivers an Rh-positive infant. To prevent hemolytic disease in future pregnancies, what should the nurse anticipate administering?", options:["Vitamin K within 1 hour","RhoGAM (Rh immune globulin) within 72 hours postpartum","Erythromycin eye ointment","Betamethasone to the mother"], correct:[1], rationale:"RhoGAM prevents Rh sensitization and must be given within 72 hours of delivery. It does not treat existing sensitization — it PREVENTS future hemolytic disease." },
+  { type:'MCQ', stem:"A newborn is noted to have absent Moro reflex on the right side only after a difficult delivery. What does this finding suggest?", options:["Normal asymmetric Moro in the first 24 hours","Possible brachial plexus injury (Erb's palsy)","Physiologic hypotonia — reassess in 24 hours","The infant is sleeping and unresponsive"], correct:[1], rationale:"Asymmetric Moro (absent on one side) + difficult delivery = Erb's palsy (brachial plexus injury, C5–C6). Report and document immediately." },
+  { type:'MCQ', stem:"Which is the correct sequence for newborn priorities using an ABC + risk framework?", options:["Feeding → Glucose → Thermoregulation → Airway","Airway/Breathing → Thermoregulation → Glucose → Feeding → Teaching","Teaching → Safety → Feeding → Thermoregulation","Glucose → Thermoregulation → Airway → Feeding"], correct:[1], rationale:"Always: Airway first → Thermoregulation (prevents downstream issues) → Glucose → Feeding → Teaching. This is the NCLEX priority order for newborns." },
+  { type:'SATA', stem:"Select ALL newborn nursery findings requiring IMMEDIATE intervention — above documentation or routine care.", options:["Central cyanosis of the lips in a 3-hour-old","Grunting and flaring with RR 78 in a 1-hour-old","Mongolian spots on sacral area of a 2-day-old","Glucose 36 mg/dL with jitteriness in an LGA infant","Acrocyanosis of hands and feet in a pink 6-hour-old","Axillary temp 35.7°C with lethargy in a 4-hour-old","Vernix on a 30-minute-old newborn","Apnea episode in a 12-hour-old"], correct:[0,1,3,5,7], rationale:"Central cyanosis, RDS signs, hypoglycemia with symptoms, hypothermia + lethargy, and apnea = intervene immediately. Mongolian spots, acrocyanosis, and vernix are normal." }
+];
+
+// ═══════════════════════════════════════════
+// PRACTICE QUESTIONS ENGINE
+// ═══════════════════════════════════════════
+let pqIdx = 0, pqScore = 0, pqAnswered = false, pqSelected = [];
+
+function renderPQ() {
+  if (pqIdx >= PQ.length) { showPQResults(); return; }
+  const q = PQ[pqIdx];
+  const isSATA = q.type === 'SATA';
+  pqAnswered = false; pqSelected = [];
+  const tagColor = isSATA ? 'background:#ede9fe;color:#5b21b6;' : 'background:#e0f2fe;color:#0369a1;';
+  document.getElementById('pq-label').textContent = `Question ${pqIdx+1} of ${PQ.length}`;
+  document.getElementById('pq-bar').style.width = ((pqIdx/PQ.length)*100) + '%';
+  const optHtml = q.options.map((o,i) => `<button class="pq-option" id="pqo-${i}" onclick="pqSelect(${i})">${o}</button>`).join('');
+  document.getElementById('pq-question-area').innerHTML = `
+    <div class="pq-q-num">Question ${pqIdx+1} · ${q.type}</div>
+    <span class="pq-type-tag" style="${tagColor}">${q.type}</span>
+    ${isSATA ? '<div class="pq-sata-hint">SATA — select all that apply, then click Submit</div>' : ''}
+    <div class="pq-stem">${q.stem}</div>
+    <div class="pq-options">${optHtml}</div>
+    <div class="pq-rationale" id="pq-rationale"><strong>Rationale:</strong> ${q.rationale}</div>
+    <div class="pq-nav">
+      ${isSATA ? '<button class="btn-pq btn-pq-primary" id="pq-submit-btn" onclick="pqSubmitSATA()">Submit Answer</button>' : ''}
+      <button class="btn-pq btn-pq-secondary" id="pq-next-btn" onclick="pqNext()" style="display:none">Next Question →</button>
+    </div>`;
+}
+
+function pqSelect(i) {
+  if (pqAnswered) return;
+  const q = PQ[pqIdx];
+  const isSATA = q.type === 'SATA';
+  if (!isSATA) {
+    pqAnswered = true;
+    const correct = q.correct.includes(i);
+    if (correct) pqScore++;
+    document.getElementById('pq-score').textContent = `Score: ${pqScore}`;
+    q.options.forEach((_,j) => {
+      const btn = document.getElementById('pqo-'+j);
+      btn.disabled = true;
+      if (q.correct.includes(j)) btn.classList.add('correct');
+      else if (j === i && !correct) btn.classList.add('incorrect');
+    });
+    document.getElementById('pq-rationale').classList.add('show');
+    document.getElementById('pq-next-btn').style.display = 'inline-flex';
+  } else {
+    const btn = document.getElementById('pqo-'+i);
+    if (pqSelected.includes(i)) {
+      pqSelected = pqSelected.filter(x=>x!==i);
+      btn.style.background = ''; btn.style.borderColor = ''; btn.style.fontWeight = '';
+    } else {
+      pqSelected.push(i);
+      btn.style.background = '#f0fdf4'; btn.style.borderColor = '#059669'; btn.style.fontWeight = '600';
+    }
+  }
+}
+
+function pqSubmitSATA() {
+  if (pqAnswered) return;
+  const q = PQ[pqIdx]; pqAnswered = true;
+  const correct = JSON.stringify(pqSelected.sort()) === JSON.stringify([...q.correct].sort());
+  if (correct) pqScore++;
+  document.getElementById('pq-score').textContent = `Score: ${pqScore}`;
+  q.options.forEach((_,j) => {
+    const btn = document.getElementById('pqo-'+j);
+    btn.disabled = true; btn.style.background=''; btn.style.borderColor=''; btn.style.fontWeight='';
+    if (q.correct.includes(j)) btn.classList.add('correct');
+    else if (pqSelected.includes(j)) btn.classList.add('incorrect');
+  });
+  document.getElementById('pq-rationale').classList.add('show');
+  document.getElementById('pq-submit-btn').style.display = 'none';
+  document.getElementById('pq-next-btn').style.display = 'inline-flex';
+}
+
+function pqNext() { pqIdx++; renderPQ(); }
+
+function showPQResults() {
+  const pct = Math.round((pqScore/PQ.length)*100);
+  const color = pct >= 80 ? '#059669' : pct >= 65 ? '#f59e0b' : '#ef4444';
+  document.getElementById('pq-container').innerHTML = `
+    <div class="pq-results">
+      <div class="pq-results-score" style="color:${color}">${pqScore}/${PQ.length}</div>
+      <div class="pq-results-label">${pct}% · ${pct>=80?'Great work! Review any misses.':pct>=65?'Good effort — review the rationales for misses.':'Review the deep dive lessons and try again.'}</div>
+      <button class="pq-restart" onclick="pqIdx=0;pqScore=0;renderPQ()">Restart Practice Questions</button>
+    </div>`;
+}
+
+renderPQ();
+
+// ═══════════════════════════════════════════
+// QUICK QUIZ DATA + ENGINE
+// ═══════════════════════════════════════════
+const QQ = [
+  { stem:"Blue hands and feet in a 6-hour-old newborn is:", options:["Central cyanosis — notify provider","Acrocyanosis — normal finding","Respiratory distress — apply O₂","Pathological — prepare for resuscitation"], correct:1, fb:"Acrocyanosis (blue hands/feet) is NORMAL. Central cyanosis (lips/tongue) is the emergency." },
+  { stem:"Jaundice appearing at 18 hours of age is:", options:["Physiologic — expected after 24 hours","Pathological — jaundice within 24 hours is always abnormal","Normal — bilirubin peaks on day 3","Expected — all newborns are jaundiced at birth"], correct:1, fb:"Jaundice within 24 hours = ALWAYS pathological. Physiologic jaundice appears AFTER 24 hours." },
+  { stem:"A newborn's APGAR score is 5 at 1 minute. The nurse should:", options:["Begin immediate resuscitation","Stimulate and provide supplemental O₂, reassess at 5 min","Document and continue routine care","Call for emergency NICU team"], correct:1, fb:"APGAR 4–6 = moderate difficulty. Stimulate + O₂ + reassess at 5 min. APGAR 0–3 = resuscitation." },
+  { stem:"Day 5 breastfed newborn with 4 wet diapers in 24 hours. The nurse should:", options:["Reassure mother — this is expected","Assess latch and feeding frequency — 4 is below expected for day 5","Immediately start supplemental formula","Notify provider of possible kidney failure"], correct:1, fb:"Day 4+ = 6–8 wet diapers expected. 4 at day 5 = inadequate — assess feeding." },
+  { stem:"Which structure bypasses the fetal lungs, connecting the pulmonary artery to the aorta?", options:["Ductus venosus","Foramen ovale","Ductus arteriosus","Umbilical vein"], correct:2, fb:"Ductus arteriosus = pulmonary artery → aorta (bypasses lungs). Closes with increased O₂ after birth." },
+  { stem:"Cold stress in newborns leads to:", options:["Decreased O₂ consumption and hyperglycemia","Increased O₂ consumption, hypoglycemia, and respiratory distress","Increased surfactant production","Decreased bilirubin production"], correct:1, fb:"Cold → nonshivering thermogenesis → burns O₂ and glucose → hypoxia + hypoglycemia." },
+  { stem:"Vitamin K is given to newborns to:", options:["Prevent ophthalmia neonatorum","Prevent hemorrhagic disease of the newborn","Treat physiologic jaundice","Boost immune system response"], correct:1, fb:"Vitamin K = prevents HDN (bleeding). Erythromycin = eye infections. Phototherapy = jaundice." },
+  { stem:"A newborn has weight loss of 8% of birth weight on day 3. This is:", options:["Abnormal — notify provider immediately","Normal — up to 10% loss is expected, regained by day 10–14","Dangerous — start IV fluids","A sign of ABO incompatibility"], correct:1, fb:"Up to 10% weight loss is physiologically normal. Regained by day 10–14. Encourage feeding." },
+  { stem:"Which safe sleep instruction is CORRECT?", options:["Place baby on stomach to prevent aspiration","Use a soft blanket to keep the baby warm","Place baby on back on a firm, flat surface — alone","Allow baby to sleep in bed with parents for bonding"], correct:2, fb:"Safe sleep ABCs: Alone, on Back, in Crib (firm flat surface). No soft objects, no bed-sharing." },
+  { stem:"A 12-hour-old newborn has an apnea episode lasting 22 seconds during assessment. The nurse should:", options:["Document and continue monitoring — this is normal transitional breathing","Notify provider immediately — apnea >20 sec is abnormal","Stimulate gently and reassess in 1 hour","Place in Trendelenburg to improve cerebral blood flow"], correct:1, fb:"Apnea >20 seconds = always report immediately. Stimulate, monitor, notify provider." }
+];
+
+let qqIdx = 0, qqScore = 0;
+
+function renderQQ() {
+  if (qqIdx >= QQ.length) {
+    const pct = Math.round((qqScore/QQ.length)*100);
+    const color = pct>=80?'#059669':pct>=65?'#f59e0b':'#ef4444';
+    document.getElementById('qq-container').innerHTML = `<div class="qq-results"><div class="qq-results-score" style="color:${color}">${qqScore}/${QQ.length} · ${pct}%</div><p style="color:#475569;font-size:14px;margin-top:8px;">${pct>=80?'Excellent! You are solid on newborn care.':pct>=65?'Good effort — review any questions you missed.':'Review the lessons and try again.'}</p><button class="qq-restart" onclick="qqIdx=0;qqScore=0;renderQQ()">Retake Quick Quiz</button></div>`;
+    return;
+  }
+  const q = QQ[qqIdx];
+  const opts = q.options.map((o,i)=>`<button class="qq-option" onclick="qqAnswer(${i})">${o}</button>`).join('');
+  document.getElementById('qq-container').innerHTML = `
+    <div class="pq-progress" style="margin-bottom:14px;">
+      <span class="pq-progress-label">Question ${qqIdx+1} of ${QQ.length}</span>
+      <div class="pq-bar-wrap"><div class="pq-bar" style="width:${(qqIdx/QQ.length)*100}%"></div></div>
+      <span class="pq-score-badge">${qqScore} correct</span>
+    </div>
+    <div class="pq-stem">${q.stem}</div>
+    ${opts}
+    <div class="qq-feedback" id="qq-fb"></div>
+    <div style="text-align:right;margin-top:8px;"><button class="btn-pq btn-pq-primary" id="qq-next" onclick="qqIdx++;renderQQ()" style="display:none">Next →</button></div>`;
+}
+
+function qqAnswer(i) {
+  const q = QQ[qqIdx];
+  document.querySelectorAll('.qq-option').forEach((btn,j) => {
+    btn.disabled = true;
+    if (j === q.correct) btn.classList.add('correct');
+    else if (j === i && i !== q.correct) btn.classList.add('incorrect');
+  });
+  if (i === q.correct) qqScore++;
+  const fb = document.getElementById('qq-fb');
+  fb.textContent = q.fb;
+  fb.className = 'qq-feedback ' + (i===q.correct?'correct':'incorrect');
+  fb.style.display = 'block';
+  document.getElementById('qq-next').style.display = 'inline-flex';
+}
+
+renderQQ();
+
+// ═══════════════════════════════════════════
+// MODULE CHECKLIST
+// ═══════════════════════════════════════════
+const CHECKLIST_KEY = 'nclex_m1_checklist';
+const CHECKLIST_ITEMS = [
+  "I can score an APGAR and explain what to do for each range",
+  "I can distinguish acrocyanosis from central cyanosis",
+  "I know the 3 fetal circulation shunts and what each bypasses",
+  "I understand why cold stress causes hypoglycemia AND respiratory distress",
+  "I can name expected wet diaper counts for days 1–4+",
+  "I know the jaundice timing rule (before vs. after 24 hours)",
+  "I can name the purpose of Vitamin K, erythromycin ointment, and HepB vaccine",
+  "I know the safe sleep ABCs",
+  "I understand the newborn priority framework (Airway → Thermo → Glucose → Feeding → Teaching)",
+  "I completed all 25 practice questions and reviewed rationales for any misses"
+];
+
+function loadChecklist() {
+  try { return JSON.parse(localStorage.getItem(CHECKLIST_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveChecklist(arr) { localStorage.setItem(CHECKLIST_KEY, JSON.stringify(arr)); }
+
+function renderChecklist() {
+  const checked = loadChecklist();
+  const container = document.getElementById('checklist-items');
+  container.innerHTML = CHECKLIST_ITEMS.map((item,i) => {
+    const isChecked = checked.includes(i);
+    return `<div class="checklist-item ${isChecked?'checked':''}" onclick="toggleCheck(${i})">
+      <div class="checklist-box">${isChecked?'✓':''}</div>
+      <div class="checklist-label">${item}</div>
+    </div>`;
+  }).join('');
+  const pct = Math.round((checked.length/CHECKLIST_ITEMS.length)*100);
+  document.getElementById('checklist-bar').style.width = pct + '%';
+  document.getElementById('checklist-progress').textContent = `${checked.length} of ${CHECKLIST_ITEMS.length} completed${pct===100?' · 🎉 Module Complete!':''}`;
+}
+
+function toggleCheck(i) {
+  let checked = loadChecklist();
+  if (checked.includes(i)) checked = checked.filter(x=>x!==i);
+  else checked.push(i);
+  saveChecklist(checked);
+  renderChecklist();
+}
+
+renderChecklist();
+</script>
+</body>
+</html>

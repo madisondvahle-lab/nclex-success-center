@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Question Bank Manager · Study with Madison, RN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
+
+    .header {
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
+      padding: 32px 28px 28px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .header-title { font-size: 22px; font-weight: 800; color: #fff; }
+    .header-sub { font-size: 13px; color: #64748b; }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 8px 14px; text-align: center; }
+    .stat-num { font-size: 18px; font-weight: 800; color: #fff; display: block; }
+    .stat-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+    .stat.flagged .stat-num { color: #fbbf24; }
+    .stat.removed .stat-num { color: #ef4444; }
+
+    .filters {
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      padding: 14px 28px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    }
+    .filter-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap; }
+    select, input[type="text"] {
+      padding: 7px 12px; border: 1.5px solid #e2e8f0; border-radius: 9px;
+      font-family: 'Inter', sans-serif; font-size: 13px; color: #1e293b; background: #f8fafc;
+      outline: none; transition: border 0.15s;
+    }
+    select:focus, input[type="text"]:focus { border-color: #0ea5e9; }
+    input[type="text"] { min-width: 220px; }
+    .filter-sep { width: 1px; height: 28px; background: #e2e8f0; }
+    .btn-export { padding: 7px 14px; border-radius: 9px; border: none; background: #0f172a; color: #fff; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .btn-export:hover { background: #1e3a5f; }
+
+    .main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 80px; }
+
+    .module-section { margin-bottom: 32px; }
+    .module-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+      padding: 12px 16px; border-radius: 12px;
+    }
+    .module-header h2 { font-size: 15px; font-weight: 800; color: #fff; }
+    .module-header span { font-size: 12px; color: rgba(255,255,255,0.65); }
+
+    .q-card {
+      background: #fff; border-radius: 14px; border: 1.5px solid #e2e8f0;
+      margin-bottom: 10px; overflow: hidden; transition: border-color 0.15s;
+      box-shadow: 0 1px 6px rgba(15,23,42,0.05);
+    }
+    .q-card.flagged { border-color: #fbbf24; background: #fffdf0; }
+    .q-card.removed { border-color: #fca5a5; background: #fff5f5; opacity: 0.7; }
+    .q-card.hidden { display: none; }
+
+    .q-header {
+      display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;
+      cursor: pointer; user-select: none;
+    }
+    .q-header:hover { background: #f8fafc; }
+    .q-card.flagged .q-header:hover { background: #fffbeb; }
+
+    .q-num { font-size: 11px; font-weight: 800; color: #94a3b8; flex-shrink: 0; min-width: 32px; padding-top: 1px; }
+    .q-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
+    .q-tag { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 700; }
+    .tag-mcq    { background: #e0f2fe; color: #0369a1; }
+    .tag-sata   { background: #ede9fe; color: #5b21b6; }
+    .tag-bowtie { background: #fef3c7; color: #92400e; }
+    .tag-case   { background: #d1fae5; color: #065f46; }
+    .tag-d1 { background: #f1f5f9; color: #475569; }
+    .tag-d2 { background: #fef3c7; color: #92400e; }
+    .tag-d3 { background: #fee2e2; color: #991b1b; }
+    .tag-concept { background: #f1f5f9; color: #475569; }
+    .q-stem { font-size: 13px; color: #1e293b; line-height: 1.55; flex: 1; }
+    .q-stem.removed-text { text-decoration: line-through; color: #94a3b8; }
+
+    .q-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding-top: 2px; }
+    .btn-flag, .btn-remove, .btn-restore {
+      padding: 5px 10px; border-radius: 8px; border: none; font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-flag   { background: #fef9c3; color: #92400e; border: 1px solid #fde047; }
+    .btn-flag:hover   { background: #fef08a; }
+    .btn-flag.active  { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+    .btn-remove { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .btn-remove:hover { background: #fecaca; }
+    .btn-restore { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .btn-restore:hover { background: #a7f3d0; }
+    .btn-expand { background: none; border: none; font-size: 16px; color: #94a3b8; cursor: pointer; padding: 2px 4px; }
+
+    .q-body { padding: 0 16px 14px 60px; display: none; }
+    .q-body.open { display: block; }
+
+    .q-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin: 10px 0 5px; }
+    .options-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+    .option-item { display: flex; gap: 8px; font-size: 12px; color: #475569; line-height: 1.45; padding: 5px 8px; border-radius: 6px; }
+    .option-item.correct { background: #f0fdf4; color: #065f46; font-weight: 600; }
+    .option-item.correct::before { content: "✓"; color: #10b981; font-weight: 800; flex-shrink: 0; }
+    .option-item:not(.correct)::before { content: ""; width: 12px; flex-shrink: 0; }
+    .rationale-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #475569; line-height: 1.6; }
+    .rationale-box strong { color: #0f172a; }
+
+    .notes-area {
+      margin-top: 10px;
+    }
+    .notes-area textarea {
+      width: 100%; padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 9px;
+      font-family: 'Inter', sans-serif; font-size: 12px; color: #334155; resize: vertical;
+      min-height: 56px; outline: none; background: #fafbfc;
+    }
+    .notes-area textarea:focus { border-color: #0ea5e9; }
+    .notes-area textarea::placeholder { color: #94a3b8; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 14px; }
+
+    @media (max-width: 600px) {
+      .filters { padding: 12px 16px; }
+      .q-body { padding: 0 12px 12px 12px; }
+      .q-actions { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">📋 Question Bank Manager</div>
+      <div class="header-sub">Study with Madison, RN · Internal Tool · Not for GitHub</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-num" id="stat-total">0</span><span class="stat-label">Total</span></div>
+      <div class="stat"><span class="stat-num" id="stat-active">0</span><span class="stat-label">Active</span></div>
+      <div class="stat flagged"><span class="stat-num" id="stat-flagged">0</span><span class="stat-label">Flagged</span></div>
+      <div class="stat removed"><span class="stat-num" id="stat-removed">0</span><span class="stat-label">Removed</span></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <input type="text" id="search" placeholder="🔍  Search by keyword or concept..." oninput="applyFilters()" style="flex:1;min-width:200px;" />
+  </div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">Filter:</span>
+  <select id="f-module" onchange="applyFilters()">
+    <option value="">All Modules</option>
+    <option value="Module 1">Module 1 — Newborn Care</option>
+    <option value="Module 2">Module 2 — Maternal & OB</option>
+  </select>
+  <select id="f-type" onchange="applyFilters()">
+    <option value="">All Types</option>
+    <option value="mcq">MCQ</option>
+    <option value="sata">SATA</option>
+    <option value="bowtie">Bow-Tie</option>
+    <option value="casestudy">Case Study</option>
+  </select>
+  <select id="f-diff" onchange="applyFilters()">
+    <option value="">All Difficulties</option>
+    <option value="1">⚪ Foundation (1)</option>
+    <option value="2">🟡 Application (2)</option>
+    <option value="3">🔴 NGN (3)</option>
+  </select>
+  <select id="f-status" onchange="applyFilters()">
+    <option value="">All Statuses</option>
+    <option value="active">Active</option>
+    <option value="flagged">Flagged for Review</option>
+    <option value="removed">Removed</option>
+  </select>
+  <div class="filter-sep"></div>
+  <button class="btn-export" onclick="exportFlagged()">📤 Export Flagged List</button>
+</div>
+
+<div class="main" id="bank-root"></div>
+
+<script>
+const QUESTIONS = [
+  // ─── MODULE 1: NEWBORN CARE ───────────────────────────────────────────────
+  { id:"m1q1",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"APGAR Scores",
+    stem:"A newborn receives an APGAR score of 5 at 1 minute of life. How should the nurse interpret this finding and plan care?",
+    options:["Normal (7–10) — document and continue routine newborn care","Moderate difficulty (4–6) — stimulate and provide supplemental oxygen, reassess at 5 minutes","Severe distress (0–3) — begin immediate resuscitation","This score predicts the newborn's long-term neurological outcomes"],
+    correct:[1], rationale:"APGAR 4–6 = moderate difficulty. Stimulate, supplemental O₂, reassess at 5 min. APGAR does NOT predict future outcomes." },
+
+  { id:"m1q2",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Expected vs. Unexpected Findings",
+    stem:"A nurse is assessing a newborn 4 hours after birth. Which finding should be reported to the provider immediately?",
+    options:["Acrocyanosis of the hands and feet","Vernix caseosa covering the skin","Central cyanosis of the lips and tongue","Mongolian spots on the lower back"],
+    correct:[2], rationale:"Central cyanosis (blue lips/tongue) = emergency. Acrocyanosis, vernix, and Mongolian spots are all normal." },
+
+  { id:"m1q3",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Newborn Circulation",
+    stem:"Which structure allows blood to bypass the fetal liver, shunting it directly from the umbilical vein to the inferior vena cava?",
+    options:["Ductus arteriosus","Foramen ovale","Ductus venosus","Umbilical artery"],
+    correct:[2], rationale:"Ductus venosus = umbilical vein → IVC (bypasses liver). Ductus arteriosus = pulmonary artery → aorta (bypasses lungs)." },
+
+  { id:"m1q4",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Newborn Medications",
+    stem:"A parent asks why their newborn is receiving vitamin K immediately after birth. What is the nurse's best response?",
+    options:["'It prevents eye infections during delivery.'","'Newborns lack clotting factors — Vitamin K prevents hemorrhagic disease of the newborn.'","'It's required by law — no specific reason for your baby.'","'It prevents jaundice by helping the liver process bilirubin.'"],
+    correct:[1], rationale:"Vit K prevents HDN (hemorrhagic disease of newborn). Erythromycin eye ointment = eye infections. Vit K ≠ bilirubin." },
+
+  { id:"m1q5",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Feeding & Wet Diapers",
+    stem:"A breastfeeding mother asks how she will know if her newborn is getting enough on day 2 postpartum. Which response is most accurate?",
+    options:["'By day 2, your baby should have 6–8 wet diapers per day.'","'By day 2, at least 2 wet diapers — wet diapers are the best signs of adequate intake.'","'Weight gain is the only reliable way to know.'","'Your baby should sleep at least 4 hours between feeds.'"],
+    correct:[1], rationale:"Day 1→1, Day 2→2, Day 3→3, Day 4+→6–8 wet diapers. Longer sleep stretches = concern, not reassurance." },
+
+  { id:"m1q6",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Cold Stress",
+    stem:"Which physiological consequence of cold stress in newborns is most important to understand?",
+    options:["Cold stress decreases oxygen consumption","Cold stress increases surfactant production","Cold stress increases blood glucose","Cold stress increases oxygen consumption, causing hypoglycemia and respiratory distress"],
+    correct:[3], rationale:"Cold stress → nonshivering thermogenesis → ↑ O₂ consumption, ↓ glucose, ↓ surfactant. Cold babies = hypoglycemic babies." },
+
+  { id:"m1q7",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Respiratory Distress",
+    stem:"A nurse assesses a 1-hour-old newborn with grunting on expiration, nasal flaring, and intercostal retractions. How should these findings be interpreted?",
+    options:["Normal transitional breathing in the first hour of life","Signs of respiratory distress requiring immediate intervention","Expected in a newborn who has been crying vigorously","Signs the newborn is hungry"],
+    correct:[1], rationale:"Grunting, flaring, retractions = classic respiratory distress signs. Require immediate action." },
+
+  { id:"m1q8",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Reflexes",
+    stem:"A nurse strokes the outer edge of a newborn's foot from heel to toe and observes dorsiflexion of the big toe with fanning of the toes. Which reflex was elicited?",
+    options:["Moro reflex","Palmar grasp reflex","Babinski reflex","Tonic neck reflex"],
+    correct:[2], rationale:"Babinski = stroke outer sole → dorsiflexion big toe + fanning. Normal in newborns, abnormal in adults." },
+
+  { id:"m1q9",  module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Weight Loss",
+    stem:"A new mother is tearful that her baby has lost weight. How should the nurse respond?",
+    options:["'Weight loss is abnormal — I'll notify the provider.'","'Weight loss up to 10% is normal. Birth weight is regained by 10–14 days. Use wet diapers as your daily guide.'","'Any weight loss means we need to start formula right away.'","'Newborns should not lose any weight in the first 24 hours.'"],
+    correct:[1], rationale:"Up to 10% weight loss in first few days = physiologically normal. Regained by day 10–14." },
+
+  { id:"m1q10", module:"Module 1", section:1, type:"mcq",      diff:1, concept:"Jaundice",
+    stem:"A nurse notes yellowing of a newborn's skin at 36 hours. The newborn is feeding well. How should the nurse classify this?",
+    options:["Pathological — jaundice should not appear until after 48 hours","Physiological — expected; jaundice appearing after 24 hours is physiologic","Concerning — suggests ABO incompatibility","Normal — jaundice in the first 24 hours is always expected"],
+    correct:[1], rationale:"KEY PEARL: Jaundice AFTER 24 hrs = physiologic. Jaundice WITHIN first 24 hrs = ALWAYS pathological." },
+
+  { id:"m1q11", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"APGAR Scores",
+    stem:"APGAR at 1 min: HR 90, weak cry, some flexion, grimace only, acrocyanosis. What is the APGAR score and priority action?",
+    options:["Score 5 — stimulate and supplemental O₂, reassess at 5 min","Score 7 — routine newborn care","Score 3 — immediate resuscitation","Score 8 — reassure parents"],
+    correct:[0], rationale:"HR 90(1)+weak cry(1)+some flexion(1)+grimace(1)+acrocyanosis(1) = APGAR 5. Score 4–6 → stimulate + O₂." },
+
+  { id:"m1q12", module:"Module 1", section:2, type:"sata",     diff:2, concept:"Expected vs. Unexpected Findings",
+    stem:"A nurse is assessing a 12-hour-old newborn. Select ALL findings that require IMMEDIATE provider notification.",
+    options:["Acrocyanosis of the hands and feet","Persistent nasal grunting between feedings","Central cyanosis of the lips and tongue","Vernix caseosa on skin folds","Apnea episode lasting 20 seconds","Milia on the nose and chin"],
+    correct:[1,2,4], rationale:"Persistent grunting, central cyanosis, and apnea = report immediately. Acrocyanosis, vernix, milia = normal." },
+
+  { id:"m1q13", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"Respiratory Distress",
+    stem:"2-hour-old: RR 74, central cyanosis, intercostal retractions, grunting, SpO₂ 86%. Priority action?",
+    options:["Document and reassess in 30 minutes","Ensure airway is open, call for immediate assistance, prepare O₂","Warm under radiant warmer to rule out cold stress","Feed to provide glucose and stimulate respiratory effort"],
+    correct:[1], rationale:"SpO₂ 86% + central cyanosis + retractions = respiratory emergency. ABCs first — airway and call for help." },
+
+  { id:"m1q14", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"Hypoglycemia",
+    stem:"4-hour-old: jittery, weak cry, difficult to arouse, blood glucose 36 mg/dL. First action?",
+    options:["Draw full metabolic panel and wait for results","Feed the newborn (breast or formula) per hypoglycemia protocol","Administer IV dextrose immediately","Place under radiant warmer, recheck in 2 hours"],
+    correct:[1], rationale:"Feed first if tolerated — oral feeding is first-line for neonatal hypoglycemia. IV glucose reserved for failure to feed or respond." },
+
+  { id:"m1q15", module:"Module 1", section:2, type:"sata",     diff:2, concept:"Thermoregulation",
+    stem:"Select ALL interventions that prevent heat loss and support thermoregulation after delivery.",
+    options:["Dry newborn with warm blankets","Place on cold infant scale immediately","Maintain warm, draft-free delivery room","Encourage skin-to-skin contact","Apply knit hat to head","Swaddle in pre-warmed blankets"],
+    correct:[0,2,3,4,5], rationale:"Drying, warm environment, skin-to-skin, hat, swaddling = prevent heat loss. Cold scale = causes heat loss (conductive)." },
+
+  { id:"m1q16", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"Safe Sleep",
+    stem:"Which parent statement during discharge teaching indicates a need for further teaching?",
+    options:["'I will always place my baby on her back to sleep.'","'We have a firm, flat crib mattress with a fitted sheet.'","'I'll put a soft blanket in the crib so she stays warm.'","'She can sleep in our room in her own bassinet.'"],
+    correct:[2], rationale:"Soft blankets in sleep space = suffocation hazard. Safe sleep: back, firm surface, no soft objects, room sharing (not bed sharing)." },
+
+  { id:"m1q17", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"Umbilical Cord Care",
+    stem:"Which instruction about umbilical cord care should the nurse include in discharge teaching?",
+    options:["Apply antibiotic ointment daily","Fold diaper below stump, keep clean and dry, expect separation in 7–14 days","Submerge in tub bath daily to soften cord","Cord should fall off in 3–4 days; call if it lasts longer"],
+    correct:[1], rationale:"Keep dry and clean, fold diaper below, off in 7–14 days. No tub baths until cord falls off. No antibiotic ointment routinely." },
+
+  { id:"m1q18", module:"Module 1", section:2, type:"mcq",      diff:2, concept:"Feeding & Wet Diapers",
+    stem:"Home health nurse visits a 5-day-old breastfed newborn. Mother reports 4 wet diapers yesterday. How should the nurse interpret this?",
+    options:["Normal — 4 wet diapers is appropriate for a 5-day-old","Concerning — day 4+ should have 6–8 wet diapers per day; 4 suggests inadequate intake","Normal — wet diaper count peaks day 3 and decreases after","Concerning — a 5-day-old should have at least 10 wet diapers"],
+    correct:[1], rationale:"Day 4+ = 6–8 wet diapers expected. At day 5, only 4 = inadequate — assess latch, frequency, weight." },
+
+  { id:"m1q19", module:"Module 1", section:2, type:"sata",     diff:2, concept:"Report Immediately",
+    stem:"Select ALL newborn findings in the nursery that require IMMEDIATE provider notification.",
+    options:["Mongolian spots on sacral area","Central cyanosis of lips and tongue","Apnea episode during assessment","Acrocyanosis of hands and feet","Seizure activity","Temperature instability","Lanugo on back and shoulders","Lethargy with poor feeding"],
+    correct:[1,2,4,5,7], rationale:"Central cyanosis, apnea, seizures, temp instability, lethargy/poor feeding = report immediately. Mongolian spots, acrocyanosis, lanugo = normal." },
+
+  { id:"m1q20", module:"Module 1", section:2, type:"mcq",      diff:3, concept:"NCLEX Traps",
+    stem:"A nursing student sees blue discoloration of a newborn's hands and feet and asks if it should be reported. Best teaching response?",
+    options:["'Yes — any blue discoloration is a cardiac emergency.'","'No — blue hands/feet (acrocyanosis) is normal. Blue lips/tongue is the emergency we watch for.'","'Yes — this is central cyanosis, prepare O₂ immediately.'","'No — newborns are blue all over for the first 24 hours.'"],
+    correct:[1], rationale:"MOST COMMON NCLEX TRAP: Acrocyanosis (blue extremities) = NORMAL. Central cyanosis (lips/tongue/trunk) = EMERGENCY." },
+
+  { id:"m1q21", module:"Module 1", section:3, type:"bowtie",   diff:3, concept:"Cold Stress",
+    stem:"Bow-Tie: 30-min-old newborn, unwrapped, Temp 35.9°C, HR 176, RR 66, glucose 36 mg/dL, jittery.",
+    options:["Left: Dry and swaddle in warm blankets","Left: Skin-to-skin contact","Left: Tepid bath to stimulate temp regulation","Left: Restrict oral feeds","Center: Cold stress with resultant hypoglycemia","Right: Axillary temperature trend","Right: Blood glucose after intervention"],
+    correct:[0,1,4,5,6], rationale:"Cold stress → hypoglycemia. Dry/swaddle + skin-to-skin = warm. Monitor temp and glucose trends." },
+
+  { id:"m1q22", module:"Module 1", section:3, type:"bowtie",   diff:3, concept:"Hypoglycemia",
+    stem:"Bow-Tie: 38-wk LGA newborn, 1hr old, GDM mother, jittery, weak cry, glucose 34 mg/dL.",
+    options:["Left: Feed per hypoglycemia protocol","Left: Restrict feeds, await IV glucose","Left: Recheck glucose 30 min after feeding","Center: Neonatal hypoglycemia","Right: Blood glucose trend (30 min post)","Right: Feeding tolerance and oral intake"],
+    correct:[0,2,3,4,5], rationale:"LGA + DM mother = fetal hyperinsulinism. Feed first, recheck glucose. IV glucose only if oral fails." },
+
+  { id:"m1q23a", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Respiratory Distress",
+    stem:"[Case Study A] 2-hr-old: RR 78, grunting, flaring, retractions, SpO₂ 86%, central cyanosis. Which finding is most immediately life-threatening?",
+    options:["HR 182 bpm","Central cyanosis with SpO₂ 86%","RR 78","Temp 37.0°C"],
+    correct:[1], rationale:"Central cyanosis + SpO₂ 86% = severe hypoxemia. Most immediately life-threatening. ABCs first." },
+
+  { id:"m1q23b", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Respiratory Distress",
+    stem:"[Case Study B] Same patient. Select ALL signs of neonatal respiratory distress.",
+    options:["Nasal flaring","Grunting on expiration","Pale skin","Intercostal retractions","Temperature 37.0°C","Central cyanosis"],
+    correct:[0,1,3,5], rationale:"Flaring, grunting, retractions, central cyanosis = RDS signs. Normal temp and pale skin are not RDS criteria." },
+
+  { id:"m1q23c", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Respiratory Distress",
+    stem:"[Case Study C] ABC framework. What is the nurse's FIRST priority action?",
+    options:["Call parents","Document all findings","Ensure airway is patent and call for immediate respiratory support","Obtain blood glucose to rule out hypoglycemia"],
+    correct:[2], rationale:"ABCs — Airway first. Ensure patent airway and call for help. Documentation and glucose come after." },
+
+  { id:"m1q24a", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Jaundice",
+    stem:"[Case Study A] 18-hr-old, mother O+, baby A+, poor feeding, 1 wet diaper. How should the nurse classify the jaundice?",
+    options:["Physiological — after 12 hours is normal","Pathological — jaundice within 24 hours is always concerning","Normal — all newborns develop visible jaundice in first 24 hours","Mild — monitor at home"],
+    correct:[1], rationale:"Jaundice within FIRST 24 hours = ALWAYS pathological. This is the critical NCLEX distinction." },
+
+  { id:"m1q24b", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Jaundice",
+    stem:"[Case Study B] Same patient. Which finding is most consistent with the likely cause?",
+    options:["Blood type incompatibility — O+ mother, A+ newborn","Lanugo on back","Mongolian spots","Acrocyanosis"],
+    correct:[0], rationale:"ABO incompatibility (O+ mom + A+ or B+ baby) → maternal antibodies cross placenta → hemolysis → pathological jaundice." },
+
+  { id:"m1q24c", module:"Module 1", section:3, type:"casestudy", diff:3, concept:"Jaundice",
+    stem:"[Case Study C] Same patient. Select ALL appropriate nursing actions.",
+    options:["Notify provider immediately","Monitor bilirubin per order","Reassure parents this is normal physiologic jaundice","Encourage frequent feeding","Assess for hemolysis signs (pallor, lethargy)","Prepare for phototherapy if ordered"],
+    correct:[0,1,3,4,5], rationale:"Notify, monitor bili, feed frequently, assess for hemolysis, prep for phototherapy. Do NOT reassure as normal — it is pathological." },
+
+  { id:"m1q25", module:"Module 1", section:3, type:"sata",     diff:3, concept:"Priority Assessments",
+    stem:"Select ALL newborn nursery findings requiring IMMEDIATE intervention — above documentation or routine care.",
+    options:["Central cyanosis of the lips in a 3-hr-old","Grunting and flaring with RR 78 in a 1-hr-old","Mongolian spots on sacral area of a 2-day-old","Glucose 36 mg/dL with jitteriness in an LGA infant","Acrocyanosis of hands and feet in a pink 6-hr-old","Axillary temp 35.7°C with lethargy in a 4-hr-old","Vernix on a 30-min-old","Apnea episode in a 12-hr-old"],
+    correct:[0,1,3,5,7], rationale:"Central cyanosis, RDS, hypoglycemia, hypothermia+lethargy, apnea = immediate. Mongolian spots, acrocyanosis, vernix = normal." },
+
+  // ─── MODULE 2: MATERNAL & OB ─────────────────────────────────────────────
+  { id:"m2q1",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"RH Incompatibility",
+    stem:"Which scenario places a fetus at risk for hemolytic disease of the newborn?",
+    options:["Rh+ mother / Rh– baby","Rh– mother / Rh+ baby","Rh+ mother / Rh+ baby","Rh– mother / Rh– baby"],
+    correct:[1], rationale:"Rh– mom + Rh+ baby = risk for hemolytic disease. Mom's antibodies attack baby's RBCs." },
+
+  { id:"m2q2",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"RH Incompatibility",
+    stem:"An Rh-negative patient delivers an Rh-positive infant. RhoGAM must be administered within which postpartum timeframe?",
+    options:["24 hours","48 hours","72 hours","1 week"],
+    correct:[2], rationale:"RhoGAM must be given within 72 hours postpartum to prevent sensitization." },
+
+  { id:"m2q3",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Hypertensive Disorders",
+    stem:"Which combination of findings establishes a diagnosis of preeclampsia?",
+    options:["BP ≥140/90 after 20 weeks with no proteinuria","BP ≥140/90 after 20 weeks + proteinuria ≥300 mg/24 hr","Seizures in a patient with elevated BP","BP ≥120/80 with severe headache after 20 weeks"],
+    correct:[1], rationale:"Preeclampsia = HTN ≥140/90 after 20 wks + proteinuria ≥300 mg/24hr. No protein = Gestational HTN only." },
+
+  { id:"m2q4",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Hypertensive Disorders",
+    stem:"Low platelets, elevated liver enzymes, and signs of hemolysis are consistent with which complication?",
+    options:["Gestational hypertension","Preeclampsia","HELLP syndrome","Eclampsia"],
+    correct:[2], rationale:"HELLP = Hemolysis, Elevated Liver enzymes, Low Platelets. May present with RUQ pain, N/V." },
+
+  { id:"m2q5",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Fetal Heart Rate Patterns",
+    stem:"Early decelerations — FHR dips symmetrically and returns to baseline with each contraction. Best nursing interpretation?",
+    options:["Umbilical cord compression — reposition the patient","Placental insufficiency — notify provider immediately","Head compression — usually benign, no intervention needed","Fetal distress — prepare for emergency delivery"],
+    correct:[2], rationale:"Early decels = head compression = benign. Return to baseline mirrors contraction. No intervention needed." },
+
+  { id:"m2q6",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Fetal Heart Rate Patterns",
+    stem:"Recurrent decelerations begin AFTER the peak of each contraction and return to baseline slowly. Priority action?",
+    options:["Document and continue monitoring","Reposition to left lateral, O₂, IV fluids, notify provider, stop Pitocin","Increase Pitocin to strengthen contractions","Administer pain medication"],
+    correct:[1], rationale:"Late decels = placental insufficiency = OMINOUS. Reposition left, O₂, IVF, notify provider, stop Pitocin." },
+
+  { id:"m2q7",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Prenatal Pearls",
+    stem:"Which fundal height finding correctly corresponds to gestational age?",
+    options:["Fundal height at the umbilicus = 12 weeks","Fundal height at the umbilicus = 20 weeks","Fundal height at the xiphoid process = 28 weeks","Fundal height just above symphysis = 20 weeks"],
+    correct:[1], rationale:"20 wks = umbilicus. 12 wks = just above symphysis. 36 wks = xiphoid process." },
+
+  { id:"m2q8",  module:"Module 2", section:1, type:"sata",     diff:1, concept:"Vaccines in Pregnancy",
+    stem:"Select ALL vaccines considered safe and recommended during pregnancy.",
+    options:["Tdap (27–36 weeks)","MMR","Influenza (injectable)","Varicella (chickenpox)","COVID-19","Zoster (Shingles)","RSV (32–36 weeks in season)","Live Influenza (FluMist)"],
+    correct:[0,2,4,6], rationale:"Safe: Tdap, injectable flu, COVID, RSV. AVOID live vaccines: MMR, Varicella, FluMist, Shingles." },
+
+  { id:"m2q9",  module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Prenatal Pearls",
+    stem:"Teaching a patient at 30 weeks about kick counts. Which instruction is most accurate?",
+    options:["Count kicks starting at 20 weeks","Feel for 10 movements in 2 hours — call provider if fewer","Count only during morning hours for accuracy","5 movements per hour is the expected minimum"],
+    correct:[1], rationale:"Kick counts begin at 28 weeks. Goal = 10 movements in 2 hours. Call provider if fewer than 10." },
+
+  { id:"m2q10", module:"Module 2", section:1, type:"mcq",      diff:1, concept:"Labs in Pregnancy",
+    stem:"Which lab finding is considered NORMAL during pregnancy?",
+    options:["Proteinuria ≥300 mg/24 hr","Platelet count of 80,000","Mild dilutional anemia (decreased Hgb/Hct)","Elevated creatinine"],
+    correct:[2], rationale:"Dilutional anemia = normal (plasma volume ↑ more than RBC). Proteinuria ≥300 mg = preeclampsia. Low platelets + elevated creatinine = concerning." },
+
+  { id:"m2q11", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Obstetric Emergencies",
+    stem:"Patient A: sudden severe abdominal pain, rigid uterus, dark red bleeding. Patient B: painless bright red bleeding, no contractions. Which best distinguishes them?",
+    options:["Patient A has placenta previa; Patient B has abruption","Patient A has placental abruption; Patient B has placenta previa","Both have the same condition — placenta previa","Both need vaginal exams to distinguish"],
+    correct:[1], rationale:"Abruption = PAINFUL, dark red, rigid uterus. Previa = PAINLESS, bright red. NO vaginal exam with previa." },
+
+  { id:"m2q12", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Obstetric Emergencies",
+    stem:"32-week patient with painless bright red vaginal bleeding, suspected placenta previa. Priority nursing action?",
+    options:["Perform a vaginal exam to assess cervical dilation","Apply fundal pressure","Do NOT perform vaginal exam — place on bed rest, notify provider, monitor mom and fetus","Encourage ambulation to stimulate contractions"],
+    correct:[2], rationale:"Placenta previa: NO vaginal exam (can cause hemorrhage). Place on bed rest, notify provider, monitor." },
+
+  { id:"m2q13", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Obstetric Emergencies",
+    stem:"Umbilical cord is visible at the vaginal introitus after membrane rupture. Priority nursing action?",
+    options:["Push the cord back into the vagina","Knee-chest position, do NOT push cord in, lift presenting part, call for emergency help","Place on her back and monitor fetal HR","Prepare for immediate vaginal delivery"],
+    correct:[1], rationale:"Cord prolapse: Knee-chest position, NEVER push cord in, manually lift presenting part off cord, EMERGENCY call." },
+
+  { id:"m2q14", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Fetal Heart Rate Patterns",
+    stem:"Variable decelerations — abrupt FHR drops varying in timing and depth. Priority action?",
+    options:["Document and continue routine monitoring","Increase Pitocin rate","Reposition the patient, administer O₂, increase IV fluids","Notify provider to prepare for immediate C-section"],
+    correct:[2], rationale:"Variable decels = cord compression. First: reposition (left lateral or knee-chest), O₂, IVF. Notify if persist." },
+
+  { id:"m2q15", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Hypertensive Disorders",
+    stem:"Patient on IV magnesium sulfate: respirations 10/min, absent DTRs, decreased urine output. Priority action?",
+    options:["Increase the Mag drip rate to maintain therapeutic levels","Stop the infusion and administer calcium gluconate IV","Reposition to left lateral and increase fluids","Document and reassess in 30 minutes"],
+    correct:[1], rationale:"Mag toxicity signs (resp <12, absent DTRs, ↓ UO) → STOP infusion + give calcium gluconate (antidote) immediately." },
+
+  { id:"m2q16", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Prenatal Pearls",
+    stem:"Chart records G4 T2 P1 A1 L2. How should the nurse correctly interpret this GTPAL?",
+    options:["4 pregnancies, 2 term births, 1 preterm, 1 abortion, 2 living children","4 deliveries, 2 premature, 1 term, 1 abortion, 2 living","4 pregnancies, 2 term, 1 stillbirth, 1 abortion, 2 living","4 pregnancies, 2 term, 1 preterm, 1 stillbirth, 2 living"],
+    correct:[0], rationale:"GTPAL: G=Gravida(total pregnancies), T=Term births, P=Preterm births, A=Abortions/losses, L=Living children." },
+
+  { id:"m2q17", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"RH Incompatibility",
+    stem:"An Rh-negative patient at 14 weeks has a positive indirect Coombs test. Most important nursing implication?",
+    options:["Administer RhoGAM immediately","The patient is already sensitized — RhoGAM will NOT prevent further hemolysis","Schedule RhoGAM at 28 weeks as planned","Prepare for emergency delivery"],
+    correct:[1], rationale:"Positive indirect Coombs = already sensitized. RhoGAM prevents sensitization — it CANNOT treat existing sensitization." },
+
+  { id:"m2q18", module:"Module 2", section:2, type:"sata",     diff:2, concept:"Report Immediately",
+    stem:"Select ALL prenatal findings that require IMMEDIATE provider notification.",
+    options:["Mild ankle edema at the end of a long day","Sudden severe headache at 32 weeks","Painless bright red vaginal bleeding at 30 weeks","Nausea in the first trimester","Visual changes and RUQ pain at 28 weeks","Decreased fetal movement after 28 weeks"],
+    correct:[1,2,4,5], rationale:"Severe headache, bright red bleeding, visual changes + RUQ pain, decreased fetal movement = report immediately. Ankle edema and 1st trimester nausea = normal." },
+
+  { id:"m2q19", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Labs in Pregnancy",
+    stem:"Which urinalysis finding requires IMMEDIATE provider notification in a pregnant patient?",
+    options:["Trace protein on dipstick","Glycosuria in the absence of other symptoms","Proteinuria 2+ on dipstick at 28 weeks","↑ urinary frequency without dysuria"],
+    correct:[2], rationale:"Proteinuria 2+ = significant protein loss. After 20 wks, combined with HTN = preeclampsia. Always report. Trace protein may be ok, but more than trace = NOT normal." },
+
+  { id:"m2q20", module:"Module 2", section:2, type:"mcq",      diff:2, concept:"Priority Nursing",
+    stem:"Nurse receives four messages simultaneously. Which patient should be assessed FIRST?",
+    options:["28-week patient reporting decreased fetal movement for 4 hours","36-week patient with mild ankle edema","32-week patient experiencing first-trimester-type nausea","38-week patient with Braxton Hicks every 20 minutes"],
+    correct:[0], rationale:"Decreased fetal movement at 28 weeks = report immediately. Reassure patient movement is the baby communicating." },
+
+  { id:"m2q21", module:"Module 2", section:3, type:"bowtie",   diff:3, concept:"Hypertensive Disorders",
+    stem:"Bow-Tie: 34-wk patient with BP 168/112, severe headache, 3+ proteinuria, RUQ pain, hyperreflexia.",
+    options:["Left: Administer IV magnesium sulfate per order","Left: Keep calcium gluconate at bedside","Left: Increase Pitocin","Center: Severe preeclampsia","Right: Respiratory rate and DTRs","Right: Urine output (≥30 mL/hr)"],
+    correct:[0,1,3,4,5], rationale:"Severe preeclampsia: Mag for seizure prevention, calcium gluconate antidote at bedside. Monitor resp, DTRs, and UO for toxicity." },
+
+  { id:"m2q22", module:"Module 2", section:3, type:"bowtie",   diff:3, concept:"Obstetric Emergencies",
+    stem:"Bow-Tie: Active labor patient — cord felt at introitus after spontaneous ROM, FHR 90 bpm.",
+    options:["Left: Knee-chest position immediately","Left: Push cord back into vagina","Left: Manually lift presenting part off cord","Center: Umbilical cord prolapse","Right: Fetal heart rate pattern","Right: Color/perfusion of cord"],
+    correct:[0,2,3,4,5], rationale:"Cord prolapse = emergency. Knee-chest, lift presenting part, never push cord in. Monitor FHR and cord perfusion." },
+
+  { id:"m2q23a", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Hypertensive Disorders",
+    stem:"[Case Study A] 32-wk patient: BP 158/106, HA, visual changes, 2+ proteinuria, hyperreflexia. Which assessment finding requires PRIORITY action before starting Mag?",
+    options:["Current blood pressure reading","Baseline respiratory rate, DTRs, and urine output","Fetal heart rate tracing","Severity of headache on 1–10 scale"],
+    correct:[1], rationale:"Before starting Mag, establish baseline: resp rate (must be ≥12), DTRs, and urine output to monitor for toxicity." },
+
+  { id:"m2q23b", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Hypertensive Disorders",
+    stem:"[Case Study B] 1 hour into Mag infusion. Select ALL findings that indicate MAGNESIUM TOXICITY.",
+    options:["Respirations 8 per minute","BP 150/100","Absent deep tendon reflexes","Urine output 15 mL/hr","Flushing and warmth (mild)","Serum Mag level 12 mEq/L"],
+    correct:[0,2,3,5], rationale:"Mag toxicity: resp <12, absent DTRs, UO <30 mL/hr, and toxic Mag level (>9 mEq/L) → STOP infusion + calcium gluconate." },
+
+  { id:"m2q23c", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Hypertensive Disorders",
+    stem:"[Case Study C] Patient has generalized tonic-clonic seizure (eclampsia). Priority nursing action DURING the seizure?",
+    options:["Restrain the patient and insert oral airway","Protect from injury, maintain airway, turn to side, call for help, note seizure duration","Document the seizure and notify physician after it ends","Administer calcium gluconate IV push immediately"],
+    correct:[1], rationale:"During seizure: protect from injury, side-lying (airway/aspiration), call for help, time it. Calcium gluconate = Mag antidote, not seizure treatment." },
+
+  { id:"m2q24a", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Priority Nursing",
+    stem:"[Case Study A] 4 antepartum patients. Using 'MOM FIRST' — which patient do you see FIRST?",
+    options:["38-wk patient with Braxton Hicks every 15 min, no cervical change","32-wk patient with BP 172/114, visual changes, and RUQ pain","34-wk patient with painless bright red vaginal bleeding (placenta previa)","28-wk patient with regular contractions q5min, cervical change to 3 cm"],
+    correct:[1], rationale:"BP 172/114 + visual changes + RUQ pain = severe preeclampsia with imminent eclampsia risk = MOST urgent life threat." },
+
+  { id:"m2q24b", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Obstetric Emergencies",
+    stem:"[Case Study B] For the placenta previa patient — which action is CONTRAINDICATED?",
+    options:["Placing patient on bed rest","Monitoring fetal heart tones continuously","Performing a vaginal exam to assess dilation","Establishing IV access"],
+    correct:[2], rationale:"NEVER do vaginal exam with placenta previa — can precipitate massive hemorrhage. Bed rest, FHT monitoring, and IV access are all appropriate." },
+
+  { id:"m2q24c", module:"Module 2", section:3, type:"casestudy", diff:3, concept:"Obstetric Emergencies",
+    stem:"[Case Study C] The 28-week preterm labor patient — which medication would the nurse MOST likely anticipate?",
+    options:["Oxytocin (Pitocin) to strengthen contractions","Betamethasone (corticosteroid) to accelerate fetal lung maturity","Calcium gluconate to treat preterm labor","Magnesium sulfate as a tocolytic AND for fetal neuroprotection"],
+    correct:[3], rationale:"Mag sulfate = tocolytic + fetal neuroprotection before 32 weeks. Betamethasone also likely. Pitocin would worsen labor." },
+
+  { id:"m2q25", module:"Module 2", section:3, type:"sata",     diff:3, concept:"Report Immediately",
+    stem:"Select ALL antepartum findings that require IMMEDIATE provider notification — above all other tasks.",
+    options:["Vaginal bleeding at 28 weeks","Mild ankle edema at 36 weeks","Severe headache with visual changes at 30 weeks","Regular contractions at 33 weeks","Decreased fetal movement for 4 hours at 32 weeks","First-trimester nausea in a 10-week patient","Leaking fluid at 35 weeks","Dizziness and syncope at 24 weeks"],
+    correct:[0,2,3,4,6,7], rationale:"Bleeding, severe HA+visual changes, preterm contractions, decreased FM, fluid leaking, dizziness/syncope = report immediately. Ankle edema and 1st trimester nausea = normal." },
+];
+
+const STORE_KEY = 'nclex_qbank_madison';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveState(state) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+function getStatus(state, id) {
+  return (state[id] && state[id].status) || 'active';
+}
+function getNotes(state, id) {
+  return (state[id] && state[id].notes) || '';
+}
+
+function typeTag(t) {
+  const map = { mcq:'MCQ', sata:'SATA', bowtie:'Bow-Tie', casestudy:'Case Study' };
+  const cls = { mcq:'tag-mcq', sata:'tag-sata', bowtie:'tag-bowtie', casestudy:'tag-case' };
+  return `<span class="q-tag ${cls[t]||''}">${map[t]||t}</span>`;
+}
+function diffTag(d) {
+  const map = {1:'⚪ Foundation', 2:'🟡 Application', 3:'🔴 NGN'};
+  const cls = {1:'tag-d1', 2:'tag-d2', 3:'tag-d3'};
+  return `<span class="q-tag ${cls[d]||''}">${map[d]||d}</span>`;
+}
+
+function renderAll() {
+  const state = loadState();
+  const root = document.getElementById('bank-root');
+  const modules = ['Module 1', 'Module 2'];
+  const fMod = document.getElementById('f-module').value;
+  const fType = document.getElementById('f-type').value;
+  const fDiff = document.getElementById('f-diff').value;
+  const fStatus = document.getElementById('f-status').value;
+  const search = document.getElementById('search').value.toLowerCase();
+
+  let total = 0, active = 0, flagged = 0, removed = 0;
+  QUESTIONS.forEach(q => {
+    const st = getStatus(state, q.id);
+    total++;
+    if (st === 'active') active++;
+    if (st === 'flagged') flagged++;
+    if (st === 'removed') removed++;
+  });
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-flagged').textContent = flagged;
+  document.getElementById('stat-removed').textContent = removed;
+
+  let html = '';
+  modules.forEach(mod => {
+    if (fMod && fMod !== mod) return;
+    const qs = QUESTIONS.filter(q => {
+      if (q.module !== mod) return false;
+      if (fType && q.type !== fType) return false;
+      if (fDiff && String(q.diff) !== fDiff) return false;
+      const st = getStatus(state, q.id);
+      if (fStatus && st !== fStatus) return false;
+      if (search && !q.stem.toLowerCase().includes(search) && !q.concept.toLowerCase().includes(search) && !(getNotes(state,q.id).toLowerCase().includes(search))) return false;
+      return true;
+    });
+    if (!qs.length) return;
+
+    const modColor = mod === 'Module 1' ? '#059669' : '#7c3aed';
+    const modEmoji = mod === 'Module 1' ? '🍼' : '🤰';
+    html += `<div class="module-section">
+      <div class="module-header" style="background:${modColor};">
+        <span style="font-size:20px;">${modEmoji}</span>
+        <h2>${mod}</h2>
+        <span>${qs.length} question${qs.length!==1?'s':''} shown</span>
+      </div>`;
+
+    qs.forEach((q, i) => {
+      const st = getStatus(state, q.id);
+      const notes = getNotes(state, q.id);
+      const cardClass = st === 'flagged' ? 'flagged' : st === 'removed' ? 'removed' : '';
+      const stemClass = st === 'removed' ? 'removed-text' : '';
+      const flagActive = st === 'flagged' ? 'active' : '';
+      const qNum = i + 1;
+
+      const optHtml = (q.options||[]).map((o,oi) => {
+        const isCorrect = (q.correct||[]).includes(oi);
+        return `<div class="option-item ${isCorrect?'correct':''}">${o}</div>`;
+      }).join('');
+
+      html += `<div class="q-card ${cardClass}" id="card-${q.id}">
+        <div class="q-header" onclick="toggleBody('${q.id}')">
+          <div class="q-num">#${qNum}</div>
+          <div style="flex:1;">
+            <div class="q-meta">
+              ${typeTag(q.type)}${diffTag(q.diff)}<span class="q-tag tag-concept">📚 ${q.concept}</span>
+              ${st==='flagged'?'<span class="q-tag" style="background:#fef9c3;color:#92400e;">🚩 Flagged</span>':''}
+              ${st==='removed'?'<span class="q-tag" style="background:#fee2e2;color:#991b1b;">🗑️ Removed</span>':''}
+            </div>
+            <div class="q-stem ${stemClass}">${q.stem}</div>
+          </div>
+          <div class="q-actions" onclick="event.stopPropagation()">
+            ${st!=='removed'?`<button class="btn-flag ${flagActive}" onclick="toggleFlag('${q.id}')">${st==='flagged'?'🚩 Flagged':'🚩 Flag'}</button>`:''}
+            ${st!=='removed'?`<button class="btn-remove" onclick="removeQ('${q.id}')">🗑️ Remove</button>`:`<button class="btn-restore" onclick="restoreQ('${q.id}')">↩️ Restore</button>`}
+            <button class="btn-expand" onclick="toggleBody('${q.id}')">▾</button>
+          </div>
+        </div>
+        <div class="q-body" id="body-${q.id}">
+          <div class="q-section-label">Answer Options</div>
+          <div class="options-list">${optHtml}</div>
+          ${q.rationale ? `<div class="q-section-label">Rationale</div><div class="rationale-box">${typeof q.rationale==='string'?q.rationale:(q.rationale.correct||JSON.stringify(q.rationale))}</div>` : ''}
+          <div class="notes-area">
+            <div class="q-section-label" style="margin-top:12px;">📝 Your Notes</div>
+            <textarea placeholder="Add notes here — e.g. 'consider updating distractor C' or 'student keeps missing this concept'" onchange="saveNote('${q.id}',this.value)">${notes}</textarea>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  if (!html) html = '<div class="empty-state">No questions match your filters.</div>';
+  root.innerHTML = html;
+}
+
+function toggleBody(id) {
+  const el = document.getElementById('body-' + id);
+  if (el) el.classList.toggle('open');
+}
+function toggleFlag(id) {
+  const state = loadState();
+  if (!state[id]) state[id] = {};
+  state[id].status = state[id].status === 'flagged' ? 'active' : 'flagged';
+  saveState(state);
+  renderAll();
+}
+function removeQ(id) {
+  if (!confirm('Mark this question as Removed? You can restore it anytime.')) return;
+  const state = loadState();
+  if (!state[id]) state[id] = {};
+  state[id].status = 'removed';
+  saveState(state);
+  renderAll();
+}
+function restoreQ(id) {
+  const state = loadState();
+  if (!state[id]) state[id] = {};
+  state[id].status = 'active';
+  saveState(state);
+  renderAll();
+}
+function saveNote(id, val) {
+  const state = loadState();
+  if (!state[id]) state[id] = {};
+  state[id].notes = val;
+  saveState(state);
+}
+function applyFilters() { renderAll(); }
+
+function exportFlagged() {
+  const state = loadState();
+  const flagged = QUESTIONS.filter(q => getStatus(state, q.id) === 'flagged');
+  if (!flagged.length) { alert('No questions are currently flagged for review.'); return; }
+  let txt = 'FLAGGED QUESTIONS FOR REVIEW\nStudy with Madison, RN\n' + new Date().toLocaleDateString() + '\n';
+  txt += '='.repeat(50) + '\n\n';
+  flagged.forEach((q,i) => {
+    const notes = getNotes(state, q.id);
+    txt += `${i+1}. [${q.module}] [${q.type.toUpperCase()}] [Diff: ${q.diff}] — ${q.concept}\n`;
+    txt += `   ${q.stem}\n`;
+    if (notes) txt += `   Notes: ${notes}\n`;
+    txt += '\n';
+  });
+  const blob = new Blob([txt], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'flagged-questions.txt';
+  a.click();
+}
+
+renderAll();
+</script>
+</body>
+</html>
