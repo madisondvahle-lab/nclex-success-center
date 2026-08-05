@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Madison's Dashboard | NCLEX Success Center</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--brand:#0d9488;--brand-light:#ccfbf1;--brand-dark:#134e4a;--text:#1f2937;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--card:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* PIN GATE */
+.gate{position:fixed;inset:0;background:linear-gradient(135deg,#134e4a,#0d9488);display:flex;align-items:center;justify-content:center;z-index:999;}
+.gate-card{background:#fff;border-radius:20px;padding:40px 36px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.gate-emoji{font-size:48px;margin-bottom:12px;}
+.gate-title{font-size:1.4rem;font-weight:800;color:var(--brand-dark);margin-bottom:4px;}
+.gate-sub{font-size:.88rem;color:var(--muted);margin-bottom:24px;}
+.gate-input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:10px;font-size:1rem;text-align:center;letter-spacing:3px;margin-bottom:12px;outline:none;}
+.gate-input:focus{border-color:var(--brand);}
+.gate-btn{width:100%;padding:12px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;}
+.gate-btn:hover{background:var(--brand-dark);}
+.gate-error{color:#dc2626;font-size:.85rem;margin-top:8px;display:none;}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#134e4a,#0d9488);color:#fff;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.header-left h1{font-size:1.4rem;font-weight:800;}
+.header-left p{font-size:.85rem;opacity:.85;margin-top:2px;}
+.header-right{display:flex;gap:10px;align-items:center;}
+.btn{padding:8px 16px;border-radius:8px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-white{background:#fff;color:var(--brand-dark);}
+.btn-white:hover{background:var(--brand-light);}
+.btn-outline-white{background:transparent;border:2px solid rgba(255,255,255,.5);color:#fff;}
+.btn-outline-white:hover{background:rgba(255,255,255,.1);}
+.last-refresh{font-size:.78rem;opacity:.7;}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:28px 24px;}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.stat-icon{font-size:1.8rem;margin-bottom:6px;}
+.stat-num{font-size:2rem;font-weight:900;color:var(--brand);}
+.stat-label{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* SECTION TITLE */
+.section-title{font-size:1.1rem;font-weight:800;color:var(--brand-dark);border-left:4px solid var(--brand);padding-left:12px;margin-bottom:16px;}
+
+/* STUDENT CARDS */
+.student-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:32px;}
+.student-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.student-header{background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px;}
+.student-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;flex-shrink:0;}
+.student-name{font-weight:800;font-size:1rem;}
+.student-email{font-size:.78rem;opacity:.8;}
+.student-body{padding:16px 20px;}
+.module-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.module-row:last-child{border-bottom:none;}
+.module-name{color:var(--text);font-weight:500;}
+.score-pill{padding:3px 10px;border-radius:99px;font-size:.78rem;font-weight:700;}
+.score-high{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.score-mid{background:#fffbeb;color:#92400e;border:1px solid #fcd34d;}
+.score-low{background:#fef2f2;color:#7f1d1d;border:1px solid #fca5a5;}
+.student-empty{color:var(--muted);font-size:.88rem;text-align:center;padding:16px 0;}
+
+/* SUBMISSIONS TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:32px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem;}
+.tbl th{background:var(--brand);color:#fff;padding:12px 16px;text-align:left;font-size:.82rem;font-weight:700;}
+.tbl td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--brand-light);cursor:pointer;}
+.expand-btn{background:var(--brand-light);border:1px solid var(--brand);color:var(--brand-dark);padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;}
+
+/* DETAIL PANEL */
+.detail-panel{background:#f9fafb;border:2px solid var(--brand);border-radius:12px;padding:20px;margin-top:8px;display:none;}
+.detail-panel.open{display:block;}
+.wrong-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;}
+.wrong-q{font-weight:700;font-size:.88rem;margin-bottom:6px;}
+.wrong-meta{font-size:.82rem;color:var(--muted);margin-bottom:4px;}
+.wrong-meta span{font-weight:600;}
+.wrong-rat{font-size:.82rem;background:#f0fdfa;border-left:3px solid var(--brand);padding:8px 10px;border-radius:0 6px 6px 0;margin-top:6px;}
+.correct-list{font-size:.82rem;color:#166534;background:#f0fdf4;padding:8px 12px;border-radius:6px;margin-top:8px;}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-emoji{font-size:48px;margin-bottom:12px;}
+.empty p{font-size:.95rem;}
+
+/* LOADING */
+.loading{text-align:center;padding:60px;color:var(--muted);}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--brand-light);border-top-color:var(--brand);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){.main{padding:16px;}.header{padding:16px;}}
+</style>
+</head>
+<body>
+
+<!-- PIN GATE -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-emoji">📊</div>
+    <div class="gate-title">Instructor Dashboard</div>
+    <div class="gate-sub">NCLEX Success Center · Study With Madison</div>
+    <input class="gate-input" type="password" id="gateInput" placeholder="Password" onkeydown="if(event.key==='Enter')unlock()"/>
+    <button class="gate-btn" onclick="unlock()">Access Dashboard</button>
+    <div class="gate-error" id="gateError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none">
+  <div class="header">
+    <div class="header-left">
+      <h1>📊 Instructor Dashboard</h1>
+      <p>Study With Madison RN · NCLEX Success Center</p>
+    </div>
+    <div class="header-right">
+      <span class="last-refresh" id="lastRefresh"></span>
+      <button class="btn btn-white" onclick="loadData()">🔄 Refresh</button>
+      <button class="btn btn-outline-white" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-outline-white" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total Submissions</div></div>
+      <div class="stat-card"><div class="stat-icon">👩‍🎓</div><div class="stat-num" id="statStudents">—</div><div class="stat-label">Students</div></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-num" id="statModules">—</div><div class="stat-label">Modules Attempted</div></div>
+      <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="statAvg">—</div><div class="stat-label">Avg Score</div></div>
+      <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-num" id="statBest">—</div><div class="stat-label">Highest Score</div></div>
+    </div>
+
+    <!-- STUDENT OVERVIEW -->
+    <div class="section-title">Student Overview</div>
+    <div class="student-grid" id="studentGrid">
+      <div class="loading"><div class="spinner"></div><br>Loading student data...</div>
+    </div>
+
+    <!-- RECENT SUBMISSIONS -->
+    <div class="section-title">All Submissions</div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>Student</th><th>Module</th><th>Score</th><th>%</th><th>Date</th><th>Detail</th></tr></thead>
+        <tbody id="submissionsBody"><tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASS = 'madison';
+const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
+const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+const { createClient } = supabase;
+const db = createClient(SB_URL, SB_KEY);
+
+let allData = [];
+
+function unlock() {
+  const val = document.getElementById('gateInput').value;
+  if (val === PASS) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    localStorage.setItem('mxdash', '1');
+    loadData();
+  } else {
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+function logout() {
+  localStorage.removeItem('mxdash');
+  location.reload();
+}
+
+if (localStorage.getItem('mxdash') === '1') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadData();
+}
+
+async function loadData() {
+  const { data, error } = await db
+    .from('quiz_results')
+    .select('*')
+    .order('submitted_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  allData = data || [];
+  document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  renderStats();
+  renderStudents();
+  renderSubmissions();
+}
+
+function renderStats() {
+  const total = allData.length;
+  const students = [...new Set(allData.map(r => r.student_email))].length;
+  const modules = [...new Set(allData.map(r => r.module))].length;
+  const avg = total ? Math.round(allData.reduce((s, r) => s + (r.percentage || 0), 0) / total) : 0;
+  const best = total ? Math.max(...allData.map(r => r.percentage || 0)) : 0;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statStudents').textContent = students;
+  document.getElementById('statModules').textContent = modules;
+  document.getElementById('statAvg').textContent = avg + '%';
+  document.getElementById('statBest').textContent = best + '%';
+}
+
+function renderStudents() {
+  const grid = document.getElementById('studentGrid');
+  if (!allData.length) { grid.innerHTML = '<div class="empty"><div class="empty-emoji">📭</div><p>No submissions yet. Once students complete quizzes and click "Email My Results", their scores will appear here.</p></div>'; return; }
+
+  const byStudent = {};
+  allData.forEach(r => {
+    const key = r.student_email;
+    if (!byStudent[key]) byStudent[key] = { name: r.student_name, email: r.student_email, modules: {} };
+    if (!byStudent[key].modules[r.module] || new Date(r.submitted_at) > new Date(byStudent[key].modules[r.module].submitted_at)) {
+      byStudent[key].modules[r.module] = r;
+    }
+  });
+
+  grid.innerHTML = Object.values(byStudent).map(s => {
+    const initials = (s.name || 'S').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const moduleRows = Object.values(s.modules).sort((a, b) => a.module.localeCompare(b.module)).map(m => {
+      const pct = m.percentage || 0;
+      const cls = pct >= 80 ? 'score-high' : pct >= 60 ? 'score-mid' : 'score-low';
+      return `<div class="module-row"><span class="module-name">${m.module.replace('Module ', 'M').split('–')[0].trim()}<span style="color:var(--muted);font-size:.78rem"> – ${m.module.split('–')[1]?.trim() || ''}</span></span><span class="score-pill ${cls}">${m.score}/${m.total} (${pct}%)</span></div>`;
+    }).join('');
+    const avgScore = Math.round(Object.values(s.modules).reduce((sum, m) => sum + (m.percentage || 0), 0) / Object.values(s.modules).length);
+    return `<div class="student-card">
+      <div class="student-header">
+        <div class="student-avatar">${initials}</div>
+        <div><div class="student-name">${s.name || 'Unknown'}</div><div class="student-email">${s.email} · Avg: ${avgScore}%</div></div>
+      </div>
+      <div class="student-body">${moduleRows || '<div class="student-empty">No submissions yet</div>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSubmissions() {
+  const tbody = document.getElementById('submissionsBody');
+  if (!allData.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-emoji">📭</div><p>No submissions yet.</p></div></td></tr>'; return; }
+
+  tbody.innerHTML = allData.map((r, idx) => {
+    const pct = r.percentage || 0;
+    const cls = pct >= 80 ? 'score-high' : pct >= 60 ? 'score-mid' : 'score-low';
+    const date = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+    const wrong = (r.answers || []).filter(a => !a.isCorrect);
+    return `<tr>
+      <td><strong>${r.student_name || '—'}</strong></td>
+      <td>${r.module || '—'}</td>
+      <td><span class="score-pill ${cls}">${r.score}/${r.total}</span></td>
+      <td><span class="score-pill ${cls}">${pct}%</span></td>
+      <td style="color:var(--muted);font-size:.82rem">${date}</td>
+      <td><button class="expand-btn" onclick="toggleDetail(${idx})">View Answers</button></td>
+    </tr>
+    <tr id="detail-row-${idx}" style="display:none"><td colspan="6">
+      <div class="detail-panel open" id="detail-${idx}">
+        ${wrong.length === 0
+          ? '<div style="color:#166534;font-weight:700;padding:8px">🎉 Perfect score — all answers correct!</div>'
+          : `<div style="font-weight:700;margin-bottom:10px;font-size:.88rem">❌ Missed Questions (${wrong.length}):</div>`
+            + wrong.map(a => `<div class="wrong-item">
+              <div class="wrong-q">Q${a.qNum}: ${a.q}</div>
+              <div class="wrong-meta">Chose: <span>${a.type === 'MCQ' ? a.opts[a.selected] : a.selected.map(s => a.opts[s]).join(' | ')}</span></div>
+              <div class="wrong-meta">Correct: <span style="color:#166534">${a.type === 'MCQ' ? a.opts[a.correct] : a.correct.map(c => a.opts[c]).join(' | ')}</span></div>
+              <div class="wrong-rat">📝 ${a.rat}</div>
+            </div>`).join('')}
+        ${(r.answers || []).filter(a => a.isCorrect).length > 0
+          ? `<div class="correct-list">✅ Correct: ${(r.answers || []).filter(a => a.isCorrect).map(a => 'Q' + a.qNum).join(', ')}</div>`
+          : ''}
+      </div>
+    </td></tr>`;
+  }).join('');
+}
+
+function toggleDetail(idx) {
+  const row = document.getElementById('detail-row-' + idx);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+
+function exportCSV() {
+  if (!allData.length) { alert('No data to export yet.'); return; }
+  const rows = [['Student', 'Email', 'Module', 'Score', 'Total', 'Percentage', 'Date']];
+  allData.forEach(r => rows.push([r.student_name, r.student_email, r.module, r.score, r.total, r.percentage + '%', r.submitted_at ? new Date(r.submitted_at).toLocaleString() : '']));
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'nclex_results_' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+}
+</script>
+</body>
+</html>
