@@ -201,6 +201,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   .pk-arrow{font-size:1rem;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -997,7 +998,10 @@ function showPQResults(){
     </div>
   </div>`;
 }
-function emailResults(mod){const date=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const pct=Math.round((pqScore/PQ.length)*100);const wrong=pqHistory.filter(h=>!h.isCorrect);const correctNums=pqHistory.filter(h=>h.isCorrect).map(h=>'Q'+h.qNum).join(', ');let body=mod+' – Practice Quiz Results\nStudent: Alyssa Dababneh\nDate: '+date+'\nScore: '+pqScore+'/'+PQ.length+' ('+pct+'%)\n\n';if(wrong.length===0){body+='All answers correct!\n';}else{body+='QUESTIONS TO REVIEW ('+wrong.length+' incorrect):\n'+'─'.repeat(50)+'\n\n';wrong.forEach(item=>{body+='Q'+item.qNum+': '+item.q+'\n';if(item.type==='MCQ'){body+='Alyssa chose: '+item.opts[item.selected]+'\nCorrect answer: '+item.opts[item.correct]+'\n';}else{body+='Alyssa chose: '+item.selected.map(s=>item.opts[s]).join(' | ')+'\nCorrect answers: '+item.correct.map(c=>item.opts[c]).join(' | ')+'\n';}body+='Rationale: '+item.rat+'\n\n';});}if(correctNums)body+='\nCorrect: '+correctNums;const sub=encodeURIComponent(mod+' Results – Alyssa – '+pct+'% ('+pqScore+'/'+PQ.length+')');window.location.href='mailto:alyssadababneh@yahoo.com,studywithmadisonrn@gmail.com?subject='+sub+'&body='+encodeURIComponent(body);}
+const SB_URL='https://pmjwwktwlsqpetwfvolb.supabase.co';const SB_KEY='sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+async function emailResults(mod){const date=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const pct=Math.round((pqScore/PQ.length)*100);const wrong=pqHistory.filter(h=>!h.isCorrect);const correctNums=pqHistory.filter(h=>h.isCorrect).map(h=>'Q'+h.qNum).join(', ');let body=mod+' – Practice Quiz Results\nStudent: Alyssa Dababneh\nDate: '+date+'\nScore: '+pqScore+'/'+PQ.length+' ('+pct+'%)\n\n';if(wrong.length===0){body+='All answers correct!\n';}else{body+='QUESTIONS TO REVIEW ('+wrong.length+' incorrect):\n'+'─'.repeat(50)+'\n\n';wrong.forEach(item=>{body+='Q'+item.qNum+': '+item.q+'\n';if(item.type==='MCQ'){body+='Alyssa chose: '+item.opts[item.selected]+'\nCorrect answer: '+item.opts[item.correct]+'\n';}else{body+='Alyssa chose: '+item.selected.map(s=>item.opts[s]).join(' | ')+'\nCorrect answers: '+item.correct.map(c=>item.opts[c]).join(' | ')+'\n';}body+='Rationale: '+item.rat+'\n\n';});}if(correctNums)body+='\nCorrect: '+correctNums;
+try{const{createClient}=supabase;const db=createClient(SB_URL,SB_KEY);await db.from('quiz_results').insert({student_name:'Alyssa Dababneh',student_email:'alyssadababneh@yahoo.com',module:mod,score:pqScore,total:PQ.length,percentage:pct,answers:pqHistory});}catch(e){console.error('Supabase:',e);}
+const sub=encodeURIComponent(mod+' Results – Alyssa – '+pct+'% ('+pqScore+'/'+PQ.length+')');window.location.href='mailto:alyssadababneh@yahoo.com,studywithmadisonrn@gmail.com?subject='+sub+'&body='+encodeURIComponent(body);}
 
 renderPQ();
 </script>
