@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
@@ -175,6 +176,25 @@
       .flow-steps { flex-direction: column; }
       .flow-arrow { display: none; }
     }
+
+    .card-accent-red  { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
+    .card-accent-blue { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .card-accent-teal { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+    .emoji-red  { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
+    .emoji-blue { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
+    .emoji-teal { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
+    .eyebrow-red  { color: #ef4444; }
+    .eyebrow-blue { color: #3b82f6; }
+    .eyebrow-teal { color: #0d9488; }
+    .badge-red  { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+    .badge-blue { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+    .badge-teal { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
+    .btn-red  { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
+    .btn-red:hover  { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-blue { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
+    .btn-blue:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-teal { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
+    .btn-teal:hover { transform:translateY(-2px); filter:brightness(1.06); }
   </style>
 </head>
 <body>
@@ -307,57 +327,12 @@
     </div>
   </div>
 
-  <!-- ── COMING SOON ── -->
-  <div class="section-label fade-up-3" style="margin-top:40px;">Modules — Assigned After Diagnostic</div>
-  <div class="coming-soon-grid fade-up-3">
-    <div class="coming-card">
-      <div class="coming-card-icon">🍼</div>
-      <div class="coming-card-num">Module 1</div>
-      <div class="coming-card-name">Newborn Care</div>
-      <span class="coming-soon-badge">Pending Assignment</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">🤰</div>
-      <div class="coming-card-num">Module 2</div>
-      <div class="coming-card-name">Maternal &amp; OB</div>
-      <span class="coming-soon-badge">Pending Assignment</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">💊</div>
-      <div class="coming-card-num">Module 3</div>
-      <div class="coming-card-name">Pharmacology</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">🧸</div>
-      <div class="coming-card-num">Module 4</div>
-      <div class="coming-card-name">Pediatrics</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">❤️</div>
-      <div class="coming-card-num">Module 5</div>
-      <div class="coming-card-name">Cardiac</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">🫁</div>
-      <div class="coming-card-num">Module 6</div>
-      <div class="coming-card-name">Respiratory</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">🧠</div>
-      <div class="coming-card-num">Module 7</div>
-      <div class="coming-card-name">Mental Health</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
-    <div class="coming-card">
-      <div class="coming-card-icon">📋</div>
-      <div class="coming-card-num">Module 8</div>
-      <div class="coming-card-name">Prioritization &amp; Delegation</div>
-      <span class="coming-soon-badge">Coming Soon</span>
-    </div>
+
+  <!-- ── DYNAMIC MODULES (Supabase) ── -->
+  <div id="assigned-modules-area" style="margin-top:36px;"></div>
+  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
+  <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
+    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
   </div>
 
 </main>
@@ -367,12 +342,180 @@
 </footer>
 
 <script>
-  // ── PIN Gate ──
-  (function() {
-    const CORRECT = '0508'; // ← Courtney's PIN
-    const STORE_KEY = 'nclex_pin_courtney';
-    if (localStorage.getItem(STORE_KEY) === CORRECT) {
+  // ── SUPABASE PIN GATE ──
+
+  const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
+  const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+  const sbClient = supabase.createClient(SB_URL, SB_KEY);
+
+  const MODULES_CATALOG = [
+    { key:'m1',  num:1,  name:'Newborn Care',              emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
+    { key:'m2',  num:2,  name:'Maternal & OB',             emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
+    { key:'m3',  num:3,  name:'Pharmacology',              emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
+    { key:'m4',  num:4,  name:'Cardiovascular',            emoji:'❤️', available:true,  guideUrl:'module4-guide.html', quizUrl:null,                    desc:'Heart failure, dysrhythmias, MI, hypertension, vascular disorders, and cardiac medications.' },
+    { key:'m5',  num:5,  name:'Respiratory',               emoji:'🫁', available:true,  guideUrl:'module5-guide.html', quizUrl:null,                    desc:'COPD, asthma, pneumonia, respiratory failure, ABG interpretation, and oxygen therapy.' },
+    { key:'m6',  num:6,  name:'Fluids & Electrolytes',     emoji:'💧', available:true,  guideUrl:'module6-guide.html', quizUrl:null,                    desc:'Electrolyte imbalances, IV fluids, acid-base balance, and clinical management priorities.' },
+    { key:'m7',  num:7,  name:'Mental Health',             emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m8',  num:8,  name:'Prioritization',            emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m9',  num:9,  name:'Infection Control',         emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m10', num:10, name:'Endocrine',                 emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m11', num:11, name:'Renal & Urologic',          emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m12', num:12, name:'Gastrointestinal',          emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m13', num:13, name:'Musculoskeletal',           emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m14', num:14, name:'Neurological',              emoji:'🧬', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m15', num:15, name:'Hematology & Oncology',     emoji:'🩸', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m16', num:16, name:'Integumentary',             emoji:'🩹', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m17', num:17, name:'Immune & Autoimmune',       emoji:'🛡️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m18', num:18, name:'Perioperative Care',        emoji:'🏥', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m19', num:19, name:'Critical Care & Shock',     emoji:'⚠️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m20', num:20, name:'NGN Clinical Judgment',     emoji:'🎯', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m21', num:21, name:'NCLEX Strategy & CAT',      emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+  ];
+
+  // Render assigned (enabled) modules as active cards
+  function renderAssignedModules(accessMap, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const enabled = MODULES_CATALOG.filter(m => accessMap[m.key]);
+    if (!enabled.length) {
+      container.innerHTML = '<p style="color:#94a3b8;font-size:14px;padding:20px 0;">No modules assigned yet — check back after your session with Madison.</p>';
+      return;
+    }
+    // Sort by module number; designate last as "current assignment"
+    const sorted = [...enabled].sort((a,b) => a.num - b.num);
+    const current = sorted[sorted.length - 1];
+    const completed = sorted.slice(0, -1);
+
+    const accentColors = {
+      m1:'green', m2:'purple', m3:'sky', m4:'red', m5:'blue', m6:'teal'
+    };
+    const colorMap = {
+      green:  { accent:'#10b981', bg:'#f0fdf4', emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
+      purple: { accent:'#8b5cf6', bg:'#faf5ff', emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
+      sky:    { accent:'#0ea5e9', bg:'#f0f9ff', emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
+      red:    { accent:'#ef4444', bg:'#fef2f2', emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
+      blue:   { accent:'#3b82f6', bg:'#eff6ff', emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
+      teal:   { accent:'#0d9488', bg:'#f0fdfa', emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
+    };
+
+    let html = '';
+
+    // Current assignment
+    const c = current;
+    const cc = colorMap[accentColors[c.key]] || colorMap['sky'];
+    html += `
+      <div class="section-label fade-up" style="margin-bottom:16px;">📌 This Week's Assignment</div>
+      <div class="card fade-up" style="margin-bottom:16px;">
+        <div class="card-accent-${accentColors[c.key] || 'sky'}"></div>
+        <div class="card-body">
+          <div class="module-header">
+            <div class="module-title-group">
+              <div class="module-emoji-wrap ${cc.emoji}">${c.emoji}</div>
+              <div>
+                <div class="module-eyebrow ${cc.eyebrow}">Module ${c.num}</div>
+                <div class="module-name">${c.name}</div>
+              </div>
+            </div>
+            <span class="badge badge-yellow">📌 Assigned This Week</span>
+          </div>
+          <p class="module-desc">${c.desc}</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            ${c.guideUrl ? `<a href="${c.guideUrl}" class="start-btn ${cc.btn}" style="flex:1;">📖 Study Guide →</a>` : ''}
+            ${c.quizUrl  ? `<a href="${c.quizUrl}?start=1" class="start-btn ${cc.btn}" style="flex:1;">🎯 Start Quiz →</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+
+    // Completed modules
+    if (completed.length) {
+      html += `<div class="section-label fade-up-2" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
+      completed.reverse().forEach(m => {
+        const mc = colorMap[accentColors[m.key]] || colorMap['green'];
+        html += `
+          <div class="card fade-up-2" style="margin-bottom:12px;">
+            <div class="card-accent-${accentColors[m.key] || 'green'}"></div>
+            <div class="card-body" style="padding-top:20px;padding-bottom:20px;">
+              <div class="module-header">
+                <div class="module-title-group">
+                  <div class="module-emoji-wrap ${mc.emoji}">${m.emoji}</div>
+                  <div>
+                    <div class="module-eyebrow ${mc.eyebrow}">Module ${m.num}</div>
+                    <div class="module-name">${m.name}</div>
+                  </div>
+                </div>
+                <span class="badge ${mc.badge}">✅ Completed</span>
+              </div>
+              <p class="module-desc" style="margin-bottom:14px;">${m.desc}</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                ${m.guideUrl ? `<a href="${m.guideUrl}" class="start-btn btn-outline" style="font-size:14px;flex:1;">📖 Review Guide →</a>` : ''}
+                ${m.quizUrl  ? `<a href="${m.quizUrl}?start=1" class="start-btn btn-outline" style="font-size:14px;flex:1;">🎯 Retake Quiz →</a>` : ''}
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+    container.innerHTML = html;
+  }
+
+  // Render full curriculum grid (all 21, enabled ones clickable)
+  function renderCurriculumGrid(accessMap, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const html = MODULES_CATALOG.map(m => {
+      const enabled = !!accessMap[m.key];
+      const unavailable = !m.available;
+      if (enabled) {
+        const links = [m.guideUrl, m.quizUrl].filter(Boolean);
+        const href = links[0] || '#';
+        return `<a href="${href}" style="text-decoration:none;">
+          <div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+            <div class="coming-card-icon">${m.emoji}</div>
+            <div class="coming-card-num" style="color:#134e4a;">Module ${m.num}</div>
+            <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
+            <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
+          </div></a>`;
+      } else if (unavailable) {
+        return `<div class="coming-card">
+          <div class="coming-card-icon">${m.emoji}</div>
+          <div class="coming-card-num">Module ${m.num}</div>
+          <div class="coming-card-name">${m.name}</div>
+          <span class="coming-soon-badge">Coming Soon</span>
+        </div>`;
+      } else {
+        return `<div class="coming-card">
+          <div class="coming-card-icon">${m.emoji}</div>
+          <div class="coming-card-num">Module ${m.num}</div>
+          <div class="coming-card-name">${m.name}</div>
+          <span class="coming-soon-badge">Pending Assignment</span>
+        </div>`;
+      }
+    }).join('');
+    container.innerHTML = html;
+  }
+
+  // Load module access from Supabase and render
+  async function loadAndRenderModules(studentId, assignedContainerId, curriculumContainerId) {
+    const { data } = await sbClient
+      .from('student_module_access')
+      .select('module_key, enabled')
+      .eq('student_id', studentId);
+    const accessMap = {};
+    (data || []).forEach(r => { accessMap[r.module_key] = r.enabled; });
+    if (assignedContainerId) renderAssignedModules(accessMap, assignedContainerId);
+    if (curriculumContainerId) renderCurriculumGrid(accessMap, curriculumContainerId);
+    // store for quiz tracking
+    localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
+  }
+
+  (async function initCourtney() {
+    const STUDENT_NAME = 'Courtney';
+    const STORE_KEY = 'nclex_sid_courtney';
+    const storedId = localStorage.getItem(STORE_KEY);
+    if (storedId) {
       document.getElementById('pin-gate').style.display = 'none';
+      document.body.classList.remove('locked');
+      localStorage.setItem('nclex_current_student', STUDENT_NAME);
+      loadAndRenderModules(storedId, 'assigned-modules-area', 'curriculum-grid');
       return;
     }
     document.body.classList.add('locked');
@@ -405,21 +548,25 @@
     else if (e.key === 'Backspace') { e.preventDefault(); pinDel(); }
   });
 
-  function checkPin() {
-    const CORRECT = '0508'; // ← Must match above
-    if (pinBuffer === CORRECT) {
-      localStorage.setItem('nclex_pin_courtney', pinBuffer);
+  async function checkPin() {
+    const STUDENT_NAME = 'Courtney';
+    const { data, error } = await sbClient
+      .from('students')
+      .select('id, pin')
+      .eq('name', STUDENT_NAME)
+      .single();
+    if (!error && data && data.pin === pinBuffer) {
+      localStorage.setItem('nclex_sid_courtney', data.id);
+      localStorage.setItem('nclex_current_student', STUDENT_NAME);
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
+      loadAndRenderModules(data.id, 'assigned-modules-area', 'curriculum-grid');
     } else {
       updateDots(true);
       document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
       setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
     }
   }
-
-  localStorage.setItem('nclex_current_student', 'Courtney');
 </script>
-
 </body>
 </html>
