@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutor Dashboard · NCLEX Success Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1e293b; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      padding: 28px 32px 24px; position: relative; overflow: hidden;
+    }
+    .header::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 80% 30%, rgba(14,165,233,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 10% 80%, rgba(139,92,246,0.10) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .header-inner { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .header-left { }
+    .header-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 99px;
+      background: rgba(14,165,233,0.15); border: 1px solid rgba(14,165,233,0.35);
+      font-size: 10px; font-weight: 700; color: #38bdf8; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .header-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.3px; margin-bottom: 4px; }
+    .header-sub { font-size: 14px; color: #64748b; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .header-btn {
+      padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08); color: #e2e8f0; font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 7px; transition: all 0.15s;
+    }
+    .header-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.25); }
+    .header-btn.primary { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+    .header-btn.primary:hover { background: #0284c7; }
+
+    /* ── Student tabs ── */
+    .tabs-bar { background: #fff; border-bottom: 1px solid #e8ecf2; padding: 0 32px; display: flex; align-items: center; gap: 4px; overflow-x: auto; }
+    .tab {
+      padding: 14px 20px; font-size: 14px; font-weight: 600; color: #64748b;
+      border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap;
+      transition: all 0.15s; display: flex; align-items: center; gap: 8px;
+    }
+    .tab:hover { color: #0f172a; }
+    .tab.active { color: #0ea5e9; border-bottom-color: #0ea5e9; }
+    .tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; background: #e2e8f0; flex-shrink: 0; }
+    .tab.has-data .tab-dot { background: #10b981; }
+
+    /* ── Layout ── */
+    .main { max-width: 1160px; margin: 0 auto; padding: 28px 24px 80px; }
+    .section-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 14px; margin-top: 28px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ── Cards ── */
+    .card { background: #fff; border-radius: 20px; box-shadow: 0 2px 16px rgba(15,23,42,0.07); overflow: hidden; margin-bottom: 16px; }
+    .card-header { padding: 18px 22px 0; }
+    .card-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .card-sub { font-size: 12px; color: #94a3b8; }
+    .card-body { padding: 18px 22px 22px; }
+    .card-accent { height: 4px; }
+
+    /* ── Stat cards ── */
+    .stat-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 2px 12px rgba(15,23,42,0.07); }
+    .stat-label { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: -1px; margin-bottom: 4px; }
+    .stat-detail { font-size: 12px; color: #64748b; }
+
+    /* ── Risk profile ── */
+    .risk-card { background: #fff; border-radius: 20px; padding: 22px; box-shadow: 0 2px 16px rgba(15,23,42,0.07); margin-bottom: 16px; display: flex; align-items: flex-start; gap: 18px; }
+    .risk-icon { font-size: 36px; flex-shrink: 0; line-height: 1; }
+    .risk-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .risk-body { font-size: 13px; color: #475569; line-height: 1.65; }
+    .risk-attempts { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+    .attempt-pip { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Blueprint bars ── */
+    .bp-row { margin-bottom: 14px; }
+    .bp-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .bp-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+    .bp-pct { font-size: 12px; font-weight: 700; }
+    .bp-bar-bg { height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+    .bp-bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+
+    /* ── Score timeline ── */
+    .timeline-wrap { position: relative; padding: 8px 0; }
+    .timeline-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; position: relative; }
+    .timeline-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 0 0 2px currentColor; }
+    .timeline-line { position: absolute; left: 5px; top: 18px; bottom: -4px; width: 2px; background: #e8ecf2; }
+    .timeline-content { flex: 1; }
+    .timeline-date { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 3px; }
+    .timeline-score { font-size: 16px; font-weight: 800; }
+    .timeline-meta { font-size: 12px; color: #64748b; }
+
+    /* ── Missed questions ── */
+    .missed-q { border: 1px solid #e8ecf2; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; background: #fafbfc; }
+    .missed-q-stem { font-size: 13px; color: #1e293b; line-height: 1.55; margin-bottom: 8px; font-weight: 500; }
+    .missed-q-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+    .missed-pill { padding: 3px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; }
+
+    /* ── CPR upload ── */
+    .upload-zone {
+      border: 2px dashed #cbd5e1; border-radius: 16px; padding: 32px;
+      text-align: center; cursor: pointer; transition: all 0.18s; background: #fafbfc;
+    }
+    .upload-zone:hover { border-color: #0ea5e9; background: #f0f9ff; }
+    .upload-zone.drag-over { border-color: #0ea5e9; background: #e0f2fe; }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+    .upload-text { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 4px; }
+    .upload-hint { font-size: 12px; color: #94a3b8; }
+    #cpr-file-input { display: none; }
+
+    .cpr-preview { background: #f0fdf4; border: 1px solid #86efac; border-radius: 16px; padding: 20px; margin-top: 14px; display: none; }
+    .cpr-filename { font-size: 14px; font-weight: 700; color: #065f46; margin-bottom: 8px; }
+    .cpr-detail { font-size: 13px; color: #15803d; line-height: 1.6; }
+
+    /* ── No data state ── */
+    .no-data { text-align: center; padding: 48px 24px; }
+    .no-data-icon { font-size: 40px; margin-bottom: 14px; }
+    .no-data-title { font-size: 17px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    .no-data-sub { font-size: 14px; color: #94a3b8; line-height: 1.6; }
+
+    /* ── Loading ── */
+    .loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 40px; color: #94a3b8; font-size: 14px; }
+
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .header { padding: 20px 16px; }
+      .tabs-bar { padding: 0 16px; }
+      .main { padding: 20px 14px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-badge">Study with Madison, RN</div>
+      <div class="header-title">📊 Tutor Dashboard</div>
+      <div class="header-sub">Student performance, weak areas, and risk profiles</div>
+    </div>
+    <div class="header-actions">
+      <a href="live-monitor.html" class="header-btn primary">🔴 Live Monitor</a>
+      <a href="home.html" class="header-btn">← Student Hub</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── STUDENT TABS ── -->
+<div class="tabs-bar">
+  <div class="tab active" data-student="all" onclick="switchTab('all')">
+    <div class="tab-dot has-data"></div> All Students
+  </div>
+  <div class="tab" data-student="7711737d-1cc0-4d99-8ae4-80b58a593cd5" id="tab-ahmed" onclick="switchTab('7711737d-1cc0-4d99-8ae4-80b58a593cd5')">
+    <div class="tab-dot" id="dot-ahmed"></div> Ahmed
+  </div>
+  <div class="tab" data-student="ae748de7-2bc5-46b3-9e74-aa3a736e0427" id="tab-alyssa" onclick="switchTab('ae748de7-2bc5-46b3-9e74-aa3a736e0427')">
+    <div class="tab-dot" id="dot-alyssa"></div> Alyssa
+  </div>
+  <div class="tab" data-student="2df04188-d5e6-4dbf-aa42-856b7f9d67b1" id="tab-courtney" onclick="switchTab('2df04188-d5e6-4dbf-aa42-856b7f9d67b1')">
+    <div class="tab-dot" id="dot-courtney"></div> Courtney
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main" id="main-content">
+  <div class="loading">⏳ Loading student data...</div>
+</div>
+
+<script>
+const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
+const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+const STUDENTS = {
+  '7711737d-1cc0-4d99-8ae4-80b58a593cd5': { name: 'Ahmed',   email: 'southviewconsultingservices@gmail.com', avatarBg: 'linear-gradient(135deg,#d1fae5,#a7f3d0)', avatarColor: '#065f46', nclex_target: null,         nclex_attempts: 0 },
+  'ae748de7-2bc5-46b3-9e74-aa3a736e0427': { name: 'Alyssa',  email: 'alyssadababneh@yahoo.com',              avatarBg: 'linear-gradient(135deg,#e0f2fe,#bae6fd)', avatarColor: '#0369a1', nclex_target: '2026-09-01', nclex_attempts: 0 },
+  '2df04188-d5e6-4dbf-aa42-856b7f9d67b1': { name: 'Courtney',email: 'stewartxcrunner@gmail.com',             avatarBg: 'linear-gradient(135deg,#fce7f3,#fbcfe8)', avatarColor: '#9d174d', nclex_target: '2026-09-14', nclex_attempts: 0 },
+};
+
+const BLUEPRINTS = [
+  'Safe & Effective Care Environment',
+  'Physiological Integrity',
+  'Health Promotion & Maintenance',
+  'Psychosocial Integrity'
+];
+
+const BP_COLORS = {
+  'Safe & Effective Care Environment': '#0ea5e9',
+  'Physiological Integrity': '#10b981',
+  'Health Promotion & Maintenance': '#f59e0b',
+  'Psychosocial Integrity': '#8b5cf6'
+};
+
+let allScores = [];
+let currentTab = 'all';
+
+// ── RISK PROFILE LOGIC ─────────────────────────────────────────────────────
+function getRiskProfile(student, scores) {
+  const attempts = student.nclex_attempts || 0;
+  const latestScore = scores.length ? scores[scores.length - 1] : null;
+  const avgScore = scores.length ? scores.reduce((a,s) => a + (s.ability_score||0), 0) / scores.length : null;
+  const target = student.nclex_target;
+  const daysLeft = target ? Math.ceil((new Date(target) - new Date()) / 86400000) : null;
+
+  // Risk factors
+  let riskLevel = 'low';
+  let riskFactors = [];
+
+  if (attempts >= 3) { riskLevel = 'critical'; riskFactors.push(`${attempts} prior NCLEX attempts`); }
+  else if (attempts === 2) { riskLevel = 'high'; riskFactors.push('2 prior NCLEX attempts'); }
+  else if (attempts === 1) { riskLevel = riskLevel === 'low' ? 'moderate' : riskLevel; riskFactors.push('1 prior attempt'); }
+
+  if (avgScore !== null && avgScore < 0.5) { riskLevel = riskLevel === 'low' ? 'moderate' : riskLevel; riskFactors.push('Average score below 50%'); }
+  if (avgScore !== null && avgScore < 0.35) { riskLevel = 'high'; }
+
+  if (daysLeft !== null && daysLeft < 14) { riskLevel = riskLevel === 'low' ? 'moderate' : riskLevel; riskFactors.push(`Only ${daysLeft} days until NCLEX`); }
+
+  const profiles = {
+    low: {
+      icon: '✅',
+      label: 'Low Risk',
+      bg: '#f0fdf4', border: '#86efac', color: '#065f46',
+      message: 'Student is on track. Keep consistent practice and reinforce weak areas.',
+      pillBg: '#d1fae5', pillColor: '#065f46'
+    },
+    moderate: {
+      icon: '⚠️',
+      label: 'Moderate Risk',
+      bg: '#fffbeb', border: '#fde047', color: '#854d0e',
+      message: 'Some concerns identified. Prioritize weak blueprints and increase practice frequency.',
+      pillBg: '#fef3c7', pillColor: '#92400e'
+    },
+    high: {
+      icon: '🔶',
+      label: 'High Risk',
+      bg: '#fff7ed', border: '#fb923c', color: '#9a3412',
+      message: 'Multiple risk factors present. Consider intensive tutoring and daily question sets.',
+      pillBg: '#fed7aa', pillColor: '#7c2d12'
+    },
+    critical: {
+      icon: '🚨',
+      label: 'Critical Risk',
+      bg: '#fef2f2', border: '#fca5a5', color: '#7f1d1d',
+      message: '3+ NCLEX attempts. Requires a full study plan overhaul and remediation strategy.',
+      pillBg: '#fee2e2', pillColor: '#7f1d1d'
+    }
+  };
+
+  return { level: riskLevel, factors: riskFactors, attempts, daysLeft, target, avgScore, ...profiles[riskLevel] };
+}
+
+// ── RENDERING ──────────────────────────────────────────────────────────────
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function daysStr(target) {
+  if (!target) return null;
+  const d = Math.ceil((new Date(target) - new Date()) / 86400000);
+  return d > 0 ? `${d} days until NCLEX` : d === 0 ? 'NCLEX is TODAY!' : `${Math.abs(d)} days ago`;
+}
+
+function pct(v) { return Math.round((v || 0) * 100); }
+
+function renderStudentView(studentId, scores) {
+  const st = STUDENTS[studentId];
+  if (!st) return '<p>Student not found.</p>';
+
+  const studentScores = scores.filter(s => s.student_id === studentId)
+    .sort((a,b) => new Date(a.completed_at||a.created_at) - new Date(b.completed_at||b.created_at));
+  const latest = studentScores[studentScores.length - 1];
+  const risk = getRiskProfile(st, studentScores);
+
+  if (!studentScores.length) {
+    return `
+      <div class="no-data">
+        <div class="no-data-icon">⏳</div>
+        <div class="no-data-title">${st.name} hasn't completed a diagnostic yet</div>
+        <div class="no-data-sub">Results will appear here automatically once they finish.<br>
+          <a href="live-monitor.html" style="color:#0ea5e9;font-weight:600;text-decoration:none;">Open the Live Monitor →</a> to get notified the moment they're done.
+        </div>
+      </div>`;
+  }
+
+  // Blueprint breakdown from latest score
+  const bpData = latest.blueprint_scores || {};
+  const missedQ = latest.missed_questions || [];
+
+  // Attempt pips
+  const attempts = st.nclex_attempts || 0;
+  const pips = Array.from({length: Math.max(attempts, 1)}, (_,i) => {
+    const color = i < attempts ? (risk.level === 'critical' ? '#ef4444' : risk.level === 'high' ? '#f97316' : '#f59e0b') : '#e2e8f0';
+    return `<div class="attempt-pip" style="background:${color};"></div>`;
+  }).join('');
+
+  return `
+    <!-- Risk Profile -->
+    <div class="section-label">Student Risk Profile</div>
+    <div class="risk-card" style="background:${risk.bg};border:1.5px solid ${risk.border};">
+      <div class="risk-icon">${risk.icon}</div>
+      <div style="flex:1;">
+        <div class="risk-title" style="color:${risk.color};">${st.name} · ${risk.label}</div>
+        <div class="risk-body" style="color:${risk.color};opacity:0.8;">${risk.message}</div>
+        <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <div class="risk-attempts" style="background:${risk.pillBg};color:${risk.pillColor};">
+            ${pips}
+            ${attempts === 0 ? '🆕 First attempt' : `${attempts} prior attempt${attempts>1?'s':''}`}
+          </div>
+          ${risk.daysLeft !== null ? `<span class="badge" style="background:${risk.pillBg};color:${risk.pillColor};">📅 ${daysStr(risk.target)}</span>` : ''}
+          ${risk.avgScore !== null ? `<span class="badge" style="background:${risk.pillBg};color:${risk.pillColor};">📊 Avg ${pct(risk.avgScore)}%</span>` : ''}
+        </div>
+        ${risk.factors.length ? `<div style="margin-top:8px;font-size:11px;color:${risk.color};opacity:0.7;">Risk factors: ${risk.factors.join(' · ')}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="section-label">Latest Diagnostic Summary</div>
+    <div class="grid-3">
+      <div class="stat-card">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" style="color:${pct(latest.ability_score)>=72?'#10b981':'#ef4444'};">${pct(latest.ability_score)}%</div>
+        <div class="stat-detail">${latest.result || (pct(latest.ability_score)>=72?'PASS':'FAIL')} · CAT result</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Questions</div>
+        <div class="stat-value">${latest.total_questions || '—'}</div>
+        <div class="stat-detail">Adaptive CAT · ${formatDate(latest.completed_at||latest.created_at)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sessions Total</div>
+        <div class="stat-value">${studentScores.length}</div>
+        <div class="stat-detail">Across all diagnostics</div>
+      </div>
+    </div>
+
+    <!-- Blueprint breakdown + Timeline -->
+    <div class="grid-2" style="margin-top:16px;">
+      <!-- Blueprint scores -->
+      <div class="card">
+        <div class="card-accent" style="background:linear-gradient(90deg,#0ea5e9,#8b5cf6);"></div>
+        <div class="card-header">
+          <div class="card-title">Blueprint Breakdown</div>
+          <div class="card-sub">Weak areas from latest diagnostic</div>
+        </div>
+        <div class="card-body">
+          ${renderBlueprintBars(bpData)}
+        </div>
+      </div>
+
+      <!-- Score timeline -->
+      <div class="card">
+        <div class="card-accent" style="background:linear-gradient(90deg,#10b981,#0ea5e9);"></div>
+        <div class="card-header">
+          <div class="card-title">Score Over Time</div>
+          <div class="card-sub">${studentScores.length} session${studentScores.length!==1?'s':''}</div>
+        </div>
+        <div class="card-body">
+          ${renderTimeline(studentScores)}
+        </div>
+      </div>
+    </div>
+
+    <!-- Missed Questions -->
+    <div class="section-label">Missed Questions (Latest Session)</div>
+    <div class="card">
+      <div class="card-body">
+        ${renderMissedQuestions(missedQ, latest)}
+      </div>
+    </div>
+
+    <!-- CPR Upload -->
+    <div class="section-label">CPR Report</div>
+    ${renderCPRUpload(studentId, st.name)}
+  `;
+}
+
+function renderBlueprintBars(bpData) {
+  const hasData = Object.keys(bpData).length > 0;
+
+  if (!hasData) {
+    // Generate placeholder note
+    return `<p style="font-size:13px;color:#94a3b8;text-align:center;padding:16px 0;">Blueprint breakdown will appear once the diagnostic saves detailed scores.<br><br>
+      <span style="font-size:11px;">The diagnostic engine tracks performance by NCLEX blueprint area — these bars will populate after the first completed session.</span></p>`;
+  }
+
+  return BLUEPRINTS.map(bp => {
+    const score = bpData[bp] ?? null;
+    const displayPct = score !== null ? Math.round(score * 100) : 0;
+    const color = score === null ? '#e2e8f0' : score >= 0.72 ? '#10b981' : score >= 0.50 ? '#f59e0b' : '#ef4444';
+    const label = score === null ? 'No data' : `${displayPct}%`;
+    return `<div class="bp-row">
+      <div class="bp-label-row">
+        <div class="bp-name">${bp}</div>
+        <div class="bp-pct" style="color:${color};">${label}</div>
+      </div>
+      <div class="bp-bar-bg">
+        <div class="bp-bar-fill" style="width:${displayPct}%;background:${color};"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline(scores) {
+  if (!scores.length) return '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No sessions yet</p>';
+
+  return `<div class="timeline-wrap">${scores.map((s, i) => {
+    const p = pct(s.ability_score);
+    const result = s.result || (p >= 72 ? 'PASS' : 'FAIL');
+    const color = result === 'PASS' ? '#10b981' : '#ef4444';
+    const isLast = i === scores.length - 1;
+    return `<div class="timeline-row">
+      ${!isLast ? '<div class="timeline-line"></div>' : ''}
+      <div class="timeline-dot" style="color:${color};"></div>
+      <div class="timeline-content">
+        <div class="timeline-date">${formatDate(s.completed_at||s.created_at)}</div>
+        <div class="timeline-score" style="color:${color};">${p}% · ${result}</div>
+        <div class="timeline-meta">${s.total_questions || '?'} questions</div>
+      </div>
+      ${isLast ? `<span class="badge" style="background:${color}22;color:${color};">Latest</span>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderMissedQuestions(missed, latestScore) {
+  // Try to use stored missed questions, or infer from score data
+  if (!missed || !missed.length) {
+    return `<div style="text-align:center;padding:20px 0;">
+      <div style="font-size:28px;margin-bottom:10px;">📝</div>
+      <div style="font-size:14px;font-weight:600;color:#475569;margin-bottom:6px;">Missed questions will appear here</div>
+      <div style="font-size:12px;color:#94a3b8;">The diagnostic needs to save a <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">missed_questions</code> array to the <code style="background:#f1f5f9;padding:1px 6px;border-radius:4px;">student_scores</code> table.<br>
+      Add this field to your Supabase save function in <strong>diagnostic.html</strong> to enable this view.</div>
+    </div>`;
+  }
+
+  return missed.slice(0, 10).map(q => {
+    const bpColor = BP_COLORS[q.blueprint] || '#64748b';
+    return `<div class="missed-q">
+      <div class="missed-q-stem">${q.stem || q.question || 'Question text not saved'}</div>
+      <div class="missed-q-meta">
+        ${q.blueprint ? `<span class="missed-pill" style="background:${bpColor}22;color:${bpColor};">${q.blueprint}</span>` : ''}
+        ${q.category ? `<span class="missed-pill" style="background:#f1f5f9;color:#475569;">${q.category}</span>` : ''}
+        ${q.difficulty ? `<span class="missed-pill" style="background:#fef3c7;color:#92400e;">Difficulty ${q.difficulty}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCPRUpload(studentId, studentName) {
+  return `
+    <div class="card">
+      <div class="card-body">
+        <div class="upload-zone" id="upload-zone-${studentId}"
+          onclick="document.getElementById('cpr-file-${studentId}').click()"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleCPRDrop(event,'${studentId}','${studentName}')">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Upload ${studentName}'s CPR Report</div>
+          <div class="upload-hint">Drag & drop a PDF or image, or click to browse</div>
+        </div>
+        <input type="file" id="cpr-file-${studentId}" accept=".pdf,.png,.jpg,.jpeg"
+          onchange="handleCPRFile(this,'${studentId}','${studentName}')" />
+        <div class="cpr-preview" id="cpr-preview-${studentId}">
+          <div class="cpr-filename" id="cpr-filename-${studentId}"></div>
+          <div class="cpr-detail">✅ CPR report saved for this session. You can view it locally — to persist across sessions, upload it to your Supabase storage bucket.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function handleCPRDrop(event, studentId, studentName) {
+  event.preventDefault();
+  document.getElementById(`upload-zone-${studentId}`).classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (file) showCPRPreview(file, studentId, studentName);
+}
+
+function handleCPRFile(input, studentId, studentName) {
+  const file = input.files[0];
+  if (file) showCPRPreview(file, studentId, studentName);
+}
+
+function showCPRPreview(file, studentId, studentName) {
+  const preview = document.getElementById(`cpr-preview-${studentId}`);
+  const filename = document.getElementById(`cpr-filename-${studentId}`);
+  const sizeMB = (file.size / 1048576).toFixed(2);
+  filename.textContent = `📎 ${file.name} · ${sizeMB} MB · ${studentName}`;
+  preview.style.display = 'block';
+  // Store in memory (localStorage not available in this environment)
+}
+
+function renderAllStudents(scores) {
+  const rows = Object.entries(STUDENTS).map(([id, st]) => {
+    const studentScores = scores.filter(s => s.student_id === id)
+      .sort((a,b) => new Date(b.completed_at||b.created_at) - new Date(a.completed_at||a.created_at));
+    const latest = studentScores[0];
+    const risk = getRiskProfile(st, studentScores);
+    const days = daysStr(st.nclex_target);
+
+    return `<tr onclick="switchTab('${id}')" style="cursor:pointer;">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:10px;background:${st.avatarBg};color:${st.avatarColor};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;">${st.name[0]}</div>
+          <div>
+            <div style="font-weight:700;color:#0f172a;">${st.name}</div>
+            <div style="font-size:11px;color:#94a3b8;">${st.email}</div>
+          </div>
+        </div>
+      </td>
+      <td>${latest ? `<span style="font-weight:700;color:${pct(latest.ability_score)>=72?'#10b981':'#ef4444'};">${pct(latest.ability_score)}%</span>` : '<span style="color:#94a3b8;">No data</span>'}</td>
+      <td>${latest ? (latest.result || (pct(latest.ability_score)>=72?'PASS':'FAIL')) : '—'}</td>
+      <td>${studentScores.length || 0}</td>
+      <td>${days ? `<span style="font-size:12px;color:#64748b;">${days}</span>` : '—'}</td>
+      <td><span class="badge" style="background:${risk.pillBg};color:${risk.pillColor};">${risk.icon} ${risk.label}</span></td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="section-label">All Students Overview</div>
+    <div class="card">
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:1px solid #f1f5f9;">
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">Student</th>
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">Latest Score</th>
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">Result</th>
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">Sessions</th>
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">NCLEX Target</th>
+              <th style="padding:12px 20px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;">Risk</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:28px;">NCLEX Attempts — Risk Legend</div>
+    <div class="grid-3">
+      <div class="stat-card" style="border-left:4px solid #10b981;">
+        <div class="stat-label">✅ Low Risk</div>
+        <div style="font-size:13px;color:#475569;line-height:1.6;margin-top:6px;">First attempt, scores ≥ 50%, plenty of time before NCLEX.</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #f59e0b;">
+        <div class="stat-label">⚠️ Moderate Risk</div>
+        <div style="font-size:13px;color:#475569;line-height:1.6;margin-top:6px;">1 prior attempt, low scores, or fewer than 14 days to NCLEX.</div>
+      </div>
+      <div class="stat-card" style="border-left:4px solid #ef4444;">
+        <div class="stat-label">🚨 Critical Risk</div>
+        <div style="font-size:13px;color:#475569;line-height:1.6;margin-top:6px;">3+ NCLEX attempts. Requires intensive remediation and a full plan overhaul.</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── TAB SWITCHING ──────────────────────────────────────────────────────────
+function switchTab(studentId) {
+  currentTab = studentId;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-student="${studentId}"]`).classList.add('active');
+
+  const main = document.getElementById('main-content');
+  if (studentId === 'all') {
+    main.innerHTML = renderAllStudents(allScores);
+  } else {
+    main.innerHTML = renderStudentView(studentId, allScores);
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const { data: scores, error } = await sb
+      .from('student_scores')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    allScores = scores || [];
+
+    // Update tab dots
+    Object.keys(STUDENTS).forEach(id => {
+      const hasData = allScores.some(s => s.student_id === id);
+      const name = STUDENTS[id].name.toLowerCase();
+      const dot = document.getElementById(`dot-${name}`);
+      if (dot && hasData) dot.classList.add('has-data');
+    });
+
+    switchTab(currentTab);
+  } catch(e) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="no-data">
+        <div class="no-data-icon">⚠️</div>
+        <div class="no-data-title">Could not load student data</div>
+        <div class="no-data-sub">${e.message}</div>
+      </div>`;
+  }
+}
+
+// ── NCLEX ATTEMPT EDITOR (future: editable in-page) ──
+// For now, attempts are hardcoded at 0 for all students.
+// To update: change nclex_attempts in the STUDENTS object above,
+// or add a student_profiles table to Supabase with attempts, notes, etc.
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+{
+  "_meta": {
+    "generated_at": "2026-08-06T20:35:00Z",
+    "project": "NCLEX Success Center",
+    "author": "Study with Madison, RN",
+    "repo": "https://github.com/madisondvahle-lab/nclex-success-center",
+    "live_url": "https://madisondvahle-lab.github.io/nclex-success-center",
+    "supabase_url": "https://pmjwwktwlsqpetwfvolb.supabase.co"
+  },
+
+  "supabase": {
+    "tables": {
+      "students": {
+        "description": "One row per student. Stores name, email, PIN, and NCLEX target date.",
+        "columns": ["id (uuid)", "name (text)", "email (text)", "pin (text)", "nclex_target_date (date)", "created_at (timestamptz)"],
+        "row_count": 4,
+        "rows": [
+          { "name": "Ahmed",    "email": "southviewconsultingservices@gmail.com", "pin": "1950", "nclex_target": null,         "id": "7711737d-1cc0-4d99-8ae4-80b58a593cd5" },
+          { "name": "Alyssa",   "email": "alyssadababneh@yahoo.com",              "pin": "7284", "nclex_target": "2026-09-01", "id": "ae748de7-2bc5-46b3-9e74-aa3a736e0427" },
+          { "name": "Courtney", "email": "stewartxcrunner@gmail.com",             "pin": "0508", "nclex_target": "2026-09-14", "id": "2df04188-d5e6-4dbf-aa42-856b7f9d67b1" },
+          { "name": "Kyle Batacan", "email": "kylebatacan22@gmail.com",           "pin": "0000", "nclex_target": "2026-08-25", "id": "30d2203b-d166-4e81-83e3-69aabc50b36f" }
+        ]
+      },
+      "student_scores": {
+        "description": "One row per completed diagnostic session. Auto-saved by diagnostic.html on exam finish.",
+        "columns": ["id", "student_id (fk→students)", "ability_score (float 0-1)", "result (text: PASS|FAIL)", "total_questions (int)", "blueprint_scores (jsonb)", "missed_questions (jsonb)", "completed_at (timestamptz)", "created_at (timestamptz)"],
+        "row_count": 0,
+        "note": "Empty — no diagnostic has been completed yet as of snapshot time. Ahmed is mid-exam.",
+        "missing_fields_to_add": [
+          "blueprint_scores (jsonb) — per-blueprint ability scores e.g. {'Safe & Effective Care Environment': 0.65}",
+          "missed_questions (jsonb) — array of {id, stem, blueprint, category, difficulty}",
+          "completed_at (timestamptz) — explicit finish timestamp (vs relying on created_at)"
+        ]
+      },
+      "student_module_access": {
+        "description": "Per-student module unlock table. Madison toggles enabled=true to assign modules.",
+        "columns": ["id", "student_id (fk→students)", "module_key (text: m1–m21)", "enabled (bool)"],
+        "row_count": 27,
+        "summary": {
+          "Ahmed":    { "student_id": "7711737d-1cc0-4d99-8ae4-80b58a593cd5", "enabled_modules": [], "note": "No rows found — diagnostic only, no modules assigned yet" },
+          "Alyssa":   { "student_id": "ae748de7-2bc5-46b3-9e74-aa3a736e0427", "enabled_modules": ["m1","m2","m3","m4","m5","m6"], "note": "6 modules enabled" },
+          "Courtney": { "student_id": "2df04188-d5e6-4dbf-aa42-856b7f9d67b1", "enabled_modules": [], "note": "No rows found — pending assignment" },
+          "Kyle":     { "student_id": "30d2203b-d166-4e81-83e3-69aabc50b36f", "enabled_modules": [], "note": "21 rows, all enabled=false" }
+        }
+      }
+    },
+    "missing_tables": [
+      "student_profiles — for NCLEX attempt count, notes, risk flags (currently hardcoded in dashboard.html)",
+      "cpr_reports — for storing uploaded CPR/Pearson Vue report metadata",
+      "student_notes — tutor session notes per student"
+    ]
+  },
+
+  "diagnostic_exam": {
+    "file": "diagnostic.html",
+    "description": "Standalone React/Babel CAT adaptive exam. PIN-gated, auto-saves to Supabase on completion.",
+    "cat_engine": {
+      "min_questions": 85,
+      "max_questions": 150,
+      "pass_threshold": 0.72,
+      "fail_threshold": 0.28,
+      "confidence_cutoff": 0.90,
+      "ability_update_rule": "IRT-lite: ±0.15 base ± 0.05 difficulty modifier per answer"
+    },
+    "question_bank": {
+      "total_claimed_by_user": 206,
+      "question_objects_parsed": 52,
+      "sub_questions_parsed": 18,
+      "note": "Full bank fetch was truncated. Parsed portion covers rm1–rm52 (Management of Care series) plus case study sub-questions cs1a–cs2b. Additional series exist (pa*, cs*, and others) in the unparsed portion.",
+      "id_prefixes_seen": {
+        "rm": { "count": 52, "description": "Risk/Management of Care series" },
+        "pa": { "description": "Physiological Adaptation series — present but count unknown from partial parse" },
+        "cs": { "description": "Case Study series — sub-questions cs1a–cs2c confirmed" }
+      }
+    },
+    "question_types": {
+      "mcq": { "count_partial": 84, "description": "Standard multiple choice, 1 correct answer" },
+      "sata": { "count_partial": 23, "description": "Select All That Apply" },
+      "bowtie": { "count_partial": 7, "description": "NGN bow-tie: 2 actions + condition + 2 parameters" },
+      "casestudy": { "count_partial": 6, "description": "NGN multi-part case studies (2–3 sub-questions each)" }
+    },
+    "difficulty_distribution_partial": {
+      "1_foundational": 7,
+      "2_applying": 55,
+      "3_analyzing": 40,
+      "note": "From parsed portion only (rm series). Full bank will have different distribution."
+    }
+  },
+
+  "blueprint_balance": {
+    "source": "Parsed from rm1–rm52 series in diagnostic.html (partial — full bank not available)",
+    "nclex_2023_target_percentages": {
+      "Safe & Effective Care Environment": "17–23% (Management of Care) + 9–15% (Safety)",
+      "Health Promotion & Maintenance": "6–12%",
+      "Psychosocial Integrity": "6–12%",
+      "Physiological Integrity": "38–62% (combined subcategories)"
+    },
+    "current_bank_partial": {
+      "Safe & Effective Care Environment": { "count": 59, "pct_of_parsed": "58%" },
+      "Physiological Integrity":           { "count": 31, "pct_of_parsed": "31%" },
+      "Health Promotion & Maintenance":    { "count": 6,  "pct_of_parsed": "6%"  },
+      "Psychosocial Integrity":            { "count": 6,  "pct_of_parsed": "6%"  }
+    },
+    "categories_seen": [
+      "Management of Care",
+      "Safety & Infection Prevention",
+      "Health Promotion",
+      "Health Screening",
+      "Developmental Stages",
+      "Ante/Intra/Postpartum",
+      "Coping & Adaptation",
+      "Mental Health Concepts",
+      "Crisis Intervention",
+      "Therapeutic Communication",
+      "Basic Care & Comfort",
+      "Pharmacological & Parenteral Therapies",
+      "Reduction of Risk Potential",
+      "Physiological Adaptation"
+    ],
+    "balance_flags": [
+      "⚠️ Management of Care is heavily over-represented in the rm* series (50 of 52 questions) — this is by design for this section but full bank should be verified",
+      "⚠️ Health Promotion and Psychosocial Integrity are low at 6% each in parsed portion — confirm these are covered in other question series",
+      "✅ Mix of NGN types (bow-tie, case study, SATA) alongside MCQ looks good for NCLEX 2026 alignment"
+    ]
+  },
+
+  "routes": {
+    "public_site": "https://madisondvahle-lab.github.io/nclex-success-center",
+    "pages": [
+      { "file": "index.html",               "route": "/",                        "description": "Redirect to home.html" },
+      { "file": "home.html",                 "route": "/home.html",               "description": "Student selector — pick Ahmed / Alyssa / Courtney" },
+      { "file": "nclex-success-center.html", "route": "/nclex-success-center.html", "description": "Public module browser (all 21 modules, Coming Soon cards)" },
+      { "file": "ahmed-hub.html",            "route": "/ahmed-hub.html",          "description": "Ahmed's personal hub — PIN: 1950, diagnostic assigned", "pin_protected": true },
+      { "file": "alyssa-hub.html",           "route": "/alyssa-hub.html",         "description": "Alyssa's personal hub — PIN: 7284, modules m1–m6 enabled", "pin_protected": true },
+      { "file": "courtney-hub.html",         "route": "/courtney-hub.html",       "description": "Courtney's personal hub — PIN: 0508, diagnostic assigned", "pin_protected": true },
+      { "file": "diagnostic.html",           "route": "/diagnostic.html",         "description": "CAT adaptive diagnostic exam (206 Qs, 85–150 served). Entry: ?start=1", "pin_protected": false, "note": "PIN handled by hub page; diagnostic itself is not PIN-gated" },
+      { "file": "module1-newborn.html",      "route": "/module1-newborn.html",    "description": "Module 1 quiz — Newborn Care, 25 questions", "status": "live" },
+      { "file": "module2-maternal.html",     "route": "/module2-maternal.html",   "description": "Module 2 quiz — Maternal & OB, 25 questions", "status": "live" },
+      { "file": "module1-guide.html",        "route": "/module1-guide.html",      "description": "Module 1 study guide", "status": "live" },
+      { "file": "module2-guide.html",        "route": "/module2-guide.html",      "description": "Module 2 study guide", "status": "live" },
+      { "file": "module3-guide.html",        "route": "/module3-guide.html",      "description": "Module 3 Pharmacology study guide", "status": "live_guide_only" },
+      { "file": "module4-guide.html",        "route": "/module4-guide.html",      "description": "Module 4 Cardiovascular study guide", "status": "live_guide_only" },
+      { "file": "module5-guide.html",        "route": "/module5-guide.html",      "description": "Module 5 Respiratory study guide", "status": "live_guide_only" },
+      { "file": "module6-guide.html",        "route": "/module6-guide.html",      "description": "Module 6 Fluids & Electrolytes study guide", "status": "live_guide_only" },
+      { "file": "dashboard.html",            "route": "/dashboard.html",          "description": "Tutor-only dashboard — scores, blueprints, risk profiles, CPR upload", "status": "new_today", "admin_only": true },
+      { "file": "live-monitor.html",         "route": "/live-monitor.html",       "description": "Live session monitor — polls Supabase every 15s, plays alert when student finishes", "status": "new_today", "admin_only": true }
+    ]
+  },
+
+  "modules": {
+    "hub_catalog": {
+      "description": "21-module curriculum as defined in ahmed-hub.html MODULES_CATALOG (used across all student hubs)",
+      "modules": [
+        { "key": "m1",  "num": 1,  "name": "Newborn Care",            "emoji": "🍼", "quiz_available": true,  "guide_available": true  },
+        { "key": "m2",  "num": 2,  "name": "Maternal & OB",           "emoji": "🤰", "quiz_available": true,  "guide_available": true  },
+        { "key": "m3",  "num": 3,  "name": "Pharmacology",            "emoji": "💊", "quiz_available": false, "guide_available": true  },
+        { "key": "m4",  "num": 4,  "name": "Cardiovascular",          "emoji": "❤️", "quiz_available": false, "guide_available": true  },
+        { "key": "m5",  "num": 5,  "name": "Respiratory",             "emoji": "🫁", "quiz_available": false, "guide_available": true  },
+        { "key": "m6",  "num": 6,  "name": "Fluids & Electrolytes",   "emoji": "💧", "quiz_available": false, "guide_available": true  },
+        { "key": "m7",  "num": 7,  "name": "Mental Health",           "emoji": "🧠", "quiz_available": false, "guide_available": false },
+        { "key": "m8",  "num": 8,  "name": "Prioritization",          "emoji": "📋", "quiz_available": false, "guide_available": false },
+        { "key": "m9",  "num": 9,  "name": "Infection Control",       "emoji": "🦠", "quiz_available": false, "guide_available": false },
+        { "key": "m10", "num": 10, "name": "Endocrine",               "emoji": "⚡", "quiz_available": false, "guide_available": false },
+        { "key": "m11", "num": 11, "name": "Renal & Urologic",        "emoji": "🫘", "quiz_available": false, "guide_available": false },
+        { "key": "m12", "num": 12, "name": "Gastrointestinal",        "emoji": "🫃", "quiz_available": false, "guide_available": false },
+        { "key": "m13", "num": 13, "name": "Musculoskeletal",         "emoji": "🦴", "quiz_available": false, "guide_available": false },
+        { "key": "m14", "num": 14, "name": "Neurological",            "emoji": "🧬", "quiz_available": false, "guide_available": false },
+        { "key": "m15", "num": 15, "name": "Hematology & Oncology",   "emoji": "🩸", "quiz_available": false, "guide_available": false },
+        { "key": "m16", "num": 16, "name": "Integumentary",           "emoji": "🩹", "quiz_available": false, "guide_available": false },
+        { "key": "m17", "num": 17, "name": "Immune & Autoimmune",     "emoji": "🛡️", "quiz_available": false, "guide_available": false },
+        { "key": "m18", "num": 18, "name": "Perioperative Care",      "emoji": "🏥", "quiz_available": false, "guide_available": false },
+        { "key": "m19", "num": 19, "name": "Critical Care & Shock",   "emoji": "⚠️", "quiz_available": false, "guide_available": false },
+        { "key": "m20", "num": 20, "name": "NGN Clinical Judgment",   "emoji": "🎯", "quiz_available": false, "guide_available": false },
+        { "key": "m21", "num": 21, "name": "NCLEX Strategy & CAT",    "emoji": "✅", "quiz_available": false, "guide_available": false }
+      ]
+    },
+    "public_catalog_note": "nclex-success-center.html shows a slightly different numbering (Pediatrics as M4, Cardiac as M5, etc.) — the hub catalog and public catalog are out of sync for M4–M6. Worth reconciling.",
+    "inconsistency": {
+      "hub_m4": "Cardiovascular",
+      "public_m4": "Pediatrics",
+      "hub_m5": "Respiratory",
+      "public_m5": "Cardiac",
+      "hub_m6": "Fluids & Electrolytes",
+      "public_m6": "Respiratory"
+    }
+  },
+
+  "question_counts": {
+    "diagnostic_bank": {
+      "total": 206,
+      "source": "User-provided context",
+      "parsed_from_source": 52,
+      "note": "Full file fetch was truncated; 52 question objects parsed from rm series only"
+    },
+    "module_quizzes": {
+      "module1_newborn":  { "questions": 25, "status": "live" },
+      "module2_maternal": { "questions": 25, "status": "live" },
+      "modules_3_to_21":  { "questions": "unknown — quiz files not yet built for most", "status": "coming_soon" }
+    },
+    "total_questions_in_platform": "256+ (206 diagnostic + 25 M1 + 25 M2)"
+  },
+
+  "students": {
+    "active": [
+      {
+        "name": "Ahmed",
+        "id": "7711737d-1cc0-4d99-8ae4-80b58a593cd5",
+        "pin": "1950",
+        "email": "southviewconsultingservices@gmail.com",
+        "nclex_target": null,
+        "assigned": "diagnostic",
+        "modules_enabled": [],
+        "status": "mid-exam as of snapshot time",
+        "scores": []
+      },
+      {
+        "name": "Alyssa",
+        "id": "ae748de7-2bc5-46b3-9e74-aa3a736e0427",
+        "pin": "7284",
+        "email": "alyssadababneh@yahoo.com",
+        "nclex_target": "2026-09-01",
+        "days_until_nclex": 26,
+        "assigned": "Module 2 (Maternal & OB) — current, M1 completed",
+        "modules_enabled": ["m1","m2","m3","m4","m5","m6"],
+        "scores": []
+      },
+      {
+        "name": "Courtney",
+        "id": "2df04188-d5e6-4dbf-aa42-856b7f9d67b1",
+        "pin": "0508",
+        "email": "stewartxcrunner@gmail.com",
+        "nclex_target": "2026-09-14",
+        "days_until_nclex": 39,
+        "assigned": "diagnostic",
+        "modules_enabled": [],
+        "scores": []
+      }
+    ],
+    "inactive": [
+      {
+        "name": "Kyle Batacan",
+        "id": "30d2203b-d166-4e81-83e3-69aabc50b36f",
+        "pin": "0000",
+        "email": "kylebatacan22@gmail.com",
+        "nclex_target": "2026-08-25",
+        "note": "In students table but no hub page exists; all module_access rows disabled"
+      }
+    ]
+  },
+
+  "latest_changes": {
+    "2026-08-06": [
+      {
+        "file": "dashboard.html",
+        "action": "created",
+        "description": "Full tutor dashboard with student tabs, risk profiles, blueprint bars, score timeline, missed questions view, and CPR report upload. Pulls live from Supabase student_scores."
+      },
+      {
+        "file": "live-monitor.html",
+        "action": "created",
+        "description": "Live session monitor that polls Supabase every 15 seconds. Plays audio alert + browser notification when a student completes a diagnostic. Shows active/pending/completed status cards for all students."
+      },
+      {
+        "file": "project_snapshot.json",
+        "action": "created",
+        "description": "This file — project audit snapshot."
+      }
+    ],
+    "previous_session": [
+      "home.html — student selector landing page",
+      "ahmed-hub.html — Ahmed's PIN-gated study hub with diagnostic assignment",
+      "alyssa-hub.html — Alyssa's hub with M1–M6 unlocked",
+      "courtney-hub.html — Courtney's hub",
+      "diagnostic.html — 206-question adaptive CAT exam",
+      "module1-newborn.html / module1-guide.html",
+      "module2-maternal.html / module2-guide.html",
+      "module3/4/5/6-guide.html — study guides (no quizzes yet)",
+      "nclex-success-center.html — public module browser"
+    ]
+  },
+
+  "todos": [
+    {
+      "priority": "URGENT",
+      "item": "Add blueprint_scores, missed_questions, and completed_at fields to the Supabase save call in diagnostic.html",
+      "why": "Dashboard blueprint bars and missed questions section are blank until these fields are populated",
+      "code_hint": "In your saveToSupabase() call, include: blueprint_scores: {<blueprint>: <float>}, missed_questions: [{id, stem, blueprint, category, difficulty}], completed_at: new Date().toISOString()"
+    },
+    {
+      "priority": "URGENT",
+      "item": "Set Ahmed's NCLEX target date in Supabase students table",
+      "why": "nclex_target_date is null for Ahmed — live monitor and risk profile can't calculate countdown",
+      "sql": "UPDATE students SET nclex_target_date = '2026-XX-XX' WHERE name = 'Ahmed';"
+    },
+    {
+      "priority": "HIGH",
+      "item": "Push dashboard.html and live-monitor.html to GitHub",
+      "why": "Files were built locally but GitHub API was blocked from the build sandbox",
+      "action": "Drag both files into github.com/madisondvahle-lab/nclex-success-center via the web UI, or use git push from your machine"
+    },
+    {
+      "priority": "HIGH",
+      "item": "Create a hub page for Kyle Batacan (or remove him from students table)",
+      "why": "Kyle has a student record and NCLEX target of 2026-08-25 but no hub page and all modules disabled"
+    },
+    {
+      "priority": "HIGH",
+      "item": "Reconcile module numbering between hub catalog and nclex-success-center.html",
+      "why": "Hub has M4=Cardiovascular, M5=Respiratory; public page has M4=Pediatrics, M5=Cardiac — students browsing the public page will see different module names than their hub"
+    },
+    {
+      "priority": "MEDIUM",
+      "item": "Add a student_profiles table to Supabase",
+      "why": "NCLEX attempt count is currently hardcoded in dashboard.html JS. A table would let you update attempts per student without redeploying code.",
+      "sql": "CREATE TABLE student_profiles (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), student_id uuid REFERENCES students(id), nclex_attempts int DEFAULT 0, notes text, risk_override text, created_at timestamptz DEFAULT now());"
+    },
+    {
+      "priority": "MEDIUM",
+      "item": "Build quiz files for modules 3–6 (guides exist, quizzes don't)",
+      "why": "Alyssa has m3–m6 enabled but clicking the quiz button goes nowhere"
+    },
+    {
+      "priority": "MEDIUM",
+      "item": "Add dashboard/live-monitor links to the admin-facing hub or create an admin login page",
+      "why": "Currently dashboard.html and live-monitor.html have no protected access — anyone with the URL can view all student data"
+    },
+    {
+      "priority": "LOW",
+      "item": "Verify full diagnostic.html blueprint balance across all 206 questions",
+      "why": "Only 52 of 206 questions were parseable — Health Promotion (6%) and Psychosocial Integrity (6%) may be under-represented in the rm series but could be covered in other series"
+    },
+    {
+      "priority": "LOW",
+      "item": "Enable Supabase Realtime on student_scores table for true push notifications",
+      "why": "live-monitor.html currently polls every 15s. Supabase Realtime would enable instant push without polling — requires enabling replication on the table in Supabase dashboard"
+    },
+    {
+      "priority": "LOW",
+      "item": "Add a CPR/Pearson Vue report storage table to Supabase",
+      "why": "CPR upload in dashboard.html is in-memory only — files aren't persisted across sessions"
+    }
+  ]
+}
