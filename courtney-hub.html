@@ -84,7 +84,6 @@
       letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px;
     }
 
-    /* ── Module cards ── */
     .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.09); margin-bottom: 16px; }
     .card-accent-orange { height: 5px; background: linear-gradient(90deg, #ea580c, #fb923c); }
     .card-accent-sky    { height: 5px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
@@ -144,7 +143,6 @@
     .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
     .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
 
-    /* ── Info box ── */
     .info-box {
       background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px;
       padding: 18px 20px; margin-bottom: 22px;
@@ -154,7 +152,6 @@
     .info-text { font-size: 13px; color: #7c2d12; line-height: 1.65; font-weight: 500; }
     .info-text strong { font-weight: 700; }
 
-    /* ── Coming soon ── */
     .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 11px; }
     .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
     .coming-card::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(241,245,249,0.5) 10px,rgba(241,245,249,0.5) 11px); pointer-events:none; }
@@ -180,21 +177,33 @@
     .card-accent-red  { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
     .card-accent-blue { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
     .card-accent-teal { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
-    .emoji-red  { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
-    .emoji-blue { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
-    .emoji-teal { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
-    .eyebrow-red  { color: #ef4444; }
-    .eyebrow-blue { color: #3b82f6; }
-    .eyebrow-teal { color: #0d9488; }
-    .badge-red  { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
-    .badge-blue { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
-    .badge-teal { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
-    .btn-red  { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
-    .btn-red:hover  { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-blue { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
-    .btn-blue:hover { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-teal { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
-    .btn-teal:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .card-accent-green  { height: 5px; background: linear-gradient(90deg, #10b981, #34d399); }
+    .card-accent-purple { height: 5px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    .emoji-red    { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
+    .emoji-blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
+    .emoji-teal   { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
+    .emoji-green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1px solid #86efac; }
+    .emoji-purple { background: linear-gradient(135deg,#faf5ff,#ede9fe); border: 1px solid #c4b5fd; }
+    .eyebrow-red    { color: #ef4444; }
+    .eyebrow-blue   { color: #3b82f6; }
+    .eyebrow-teal   { color: #0d9488; }
+    .eyebrow-green  { color: #10b981; }
+    .eyebrow-purple { color: #8b5cf6; }
+    .badge-red    { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+    .badge-blue   { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+    .badge-teal   { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
+    .badge-green  { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+    .badge-purple { background: #faf5ff; border: 1px solid #c4b5fd; color: #4c1d95; }
+    .btn-red    { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
+    .btn-red:hover    { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-blue   { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
+    .btn-blue:hover   { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-teal   { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
+    .btn-teal:hover   { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-green  { background: linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.28); }
+    .btn-green:hover  { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-purple { background: linear-gradient(135deg,#6d28d9,#8b5cf6); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,0.28); }
+    .btn-purple:hover { transform:translateY(-2px); filter:brightness(1.06); }
   </style>
 </head>
 <body>
@@ -238,7 +247,6 @@
 
 <main class="main">
 
-  <!-- ── FIRST STEP: DIAGNOSTIC ── -->
   <div class="section-label fade-up">📌 Your First Step</div>
 
   <div class="card fade-up">
@@ -301,7 +309,6 @@
     </div>
   </div>
 
-  <!-- ── TARGETED PRACTICE (locked until after diagnostic) ── -->
   <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
 
   <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
@@ -327,8 +334,6 @@
     </div>
   </div>
 
-
-  <!-- ── DYNAMIC MODULES (Supabase) ── -->
   <div id="assigned-modules-area" style="margin-top:36px;"></div>
   <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
   <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
@@ -342,8 +347,6 @@
 </footer>
 
 <script>
-  // ── SUPABASE PIN GATE ──
-
   const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
   const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
   const sbClient = supabase.createClient(SB_URL, SB_KEY);
@@ -372,7 +375,6 @@
     { key:'m21', num:21, name:'NCLEX Strategy & CAT',      emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
   ];
 
-  // Render assigned (enabled) modules as active cards
   function renderAssignedModules(accessMap, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -381,26 +383,21 @@
       container.innerHTML = '<p style="color:#94a3b8;font-size:14px;padding:20px 0;">No modules assigned yet — check back after your session with Madison.</p>';
       return;
     }
-    // Sort by module number; designate last as "current assignment"
     const sorted = [...enabled].sort((a,b) => a.num - b.num);
     const current = sorted[sorted.length - 1];
     const completed = sorted.slice(0, -1);
 
-    const accentColors = {
-      m1:'green', m2:'purple', m3:'sky', m4:'red', m5:'blue', m6:'teal'
-    };
+    const accentColors = { m1:'green', m2:'purple', m3:'sky', m4:'red', m5:'blue', m6:'teal' };
     const colorMap = {
-      green:  { accent:'#10b981', bg:'#f0fdf4', emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
-      purple: { accent:'#8b5cf6', bg:'#faf5ff', emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
-      sky:    { accent:'#0ea5e9', bg:'#f0f9ff', emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
-      red:    { accent:'#ef4444', bg:'#fef2f2', emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
-      blue:   { accent:'#3b82f6', bg:'#eff6ff', emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
-      teal:   { accent:'#0d9488', bg:'#f0fdfa', emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
+      green:  { accent:'#10b981', emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
+      purple: { accent:'#8b5cf6', emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
+      sky:    { accent:'#0ea5e9', emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
+      red:    { accent:'#ef4444', emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
+      blue:   { accent:'#3b82f6', emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
+      teal:   { accent:'#0d9488', emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
     };
 
     let html = '';
-
-    // Current assignment
     const c = current;
     const cc = colorMap[accentColors[c.key]] || colorMap['sky'];
     html += `
@@ -426,7 +423,6 @@
         </div>
       </div>`;
 
-    // Completed modules
     if (completed.length) {
       html += `<div class="section-label fade-up-2" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
       completed.reverse().forEach(m => {
@@ -457,16 +453,13 @@
     container.innerHTML = html;
   }
 
-  // Render full curriculum grid (all 21, enabled ones clickable)
   function renderCurriculumGrid(accessMap, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const html = MODULES_CATALOG.map(m => {
       const enabled = !!accessMap[m.key];
-      const unavailable = !m.available;
       if (enabled) {
-        const links = [m.guideUrl, m.quizUrl].filter(Boolean);
-        const href = links[0] || '#';
+        const href = m.guideUrl || m.quizUrl || '#';
         return `<a href="${href}" style="text-decoration:none;">
           <div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
             <div class="coming-card-icon">${m.emoji}</div>
@@ -474,7 +467,7 @@
             <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
             <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
           </div></a>`;
-      } else if (unavailable) {
+      } else if (!m.available) {
         return `<div class="coming-card">
           <div class="coming-card-icon">${m.emoji}</div>
           <div class="coming-card-num">Module ${m.num}</div>
@@ -493,35 +486,34 @@
     container.innerHTML = html;
   }
 
-  // Load module access from Supabase and render
-  async function loadAndRenderModules(studentId, assignedContainerId, curriculumContainerId) {
+  async function loadAndRenderModules(studentId) {
     const { data } = await sbClient
       .from('student_module_access')
       .select('module_key, enabled')
       .eq('student_id', studentId);
     const accessMap = {};
     (data || []).forEach(r => { accessMap[r.module_key] = r.enabled; });
-    if (assignedContainerId) renderAssignedModules(accessMap, assignedContainerId);
-    if (curriculumContainerId) renderCurriculumGrid(accessMap, curriculumContainerId);
-    // store for quiz tracking
+    renderAssignedModules(accessMap, 'assigned-modules-area');
+    renderCurriculumGrid(accessMap, 'curriculum-grid');
     localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
   }
 
   (async function initCourtney() {
-    const STUDENT_NAME = 'Courtney';
     const STORE_KEY = 'nclex_sid_courtney';
     const storedId = localStorage.getItem(STORE_KEY);
     if (storedId) {
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
-      localStorage.setItem('nclex_current_student', STUDENT_NAME);
-      loadAndRenderModules(storedId, 'assigned-modules-area', 'curriculum-grid');
+      localStorage.setItem('student_id', storedId);
+      localStorage.setItem('nclex_current_student', 'Courtney');
+      loadAndRenderModules(storedId);
       return;
     }
     document.body.classList.add('locked');
   })();
 
   let pinBuffer = '';
+
   function pinKey(digit) {
     if (pinBuffer.length >= 4) return;
     pinBuffer += digit;
@@ -540,27 +532,31 @@
       d.classList.toggle('error', !!err);
     }
   }
-  // keyboard-pin-support
+
   document.addEventListener('keydown', function(e) {
-    var gate = document.getElementById('pin-gate');
+    const gate = document.getElementById('pin-gate');
     if (!gate || gate.style.display === 'none') return;
     if (e.key >= '0' && e.key <= '9') { e.preventDefault(); pinKey(e.key); }
     else if (e.key === 'Backspace') { e.preventDefault(); pinDel(); }
   });
 
   async function checkPin() {
-    const STUDENT_NAME = 'Courtney';
     const { data, error } = await sbClient
       .from('students')
       .select('id, pin')
-      .eq('name', STUDENT_NAME)
+      .eq('name', 'Courtney')
       .single();
-    if (!error && data && data.pin === pinBuffer) {
+
+    // Normalize both sides to 4-digit strings so leading zeros always match
+    const storedPin = data ? String(data.pin).padStart(4, '0') : null;
+
+    if (!error && storedPin && storedPin === pinBuffer) {
       localStorage.setItem('nclex_sid_courtney', data.id);
-      localStorage.setItem('nclex_current_student', STUDENT_NAME);
+      localStorage.setItem('student_id', data.id);
+      localStorage.setItem('nclex_current_student', 'Courtney');
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
-      loadAndRenderModules(data.id, 'assigned-modules-area', 'curriculum-grid');
+      loadAndRenderModules(data.id);
     } else {
       updateDots(true);
       document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
