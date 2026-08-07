@@ -7,6 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; }
@@ -1077,13 +1078,13 @@ function QuizScreen({ profile, onFinish }) {
 
     if(isNCLEX) {
       const result = shouldStop(newHistory, newAbility);
-      if(result) { setCatResult(result); onFinish(newHistory, result); return; }
+      if(result) { setCatResult(result); saveToSupabase(newHistory, result, profile, newAbility); onFinish(newHistory, result); return; }
     } else {
-      if(newHistory.length>=profile.qCount) { onFinish(newHistory, null); return; }
+      if(newHistory.length>=profile.qCount) { saveToSupabase(newHistory, null, profile, newAbility); onFinish(newHistory, null); return; }
     }
 
     const next = pickNextQuestion(activeBank, newHistory, profile, newAbility);
-    if(!next){ onFinish(newHistory, isNCLEX?shouldStop(newHistory,newAbility)||"PASS":null); return; }
+    if(!next){ const fallbackResult=isNCLEX?shouldStop(newHistory,newAbility)||"PASS":null; saveToSupabase(newHistory, fallbackResult, profile, newAbility); onFinish(newHistory, fallbackResult); return; }
     setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
   }
 
@@ -1171,6 +1172,55 @@ function QuizScreen({ profile, onFinish }) {
       </div>
     </div>
   );
+}
+
+// ─── SUPABASE ─────────────────────────────────────────────────────────────────
+const SUPABASE_URL = "https://pmjwwktwlsqpetwfvolb.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT";
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+async function saveToSupabase(history, catResult, profile, ability) {
+  if (!supabase) return;
+  const studentId = localStorage.getItem("student_id");
+  if (!studentId) return;
+
+  const total = history.length;
+  const correct = history.filter(h => h.correct).length;
+  const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  // Blueprint breakdown
+  const blueprintScores = {};
+  history.forEach(h => {
+    if (!blueprintScores[h.blueprint]) blueprintScores[h.blueprint] = { correct: 0, total: 0 };
+    blueprintScores[h.blueprint].total++;
+    if (h.correct) blueprintScores[h.blueprint].correct++;
+  });
+  const blueprintPcts = {};
+  Object.entries(blueprintScores).forEach(([bp, d]) => {
+    blueprintPcts[bp] = Math.round((d.correct / d.total) * 100);
+  });
+
+  // Missed questions
+  const missedQuestions = history
+    .filter(h => !h.correct)
+    .map(h => ({ id: h.id, type: h.type, blueprint: h.blueprint }));
+
+  const passed = catResult === "PASS" ||
+    (profile.mode !== "nclex" && score >= 75);
+
+  await supabase.from("student_scores").insert({
+    student_id: studentId,
+    score,
+    total_questions: total,
+    correct_answers: correct,
+    passed,
+    mode: profile.mode || "practice",
+    cat_result: catResult || null,
+    blueprint_scores: blueprintPcts,
+    missed_questions: missedQuestions,
+    ability_estimate: Math.round(ability * 100) / 100,
+    completed_at: new Date().toISOString()
+  });
 }
 
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
