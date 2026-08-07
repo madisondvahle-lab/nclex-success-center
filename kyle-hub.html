@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alyssa's NCLEX Practice · Study with Madison, RN</title>
+  <title>Kyle's NCLEX Practice · Study with Madison, RN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -13,40 +13,41 @@
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
     #pin-gate {
       position: fixed; inset: 0; z-index: 9999;
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      background: linear-gradient(135deg, #0f172a 0%, #1a2e4a 100%);
       display: flex; align-items: center; justify-content: center; padding: 24px;
     }
     #pin-gate::before {
       content: ""; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 30%, rgba(14,165,233,0.12) 0%, transparent 55%),
-                  radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.10) 0%, transparent 55%);
+      background: radial-gradient(ellipse at 70% 30%, rgba(99,102,241,0.14) 0%, transparent 55%),
+                  radial-gradient(ellipse at 20% 80%, rgba(14,165,233,0.10) 0%, transparent 55%);
       pointer-events: none;
     }
     .pin-card { background:#fff; border-radius:24px; padding:44px 40px 40px; max-width:380px; width:100%; text-align:center; box-shadow:0 32px 80px rgba(0,0,0,0.5); position:relative; z-index:1; }
-    .pin-avatar { width:64px; height:64px; border-radius:20px; margin:0 auto 20px; background:linear-gradient(135deg,#e0f2fe,#bae6fd); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; color:#0369a1; }
+    .pin-avatar { width:64px; height:64px; border-radius:20px; margin:0 auto 20px; background:linear-gradient(135deg,#e0e7ff,#c7d2fe); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; color:#3730a3; }
     .pin-title { font-size:22px; font-weight:800; color:#0f172a; margin-bottom:6px; }
     .pin-sub { font-size:14px; color:#64748b; margin-bottom:28px; line-height:1.5; }
     .pin-dots { display:flex; gap:10px; justify-content:center; margin-bottom:24px; }
     .pin-dot { width:14px; height:14px; border-radius:50%; background:#e2e8f0; transition:background 0.15s ease; }
-    .pin-dot.filled { background:#0ea5e9; }
+    .pin-dot.filled { background:#6366f1; }
     .pin-dot.error  { background:#ef4444; }
     .pin-keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
     .pin-key { padding:16px; border-radius:14px; border:1.5px solid #e2e8f0; background:#f8fafc; font-size:18px; font-weight:700; color:#0f172a; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.12s ease; }
-    .pin-key:hover  { background:#f0f9ff; border-color:#7dd3fc; color:#0369a1; }
+    .pin-key:hover  { background:#eef2ff; border-color:#a5b4fc; color:#3730a3; }
     .pin-key:active { transform:scale(0.95); }
     .pin-key.del    { color:#94a3b8; font-size:16px; }
     .pin-error { font-size:13px; color:#ef4444; font-weight:600; min-height:20px; margin-top:4px; }
     .pin-hint { font-size:12px; color:#94a3b8; margin-top:16px; }
     body.locked { overflow:hidden; }
     .site-header { background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%); padding:52px 24px 48px; text-align:center; position:relative; overflow:hidden; }
-    .site-header::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 40%,rgba(14,165,233,0.12) 0%,transparent 60%); pointer-events:none; }
-    .header-badge { display:inline-block; padding:4px 14px; border-radius:99px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.35); font-size:11px; font-weight:700; color:#38bdf8; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:16px; }
+    .site-header::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 40%,rgba(99,102,241,0.14) 0%,transparent 60%); pointer-events:none; }
+    .header-badge { display:inline-block; padding:4px 14px; border-radius:99px; background:rgba(99,102,241,0.14); border:1px solid rgba(99,102,241,0.35); font-size:11px; font-weight:700; color:#a5b4fc; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:16px; }
     .header-greeting { font-size:clamp(26px,5vw,40px); font-weight:800; color:#fff; margin-bottom:10px; }
     .header-sub { font-size:15px; color:#94a3b8; max-width:440px; margin:0 auto 10px; line-height:1.65; }
     .header-byline { font-size:13px; color:#475569; font-weight:500; }
     .main { max-width:860px; margin:0 auto; padding:44px 20px 80px; }
     .section-label { font-size:11px; font-weight:700; color:#64748b; letter-spacing:1.6px; text-transform:uppercase; margin-bottom:16px; }
     .card { background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 4px 24px rgba(15,23,42,0.09); margin-bottom:16px; }
+    .card-accent-indigo { height:5px; background:linear-gradient(90deg,#4f46e5,#6366f1); }
     .card-accent-sky    { height:5px; background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
     .card-accent-green  { height:5px; background:linear-gradient(90deg,#10b981,#34d399); }
     .card-accent-purple { height:5px; background:linear-gradient(90deg,#8b5cf6,#a78bfa); }
@@ -57,6 +58,7 @@
     .module-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:8px; flex-wrap:wrap; }
     .module-title-group { display:flex; align-items:center; gap:14px; }
     .module-emoji-wrap { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+    .emoji-indigo { background:linear-gradient(135deg,#eef2ff,#e0e7ff); border:1px solid #a5b4fc; }
     .emoji-sky    { background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border:1px solid #7dd3fc; }
     .emoji-green  { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1px solid #86efac; }
     .emoji-purple { background:linear-gradient(135deg,#faf5ff,#ede9fe); border:1px solid #c4b5fd; }
@@ -64,21 +66,37 @@
     .emoji-blue   { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1px solid #93c5fd; }
     .emoji-teal   { background:linear-gradient(135deg,#f0fdfa,#ccfbf1); border:1px solid #5eead4; }
     .module-eyebrow { font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:3px; }
-    .eyebrow-sky { color:#0ea5e9; } .eyebrow-green { color:#059669; } .eyebrow-purple { color:#8b5cf6; }
-    .eyebrow-red { color:#ef4444; } .eyebrow-blue { color:#3b82f6; } .eyebrow-teal { color:#0d9488; }
+    .eyebrow-indigo { color:#4f46e5; } .eyebrow-sky { color:#0ea5e9; } .eyebrow-green { color:#059669; }
+    .eyebrow-purple { color:#8b5cf6; } .eyebrow-red { color:#ef4444; } .eyebrow-blue { color:#3b82f6; } .eyebrow-teal { color:#0d9488; }
     .module-name { font-size:19px; font-weight:800; color:#0f172a; line-height:1.2; }
     .badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:99px; font-size:11px; font-weight:700; white-space:nowrap; flex-shrink:0; }
     .badge-yellow { background:#fef9c3; border:1px solid #fde047; color:#854d0e; }
     .badge-sky    { background:#f0f9ff; border:1px solid #7dd3fc; color:#0369a1; }
+    .badge-indigo { background:#eef2ff; border:1px solid #a5b4fc; color:#3730a3; }
     .badge-green  { background:#d1fae5; border:1px solid #6ee7b7; color:#065f46; }
     .badge-purple { background:#faf5ff; border:1px solid #c4b5fd; color:#4c1d95; }
     .badge-red    { background:#fef2f2; border:1px solid #fca5a5; color:#7f1d1d; }
     .badge-blue   { background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; }
     .badge-teal   { background:#f0fdfa; border:1px solid #5eead4; color:#134e4a; }
     .module-desc { font-size:14px; color:#475569; line-height:1.7; margin-bottom:20px; }
+    .flow-label { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:1.4px; text-transform:uppercase; margin-bottom:10px; }
+    .flow-steps { display:flex; align-items:stretch; flex-wrap:wrap; gap:6px; margin-bottom:22px; }
+    .flow-step { flex:1; min-width:110px; background:#f8fafc; border:1px solid #e8ecf2; border-radius:12px; padding:11px 12px; display:flex; flex-direction:column; gap:4px; }
+    .flow-step.active-indigo { background:#eef2ff; border-color:#a5b4fc; }
+    .flow-step-icon { font-size:15px; }
+    .flow-step-text { font-size:11px; font-weight:600; color:#1e293b; line-height:1.4; }
+    .flow-step.active-indigo .flow-step-text { color:#3730a3; }
+    .flow-step-sub { font-size:10px; font-weight:600; color:#6366f1; }
+    .flow-arrow { display:flex; align-items:center; color:#cbd5e1; font-size:15px; font-weight:700; flex-shrink:0; align-self:center; }
     .module-meta { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:20px; }
     .meta-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:99px; background:#f1f5f9; border:1px solid #e2e8f0; font-size:11px; font-weight:600; color:#475569; }
+    .info-box { background:#eef2ff; border:1px solid #a5b4fc; border-radius:14px; padding:18px 20px; margin-bottom:22px; display:flex; gap:12px; align-items:flex-start; }
+    .info-icon { font-size:20px; flex-shrink:0; }
+    .info-text { font-size:13px; color:#3730a3; line-height:1.65; font-weight:500; }
+    .info-text strong { font-weight:700; }
     .start-btn { display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 28px; border:none; border-radius:14px; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none; transition:all 0.18s ease; width:100%; }
+    .btn-indigo { background:linear-gradient(135deg,#4338ca,#6366f1); color:#fff; box-shadow:0 4px 14px rgba(99,102,241,0.30); }
+    .btn-indigo:hover { transform:translateY(-2px); filter:brightness(1.06); }
     .btn-sky    { background:linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
     .btn-sky:hover    { transform:translateY(-2px); filter:brightness(1.06); }
     .btn-green  { background:linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.30); }
@@ -92,7 +110,7 @@
     .btn-teal   { background:linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
     .btn-teal:hover   { transform:translateY(-2px); filter:brightness(1.06); }
     .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
-    .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
+    .btn-outline:hover { background:#f1f5f9; }
     .coming-soon-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:11px; }
     .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
     .coming-card::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(241,245,249,0.5) 10px,rgba(241,245,249,0.5) 11px); pointer-events:none; }
@@ -105,15 +123,15 @@
     .fade-up   { animation:fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
     .fade-up-2 { animation:fadeUp 0.38s 0.08s cubic-bezier(0.22,1,0.36,1) both; }
     .fade-up-3 { animation:fadeUp 0.38s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
-    @media (max-width:600px) { .card-body { padding:20px 16px 24px; } }
+    @media (max-width:600px) { .card-body { padding:20px 16px 24px; } .flow-steps { flex-direction:column; } .flow-arrow { display:none; } }
   </style>
 </head>
 <body>
 
 <div id="pin-gate">
   <div class="pin-card">
-    <div class="pin-avatar">A</div>
-    <div class="pin-title">Alyssa's Hub</div>
+    <div class="pin-avatar">K</div>
+    <div class="pin-title">Kyle's Hub</div>
     <div class="pin-sub">Enter your PIN to access your personalized study hub.</div>
     <div class="pin-dots">
       <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
@@ -139,14 +157,70 @@
 
 <header class="site-header">
   <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
-  <h1 class="header-greeting">Hi, Alyssa! 👋</h1>
-  <p class="header-sub">Your personalized NCLEX practice hub — complete your assigned modules, then tackle your targeted weak areas.</p>
-  <div class="header-byline">Study guide → Practice quiz → Bootcamp/UWorld → Tutoring session</div>
+  <h1 class="header-greeting">Hi, Kyle! 👋</h1>
+  <p class="header-sub">Welcome to your personalized NCLEX practice hub. Let's start by finding out where you're strongest — and where to focus first.</p>
+  <div class="header-byline">Diagnostic → Targeted modules → Bootcamp/Archer → Tutoring session</div>
 </header>
 
 <main class="main">
-  <div id="assigned-modules-area"><p style="text-align:center;padding:40px;color:#94a3b8;font-size:14px;">Loading your modules…</p></div>
-  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your Full 21-Module Curriculum</div>
+  <div class="section-label fade-up">📌 Your First Step</div>
+  <div class="card fade-up">
+    <div class="card-accent-indigo"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-indigo">🩺</div>
+          <div>
+            <div class="module-eyebrow eyebrow-indigo">Start Here</div>
+            <div class="module-name">Full NCLEX Diagnostic</div>
+          </div>
+        </div>
+        <span class="badge badge-yellow">📌 Assigned</span>
+      </div>
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <div class="info-text"><strong>Why start with a diagnostic?</strong> This adaptive assessment identifies exactly where you're strong and where to focus — so we don't waste a single hour on content you already know.</div>
+      </div>
+      <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas: Pharmacology, Management of Care, OB/Maternity, Pediatrics, Cardiac, Respiratory, Mental Health, and more.</p>
+      <div class="flow-label">Your Study Flow — Starting Here</div>
+      <div class="flow-steps">
+        <div class="flow-step active-indigo"><span class="flow-step-icon">🩺</span><span class="flow-step-text">Complete the Diagnostic</span><span class="flow-step-sub">You are here</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="flow-step-icon">📊</span><span class="flow-step-text">Madison reviews your results</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="flow-step-icon">🎯</span><span class="flow-step-text">Get your personalized module assignments</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><span class="flow-step-icon">👩‍🏫</span><span class="flow-step-text">Tutoring session to build your plan</span></div>
+      </div>
+      <div class="module-meta">
+        <span class="meta-pill">🔄 Adaptive CAT Engine</span>
+        <span class="meta-pill">✏️ All Content Areas</span>
+        <span class="meta-pill">📊 35+ Questions</span>
+        <span class="meta-pill">⏱️ ~45 Minutes</span>
+      </div>
+      <a href="diagnostic.html?start=1" class="start-btn btn-indigo">Start My Diagnostic →</a>
+    </div>
+  </div>
+
+  <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
+  <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
+    <div class="card-accent-sky"></div>
+    <div class="card-body">
+      <div class="module-header">
+        <div class="module-title-group">
+          <div class="module-emoji-wrap emoji-sky">⚡</div>
+          <div><div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div><div class="module-name">Your Weak Areas</div></div>
+        </div>
+        <span class="badge badge-sky">🔒 Complete Diagnostic First</span>
+      </div>
+      <p class="module-desc">Once Madison reviews your diagnostic results, this section will be personalized to your specific weak areas.</p>
+      <div class="module-meta"><span class="meta-pill">🔄 Adaptive CAT Engine</span><span class="meta-pill">📊 35 Questions</span></div>
+      <div class="start-btn btn-outline" style="cursor:default;opacity:0.5;">Coming After Diagnostic</div>
+    </div>
+  </div>
+
+  <div id="assigned-modules-area" style="margin-top:36px;"></div>
+  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
   <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
   </div>
@@ -198,7 +272,7 @@
   function renderAssignedModules(accessMap) {
     const container = document.getElementById('assigned-modules-area');
     const enabled = MODULES_CATALOG.filter(m => accessMap[m.key]).sort((a,b) => a.num - b.num);
-    if (!enabled.length) { container.innerHTML = '<p style="color:#94a3b8;font-size:14px;padding:20px 0;">No modules assigned yet — check back after your session with Madison.</p>'; return; }
+    if (!enabled.length) { container.innerHTML = ''; return; }
     const current = enabled[enabled.length-1];
     const completed = enabled.slice(0,-1).reverse();
     const c = current, cc = CMAP[ACCENT[c.key]] || CMAP.sky;
@@ -250,11 +324,11 @@
     document.getElementById('curriculum-grid').innerHTML = MODULES_CATALOG.map(m => {
       if (accessMap[m.key]) {
         const href = m.guideUrl || m.quizUrl || '#';
-        return `<a href="${href}" style="text-decoration:none;"><div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+        return `<a href="${href}" style="text-decoration:none;"><div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #6366f1;background:linear-gradient(135deg,#eef2ff,#e0e7ff);">
           <div class="coming-card-icon">${m.emoji}</div>
-          <div class="coming-card-num" style="color:#134e4a;">Module ${m.num}</div>
+          <div class="coming-card-num" style="color:#3730a3;">Module ${m.num}</div>
           <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
-          <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
+          <span class="coming-soon-badge" style="background:#e0e7ff;border-color:#a5b4fc;color:#3730a3;">Open →</span>
         </div></a>`;
       }
       return `<div class="coming-card">
@@ -276,12 +350,12 @@
   }
 
   (async function init() {
-    const stored = localStorage.getItem('nclex_sid_alyssa');
+    const stored = localStorage.getItem('nclex_sid_kyle');
     if (stored) {
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
       localStorage.setItem('student_id', stored);
-      localStorage.setItem('nclex_current_student', 'Alyssa');
+      localStorage.setItem('nclex_current_student', 'Kyle');
       loadModules(stored);
       return;
     }
@@ -307,7 +381,7 @@
   async function checkPin() {
     document.getElementById('pin-error').textContent = 'Checking…';
     try {
-      const { data, error } = await sbClient.from('students').select('id,pin').eq('name','Alyssa Dababneh').single();
+      const { data, error } = await sbClient.from('students').select('id,pin').eq('name','Kyle Batacan').single();
       console.log('[PIN] data:', data, 'error:', error);
       if (error) {
         document.getElementById('pin-error').textContent = 'Connection error — check console';
@@ -317,9 +391,9 @@
       const stored = data ? String(data.pin).padStart(4,'0') : null;
       console.log('[PIN] stored:', stored, 'entered:', pinBuffer);
       if (stored && stored === pinBuffer) {
-        localStorage.setItem('nclex_sid_alyssa', data.id);
+        localStorage.setItem('nclex_sid_kyle', data.id);
         localStorage.setItem('student_id', data.id);
-        localStorage.setItem('nclex_current_student', 'Alyssa');
+        localStorage.setItem('nclex_current_student', 'Kyle');
         document.getElementById('pin-gate').style.display = 'none';
         document.body.classList.remove('locked');
         loadModules(data.id);

@@ -541,26 +541,42 @@
   });
 
   async function checkPin() {
-    const { data, error } = await sbClient
-      .from('students')
-      .select('id, pin')
-      .eq('name', 'Courtney')
-      .single();
+    document.getElementById('pin-error').textContent = 'Checking…';
+    try {
+      const { data, error } = await sbClient
+        .from('students')
+        .select('id, pin')
+        .eq('name', 'Courtney Stewart')
+        .single();
 
-    // Normalize both sides to 4-digit strings so leading zeros always match
-    const storedPin = data ? String(data.pin).padStart(4, '0') : null;
+      console.log('[PIN] data:', data, 'error:', error);
 
-    if (!error && storedPin && storedPin === pinBuffer) {
-      localStorage.setItem('nclex_sid_courtney', data.id);
-      localStorage.setItem('student_id', data.id);
-      localStorage.setItem('nclex_current_student', 'Courtney');
-      document.getElementById('pin-gate').style.display = 'none';
-      document.body.classList.remove('locked');
-      loadAndRenderModules(data.id);
-    } else {
-      updateDots(true);
-      document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
-      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
+      if (error) {
+        document.getElementById('pin-error').textContent = 'Connection error — check console';
+        setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 2500);
+        return;
+      }
+
+      // Normalize both sides to 4-digit strings so leading zeros always match
+      const storedPin = data ? String(data.pin).padStart(4, '0') : null;
+      console.log('[PIN] stored:', storedPin, 'entered:', pinBuffer);
+
+      if (storedPin && storedPin === pinBuffer) {
+        localStorage.setItem('nclex_sid_courtney', data.id);
+        localStorage.setItem('student_id', data.id);
+        localStorage.setItem('nclex_current_student', 'Courtney');
+        document.getElementById('pin-gate').style.display = 'none';
+        document.body.classList.remove('locked');
+        loadAndRenderModules(data.id);
+      } else {
+        updateDots(true);
+        document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
+        setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
+      }
+    } catch (e) {
+      console.error('[PIN] exception:', e);
+      document.getElementById('pin-error').textContent = 'Error: ' + e.message;
+      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 2500);
     }
   }
 </script>

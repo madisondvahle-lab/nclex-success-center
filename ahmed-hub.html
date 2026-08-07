@@ -11,8 +11,6 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
-
-    /* ── PIN Gate ── */
     #pin-gate {
       position: fixed; inset: 0; z-index: 9999;
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
@@ -24,17 +22,8 @@
                   radial-gradient(ellipse at 20% 80%, rgba(14,165,233,0.10) 0%, transparent 55%);
       pointer-events: none;
     }
-    .pin-card {
-      background: #fff; border-radius: 24px; padding: 44px 40px 40px;
-      max-width: 380px; width: 100%; text-align: center;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5); position: relative; z-index: 1;
-    }
-    .pin-avatar {
-      width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 20px;
-      background: linear-gradient(135deg,#d1fae5,#a7f3d0);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; font-weight: 800; color: #065f46; letter-spacing: -1px;
-    }
+    .pin-card { background: #fff; border-radius: 24px; padding: 44px 40px 40px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,0.5); position: relative; z-index: 1; }
+    .pin-avatar { width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 20px; background: linear-gradient(135deg,#d1fae5,#a7f3d0); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: #065f46; }
     .pin-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
     .pin-sub { font-size: 14px; color: #64748b; margin-bottom: 28px; line-height: 1.5; }
     .pin-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
@@ -42,47 +31,25 @@
     .pin-dot.filled { background: #10b981; }
     .pin-dot.error  { background: #ef4444; }
     .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-    .pin-key {
-      padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0;
-      background: #f8fafc; font-size: 18px; font-weight: 700; color: #0f172a;
-      cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s ease;
-    }
+    .pin-key { padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 18px; font-weight: 700; color: #0f172a; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s ease; }
     .pin-key:hover  { background: #f0fdf4; border-color: #6ee7b7; color: #065f46; }
-    .pin-key:active { transform: scale(0.95); background: #d1fae5; }
+    .pin-key:active { transform: scale(0.95); }
     .pin-key.del    { color: #94a3b8; font-size: 16px; }
     .pin-error { font-size: 13px; color: #ef4444; font-weight: 600; min-height: 20px; margin-top: 4px; }
     .pin-hint { font-size: 12px; color: #94a3b8; margin-top: 16px; }
     body.locked { overflow: hidden; }
-
-    .site-header {
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
-      padding: 52px 24px 48px; text-align: center; position: relative; overflow: hidden;
-    }
-    .site-header::before {
-      content: ""; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 40%, rgba(16,185,129,0.12) 0%, transparent 60%),
-                  radial-gradient(ellipse at 20% 80%, rgba(14,165,233,0.10) 0%, transparent 55%);
-      pointer-events: none;
-    }
-    .header-badge {
-      display: inline-block; padding: 4px 14px; border-radius: 99px;
-      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35);
-      font-size: 11px; font-weight: 700; color: #34d399; letter-spacing: 1.4px;
-      text-transform: uppercase; margin-bottom: 16px;
-    }
-    .header-greeting { font-size: clamp(26px,5vw,40px); font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .site-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); padding: 52px 24px 48px; text-align: center; position: relative; overflow: hidden; }
+    .site-header::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 40%, rgba(16,185,129,0.12) 0%, transparent 60%); pointer-events: none; }
+    .header-badge { display: inline-block; padding: 4px 14px; border-radius: 99px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); font-size: 11px; font-weight: 700; color: #34d399; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px; }
+    .header-greeting { font-size: clamp(26px,5vw,40px); font-weight: 800; color: #fff; margin-bottom: 10px; }
     .header-sub { font-size: 15px; color: #94a3b8; max-width: 440px; margin: 0 auto 10px; line-height: 1.65; }
     .header-byline { font-size: 13px; color: #475569; font-weight: 500; }
-
     .main { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
-
     .section-label { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px; }
-
     .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.09); margin-bottom: 16px; }
     .card-accent-green { height: 5px; background: linear-gradient(90deg, #059669, #34d399); }
     .card-accent-sky   { height: 5px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
     .card-body { padding: 28px 34px 32px; }
-
     .module-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
     .module-title-group { display: flex; align-items: center; gap: 14px; }
     .module-emoji-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
@@ -92,14 +59,10 @@
     .eyebrow-green { color: #059669; }
     .eyebrow-sky   { color: #0ea5e9; }
     .module-name { font-size: 19px; font-weight: 800; color: #0f172a; line-height: 1.2; }
-
     .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
-    .badge-green  { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; }
-    .badge-sky    { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
     .badge-yellow { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
-
-    .module-desc { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px; font-weight: 400; }
-
+    .badge-sky    { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
+    .module-desc { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px; }
     .flow-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 10px; }
     .flow-steps { display: flex; align-items: stretch; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
     .flow-step { flex: 1; min-width: 110px; background: #f8fafc; border: 1px solid #e8ecf2; border-radius: 12px; padding: 11px 12px; display: flex; flex-direction: column; gap: 4px; }
@@ -109,22 +72,18 @@
     .flow-step.active-green .flow-step-text { color: #065f46; }
     .flow-step-sub { font-size: 10px; font-weight: 600; color: #059669; }
     .flow-arrow { display: flex; align-items: center; color: #cbd5e1; font-size: 15px; font-weight: 700; flex-shrink: 0; align-self: center; }
-
     .module-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
     .meta-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; color: #475569; }
-
     .info-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 14px; padding: 18px 20px; margin-bottom: 22px; display: flex; gap: 12px; align-items: flex-start; }
     .info-icon { font-size: 20px; flex-shrink: 0; }
     .info-text { font-size: 13px; color: #065f46; line-height: 1.65; font-weight: 500; }
     .info-text strong { font-weight: 700; }
-
-    .start-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 14px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; letter-spacing: 0.2px; transition: all 0.18s ease; width: 100%; }
+    .start-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 14px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.18s ease; width: 100%; }
     .btn-green { background: linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.30); }
-    .btn-green:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(16,185,129,0.36); filter:brightness(1.06); }
+    .btn-green:hover { transform:translateY(-2px); filter:brightness(1.06); }
     .btn-sky { background: linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
-    .btn-sky:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(14,165,233,0.36); filter:brightness(1.06); }
+    .btn-sky:hover { transform:translateY(-2px); filter:brightness(1.06); }
     .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
-
     .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 11px; }
     .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
     .coming-card::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(-45deg,transparent,transparent 10px,rgba(241,245,249,0.5) 10px,rgba(241,245,249,0.5) 11px); pointer-events:none; }
@@ -132,53 +91,47 @@
     .coming-card-num { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
     .coming-card-name { font-size:13px; font-weight:700; color:#64748b; margin-bottom:7px; line-height:1.3; }
     .coming-soon-badge { display:inline-block; padding:3px 9px; border-radius:99px; background:#f1f5f9; border:1px solid #e2e8f0; font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.8px; text-transform:uppercase; }
-
     .site-footer { text-align:center; padding:28px 24px; font-size:13px; color:#94a3b8; border-top:1px solid #e8ecf2; background:#fff; }
-
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     .fade-up   { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
     .fade-up-2 { animation: fadeUp 0.38s 0.08s cubic-bezier(0.22,1,0.36,1) both; }
     .fade-up-3 { animation: fadeUp 0.38s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
-
-    @media (max-width: 600px) {
-      .card-body { padding: 20px 16px 24px; }
-      .flow-steps { flex-direction: column; }
-      .flow-arrow { display: none; }
-    }
-
-    .card-accent-red  { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
-    .card-accent-blue { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    .card-accent-teal { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
-    .emoji-red  { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
-    .emoji-blue { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
-    .emoji-teal { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
-    .eyebrow-red  { color: #ef4444; }
-    .eyebrow-blue { color: #3b82f6; }
-    .eyebrow-teal { color: #0d9488; }
-    .badge-red  { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
-    .badge-blue { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
-    .badge-teal { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
-    .btn-red  { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
-    .btn-red:hover  { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-blue { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
-    .btn-blue:hover { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-teal { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
-    .btn-teal:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    @media (max-width:600px) { .card-body { padding:20px 16px 24px; } .flow-steps { flex-direction:column; } .flow-arrow { display:none; } }
+    /* extra color tokens for dynamic modules */
+    .card-accent-red    { height:5px; background:linear-gradient(90deg,#ef4444,#f87171); }
+    .card-accent-blue   { height:5px; background:linear-gradient(90deg,#3b82f6,#60a5fa); }
+    .card-accent-teal   { height:5px; background:linear-gradient(90deg,#0d9488,#2dd4bf); }
+    .card-accent-purple { height:5px; background:linear-gradient(90deg,#8b5cf6,#a78bfa); }
+    .emoji-red    { background:linear-gradient(135deg,#fef2f2,#fee2e2); border:1px solid #fca5a5; }
+    .emoji-blue   { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1px solid #93c5fd; }
+    .emoji-teal   { background:linear-gradient(135deg,#f0fdfa,#ccfbf1); border:1px solid #5eead4; }
+    .emoji-purple { background:linear-gradient(135deg,#faf5ff,#ede9fe); border:1px solid #c4b5fd; }
+    .eyebrow-red    { color:#ef4444; } .eyebrow-blue { color:#3b82f6; } .eyebrow-teal { color:#0d9488; } .eyebrow-purple { color:#8b5cf6; }
+    .badge-green  { background:#d1fae5; border:1px solid #6ee7b7; color:#065f46; }
+    .badge-red    { background:#fef2f2; border:1px solid #fca5a5; color:#7f1d1d; }
+    .badge-blue   { background:#eff6ff; border:1px solid #93c5fd; color:#1e40af; }
+    .badge-teal   { background:#f0fdfa; border:1px solid #5eead4; color:#134e4a; }
+    .badge-purple { background:#faf5ff; border:1px solid #c4b5fd; color:#4c1d95; }
+    .btn-red    { background:linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
+    .btn-red:hover    { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-blue   { background:linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
+    .btn-blue:hover   { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-teal   { background:linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
+    .btn-teal:hover   { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-purple { background:linear-gradient(135deg,#6d28d9,#8b5cf6); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,0.28); }
+    .btn-purple:hover { transform:translateY(-2px); filter:brightness(1.06); }
   </style>
 </head>
 <body>
 
-<!-- ── PIN GATE ── -->
 <div id="pin-gate">
   <div class="pin-card">
     <div class="pin-avatar">A</div>
     <div class="pin-title">Ahmed's Hub</div>
     <div class="pin-sub">Enter your PIN to access your personalized study hub.</div>
     <div class="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
+      <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
     </div>
     <div class="pin-keypad">
       <button class="pin-key" onclick="pinKey('1')">1</button>
@@ -201,14 +154,12 @@
 <header class="site-header">
   <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
   <h1 class="header-greeting">Hi, Ahmed! 👋</h1>
-  <p class="header-sub">Welcome to your personalized NCLEX practice hub. Let's start by finding out where you're strongest — and where to focus first.</p>
+  <p class="header-sub">Welcome to your personalized NCLEX practice hub. Let's find where you're strongest — and where to focus first.</p>
   <div class="header-byline">Diagnostic → Targeted modules → Bootcamp/Archer → Tutoring session</div>
 </header>
 
 <main class="main">
-
   <div class="section-label fade-up">📌 Your First Step</div>
-
   <div class="card fade-up">
     <div class="card-accent-green"></div>
     <div class="card-body">
@@ -222,87 +173,53 @@
         </div>
         <span class="badge badge-yellow">📌 Assigned</span>
       </div>
-
       <div class="info-box">
         <span class="info-icon">💡</span>
-        <div class="info-text">
-          <strong>Why start with a diagnostic?</strong> This adaptive assessment identifies exactly where you're strong and where to focus your study time — so we don't waste a single hour on content you already know.
-        </div>
+        <div class="info-text"><strong>Why start with a diagnostic?</strong> This adaptive assessment identifies exactly where you're strong and where to focus — so we don't waste a single hour on content you already know.</div>
       </div>
-
-      <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas: Pharmacology, Management of Care, OB/Maternity, Pediatrics, Cardiac, Respiratory, Mental Health, and more. The engine adjusts difficulty in real time based on your responses.</p>
-
+      <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas. The engine adjusts difficulty in real time based on your responses.</p>
       <div class="flow-label">Your Study Flow — Starting Here</div>
       <div class="flow-steps">
-        <div class="flow-step active-green">
-          <span class="flow-step-icon">🩺</span>
-          <span class="flow-step-text">Complete the Diagnostic</span>
-          <span class="flow-step-sub">You are here</span>
-        </div>
+        <div class="flow-step active-green"><span class="flow-step-icon">🩺</span><span class="flow-step-text">Complete the Diagnostic</span><span class="flow-step-sub">You are here</span></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <span class="flow-step-icon">📊</span>
-          <span class="flow-step-text">Madison reviews your results</span>
-        </div>
+        <div class="flow-step"><span class="flow-step-icon">📊</span><span class="flow-step-text">Madison reviews your results</span></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <span class="flow-step-icon">🎯</span>
-          <span class="flow-step-text">Get your personalized module assignments</span>
-        </div>
+        <div class="flow-step"><span class="flow-step-icon">🎯</span><span class="flow-step-text">Get your personalized module assignments</span></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <span class="flow-step-icon">👩‍🏫</span>
-          <span class="flow-step-text">Tutoring session to build your plan</span>
-        </div>
+        <div class="flow-step"><span class="flow-step-icon">👩‍🏫</span><span class="flow-step-text">Tutoring session to build your plan</span></div>
       </div>
-
       <div class="module-meta">
         <span class="meta-pill">🔄 Adaptive CAT Engine</span>
         <span class="meta-pill">✏️ All Content Areas</span>
         <span class="meta-pill">📊 35+ Questions</span>
         <span class="meta-pill">⏱️ ~45 Minutes</span>
       </div>
-
-      <a href="diagnostic.html?start=1" class="start-btn btn-green">
-        Start My Diagnostic →
-      </a>
+      <a href="diagnostic.html?start=1" class="start-btn btn-green">Start My Diagnostic →</a>
     </div>
   </div>
 
-  <!-- Targeted Practice — locked -->
   <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
-
   <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
     <div class="card-accent-sky"></div>
     <div class="card-body">
       <div class="module-header">
         <div class="module-title-group">
           <div class="module-emoji-wrap emoji-sky">⚡</div>
-          <div>
-            <div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div>
-            <div class="module-name">Your Weak Areas</div>
-          </div>
+          <div><div class="module-eyebrow eyebrow-sky">Adaptive Quiz</div><div class="module-name">Your Weak Areas</div></div>
         </div>
         <span class="badge badge-sky">🔒 Complete Diagnostic First</span>
       </div>
-      <p class="module-desc">Once Madison reviews your diagnostic results, this section will be personalized to your specific weak areas with targeted questions calibrated to your level.</p>
-      <div class="module-meta">
-        <span class="meta-pill">🔄 Adaptive CAT Engine</span>
-        <span class="meta-pill">✏️ Practice Mode</span>
-        <span class="meta-pill">📊 35 Questions</span>
-      </div>
+      <p class="module-desc">Once Madison reviews your diagnostic results, this section will be personalized to your specific weak areas.</p>
+      <div class="module-meta"><span class="meta-pill">🔄 Adaptive CAT Engine</span><span class="meta-pill">📊 35 Questions</span></div>
       <div class="start-btn btn-outline" style="cursor:default;opacity:0.5;">Coming After Diagnostic</div>
     </div>
   </div>
 
-
-  <!-- ── DYNAMIC MODULES (Supabase) ── -->
   <div id="assigned-modules-area" style="margin-top:36px;"></div>
   <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
   <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
     <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
   </div>
-
 </main>
 
 <footer class="site-footer">
@@ -310,79 +227,59 @@
 </footer>
 
 <script>
-  // ── SUPABASE PIN GATE ──
-
   const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
   const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
   const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
   const MODULES_CATALOG = [
-    { key:'m1',  num:1,  name:'Newborn Care',              emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
-    { key:'m2',  num:2,  name:'Maternal & OB',             emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
-    { key:'m3',  num:3,  name:'Pharmacology',              emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
-    { key:'m4',  num:4,  name:'Cardiovascular',            emoji:'❤️', available:true,  guideUrl:'module4-guide.html', quizUrl:null,                    desc:'Heart failure, dysrhythmias, MI, hypertension, vascular disorders, and cardiac medications.' },
-    { key:'m5',  num:5,  name:'Respiratory',               emoji:'🫁', available:true,  guideUrl:'module5-guide.html', quizUrl:null,                    desc:'COPD, asthma, pneumonia, respiratory failure, ABG interpretation, and oxygen therapy.' },
-    { key:'m6',  num:6,  name:'Fluids & Electrolytes',     emoji:'💧', available:true,  guideUrl:'module6-guide.html', quizUrl:null,                    desc:'Electrolyte imbalances, IV fluids, acid-base balance, and clinical management priorities.' },
-    { key:'m7',  num:7,  name:'Mental Health',             emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m8',  num:8,  name:'Prioritization',            emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m9',  num:9,  name:'Infection Control',         emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m10', num:10, name:'Endocrine',                 emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m11', num:11, name:'Renal & Urologic',          emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m12', num:12, name:'Gastrointestinal',          emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m13', num:13, name:'Musculoskeletal',           emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m14', num:14, name:'Neurological',              emoji:'🧬', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m15', num:15, name:'Hematology & Oncology',     emoji:'🩸', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m16', num:16, name:'Integumentary',             emoji:'🩹', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m17', num:17, name:'Immune & Autoimmune',       emoji:'🛡️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m18', num:18, name:'Perioperative Care',        emoji:'🏥', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m19', num:19, name:'Critical Care & Shock',     emoji:'⚠️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m20', num:20, name:'NGN Clinical Judgment',     emoji:'🎯', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m21', num:21, name:'NCLEX Strategy & CAT',      emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m1',  num:1,  name:'Newborn Care',          emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html', desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
+    { key:'m2',  num:2,  name:'Maternal & OB',         emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies.' },
+    { key:'m3',  num:3,  name:'Pharmacology',          emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null, desc:'High-alert medications, drug calculations, antidotes, nursing implications.' },
+    { key:'m4',  num:4,  name:'Cardiovascular',        emoji:'❤️', available:true,  guideUrl:'module4-guide.html', quizUrl:null, desc:'Heart failure, dysrhythmias, MI, hypertension, vascular disorders.' },
+    { key:'m5',  num:5,  name:'Respiratory',           emoji:'🫁', available:true,  guideUrl:'module5-guide.html', quizUrl:null, desc:'COPD, asthma, pneumonia, respiratory failure, ABG interpretation.' },
+    { key:'m6',  num:6,  name:'Fluids & Electrolytes', emoji:'💧', available:true,  guideUrl:'module6-guide.html', quizUrl:null, desc:'Electrolyte imbalances, IV fluids, acid-base balance.' },
+    { key:'m7',  num:7,  name:'Mental Health',         emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m8',  num:8,  name:'Prioritization',        emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m9',  num:9,  name:'Infection Control',     emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m10', num:10, name:'Endocrine',             emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m11', num:11, name:'Renal & Urologic',      emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m12', num:12, name:'Gastrointestinal',      emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m13', num:13, name:'Musculoskeletal',       emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m14', num:14, name:'Neurological',          emoji:'🧬', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m15', num:15, name:'Hematology & Oncology', emoji:'🩸', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m16', num:16, name:'Integumentary',         emoji:'🩹', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m17', num:17, name:'Immune & Autoimmune',   emoji:'🛡️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m18', num:18, name:'Perioperative Care',    emoji:'🏥', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m19', num:19, name:'Critical Care & Shock', emoji:'⚠️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m20', num:20, name:'NGN Clinical Judgment', emoji:'🎯', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m21', num:21, name:'NCLEX Strategy & CAT',  emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
   ];
 
-  // Render assigned (enabled) modules as active cards
-  function renderAssignedModules(accessMap, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const enabled = MODULES_CATALOG.filter(m => accessMap[m.key]);
-    if (!enabled.length) {
-      container.innerHTML = '<p style="color:#94a3b8;font-size:14px;padding:20px 0;">No modules assigned yet — check back after your session with Madison.</p>';
-      return;
-    }
-    // Sort by module number; designate last as "current assignment"
-    const sorted = [...enabled].sort((a,b) => a.num - b.num);
-    const current = sorted[sorted.length - 1];
-    const completed = sorted.slice(0, -1);
+  const ACCENT = { m1:'green',m2:'purple',m3:'sky',m4:'red',m5:'blue',m6:'teal' };
+  const CMAP = {
+    green:  { emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
+    purple: { emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
+    sky:    { emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
+    red:    { emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
+    blue:   { emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
+    teal:   { emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
+  };
 
-    const accentColors = {
-      m1:'green', m2:'purple', m3:'sky', m4:'red', m5:'blue', m6:'teal'
-    };
-    const colorMap = {
-      green:  { accent:'#10b981', bg:'#f0fdf4', emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
-      purple: { accent:'#8b5cf6', bg:'#faf5ff', emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
-      sky:    { accent:'#0ea5e9', bg:'#f0f9ff', emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
-      red:    { accent:'#ef4444', bg:'#fef2f2', emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
-      blue:   { accent:'#3b82f6', bg:'#eff6ff', emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
-      teal:   { accent:'#0d9488', bg:'#f0fdfa', emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
-    };
-
-    let html = '';
-
-    // Current assignment
-    const c = current;
-    const cc = colorMap[accentColors[c.key]] || colorMap['sky'];
-    html += `
-      <div class="section-label fade-up" style="margin-bottom:16px;">📌 This Week's Assignment</div>
-      <div class="card fade-up" style="margin-bottom:16px;">
-        <div class="card-accent-${accentColors[c.key] || 'sky'}"></div>
+  function renderAssignedModules(accessMap) {
+    const container = document.getElementById('assigned-modules-area');
+    const enabled = MODULES_CATALOG.filter(m => accessMap[m.key]).sort((a,b) => a.num - b.num);
+    if (!enabled.length) { container.innerHTML = ''; return; }
+    const current = enabled[enabled.length - 1];
+    const completed = enabled.slice(0, -1).reverse();
+    const c = current, cc = CMAP[ACCENT[c.key]] || CMAP.sky;
+    let html = `<div class="section-label" style="margin-bottom:16px;">📌 This Week's Assignment</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-accent-${ACCENT[c.key]||'sky'}"></div>
         <div class="card-body">
           <div class="module-header">
             <div class="module-title-group">
               <div class="module-emoji-wrap ${cc.emoji}">${c.emoji}</div>
-              <div>
-                <div class="module-eyebrow ${cc.eyebrow}">Module ${c.num}</div>
-                <div class="module-name">${c.name}</div>
-              </div>
+              <div><div class="module-eyebrow ${cc.eyebrow}">Module ${c.num}</div><div class="module-name">${c.name}</div></div>
             </div>
             <span class="badge badge-yellow">📌 Assigned This Week</span>
           </div>
@@ -393,146 +290,118 @@
           </div>
         </div>
       </div>`;
-
-    // Completed modules
     if (completed.length) {
-      html += `<div class="section-label fade-up-2" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
-      completed.reverse().forEach(m => {
-        const mc = colorMap[accentColors[m.key]] || colorMap['green'];
-        html += `
-          <div class="card fade-up-2" style="margin-bottom:12px;">
-            <div class="card-accent-${accentColors[m.key] || 'green'}"></div>
-            <div class="card-body" style="padding-top:20px;padding-bottom:20px;">
-              <div class="module-header">
-                <div class="module-title-group">
-                  <div class="module-emoji-wrap ${mc.emoji}">${m.emoji}</div>
-                  <div>
-                    <div class="module-eyebrow ${mc.eyebrow}">Module ${m.num}</div>
-                    <div class="module-name">${m.name}</div>
-                  </div>
-                </div>
-                <span class="badge ${mc.badge}">✅ Completed</span>
+      html += `<div class="section-label" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
+      completed.forEach(m => {
+        const mc = CMAP[ACCENT[m.key]] || CMAP.green;
+        html += `<div class="card" style="margin-bottom:12px;">
+          <div class="card-accent-${ACCENT[m.key]||'green'}"></div>
+          <div class="card-body" style="padding-top:20px;padding-bottom:20px;">
+            <div class="module-header">
+              <div class="module-title-group">
+                <div class="module-emoji-wrap ${mc.emoji}">${m.emoji}</div>
+                <div><div class="module-eyebrow ${mc.eyebrow}">Module ${m.num}</div><div class="module-name">${m.name}</div></div>
               </div>
-              <p class="module-desc" style="margin-bottom:14px;">${m.desc}</p>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                ${m.guideUrl ? `<a href="${m.guideUrl}" class="start-btn btn-outline" style="font-size:14px;flex:1;">📖 Review Guide →</a>` : ''}
-                ${m.quizUrl  ? `<a href="${m.quizUrl}?start=1" class="start-btn btn-outline" style="font-size:14px;flex:1;">🎯 Retake Quiz →</a>` : ''}
-              </div>
+              <span class="badge ${mc.badge}">✅ Completed</span>
             </div>
-          </div>`;
+            <p class="module-desc" style="margin-bottom:14px;">${m.desc}</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              ${m.guideUrl ? `<a href="${m.guideUrl}" class="start-btn btn-outline" style="font-size:14px;flex:1;">📖 Review Guide →</a>` : ''}
+              ${m.quizUrl  ? `<a href="${m.quizUrl}?start=1" class="start-btn btn-outline" style="font-size:14px;flex:1;">🎯 Retake Quiz →</a>` : ''}
+            </div>
+          </div>
+        </div>`;
       });
     }
     container.innerHTML = html;
   }
 
-  // Render full curriculum grid (all 21, enabled ones clickable)
-  function renderCurriculumGrid(accessMap, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const html = MODULES_CATALOG.map(m => {
-      const enabled = !!accessMap[m.key];
-      const unavailable = !m.available;
-      if (enabled) {
-        const links = [m.guideUrl, m.quizUrl].filter(Boolean);
-        const href = links[0] || '#';
-        return `<a href="${href}" style="text-decoration:none;">
-          <div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
-            <div class="coming-card-icon">${m.emoji}</div>
-            <div class="coming-card-num" style="color:#134e4a;">Module ${m.num}</div>
-            <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
-            <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
-          </div></a>`;
-      } else if (unavailable) {
-        return `<div class="coming-card">
+  function renderCurriculumGrid(accessMap) {
+    document.getElementById('curriculum-grid').innerHTML = MODULES_CATALOG.map(m => {
+      if (accessMap[m.key]) {
+        const href = m.guideUrl || m.quizUrl || '#';
+        return `<a href="${href}" style="text-decoration:none;"><div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
           <div class="coming-card-icon">${m.emoji}</div>
-          <div class="coming-card-num">Module ${m.num}</div>
-          <div class="coming-card-name">${m.name}</div>
-          <span class="coming-soon-badge">Coming Soon</span>
-        </div>`;
-      } else {
-        return `<div class="coming-card">
-          <div class="coming-card-icon">${m.emoji}</div>
-          <div class="coming-card-num">Module ${m.num}</div>
-          <div class="coming-card-name">${m.name}</div>
-          <span class="coming-soon-badge">Pending Assignment</span>
-        </div>`;
+          <div class="coming-card-num" style="color:#134e4a;">Module ${m.num}</div>
+          <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
+          <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
+        </div></a>`;
       }
+      return `<div class="coming-card">
+        <div class="coming-card-icon">${m.emoji}</div>
+        <div class="coming-card-num">Module ${m.num}</div>
+        <div class="coming-card-name">${m.name}</div>
+        <span class="coming-soon-badge">${m.available ? 'Pending Assignment' : 'Coming Soon'}</span>
+      </div>`;
     }).join('');
-    container.innerHTML = html;
   }
 
-  // Load module access from Supabase and render
-  async function loadAndRenderModules(studentId, assignedContainerId, curriculumContainerId) {
-    const { data } = await sbClient
-      .from('student_module_access')
-      .select('module_key, enabled')
-      .eq('student_id', studentId);
+  async function loadModules(studentId) {
+    const { data } = await sbClient.from('student_module_access').select('module_key,enabled').eq('student_id', studentId);
     const accessMap = {};
-    (data || []).forEach(r => { accessMap[r.module_key] = r.enabled; });
-    if (assignedContainerId) renderAssignedModules(accessMap, assignedContainerId);
-    if (curriculumContainerId) renderCurriculumGrid(accessMap, curriculumContainerId);
-    // store for quiz tracking
+    (data||[]).forEach(r => { accessMap[r.module_key] = r.enabled; });
+    renderAssignedModules(accessMap);
+    renderCurriculumGrid(accessMap);
     localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
   }
 
-  (async function initAhmed() {
-    const STUDENT_NAME = 'Ahmed';
-    const STORE_KEY = 'nclex_sid_ahmed';
-    const storedId = localStorage.getItem(STORE_KEY);
-    if (storedId) {
+  (async function init() {
+    const stored = localStorage.getItem('nclex_sid_ahmed');
+    if (stored) {
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
-      localStorage.setItem('nclex_current_student', STUDENT_NAME);
-      loadAndRenderModules(storedId, 'assigned-modules-area', 'curriculum-grid');
+      localStorage.setItem('student_id', stored);
+      localStorage.setItem('nclex_current_student', 'Ahmed');
+      loadModules(stored);
       return;
     }
     document.body.classList.add('locked');
   })();
 
   let pinBuffer = '';
-  function pinKey(digit) {
-    if (pinBuffer.length >= 4) return;
-    pinBuffer += digit;
-    updateDots();
-    if (pinBuffer.length === 4) checkPin();
-  }
-  function pinDel() {
-    pinBuffer = pinBuffer.slice(0, -1);
-    document.getElementById('pin-error').textContent = '';
-    updateDots(false);
-  }
+  function pinKey(d) { if (pinBuffer.length >= 4) return; pinBuffer += d; updateDots(); if (pinBuffer.length === 4) checkPin(); }
+  function pinDel() { pinBuffer = pinBuffer.slice(0,-1); document.getElementById('pin-error').textContent=''; updateDots(false); }
   function updateDots(err) {
-    for (let i = 0; i < 4; i++) {
-      const d = document.getElementById('d' + i);
+    for (let i=0;i<4;i++) {
+      const d = document.getElementById('d'+i);
       d.classList.toggle('filled', i < pinBuffer.length);
       d.classList.toggle('error', !!err);
     }
   }
-  // keyboard-pin-support
-  document.addEventListener('keydown', function(e) {
-    var gate = document.getElementById('pin-gate');
-    if (!gate || gate.style.display === 'none') return;
-    if (e.key >= '0' && e.key <= '9') { e.preventDefault(); pinKey(e.key); }
-    else if (e.key === 'Backspace') { e.preventDefault(); pinDel(); }
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('pin-gate').style.display==='none') return;
+    if (e.key>='0'&&e.key<='9') { e.preventDefault(); pinKey(e.key); }
+    else if (e.key==='Backspace') { e.preventDefault(); pinDel(); }
   });
 
   async function checkPin() {
-    const STUDENT_NAME = 'Ahmed';
-    const { data, error } = await sbClient
-      .from('students')
-      .select('id, pin')
-      .eq('name', STUDENT_NAME)
-      .single();
-    if (!error && data && data.pin === pinBuffer) {
-      localStorage.setItem('nclex_sid_ahmed', data.id);
-      localStorage.setItem('nclex_current_student', STUDENT_NAME);
-      document.getElementById('pin-gate').style.display = 'none';
-      document.body.classList.remove('locked');
-      loadAndRenderModules(data.id, 'assigned-modules-area', 'curriculum-grid');
-    } else {
-      updateDots(true);
-      document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
-      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
+    document.getElementById('pin-error').textContent = 'Checking…';
+    try {
+      const { data, error } = await sbClient.from('students').select('id,pin').eq('name','Ahmed Bule').single();
+      console.log('[PIN] data:', data, 'error:', error);
+      if (error) {
+        document.getElementById('pin-error').textContent = 'Connection error — check console';
+        setTimeout(() => { pinBuffer=''; updateDots(false); document.getElementById('pin-error').textContent=''; }, 2500);
+        return;
+      }
+      const stored = data ? String(data.pin).padStart(4,'0') : null;
+      console.log('[PIN] stored:', stored, 'entered:', pinBuffer);
+      if (stored && stored === pinBuffer) {
+        localStorage.setItem('nclex_sid_ahmed', data.id);
+        localStorage.setItem('student_id', data.id);
+        localStorage.setItem('nclex_current_student', 'Ahmed');
+        document.getElementById('pin-gate').style.display = 'none';
+        document.body.classList.remove('locked');
+        loadModules(data.id);
+      } else {
+        updateDots(true);
+        document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
+        setTimeout(() => { pinBuffer=''; updateDots(false); document.getElementById('pin-error').textContent=''; }, 1200);
+      }
+    } catch(e) {
+      console.error('[PIN] exception:', e);
+      document.getElementById('pin-error').textContent = 'Error: ' + e.message;
+      setTimeout(() => { pinBuffer=''; updateDots(false); document.getElementById('pin-error').textContent=''; }, 2500);
     }
   }
 </script>
