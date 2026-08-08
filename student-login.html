@@ -1,2 +1,154 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Student Sign In | NCLEX Success Center</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui;background:#f0f2f8;color:#0f172a}.card{width:min(380px,calc(100% - 40px));background:#fff;border-radius:20px;padding:32px;box-shadow:0 18px 48px #0f172a22}h1{margin:0 0 8px;font-size:24px}p{color:#64748b;line-height:1.5}input,button{box-sizing:border-box;width:100%;padding:12px;border-radius:10px;font:inherit}input{margin:8px 0;border:1px solid #cbd5e1}button{margin-top:12px;border:0;background:#0d9488;color:#fff;font-weight:700;cursor:pointer}.error{min-height:20px;color:#dc2626;font-size:14px;margin-top:10px}</style></head><body><main class="card"><h1>Student sign in</h1><p>Use the email and password provided by Study with Madison, RN.</p><input id="email" type="email" autocomplete="email" placeholder="Email"><input id="password" type="password" autocomplete="current-password" placeholder="Password"><button id="submit">Sign in</button><div class="error" id="error"></div></main><script>const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');const requestedNext=new URLSearchParams(location.search).get('next');document.getElementById('submit').onclick=async()=>{const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;const{data,error}=await db.auth.signInWithPassword({email,password});if(error){document.getElementById('error').textContent='Unable to sign in. Check your email and password.';return}const{data:student}=await db.from('students').select('name').eq('auth_user_id',data.user.id).maybeSingle();const destinations={'Alyssa Dababneh':'alyssa-hub.html','Ahmed Bule':'ahmed-hub.html','Courtney Stewart':'courtney-hub.html','Kyle Batacan':'kyle-hub.html'};location.replace(requestedNext||destinations[student?.name]||'home.html')};</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In · NCLEX Success Center</title>
+  <style>
+    :root { --navy:#10233d; --navy-deep:#081728; --teal:#21b6a8; --ink:#17263a; --muted:#65758a; --line:#dce5ed; --paper:#ffffff; --wash:#eef4f7; --danger:#b4233a; }
+    * { box-sizing:border-box; }
+    body { min-height:100vh; margin:0; display:grid; place-items:center; padding:28px; color:var(--ink); background:radial-gradient(circle at top right,#d7f3ef 0,transparent 32%),linear-gradient(135deg,#f8fbfc,#eaf1f5); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .shell { width:min(100%,1020px); min-height:610px; display:grid; grid-template-columns:1.05fr .95fr; overflow:hidden; border:1px solid rgba(16,35,61,.08); border-radius:28px; background:var(--paper); box-shadow:0 24px 70px rgba(16,35,61,.17); }
+    .welcome { position:relative; padding:54px; overflow:hidden; color:#fff; background:linear-gradient(155deg,var(--navy),var(--navy-deep)); }
+    .welcome::after { content:""; position:absolute; right:-130px; bottom:-160px; width:390px; height:390px; border:1px solid rgba(255,255,255,.12); border-radius:50%; box-shadow:0 0 0 44px rgba(255,255,255,.035),0 0 0 88px rgba(255,255,255,.025); }
+    .brand { display:flex; align-items:center; gap:11px; font-size:14px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+    .brand-mark { display:grid; place-items:center; width:34px; height:34px; border-radius:10px; color:var(--navy); background:var(--teal); font-family:Georgia,serif; font-size:17px; }
+    .eyebrow { margin:92px 0 13px; color:#8de4d9; font-size:12px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    h1 { max-width:430px; margin:0; font-family:Georgia,"Times New Roman",serif; font-size:clamp(36px,4vw,51px); line-height:1.06; letter-spacing:-.035em; }
+    .intro { max-width:410px; margin:20px 0 32px; color:#d8e4ef; font-size:16px; line-height:1.65; }
+    .benefits { display:grid; gap:12px; position:relative; z-index:1; }
+    .benefit { display:flex; align-items:center; gap:11px; color:#e6f0f6; font-size:14px; }
+    .benefit-icon { display:grid; place-items:center; width:29px; height:29px; border:1px solid rgba(255,255,255,.17); border-radius:9px; background:rgba(255,255,255,.08); }
+    .panel { display:flex; flex-direction:column; justify-content:center; padding:54px; }
+    .panel h2 { margin:0 0 8px; font-family:Georgia,"Times New Roman",serif; font-size:29px; letter-spacing:-.025em; }
+    .panel-lead { margin:0 0 27px; color:var(--muted); font-size:14px; line-height:1.55; }
+    .notice { display:flex; gap:10px; align-items:flex-start; margin-bottom:24px; padding:13px 14px; border:1px solid #bce8e2; border-radius:12px; color:#155b58; background:#effcf9; font-size:13px; line-height:1.48; }
+    .notice strong { display:block; margin-bottom:2px; color:#0d4544; }
+    form { display:grid; gap:16px; }
+    label { display:grid; gap:7px; color:#42536a; font-size:12px; font-weight:800; letter-spacing:.025em; }
+    input { width:100%; min-height:50px; padding:13px 14px; border:1px solid var(--line); border-radius:11px; outline:none; color:var(--ink); background:#fff; font:15px inherit; transition:border .15s,box-shadow .15s; }
+    input:focus { border-color:var(--teal); box-shadow:0 0 0 4px rgba(33,182,168,.14); }
+    .password-wrap { position:relative; }
+    .password-wrap input { padding-right:66px; }
+    .toggle { position:absolute; top:50%; right:10px; transform:translateY(-50%); padding:6px 8px; border:0; border-radius:7px; color:#31566a; background:transparent; font:700 12px inherit; cursor:pointer; }
+    .toggle:hover { background:#edf4f6; }
+    .submit { min-height:52px; margin-top:3px; border:0; border-radius:11px; color:#fff; background:var(--navy); box-shadow:0 8px 16px rgba(16,35,61,.18); font:800 15px inherit; cursor:pointer; transition:transform .15s,background .15s; }
+    .submit:hover { background:#183557; transform:translateY(-1px); }
+    .submit:disabled { cursor:wait; opacity:.72; transform:none; }
+    .status { min-height:20px; margin:2px 0 0; font-size:13px; line-height:1.45; }
+    .status.error { color:var(--danger); }
+    .status.info { color:#176c67; }
+    .help { margin:25px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.55; }
+    .help a { color:#176c67; font-weight:800; text-decoration:none; }
+    .help a:hover { text-decoration:underline; }
+    @media (max-width:760px) { body { padding:16px; } .shell { min-height:0; grid-template-columns:1fr; border-radius:22px; } .welcome { padding:32px 30px; } .eyebrow { margin:39px 0 10px; } .intro,.benefits { display:none; } h1 { font-size:34px; } .panel { padding:34px 30px; } }
+  </style>
+</head>
+<body>
+  <main class="shell" aria-labelledby="page-title">
+    <section class="welcome">
+      <div class="brand"><span class="brand-mark">M</span> Study with Madison, RN</div>
+      <p class="eyebrow">NCLEX Success Center</p>
+      <h1 id="page-title">Your personalized study hub starts here.</h1>
+      <p class="intro">Sign in to see your study plan, assigned learning modules, diagnostic progress, and updates from Madison.</p>
+      <div class="benefits" aria-label="What is inside your student hub">
+        <div class="benefit"><span class="benefit-icon">✓</span> Personalized study plan</div>
+        <div class="benefit"><span class="benefit-icon">✓</span> Assigned NCLEX modules and practice</div>
+        <div class="benefit"><span class="benefit-icon">✓</span> Progress and tutor updates in one place</div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="sign-in-title">
+      <h2 id="sign-in-title">Welcome back</h2>
+      <p class="panel-lead">Use the email connected to your NCLEX Success Center account.</p>
+      <div class="notice">
+        <span aria-hidden="true">🔐</span>
+        <div><strong>Temporary password</strong>Use the last 4 digits of your phone number — the same PIN you have been using.</div>
+      </div>
+      <form id="login-form">
+        <label>Email address
+          <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+        </label>
+        <label>Password
+          <span class="password-wrap">
+            <input id="password" type="password" autocomplete="current-password" placeholder="Enter your temporary password" required>
+            <button class="toggle" id="password-toggle" type="button" aria-label="Show password">Show</button>
+          </span>
+        </label>
+        <button class="submit" id="submit" type="submit">Open my study hub</button>
+        <p class="status" id="status" aria-live="polite"></p>
+      </form>
+      <p class="help">Having trouble signing in? <a href="mailto:studywithmadisonrn@gmail.com?subject=NCLEX%20Success%20Center%20sign-in%20help">Email Madison for help</a>.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co', 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const requestedNext = new URLSearchParams(location.search).get('next');
+    const destinations = {
+      'Alyssa Dababneh': 'alyssa-hub.html',
+      'Ahmed Bule': 'ahmed-hub.html',
+      'Courtney Stewart': 'courtney-hub.html',
+      'Kyle Batacan': 'kyle-hub.html'
+    };
+    const form = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitButton = document.getElementById('submit');
+    const status = document.getElementById('status');
+    const passwordToggle = document.getElementById('password-toggle');
+
+    function setStatus(message, type = '') {
+      status.textContent = message;
+      status.className = `status ${type}`.trim();
+    }
+
+    async function openStudentHub(user) {
+      setStatus('Opening your study hub…', 'info');
+      const { data: student, error } = await db
+        .from('students')
+        .select('name')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      const destination = student && destinations[student.name];
+      if (error || !destination) {
+        await db.auth.signOut();
+        setStatus('This email is not assigned to a student hub. Please contact Madison for help.', 'error');
+        return;
+      }
+      location.replace(requestedNext === destination ? requestedNext : destination);
+    }
+
+    passwordToggle.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      passwordToggle.textContent = isHidden ? 'Hide' : 'Show';
+      passwordToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      submitButton.textContent = 'Signing in…';
+      setStatus('');
+      const { data, error } = await db.auth.signInWithPassword({
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      });
+      if (error || !data.user) {
+        setStatus('Unable to sign in. Check your email and temporary password, then try again.', 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Open my study hub';
+        return;
+      }
+      await openStudentHub(data.user);
+    });
+
+    (async () => {
+      const { data: { session } } = await db.auth.getSession();
+      if (session) await openStudentHub(session.user);
+    })();
+  </script>
+</body>
+</html>
