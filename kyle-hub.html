@@ -507,7 +507,7 @@
   async function checkPin() {
     // PIN 9587 verified locally first for speed, then confirm via Supabase
     const { data, error } = await sbClient.from('students').select('id, pin').eq('name', 'Kyle').single();
-    if (!error && data && data.pin === pinBuffer) {
+    if (!error && data && String(data.pin) === pinBuffer) {
       localStorage.setItem('nclex_sid_kyle', data.id);
       unlockHub(data.id, 'Kyle');
     } else {
