@@ -6,7 +6,7 @@
   <title>NCLEX-RN Adaptive Quiz · 2026 Blueprint</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>\n  <script src="diagnostic-question-expansion.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; }
@@ -19,7 +19,7 @@
     const { useState } = React;
 
 
-// ─── QUESTION BANK (50 items) ─────────────────────────────────────────────────
+// ─── QUESTION BANK (150 items) ────────────────────────────────────────────────
 const QUESTION_BANK = [
 
   // ══ SAFE & EFFECTIVE CARE ENVIRONMENT — Management of Care ══
@@ -200,9 +200,9 @@ const QUESTION_BANK = [
 
   // ══ PHYSIOLOGICAL INTEGRITY — Reduction of Risk Potential ══
   { id:"rr1", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
-    stem:"A nurse is reviewing morning labs for a client on digoxin. Which finding requires holding the medication and contacting the provider?",
-    options:["Serum potassium of 4.2 mEq/L","Serum sodium of 138 mEq/L","Serum digoxin level of 2.4 ng/mL","BUN of 18 mg/dL"],
-    correct:[2], rationale:{ correct:"Therapeutic digoxin is 0.5–2.0 ng/mL. A level of 2.4 ng/mL is toxic — hold and notify.", wrong:["Potassium 4.2 is normal.","Sodium 138 is normal.","BUN 18 is normal."]}},
+    stem:"While assessing a peripheral IV site, the nurse notes coolness, pallor, swelling, and a slowed infusion. Which complication does the nurse suspect?",
+    options:["Infiltration","Phlebitis","Extravasation of a vesicant","Local infection"],
+    correct:[0], rationale:{correct:"Coolness, pallor, swelling, and slowed infusion are classic findings of IV infiltration. Stop the infusion and follow facility protocol.",wrong:["Phlebitis usually causes warmth, redness, and tenderness along the vein.","Extravasation involves a vesicant medication and requires specific antidote and protocol considerations.","Local infection commonly produces redness, warmth, drainage, or fever rather than cool pallor."]}},
 
   { id:"rr2", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
     stem:"A nurse assesses a client post-thyroidectomy and notes stridor, hoarseness, and tingling around the mouth. Which complication does the nurse suspect?",
@@ -309,7 +309,7 @@ const QUESTION_BANK = [
         options:["Administer aspirin 325 mg PO as ordered","Apply supplemental oxygen to maintain SpO2 >94%","Prepare the client for emergent PCI","Encourage the client to ambulate to prevent DVT","Administer morphine IV for pain as ordered","Restrict IV fluids to prevent volume overload"],
         correct:[0,1,2,4], rationale:"Aspirin (antiplatelet), oxygen (treat hypoxemia), emergent PCI (reperfusion therapy), and morphine (reduce oxygen demand/pain) are all appropriate for STEMI management. Ambulation is contraindicated in acute STEMI. Fluid restriction is not appropriate — this client may need volume support given hypotension."}
     ]}
-];
+,\n  ...window.DIAGNOSTIC_EXPANSION\n];
 
 
 const REMEDIATION_BANK = [
