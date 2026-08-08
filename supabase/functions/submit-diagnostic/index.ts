@@ -1,4 +1,5 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { withSupabase } from 'jsr:@supabase/server@^1';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': 'https://madisondvahle-lab.github.io',
@@ -6,59 +7,81 @@ const corsHeaders = {
   'Content-Type': 'application/json',
 };
 
-const json = (body: Record<string, unknown>, status = 200) =>
+const reply = (body: object, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: corsHeaders });
 
-Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
-
-  try {
-    const body = await request.json();
-    const name = String(body.fullName ?? '').trim();
-    const email = String(body.email ?? '').trim().toLowerCase();
-    const consent = body.consentToContact === true;
-    const score = Number(body.overallScore);
-    const categoryScores = body.categoryScores ?? {};
-    const turnstileToken = String(body.turnstileToken ?? '');
-
-    if (name.length < 2 || !email.includes('@') || !consent || !Number.isFinite(score) || !turnstileToken) {
-      return json({ error: 'Please complete your name, email, and consent before viewing results.' }, 400);
+export default {
+  fetch: withSupabase({ auth: 'none' }, async (request) => {
+    if (request.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
     }
 
-    const secret = Deno.env.get('TURNSTILE_SECRET_KEY');
-    if (!secret) return json({ error: 'The readiness check is not configured yet.' }, 503);
-    const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ secret, response: turnstileToken, remoteip: request.headers.get('x-forwarded-for') ?? '' }),
-    });
-    const verificationResult = await verification.json();
-    if (!verification.ok || verificationResult.success !== true) {
-      return json({ error: 'Please refresh the security check and try again.' }, 403);
+    if (request.method !== 'POST') {
+      return reply({ error: 'Method not allowed.' }, 405);
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    try {
+      const body = await request.json();
+      const name = String(body.fullName ?? '').trim();
+      const email = String(body.email ?? '').trim().toLowerCase();
+      const score = Number(body.overallScore);
+      const token = String(body.turnstileToken ?? '');
 
-    const readinessBand = score < 45 ? 'building_foundation' : score < 65 ? 'developing' : score < 80 ? 'on_track' : 'strong';
-    const { error } = await supabase.from('diagnostic_leads').insert({
-      full_name: name,
-      email,
-      nclex_target_date: body.nclexTargetDate || null,
-      overall_score: score,
-      category_scores: categoryScores,
-      readiness_band: readinessBand,
-      consent_to_contact: true,
-    });
-    if (error) throw error;
+      if (
+        name.length < 2 ||
+        !email.includes('@') ||
+        body.consentToContact !== true ||
+        !Number.isFinite(score) ||
+        !token
+      ) {
+        return reply({ error: 'Please complete the form and security check.' }, 400);
+      }
 
-    // Add Resend (or another transactional-email provider) here to send Madison a lead alert.
-    return json({ readinessBand });
-  } catch (error) {
-    console.error(error);
-    return json({ error: 'We could not save your diagnostic right now. Please try again.' }, 500);
-  }
-});
+      const secret = Deno.env.get('TURNSTILE_SECRET_KEY');
+      if (!secret) {
+        return reply({ error: 'Security is not configured yet.' }, 503);
+      }
+
+      const verifyResponse = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ secret, response: token }),
+        },
+      );
+
+      const verification = await verifyResponse.json();
+      if (!verifyResponse.ok || verification.success !== true) {
+        return reply({ error: 'Please refresh the security check and try again.' }, 403);
+      }
+
+      let readinessBand = 'strong';
+      if (score < 45) readinessBand = 'building_foundation';
+      else if (score < 65) readinessBand = 'developing';
+      else if (score < 80) readinessBand = 'on_track';
+
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      );
+
+      const { error } = await supabase.from('diagnostic_leads').insert({
+        full_name: name,
+        email,
+        nclex_target_date: body.nclexTargetDate || null,
+        overall_score: score,
+        category_scores: body.categoryScores ?? {},
+        readiness_band: readinessBand,
+        consent_to_contact: true,
+      });
+
+      if (error) throw error;
+
+      return reply({ readinessBand });
+    } catch (error) {
+      console.error(error);
+      return reply({ error: 'We could not save your diagnostic right now.' }, 500);
+    }
+  }),
+};
