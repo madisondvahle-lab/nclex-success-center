@@ -247,6 +247,7 @@
 
 <main class="main">
 
+  <div id="diagnostic-section">
   <div class="section-label fade-up">📌 Your First Step</div>
 
   <div class="card fade-up">
@@ -304,6 +305,8 @@
     </div>
   </div>
 
+  </div><!-- end diagnostic-section -->
+
   <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
 
   <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
@@ -330,10 +333,6 @@
   </div>
 
   <div id="assigned-modules-area" style="margin-top:36px;"></div>
-  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
-  <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
-    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
-  </div>
 
 </main>
 
@@ -478,6 +477,14 @@
   }
 
   async function loadAndRenderModules(studentId) {
+    // Hide diagnostic section if student has already completed a diagnostic
+    const diagDone = localStorage.getItem('nclex_diag_complete_courtney') ||
+                     localStorage.getItem('diagnostic_completed');
+    if (diagDone) {
+      const diagSection = document.getElementById('diagnostic-section');
+      if (diagSection) diagSection.style.display = 'none';
+    }
+
     const { data } = await sbClient
       .from('student_module_access')
       .select('module_key, enabled')
@@ -485,7 +492,6 @@
     const accessMap = {};
     (data || []).forEach(r => { accessMap[r.module_key] = r.enabled; });
     renderAssignedModules(accessMap, 'assigned-modules-area');
-    renderCurriculumGrid(accessMap, 'curriculum-grid');
     localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
   }
 
