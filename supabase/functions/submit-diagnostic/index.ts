@@ -20,12 +20,24 @@ Deno.serve(async (request) => {
     const consent = body.consentToContact === true;
     const score = Number(body.overallScore);
     const categoryScores = body.categoryScores ?? {};
+    const turnstileToken = String(body.turnstileToken ?? '');
 
-    if (name.length < 2 || !email.includes('@') || !consent || !Number.isFinite(score)) {
+    if (name.length < 2 || !email.includes('@') || !consent || !Number.isFinite(score) || !turnstileToken) {
       return json({ error: 'Please complete your name, email, and consent before viewing results.' }, 400);
     }
 
-    // Add Cloudflare Turnstile validation here before launch. Keep the secret in Supabase secrets.
+    const secret = Deno.env.get('TURNSTILE_SECRET_KEY');
+    if (!secret) return json({ error: 'The readiness check is not configured yet.' }, 503);
+    const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret, response: turnstileToken, remoteip: request.headers.get('x-forwarded-for') ?? '' }),
+    });
+    const verificationResult = await verification.json();
+    if (!verification.ok || verificationResult.success !== true) {
+      return json({ error: 'Please refresh the security check and try again.' }, 403);
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
