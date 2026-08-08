@@ -118,7 +118,7 @@
     <div class="pin-dots">
       <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
       <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
-    </div>
+  
     <div class="pin-keypad">
       <button class="pin-key" onclick="pinKey('1')">1</button>
       <button class="pin-key" onclick="pinKey('2')">2</button>
@@ -131,10 +131,10 @@
       <button class="pin-key" onclick="pinKey('9')">9</button>
       <button class="pin-key" onclick="pinKey('0')" style="grid-column:2;">0</button>
       <button class="pin-key del" onclick="pinDel()">⌫</button>
-    </div>
+  
     <div class="pin-error" id="pin-error"></div>
     <div class="pin-hint">PIN provided by Madison 💙</div>
-  </div>
+
 </div>
 
 <header class="site-header">
@@ -145,11 +145,34 @@
 </header>
 
 <main class="main">
-  <div id="assigned-modules-area"><p style="text-align:center;padding:40px;color:#94a3b8;font-size:14px;">Loading your modules…</p></div>
-  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your Full 21-Module Curriculum</div>
-  <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
-    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
-  </div>
+  <div id="diagnostic-section">
+    <div class="section-label fade-up">📌 Your First Step</div>
+    <div class="card fade-up">
+      <div class="card-accent-sky"></div>
+      <div class="card-body">
+        <div class="module-header">
+          <div class="module-title-group">
+            <div class="module-emoji-wrap emoji-sky">🩺</div>
+            <div>
+              <div class="module-eyebrow eyebrow-sky">Start Here</div>
+              <div class="module-name">Full NCLEX Diagnostic</div>
+            </div>
+          </div>
+          <span class="badge badge-yellow">📌 Assigned</span>
+        </div>
+        <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas. The engine adjusts difficulty in real time based on your responses.</p>
+        <div class="module-meta">
+          <span class="meta-pill">🔄 Adaptive CAT Engine</span>
+          <span class="meta-pill">✏️ All Content Areas</span>
+          <span class="meta-pill">📊 35+ Questions</span>
+          <span class="meta-pill">⏱️ ~45 Minutes</span>
+        </div>
+        <a href="diagnostic.html?start=1" class="start-btn btn-sky">Start My Diagnostic →</a>
+      </div>
+    </div>
+  </div><!-- end diagnostic-section -->
+
+  <div id="assigned-modules-area" style="margin-top:36px;"></div>
 </main>
 
 <footer class="site-footer">
@@ -210,15 +233,15 @@
             <div class="module-title-group">
               <div class="module-emoji-wrap ${cc.emoji}">${c.emoji}</div>
               <div><div class="module-eyebrow ${cc.eyebrow}">Module ${c.num}</div><div class="module-name">${c.name}</div></div>
-            </div>
+          
             <span class="badge badge-yellow">📌 Assigned This Week</span>
-          </div>
+        
           <p class="module-desc">${c.desc}</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             ${c.guideUrl ? `<a href="${c.guideUrl}" class="start-btn ${cc.btn}" style="flex:1;">📖 Study Guide →</a>` : ''}
             ${c.quizUrl  ? `<a href="${c.quizUrl}?start=1" class="start-btn ${cc.btn}" style="flex:1;">🎯 Start Quiz →</a>` : ''}
-          </div>
-        </div>
+        
+      
       </div>`;
     if (completed.length) {
       html += `<div class="section-label" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
@@ -231,15 +254,15 @@
               <div class="module-title-group">
                 <div class="module-emoji-wrap ${mc.emoji}">${m.emoji}</div>
                 <div><div class="module-eyebrow ${mc.eyebrow}">Module ${m.num}</div><div class="module-name">${m.name}</div></div>
-              </div>
+            
               <span class="badge ${mc.badge}">✅ Completed</span>
-            </div>
+          
             <p class="module-desc" style="margin-bottom:14px;">${m.desc}</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               ${m.guideUrl ? `<a href="${m.guideUrl}" class="start-btn btn-outline" style="font-size:14px;flex:1;">📖 Review Guide →</a>` : ''}
               ${m.quizUrl  ? `<a href="${m.quizUrl}?start=1" class="start-btn btn-outline" style="font-size:14px;flex:1;">🎯 Retake Quiz →</a>` : ''}
-            </div>
-          </div>
+          
+        
         </div>`;
       });
     }
@@ -267,11 +290,16 @@
   }
 
   async function loadModules(studentId) {
+    const diagDone = localStorage.getItem('nclex_diag_complete_alyssa') ||
+                     localStorage.getItem('diagnostic_completed');
+    if (diagDone) {
+      const s = document.getElementById('diagnostic-section');
+      if (s) s.style.display = 'none';
+    }
     const { data } = await sbClient.from('student_module_access').select('module_key,enabled').eq('student_id', studentId);
     const accessMap = {};
     (data||[]).forEach(r => { accessMap[r.module_key] = r.enabled; });
     renderAssignedModules(accessMap);
-    renderCurriculumGrid(accessMap);
     localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
   }
 
