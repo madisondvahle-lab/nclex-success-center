@@ -91,6 +91,15 @@
 
     async function openStudentHub(user) {
       setStatus('Opening your study hub…', 'info');
+      const { data: admin } = await db
+        .from('app_admins')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (admin) {
+        location.replace('madison-leads.html');
+        return;
+      }
       const { data: student, error } = await db
         .from('students')
         .select('id')
