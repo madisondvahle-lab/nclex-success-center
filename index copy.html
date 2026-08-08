@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCLEX-RN Adaptive Quiz · 2026 Blueprint</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; }
+    button:focus { outline: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+
+// ─── QUESTION BANK (65 questions) ─────────────────────────────────────────────
+const QUESTION_BANK = [
+
+  // ══ SAFE & EFFECTIVE CARE ENVIRONMENT — Management of Care ══
+  { id:"m1", type:"mcq", difficulty:1, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A registered nurse is preparing to delegate tasks at the start of the shift. Which task is most appropriate to delegate to an unlicensed assistive personnel (UAP)?",
+    options:["Assessing bilateral breath sounds after bronchodilator therapy","Ambulating a stable post-op day 2 client to the hallway","Educating a diabetic client on insulin self-injection technique","Interpreting a client's telemetry rhythm change"],
+    correct:[1], rationale:{ correct:"Ambulating a stable post-op day 2 client is a routine task requiring no clinical judgment — appropriate for UAP.", wrong:["Assessing breath sounds requires clinical interpretation — RN only.","Client education requires nursing judgment — not delegable to UAP.","Telemetry interpretation requires clinical judgment — RN only."]}},
+
+  { id:"m2", type:"mcq", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A nurse is using the SBAR communication tool to report a change in a client's condition to the provider. Which component addresses the nurse's clinical assessment of the problem?",
+    options:["Situation","Background","Assessment","Recommendation"],
+    correct:[2], rationale:{ correct:"Assessment is the nurse's clinical interpretation of what is happening — the 'A' in SBAR.", wrong:["Situation describes what is happening right now (the problem statement).","Background provides relevant clinical history.","Recommendation is the nurse's request for action."]}},
+
+  { id:"m3", type:"mcq", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A charge nurse observes a new graduate RN performing a sterile dressing change using incorrect technique. What is the charge nurse's priority action?",
+    options:["Document the incident and address it at the next staff meeting","Immediately intervene and assist the nurse to complete the dressing change correctly","Complete an incident report and notify the manager","Ask the client if they noticed the error"],
+    correct:[1], rationale:{ correct:"Client safety is the immediate priority — the charge nurse must intervene to correct the technique before harm occurs.", wrong:["Delaying until a staff meeting leaves the client at risk for infection.","An incident report may be completed later, but immediate client safety comes first.","Asking the client is inappropriate and does not address the safety concern."]}},
+
+  { id:"m4", type:"mcq", difficulty:3, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A nurse is caring for four clients. Which client should be assigned to the traveling (agency) nurse?",
+    options:["A client with COPD admitted 2 days ago, stable on 2L O2 via nasal cannula","A client admitted this morning with new-onset chest pain awaiting cardiac workup","A client post-op day 1 following a coronary artery bypass graft","A client with diabetic ketoacidosis receiving an insulin drip"],
+    correct:[0], rationale:{ correct:"The stable COPD client on 2L O2 is the most predictable assignment — appropriate for an agency nurse unfamiliar with the unit's protocols.", wrong:["A new chest pain admission requires assessment by a nurse familiar with the unit's cardiac protocols.","A post-op CABG day 1 client has high acuity and complex needs — not appropriate for an agency nurse.","A client on an insulin drip requires close titration and familiarity with unit protocols."]}},
+
+  { id:"m5", type:"mcq", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A client tells the nurse, 'I do not want my family to know I have been diagnosed with HIV.' What is the nurse's best response?",
+    options:["'I understand, but your family needs to know for your safety.'","'Your information is confidential and will not be shared without your consent.'","'I will need to tell your emergency contact if your condition worsens.'","'You should tell your family yourself so they can support you.'"],
+    correct:[1], rationale:{ correct:"Client confidentiality is a legal and ethical right — the nurse must protect this information unless legally required to disclose.", wrong:["Overriding the client's wishes violates HIPAA and patient rights.","Emergency contact notification does not apply here and is not legally required for HIV status.","Encouraging disclosure is appropriate over time, but the immediate response must affirm confidentiality."]}},
+
+  { id:"m6", type:"sata", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    stem:"A nurse is preparing to perform a surgical time-out before a procedure. Select ALL components that must be verified during the time-out.",
+    options:["Client identity using two identifiers","Client's insurance information","Correct surgical site and side","Type of procedure to be performed","Surgeon's board certification","Correct client position for the procedure"],
+    correct:[0,2,3,5], rationale:{ correct:"The surgical time-out (Universal Protocol) requires verification of client identity, correct site/side, procedure type, and positioning.", wrong:["Insurance information is not part of the surgical time-out safety protocol.","Surgeon board certification is credentialed during privileging, not the time-out."]}},
+
+  // ══ SAFE & EFFECTIVE — Safety & Infection Prevention ══
+  { id:"si1", type:"mcq", difficulty:1, blueprint:"Safe & Effective Care Environment", category:"Safety & Infection Prevention",
+    stem:"A nurse is caring for a client with active pulmonary tuberculosis. Which type of transmission-based precaution is required?",
+    options:["Contact precautions","Droplet precautions","Airborne precautions","Reverse isolation"],
+    correct:[2], rationale:{ correct:"TB is transmitted via airborne droplet nuclei (<5 microns) — airborne precautions with a negative-pressure room and N95 respirator are required.", wrong:["Contact precautions are for direct-contact organisms like MRSA or C. diff.","Droplet precautions are for larger respiratory droplets (influenza, pertussis) — not TB.","Reverse isolation protects immunocompromised clients from the environment."]}},
+
+  { id:"si2", type:"mcq", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Safety & Infection Prevention",
+    stem:"A nurse is preparing to insert a urinary catheter. After opening the sterile field and adding supplies, the nurse's hand accidentally touches the sterile drape. What should the nurse do?",
+    options:["Continue — the drape is not part of the sterile field","Document the event and proceed carefully","Discard the setup and obtain a new sterile catheter kit","Clean the drape with a sterile alcohol wipe and continue"],
+    correct:[2], rationale:{ correct:"Once a sterile field is contaminated, the entire setup must be discarded and a new sterile kit obtained.", wrong:["The sterile drape is the border of the sterile field — contamination of it compromises the entire setup.","Documentation without replacing the kit does not restore sterility.","Alcohol wipes do not re-sterilize a contaminated sterile field."]}},
+
+  { id:"si3", type:"mcq", difficulty:1, blueprint:"Safe & Effective Care Environment", category:"Safety & Infection Prevention",
+    stem:"A nurse is caring for a client with Clostridioides difficile (C. diff) diarrhea. Which hand hygiene method is most effective before exiting the room?",
+    options:["Alcohol-based hand rub for 20 seconds","Soap and water handwashing for at least 20 seconds","Chlorhexidine hand wipe followed by hand rub","Either soap or alcohol-based hand rub — both are equally effective"],
+    correct:[1], rationale:{ correct:"C. diff spores are NOT killed by alcohol-based hand rubs — soap and water is required to physically remove the spores.", wrong:["Alcohol-based hand rubs are ineffective against C. diff spores.","Chlorhexidine wipes do not adequately remove C. diff spores.","They are not equally effective — alcohol rubs fail against C. diff."]}},
+
+  { id:"si4", type:"mcq", difficulty:2, blueprint:"Safe & Effective Care Environment", category:"Safety & Infection Prevention",
+    stem:"A nurse is caring for four clients. Which client requires contact precautions?",
+    options:["A client with active pulmonary tuberculosis","A client with influenza","A client with a wound infected with methicillin-resistant Staphylococcus aureus (MRSA)","A client with meningococcal meningitis"],
+    correct:[2], rationale:{ correct:"MRSA is transmitted by direct or indirect contact — contact precautions (gown and gloves) are required.", wrong:["TB requires airborne precautions.","Influenza requires droplet precautions.","Meningococcal meningitis requires droplet precautions."]}},
+
+  // ══ HEALTH PROMOTION & MAINTENANCE ══
+  { id:"hp1", type:"mcq", difficulty:1, blueprint:"Health Promotion & Maintenance", category:"Health Promotion",
+    stem:"A nurse provides discharge teaching to a client who is 8 weeks pregnant. Which statement requires further teaching?",
+    options:["'I will take my prenatal vitamins with a full glass of water daily.'","'I can have one or two glasses of wine on special occasions.'","'I should call my provider if I notice decreased fetal movement after 28 weeks.'","'I will avoid eating raw sushi during my pregnancy.'"],
+    correct:[1], rationale:{ correct:"No amount of alcohol is safe in pregnancy — any consumption risks fetal alcohol spectrum disorder.", wrong:["Daily prenatal vitamins are correct — no teaching needed.","Reporting decreased fetal movement after 28 weeks shows correct understanding.","Avoiding raw sushi is correct due to listeria and mercury risk."]}},
+
+  { id:"hp2", type:"mcq", difficulty:1, blueprint:"Health Promotion & Maintenance", category:"Health Screening",
+    stem:"A nurse is teaching a 50-year-old client with no family history of colorectal cancer about recommended cancer screenings. Which statement is correct?",
+    options:["Colonoscopy is recommended every 5 years starting at age 45","Colorectal cancer screening should begin at age 50 with annual fecal occult blood testing only","Average-risk individuals should begin colorectal cancer screening at age 45","Screening is only recommended if the client has symptoms"],
+    correct:[2], rationale:{ correct:"The American Cancer Society recommends colorectal cancer screening beginning at age 45 for average-risk individuals.", wrong:["Colonoscopy is recommended every 10 years (not 5) for average-risk individuals.","Multiple screening modalities are acceptable — annual FOBT is just one option.","Screening is preventive — waiting for symptoms defeats its purpose."]}},
+
+  { id:"hp3", type:"mcq", difficulty:2, blueprint:"Health Promotion & Maintenance", category:"Developmental Stages",
+    stem:"A nurse is assessing a 15-month-old child during a well-child visit. Which finding should the nurse report to the provider as a developmental concern?",
+    options:["The child uses 5–10 words","The child walks independently","The child does not yet use a spoon","The child does not respond to their name when called"],
+    correct:[3], rationale:{ correct:"Responding to one's name is a milestone expected by 9–12 months. Failure at 15 months is a red flag for autism spectrum disorder or hearing loss.", wrong:["5–10 words at 15 months is appropriate — milestone is at least 1 word by 12 months.","Independent walking at 15 months is normal — milestone is by 15 months.","Using a spoon independently is typically mastered between 15–18 months."]}},
+
+  { id:"hp4", type:"mcq", difficulty:2, blueprint:"Health Promotion & Maintenance", category:"Health Promotion",
+    stem:"A nurse is teaching a client about a low-sodium diet. Which meal choice indicates the client understands the teaching?",
+    options:["Canned chicken noodle soup with crackers","Grilled salmon with steamed broccoli and brown rice","A deli turkey sandwich on whole wheat bread","Cottage cheese with canned fruit cocktail"],
+    correct:[1], rationale:{ correct:"Fresh grilled salmon with steamed vegetables and whole grains is naturally low in sodium — an appropriate choice.", wrong:["Canned soups are very high in sodium — often 800–1200 mg per serving.","Deli meats are heavily processed and high in sodium.","Canned fruits are often packed in syrups and may contain added sodium."]}},
+
+  { id:"hp5", type:"sata", difficulty:2, blueprint:"Health Promotion & Maintenance", category:"Health Promotion",
+    stem:"A nurse is teaching a client about reducing cardiovascular risk factors. Select ALL modifiable risk factors the nurse should address.",
+    options:["Hypertension","Family history of heart disease","Cigarette smoking","Age over 65","Sedentary lifestyle","Hyperlipidemia"],
+    correct:[0,2,4,5], rationale:{ correct:"Hypertension, smoking, sedentary lifestyle, and hyperlipidemia are all modifiable through lifestyle changes and/or medications.", wrong:["Family history is a non-modifiable risk factor — it cannot be changed.","Age is a non-modifiable risk factor."]}},
+
+  { id:"hp6", type:"mcq", difficulty:3, blueprint:"Health Promotion & Maintenance", category:"Ante/Intra/Postpartum",
+    stem:"A nurse is assessing a client at 36 weeks gestation who reports a sudden onset of painless, bright red vaginal bleeding. Which condition does the nurse suspect?",
+    options:["Abruptio placentae","Placenta previa","Preterm labor","Ruptured ectopic pregnancy"],
+    correct:[1], rationale:{ correct:"Painless bright red vaginal bleeding in the third trimester is the classic presentation of placenta previa — the placenta covers the cervical os.", wrong:["Abruptio placentae typically presents with painful, dark bleeding and uterine rigidity.","Preterm labor presents with contractions — not painless bleeding.","Ectopic pregnancy rupture occurs in the first trimester, not at 36 weeks."]}},
+
+  // ══ PSYCHOSOCIAL INTEGRITY ══
+  { id:"ps1", type:"mcq", difficulty:2, blueprint:"Psychosocial Integrity", category:"Coping & Adaptation",
+    stem:"A nurse is caring for a client newly diagnosed with type 1 diabetes who states, 'I just don't believe this is really happening to me.' Which response is most therapeutic?",
+    options:["'Don't worry — many people live full lives with diabetes.'","'It sounds like this news is really difficult to process.'","'You need to start learning about insulin injections today.'","'Let me get the diabetes educator to speak with you right away.'"],
+    correct:[1], rationale:{ correct:"Reflecting the client's emotional experience demonstrates therapeutic communication and acknowledges feelings without dismissing or redirecting.", wrong:["Minimizing feelings is non-therapeutic.","Focusing on education ignores the emotional state — teaching is ineffective during denial.","Consulting the educator is appropriate later, but the immediate priority is acknowledging feelings."]}},
+
+  { id:"ps2", type:"mcq", difficulty:2, blueprint:"Psychosocial Integrity", category:"Mental Health Concepts",
+    stem:"A client with schizophrenia tells the nurse, 'The television is sending me secret messages.' How should the nurse document this finding?",
+    options:["'Client reports delusions of reference — TV sends secret messages.'","'Client is delusional and psychotic.'","'Client states the television is sending secret messages.'","'Client appears to be experiencing a hallucination.'"],
+    correct:[2], rationale:{ correct:"Objective documentation uses the client's exact words in quotes — it avoids interpretation and is legally defensible.", wrong:["While 'delusion of reference' is clinically accurate, quoting the client is more objective and appropriate.", "Labeling the client as 'delusional and psychotic' is judgmental and not objective documentation.","The described phenomenon is a delusion (false fixed belief), not a hallucination (false sensory perception)."]}},
+
+  { id:"ps3", type:"mcq", difficulty:3, blueprint:"Psychosocial Integrity", category:"Crisis Intervention",
+    stem:"A nurse is triaging calls at a mental health crisis line. A caller states, 'I have a loaded gun in my hand and I'm thinking about ending it.' What is the nurse's priority action?",
+    options:["Assess the caller's support system and encourage them to call a trusted friend","Ask the caller to describe the events that led to this crisis","Direct the caller to emergency services and stay on the line","Schedule a follow-up appointment with a mental health provider"],
+    correct:[2], rationale:{ correct:"This is an imminent safety emergency — the caller has means, plan, and intent. The priority is immediate emergency services while maintaining connection.", wrong:["Assessing support systems is not the priority when there is imminent danger.","Exploring history delays immediate life-saving action.","Scheduling follow-up is entirely inappropriate for an active suicidal emergency."]}},
+
+  { id:"ps4", type:"mcq", difficulty:2, blueprint:"Psychosocial Integrity", category:"Therapeutic Communication",
+    stem:"A client who lost their spouse 3 days ago says, 'I keep expecting to hear his key in the door.' Which response is most therapeutic?",
+    options:["'That is a normal part of grieving — it will get easier with time.'","'Have you considered speaking with a grief counselor?'","'It must be very hard not having him here. Tell me more about that.'","'You need to give yourself permission to heal and move forward.'"],
+    correct:[2], rationale:{ correct:"This response acknowledges the client's pain and invites them to share more — it is empathetic and open-ended.", wrong:["Telling a grieving person it 'will get easier' minimizes their immediate pain.", "Redirecting to a counselor, while potentially appropriate, blocks the therapeutic communication opportunity.", "Telling a 3-day widow to 'move forward' is dismissive and inappropriate."]}},
+
+  { id:"ps5", type:"mcq", difficulty:2, blueprint:"Psychosocial Integrity", category:"Mental Health Concepts",
+    stem:"A client with anorexia nervosa has a BMI of 15.5 and is admitted for medical stabilization. Which nursing priority takes precedence?",
+    options:["Begin therapeutic communication to explore the causes of the eating disorder","Monitor and correct electrolyte imbalances","Implement a structured eating program immediately","Obtain a dietary consult"],
+    correct:[1], rationale:{ correct:"Physiological stability is the priority — severe malnutrition causes life-threatening electrolyte imbalances (especially hypokalemia) that must be corrected first.", wrong:["Therapeutic communication is important but secondary to physiological stabilization.", "Refeeding must be done carefully to avoid refeeding syndrome — not immediately.", "Dietary consult is appropriate but not the first priority."]}},
+
+  { id:"ps6", type:"sata", difficulty:2, blueprint:"Psychosocial Integrity", category:"Therapeutic Communication",
+    stem:"A nurse is caring for a client who has been prescribed haloperidol. Select ALL findings that indicate the client may be experiencing extrapyramidal side effects (EPS).",
+    options:["Shuffling gait and muscle rigidity","Weight gain of 10 lbs in 2 weeks","Involuntary tongue movements and grimacing","Restlessness and inability to sit still","Dry mouth and urinary retention","Sustained involuntary muscle contractions causing abnormal postures"],
+    correct:[0,2,3,5], rationale:{ correct:"Shuffling gait/rigidity (pseudoparkinsonism), tardive dyskinesia (tongue/facial movements), akathisia (restlessness), and acute dystonia (muscle contractions) are all EPS.", wrong:["Weight gain is a metabolic side effect of antipsychotics, not EPS.","Dry mouth and urinary retention are anticholinergic effects, not EPS."]}},
+
+  // ══ PHYSIOLOGICAL INTEGRITY — Basic Care & Comfort ══
+  { id:"bc1", type:"mcq", difficulty:1, blueprint:"Physiological Integrity", category:"Basic Care & Comfort",
+    stem:"A nurse is caring for a client who is postoperative following abdominal surgery and reports pain of 7/10. The client's last analgesic was 4 hours ago and is due in 30 minutes. What is the nurse's best action?",
+    options:["Ask the client to wait 30 minutes until the medication is due","Reposition the client and apply distraction techniques while preparing to administer the medication at the scheduled time","Notify the provider that the current analgesic regimen is ineffective","Contact the provider to request a PRN dose now"],
+    correct:[1], rationale:{ correct:"Non-pharmacological comfort measures (repositioning, distraction) can be used now, while preparing to administer the scheduled analgesic on time — this is the most comprehensive response.", wrong:["Telling a client in pain to simply 'wait' is inadequate nursing care.","One report of pain at 7/10 doesn't immediately indicate regimen failure — first optimize current orders.","A PRN dose request is appropriate if the scheduled analgesic was just given — here, maximizing current orders is the priority."]}},
+
+  { id:"bc2", type:"mcq", difficulty:1, blueprint:"Physiological Integrity", category:"Basic Care & Comfort",
+    stem:"A nurse is caring for a client receiving nasogastric tube feedings. Which action prevents aspiration?",
+    options:["Administer feedings with the head of bed flat","Verify tube placement by auscultating air over the epigastrium","Maintain head of bed elevation at 30–45 degrees during and after feedings","Flush the tube with 10 mL of water before and after each feeding"],
+    correct:[2], rationale:{ correct:"Elevating the head of bed 30–45 degrees uses gravity to keep gastric contents from refluxing into the airway — the primary prevention for aspiration during tube feeding.", wrong:["Flat positioning greatly increases aspiration risk.","Auscultation of air is no longer considered a reliable method of confirming tube placement.","Flushing maintains tube patency but does not prevent aspiration."]}},
+
+  { id:"bc3", type:"sata", difficulty:2, blueprint:"Physiological Integrity", category:"Basic Care & Comfort",
+    stem:"A nurse is caring for a client with a new tracheostomy. Select ALL interventions the nurse should include in the plan of care.",
+    options:["Keep a spare tracheostomy tube of the same size at the bedside","Suction the airway every hour regardless of clinical assessment","Secure tracheostomy ties with one finger-width of slack","Humidify inspired air or oxygen","Change the inner cannula per facility protocol","Place the client in Trendelenburg during suctioning"],
+    correct:[0,2,3,4], rationale:{ correct:"A spare tube for emergencies, properly secured ties, humidification to prevent secretion crusting, and regular inner cannula changes all maintain airway safety.", wrong:["Suctioning should be based on clinical assessment — not on a fixed schedule.","Trendelenburg is contraindicated; semi-Fowler's or upright positioning is correct."]}},
+
+  { id:"bc4", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Basic Care & Comfort",
+    stem:"A nurse is caring for a client with a stage 3 pressure injury on the sacrum. Which intervention is the priority?",
+    options:["Apply a moisture barrier cream to the wound bed","Reposition the client every 2 hours","Irrigate the wound with povidone-iodine solution","Place a donut-shaped foam ring under the sacrum"],
+    correct:[1], rationale:{ correct:"Repositioning every 2 hours relieves pressure — the underlying cause of the injury. Offloading pressure is the priority intervention.", wrong:["Moisture barrier cream protects surrounding skin but does not address the cause of the injury.","Povidone-iodine is cytotoxic and destroys granulation tissue — contraindicated in wound care.","Donut rings concentrate pressure around the wound edges — actually worsen tissue damage."]}},
+
+  // ══ PHYSIOLOGICAL INTEGRITY — Pharmacological & Parenteral Therapies ══
+  { id:"ph1", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is caring for a client receiving IV heparin for pulmonary embolism. The aPTT returns at 180 seconds. What is the priority action?",
+    options:["Continue the infusion and reassess in 6 hours","Increase the infusion rate per protocol","Hold the infusion and notify the provider immediately","Administer protamine sulfate without waiting for orders"],
+    correct:[2], rationale:{ correct:"Therapeutic aPTT is 60–100 seconds. At 180 seconds the client is supratherapeutic with high hemorrhage risk — hold and notify.", wrong:["Continuing a supratherapeutic infusion risks life-threatening bleeding.","Increasing the rate compounds the risk.","Protamine sulfate requires a provider order."]}},
+
+  { id:"ph2", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is reviewing morning labs for a client on digoxin. Which finding requires holding the medication and contacting the provider?",
+    options:["Serum potassium of 4.2 mEq/L","Serum sodium of 138 mEq/L","Serum digoxin level of 2.4 ng/mL","BUN of 18 mg/dL"],
+    correct:[2], rationale:{ correct:"Therapeutic digoxin is 0.5–2.0 ng/mL. A level of 2.4 ng/mL is toxic — hold and notify.", wrong:["Potassium 4.2 is normal (3.5–5.0).","Sodium 138 is normal (136–145).","BUN 18 is normal (7–20)."]}},
+
+  { id:"ph3", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is caring for a client prescribed lithium carbonate for bipolar disorder. Which client statement requires immediate follow-up?",
+    options:["'I try to drink about 8 glasses of water a day.'","'I've been having a lot of diarrhea and my hands are shaking.'","'I take my medication with food to reduce nausea.'","'I had my lithium level checked last month — it was 0.9.'"],
+    correct:[1], rationale:{ correct:"Diarrhea causes sodium and fluid loss, which raises lithium levels. Tremors are a sign of toxicity. This client needs immediate lithium level assessment.", wrong:["Adequate hydration helps maintain stable lithium levels — appropriate behavior.","Taking lithium with food to reduce GI side effects is a correct strategy.","A level of 0.9 mEq/L is within the therapeutic range of 0.6–1.2 mEq/L."]}},
+
+  { id:"ph4", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A client is receiving vancomycin 1g IV. During the infusion, the nurse notes the client's face, neck, and upper chest are flushed and red. What is the nurse's priority action?",
+    options:["Administer diphenhydramine IV and continue the infusion","Stop the infusion and prepare for anaphylaxis treatment","Slow the infusion rate and monitor the client","Discontinue the IV line and notify the provider of a medication error"],
+    correct:[2], rationale:{ correct:"This is Red Man Syndrome — a rate-related reaction to vancomycin, not a true allergy. Slowing the infusion rate typically resolves the reaction.", wrong:["Diphenhydramine may be used as adjunct treatment but slowing the rate is the first intervention.","Red Man Syndrome is not anaphylaxis — it is a rate-related infusion reaction.","The IV line does not need to be discontinued — slowing the rate resolves the reaction."]}},
+
+  { id:"ph5", type:"sata", difficulty:2, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is preparing to administer a blood transfusion. Select ALL actions the nurse must perform before initiating the infusion.",
+    options:["Verify blood product with two licensed nurses at the bedside","Prime IV tubing with dextrose 5% in water","Obtain baseline vital signs","Ensure IV access with at least an 18-gauge catheter","Confirm client identity using two identifiers","Start the infusion at the fastest rate to prevent product wastage"],
+    correct:[0,2,3,4], rationale:{ correct:"Two-nurse verification, baseline vitals, 18G or larger catheter, and two-identifier client verification are all required before blood transfusion.", wrong:["Blood must be primed with 0.9% normal saline only — D5W causes hemolysis.","Blood must be infused slowly for the first 15 minutes to monitor for transfusion reactions."]}},
+
+  { id:"ph6", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is preparing to administer metformin to a client scheduled for a contrast CT scan this afternoon. What is the appropriate action?",
+    options:["Administer the metformin as scheduled","Hold the metformin and notify the provider","Administer half the dose and document","Ask the client if they have had contrast before and proceed accordingly"],
+    correct:[1], rationale:{ correct:"Metformin must be held before and after iodinated contrast due to the risk of contrast-induced nephropathy leading to lactic acidosis.", wrong:["Administering metformin before contrast is contraindicated due to lactic acidosis risk.","Giving half the dose does not adequately reduce the risk.", "History of prior contrast use does not eliminate the contraindication with metformin."]}},
+
+  { id:"ph7", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is caring for a client who received an opioid analgesic 30 minutes ago. The client's respiratory rate is now 8 breaths/min and they are difficult to arouse. What is the priority action?",
+    options:["Administer oxygen via nasal cannula and continue to monitor","Stimulate the client and ask them to take deep breaths","Administer naloxone as ordered and prepare for emergency support","Document the findings and reassess in 15 minutes"],
+    correct:[2], rationale:{ correct:"A respiratory rate of 8 and unresponsiveness indicate opioid-induced respiratory depression — a medical emergency requiring naloxone administration immediately.", wrong:["Oxygen alone does not reverse opioid-induced respiratory depression.","Stimulation is insufficient for significant respiratory depression.","Documenting and waiting 15 minutes is dangerous — this is an emergency."]}},
+
+  { id:"ph8", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Pharmacological & Parenteral Therapies",
+    stem:"A nurse is teaching a client newly prescribed warfarin. Which statement by the client indicates a need for further teaching?",
+    options:["'I will have my INR checked regularly.'","'I should avoid drastic changes to how much leafy green vegetables I eat.'","'I can take ibuprofen for my headaches since it's not a blood thinner.'","'I need to report any unusual bruising or bleeding to my provider.'"],
+    correct:[2], rationale:{ correct:"NSAIDs like ibuprofen increase bleeding risk when combined with warfarin by inhibiting platelet aggregation — clients should use acetaminophen instead.", wrong:["Regular INR monitoring is required to ensure therapeutic anticoagulation.","Consistent vitamin K intake (from leafy greens) is important for stable INR.","Reporting unusual bleeding is essential client education for warfarin."]}},
+
+  // ══ PHYSIOLOGICAL INTEGRITY — Reduction of Risk Potential ══
+  { id:"rr1", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
+    stem:"A nurse is reviewing morning labs for a client on digoxin. Which finding requires holding the medication and contacting the provider?",
+    options:["Serum potassium of 4.2 mEq/L","Serum sodium of 138 mEq/L","Serum digoxin level of 2.4 ng/mL","BUN of 18 mg/dL"],
+    correct:[2], rationale:{ correct:"Therapeutic digoxin is 0.5–2.0 ng/mL. A level of 2.4 ng/mL is toxic — hold and notify.", wrong:["Potassium 4.2 is normal.","Sodium 138 is normal.","BUN 18 is normal."]}},
+
+  { id:"rr2", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
+    stem:"A nurse assesses a client post-thyroidectomy and notes stridor, hoarseness, and tingling around the mouth. Which complication does the nurse suspect?",
+    options:["Thyroid storm","Hypocalcemia due to inadvertent parathyroid removal","Respiratory infection","Recurrent laryngeal nerve damage only"],
+    correct:[1], rationale:{ correct:"Tingling around the mouth and stridor post-thyroidectomy indicate hypocalcemia from accidental parathyroid removal, causing tetany and laryngospasm.", wrong:["Thyroid storm presents with hyperthermia, tachycardia, and hypertension — not these findings.","Infection is not an immediate post-op complication causing these neurological signs.","Laryngeal nerve damage alone causes hoarseness — not perioral tingling or stridor from tetany."]}},
+
+  { id:"rr3", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
+    stem:"A nurse is caring for a client four hours after a lumbar puncture. The client reports a severe headache that worsens when sitting up. What is the priority nursing action?",
+    options:["Administer prescribed acetaminophen and reassess in 1 hour","Encourage the client to increase fluid intake and remain flat","Notify the provider immediately of possible spinal cord injury","Position the client in high-Fowler's and apply a cold pack"],
+    correct:[1], rationale:{ correct:"This is a classic post-lumbar puncture headache caused by CSF leakage. Lying flat reduces the pressure gradient, and increased fluids help replenish CSF volume.", wrong:["Acetaminophen alone without positional changes is insufficient for post-LP headache.", "A post-LP headache is expected and does not indicate spinal cord injury.","Sitting up (high-Fowler's) worsens the headache — the client should remain flat."]}},
+
+  { id:"rr4", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
+    stem:"A nurse is caring for a client with chronic kidney disease (CKD). Which laboratory value is most critical to monitor?",
+    options:["Serum albumin","Serum potassium","Serum calcium","Hemoglobin A1C"],
+    correct:[1], rationale:{ correct:"Hyperkalemia is a life-threatening complication of CKD because impaired kidneys cannot excrete potassium — it can cause fatal dysrhythmias.", wrong:["Albumin is monitored for nutrition but is not the most critical in CKD.","Calcium is important in CKD but hyperkalemia poses the most immediate life threat.","HbA1C is relevant if diabetes is the cause of CKD but is not the most critical CKD lab."]}},
+
+  { id:"rr5", type:"sata", difficulty:3, blueprint:"Physiological Integrity", category:"Reduction of Risk Potential",
+    stem:"A nurse is caring for a client who is 12 hours post-op following a right hip replacement. Select ALL findings that require immediate notification of the provider.",
+    options:["Temperature of 37.4°C (99.3°F)","Right calf pain and warmth","Urine output of 20 mL over the past 2 hours","Capillary refill of 2 seconds in the right foot","Serosanguineous drainage on the dressing","Pain rated 8/10 despite IV analgesic given 30 minutes ago"],
+    correct:[1,2,5], rationale:{ correct:"Calf pain/warmth suggests DVT. Urine output of 20 mL/hr is oliguria (normal is ≥30 mL/hr). Uncontrolled pain 30 min after IV analgesic needs reassessment.", wrong:["Temp 37.4°C (99.3°F) is normal — mild elevation is expected post-op.","Capillary refill of 2 seconds is normal.","Serosanguineous drainage is expected in early post-op wound healing."]}},
+
+  // ══ PHYSIOLOGICAL INTEGRITY — Physiological Adaptation ══
+  { id:"pa1", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client in the ICU with the following ABG results: pH 7.28, PaCO2 52 mmHg, HCO3 24 mEq/L, PaO2 70 mmHg. How should the nurse interpret these results?",
+    options:["Metabolic acidosis, uncompensated","Respiratory acidosis, uncompensated","Respiratory alkalosis, compensated","Metabolic alkalosis, uncompensated"],
+    correct:[1], rationale:{ correct:"pH <7.35 = acidosis. Elevated PaCO2 (>45) = respiratory cause. HCO3 is normal (22–26) = no compensation yet. This is respiratory acidosis, uncompensated.", wrong:["Metabolic acidosis would show low HCO3, not elevated CO2 as the primary abnormality.","Respiratory alkalosis would show elevated pH and low CO2.","Metabolic alkalosis would show elevated pH and HCO3."]}},
+
+  { id:"pa2", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client with heart failure who has gained 3 lbs overnight and has worsening shortness of breath. Which intervention should the nurse perform first?",
+    options:["Weigh the client again to confirm accuracy","Administer the prescribed PRN furosemide","Elevate the head of bed and apply supplemental oxygen","Restrict the client's oral fluid intake for the rest of the day"],
+    correct:[2], rationale:{ correct:"Positioning and oxygenation address the immediate symptom of dyspnea first — then pharmacological intervention follows.", wrong:["Reweighing delays treatment of active respiratory distress.","Furosemide is indicated but the immediate priority is alleviating respiratory distress.","Fluid restriction is appropriate but not the priority when the client is actively dyspneic."]}},
+
+  { id:"pa3", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client with burns over 40% total body surface area who is 6 hours post-injury. The nurse notes urine output of 15 mL/hr. What is the priority action?",
+    options:["Document the finding and reassess in 1 hour","Increase IV fluid administration per the Parkland formula and notify the provider","Restrict fluids to prevent fluid overload","Administer a diuretic to increase urine output"],
+    correct:[1], rationale:{ correct:"Adequate urine output (0.5–1 mL/kg/hr in burn patients) signals adequate resuscitation. 15 mL/hr is inadequate — increase fluids per Parkland formula and notify provider.", wrong:["Documenting without acting allows further hemodynamic compromise.","Fluid restriction in a burn patient with oliguria worsens shock.","Diuretics are contraindicated — they worsen volume depletion in burn resuscitation."]}},
+
+  { id:"pa4", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client with increased intracranial pressure (ICP). Which intervention should the nurse question if ordered?",
+    options:["Elevate the head of bed to 30 degrees","Administer mannitol IV as prescribed","Encourage coughing and deep breathing every 2 hours","Maintain a quiet, low-stimulation environment"],
+    correct:[2], rationale:{ correct:"Coughing increases intrathoracic pressure which impairs cerebral venous drainage and dramatically raises ICP — this intervention is contraindicated.", wrong:["HOB at 30° promotes cerebral venous drainage and is standard ICP management.","Mannitol is an osmotic diuretic used to reduce cerebral edema.","Minimizing stimulation reduces ICP spikes — appropriate intervention."]}},
+
+  { id:"pa5", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client in diabetic ketoacidosis (DKA). After IV fluids are initiated, which intervention does the nurse anticipate next?",
+    options:["Administer IV sodium bicarbonate","Begin a regular insulin infusion","Administer IV potassium before starting insulin","Replace fluids with D5W immediately"],
+    correct:[2], rationale:{ correct:"In DKA, insulin drives potassium into cells, causing hypokalemia. IV potassium must be replaced and verified adequate before insulin is started to prevent life-threatening arrhythmias.", wrong:["Bicarb is reserved for severe acidosis (pH <6.9) — not routine in DKA management.","Insulin is the definitive treatment but must be held until potassium is ≥3.5 mEq/L.","D5W is used later to prevent hypoglycemia once glucose drops to 200 mg/dL — not immediately."]}},
+
+  { id:"pa6", type:"mcq", difficulty:3, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is caring for a client who is 2 days post-op following bowel resection. Which assessment finding indicates the client may be developing anastomotic leak?",
+    options:["Passage of flatus","Serosanguineous wound drainage","Sudden onset of severe abdominal pain with abdominal rigidity","Urine output of 35 mL/hr"],
+    correct:[2], rationale:{ correct:"Sudden severe abdominal pain with rigidity post-bowel surgery is a red flag for anastomotic leak, which can cause peritonitis — a surgical emergency.", wrong:["Passage of flatus is a positive sign indicating return of bowel function.","Serosanguineous drainage is expected in early post-op wound healing.","Urine output of 35 mL/hr is normal — above the minimum threshold of 30 mL/hr."]}},
+
+  { id:"pa7", type:"mcq", difficulty:2, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    stem:"A nurse is assessing a client admitted with pneumonia. Which finding is the priority concern?",
+    options:["Temperature 38.6°C (101.5°F)","Productive cough with yellow sputum","Oxygen saturation of 88% on room air","Respiratory rate of 22 breaths per minute"],
+    correct:[2], rationale:{ correct:"SpO2 of 88% indicates significant hypoxemia — immediate supplemental oxygen is required to prevent respiratory failure.", wrong:["Fever is expected with pneumonia and requires monitoring but is not immediately life-threatening.","Productive yellow sputum is consistent with bacterial pneumonia — expected finding.","RR of 22 is mildly elevated — concerning but not the priority over hypoxemia."]}},
+
+  // ══ NGN — BOW-TIE ══
+  { id:"bt1", type:"bowtie", difficulty:3, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    caseIntro:"A 68-year-old client admitted for heart failure exacerbation. VS: BP 158/94, HR 112, RR 26, SpO2 89% on room air. Client is sitting upright using accessory muscles, states 'I can't catch my breath.' Bilateral crackles at lung bases. 2+ pitting edema bilateral lower extremities.",
+    stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+    leftLabel:"Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:["Administer prescribed furosemide IV","Elevate head of bed to high-Fowler's","Encourage ambulation in the hallway","Increase oral fluid intake to 3L/day"],
+    centerOptions:["Fluid volume excess","Fluid volume deficit","Ineffective airway clearance","Risk for infection"],
+    rightOptions:["Urine output and weight","SpO2 and respiratory rate","Blood glucose and temperature","Serum potassium and BUN"],
+    correctLeft:[0,1], correctCenter:[0], correctRight:[0,1],
+    rationale:{ condition:"Classic acute decompensated HF with fluid volume excess: crackles, edema, dyspnea, tachycardia, low SpO2.", actions:"Furosemide (loop diuretic) reduces preload and fluid overload. High-Fowler's reduces work of breathing by using gravity to shift fluid away from lungs.", outcomes:"Urine output and weight confirm diuresis is working. SpO2 and RR confirm respiratory status is improving.", wrong:"Ambulation is inappropriate in acute respiratory distress. Increasing fluids worsens volume overload."}},
+
+  { id:"bt2", type:"bowtie", difficulty:3, blueprint:"Safe & Effective Care Environment", category:"Safety & Infection Prevention",
+    caseIntro:"A 72-year-old client is admitted following a fall at home. PMH: osteoporosis, hypertension, taking amlodipine and hydrochlorothiazide. Admission VS: BP 102/64 (sitting), HR 96, RR 18, SpO2 97%. Client reports feeling dizzy when standing up.",
+    stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+    leftLabel:"Nursing Actions (Select 2)", centerLabel:"Condition", rightLabel:"Parameters to Monitor (Select 2)",
+    leftOptions:["Instruct client to change positions slowly","Apply bilateral compression stockings","Review antihypertensive medications with provider","Encourage high-sodium foods to raise BP"],
+    centerOptions:["Orthostatic hypotension","Hypertensive urgency","Dehydration-related fall risk","Risk for deep vein thrombosis"],
+    rightOptions:["Blood pressure with position changes","Fall incidents during hospitalization","Daily weight and fluid balance","Heart rate and SpO2"],
+    correctLeft:[0,2], correctCenter:[0], correctRight:[0,1],
+    rationale:{ condition:"BP 102/64 with dizziness on standing confirms orthostatic hypotension — a known side effect of amlodipine and hydrochlorothiazide, creating significant fall risk.", actions:"Slow position changes prevent sudden pressure drops. Reviewing antihypertensives with the provider addresses the root pharmacological cause.", outcomes:"Monitoring BP with position changes tracks whether orthostasis resolves. Tracking fall incidents is the primary safety outcome.", wrong:"Compression stockings address DVT, not orthostatic hypotension. Encouraging sodium is not a nursing-scope intervention for this client."}}  ,
+
+  // ══ NGN — CASE STUDIES ══
+  { id:"cs1", type:"casestudy", difficulty:3, blueprint:"Safe & Effective Care Environment", category:"Management of Care",
+    caseIntro:"A 54-year-old client arrives to the ED confused, febrile (T 38.8°C / 101.8°F), hypotensive (BP 94/60), tachycardic (HR 122), and tachypneic (RR 22). Point-of-care glucose: 38 mg/dL. Family reports the client has not eaten or taken medications in 24 hours and had a seizure at home. PMH: Type 2 diabetes, hypertension. Medications: metformin, lisinopril.",
+    questions:[
+      { qid:"cs1a", stem:"Which TWO conditions are the nurse's priority concerns based on this data?", type:"sata",
+        options:["Hypoglycemia","Hypertensive crisis","Sepsis","Medication overdose","New-onset seizure disorder","Hypovolemia only"],
+        correct:[0,2], rationale:"Glucose of 38 mg/dL is critically low — immediate intervention required. Fever, hypotension, tachycardia, and altered mental status meet SIRS/sepsis criteria. Both are immediate life threats."},
+      { qid:"cs1b", stem:"After administering dextrose 50% IV push, what is the nurse's priority reassessment?", type:"mcq",
+        options:["Recheck blood pressure","Recheck point-of-care glucose in 15 minutes","Reassess level of consciousness immediately","Obtain a 12-lead ECG"],
+        correct:[1], rationale:"After D50 administration, rechecking glucose in 15 minutes confirms treatment efficacy and guides whether repeat dosing is needed."},
+      { qid:"cs1c", stem:"The provider orders blood cultures × 2, lactate, CBC, BMP, and 1L NS bolus. Which action should the nurse perform first?", type:"mcq",
+        options:["Administer the NS bolus","Draw blood cultures before initiating IV fluids","Obtain the CBC first to assess leukocytosis","Call pharmacy to prepare antibiotics"],
+        correct:[1], rationale:"In suspected sepsis, blood cultures MUST be drawn before IV fluids or antibiotics to prevent contaminating culture results and ensure accurate identification of the organism."}
+    ]},
+
+  { id:"cs2", type:"casestudy", difficulty:3, blueprint:"Physiological Integrity", category:"Physiological Adaptation",
+    caseIntro:"A 45-year-old client is admitted to the telemetry unit following an emergency department visit for chest pain. 12-lead ECG shows ST elevation in leads II, III, and aVF. Troponin I is 4.2 ng/mL (elevated). The client is diaphoretic, pale, and rates pain 9/10. VS: BP 88/54, HR 58, RR 20, SpO2 94%.",
+    questions:[
+      { qid:"cs2a", stem:"Based on the ECG findings and clinical presentation, which area of the myocardium is most likely affected?", type:"mcq",
+        options:["Anterior wall","Lateral wall","Inferior wall","Posterior wall"],
+        correct:[2], rationale:"ST elevation in leads II, III, and aVF indicates inferior wall MI, typically caused by right coronary artery occlusion."},
+      { qid:"cs2b", stem:"The provider orders nitroglycerin 0.4 mg sublingual. Given this client's vital signs, what is the nurse's priority action before administration?", type:"mcq",
+        options:["Administer as ordered — pain relief is the priority","Hold the nitroglycerin and notify the provider of the blood pressure","Administer half the dose and monitor BP closely","Ask the client to rate the pain again before administering"],
+        correct:[1], rationale:"Nitroglycerin causes vasodilation and can severely worsen hypotension. A BP of 88/54 is a contraindication — the provider must be notified before administration."},
+      { qid:"cs2c", stem:"Select ALL nursing interventions appropriate for this client at this time.", type:"sata",
+        options:["Administer aspirin 325 mg PO as ordered","Apply supplemental oxygen to maintain SpO2 >94%","Prepare the client for emergent PCI","Encourage the client to ambulate to prevent DVT","Administer morphine IV for pain as ordered","Restrict IV fluids to prevent volume overload"],
+        correct:[0,1,2,4], rationale:"Aspirin (antiplatelet), oxygen (treat hypoxemia), emergent PCI (reperfusion therapy), and morphine (reduce oxygen demand/pain) are all appropriate for STEMI management. Ambulation is contraindicated in acute STEMI. Fluid restriction is not appropriate — this client may need volume support given hypotension."}
+    ]}
+];
+
+
+const REMEDIATION_BANK = [
+{id:"rm1",type:"mcq",difficulty:3,blueprint:"Physiological Integrity",category:"Reduction of Risk Potential",
+stem:"A client is 24 hours post-op and reports new unilateral calf pain and warmth. What is the nurse's priority action?",
+options:["Massage the calf","Ambulate the client","Notify the provider and limit ambulation","Apply a heating pad"],
+correct:[2],rationale:{correct:"Calf pain and warmth suggest DVT. Prevent embolization and notify the provider.",wrong:["Massage may dislodge a clot.","Ambulation before evaluation may be unsafe.","Heat does not address the underlying risk."]}},
+
+{id:"rm2",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"Which client should the nurse assess first?",
+options:["Stable client awaiting discharge instructions","Client with COPD whose oxygen saturation dropped from 94% to 88%","Client requesting pain medication rated 6/10","Client asking for a dressing change"],
+correct:[1],rationale:{correct:"Unexpected hypoxemia is the highest priority finding.",wrong:["These are important but not the priority.","Pain is important but not before compromised oxygenation.","Dressing changes can wait."]}},
+
+{id:"rm3",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A charge nurse is delegating tasks at the start of the shift. Which task is most appropriate to delegate to an unlicensed assistive personnel (UAP)?",
+options:["Assessing a client's lung sounds after a bronchodilator treatment","Measuring and recording intake and output for a stable client","Teaching a newly diagnosed diabetic client about foot care","Evaluating a client's response to a new antihypertensive medication"],
+correct:[1],rationale:{correct:"Measuring and recording I&O for a stable client is a routine task that does not require nursing judgment and is appropriate for UAP.",wrong:["Lung sound assessment requires clinical interpretation and cannot be delegated to UAP.","Client teaching requires nursing judgment and remains an RN responsibility.","Evaluating medication response requires assessment and clinical decision-making by the nurse."]}},
+
+{id:"rm4",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is caring for four clients. Which client should the nurse assess first?",
+options:["A client with a blood pressure of 118/76 who is requesting discharge teaching","A client with heart failure whose oxygen saturation dropped from 96% to 88% on room air","A client with a pain rating of 6/10 who received analgesia 45 minutes ago","A client who needs assistance to the bathroom and is steady with a walker"],
+correct:[1],rationale:{correct:"An unexpected drop in oxygen saturation indicates potential respiratory compromise and is the highest priority.",wrong:["Discharge teaching is important but not urgent when another client has compromised oxygenation.","Pain of 6/10 after recent analgesia requires follow-up but is lower priority than hypoxemia.","Ambulation assistance can be delegated or delayed when a client has an acute physiological change."]}},
+
+{id:"rm5",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client scheduled for surgery states, 'I do not want the student nurse in my room during the procedure.' What is the nurse's best action?",
+options:["Explain that all learners must participate to graduate","Honor the client's request and notify the surgical team","Ask the client to reconsider because the student is supervised","Document the refusal but allow the student to observe from the doorway"],
+correct:[1],rationale:{correct:"Clients have the right to refuse participation by students. The nurse must advocate for the client's wishes and communicate with the team.",wrong:["Requiring student participation violates client autonomy and informed consent rights.","Pressuring the client to reconsider is not advocacy and disregards the right to refuse.","Allowing observation after refusal still violates the client's expressed wishes."]}},
+
+{id:"rm6",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is preparing a client for a surgical procedure. The client asks, 'What are the risks if I have this operation?' What is the nurse's priority responsibility related to informed consent?",
+options:["Have the client sign the consent form before answering questions","Ensure the provider has explained the procedure, risks, benefits, and alternatives","Tell the client that all surgery carries some risk and proceed with pre-op checklist","Delegate consent verification to the UAP completing the admission paperwork"],
+correct:[1],rationale:{correct:"Informed consent requires that the provider explain the procedure, risks, benefits, and alternatives. The nurse verifies understanding and witnesses consent; the nurse does not obtain informed consent.",wrong:["Signing before questions are answered does not meet informed consent standards.","A vague statement about risk is insufficient and does not replace provider explanation.","Consent verification cannot be delegated to UAP."]}},
+
+{id:"rm7",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse discovers that a colleague documented care that was not provided. What is the nurse's first action?",
+options:["Confront the colleague in the nurses' station in front of the team","Report the concern through appropriate institutional channels and ensure client safety","Ignore the incident because the client was not harmed","Complete a new entry stating the care was not done and leave the original note unchanged"],
+correct:[1],rationale:{correct:"Falsification of documentation is an ethical and legal violation. The nurse must protect client safety and follow institutional reporting procedures.",wrong:["Public confrontation does not follow proper reporting channels and may escalate conflict without resolving the safety issue.","Failure to report violates the nurse's ethical duty even if no immediate harm occurred.","Adding a note without reporting falsification fails to address the ethical violation appropriately."]}},
+
+{id:"rm8",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A home health nurse visits a client who reports being pressured by family to stop taking prescribed antidepressants. What is the nurse's best response?",
+options:["Tell the family they must allow the client to take the medication","Assess the client's understanding and support the client's right to make medication decisions","Administer the medication because the provider ordered it","Suggest the family speak with the provider at the next appointment only"],
+correct:[1],rationale:{correct:"The nurse advocates for client autonomy by assessing understanding and supporting informed decision-making.",wrong:["Authoritarian direction to the family does not center the client's rights.","Administering medication against the client's wishes violates autonomy unless incapacity is established.","Delaying advocacy until a future visit leaves the client unsupported now."]}},
+
+{id:"rm9",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Safety & Infection Prevention",
+stem:"A nurse enters the room of a client with Clostridioides difficile (C. diff) diarrhea. Which action is required before leaving the room?",
+options:["Apply alcohol-based hand rub for 20 seconds","Wash hands with soap and water for at least 20 seconds","Wipe hands with a chlorhexidine cloth","Use alcohol-based hand rub followed by soap and water"],
+correct:[1],rationale:{correct:"C. diff spores are not killed by alcohol-based products. Soap and water is required to physically remove spores.",wrong:["Alcohol-based hand rub does not eliminate C. diff spores.","Chlorhexidine cloths do not replace soap-and-water handwashing for C. diff.","Alcohol followed by soap is unnecessary; soap and water alone is the required method."]}},
+
+{id:"rm10",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Safety & Infection Prevention",
+stem:"A nurse is preparing to insert an indwelling urinary catheter using sterile technique. After opening the kit, the sterile drape is touched on the outer edge by a nonsterile glove. What should the nurse do?",
+options:["Continue if the catheter package remains unopened","Wipe the drape with sterile saline and proceed","Discard the setup and obtain a new sterile kit","Ask another nurse to finish the procedure"],
+correct:[2],rationale:{correct:"Once the sterile field is contaminated, the setup must be discarded and a new sterile kit obtained.",wrong:["An untouched catheter package does not restore a contaminated sterile field.","Saline does not re-sterilize a contaminated field.","Another nurse cannot safely continue with a contaminated setup."]}},
+
+{id:"rm11",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse receives a provider order that appears inappropriate for a client's current condition. What is the nurse's priority action?",
+options:["Carry out the order because the provider is responsible","Clarify the order with the provider before implementation","Document concern in the chart and administer as ordered","Ask the charge nurse to administer the medication instead"],
+correct:[1],rationale:{correct:"The nurse has a duty to clarify questionable orders before implementation to protect client safety.",wrong:["Blind obedience does not fulfill the nurse's independent duty to protect the client.","Administering a suspected inappropriate order may cause harm.","Delegating administration does not resolve the need to clarify an inappropriate order."]}},
+
+{id:"rm12",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is supervising a UAP who reports a client's blood pressure is 88/50 and the client feels dizzy. What is the nurse's immediate action?",
+options:["Instruct the UAP to recheck the blood pressure in 1 hour","Perform an assessment and intervene because assessment cannot be delegated","Document the UAP's report and continue with medication administration","Tell the UAP to offer juice and recheck later"],
+correct:[1],rationale:{correct:"Hypotension with dizziness requires nursing assessment and intervention. Assessment and clinical decision-making cannot be delegated.",wrong:["Delaying reassessment risks client harm from potential shock or fall.","Documentation without assessment neglects the nurse's supervisory responsibility.","Offering juice without assessment may be insufficient for symptomatic hypotension."]}},
+
+{id:"rm13",type:"mcq",difficulty:2,blueprint:"Physiological Integrity",category:"Reduction of Risk Potential",
+stem:"A nurse is reviewing morning laboratory results for a client receiving digoxin. Which finding requires holding the medication and notifying the provider?",
+options:["Serum potassium 4.0 mEq/L","Serum digoxin level 2.6 ng/mL","Serum sodium 140 mEq/L","BUN 16 mg/dL"],
+correct:[1],rationale:{correct:"A digoxin level of 2.6 ng/mL exceeds the therapeutic range and indicates toxicity risk.",wrong:["Potassium 4.0 mEq/L is within normal limits.","Sodium 140 mEq/L is within normal limits.","BUN 16 mg/dL is within normal limits."]}},
+
+{id:"rm14",type:"mcq",difficulty:3,blueprint:"Physiological Integrity",category:"Reduction of Risk Potential",
+stem:"A nurse is caring for a client 12 hours after a right total hip arthroplasty. Which finding requires immediate notification of the provider?",
+options:["Pain rated 4/10 after scheduled analgesia","Temperature 37.2°C (99.0°F)","New onset of shortness of breath and oxygen saturation 89%","Serosanguineous drainage on the surgical dressing"],
+correct:[2],rationale:{correct:"New shortness of breath with hypoxemia after orthopedic surgery raises concern for pulmonary embolism and requires immediate action.",wrong:["Mild pain after analgesia is common postoperatively.","Low-grade temperature can be expected postoperatively.","Serosanguineous drainage is an expected early postoperative finding."]}},
+
+{id:"rm15",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client with decision-making capacity refuses a blood transfusion for religious reasons. The provider orders the transfusion anyway. What is the nurse's best action?",
+options:["Prepare the client for transfusion because the provider ordered it","Support the client's refusal and notify the provider and risk management as needed","Ask family members to consent for the client","Administer the transfusion and document the provider order"],
+correct:[1],rationale:{correct:"A competent adult may refuse treatment. The nurse advocates for client rights and communicates with the provider.",wrong:["Administering treatment against a competent client's refusal violates autonomy and law.","Family cannot override a competent adult's refusal.","Following an order that violates informed refusal is not appropriate."]}},
+
+{id:"rm16",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is using SBAR to report a client's sudden change in status to the provider. Which component includes the nurse's clinical interpretation?",
+options:["Situation","Background","Assessment","Recommendation"],
+correct:[2],rationale:{correct:"Assessment is the nurse's analysis of what the findings mean clinically.",wrong:["Situation states the current problem briefly.","Background provides relevant history.","Recommendation states the requested action."]}},
+
+{id:"rm17",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse manager learns that a staff nurse posted a client's wound photo on social media without identifying information. What is the manager's priority concern?",
+options:["The post may violate client privacy and organizational policy even without a name","The post is acceptable because no name was included","The nurse should delete the post and no further action is needed","Only the marketing department can address social media use"],
+correct:[0],rationale:{correct:"Client images may still be identifiable and violate HIPAA and institutional policy even without explicit identifiers.",wrong:["Lack of a name does not guarantee de-identification or permission to share.","Deletion alone may not satisfy reporting and disciplinary requirements.","Privacy violations are a nursing leadership and compliance issue, not only marketing."]}},
+
+{id:"rm18",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A charge nurse is planning assignments. Select ALL tasks that should remain with the registered nurse.",
+options:["Developing the plan of care for a newly admitted client","Ambulating a stable postoperative client","Assessing pain before administering PRN opioid medication","Feeding a client with a history of aspiration who is alert","Evaluating a client's response to a new diuretic","Obtaining routine vital signs on a stable client"],
+correct:[0,2,4],rationale:{correct:"Care planning, pre-medication pain assessment, and evaluation of medication response require nursing judgment and cannot be delegated inappropriately.",wrong:["Ambulation of a stable postoperative client may be delegated with appropriate supervision.","Feeding an aspiration-risk client requires assessment and supervision beyond routine UAP scope.","Routine vital signs on a stable client may be delegated with the nurse interpreting results."]}},
+
+{id:"rm19",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is preparing a client for an invasive procedure. Select ALL elements required for valid informed consent.",
+options:["Explanation of the procedure and associated risks","Client's voluntary agreement without coercion","Witness signature by the nurse after verification of understanding","Guarantee of a successful outcome","Discussion of alternative treatments","Client's ability to ask questions and receive answers"],
+correct:[0,1,2,4,5],rationale:{correct:"Informed consent requires explanation, voluntariness, alternatives, opportunity for questions, and nurse verification/witnessing as appropriate.",wrong:["No treatment can guarantee a successful outcome; guarantees are not part of informed consent."]}},
+
+{id:"rm20",type:"sata",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Safety & Infection Prevention",
+stem:"A nurse is caring for clients on a medical-surgical unit. Select ALL actions that follow standard infection prevention principles.",
+options:["Performing hand hygiene before and after client contact","Placing a client with active tuberculosis in a negative-pressure room","Wearing an N95 respirator for pulmonary tuberculosis care","Reusing disposable gloves after alcohol hand rub","Using soap and water after caring for a client with C. diff","Keeping the door open at all times for a client on contact precautions"],
+correct:[0,1,2,4],rationale:{correct:"Hand hygiene, airborne isolation for TB, N95 use, and soap-and-water after C. diff are correct infection control practices.",wrong:["Disposable gloves are single-use and must not be reused.","Contact precautions require limiting transport and controlling exposure; leaving the door open increases transmission risk."]}},
+
+{id:"rm21",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is advocating for a hospitalized older adult. Select ALL actions that demonstrate client advocacy.",
+options:["Ensuring the client participates in care decisions when able","Reporting suspected neglect to the appropriate agency","Requesting an interpreter for informed consent discussions","Completing the consent form without provider explanation","Notifying the provider when the client's condition changes","Telling the family the client's diagnosis without the client's permission"],
+correct:[0,1,2,4],rationale:{correct:"Advocacy includes supporting autonomy, reporting abuse/neglect, ensuring communication access, and communicating clinical changes.",wrong:["Consent forms cannot substitute for provider explanation of risks and benefits.","Sharing diagnosis against the client's wishes violates confidentiality and autonomy."]}},
+
+{id:"rm22",type:"sata",difficulty:3,blueprint:"Physiological Integrity",category:"Reduction of Risk Potential",
+stem:"A nurse is monitoring a postoperative client. Select ALL findings that should be reported to the provider immediately.",
+options:["Urine output 15 mL/hr for 2 hours in a hemodynamically unstable client","Unilateral calf swelling and pain after knee surgery","Blood glucose 102 mg/dL before lunch","Wound redness limited to 0.5 cm at the incision line on day 1","Sudden restlessness and confusion in an older adult after opioid administration","Pain 3/10 after scheduled analgesia"],
+correct:[0,1,4],rationale:{correct:"Oliguria in an unstable client, possible DVT signs, and acute opioid-related neuro changes require immediate provider notification.",wrong:["Blood glucose 102 mg/dL is not an emergency finding in this context.","Minimal day-1 incision redness can be expected.","Mild pain after analgesia is not an emergency."]}},
+
+{id:"rm23",type:"bowtie",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A 78-year-old client is admitted from a long-term care facility with fever, confusion, blood pressure 86/48, heart rate 118, respiratory rate 24, and lactate 3.8 mmol/L. The client has an indwelling urinary catheter inserted 5 days ago. The provider suspects sepsis.",
+stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+leftLabel:"Nursing Actions (Select 2)",centerLabel:"Condition",rightLabel:"Parameters to Monitor (Select 2)",
+leftOptions:["Obtain blood cultures before antibiotics if ordered and not yet given","Encourage oral fluids and delay notification until morning","Initiate sepsis bundle orders per protocol and maintain IV access","Place client in high Fowler's only without hemodynamic monitoring"],
+centerOptions:["Sepsis","Fluid volume excess","Acute pain","Risk for falls only"],
+rightOptions:["Blood pressure and urine output","Blood glucose and appetite","Lactate and temperature","Pain rating and sleep pattern"],
+correctLeft:[0,2],correctCenter:[0],correctRight:[0,2],
+rationale:{condition:"Fever, hypotension, tachycardia, tachypnea, confusion, and elevated lactate meet sepsis criteria.",actions:"Blood cultures before antibiotics when possible and rapid implementation of sepsis bundle care support early treatment.",outcomes:"Blood pressure and urine output reflect perfusion; lactate and temperature track response to sepsis treatment.",wrong:"Delaying care or focusing only on positioning without monitoring worsens outcomes in sepsis."}},
+
+{id:"rm24",type:"bowtie",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Safety & Infection Prevention",
+caseIntro:"A 62-year-old client with MRSA-infected wound drainage is admitted to a semiprivate room. The client is alert, requires wound dressing changes, and will be transported to radiology later today.",
+stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+leftLabel:"Nursing Actions (Select 2)",centerLabel:"Condition",rightLabel:"Parameters to Monitor (Select 2)",
+leftOptions:["Implement contact precautions with gown and gloves for contact with client or environment","Place client in airborne isolation with N95 at all times","Perform hand hygiene before and after client contact","Assign the client to share bathroom supplies with the roommate"],
+centerOptions:["Risk for transmission of multidrug-resistant organism","Risk for impaired skin integrity only","Deficient knowledge","Ineffective airway clearance"],
+rightOptions:["Wound drainage and signs of spreading infection","Roommate respiratory status and new MRSA screening needs","Daily weight and oral intake only","Sleep pattern and visitor preferences"],
+correctLeft:[0,2],correctCenter:[0],correctRight:[0,1],
+rationale:{condition:"MRSA wound drainage requires contact precautions to prevent transmission.",actions:"Gown and gloves for contact plus hand hygiene are core contact precaution interventions.",outcomes:"Monitor wound status and evaluate exposure risk to the roommate and environment.",wrong:"Airborne isolation is not indicated for MRSA. Sharing supplies increases transmission risk."}},
+
+{id:"rm25",type:"bowtie",difficulty:3,blueprint:"Physiological Integrity",category:"Reduction of Risk Potential",
+caseIntro:"A 55-year-old client returns from surgery after a total abdominal hysterectomy. Eight hours post-op, the client reports sudden shortness of breath, oxygen saturation is 90% on 2 L nasal cannula, heart rate 112, and the right calf is swollen and tender.",
+stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+leftLabel:"Nursing Actions (Select 2)",centerLabel:"Condition",rightLabel:"Parameters to Monitor (Select 2)",
+leftOptions:["Notify the provider immediately and keep the client on bed rest","Massage the affected calf to improve circulation","Apply supplemental oxygen to maintain prescribed saturation","Encourage early ambulation in the hallway now"],
+centerOptions:["Risk for pulmonary embolism","Risk for constipation","Acute pain","Deficient fluid volume"],
+rightOptions:["Respiratory rate and oxygen saturation","Calf circumference and pain in the extremity","Bowel sounds and last bowel movement","Daily weight and oral intake"],
+correctLeft:[0,2],correctCenter:[0],correctRight:[0,1],
+rationale:{condition:"Sudden dyspnea with tachycardia and unilateral calf findings after surgery suggest pulmonary embolism risk.",actions:"Immediate provider notification, bed rest, and oxygen support are priority nursing actions.",outcomes:"Respiratory status and leg findings monitor for embolism progression and treatment response.",wrong:"Massaging a possible DVT and ambulating before evaluation may increase embolization risk."}},
+
+{id:"rm26",type:"casestudy",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A 70-year-old client is admitted for elective colon resection. The client speaks limited English and the adult son insists on signing the surgical consent because he is the healthcare proxy. The client is alert, oriented, and nodding during the discussion. The provider has not yet explained risks in a language the client understands.",
+questions:[
+{qid:"rm26a",stem:"Which TWO nursing actions are the priority before the procedure?",type:"sata",
+options:["Request a qualified interpreter for the informed consent discussion","Allow the son to sign because he is the healthcare proxy","Verify that the provider explains risks, benefits, and alternatives in a language the client understands","Proceed with pre-op antibiotics because surgery is scheduled","Notify the surgical team to delay until informed consent requirements are met","Ask the UAP to witness consent after the son signs"],
+correct:[0,2],rationale:"A qualified interpreter and verified understanding of risks, benefits, and alternatives are required for valid informed consent when language is a barrier."},
+{qid:"rm26b",stem:"The son states, 'My father would want the surgery even if he does not understand everything.' What is the nurse's best response?",type:"mcq",
+options:["'I will make sure the provider explains everything with an interpreter so your father can decide.'","'Because you are the proxy, we can proceed without his understanding.'","'He can sign now and ask questions later.'","'The consent form is only a formality.'"],
+correct:[0],rationale:"The nurse advocates for the client's right to informed consent and facilitates communication through appropriate interpreter services."},
+{qid:"rm26c",stem:"After the procedure, the client develops a fever and the nurse notes inadequate handoff communication from the OR. What is the nurse's best action?",type:"mcq",
+options:["Use SBAR to clarify the missing information and report changes to the provider","Wait until the next shift to review the chart","Document fever only and continue routine care","Ask the family to explain what happened in surgery"],
+correct:[0],rationale:"SBAR promotes clear communication during handoff and supports timely provider notification when the client's status changes."}
+]},
+
+{id:"rm27",type:"casestudy",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A medical-surgical nurse receives report on four clients at 0700: Client A has new chest pain and diaphoresis; Client B needs a dressing change for a nonbleeding surgical wound; Client C is stable but requesting PRN anxiolytic for anxiety before a test; Client D needs routine morning medications and breakfast assistance.",
+questions:[
+{qid:"rm27a",stem:"Which client should the nurse see first?",type:"mcq",
+options:["Client A with new chest pain and diaphoresis","Client B who needs a dressing change","Client C who is anxious before a test","Client D who needs medications and breakfast"],
+correct:[0],rationale:"New chest pain with diaphoresis may indicate acute coronary syndrome and is the highest priority."},
+{qid:"rm27b",stem:"Select ALL tasks the nurse may appropriately delegate to UAP after initial assessment.",type:"sata",
+options:["Assisting Client D with breakfast for a stable client","Measuring intake and output for Client D","Assessing Client A's pain before nitroglycerin administration","Changing Client B's nonsterile dressing without nurse evaluation of the wound","Obtaining routine vital signs on Client C who is stable","Evaluating dizziness after blood pressure medication"],
+correct:[0,1,4],rationale:"Routine feeding assistance, I&O measurement, and stable vital signs may be delegated with appropriate supervision after nursing assessment."},
+{qid:"rm27c",stem:"Client C says, 'I do not want the sedating medication because it makes me too sleepy for my test.' What is the nurse's best action?",type:"mcq",
+options:["Administer the medication because it was scheduled","Support the client's decision and offer nonpharmacological anxiety interventions","Tell the client the test cannot proceed without the medication","Ask the family to convince the client to take the medication"],
+correct:[1],rationale:"The nurse respects client autonomy and advocates by supporting refusal while offering appropriate alternatives."}
+]},
+
+{id:"rm28",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse delegates feeding a stable client to a UAP. Thirty minutes later, the UAP reports the client is coughing during lunch. What is the nurse's priority action?",
+options:["Instruct the UAP to feed the client more slowly","Assess the client immediately because supervision and evaluation cannot be delegated","Document the coughing and continue the lunch","Ask the UAP to complete the feeding and report back later"],
+correct:[1],rationale:{correct:"When a delegated task reveals a change in client status, the nurse must assess and intervene. Evaluation of clinical changes remains an RN responsibility.",wrong:["Slowing feeding without assessment may not address aspiration risk.","Documentation alone does not address a potential safety event.","Continuing delegation after a concerning report neglects supervisory responsibility."]}},
+
+{id:"rm29",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"Which task is appropriate for the nurse to delegate to an experienced UAP on a stable medical-surgical unit?",
+options:["Determining whether a postoperative client is ready to ambulate","Collecting a urine specimen from an indwelling catheter using sterile technique","Comparing a new prescription with the medication administration record before giving a drug","Teaching a client how to use an incentive spirometer"],
+correct:[1],rationale:{correct:"Collecting a urine specimen from an indwelling catheter is a routine technical task that may be delegated when the client is stable and the UAP has been trained.",wrong:["Readiness for ambulation requires nursing assessment and judgment.","Medication verification and administration require nursing responsibility.","Client teaching requires nursing judgment and cannot be delegated to UAP."]}},
+
+{id:"rm30",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse receives report on four clients. Which client should the nurse assess first?",
+options:["A client with diabetes whose blood glucose is 248 mg/dL and who is alert and drinking fluids","A client with a fresh tracheostomy who has thick secretions and an SpO2 of 90%","A client requesting a PRN stool softener for constipation","A client who needs discharge paperwork completed before noon"],
+correct:[1],rationale:{correct:"A client with a new tracheostomy, thick secretions, and hypoxemia has potential airway compromise and is the highest priority.",wrong:["Hyperglycemia in an alert client drinking fluids requires follow-up but is not the first priority.","Constipation is important but not urgent compared with airway compromise.","Discharge paperwork is a lower priority than an unstable airway."]}},
+
+{id:"rm31",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"At the start of the shift, a nurse has these pending tasks: administer 0900 medications to four stable clients, respond to a call light from a client reporting chest pressure, and complete an admission assessment for a client who arrived 10 minutes ago. What should the nurse do first?",
+options:["Administer the 0900 medications to all four clients","Complete the admission assessment because it is a new client","Assess the client reporting chest pressure immediately","Finish the admission paperwork before seeing any other clients"],
+correct:[2],rationale:{correct:"Chest pressure may indicate an acute cardiac event and takes priority over routine medications, admission tasks, and documentation.",wrong:["Routine medications for stable clients can be delayed briefly when an acute symptom requires assessment.","Admission assessment is important but not before assessing a potentially life-threatening symptom.","Paperwork should not delay assessment of chest pressure."]}},
+
+{id:"rm32",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A hospitalized adolescent tells the nurse, 'Please do not tell my parents I am pregnant. I want to talk to the provider myself.' The adolescent is alert and oriented. What is the nurse's best action?",
+options:["Notify the parents immediately because they are the legal guardians","Respect the client's request for confidentiality and assist with provider communication","Tell the client that parents must be informed before any care is given","Document the pregnancy in the chart and ask the parents to come to the unit"],
+correct:[1],rationale:{correct:"The nurse advocates for the client by respecting confidentiality within legal and ethical limits and facilitating appropriate care communication.",wrong:["Automatic parental notification may violate adolescent confidentiality laws in many states.","Care can be provided while respecting confidentiality when the client has decision-making capacity.","Informing parents against the client's request without legal basis violates advocacy and confidentiality."]}},
+
+{id:"rm33",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse notices that a cognitively intact older adult is not receiving scheduled pain medication because the family told the UAP to withhold it. What is the nurse's priority action?",
+options:["Follow the family's request because they know the client best","Assess the client and advocate for pain management based on the client's report and orders","Document the family's request and take no further action","Ask the UAP to continue withholding medication until the provider rounds"],
+correct:[1],rationale:{correct:"The nurse advocates for the client by assessing pain and ensuring ordered care is provided according to the client's needs and consent.",wrong:["Family preferences do not override the competent client's right to pain management and ordered care.","Failure to act leaves the client undertreated.","Delaying until provider rounds prolongs unnecessary pain."]}},
+
+{id:"rm34",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client is scheduled for a colonoscopy with conscious sedation. The client signed the consent form but tells the nurse, 'I still do not understand what could go wrong.' What is the nurse's best action?",
+options:["Proceed because the consent form is already signed","Notify the provider to re-explain the procedure, risks, benefits, and alternatives before sedation","Have the UAP witness a second signature and continue","Tell the client to read the consent form again independently"],
+correct:[1],rationale:{correct:"Valid informed consent requires understanding. The nurse must ensure the provider addresses unanswered questions before the procedure.",wrong:["A signature alone does not confirm informed consent when understanding is lacking.","UAP cannot resolve informed consent deficiencies.","Reading the form without explanation may not ensure understanding."]}},
+
+{id:"rm35",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A charge nurse is assigning staff at the beginning of the shift. Which assignment is most appropriate for a newly licensed RN?",
+options:["A client with unstable angina who just received thrombolytic therapy","A stable postoperative client who had an appendectomy 2 days ago","A client with diabetic ketoacidosis on an insulin drip","A client with active suicidal ideation and one-to-one observation"],
+correct:[1],rationale:{correct:"A stable postoperative client on day 2 is an appropriate assignment for a new graduate with support from the charge nurse.",wrong:["Unstable cardiac clients require experienced nursing judgment.","Insulin drip management is high acuity for a new graduate.","Suicidal clients with one-to-one observation require experienced assessment and safety management."]}},
+
+{id:"rm36",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is caring for multiple clients. Which situation requires the nurse's immediate attention?",
+options:["A client waiting 15 minutes for assistance to the bathroom","A client whose IV pump is beeping due to an occluded line and who reports arm pain","A family member requesting an extra blanket","A client asking for help contacting pastoral care"],
+correct:[1],rationale:{correct:"An occluded IV with arm pain may indicate infiltration or phlebitis and requires immediate nursing assessment and intervention.",wrong:["Bathroom assistance is important but generally not emergent if the client is safe.","A blanket request is a comfort need with lower priority.","Pastoral care can be arranged after urgent clinical needs are addressed."]}},
+
+{id:"rm37",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client with limited English proficiency needs education about a new anticoagulant before discharge. What is the nurse's best advocacy action?",
+options:["Provide the education in English and ask the family to translate","Request a qualified medical interpreter and teach using teach-back method","Give the client a printed handout and skip verbal teaching","Ask the UAP who speaks the client's language to explain the medication"],
+correct:[1],rationale:{correct:"Advocacy includes ensuring effective communication through a qualified interpreter and verifying understanding with teach-back.",wrong:["Family translation is not a substitute for qualified medical interpretation of medication teaching.","A handout alone may not ensure understanding.","Medication teaching requires nursing judgment and cannot be delegated to UAP."]}},
+
+{id:"rm38",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client is brought to the preoperative area and states, 'I changed my mind. I do not want surgery today.' The client is alert and oriented. What is the nurse's priority action?",
+options:["Tell the client it is too late to cancel and prepare for transfer","Support the client's right to refuse and notify the provider and surgical team","Ask the family to convince the client to proceed","Have the client sign another consent form to confirm the decision"],
+correct:[1],rationale:{correct:"A competent client may withdraw consent at any time. The nurse advocates for autonomy and communicates the refusal to the team.",wrong:["It is never too late for a competent client to refuse surgery.","Family cannot override a competent adult's refusal.","Additional signatures are not required to validate refusal."]}},
+
+{id:"rm39",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is witnessing informed consent for a client undergoing a hysterectomy. Which nurse action is most appropriate?",
+options:["Explain the surgical risks in detail to the client","Verify that the client had opportunity to ask questions and appears to understand before witnessing","Obtain consent from the client's spouse in case the client changes their mind later","Tell the client to sign quickly so surgery is not delayed"],
+correct:[1],rationale:{correct:"The nurse's role in informed consent is to witness and verify understanding after the provider explains risks, benefits, and alternatives.",wrong:["Risk explanation is the provider's responsibility, not the nurse witness role.","Spousal consent is not required when the client has capacity.","Rushing consent undermines voluntariness and understanding."]}},
+
+{id:"rm40",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A UAP reports that a client fell in the bathroom while trying to get up alone. The client is awake and complaining of hip pain. What is the nurse's first action?",
+options:["Help the UAP get the client back into bed immediately","Assess the client and initiate fall protocol and provider notification","Complete the incident report before assessing the client","Delegate reassessment to the UAP in 30 minutes"],
+correct:[1],rationale:{correct:"After a fall, the nurse must assess for injury and follow institutional fall protocols. Assessment cannot be delegated.",wrong:["Moving the client before assessment may worsen injury.","Incident reporting follows assessment and immediate safety actions.","Reassessment cannot be delegated when injury is suspected."]}},
+
+{id:"rm41",type:"mcq",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse overhears a provider discussing a client's HIV status in the elevator with a drug representative. What is the nurse's best action?",
+options:["Ignore the conversation because it happened off the unit","Report the breach of confidentiality through appropriate institutional channels","Confront the drug representative only","Post a reminder about HIPAA on the unit bulletin board and take no further action"],
+correct:[1],rationale:{correct:"The nurse advocates for client rights by reporting a suspected HIPAA violation through proper channels.",wrong:["Ignoring a confidentiality breach fails the nurse's ethical duty.","Confronting only the representative does not address the provider's violation.","A bulletin board notice does not address the specific breach."]}},
+
+{id:"rm42",type:"mcq",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse has completed morning medications for all assigned clients. Which task should the nurse complete next?",
+options:["Document all medications given","Assess a client who now has new onset shortness of breath","Return a call from a stable client's family requesting a visit time","Restock the medication cart"],
+correct:[1],rationale:{correct:"A new physiological symptom takes priority over documentation, family calls, and supply tasks.",wrong:["Documentation is important but not before assessing acute shortness of breath.","A routine family call can wait when a client has a new respiratory symptom.","Cart restocking is a lower priority than client assessment."]}},
+
+{id:"rm43",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is delegating care to UAP on a busy unit. Select ALL tasks that may be appropriately delegated to UAP.",
+options:["Bathing a stable client who ambulates independently","Interpreting abnormal vital signs and determining the need for provider notification","Measuring and recording vital signs on a stable postoperative client","Deciding whether a client may have a regular diet after surgery","Ambulating a stable client after the nurse determines readiness","Evaluating whether a wound dressing needs to be changed"],
+correct:[0,2,4],rationale:{correct:"Bathing, routine vital signs on stable clients, and ambulation after RN readiness assessment may be delegated with supervision.",wrong:["Interpreting abnormal findings and deciding provider notification require nursing judgment.","Diet advancement decisions require nursing assessment.","Wound evaluation requires nursing judgment."]}},
+
+{id:"rm44",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"Select ALL actions that demonstrate client advocacy by the nurse.",
+options:["Supporting a competent client's refusal of a procedure","Requesting a social work consult for a client experiencing homelessness","Sharing a client's diagnosis with visitors without the client's permission","Notifying risk management when a client reports care concerns","Encouraging a client to participate in care planning","Telling a client that the provider's decision is final and cannot be questioned"],
+correct:[0,1,3,4],rationale:{correct:"Advocacy includes supporting autonomy, securing resources, reporting concerns, and involving the client in care planning.",wrong:["Sharing diagnosis without permission violates confidentiality.","Discouraging questions undermines advocacy and informed decision-making."]}},
+
+{id:"rm45",type:"sata",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A nurse is prioritizing care at the beginning of the shift. Select ALL clients the nurse should assess first.",
+options:["A client with a new onset of slurred speech and facial droop","A client requesting PRN acetaminophen for a headache rated 3/10","A client with a blood pressure of 88/46 and altered mental status","A client who needs routine morning insulin before breakfast","A client with an SpO2 of 85% on room air","A client asking for help ordering lunch"],
+correct:[0,2,4],rationale:{correct:"Stroke symptoms, hypotension with altered mental status, and severe hypoxemia are emergent priorities.",wrong:["Mild headache is lower priority.","Routine insulin timing is important but not before emergent findings.","Lunch ordering is a low-priority comfort request."]}},
+
+{id:"rm46",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A client is scheduled for an elective procedure. Select ALL nursing responsibilities related to informed consent.",
+options:["Confirm the consent form is signed before the procedure","Ensure the provider explained risks, benefits, and alternatives","Determine whether the client understands the information","Perform the surgical procedure if the provider is delayed","Notify the provider if the client has unanswered questions","Witness the client's signature when required by policy"],
+correct:[0,1,2,4,5],rationale:{correct:"The nurse verifies consent completeness, facilitates understanding, communicates concerns to the provider, and witnesses as required.",wrong:["Performing surgery is not within nursing scope."]}},
+
+{id:"rm47",type:"sata",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"Select ALL situations in which the nurse should intervene to protect client rights.",
+options:["A provider discusses a client's case loudly in the cafeteria using the client's name","A competent client is pressured by staff to accept a blood transfusion","A family member insists on staying during a sensitive exam and the client agrees","A client is asked to sign consent while sedated from premedication","A UAP reminds a client about a scheduled shower","A client requests a second opinion before surgery"],
+correct:[0,1,3,5],rationale:{correct:"Confidentiality breaches, coercion, invalid consent due to sedation, and the right to a second opinion all require nurse advocacy.",wrong:["If the client agrees to the family presence, no rights violation exists.","Reminding a client about hygiene is routine care, not a rights issue."]}},
+
+{id:"rm48",type:"sata",difficulty:2,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+stem:"A charge nurse is making assignments. Select ALL factors the charge nurse should consider when delegating tasks.",
+options:["Competency and training of the delegatee","Stability and acuity of the client","Whether the task requires nursing judgment","The delegatee's personal preference for certain clients","State nurse practice act and institutional policy","Availability of supervision by the RN"],
+correct:[0,1,2,4,5],rationale:{correct:"Safe delegation requires evaluating competency, client stability, judgment requirements, legal scope, and RN supervision.",wrong:["Personal preference alone is not a primary delegation criterion."]}},
+
+{id:"rm49",type:"bowtie",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A 64-year-old client is admitted with chest pain. The provider orders cardiac monitoring, nitroglycerin PRN, and telemetry. One hour later, the client reports crushing chest pain rated 9/10, blood pressure 90/60, diaphoresis, and nausea. The nurse has four other stable clients assigned.",
+stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+leftLabel:"Nursing Actions (Select 2)",centerLabel:"Condition",rightLabel:"Parameters to Monitor (Select 2)",
+leftOptions:["Assess the client immediately and notify the provider","Delegate reassessment of the client to the UAP","Administer prescribed PRN nitroglycerin per protocol after assessment","Complete routine documentation for the other four clients first"],
+centerOptions:["Acute coronary syndrome","Risk for infection","Deficient knowledge","Impaired mobility"],
+rightOptions:["Chest pain characteristics and blood pressure","Bowel pattern and appetite","Troponin trend and cardiac rhythm","Sleep pattern and visitor status"],
+correctLeft:[0,2],correctCenter:[0],correctRight:[0,2],
+rationale:{condition:"Crushing chest pain with hypotension, diaphoresis, and nausea suggests acute coronary syndrome.",actions:"Immediate assessment and provider notification are priorities; nitroglycerin may be given per protocol after assessment.",outcomes:"Pain and blood pressure reflect perfusion; troponin and rhythm monitor for myocardial injury and dysrhythmia.",wrong:"Delegating reassessment or delaying care for documentation places the client at risk."}},
+
+{id:"rm50",type:"bowtie",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A 58-year-old client is scheduled for a total knee replacement in 2 hours. The client is alert, anxious, and states, 'I do not think I want the surgery anymore.' The spouse says, 'Sign the papers anyway — we already waited months.' The consent form is unsigned.",
+stem:"Complete the bow-tie clinical judgment item. Select the ONE condition, TWO nursing actions, and TWO parameters to monitor.",
+leftLabel:"Nursing Actions (Select 2)",centerLabel:"Condition",rightLabel:"Parameters to Monitor (Select 2)",
+leftOptions:["Notify the provider and surgical team of the client's expressed refusal","Ask the spouse to sign the consent form","Assess the client's understanding and explore concerns privately","Proceed to pre-op because the case is already scheduled"],
+centerOptions:["Risk for decisional conflict related to informed consent","Risk for infection","Impaired physical mobility","Acute pain"],
+rightOptions:["Client's stated understanding and questions about surgery","Surgical site and preoperative vital signs","Family pressure and client's expressed wishes","Bowel sounds and last meal time"],
+correctLeft:[0,2],correctCenter:[0],correctRight:[0,2],
+rationale:{condition:"The client expresses refusal and family pressure, indicating decisional conflict around informed consent.",actions:"Advocacy requires private assessment of understanding and notifying the team of the client's wishes.",outcomes:"Monitoring the client's understanding and expressed wishes supports valid voluntary consent.",wrong:"Spousal consent and proceeding without valid consent violate client autonomy."}},
+
+{id:"rm51",type:"casestudy",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A nurse on a medical-surgical unit is caring for four clients. Client 1 is stable and needs a bed bath. Client 2 has a new order for IV furosemide and reports increased shortness of breath. Client 3 is waiting for discharge teaching about warfarin. Client 4 is asleep after receiving PRN zolpidem. The UAP asks the nurse what to do first.",
+questions:[
+{qid:"rm51a",stem:"Which client should the nurse assess first?",type:"mcq",
+options:["Client 1 who needs a bed bath","Client 2 with new shortness of breath and IV furosemide order","Client 3 waiting for discharge teaching","Client 4 who is asleep after sedative administration"],
+correct:[1],rationale:"New shortness of breath in a client with a diuretic order suggests possible fluid overload or worsening heart failure and is the highest priority."},
+{qid:"rm51b",stem:"Select ALL tasks the nurse may delegate to UAP after appropriate assessment.",type:"sata",
+options:["Bed bath for stable Client 1","Reassessment of Client 2's lung sounds after diuretic administration","Routine vital signs on stable Client 1","Discharge teaching for Client 3 about warfarin","Ambulating Client 1 after the nurse determines stability","Monitoring Client 4 for sedation-related respiratory depression"],
+correct:[0,2,4],rationale:"Bed bath, routine vitals, and ambulation after RN readiness assessment may be delegated. Lung sound reassessment, medication teaching, and sedation monitoring require nursing judgment."},
+{qid:"rm51c",stem:"Client 3 says, 'I do not want to learn about warfarin today. I just want to go home.' What is the nurse's best advocacy action?",type:"mcq",
+options:["Cancel discharge because teaching was refused","Assess barriers, offer brief essential safety teaching, and involve case management if needed","Tell the client discharge cannot occur without a full class","Ask the family to sign that teaching was refused and send the client home"],
+correct:[1],rationale:"The nurse advocates by assessing needs, providing essential safety information, and coordinating resources without denying appropriate discharge planning."}
+]},
+
+{id:"rm52",type:"casestudy",difficulty:3,blueprint:"Safe & Effective Care Environment",category:"Management of Care",
+caseIntro:"A 45-year-old client is admitted for an elective cholecystectomy. The client has decision-making capacity but is hard of hearing and did not receive a hearing aid today. The provider obtained a signed consent earlier in a crowded room while the client nodded but asked no questions. The client's adult daughter says, 'Just take him to surgery — he already agreed.'",
+questions:[
+{qid:"rm52a",stem:"What is the nurse's priority action before the client goes to the operating room?",type:"mcq",
+options:["Transport the client because consent is signed","Hold the transfer and ensure informed consent is verified with effective communication","Let the daughter answer any remaining questions for the client","Ask the UAP to witness a second signature"],
+correct:[1],rationale:"The nurse must ensure valid informed consent, including effective communication and verified understanding, before elective surgery."},
+{qid:"rm52b",stem:"Select ALL nurse actions that support informed consent and advocacy.",type:"sata",
+options:["Request quiet space and use communication aids so the client can ask questions","Notify the provider if understanding is uncertain","Allow the daughter to consent in place of the competent client","Use teach-back to confirm the client understands risks and benefits","Proceed because nodding is sufficient proof of understanding","Document the client's questions and the provider's responses"],
+correct:[0,1,3,5],rationale:"Effective communication, provider notification, teach-back, and documentation support valid informed consent and advocacy.",wrong:["A competent client must provide their own consent.","Nodding without verified understanding is insufficient for informed consent."]},
+{qid:"rm52c",stem:"The client states, 'I want the surgery, but I still do not know what the main risks are.' What should the nurse do next?",type:"mcq",
+options:["Reassure the client that surgery is usually safe and proceed","Ask the provider to return and explain risks, benefits, and alternatives before transfer","Tell the daughter to explain the risks in the hallway","Cancel surgery permanently without further discussion"],
+correct:[1],rationale:"When understanding is incomplete, the nurse advocates by requesting provider re-explanation before the procedure proceeds."}
+]}
+];
+
+// ─── CAT ENGINE ───────────────────────────────────────────────────────────────
+const MIN_Q = 85;
+const MAX_Q = 150;
+const PASS_THRESHOLD = 0.72;
+const FAIL_THRESHOLD = 0.28;
+const CONFIDENCE_CUTOFF = 0.90;
+
+function updateAbility(ability, correct, difficulty) {
+  const diffMap = { 1: -0.5, 2: 0, 3: 0.5 };
+  const delta = correct ? 0.15 + (diffMap[difficulty] || 0) * 0.05 : -0.15 + (diffMap[difficulty] || 0) * 0.05;
+  return Math.max(0, Math.min(1, ability + delta));
+}
+
+function getConfidence(history) {
+  if (history.length < 10) return 0;
+  const recentCorrect = history.slice(-10).filter(h => h.correct).length / 10;
+  const spread = history.length / MAX_Q;
+  return Math.min(0.99, spread * 0.6 + Math.abs(recentCorrect - 0.5) * 0.8);
+}
+
+function shouldStop(history, ability) {
+  if (history.length < MIN_Q) return null;
+  const confidence = getConfidence(history);
+  if (confidence >= CONFIDENCE_CUTOFF) {
+    return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
+  }
+  if (history.length >= MAX_Q) {
+    return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
+  }
+  return null;
+}
+
+function pickNextQuestion(bank, history, profile, ability) {
+  const usedIds = new Set(history.map(h => h.id));
+  const available = bank.filter(q => !usedIds.has(q.id));
+  if (!available.length) return null;
+
+  let targetDiff;
+  if (ability >= 0.7) targetDiff = 3;
+  else if (ability >= 0.4) targetDiff = 2;
+  else targetDiff = 1;
+
+  const weak = profile?.weakAreas || [];
+  const weakMatches = available.filter(q =>
+    weak.some(w => q.blueprint?.toLowerCase().includes(w.toLowerCase()) || q.category?.toLowerCase().includes(w.toLowerCase()))
+  );
+  const pool = (weakMatches.length > 0 && Math.random() < 0.6) ? weakMatches : available;
+  return [...pool].sort((a, b) => Math.abs(a.difficulty - targetDiff) - Math.abs(b.difficulty - targetDiff))[0];
+}
+
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const CAT_COLORS = {
+  "Safe & Effective Care Environment": "#0ea5e9",
+  "Physiological Integrity": "#10b981",
+  "Health Promotion & Maintenance": "#f59e0b",
+  "Psychosocial Integrity": "#8b5cf6"
+};
+const DIFF_LABELS = { 1: "Foundational", 2: "Applying", 3: "Analyzing" };
+const DIFF_COLORS = { 1:{ bg:"#d1fae5", text:"#065f46" }, 2:{ bg:"#fef3c7", text:"#92400e" }, 3:{ bg:"#fee2e2", text:"#991b1b" } };
+const NGN_LABELS = { mcq:"MCQ", sata:"SATA", bowtie:"NGN · Bow-Tie", casestudy:"NGN · Case Study" };
+
+// ─── UI ATOMS ─────────────────────────────────────────────────────────────────
+function Tag({ children, color, bg, border }) {
+  return <span style={{ fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:99, letterSpacing:0.8, textTransform:"uppercase", background:bg||"#f1f5f9", color:color||"#64748b", border:border?`1px solid ${border}`:"none" }}>{children}</span>;
+}
+
+function Btn({ children, onClick, disabled, variant="primary", small }) {
+  const base = { border:"none", borderRadius:10, fontFamily:"Georgia,serif", fontWeight:700, cursor:disabled?"default":"pointer", letterSpacing:0.5, padding: small?"9px 18px":"13px 28px", fontSize: small?13:15 };
+  const variants = {
+    primary:{ background:disabled?"#e2e8f0":"#0f172a", color:disabled?"#94a3b8":"#fff" },
+    outline:{ background:"#f8fafc", color:"#475569", border:"1.5px solid #e2e8f0" }
+  };
+  return <button style={{...base,...variants[variant]}} onClick={onClick} disabled={disabled}>{children}</button>;
+}
+
+function OptionBtn({ letter, text, state, onClick }) {
+  const base = { display:"flex", alignItems:"flex-start", gap:12, padding:"13px 16px", borderRadius:10, border:"2px solid #e2e8f0", background:"#f8fafc", cursor:"pointer", textAlign:"left", width:"100%", fontFamily:"Georgia,serif", fontSize:15, transition:"all 0.15s" };
+  const states = { selected:{ border:"2px solid #0ea5e9", background:"#f0f9ff" }, correct:{ border:"2px solid #10b981", background:"#f0fdf4", cursor:"default" }, wrong:{ border:"2px solid #ef4444", background:"#fef2f2", cursor:"default" }, dim:{ border:"2px solid #f1f5f9", background:"#f8fafc", opacity:0.45, cursor:"default" }, neutral:{} };
+  return (
+    <button style={{...base,...states[state||"neutral"]}} onClick={onClick}>
+      <span style={{ minWidth:26, height:26, borderRadius:"50%", background:"#e2e8f0", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"#475569", flexShrink:0, marginTop:1 }}>{letter}</span>
+      <span style={{ flex:1, color:"#1e293b", lineHeight:1.55 }}>{text}</span>
+      {state==="correct" && <span style={{ color:"#10b981", fontWeight:700, fontSize:16 }}>✓</span>}
+      {state==="wrong" && <span style={{ color:"#ef4444", fontWeight:700, fontSize:16 }}>✗</span>}
+    </button>
+  );
+}
+
+// ─── QUESTION RENDERERS ───────────────────────────────────────────────────────
+function MCQQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+      {q.options.map((opt,idx) => {
+        let state = "neutral";
+        if (submitted) { if(idx===q.correct[0]) state="correct"; else if(idx===(selected||[])[0]&&idx!==q.correct[0]) state="wrong"; else state="dim"; }
+        else if ((selected||[]).includes(idx)) state="selected";
+        return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+      })}
+    </div>
+  );
+}
+
+function SATAQuestion({ q, submitted, selected, onSelect }) {
+  return (
+    <div>
+      <div style={{ fontSize:12, color:"#64748b", marginBottom:10, fontStyle:"italic" }}>Select all that apply — choose every correct option.</div>
+      <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
+        {q.options.map((opt,idx) => {
+          let state = "neutral";
+          if (submitted) { if(q.correct.includes(idx)) state="correct"; else if((selected||[]).includes(idx)) state="wrong"; else state="dim"; }
+          else if ((selected||[]).includes(idx)) state="selected";
+          return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
+  const col = { display:"flex", flexDirection:"column", gap:6, flex:1, minWidth:160 };
+  const colHead = { fontSize:11, fontWeight:700, color:"#64748b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:4 };
+  const colLimit = { left:2, center:1, right:2 };
+
+  function BtOpt({ label, selected, correct, wrong, dim, onClick }) {
+    let bg="#f8fafc",border="1.5px solid #e2e8f0",color="#1e293b";
+    if(dim){color="#cbd5e1";border="1.5px solid #f1f5f9";}
+    if(selected){bg="#f0f9ff";border="1.5px solid #0ea5e9";}
+    if(correct){bg="#f0fdf4";border="1.5px solid #10b981";color="#065f46";}
+    if(wrong){bg="#fef2f2";border="1.5px solid #ef4444";color="#991b1b";}
+    return <button onClick={onClick} style={{ padding:"8px 10px", borderRadius:8, border, background:bg, color, fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", fontFamily:"Georgia,serif", lineHeight:1.4, width:"100%" }}>{correct&&"✓ "}{wrong&&"✗ "}{label}</button>;
+  }
+
+  function handleSelect(key, idx) {
+    if(submitted) return;
+    const limit = colLimit[key];
+    const sel = btState[key]||[];
+    let next;
+    if(sel.includes(idx)) { next = sel.filter(x=>x!==idx); }
+    else if(sel.length < limit) { next = [...sel, idx]; }
+    else { next = limit===1 ? [idx] : sel; } // for center (limit 1), replace selection
+    onBTSelect(key, next);
+  }
+
+  function renderCol(options, correctArr, key) {
+    const sel = btState[key]||[];
+    const limit = colLimit[key];
+    return options.map((opt,idx) => {
+      const isSel=sel.includes(idx);
+      const isCorr=submitted&&correctArr.includes(idx);
+      const isWrong=submitted&&isSel&&!correctArr.includes(idx);
+      const isDim=submitted&&!isCorr&&!isSel;
+      const isDisabled=!submitted&&!isSel&&sel.length>=limit;
+      return <BtOpt key={idx} label={opt} selected={!submitted&&isSel} correct={isCorr} wrong={isWrong} dim={isDim||isDisabled} onClick={isDisabled?null:()=>handleSelect(key,idx)} />;
+    });
+  }
+
+  const leftSel=(btState.left||[]).length, centerSel=(btState.center||[]).length, rightSel=(btState.right||[]).length;
+
+  function SlotBadge({ filled, total }) {
+    return <div style={{ fontSize:10, color: filled===total?"#10b981":"#94a3b8", marginBottom:6, fontWeight:600 }}>{filled}/{total} selected</div>;
+  }
+
+  return (
+    <div>
+      {!submitted&&(
+        <div style={{ fontSize:12, color:"#64748b", marginBottom:14, fontStyle:"italic", background:"#f0f9ff", padding:"10px 14px", borderRadius:8, border:"1px solid #bae6fd" }}>
+          🎯 <strong>Bow-Tie Format:</strong> Select <strong>2 nursing actions</strong> (left) → identify <strong>1 condition</strong> (center) → select <strong>2 parameters to monitor</strong> (right)
+        </div>
+      )}
+      <div style={{ display:"flex", gap:8, marginBottom:20, alignItems:"flex-start" }}>
+        <div style={col}>
+          <div style={colHead}>⚕️ {q.leftLabel}</div>
+          {!submitted&&<SlotBadge filled={leftSel} total={2} />}
+          {renderCol(q.leftOptions, q.correctLeft, "left")}
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0, paddingTop:40, gap:4 }}>
+          <div style={{ fontSize:20, color:"#0ea5e9" }}>⟶</div>
+        </div>
+        <div style={{ ...col, maxWidth:180 }}>
+          <div style={colHead}>🔍 {q.centerLabel}</div>
+          {!submitted&&<SlotBadge filled={centerSel} total={1} />}
+          {renderCol(q.centerOptions, q.correctCenter, "center")}
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", flexShrink:0, paddingTop:40, gap:4 }}>
+          <div style={{ fontSize:20, color:"#0ea5e9" }}>⟶</div>
+        </div>
+        <div style={col}>
+          <div style={colHead}>🎯 {q.rightLabel}</div>
+          {!submitted&&<SlotBadge filled={rightSel} total={2} />}
+          {renderCol(q.rightOptions, q.correctRight, "right")}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+      {q.questions.map((sub,si) => {
+        const sel = csAnswers[sub.qid]||[];
+        return (
+          <div key={sub.qid} style={{ background:"#f8fafc", borderRadius:12, padding:"16px 18px", border:"1px solid #e2e8f0" }}>
+            <div style={{ fontWeight:700, fontSize:12, color:"#64748b", marginBottom:8, letterSpacing:0.5 }}>QUESTION {si+1} OF {q.questions.length}</div>
+            <div style={{ fontFamily:"Georgia,serif", fontSize:15, lineHeight:1.65, color:"#0f172a", marginBottom:12 }}>{sub.stem}</div>
+            {sub.type==="sata"&&<div style={{ fontSize:11, color:"#94a3b8", marginBottom:8, fontStyle:"italic" }}>Select all that apply</div>}
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {sub.options.map((opt,idx) => {
+                let state="neutral";
+                if(submitted){ if(sub.correct.includes(idx)) state="correct"; else if(sel.includes(idx)) state="wrong"; else state="dim"; }
+                else if(sel.includes(idx)) state="selected";
+                return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const cur=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,cur.includes(idx)?cur.filter(x=>x!==idx):[...cur,idx]); }}} />;
+              })}
+            </div>
+            {submitted&&<div style={{ marginTop:12, padding:"10px 14px", background:"#fff", borderRadius:8, border:"1px solid #e2e8f0", fontSize:13, color:"#475569", lineHeight:1.6 }}><strong>Rationale:</strong> {sub.rationale}</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── PROFILE SCREEN ───────────────────────────────────────────────────────────
+const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
+
+function ProfileScreen({ onStart }) {
+  const [name,setName]=useState(""); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(""); const [mode,setMode]=useState("practice");
+  const inp={ width:"100%", padding:"10px 14px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, fontFamily:"Georgia,serif", color:"#0f172a", background:"#fff", outline:"none", boxSizing:"border-box" };
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+      <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
+        <div style={{ textAlign:"center", marginBottom:28 }}>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
+          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>Student Session Profile</div>
+          <div style={{ fontSize:14, color:"#64748b", marginTop:6 }}>Complete before starting to personalize the adaptive session.</div>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
+          <div style={{ display:"flex", gap:14 }}>
+            <div style={{ flex:1 }}><label style={lbl}>Student Name</label><input style={inp} placeholder="e.g. Maria R." value={name} onChange={e=>setName(e.target.value)} /></div>
+          </div>
+          {/* Mode Selection */}
+          <div>
+            <label style={lbl}>Session Mode</label>
+            <div style={{ display:"flex", gap:10 }}>
+              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 NCLEX Simulation",sub:"85–150 questions · Pass/Fail only"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
+                <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
+                  <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
+                  <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {mode==="practice"&&(
+            <div>
+              <label style={lbl}>Number of Questions</label>
+              <div style={{ display:"flex", gap:10 }}>
+                {[5,10,15,20,30].map(n=>(
+                  <button key={n} onClick={()=>setNotes(prev=>prev)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:"#f8fafc", color:"#475569", borderColor:"#e2e8f0" }} data-qcount={n}>{n}</button>
+                ))}
+              </div>
+              <div style={{ fontSize:11, color:"#94a3b8", marginTop:6 }}>Click a number above to set question count (selected will highlight).</div>
+            </div>
+          )}
+
+          <div>
+            <label style={lbl}>Weak Areas <span style={{ color:"#94a3b8", fontWeight:400 }}>(select all — adaptive engine prioritizes these)</span></label>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
+              {BLUEPRINT_AREAS.map(area=>(
+                <button key={area} onClick={()=>setWeak(w=>w.includes(area)?w.filter(x=>x!==area):[...w,area])} style={{ padding:"6px 13px", borderRadius:99, fontSize:12, fontWeight:600, cursor:"pointer", border:"1.5px solid", background:weak.includes(area)?"#0f172a":"#f8fafc", color:weak.includes(area)?"#fff":"#475569", borderColor:weak.includes(area)?"#0f172a":"#e2e8f0", fontFamily:"Georgia,serif" }}>{area}</button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label style={lbl}>Tutor Notes <span style={{ color:"#94a3b8", fontWeight:400 }}>(optional)</span></label>
+            <textarea style={{ ...inp, minHeight:70, resize:"vertical" }} placeholder="e.g. Struggled with priority questions last session. Focus on pharm today." value={notes} onChange={e=>setNotes(e.target.value)} />
+          </div>
+        </div>
+
+        <StartButton name={name} mode={mode} weak={weak} notes={notes} onStart={onStart} />
+      </div>
+    </div>
+  );
+}
+
+function StartButton({ name, mode, weak, notes, onStart }) {
+  const [qCount, setQCount] = useState(10);
+  return (
+    <div style={{ marginTop:24 }}>
+      {mode==="practice"&&(
+        <div style={{ marginBottom:14 }}>
+          <label style={lbl}>Number of Questions</label>
+          <div style={{ display:"flex", gap:10 }}>
+            {[5,10,15,20,30].map(n=>(
+              <button key={n} onClick={()=>setQCount(n)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:qCount===n?"#0f172a":"#f8fafc", color:qCount===n?"#fff":"#475569", borderColor:qCount===n?"#0f172a":"#e2e8f0" }}>{n}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:qCount,mode})}
+        style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
+        {name.trim() ? (mode==="nclex" ? "Begin NCLEX Simulation →" : "Start Practice Session →") : "Enter student name to continue"}
+      </button>
+    </div>
+  );
+}
+
+const lbl={ fontSize:12, fontWeight:700, color:"#475569", letterSpacing:0.5, textTransform:"uppercase", display:"block", marginBottom:6 };
+
+// ─── RESULTS SCREEN ───────────────────────────────────────────────────────────
+function ResultsScreen({ profile, history, catResult, onRestart }) {
+  const isNCLEX = profile.mode==="nclex";
+  const total=history.length, correct=history.filter(h=>h.correct).length, pct=total?Math.round((correct/total)*100):0;
+  const passed = catResult==="PASS" || (!catResult && pct>=75);
+  const ringColor = isNCLEX ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
+  const byBlueprint={};
+  history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+      <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
+        <div style={{ textAlign:"center", marginBottom:24 }}>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"NCLEX Simulation Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
+          <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
+        </div>
+
+        {/* Score Ring */}
+        <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
+          <div style={{ width:160, height:160, borderRadius:"50%", border:`6px solid ${ringColor}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4 }}>
+            {isNCLEX ? (
+              <>
+                <span style={{ fontSize:32, fontWeight:700, color:ringColor }}>{passed?"PASS":"FAIL"}</span>
+                <span style={{ fontSize:12, color:"#64748b" }}>Simulated result</span>
+              </>
+            ) : (
+              <>
+                <span style={{ fontSize:36, fontWeight:700, color:"#0f172a" }}>{pct}%</span>
+                <span style={{ fontSize:13, color:"#64748b" }}>{correct}/{total} correct</span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {isNCLEX&&(
+          <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
+            <strong>{passed?"✓ Above Passing Standard":"✗ Below Passing Standard"}</strong><br/>
+            {passed?"The adaptive engine determined competency above the NCLEX passing standard. In a real exam, additional question distribution and item response theory would be used.":"The adaptive engine determined performance below the NCLEX passing standard. Focus areas are highlighted in the breakdown below."}
+          </div>
+        )}
+
+        {/* Blueprint Breakdown */}
+        <div style={{ marginBottom:24 }}>
+          <div style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:12 }}>Blueprint Breakdown</div>
+          {Object.entries(byBlueprint).map(([bp,data])=>{ const bpPct=Math.round((data.correct/data.total)*100); const col=CAT_COLORS[bp]||"#6366f1"; return (
+            <div key={bp} style={{ marginBottom:10 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                <span style={{ fontSize:13, color:"#0f172a" }}>{bp}</span>
+                <span style={{ fontSize:13, fontWeight:700, color:bpPct>=75?"#10b981":"#ef4444" }}>{bpPct}% ({data.correct}/{data.total})</span>
+              </div>
+              <div style={{ height:6, background:"#e2e8f0", borderRadius:99 }}>
+                <div style={{ height:"100%", width:`${bpPct}%`, background:col, borderRadius:99 }} />
+              </div>
+            </div>
+          );})}
+        </div>
+
+        {/* Question Review */}
+        <div style={{ marginBottom:24 }}>
+          <div style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:10 }}>Question Review</div>
+          {history.map((h,i)=>(
+            <div key={i} style={{ padding:"10px 14px", background:"#f8fafc", borderRadius:8, marginBottom:6, borderLeft:`4px solid ${h.correct?"#10b981":"#ef4444"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div>
+                <div style={{ fontSize:11, color:"#94a3b8", marginBottom:2 }}>{h.blueprint} · {NGN_LABELS[h.type]}</div>
+                <div style={{ fontSize:13, color:"#475569" }}>Q{i+1}: {h.stem?h.stem.substring(0,65)+"...":"(NGN Case Study)"}</div>
+              </div>
+              <span style={{ color:h.correct?"#10b981":"#ef4444", fontWeight:700, fontSize:15, marginLeft:12 }}>{h.correct?"✓":"✗"}</span>
+            </div>
+          ))}
+        </div>
+
+        {profile.notes&&<div style={{ background:"#f8fafc", borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:13, color:"#475569", border:"1px solid #e2e8f0" }}><strong>Tutor Notes:</strong> {profile.notes}</div>}
+        <button onClick={onRestart} style={{ width:"100%", padding:"13px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"Georgia,serif" }}>New Session</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── QUIZ SCREEN ──────────────────────────────────────────────────────────────
+function QuizScreen({ profile, onFinish }) {
+  const [history, setHistory] = useState([]);
+  const [ability, setAbility] = useState(0.5);
+  const activeBank = profile.mode==="remediation" ? REMEDIATION_BANK : QUESTION_BANK;
+  const [currentQ, setCurrentQ] = useState(()=>pickNextQuestion(activeBank,[],profile,0.5));
+  const [selected, setSelected] = useState([]);
+  const [btState, setBtState] = useState({left:[],center:[],right:[]});
+  const [csAnswers, setCsAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [catResult, setCatResult] = useState(null);
+  const isNCLEX = profile.mode==="nclex";
+
+  const q = currentQ;
+  if(!q){ onFinish(history, catResult); return null; }
+
+  const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
+  const diffStyle = DIFF_COLORS[q.difficulty];
+
+  function isAnswered() {
+    if(q.type==="mcq") return selected.length===1;
+    if(q.type==="sata") return selected.length>0;
+    if(q.type==="bowtie") return btState.left.length===2&&btState.center.length===1&&btState.right.length===2;
+    if(q.type==="casestudy") return q.questions.every(sq=>(csAnswers[sq.qid]||[]).length>0);
+    return false;
+  }
+
+  function calcCorrect() {
+    if(q.type==="mcq") return selected[0]===q.correct[0];
+    if(q.type==="sata") return [...selected].sort().join(",")===q.correct.slice().sort().join(",");
+    if(q.type==="bowtie") {
+      return [...(btState.left||[])].sort().join(",")===q.correctLeft.slice().sort().join(",")&&
+             [...(btState.center||[])].sort().join(",")===q.correctCenter.slice().sort().join(",")&&
+             [...(btState.right||[])].sort().join(",")===q.correctRight.slice().sort().join(",");
+    }
+    if(q.type==="casestudy") return q.questions.every(sq=>[...(csAnswers[sq.qid]||[])].sort().join(",")===sq.correct.slice().sort().join(","));
+    return false;
+  }
+
+  function handleSubmit() {
+    if(!isAnswered()) return;
+    setSubmitted(true);
+  }
+
+  function handleNext() {
+    const isCorrect = calcCorrect();
+    const newAbility = updateAbility(ability, isCorrect, q.difficulty);
+    const newHistory = [...history, { id:q.id, type:q.type, blueprint:q.blueprint, stem:q.stem||null, correct:isCorrect }];
+    setHistory(newHistory);
+    setAbility(newAbility);
+
+    if(isNCLEX) {
+      const result = shouldStop(newHistory, newAbility);
+      if(result) { setCatResult(result); onFinish(newHistory, result); return; }
+    } else {
+      if(newHistory.length>=profile.qCount) { onFinish(newHistory, null); return; }
+    }
+
+    const next = pickNextQuestion(activeBank, newHistory, profile, newAbility);
+    if(!next){ onFinish(newHistory, isNCLEX?shouldStop(newHistory,newAbility)||"PASS":null); return; }
+    setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
+  }
+
+  const qNum = history.length+1;
+  const correctSoFar = history.filter(h=>h.correct).length;
+  const progressPct = isNCLEX ? Math.min(100,(qNum/MIN_Q)*100) : (qNum/profile.qCount)*100;
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+      <div style={{ background:"#fff", borderRadius:20, padding:"30px 34px", maxWidth:860, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
+
+        {/* Header */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, gap:12, flexWrap:"wrap" }}>
+          <div>
+            <div style={{ fontSize:18, fontWeight:700, color:"#0f172a", letterSpacing:2 }}>NCLEX-RN</div>
+            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"CAT Simulation":"Practice"}</div>
+          </div>
+          <div style={{ flex:1, maxWidth:260 }}>
+            <div style={{ fontSize:11, color:"#64748b", marginBottom:5 }}>
+              {isNCLEX ? `Question ${qNum} · Min ${MIN_Q} required` : `Question ${qNum} of ${profile.qCount}`}
+            </div>
+            <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
+              <div style={{ height:"100%", width:`${progressPct}%`, background: isNCLEX?"#8b5cf6":"#0ea5e9", borderRadius:99, transition:"width 0.4s" }} />
+            </div>
+          </div>
+          <div style={{ fontSize:12, fontWeight:600, color:"#475569", background:"#f8fafc", padding:"5px 12px", borderRadius:99, border:"1px solid #e2e8f0" }}>
+            {isNCLEX ? `Q${qNum}` : `${correctSoFar}/${history.length} correct`}
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div style={{ display:"flex", gap:7, flexWrap:"wrap", marginBottom:14 }}>
+          <Tag children={q.blueprint} color={catColor} bg={catColor+"18"} border={catColor+"44"} />
+          <Tag children={DIFF_LABELS[q.difficulty]} color={diffStyle.text} bg={diffStyle.bg} />
+          <Tag children={NGN_LABELS[q.type]} color="#6366f1" bg="#eef2ff" border="#c7d2fe" />
+          <Tag children={q.category} />
+        </div>
+
+        {/* Case intro */}
+        {q.caseIntro&&(
+          <div style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderRadius:10, padding:"14px 16px", marginBottom:16, fontSize:14, lineHeight:1.7, color:"#0c4a6e", fontStyle:"italic" }}>
+            <strong style={{ fontStyle:"normal", color:"#0369a1" }}>Clinical Scenario: </strong>{q.caseIntro}
+          </div>
+        )}
+
+        {/* Stem */}
+        <div style={{ fontSize:16, lineHeight:1.7, color:"#0f172a", marginBottom:18, fontFamily:"Georgia,serif" }}>{q.stem}</div>
+
+        {/* Question */}
+        {q.type==="mcq"&&<MCQQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
+        {q.type==="sata"&&<SATAQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
+        {q.type==="bowtie"&&<BowTieQuestion q={q} submitted={submitted} btState={btState} onBTSelect={(col,arr)=>setBtState(s=>({...s,[col]:arr}))} />}
+        {q.type==="casestudy"&&<CaseStudyQuestion q={q} submitted={submitted} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
+
+        {/* Rationale */}
+        {submitted&&q.type!=="casestudy"&&(
+          <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:12, padding:"18px 20px", marginBottom:20 }}>
+            <div style={{ fontWeight:700, fontSize:13, color:"#0f172a", marginBottom:10, letterSpacing:0.5 }}>📋 RATIONALE</div>
+            {q.type==="bowtie" ? (
+              <>
+                <div style={{ background:"#d1fae5", padding:"10px 14px", borderRadius:8, marginBottom:8, fontSize:13, color:"#065f46", lineHeight:1.6 }}><strong>Condition:</strong> {q.rationale.condition}</div>
+                <div style={{ background:"#dbeafe", padding:"10px 14px", borderRadius:8, marginBottom:8, fontSize:13, color:"#1e40af", lineHeight:1.6 }}><strong>Actions:</strong> {q.rationale.actions}</div>
+                <div style={{ background:"#f0fdf4", padding:"10px 14px", borderRadius:8, marginBottom:8, fontSize:13, color:"#065f46", lineHeight:1.6 }}><strong>Outcomes:</strong> {q.rationale.outcomes}</div>
+                <div style={{ background:"#fef2f2", padding:"10px 14px", borderRadius:8, fontSize:13, color:"#991b1b", lineHeight:1.6 }}><strong>Incorrect options:</strong> {q.rationale.wrong}</div>
+              </>
+            ) : (
+              <>
+                <div style={{ background:"#d1fae5", padding:"10px 14px", borderRadius:8, marginBottom:8, fontSize:13, color:"#065f46", lineHeight:1.6 }}><strong>✓ Correct:</strong> {q.rationale.correct}</div>
+                {q.options.map((_,idx)=>{ if(q.correct.includes(idx)) return null; const wrongItems=q.options.map((_,i)=>i).filter(i=>!q.correct.includes(i)); const wi=wrongItems.indexOf(idx); return wi>=0&&q.rationale.wrong[wi]?(<div key={idx} style={{ padding:"8px 12px", background:"#fff", borderRadius:8, border:"1px solid #f1f5f9", fontSize:12, color:"#475569", lineHeight:1.6, marginBottom:5 }}><strong>✗ {String.fromCharCode(65+idx)}:</strong> {q.rationale.wrong[wi]}</div>):null; })}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Actions */}
+        <div style={{ display:"flex", justifyContent:"flex-end", gap:10 }}>
+          {!submitted ? (
+            <Btn onClick={handleSubmit} disabled={!isAnswered()}>Submit Answer</Btn>
+          ) : (
+            <Btn onClick={handleNext}>
+              {isNCLEX ? "Continue Exam →" : (qNum>=profile.qCount?"View Results →":"Next Question →")}
+            </Btn>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ROOT ─────────────────────────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen] = useState("profile");
+  const [profile, setProfile] = useState(null);
+  const [finalHistory, setFinalHistory] = useState([]);
+  const [catResult, setCatResult] = useState(null);
+
+  if(screen==="profile") return <ProfileScreen onStart={p=>{ setProfile(p); setScreen("quiz"); }} />;
+  if(screen==="quiz") return <QuizScreen profile={profile} onFinish={(h,r)=>{ setFinalHistory(h); setCatResult(r); setScreen("results"); }} />;
+  if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} catResult={catResult} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setScreen("profile"); }} />;
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

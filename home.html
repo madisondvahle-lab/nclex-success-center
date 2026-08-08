@@ -102,11 +102,12 @@
       white-space: nowrap;
     }
 
+    /* Student cards */
     .student-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
       animation: fadeUpSlow 0.55s cubic-bezier(0.22,1,0.36,1) both;
     }
 
@@ -182,26 +183,27 @@
       transform: translateX(3px);
     }
 
-    .admin-link {
+    /* Browse all */
+    .browse-link {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 11px;
-      border-radius: 12px;
-      border: 1.5px solid #e2e8f0;
+      padding: 13px;
+      border-radius: 14px;
+      border: 1.5px dashed #cbd5e1;
       background: transparent;
-      color: #94a3b8;
-      font-size: 13px;
+      color: #64748b;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.18s ease;
       font-family: 'Inter', sans-serif;
     }
-    .admin-link:hover {
+    .browse-link:hover {
       border-color: #94a3b8;
-      color: #475569;
+      color: #374151;
       background: #f8fafc;
     }
 
@@ -239,6 +241,12 @@
 
     <div class="student-grid">
 
+      <!-- ══════════════════════════════════════════════════════
+           STUDENT CARDS — To add a new student:
+           1. Copy one <a class="student-btn"> block below
+           2. Update: name, hub link, avatar letter, avatar color, badges
+           ══════════════════════════════════════════════════════ -->
+
       <a href="alyssa-hub.html" class="student-btn">
         <div class="avatar" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd); color:#0369a1;">A</div>
         <div class="student-info">
@@ -273,25 +281,14 @@
         <div class="arrow">→</div>
       </a>
 
-      <a href="kyle-hub.html" class="student-btn">
-        <div class="avatar" style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe); color:#3730a3;">K</div>
-        <div class="student-info">
-          <div class="student-name">Kyle</div>
-          <div class="student-sub">
-            <span class="badge" style="background:#fef3c7; color:#92400e;">📌 Diagnostic Assessment</span>
-          </div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
-
       <!-- TEMPLATE — copy, uncomment, and fill in for next student
 
       <a href="STUDENTNAME-hub.html" class="student-btn">
         <div class="avatar" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); color:#166534;">M</div>
         <div class="student-info">
-          <div class="student-name">Name</div>
+          <div class="student-name">Maria</div>
           <div class="student-sub">
-            <span class="badge" style="background:#fef3c7; color:#92400e;">📌 Diagnostic Assessment</span>
+            <span class="badge" style="background:#fef3c7; color:#92400e;">📌 Module 2 — Maternal & OB</span>
           </div>
         </div>
         <div class="arrow">→</div>
@@ -301,7 +298,12 @@
 
     </div>
 
-    <a href="admin.html" class="admin-link">🔐 Madison's Admin Dashboard</a>
+    <a href="nclex-success-center.html" class="browse-link">
+      📚 Browse all modules
+    </a>
+    <a href="question-bank.html" class="browse-link" style="margin-top:8px;">
+      📋 Question Bank (118 questions)
+    </a>
 
   </div>
 

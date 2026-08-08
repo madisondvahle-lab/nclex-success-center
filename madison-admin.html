@@ -101,6 +101,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .module-emoji{font-size:1.2rem;}
 .module-meta-name{font-size:.88rem;font-weight:700;color:var(--text);}
 .module-sub{font-size:.72rem;color:var(--muted);}
+.catalog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.catalog-copy{flex:1;min-width:0;}.catalog-name{font-size:.9rem;font-weight:800;}.catalog-meta{font-size:.76rem;color:var(--muted);margin-top:3px;word-break:break-word;}
 /* Toggle switch */
 .toggle-wrap{position:relative;width:46px;height:26px;flex-shrink:0;}
 .toggle-wrap input{opacity:0;width:0;height:0;}
@@ -198,6 +200,12 @@ input:disabled+.toggle-slider{cursor:not-allowed;}
       <div class="empty-state"><div class="spinner"></div></div>
     </div>
 
+    <div class="section-header">
+      <div class="section-title">Module Catalog</div>
+      <button class="btn btn-brand" onclick="openModuleModal()">+ Add Module</button>
+    </div>
+    <div id="moduleCatalog"><div class="empty-state"><div class="spinner"></div></div></div>
+
     <!-- DETAIL PANEL -->
     <div class="detail-wrap" id="detailWrap" style="display:none">
       <div class="detail-top">
@@ -239,7 +247,7 @@ input:disabled+.toggle-slider{cursor:not-allowed;}
 
       <!-- TAB: MODULES -->
       <div class="tab-pane" id="tab-modules">
-        <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Toggle which modules this student can access. Modules 7–21 are coming soon and cannot be enabled yet.</p>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">Toggle which available modules this student can access. Add, edit, or mark modules available in the catalog below.</p>
         <div class="modules-grid" id="modulesGrid">
           <div class="empty-state"><div class="spinner"></div></div>
         </div>
@@ -289,6 +297,24 @@ input:disabled+.toggle-slider{cursor:not-allowed;}
   </div>
 </div>
 
+<!-- MODULE MODAL -->
+<div class="modal-overlay" id="moduleModal">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-title" id="moduleModalTitle">Add Module</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Module Key</label><input class="form-input" id="modKey" placeholder="e.g. m22"/></div>
+      <div class="form-group"><label class="form-label">Module Number</label><input class="form-input" id="modNumber" type="number" min="1" placeholder="e.g. 22"/></div>
+      <div class="form-group"><label class="form-label">Module Name</label><input class="form-input" id="modName" placeholder="Module title"/></div>
+      <div class="form-group"><label class="form-label">Emoji</label><input class="form-input" id="modEmoji" maxlength="8" placeholder="📚"/></div>
+      <div class="form-group"><label class="form-label">Study Guide URL</label><input class="form-input" id="modGuideUrl" placeholder="module22-guide.html"/></div>
+      <div class="form-group"><label class="form-label">Quiz URL</label><input class="form-input" id="modQuizUrl" placeholder="module22-quiz.html"/></div>
+      <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Description</label><textarea class="form-textarea" id="modDescription" placeholder="Student-facing module description"></textarea></div>
+      <div class="form-group"><label class="form-label">Availability</label><select class="form-select" id="modAvailable"><option value="true">Available to assign</option><option value="false">Coming soon</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-outline-white" style="color:var(--muted);border:1.5px solid var(--border);background:#fff;" onclick="closeModuleModal()">Cancel</button><button class="btn btn-brand" onclick="saveModule()">Save Module</button></div>
+  </div>
+</div>
+
 <!-- ADD/EDIT MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -328,7 +354,7 @@ const { createClient } = supabase;
 const db = createClient(SB_URL, SB_KEY);
 
 // All 21 modules
-const MODULES = [
+let MODULES = [
   {key:'m1',num:1,name:'Newborn Care',emoji:'🍼',available:true,guideUrl:'module1-guide.html',quizUrl:'module1-newborn.html'},
   {key:'m2',num:2,name:'Maternal & OB',emoji:'🤰',available:true,guideUrl:'module2-guide.html',quizUrl:'module2-maternal.html'},
   {key:'m3',num:3,name:'Pharmacology',emoji:'💊',available:true,guideUrl:'module3-guide.html',quizUrl:null},
@@ -354,6 +380,7 @@ const MODULES = [
 
 let currentStudentId = null;
 let editingStudentId = null;
+let editingModuleId = null;
 let allStudents = [];
 
 // ── AUTH ──
@@ -377,18 +404,28 @@ if(localStorage.getItem('mxadmin')==='1'){
 
 // ── LOAD ALL ──
 async function loadAll(){
-  const [studRes, modRes, scoreRes, noteRes] = await Promise.all([
+  const [studRes, modRes, scoreRes, noteRes, catalogRes] = await Promise.all([
     db.from('students').select('*').order('created_at'),
     db.from('student_module_access').select('*').eq('enabled',true),
     db.from('student_scores').select('id'),
     db.from('session_notes').select('id'),
+    db.from('modules').select('*').order('module_number'),
   ]);
+  if(!catalogRes.error && catalogRes.data && catalogRes.data.length){
+    MODULES = catalogRes.data.map(m=>({key:m.module_key,num:m.module_number,name:m.name,emoji:m.emoji,desc:m.description,available:m.is_available,guideUrl:m.guide_url,quizUrl:m.quiz_url,id:m.id}));
+  }
   allStudents = studRes.data || [];
   document.getElementById('statStudents').textContent = allStudents.length;
   document.getElementById('statModules').textContent = (modRes.data||[]).length;
   document.getElementById('statScores').textContent = (scoreRes.data||[]).length;
   document.getElementById('statNotes').textContent = (noteRes.data||[]).length;
   renderStudentGrid();
+  renderModuleCatalog();
+}
+
+function renderModuleCatalog(){
+  const container=document.getElementById('moduleCatalog');
+  container.innerHTML=MODULES.map(m=>`<div class="catalog-card"><span class="module-emoji">${esc(m.emoji||'📚')}</span><div class="catalog-copy"><div class="catalog-name">M${m.num}: ${esc(m.name)}</div><div class="catalog-meta">${m.available?'Available to assign':'Coming soon'}${m.guideUrl?' · Guide: '+esc(m.guideUrl):''}${m.quizUrl?' · Quiz: '+esc(m.quizUrl):''}</div></div><button class="btn btn-brand btn-sm" onclick="openModuleModal('${m.id||''}')">Edit</button></div>`).join('');
 }
 
 function renderStudentGrid(){
@@ -517,6 +554,47 @@ async function toggleModule(studentId, moduleKey, enabled, moduleName){
   // refresh stats
   const {data} = await db.from('student_module_access').select('id').eq('enabled',true);
   document.getElementById('statModules').textContent = (data||[]).length;
+}
+
+// ── MODULE CATALOG ──
+function openModuleModal(id=''){
+  const m = MODULES.find(x=>x.id===id);
+  editingModuleId = m ? m.id : null;
+  document.getElementById('moduleModalTitle').textContent = m ? 'Edit Module' : 'Add Module';
+  document.getElementById('modKey').value = m ? m.key : '';
+  document.getElementById('modKey').disabled = !!m;
+  document.getElementById('modNumber').value = m ? m.num : '';
+  document.getElementById('modName').value = m ? m.name : '';
+  document.getElementById('modEmoji').value = m ? m.emoji : '📚';
+  document.getElementById('modGuideUrl').value = m ? (m.guideUrl||'') : '';
+  document.getElementById('modQuizUrl').value = m ? (m.quizUrl||'') : '';
+  document.getElementById('modDescription').value = m ? (m.desc||'') : '';
+  document.getElementById('modAvailable').value = m && !m.available ? 'false' : 'true';
+  document.getElementById('moduleModal').classList.add('open');
+}
+function closeModuleModal(){ document.getElementById('moduleModal').classList.remove('open'); }
+document.getElementById('moduleModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModuleModal();});
+
+async function saveModule(){
+  const module_key=document.getElementById('modKey').value.trim().toLowerCase();
+  const module_number=Number(document.getElementById('modNumber').value);
+  const name=document.getElementById('modName').value.trim();
+  const emoji=document.getElementById('modEmoji').value.trim()||'📚';
+  const description=document.getElementById('modDescription').value.trim();
+  const guide_url=document.getElementById('modGuideUrl').value.trim()||null;
+  const quiz_url=document.getElementById('modQuizUrl').value.trim()||null;
+  const is_available=document.getElementById('modAvailable').value==='true';
+  if(!/^m\d+$/.test(module_key)){toast('Module key must use the format m22','error');return;}
+  if(!Number.isInteger(module_number)||module_number<1){toast('Enter a positive module number','error');return;}
+  if(!name){toast('Module name is required','error');return;}
+  const payload={module_key,module_number,name,emoji,description,guide_url,quiz_url,is_available};
+  const request=editingModuleId ? db.from('modules').update(payload).eq('id',editingModuleId) : db.from('modules').insert(payload);
+  const {error}=await request;
+  if(error){toast('Error: '+error.message,'error');return;}
+  closeModuleModal();
+  toast(editingModuleId?'Module updated ✓':'Module added ✓');
+  await loadAll();
+  if(currentStudentId) loadModules(currentStudentId);
 }
 
 // ── SCORES ──
