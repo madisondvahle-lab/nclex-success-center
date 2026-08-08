@@ -473,11 +473,12 @@
   }
 
   (async function init() {
-    const {data:{session}} = await sbClient.auth.getSession();
+    const { data: { session } } = await sbClient.auth.getSession();
     if (!session) { location.replace('student-login.html?next=kyle-hub.html'); return; }
-    const {data:student} = await sbClient.from('students').select('id,name').eq('auth_user_id',session.user.id).maybeSingle();
+    const { data: student } = await sbClient.from('students').select('id,name').eq('auth_user_id', session.user.id).maybeSingle();
     if (student && student.name === 'Kyle Batacan') { unlockHub(student.id, 'Kyle'); return; }
-    document.getElementById('pin-error').textContent = 'This account is not assigned to Kyle’s hub.';
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'This account is not assigned to Kyle’s hub.';
   })();
 
   let pinBuffer = '';
@@ -508,7 +509,8 @@
   });
 
   async function checkPin() {
-    document.getElementById('pin-error').textContent = 'Please sign in with Kyle’s assigned email account.';
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'Please sign in with Kyle’s assigned email account.';
     pinBuffer = '';
     updateDots(true);
   }
