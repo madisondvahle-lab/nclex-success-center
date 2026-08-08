@@ -10,20 +10,25 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
 
-    /* ── PIN Gate ── */
-    #pin-gate {
-      position: fixed; inset: 0; z-index: 9999;
+    /* ── PIN-only body ── */
+    body {
+      font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
-      display: flex; align-items: center; justify-content: center; padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
-    #pin-gate::before {
-      content: ""; position: absolute; inset: 0;
+    body::before {
+      content: ""; position: fixed; inset: 0;
       background: radial-gradient(ellipse at 70% 30%, rgba(251,146,60,0.12) 0%, transparent 55%),
                   radial-gradient(ellipse at 20% 80%, rgba(244,63,94,0.10) 0%, transparent 55%);
-      pointer-events: none;
+      pointer-events: none; z-index: 0;
     }
+
+    /* ── PIN card ── */
     .pin-card {
       background: #fff; border-radius: 24px; padding: 44px 40px 40px;
       max-width: 380px; width: 100%; text-align: center;
@@ -55,7 +60,14 @@
     .pin-key.del    { color: #94a3b8; font-size: 16px; }
     .pin-error { font-size: 13px; color: #ef4444; font-weight: 600; min-height: 20px; margin-top: 4px; }
     .pin-hint { font-size: 12px; color: #94a3b8; margin-top: 16px; }
-    body.locked { overflow: hidden; }
+
+    /* ── Hub styles (only matter after unlock) ── */
+    body.unlocked {
+      background: #f0f2f8;
+      display: block;
+      padding: 0;
+    }
+    body.unlocked::before { display: none; }
 
     .site-header {
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
@@ -78,16 +90,17 @@
     .header-byline { font-size: 13px; color: #475569; font-weight: 500; }
 
     .main { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
-
-    .section-label {
-      font-size: 11px; font-weight: 700; color: #64748b;
-      letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px;
-    }
+    .section-label { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 16px; }
 
     .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 24px rgba(15,23,42,0.09); margin-bottom: 16px; }
     .card-accent-orange { height: 5px; background: linear-gradient(90deg, #ea580c, #fb923c); }
     .card-accent-sky    { height: 5px; background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
     .card-accent-slate  { height: 5px; background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+    .card-accent-red    { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
+    .card-accent-blue   { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .card-accent-teal   { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+    .card-accent-green  { height: 5px; background: linear-gradient(90deg, #10b981, #34d399); }
+    .card-accent-purple { height: 5px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
     .card-body { padding: 28px 34px 32px; }
 
     .module-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -95,30 +108,36 @@
     .module-emoji-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
     .emoji-orange { background: linear-gradient(135deg,#fff7ed,#ffedd5); border: 1px solid #fdba74; }
     .emoji-sky    { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border: 1px solid #7dd3fc; }
+    .emoji-red    { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
+    .emoji-blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
+    .emoji-teal   { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
+    .emoji-green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1px solid #86efac; }
+    .emoji-purple { background: linear-gradient(135deg,#faf5ff,#ede9fe); border: 1px solid #c4b5fd; }
     .module-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 3px; }
     .eyebrow-orange { color: #ea580c; }
     .eyebrow-sky    { color: #0ea5e9; }
+    .eyebrow-red    { color: #ef4444; }
+    .eyebrow-blue   { color: #3b82f6; }
+    .eyebrow-teal   { color: #0d9488; }
+    .eyebrow-green  { color: #059669; }
+    .eyebrow-purple { color: #8b5cf6; }
     .module-name { font-size: 19px; font-weight: 800; color: #0f172a; line-height: 1.2; }
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 12px; border-radius: 99px;
-      font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
-    }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
     .badge-orange { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; }
     .badge-sky    { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
     .badge-yellow { background: #fef9c3; border: 1px solid #fde047; color: #854d0e; }
+    .badge-red    { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+    .badge-blue   { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+    .badge-teal   { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
+    .badge-green  { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; }
+    .badge-purple { background: #ede9fe; border: 1px solid #c4b5fd; color: #5b21b6; }
 
     .module-desc { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 20px; font-weight: 400; }
 
     .flow-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 10px; }
     .flow-steps { display: flex; align-items: stretch; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
-    .flow-step {
-      flex: 1; min-width: 110px;
-      background: #f8fafc; border: 1px solid #e8ecf2;
-      border-radius: 12px; padding: 11px 12px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
+    .flow-step { flex: 1; min-width: 110px; background: #f8fafc; border: 1px solid #e8ecf2; border-radius: 12px; padding: 11px 12px; display: flex; flex-direction: column; gap: 4px; }
     .flow-step.active-orange { background: #fff7ed; border-color: #fdba74; }
     .flow-step-icon { font-size: 15px; }
     .flow-step-text { font-size: 11px; font-weight: 600; color: #1e293b; line-height: 1.4; }
@@ -129,28 +148,28 @@
     .module-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
     .meta-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; color: #475569; }
 
-    .start-btn {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 14px 28px; border: none; border-radius: 14px;
-      font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700;
-      cursor: pointer; text-decoration: none; letter-spacing: 0.2px;
-      transition: all 0.18s ease; width: 100%;
-    }
-    .btn-orange { background: linear-gradient(135deg,#c2410c,#ea580c); color:#fff; box-shadow:0 4px 14px rgba(234,88,12,0.30); }
-    .btn-orange:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(234,88,12,0.36); filter:brightness(1.06); }
-    .btn-sky { background: linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
-    .btn-sky:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(14,165,233,0.36); filter:brightness(1.06); }
-    .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
-    .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
-
-    .info-box {
-      background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px;
-      padding: 18px 20px; margin-bottom: 22px;
-      display: flex; gap: 12px; align-items: flex-start;
-    }
+    .info-box { background: #fff7ed; border: 1px solid #fdba74; border-radius: 14px; padding: 18px 20px; margin-bottom: 22px; display: flex; gap: 12px; align-items: flex-start; }
     .info-icon { font-size: 20px; flex-shrink: 0; }
     .info-text { font-size: 13px; color: #7c2d12; line-height: 1.65; font-weight: 500; }
     .info-text strong { font-weight: 700; }
+
+    .start-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 14px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; letter-spacing: 0.2px; transition: all 0.18s ease; width: 100%; }
+    .btn-orange { background: linear-gradient(135deg,#c2410c,#ea580c); color:#fff; box-shadow:0 4px 14px rgba(234,88,12,0.30); }
+    .btn-orange:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-sky    { background: linear-gradient(135deg,#0369a1,#0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
+    .btn-sky:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-red    { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
+    .btn-red:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-blue   { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
+    .btn-blue:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-teal   { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
+    .btn-teal:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-green  { background: linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.30); }
+    .btn-green:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-purple { background: linear-gradient(135deg,#6d28d9,#8b5cf6); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,0.28); }
+    .btn-purple:hover { transform:translateY(-2px); filter:brightness(1.06); }
+    .btn-outline { background:#f8fafc; color:#475569; border:1.5px solid #cbd5e1; }
+    .btn-outline:hover { background:#f1f5f9; border-color:#94a3b8; }
 
     .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 11px; }
     .coming-card { background:#fff; border-radius:16px; padding:18px 16px; border:1px solid #e8ecf2; opacity:0.68; cursor:default; box-shadow:0 1px 6px rgba(15,23,42,0.04); position:relative; overflow:hidden; }
@@ -173,70 +192,40 @@
       .flow-steps { flex-direction: column; }
       .flow-arrow { display: none; }
     }
-
-    .card-accent-red    { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
-    .card-accent-blue   { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    .card-accent-teal   { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
-    .card-accent-green  { height: 5px; background: linear-gradient(90deg, #10b981, #34d399); }
-    .card-accent-purple { height: 5px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
-    .emoji-red    { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
-    .emoji-blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); border: 1px solid #93c5fd; }
-    .emoji-teal   { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border: 1px solid #5eead4; }
-    .emoji-green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1px solid #86efac; }
-    .emoji-purple { background: linear-gradient(135deg,#faf5ff,#ede9fe); border: 1px solid #c4b5fd; }
-    .eyebrow-red    { color: #ef4444; }
-    .eyebrow-blue   { color: #3b82f6; }
-    .eyebrow-teal   { color: #0d9488; }
-    .eyebrow-green  { color: #10b981; }
-    .eyebrow-purple { color: #8b5cf6; }
-    .badge-red    { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
-    .badge-blue   { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
-    .badge-teal   { background: #f0fdfa; border: 1px solid #5eead4; color: #134e4a; }
-    .badge-green  { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
-    .badge-purple { background: #faf5ff; border: 1px solid #c4b5fd; color: #4c1d95; }
-    .btn-red    { background: linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(220,38,38,0.28); }
-    .btn-red:hover    { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-blue   { background: linear-gradient(135deg,#1d4ed8,#3b82f6); color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.28); }
-    .btn-blue:hover   { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-teal   { background: linear-gradient(135deg,#0f766e,#0d9488); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,0.28); }
-    .btn-teal:hover   { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-green  { background: linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 14px rgba(16,185,129,0.28); }
-    .btn-green:hover  { transform:translateY(-2px); filter:brightness(1.06); }
-    .btn-purple { background: linear-gradient(135deg,#6d28d9,#8b5cf6); color:#fff; box-shadow:0 4px 14px rgba(139,92,246,0.28); }
-    .btn-purple:hover { transform:translateY(-2px); filter:brightness(1.06); }
   </style>
 </head>
 <body>
 
-<!-- ── PIN GATE ── -->
-<div id="pin-gate">
-  <div class="pin-card">
-    <div class="pin-avatar">C</div>
-    <div class="pin-title">Courtney's Hub</div>
-    <div class="pin-sub">Enter your PIN to access your personalized study hub.</div>
-    <div class="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
-    </div>
-    <div class="pin-keypad">
-      <button class="pin-key" onclick="pinKey('1')">1</button>
-      <button class="pin-key" onclick="pinKey('2')">2</button>
-      <button class="pin-key" onclick="pinKey('3')">3</button>
-      <button class="pin-key" onclick="pinKey('4')">4</button>
-      <button class="pin-key" onclick="pinKey('5')">5</button>
-      <button class="pin-key" onclick="pinKey('6')">6</button>
-      <button class="pin-key" onclick="pinKey('7')">7</button>
-      <button class="pin-key" onclick="pinKey('8')">8</button>
-      <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2;">0</button>
-      <button class="pin-key del" onclick="pinDel()">⌫</button>
-    </div>
-    <div class="pin-error" id="pin-error"></div>
-    <div class="pin-hint">PIN provided by Madison 💙</div>
+<!-- ── PIN CARD — only thing in DOM until correct PIN ── -->
+<div class="pin-card" id="pin-card">
+  <div class="pin-avatar">C</div>
+  <div class="pin-title">Courtney's Hub</div>
+  <div class="pin-sub">Enter your PIN to access your personalized study hub.</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div>
+    <div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div>
+    <div class="pin-dot" id="d3"></div>
   </div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key" onclick="pinKey('0')" style="grid-column:2;">0</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-hint">PIN provided by Madison 💙</div>
 </div>
+
+<!-- ── HUB CONTENT — inside <template>, never rendered until unlocked ── -->
+<template id="hub-template">
 
 <header class="site-header">
   <div class="header-badge">Study with Madison, RN · NCLEX-RN 2026</div>
@@ -247,7 +236,6 @@
 
 <main class="main">
 
-  <div id="diagnostic-section">
   <div class="section-label fade-up">📌 Your First Step</div>
 
   <div class="card fade-up">
@@ -299,16 +287,11 @@
         <span class="meta-pill">📊 35+ Questions</span>
         <span class="meta-pill">⏱️ ~45 Minutes</span>
       </div>
-      <a href="diagnostic.html?start=1" class="start-btn btn-orange">
-        Start My Diagnostic →
-      </a>
+      <a href="diagnostic.html?start=1" class="start-btn btn-orange">Start My Diagnostic →</a>
     </div>
   </div>
 
-  </div><!-- end diagnostic-section -->
-
   <div class="section-label fade-up-2" style="margin-top:36px;">🎯 Targeted Practice — Unlocks After Diagnostic</div>
-
   <div class="card fade-up-2" style="opacity:0.6;pointer-events:none;">
     <div class="card-accent-sky"></div>
     <div class="card-body">
@@ -333,6 +316,10 @@
   </div>
 
   <div id="assigned-modules-area" style="margin-top:36px;"></div>
+  <div class="section-label fade-up-3" style="margin-top:40px;">🗺️ Your 21-Module Curriculum</div>
+  <div class="coming-soon-grid fade-up-3" id="curriculum-grid">
+    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:14px;grid-column:1/-1;">Loading…</div>
+  </div>
 
 </main>
 
@@ -340,12 +327,24 @@
   <strong style="color:#64748b;">Study with Madison, RN</strong> · NCLEX Success Center · 2026
 </footer>
 
+</template>
+
 <script>
   const SB_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
-  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtand3a3R3bHNxcGV0d2Z2b2xiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5NTAzNjYsImV4cCI6MjEwMTUyNjM2Nn0.-XV9sRSFgr4BB_zn7hpWgFYJ6JoMuGlLAOeTs3NxQUY';
+  const SB_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
   const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-  const MODULES_CATALOG = [
+  function unlockHub(studentId, studentName) {
+    // Swap PIN card for hub content
+    document.getElementById('pin-card').remove();
+    const tpl = document.getElementById('hub-template');
+    document.body.appendChild(tpl.content.cloneNode(true));
+    document.body.classList.add('unlocked');
+    localStorage.setItem('nclex_current_student', studentName);
+    loadAndRenderModules(studentId, 'assigned-modules-area', 'curriculum-grid');
+  }
+
+  let MODULES_CATALOG = [
     { key:'m1',  num:1,  name:'Newborn Care',          emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
     { key:'m2',  num:2,  name:'Maternal & OB',         emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
     { key:'m3',  num:3,  name:'Pharmacology',          emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
@@ -355,7 +354,7 @@
     { key:'m7',  num:7,  name:'Mental Health',         emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
     { key:'m8',  num:8,  name:'Prioritization',        emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
     { key:'m9',  num:9,  name:'Infection Control',     emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m10', num:10, name:'Endocrine',              emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m10', num:10, name:'Endocrine',             emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
     { key:'m11', num:11, name:'Renal & Urologic',      emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
     { key:'m12', num:12, name:'Gastrointestinal',      emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
     { key:'m13', num:13, name:'Musculoskeletal',       emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
@@ -448,8 +447,10 @@
     const container = document.getElementById(containerId);
     if (!container) return;
     const html = MODULES_CATALOG.map(m => {
-      if (accessMap[m.key]) {
-        const href = m.guideUrl || m.quizUrl || '#';
+      const enabled = !!accessMap[m.key];
+      const unavailable = !m.available;
+      if (enabled) {
+        const href = [m.guideUrl, m.quizUrl].filter(Boolean)[0] || '#';
         return `<a href="${href}" style="text-decoration:none;">
           <div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
             <div class="coming-card-icon">${m.emoji}</div>
@@ -457,52 +458,39 @@
             <div class="coming-card-name" style="color:#1e293b;">${m.name}</div>
             <span class="coming-soon-badge" style="background:#ccfbf1;border-color:#5eead4;color:#134e4a;">Open →</span>
           </div></a>`;
-      } else if (!m.available) {
-        return `<div class="coming-card">
-          <div class="coming-card-icon">${m.emoji}</div>
-          <div class="coming-card-num">Module ${m.num}</div>
-          <div class="coming-card-name">${m.name}</div>
-          <span class="coming-soon-badge">Coming Soon</span>
-        </div>`;
+      } else if (unavailable) {
+        return `<div class="coming-card"><div class="coming-card-icon">${m.emoji}</div><div class="coming-card-num">Module ${m.num}</div><div class="coming-card-name">${m.name}</div><span class="coming-soon-badge">Coming Soon</span></div>`;
       } else {
-        return `<div class="coming-card">
-          <div class="coming-card-icon">${m.emoji}</div>
-          <div class="coming-card-num">Module ${m.num}</div>
-          <div class="coming-card-name">${m.name}</div>
-          <span class="coming-soon-badge">Pending Assignment</span>
-        </div>`;
+        return `<div class="coming-card"><div class="coming-card-icon">${m.emoji}</div><div class="coming-card-num">Module ${m.num}</div><div class="coming-card-name">${m.name}</div><span class="coming-soon-badge">Pending Assignment</span></div>`;
       }
     }).join('');
     container.innerHTML = html;
   }
 
-  async function loadAndRenderModules(studentId) {
-    // Hide diagnostic section if student has already completed a diagnostic
-    const diagDone = localStorage.getItem('nclex_diag_complete_courtney') ||
-                     localStorage.getItem('diagnostic_completed');
-    if (diagDone) {
-      const diagSection = document.getElementById('diagnostic-section');
-      if (diagSection) diagSection.style.display = 'none';
+  async function loadAndRenderModules(studentId, assignedContainerId, curriculumContainerId) {
+    const { data: catalog } = await sbClient.from('modules').select('*').order('module_number');
+    if (catalog && catalog.length) {
+      MODULES_CATALOG = catalog.map(m => ({ key:m.module_key, num:m.module_number, name:m.name, emoji:m.emoji, available:m.is_available, guideUrl:m.guide_url, quizUrl:m.quiz_url, desc:m.description }));
     }
-
-    const { data } = await sbClient
-      .from('student_module_access')
-      .select('module_key, enabled')
-      .eq('student_id', studentId);
+    const { data } = await sbClient.from('student_module_access').select('module_key, enabled').eq('student_id', studentId);
     const accessMap = {};
     (data || []).forEach(r => { accessMap[r.module_key] = r.enabled; });
-    renderAssignedModules(accessMap, 'assigned-modules-area');
+    if (assignedContainerId) renderAssignedModules(accessMap, assignedContainerId);
+    if (curriculumContainerId) renderCurriculumGrid(accessMap, curriculumContainerId);
     localStorage.setItem('nclex_module_access', JSON.stringify(accessMap));
   }
 
-  (async function initCourtney() {
-    const {data:{session}}=await sbClient.auth.getSession();
-    if(!session){location.replace('student-login.html?next=courtney-hub.html');return;}
-    const {data:student}=await sbClient.from('students').select('id,name').eq('auth_user_id',session.user.id).maybeSingle();
-    if(student&&student.name==='Courtney Stewart'){document.getElementById('pin-gate').style.display='none';document.body.classList.remove('locked');localStorage.setItem('student_id',student.id);localStorage.setItem('nclex_current_student','Courtney');loadAndRenderModules(student.id);return;}
-    document.getElementById('pin-error').textContent='This account is not assigned to Courtney’s hub.';
+  // Check stored session on load
+  (async function init() {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (!session) { location.replace('student-login.html?next=courtney-hub.html'); return; }
+    const { data: student } = await sbClient.from('students').select('id,name').eq('auth_user_id', session.user.id).maybeSingle();
+    if (student && student.name === 'Courtney Stewart') { unlockHub(student.id, 'Courtney'); return; }
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'This account is not assigned to Courtney’s hub.';
   })();
 
+  // PIN input
   let pinBuffer = '';
   function pinKey(digit) {
     if (pinBuffer.length >= 4) return;
@@ -512,25 +500,27 @@
   }
   function pinDel() {
     pinBuffer = pinBuffer.slice(0, -1);
-    document.getElementById('pin-error').textContent = '';
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = '';
     updateDots(false);
   }
   function updateDots(err) {
     for (let i = 0; i < 4; i++) {
       const d = document.getElementById('d' + i);
+      if (!d) return;
       d.classList.toggle('filled', i < pinBuffer.length);
       d.classList.toggle('error', !!err);
     }
   }
   document.addEventListener('keydown', function(e) {
-    const gate = document.getElementById('pin-gate');
-    if (!gate || gate.style.display === 'none') return;
+    if (document.body.classList.contains('unlocked')) return;
     if (e.key >= '0' && e.key <= '9') { e.preventDefault(); pinKey(e.key); }
     else if (e.key === 'Backspace') { e.preventDefault(); pinDel(); }
   });
 
   async function checkPin() {
-    document.getElementById('pin-error').textContent = 'Please sign in with Courtney’s assigned email account.';
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'Please sign in with Courtney’s assigned email account.';
     pinBuffer = '';
     updateDots(true);
   }
