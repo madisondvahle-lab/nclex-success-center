@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NCLEX Success Center by Study with Madison, RN">
+  <title>NCLEX Success Center · Study with Madison, RN</title>
+  <style>
+    :root { --ink:#17344f; --cream:#fcf8f2; --paper:#fffdf9; --rose:#bd6f7f; --plum:#382338; --sage:#dce6dc; --muted:#567087; --line:#d8e1db; }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); background:var(--cream); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    a { color:inherit; text-decoration:none; } .wrap { width:min(1160px,calc(100% - 40px)); margin:auto; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:21px 0; }
+    .brand { font-family:Georgia,serif; font-size:1.35rem; font-weight:700; letter-spacing:-.04em; } .brand small { font-family:Inter,sans-serif; font-size:.6em; letter-spacing:0; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:13px 20px; border-radius:999px; background:var(--ink); color:white; font-size:.88rem; font-weight:800; transition:transform .2s; }
+    .button:hover { transform:translateY(-2px); } .button-light { background:white; color:var(--plum); } .text-link { font-size:.86rem; font-weight:800; border-bottom:1px solid currentColor; padding-bottom:3px; }
+    .hero { display:grid; grid-template-columns:1.05fr .95fr; gap:70px; align-items:center; min-height:620px; padding:65px 0 84px; }
+    .eyebrow { margin:0 0 18px; color:var(--rose); font-size:.72rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+    h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; letter-spacing:-.045em; } h1 { max-width:650px; margin:0; font-size:clamp(3.2rem,6vw,5.7rem); line-height:.98; } h2 { margin:0; font-size:clamp(2.35rem,4vw,4rem); line-height:1.03; }
+    .hero-text { max-width:570px; margin:29px 0; color:var(--muted); font-size:1.08rem; line-height:1.7; }.hero-actions{display:flex;align-items:center;gap:24px;flex-wrap:wrap}.trust{display:flex;gap:24px;margin-top:55px}.trust div{padding-left:14px;border-left:1px solid #bdd0ca}.trust strong,.trust span{display:block}.trust strong{font-family:Georgia,serif;font-size:1.25rem}.trust span{margin-top:4px;color:#637d8f;font-size:.73rem}
+    .readiness-card { padding:34px; background:var(--plum); color:white; box-shadow:0 24px 48px #38233822; }.card-top { display:flex; justify-content:space-between; gap:15px; align-items:center; }.card-top span{font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#f1c0c8}.steps{display:grid;gap:0;margin:30px 0 27px;border-top:1px solid #755b73}.step{display:flex;gap:15px;padding:17px 0;border-bottom:1px solid #755b73}.number{flex:0 0 27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#f0bdc5;color:var(--plum);font-size:.75rem;font-weight:900}.step strong{display:block;margin:1px 0 4px;font-size:.94rem}.step p{margin:0;color:#eddce4;font-size:.82rem;line-height:1.45}.fine-print{margin:18px 0 0;color:#dfc7d3;font-size:.72rem;line-height:1.5}
+    .paths { padding:92px 0; background:var(--sage); }.section-lead{max-width:620px;margin:20px 0 45px;color:var(--muted);line-height:1.7}.path-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.path{min-height:360px;padding:38px;background:var(--paper);display:flex;flex-direction:column}.path:nth-child(2){background:var(--ink);color:white}.path-icon{font-size:1.7rem}.path h3{margin:21px 0 12px;font-size:2rem}.path p{margin:0;color:var(--muted);line-height:1.65}.path:nth-child(2) p{color:#d2dfe7}.path ul{margin:25px 0;padding:0;list-style:none}.path li{margin:10px 0;font-size:.86rem}.path li:before{content:"✓";color:var(--rose);font-weight:900;margin-right:10px}.path:nth-child(2) li:before{color:#f2bbc5}.path .button,.path .text-link{margin-top:auto;align-self:flex-start}
+    .inside { padding:100px 0; }.inside-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:74px;align-items:start}.inside-copy{position:sticky;top:30px}.inside-copy p:not(.eyebrow){color:var(--muted);line-height:1.7;margin:24px 0}.feature-list{display:grid;gap:1px;background:var(--line)}.feature{display:grid;grid-template-columns:56px 1fr;gap:17px;align-items:start;padding:27px;background:var(--paper)}.feature-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#f8e7e3;color:var(--rose);font-weight:900}.feature h3{margin:0 0 6px;font-size:1.3rem}.feature p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.55}
+    .note { padding:54px 0; background:#fff4ee; text-align:center; }.note p{max-width:720px;margin:0 auto;color:#506b7d;line-height:1.65}.note strong{color:var(--ink)} footer{padding:35px 0;background:var(--ink);color:#d4e0e7;font-size:.8rem}footer .wrap{display:flex;justify-content:space-between;gap:20px;align-items:center}footer .brand{color:white}
+    @media(max-width:760px){.wrap{width:min(100% - 32px,1160px)}.nav .button{display:none}.hero,.inside-grid{grid-template-columns:1fr;gap:46px}.hero{padding:45px 0 65px}.trust{margin-top:38px;gap:14px}.readiness-card{padding:28px}.paths,.inside{padding:68px 0}.path-grid{grid-template-columns:1fr}.inside-copy{position:static}.path{min-height:330px}footer .wrap{display:block}footer p{margin:12px 0 0}}
+  </style>
+</head>
+<body>
+  <header class="wrap nav">
+    <a class="brand" href="#top">Study With Madison <small>RN</small></a>
+    <a class="button" href="#student-access">Student sign in →</a>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero">
+      <div>
+        <p class="eyebrow">NCLEX Success Center</p>
+        <h1>Know what to study.<br>Know what comes next.</h1>
+        <p class="hero-text">A private NCLEX readiness space designed around your real scores, your test date, and the plan that will move you forward—not another overwhelming pile of resources.</p>
+        <div class="hero-actions"><a class="button" href="free-readiness-check.html">Take the free readiness check →</a><a class="text-link" href="#student-access">I&apos;m a current student</a></div>
+        <div class="trust"><div><strong>Personal</strong><span>built around your gaps</span></div><div><strong>Clear</strong><span>daily next steps</span></div><div><strong>Private</strong><span>secure student access</span></div></div>
+      </div>
+      <aside class="readiness-card" aria-label="How the free NCLEX readiness check works">
+        <div class="card-top"><span>Free NCLEX readiness check</span><span>10 min</span></div>
+        <div class="steps">
+          <div class="step"><span class="number">1</span><div><strong>Answer a focused set of questions</strong><p>See how your current study habits and confidence line up with NCLEX preparation.</p></div></div>
+          <div class="step"><span class="number">2</span><div><strong>Get your personal focus areas</strong><p>Receive a simple result that shows where to begin and what deserves attention first.</p></div></div>
+          <div class="step"><span class="number">3</span><div><strong>Leave with a clearer next step</strong><p>Use your result to build a plan—or bring it to a free consult with Madison.</p></div></div>
+        </div>
+        <a class="button button-light" href="free-readiness-check.html">Start my free check →</a>
+        <p class="fine-print">Educational support only. This is not an NCLEX outcome prediction or a guarantee of exam results.</p>
+      </aside>
+    </section>
+
+    <section class="paths" id="free-diagnostic"><div class="wrap"><p class="eyebrow">Choose your path</p><h2>Start where you are.</h2><p class="section-lead">The free readiness check is for prospective students. The private Success Center is for active tutoring students working through a personalized plan.</p><div class="path-grid">
+      <article class="path"><div class="path-icon">✦</div><h3>Not a student yet?</h3><p>Take a short NCLEX readiness check and get a personalized picture of your most important next study move.</p><ul><li>About 10 minutes</li><li>Personal focus-area summary</li><li>Optional free consultation</li></ul><a class="button" href="free-readiness-check.html">Take the free readiness check →</a></article>
+      <article class="path" id="student-access"><div class="path-icon">🔐</div><h3>Already working with Madison?</h3><p>Sign in securely to see your current NCLEX roadmap, weekly priorities, assigned resources, and tutoring updates.</p><ul><li>Magic-link sign in—no PINs</li><li>Private study plans and resources</li><li>Progress tracked in one place</li></ul><a class="button button-light" href="student-login.html">Student sign in →</a></article>
+    </div></div></section>
+
+    <section class="inside"><div class="wrap inside-grid"><div class="inside-copy"><p class="eyebrow">For active tutoring students</p><h2>A plan that stays connected to real life.</h2><p>Your dashboard should make it easier to move forward between sessions—not make you wonder what to do next.</p></div><div class="feature-list"><article class="feature"><span class="feature-mark">01</span><div><h3>Your NCLEX roadmap</h3><p>A structured path from today through your target test date, adjusted as your scores and schedule change.</p></div></article><article class="feature"><span class="feature-mark">02</span><div><h3>Weekly focus and daily priorities</h3><p>Clear, realistic tasks that tell you what matters most this week and what to do when you sit down to study.</p></div></article><article class="feature"><span class="feature-mark">03</span><div><h3>Assessment review that turns into action</h3><p>Scores and missed-question patterns become targeted next steps—not just more data to stress about.</p></div></article><article class="feature"><span class="feature-mark">04</span><div><h3>Resources selected for you</h3><p>Study guides, practice sets, and notes assigned around the areas you and Madison are actively working on.</p></div></article></div></div></section>
+
+    <section class="note"><div class="wrap"><p><strong>Your privacy matters.</strong> The new Success Center is being rebuilt with secure individual sign-in and private student records. It will not use public PIN pages or expose student information.</p></div></section>
+  </main>
+  <footer><div class="wrap"><span class="brand">Study With Madison <small>RN</small></span><span>Personalized nursing tutoring · Online via Zoom</span></div></footer>
+</body>
+</html>
