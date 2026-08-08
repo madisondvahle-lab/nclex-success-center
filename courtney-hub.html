@@ -174,9 +174,9 @@
       .flow-arrow { display: none; }
     }
 
-    .card-accent-red  { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
-    .card-accent-blue { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    .card-accent-teal { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
+    .card-accent-red    { height: 5px; background: linear-gradient(90deg, #ef4444, #f87171); }
+    .card-accent-blue   { height: 5px; background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .card-accent-teal   { height: 5px; background: linear-gradient(90deg, #0d9488, #2dd4bf); }
     .card-accent-green  { height: 5px; background: linear-gradient(90deg, #10b981, #34d399); }
     .card-accent-purple { height: 5px; background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
     .emoji-red    { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 1px solid #fca5a5; }
@@ -262,16 +262,13 @@
         </div>
         <span class="badge badge-yellow">📌 Assigned</span>
       </div>
-
       <div class="info-box">
         <span class="info-icon">💡</span>
         <div class="info-text">
           <strong>Why start with a diagnostic?</strong> This adaptive assessment identifies exactly where you're strong and where to focus your study time — so we don't waste a single hour on content you already know.
         </div>
       </div>
-
       <p class="module-desc">A full adaptive CAT-style diagnostic covering all major NCLEX content areas: Pharmacology, Management of Care, OB/Maternity, Pediatrics, Cardiac, Respiratory, Mental Health, and more. The engine adjusts difficulty in real time based on your responses.</p>
-
       <div class="flow-label">Your Study Flow — Starting Here</div>
       <div class="flow-steps">
         <div class="flow-step active-orange">
@@ -295,14 +292,12 @@
           <span class="flow-step-text">Tutoring session to build your plan</span>
         </div>
       </div>
-
       <div class="module-meta">
         <span class="meta-pill">🔄 Adaptive CAT Engine</span>
         <span class="meta-pill">✏️ All Content Areas</span>
         <span class="meta-pill">📊 35+ Questions</span>
         <span class="meta-pill">⏱️ ~45 Minutes</span>
       </div>
-
       <a href="diagnostic.html?start=1" class="start-btn btn-orange">
         Start My Diagnostic →
       </a>
@@ -352,27 +347,27 @@
   const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
   const MODULES_CATALOG = [
-    { key:'m1',  num:1,  name:'Newborn Care',              emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
-    { key:'m2',  num:2,  name:'Maternal & OB',             emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
-    { key:'m3',  num:3,  name:'Pharmacology',              emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
-    { key:'m4',  num:4,  name:'Cardiovascular',            emoji:'❤️', available:true,  guideUrl:'module4-guide.html', quizUrl:null,                    desc:'Heart failure, dysrhythmias, MI, hypertension, vascular disorders, and cardiac medications.' },
-    { key:'m5',  num:5,  name:'Respiratory',               emoji:'🫁', available:true,  guideUrl:'module5-guide.html', quizUrl:null,                    desc:'COPD, asthma, pneumonia, respiratory failure, ABG interpretation, and oxygen therapy.' },
-    { key:'m6',  num:6,  name:'Fluids & Electrolytes',     emoji:'💧', available:true,  guideUrl:'module6-guide.html', quizUrl:null,                    desc:'Electrolyte imbalances, IV fluids, acid-base balance, and clinical management priorities.' },
-    { key:'m7',  num:7,  name:'Mental Health',             emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m8',  num:8,  name:'Prioritization',            emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m9',  num:9,  name:'Infection Control',         emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m10', num:10, name:'Endocrine',                 emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m11', num:11, name:'Renal & Urologic',          emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m12', num:12, name:'Gastrointestinal',          emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m13', num:13, name:'Musculoskeletal',           emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m14', num:14, name:'Neurological',              emoji:'🧬', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m15', num:15, name:'Hematology & Oncology',     emoji:'🩸', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m16', num:16, name:'Integumentary',             emoji:'🩹', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m17', num:17, name:'Immune & Autoimmune',       emoji:'🛡️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m18', num:18, name:'Perioperative Care',        emoji:'🏥', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m19', num:19, name:'Critical Care & Shock',     emoji:'⚠️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m20', num:20, name:'NGN Clinical Judgment',     emoji:'🎯', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
-    { key:'m21', num:21, name:'NCLEX Strategy & CAT',      emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m1',  num:1,  name:'Newborn Care',          emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
+    { key:'m2',  num:2,  name:'Maternal & OB',         emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
+    { key:'m3',  num:3,  name:'Pharmacology',          emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
+    { key:'m4',  num:4,  name:'Cardiovascular',        emoji:'❤️', available:true,  guideUrl:'module4-guide.html', quizUrl:null,                    desc:'Heart failure, dysrhythmias, MI, hypertension, vascular disorders, and cardiac medications.' },
+    { key:'m5',  num:5,  name:'Respiratory',           emoji:'🫁', available:true,  guideUrl:'module5-guide.html', quizUrl:null,                    desc:'COPD, asthma, pneumonia, respiratory failure, ABG interpretation, and oxygen therapy.' },
+    { key:'m6',  num:6,  name:'Fluids & Electrolytes', emoji:'💧', available:true,  guideUrl:'module6-guide.html', quizUrl:null,                    desc:'Electrolyte imbalances, IV fluids, acid-base balance, and clinical management priorities.' },
+    { key:'m7',  num:7,  name:'Mental Health',         emoji:'🧠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m8',  num:8,  name:'Prioritization',        emoji:'📋', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m9',  num:9,  name:'Infection Control',     emoji:'🦠', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m10', num:10, name:'Endocrine',              emoji:'⚡', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m11', num:11, name:'Renal & Urologic',      emoji:'🫘', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m12', num:12, name:'Gastrointestinal',      emoji:'🫃', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m13', num:13, name:'Musculoskeletal',       emoji:'🦴', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m14', num:14, name:'Neurological',          emoji:'🧬', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m15', num:15, name:'Hematology & Oncology', emoji:'🩸', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m16', num:16, name:'Integumentary',         emoji:'🩹', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m17', num:17, name:'Immune & Autoimmune',   emoji:'🛡️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m18', num:18, name:'Perioperative Care',    emoji:'🏥', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m19', num:19, name:'Critical Care & Shock', emoji:'⚠️', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m20', num:20, name:'NGN Clinical Judgment', emoji:'🎯', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
+    { key:'m21', num:21, name:'NCLEX Strategy & CAT',  emoji:'✅', available:false, guideUrl:null, quizUrl:null, desc:'Coming soon.' },
   ];
 
   function renderAssignedModules(accessMap, containerId) {
@@ -386,17 +381,15 @@
     const sorted = [...enabled].sort((a,b) => a.num - b.num);
     const current = sorted[sorted.length - 1];
     const completed = sorted.slice(0, -1);
-
     const accentColors = { m1:'green', m2:'purple', m3:'sky', m4:'red', m5:'blue', m6:'teal' };
     const colorMap = {
-      green:  { accent:'#10b981', emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
-      purple: { accent:'#8b5cf6', emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
-      sky:    { accent:'#0ea5e9', emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
-      red:    { accent:'#ef4444', emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
-      blue:   { accent:'#3b82f6', emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
-      teal:   { accent:'#0d9488', emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
+      green:  { emoji:'emoji-green',  eyebrow:'eyebrow-green',  btn:'btn-green',  badge:'badge-green' },
+      purple: { emoji:'emoji-purple', eyebrow:'eyebrow-purple', btn:'btn-purple', badge:'badge-purple' },
+      sky:    { emoji:'emoji-sky',    eyebrow:'eyebrow-sky',    btn:'btn-sky',    badge:'badge-sky' },
+      red:    { emoji:'emoji-red',    eyebrow:'eyebrow-red',    btn:'btn-red',    badge:'badge-red' },
+      blue:   { emoji:'emoji-blue',   eyebrow:'eyebrow-blue',   btn:'btn-blue',   badge:'badge-blue' },
+      teal:   { emoji:'emoji-teal',   eyebrow:'eyebrow-teal',   btn:'btn-teal',   badge:'badge-teal' },
     };
-
     let html = '';
     const c = current;
     const cc = colorMap[accentColors[c.key]] || colorMap['sky'];
@@ -422,7 +415,6 @@
           </div>
         </div>
       </div>`;
-
     if (completed.length) {
       html += `<div class="section-label fade-up-2" style="margin-top:28px;margin-bottom:16px;">✅ Completed — Review Anytime</div>`;
       completed.reverse().forEach(m => {
@@ -457,8 +449,7 @@
     const container = document.getElementById(containerId);
     if (!container) return;
     const html = MODULES_CATALOG.map(m => {
-      const enabled = !!accessMap[m.key];
-      if (enabled) {
+      if (accessMap[m.key]) {
         const href = m.guideUrl || m.quizUrl || '#';
         return `<a href="${href}" style="text-decoration:none;">
           <div class="coming-card" style="opacity:1;cursor:pointer;border:2px solid #0d9488;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
@@ -499,21 +490,19 @@
   }
 
   (async function initCourtney() {
-    const STORE_KEY = 'nclex_sid_courtney';
-    const storedId = localStorage.getItem(STORE_KEY);
-    if (storedId) {
+    const stored = localStorage.getItem('nclex_sid_courtney');
+    if (stored) {
       document.getElementById('pin-gate').style.display = 'none';
       document.body.classList.remove('locked');
-      localStorage.setItem('student_id', storedId);
+      localStorage.setItem('student_id', stored);
       localStorage.setItem('nclex_current_student', 'Courtney');
-      loadAndRenderModules(storedId);
+      loadAndRenderModules(stored);
       return;
     }
     document.body.classList.add('locked');
   })();
 
   let pinBuffer = '';
-
   function pinKey(digit) {
     if (pinBuffer.length >= 4) return;
     pinBuffer += digit;
@@ -532,7 +521,6 @@
       d.classList.toggle('error', !!err);
     }
   }
-
   document.addEventListener('keydown', function(e) {
     const gate = document.getElementById('pin-gate');
     if (!gate || gate.style.display === 'none') return;
@@ -541,42 +529,23 @@
   });
 
   async function checkPin() {
-    document.getElementById('pin-error').textContent = 'Checking…';
-    try {
-      const { data, error } = await sbClient
-        .from('students')
-        .select('id, pin')
-        .eq('name', 'Courtney Stewart')
-        .single();
-
-      console.log('[PIN] data:', data, 'error:', error);
-
-      if (error) {
-        document.getElementById('pin-error').textContent = 'Connection error — check console';
-        setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 2500);
-        return;
-      }
-
-      // Normalize both sides to 4-digit strings so leading zeros always match
-      const storedPin = data ? String(data.pin).padStart(4, '0') : null;
-      console.log('[PIN] stored:', storedPin, 'entered:', pinBuffer);
-
-      if (storedPin && storedPin === pinBuffer) {
-        localStorage.setItem('nclex_sid_courtney', data.id);
-        localStorage.setItem('student_id', data.id);
-        localStorage.setItem('nclex_current_student', 'Courtney');
-        document.getElementById('pin-gate').style.display = 'none';
-        document.body.classList.remove('locked');
-        loadAndRenderModules(data.id);
-      } else {
-        updateDots(true);
-        document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
-        setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
-      }
-    } catch (e) {
-      console.error('[PIN] exception:', e);
-      document.getElementById('pin-error').textContent = 'Error: ' + e.message;
-      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 2500);
+    const { data, error } = await sbClient
+      .from('students')
+      .select('id, pin')
+      .eq('name', 'Courtney Stewart')
+      .single();
+    const storedPin = data ? String(data.pin).padStart(4, '0') : null;
+    if (!error && storedPin && storedPin === pinBuffer) {
+      localStorage.setItem('nclex_sid_courtney', data.id);
+      localStorage.setItem('student_id', data.id);
+      localStorage.setItem('nclex_current_student', 'Courtney');
+      document.getElementById('pin-gate').style.display = 'none';
+      document.body.classList.remove('locked');
+      loadAndRenderModules(data.id);
+    } else {
+      updateDots(true);
+      document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
+      setTimeout(() => { pinBuffer = ''; updateDots(false); document.getElementById('pin-error').textContent = ''; }, 1200);
     }
   }
 </script>
