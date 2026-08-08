@@ -19,7 +19,7 @@
     const { useState } = React;
 
 
-// ─── QUESTION BANK (65 questions) ─────────────────────────────────────────────
+// ─── QUESTION BANK (50 items) ─────────────────────────────────────────────────
 const QUESTION_BANK = [
 
   // ══ SAFE & EFFECTIVE CARE ENVIRONMENT — Management of Care ══
@@ -635,54 +635,103 @@ correct:[1],rationale:"When understanding is incomplete, the nurse advocates by 
 ]}
 ];
 
-// ─── CAT ENGINE ───────────────────────────────────────────────────────────────
-const MIN_Q = 85;
-const MAX_Q = 150;
-const PASS_THRESHOLD = 0.72;
-const FAIL_THRESHOLD = 0.28;
-const CONFIDENCE_CUTOFF = 0.90;
+// ─── CAT-STYLE DIAGNOSTIC ENGINE ─────────────────────────────────────────────
+const MIN_Q = 30;
+const MAX_Q = 45;
+const PASS_THRESHOLD = 0.60;
+const CONFIDENCE_Z = 1.96;
+const ITEM_DIFFICULTIES = { 1: 0.28, 2: 0.50, 3: 0.72 };
+const BLUEPRINT_MINIMUMS = {
+  "Safe & Effective Care Environment": 8,
+  "Health Promotion & Maintenance": 4,
+  "Psychosocial Integrity": 4,
+  "Physiological Integrity": 14
+};
 
-function updateAbility(ability, correct, difficulty) {
-  const diffMap = { 1: -0.5, 2: 0, 3: 0.5 };
-  const delta = correct ? 0.15 + (diffMap[difficulty] || 0) * 0.05 : -0.15 + (diffMap[difficulty] || 0) * 0.05;
-  return Math.max(0, Math.min(1, ability + delta));
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+function itemProbability(ability, difficulty) {
+  const itemDifficulty = ITEM_DIFFICULTIES[difficulty] ?? 0.50;
+  return 1 / (1 + Math.exp(-(ability - itemDifficulty) * 6));
 }
 
-function getConfidence(history) {
-  if (history.length < 10) return 0;
-  const recentCorrect = history.slice(-10).filter(h => h.correct).length / 10;
-  const spread = history.length / MAX_Q;
-  return Math.min(0.99, spread * 0.6 + Math.abs(recentCorrect - 0.5) * 0.8);
+function updateAbility(ability, correct, difficulty) {
+  const expected = itemProbability(ability, difficulty);
+  const response = correct ? 1 : 0;
+  return clamp(ability + 0.18 * (response - expected), 0.05, 0.95);
+}
+
+function getStandardError(history, ability) {
+  if (!history.length) return Infinity;
+  const information = history.reduce((total, item) => {
+    const probability = itemProbability(ability, item.difficulty);
+    return total + 36 * probability * (1 - probability);
+  }, 0);
+  return information > 0 ? 1 / Math.sqrt(information) : Infinity;
+}
+
+function hasBlueprintCoverage(history) {
+  const counts = history.reduce((totals, item) => {
+    totals[item.blueprint] = (totals[item.blueprint] || 0) + 1;
+    return totals;
+  }, {});
+  return Object.entries(BLUEPRINT_MINIMUMS).every(([blueprint, minimum]) => (counts[blueprint] || 0) >= minimum);
 }
 
 function shouldStop(history, ability) {
-  if (history.length < MIN_Q) return null;
-  const confidence = getConfidence(history);
-  if (confidence >= CONFIDENCE_CUTOFF) {
-    return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
-  }
-  if (history.length >= MAX_Q) {
-    return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
-  }
+  if (history.length < MIN_Q || !hasBlueprintCoverage(history)) return null;
+  const standardError = getStandardError(history, ability);
+  const lowerBound = ability - CONFIDENCE_Z * standardError;
+  const upperBound = ability + CONFIDENCE_Z * standardError;
+  if (lowerBound > PASS_THRESHOLD) return "PASS";
+  if (upperBound < PASS_THRESHOLD) return "FAIL";
+  if (history.length >= MAX_Q) return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
   return null;
 }
 
 function pickNextQuestion(bank, history, profile, ability) {
-  const usedIds = new Set(history.map(h => h.id));
-  const available = bank.filter(q => !usedIds.has(q.id));
+  const usedIds = new Set(history.map(item => item.id));
+  const available = bank.filter(item => !usedIds.has(item.id));
   if (!available.length) return null;
 
-  let targetDiff;
-  if (ability >= 0.7) targetDiff = 3;
-  else if (ability >= 0.4) targetDiff = 2;
-  else targetDiff = 1;
+  const blueprintCounts = history.reduce((totals, item) => {
+    totals[item.blueprint] = (totals[item.blueprint] || 0) + 1;
+    return totals;
+  }, {});
+  const neededBlueprints = Object.entries(BLUEPRINT_MINIMUMS)
+    .filter(([blueprint, minimum]) => (blueprintCounts[blueprint] || 0) < minimum)
+    .sort(([blueprintA, minimumA], [blueprintB, minimumB]) =>
+      ((blueprintCounts[blueprintA] || 0) / minimumA) - ((blueprintCounts[blueprintB] || 0) / minimumB)
+    );
 
-  const weak = profile?.weakAreas || [];
-  const weakMatches = available.filter(q =>
-    weak.some(w => q.blueprint?.toLowerCase().includes(w.toLowerCase()) || q.category?.toLowerCase().includes(w.toLowerCase()))
+  let candidates = available;
+  if (neededBlueprints.length) {
+    const priorityBlueprint = neededBlueprints[0][0];
+    candidates = available.filter(item => item.blueprint === priorityBlueprint);
+  }
+
+  const weakAreas = profile?.weakAreas || [];
+  const weakCandidates = candidates.filter(item =>
+    weakAreas.some(area =>
+      item.blueprint?.toLowerCase().includes(area.toLowerCase()) ||
+      item.category?.toLowerCase().includes(area.toLowerCase())
+    )
   );
-  const pool = (weakMatches.length > 0 && Math.random() < 0.6) ? weakMatches : available;
-  return [...pool].sort((a, b) => Math.abs(a.difficulty - targetDiff) - Math.abs(b.difficulty - targetDiff))[0];
+  if (weakCandidates.length && Math.random() < 0.45) candidates = weakCandidates;
+
+  const recentBlueprints = history.slice(-2).map(item => item.blueprint);
+  const ranked = candidates
+    .map(item => ({
+      item,
+      score:
+        Math.abs((ITEM_DIFFICULTIES[item.difficulty] ?? 0.50) - ability) +
+        (recentBlueprints.includes(item.blueprint) ? 0.18 : 0)
+    }))
+    .sort((a, b) => a.score - b.score);
+
+  const bestScore = ranked[0].score;
+  const shortlist = ranked.filter(entry => entry.score <= bestScore + 0.04).slice(0, 3);
+  return shortlist[Math.floor(Math.random() * shortlist.length)].item;
 }
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -879,7 +928,7 @@ function ProfileScreen({ onStart }) {
           <div>
             <label style={lbl}>Session Mode</label>
             <div style={{ display:"flex", gap:10 }}>
-              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 NCLEX Simulation",sub:"85–150 questions · Pass/Fail only"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
+              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 CAT-Style Diagnostic",sub:"30–45 items · adaptive readiness estimate"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
                 <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
@@ -937,7 +986,7 @@ function StartButton({ name, mode, weak, notes, onStart }) {
       )}
       <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:qCount,mode})}
         style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
-        {name.trim() ? (mode==="nclex" ? "Begin NCLEX Simulation →" : "Start Practice Session →") : "Enter student name to continue"}
+        {name.trim() ? (mode==="nclex" ? "Begin CAT-Style Diagnostic →" : "Start Practice Session →") : "Enter student name to continue"}
       </button>
     </div>
   );
@@ -958,7 +1007,7 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"NCLEX Simulation Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"CAT-Style Diagnostic Complete":"Practice Session Complete"}</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
         </div>
@@ -969,7 +1018,7 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
             {isNCLEX ? (
               <>
                 <span style={{ fontSize:32, fontWeight:700, color:ringColor }}>{passed?"PASS":"FAIL"}</span>
-                <span style={{ fontSize:12, color:"#64748b" }}>Simulated result</span>
+                <span style={{ fontSize:12, color:"#64748b" }}>Readiness estimate</span>
               </>
             ) : (
               <>
@@ -982,8 +1031,8 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
 
         {isNCLEX&&(
           <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
-            <strong>{passed?"✓ Above Passing Standard":"✗ Below Passing Standard"}</strong><br/>
-            {passed?"The adaptive engine determined competency above the NCLEX passing standard. In a real exam, additional question distribution and item response theory would be used.":"The adaptive engine determined performance below the NCLEX passing standard. Focus areas are highlighted in the breakdown below."}
+            <strong>{passed?"✓ Above Diagnostic Benchmark":"✗ Below Diagnostic Benchmark"}</strong><br/>
+            {passed?"This CAT-style diagnostic estimate is above the program benchmark. It is a study-readiness result, not an official NCLEX outcome.":"This CAT-style diagnostic estimate is below the program benchmark. Focus areas are highlighted in the breakdown below."}
           </div>
         )}
 
@@ -1071,7 +1120,7 @@ function QuizScreen({ profile, onFinish }) {
   function handleNext() {
     const isCorrect = calcCorrect();
     const newAbility = updateAbility(ability, isCorrect, q.difficulty);
-    const newHistory = [...history, { id:q.id, type:q.type, blueprint:q.blueprint, stem:q.stem||null, correct:isCorrect }];
+    const newHistory = [...history, { id:q.id, type:q.type, difficulty:q.difficulty, blueprint:q.blueprint, stem:q.stem||null, correct:isCorrect }];
     setHistory(newHistory);
     setAbility(newAbility);
 
@@ -1083,13 +1132,13 @@ function QuizScreen({ profile, onFinish }) {
     }
 
     const next = pickNextQuestion(activeBank, newHistory, profile, newAbility);
-    if(!next){ onFinish(newHistory, isNCLEX?shouldStop(newHistory,newAbility)||"PASS":null); return; }
+    if(!next){ const result = isNCLEX ? (newAbility>=PASS_THRESHOLD?"PASS":"FAIL") : null; setCatResult(result); onFinish(newHistory, result); return; }
     setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
   }
 
   const qNum = history.length+1;
   const correctSoFar = history.filter(h=>h.correct).length;
-  const progressPct = isNCLEX ? Math.min(100,(qNum/MIN_Q)*100) : (qNum/profile.qCount)*100;
+  const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : (qNum/profile.qCount)*100;
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -1103,7 +1152,7 @@ function QuizScreen({ profile, onFinish }) {
           </div>
           <div style={{ flex:1, maxWidth:260 }}>
             <div style={{ fontSize:11, color:"#64748b", marginBottom:5 }}>
-              {isNCLEX ? `Question ${qNum} · Min ${MIN_Q} required` : `Question ${qNum} of ${profile.qCount}`}
+              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : `Question ${qNum} of ${profile.qCount}`}
             </div>
             <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
               <div style={{ height:"100%", width:`${progressPct}%`, background: isNCLEX?"#8b5cf6":"#0ea5e9", borderRadius:99, transition:"width 0.4s" }} />
