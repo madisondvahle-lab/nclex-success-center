@@ -508,17 +508,9 @@
   });
 
   async function checkPin() {
-    // PIN 9587 verified locally first for speed, then confirm via Supabase
-    const { data, error } = await sbClient.from('students').select('id, pin').eq('name', 'Kyle Batacan').single();
-    if (!error && data && String(data.pin) === pinBuffer) {
-      localStorage.setItem('nclex_sid_kyle', data.id);
-      unlockHub(data.id, 'Kyle');
-    } else {
-      updateDots(true);
-      const el = document.getElementById('pin-error');
-      if (el) el.textContent = 'Incorrect PIN — try again';
-      setTimeout(() => { pinBuffer = ''; updateDots(false); const e2 = document.getElementById('pin-error'); if(e2) e2.textContent = ''; }, 1200);
-    }
+    document.getElementById('pin-error').textContent = 'Please sign in with Kyle’s assigned email account.';
+    pinBuffer = '';
+    updateDots(true);
   }
 </script>
 </body>
