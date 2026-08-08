@@ -345,7 +345,7 @@
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtand3a3R3bHNxcGV0d2Z2b2xiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5NTAzNjYsImV4cCI6MjEwMTUyNjM2Nn0.-XV9sRSFgr4BB_zn7hpWgFYJ6JoMuGlLAOeTs3NxQUY';
   const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-  const MODULES_CATALOG = [
+  let MODULES_CATALOG = [
     { key:'m1',  num:1,  name:'Newborn Care',          emoji:'🍼', available:true,  guideUrl:'module1-guide.html', quizUrl:'module1-newborn.html',  desc:'APGAR scoring, thermoregulation, respiratory distress, jaundice, hypoglycemia, and NGN clinical judgment.' },
     { key:'m2',  num:2,  name:'Maternal & OB',         emoji:'🤰', available:true,  guideUrl:'module2-guide.html', quizUrl:'module2-maternal.html', desc:'RH incompatibility, preeclampsia/HELLP, fetal heart rate patterns, obstetric emergencies, vaccines in pregnancy.' },
     { key:'m3',  num:3,  name:'Pharmacology',          emoji:'💊', available:true,  guideUrl:'module3-guide.html', quizUrl:null,                    desc:'High-alert medications, drug calculations, antidotes, nursing implications, and common drug classes.' },
@@ -477,6 +477,8 @@
   }
 
   async function loadAndRenderModules(studentId) {
+    const { data: catalog } = await sbClient.from('modules').select('*').order('module_number');
+    if (catalog && catalog.length) MODULES_CATALOG = catalog.map(m => ({key:m.module_key,num:m.module_number,name:m.name,emoji:m.emoji,available:m.is_available,guideUrl:m.guide_url,quizUrl:m.quiz_url,desc:m.description}));
     // Hide diagnostic section if student has already completed a diagnostic
     const diagDone = localStorage.getItem('nclex_diag_complete_courtney') ||
                      localStorage.getItem('diagnostic_completed');
