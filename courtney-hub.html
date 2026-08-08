@@ -481,13 +481,13 @@
   }
 
   // Check stored session on load
-  (function init() {
-    const STUDENT_NAME = 'Courtney';
-    const STORE_KEY = 'nclex_sid_courtney';
-    const storedId = localStorage.getItem(STORE_KEY);
-    if (storedId) {
-      unlockHub(storedId, STUDENT_NAME);
-    }
+  (async function init() {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (!session) { location.replace('student-login.html?next=courtney-hub.html'); return; }
+    const { data: student } = await sbClient.from('students').select('id,name').eq('auth_user_id', session.user.id).maybeSingle();
+    if (student && student.name === 'Courtney Stewart') { unlockHub(student.id, 'Courtney'); return; }
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'This account is not assigned to Courtney’s hub.';
   })();
 
   // PIN input
@@ -519,17 +519,10 @@
   });
 
   async function checkPin() {
-    const STUDENT_NAME = 'Courtney';
-    const { data, error } = await sbClient.from('students').select('id, pin').eq('name', STUDENT_NAME).single();
-    if (!error && data && data.pin === pinBuffer) {
-      localStorage.setItem('nclex_sid_courtney', data.id);
-      unlockHub(data.id, STUDENT_NAME);
-    } else {
-      updateDots(true);
-      const el = document.getElementById('pin-error');
-      if (el) el.textContent = 'Incorrect PIN — try again';
-      setTimeout(() => { pinBuffer = ''; updateDots(false); const e2 = document.getElementById('pin-error'); if(e2) e2.textContent = ''; }, 1200);
-    }
+    const el = document.getElementById('pin-error');
+    if (el) el.textContent = 'Please sign in with Courtney’s assigned email account.';
+    pinBuffer = '';
+    updateDots(true);
   }
 </script>
 </body>
