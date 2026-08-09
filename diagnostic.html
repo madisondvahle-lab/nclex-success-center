@@ -1057,12 +1057,14 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
   const ringColor = isNCLEX ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
   const byBlueprint={};
   history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
+  const coveredCore = new Set(history.flatMap(h=>h.coreTags||[]));
+  const missingCore = CORE_REQUIREMENTS.filter(requirement=>!coveredCore.has(requirement.key));
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"CAT-Style Diagnostic Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"85-Question Blueprint Mock Complete":"Practice Session Complete"}</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
         </div>
@@ -1088,6 +1090,13 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
           <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
             <strong>{passed?"✓ Above Diagnostic Benchmark":"✗ Below Diagnostic Benchmark"}</strong><br/>
             {passed?"This CAT-style diagnostic estimate is above the program benchmark. It is a study-readiness result, not an official NCLEX outcome.":"This CAT-style diagnostic estimate is below the program benchmark. Focus areas are highlighted in the breakdown below."}
+          </div>
+        )}
+
+        {(isNCLEX||isMock)&&(
+          <div style={{ background:missingCore.length?"#fff7ed":"#f0fdf4", border:`1px solid ${missingCore.length?"#fdba74":"#86efac"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:13, color:missingCore.length?"#9a3412":"#065f46", lineHeight:1.6 }}>
+            <strong>🛡️ Core RN Safety Coverage: {coveredCore.size}/{CORE_REQUIREMENTS.length}</strong><br/>
+            {missingCore.length ? `Not assessed this session: ${missingCore.map(item=>item.label).join(", ")}.` : "This session assessed every required safety competency in the core blueprint."}
           </div>
         )}
 
@@ -1140,6 +1149,7 @@ function QuizScreen({ profile, onFinish }) {
   const [submitted, setSubmitted] = useState(false);
   const [catResult, setCatResult] = useState(null);
   const isNCLEX = profile.mode==="nclex";
+  const isMock = profile.mode==="mock";
 
   const q = currentQ;
   if(!q){ onFinish(history, catResult); return null; }
