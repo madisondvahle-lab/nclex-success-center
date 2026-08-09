@@ -1,0 +1,2 @@
+student_email,platform,assessment_name,taken_at,overall_score,readiness_level,management_of_care,safety_infection_prevention,health_promotion_maintenance,psychosocial_integrity,basic_care_comfort,pharmacological_parenteral_therapies,reduction_risk_potential,physiological_adaptation,notes
+student@example.com,UWorld,CAT #1,2026-08-01,62,Borderline,58,61,67,60,64,55,59,63,"Optional tutoring notes"
