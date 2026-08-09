@@ -16,6 +16,12 @@ create table if not exists student_assessment_uploads (
   created_at timestamptz not null default now()
 );
 
+-- Safe to run after the initial workspace migration. These fields distinguish
+-- repeat readiness/CAT attempts without changing any existing reports.
+alter table student_assessment_uploads
+  add column if not exists report_label text,
+  add column if not exists attempt_number integer check (attempt_number is null or attempt_number >= 1);
+
 create table if not exists student_assessment_insights (
   id uuid primary key default gen_random_uuid(),
   assessment_id uuid not null unique references student_assessment_uploads(id) on delete cascade,
