@@ -642,7 +642,8 @@ correct:[1],rationale:"When understanding is incomplete, the nurse advocates by 
 // ─── CAT-STYLE DIAGNOSTIC ENGINE ─────────────────────────────────────────────
 const MIN_Q = 30;
 const MAX_Q = 45;
-const FULL_MOCK_Q = 85;
+const FULL_MOCK_MIN_Q = 85;
+const FULL_MOCK_MAX_Q = 150;
 const PASS_THRESHOLD = 0.60;
 const CONFIDENCE_Z = 1.96;
 const ITEM_DIFFICULTIES = { 1: 0.28, 2: 0.50, 3: 0.72 };
@@ -655,6 +656,7 @@ const BLUEPRINT_MINIMUMS = {
 const CORE_BLUEPRINT = window.NCLEX_CORE_BLUEPRINT;
 const CORE_REQUIREMENTS = CORE_BLUEPRINT.requirements;
 const MOCK_CATEGORY_TARGETS = CORE_BLUEPRINT.nclexCategoryTargets;
+const MOCK_CATEGORY_RATIOS = Object.fromEntries(Object.entries(MOCK_CATEGORY_TARGETS).map(([category, count]) => [category, count / FULL_MOCK_MIN_Q]));
 const getCoreTags = item => CORE_BLUEPRINT.tagsForItem(item);
 const getNCLEXCategory = item => {
   if (item.blueprint === "Safe & Effective Care Environment") {
@@ -722,12 +724,36 @@ function shouldStop(history, ability) {
   return null;
 }
 
+function hasMockCategoryCoverage(history) {
+  const counts = history.reduce((totals, item) => {
+    const category = item.nclexCategory || getNCLEXCategory(item);
+    totals[category] = (totals[category] || 0) + 1;
+    return totals;
+  }, {});
+  return Object.entries(MOCK_CATEGORY_TARGETS).every(([category, target]) => (counts[category] || 0) >= target);
+}
+
+function shouldStopMock(history, ability) {
+  if (history.length < FULL_MOCK_MIN_Q || !hasCoreCoverage(history) || !hasMockCategoryCoverage(history)) return null;
+  const standardError = getStandardError(history, ability);
+  const lowerBound = ability - CONFIDENCE_Z * standardError;
+  const upperBound = ability + CONFIDENCE_Z * standardError;
+  if (lowerBound > PASS_THRESHOLD) return "PASS";
+  if (upperBound < PASS_THRESHOLD) return "FAIL";
+  if (history.length >= FULL_MOCK_MAX_Q) return ability >= PASS_THRESHOLD ? "PASS" : "FAIL";
+  return null;
+}
+
 function pickNextQuestion(bank, history, profile, ability) {
-  const usedIds = new Set(history.map(item => item.id));
-  const available = bank.filter(item => !usedIds.has(item.id));
+  const usedIds = new Set(history.map(item => item.sourceId || item.id));
+  const isMock = profile?.mode === "mock";
+  const available = bank.filter(item => {
+    if (usedIds.has(item.id)) return false;
+    if (isMock && item.type === "casestudy" && history.length + item.questions.length > FULL_MOCK_MAX_Q) return false;
+    return true;
+  });
   if (!available.length) return null;
 
-  const isMock = profile?.mode === "mock";
   const blueprintCounts = history.reduce((totals, item) => {
     totals[item.blueprint] = (totals[item.blueprint] || 0) + 1;
     return totals;
@@ -743,10 +769,9 @@ function pickNextQuestion(bank, history, profile, ability) {
     totals[category] = (totals[category] || 0) + 1;
     return totals;
   }, {});
-  const neededMockCategories = Object.entries(MOCK_CATEGORY_TARGETS)
-    .filter(([category, target]) => (mockCounts[category] || 0) < target)
-    .sort(([categoryA, targetA], [categoryB, targetB]) =>
-      ((mockCounts[categoryA] || 0) / targetA) - ((mockCounts[categoryB] || 0) / targetB)
+  const neededMockCategories = Object.entries(MOCK_CATEGORY_RATIOS)
+    .sort(([categoryA, ratioA], [categoryB, ratioB]) =>
+      ((mockCounts[categoryA] || 0) / ratioA) - ((mockCounts[categoryB] || 0) / ratioB)
     );
 
   let candidates = available;
@@ -982,7 +1007,7 @@ function ProfileScreen({ onStart }) {
           <div>
             <label style={lbl}>Session Mode</label>
             <div style={{ display:"flex", gap:10 }}>
-              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 Core-Safe CAT",sub:"30–45 items · adaptive + essential safety coverage"},{val:"mock",label:"🧭 NCLEX Blueprint Mock",sub:"85 items · all core safety areas + blueprint targets"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
+              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 Core-Safe CAT",sub:"30–45 items · adaptive + essential safety coverage"},{val:"mock",label:"🧭 Adaptive NCLEX Mock CAT",sub:"85–150 items · adaptive mock pass/fail + safety blueprint"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
                 <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
@@ -1038,9 +1063,9 @@ function StartButton({ name, mode, weak, notes, onStart }) {
           </div>
         </div>
       )}
-      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_Q:qCount,mode})}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:qCount,mode})}
         style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
-        {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin 85-Question Blueprint Mock →" : "Start Practice Session →") : "Enter student name to continue"}
+        {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : "Start Practice Session →") : "Enter student name to continue"}
       </button>
     </div>
   );
@@ -1053,8 +1078,9 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
   const total=history.length, correct=history.filter(h=>h.correct).length, pct=total?Math.round((correct/total)*100):0;
-  const passed = catResult==="PASS" || (!catResult && pct>=75);
-  const ringColor = isNCLEX ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
+  const isAdaptiveMock = isNCLEX || isMock;
+  const passed = catResult==="PASS" || (isAdaptiveMock && !catResult && pct>=75);
+  const ringColor = isAdaptiveMock ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
   const byBlueprint={};
   history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
   const coveredCore = new Set(history.flatMap(h=>h.coreTags||[]));
@@ -1064,7 +1090,7 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"85-Question Blueprint Mock Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"Adaptive NCLEX Mock CAT Complete":"Practice Session Complete"}</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
         </div>
@@ -1072,10 +1098,10 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
         {/* Score Ring */}
         <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
           <div style={{ width:160, height:160, borderRadius:"50%", border:`6px solid ${ringColor}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4 }}>
-            {isNCLEX ? (
+            {isAdaptiveMock ? (
               <>
                 <span style={{ fontSize:32, fontWeight:700, color:ringColor }}>{passed?"PASS":"FAIL"}</span>
-                <span style={{ fontSize:12, color:"#64748b" }}>Readiness estimate</span>
+                <span style={{ fontSize:12, color:"#64748b" }}>{isMock ? "Mock readiness estimate" : "Readiness estimate"}</span>
               </>
             ) : (
               <>
@@ -1086,10 +1112,10 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
           </div>
         </div>
 
-        {isNCLEX&&(
+        {isAdaptiveMock&&(
           <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
-            <strong>{passed?"✓ Above Diagnostic Benchmark":"✗ Below Diagnostic Benchmark"}</strong><br/>
-            {passed?"This CAT-style diagnostic estimate is above the program benchmark. It is a study-readiness result, not an official NCLEX outcome.":"This CAT-style diagnostic estimate is below the program benchmark. Focus areas are highlighted in the breakdown below."}
+            <strong>{passed?"✓ Mock PASS":"✗ Mock FAIL"}</strong><br/>
+            {passed?"This adaptive study result is above the program benchmark. It is not an official NCLEX outcome.":"This adaptive study result is below the program benchmark. Review the focus areas before retesting."}
           </div>
         )}
 
@@ -1183,27 +1209,53 @@ function QuizScreen({ profile, onFinish }) {
   }
 
   function handleNext() {
-    const isCorrect = calcCorrect();
-    const newAbility = updateAbility(ability, isCorrect, q.difficulty);
-    const newHistory = [...history, { id:q.id, type:q.type, difficulty:q.difficulty, blueprint:q.blueprint, nclexCategory:getNCLEXCategory(q), coreTags:getCoreTags(q), stem:q.stem||null, correct:isCorrect }];
+    const caseOutcomes = q.type==="casestudy"
+      ? q.questions.map(sub => ({
+          id:`${q.id}:${sub.qid}`,
+          type:sub.type,
+          stem:sub.stem,
+          correct:[...(csAnswers[sub.qid]||[])].sort().join(",")===sub.correct.slice().sort().join(",")
+        }))
+      : [{ id:q.id, type:q.type, stem:q.stem||null, correct:calcCorrect() }];
+
+    let newAbility = ability;
+    const newRecords = caseOutcomes.map(outcome => {
+      newAbility = updateAbility(newAbility, outcome.correct, q.difficulty);
+      return {
+        id:outcome.id,
+        sourceId:q.id,
+        type:outcome.type,
+        difficulty:q.difficulty,
+        blueprint:q.blueprint,
+        nclexCategory:getNCLEXCategory(q),
+        coreTags:getCoreTags(q),
+        stem:outcome.stem,
+        correct:outcome.correct
+      };
+    });
+    const newHistory = [...history, ...newRecords];
     setHistory(newHistory);
     setAbility(newAbility);
 
     if(isNCLEX) {
       const result = shouldStop(newHistory, newAbility);
       if(result) { setCatResult(result); onFinish(newHistory, result); return; }
+    } else if(isMock) {
+      const result = shouldStopMock(newHistory, newAbility);
+      if(result) { setCatResult(result); onFinish(newHistory, result); return; }
     } else if(newHistory.length>=profile.qCount) {
       onFinish(newHistory, null); return;
     }
 
     const next = pickNextQuestion(activeBank, newHistory, profile, newAbility);
-    if(!next){ const result = isNCLEX ? (newAbility>=PASS_THRESHOLD?"PASS":"FAIL") : null; setCatResult(result); onFinish(newHistory, result); return; }
+    if(!next){ const result = (isNCLEX||isMock) ? (newAbility>=PASS_THRESHOLD?"PASS":"FAIL") : null; setCatResult(result); onFinish(newHistory, result); return; }
     setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
   }
 
   const qNum = history.length+1;
   const correctSoFar = history.filter(h=>h.correct).length;
-  const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : (qNum/profile.qCount)*100;
+  const caseItemCount = q.type==="casestudy" ? q.questions.length : 1;
+  const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : isMock ? Math.min(100,(qNum/FULL_MOCK_MAX_Q)*100) : (qNum/profile.qCount)*100;
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -1213,11 +1265,11 @@ function QuizScreen({ profile, onFinish }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, gap:12, flexWrap:"wrap" }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:"#0f172a", letterSpacing:2 }}>NCLEX-RN</div>
-            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"85-Question Blueprint Mock":"Practice"}</div>
+            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"Adaptive Mock CAT":"Practice"}</div>
           </div>
           <div style={{ flex:1, maxWidth:260 }}>
             <div style={{ fontSize:11, color:"#64748b", marginBottom:5 }}>
-              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `Question ${qNum} of ${FULL_MOCK_Q} · core safety blueprint` : `Question ${qNum} of ${profile.qCount}`}
+              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : `Question ${qNum} of ${profile.qCount}`}
             </div>
             <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
               <div style={{ height:"100%", width:`${progressPct}%`, background: isNCLEX?"#8b5cf6":"#0ea5e9", borderRadius:99, transition:"width 0.4s" }} />
