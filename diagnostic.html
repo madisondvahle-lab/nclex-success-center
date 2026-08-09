@@ -9,6 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="diagnostic-question-expansion.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
+  <script src="assessment-personalization.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; }
@@ -18,7 +20,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { useState } = React;
+    const { useEffect, useState } = React;
 
 
 // ─── QUESTION BANK (150 items) ────────────────────────────────────────────────
@@ -656,7 +658,14 @@ const BLUEPRINT_MINIMUMS = {
 const CORE_BLUEPRINT = window.NCLEX_CORE_BLUEPRINT;
 const CORE_REQUIREMENTS = CORE_BLUEPRINT.requirements;
 const MOCK_CATEGORY_TARGETS = CORE_BLUEPRINT.nclexCategoryTargets;
-const MOCK_CATEGORY_RATIOS = Object.fromEntries(Object.entries(MOCK_CATEGORY_TARGETS).map(([category, count]) => [category, count / FULL_MOCK_MIN_Q]));
+const MOCK_CATEGORY_RANGES = CORE_BLUEPRINT.nclexCategoryRanges;
+const MOCK_CATEGORY_MINIMUMS = Object.fromEntries(
+  Object.entries(MOCK_CATEGORY_RANGES).map(([category, range]) => [category, Math.ceil(FULL_MOCK_MIN_Q * range.min / 100)])
+);
+const MOCK_CATEGORY_MAXIMUMS = Object.fromEntries(
+  Object.entries(MOCK_CATEGORY_RANGES).map(([category, range]) => [category, Math.floor(FULL_MOCK_MIN_Q * range.max / 100)])
+);
+const ASSESSMENT_PERSONALIZATION = window.NCLEX_ASSESSMENT_PERSONALIZATION;
 const getCoreTags = item => CORE_BLUEPRINT.tagsForItem(item);
 const getNCLEXCategory = item => {
   if (item.blueprint === "Safe & Effective Care Environment") {
@@ -730,7 +739,28 @@ function hasMockCategoryCoverage(history) {
     totals[category] = (totals[category] || 0) + 1;
     return totals;
   }, {});
-  return Object.entries(MOCK_CATEGORY_TARGETS).every(([category, target]) => (counts[category] || 0) >= target);
+  return Object.entries(MOCK_CATEGORY_MINIMUMS).every(([category, minimum]) => (counts[category] || 0) >= minimum);
+}
+
+function categoryPersonalizationWeight(profile, category) {
+  const weight = Number(profile?.externalCategoryWeights?.[category]);
+  return Number.isFinite(weight) ? clamp(weight, 0.8, 1.65) : 1;
+}
+
+function mockPriorityCategory(counts, profile) {
+  const categories = Object.keys(MOCK_CATEGORY_TARGETS).filter(
+    category => (counts[category] || 0) < MOCK_CATEGORY_MAXIMUMS[category]
+  );
+  const pool = categories.length ? categories : Object.keys(MOCK_CATEGORY_TARGETS);
+  const belowMinimum = pool.filter(category => (counts[category] || 0) < MOCK_CATEGORY_MINIMUMS[category]);
+  const candidates = belowMinimum.length ? belowMinimum : pool;
+  return candidates.map(category => {
+    const count = counts[category] || 0;
+    const target = MOCK_CATEGORY_TARGETS[category];
+    const weight = categoryPersonalizationWeight(profile, category);
+    const coverage = belowMinimum.length ? count / MOCK_CATEGORY_MINIMUMS[category] : count / (target * weight);
+    return { category, coverage, count };
+  }).sort((a, b) => a.coverage - b.coverage || a.count - b.count)[0]?.category || null;
 }
 
 function shouldStopMock(history, ability) {
@@ -769,14 +799,9 @@ function pickNextQuestion(bank, history, profile, ability) {
     totals[category] = (totals[category] || 0) + 1;
     return totals;
   }, {});
-  const neededMockCategories = Object.entries(MOCK_CATEGORY_RATIOS)
-    .sort(([categoryA, ratioA], [categoryB, ratioB]) =>
-      ((mockCounts[categoryA] || 0) / ratioA) - ((mockCounts[categoryB] || 0) / ratioB)
-    );
-
   let candidates = available;
   const priorityBlueprint = neededBlueprints[0]?.[0];
-  const priorityCategory = isMock ? neededMockCategories[0]?.[0] : null;
+  const priorityCategory = isMock ? mockPriorityCategory(mockCounts, profile) : null;
   if (coreNeeded.length) {
     const requiredTag = coreNeeded[0].key;
     const coreCandidates = available.filter(item => getCoreTags(item).includes(requiredTag));
@@ -801,12 +826,16 @@ function pickNextQuestion(bank, history, profile, ability) {
 
   const recentBlueprints = history.slice(-2).map(item => item.blueprint);
   const ranked = candidates
-    .map(item => ({
-      item,
-      score:
-        Math.abs((ITEM_DIFFICULTIES[item.difficulty] ?? 0.50) - ability) +
-        (recentBlueprints.includes(item.blueprint) ? 0.18 : 0)
-    }))
+    .map(item => {
+      const externalWeight = categoryPersonalizationWeight(profile, getNCLEXCategory(item));
+      return {
+        item,
+        score:
+          Math.abs((ITEM_DIFFICULTIES[item.difficulty] ?? 0.50) - ability) +
+          (recentBlueprints.includes(item.blueprint) ? 0.18 : 0) -
+          (externalWeight - 1) * 0.08
+      };
+    })
     .sort((a, b) => a.score - b.score);
   const bestScore = ranked[0].score;
   const shortlist = ranked.filter(entry => entry.score <= bestScore + 0.04).slice(0, 3);
@@ -988,8 +1017,11 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 // ─── PROFILE SCREEN ───────────────────────────────────────────────────────────
 const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
 
-function ProfileScreen({ onStart }) {
+function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
   const [name,setName]=useState(""); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(""); const [mode,setMode]=useState("practice");
+  useEffect(() => {
+    if (assessmentProfile?.studentName) setName(assessmentProfile.studentName);
+  }, [assessmentProfile?.studentName]);
   const inp={ width:"100%", padding:"10px 14px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, fontFamily:"Georgia,serif", color:"#0f172a", background:"#fff", outline:"none", boxSizing:"border-box" };
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -1003,6 +1035,16 @@ function ProfileScreen({ onStart }) {
           <div style={{ display:"flex", gap:14 }}>
             <div style={{ flex:1 }}><label style={lbl}>Student Name</label><input style={inp} placeholder="e.g. Maria R." value={name} onChange={e=>setName(e.target.value)} /></div>
           </div>
+          {assessmentLoading ? (
+            <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#64748b" }}>Loading your assessment-history personalization…</div>
+          ) : assessmentProfile?.hasPersonalization ? (
+            <div style={{ background:"#eff6ff", border:"1px solid #bfdbfe", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#1e40af", lineHeight:1.55 }}>
+              <strong>Outside assessment history is shaping this session.</strong>
+              <div style={{ color:"#475569", marginTop:4 }}>Core safety coverage and Client Needs guardrails remain required in every CAT.</div>
+            </div>
+          ) : (
+            <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#64748b", lineHeight:1.55 }}>No outside assessment scores are on file yet. This session will use the standard NCLEX blueprint plus any areas selected below.</div>
+          )}
           {/* Mode Selection */}
           <div>
             <label style={lbl}>Session Mode</label>
@@ -1043,13 +1085,13 @@ function ProfileScreen({ onStart }) {
           </div>
         </div>
 
-        <StartButton name={name} mode={mode} weak={weak} notes={notes} onStart={onStart} />
+        <StartButton name={name} mode={mode} weak={weak} notes={notes} assessmentProfile={assessmentProfile} onStart={onStart} />
       </div>
     </div>
   );
 }
 
-function StartButton({ name, mode, weak, notes, onStart }) {
+function StartButton({ name, mode, weak, notes, assessmentProfile, onStart }) {
   const [qCount, setQCount] = useState(10);
   return (
     <div style={{ marginTop:24 }}>
@@ -1063,7 +1105,7 @@ function StartButton({ name, mode, weak, notes, onStart }) {
           </div>
         </div>
       )}
-      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:qCount,mode})}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:qCount,mode})}
         style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
         {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : "Start Practice Session →") : "Enter student name to continue"}
       </button>
@@ -1342,11 +1384,29 @@ function QuizScreen({ profile, onFinish }) {
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 function App() {
   const [screen, setScreen] = useState("profile");
+  const [assessmentProfile, setAssessmentProfile] = useState(null);
+  const [assessmentLoading, setAssessmentLoading] = useState(true);
+  useEffect(() => {
+    let active = true;
+    async function loadAssessmentHistory() {
+      if (!window.supabase || !ASSESSMENT_PERSONALIZATION) { if (active) setAssessmentLoading(false); return; }
+      const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { if (active) setAssessmentLoading(false); return; }
+      const { data: student } = await db.from('students').select('id,name').eq('auth_user_id', session.user.id).maybeSingle();
+      if (!student) { if (active) setAssessmentLoading(false); return; }
+      const { data: assessments } = await db.from('external_assessments').select('platform,taken_at,created_at,category_scores').eq('student_id', student.id).order('taken_at',{ascending:false});
+      const result = ASSESSMENT_PERSONALIZATION.buildProfile(assessments || []);
+      if (active) { setAssessmentProfile({ ...result, studentName: student.name }); setAssessmentLoading(false); }
+    }
+    loadAssessmentHistory().catch(() => { if (active) setAssessmentLoading(false); });
+    return () => { active = false; };
+  }, []);
   const [profile, setProfile] = useState(null);
   const [finalHistory, setFinalHistory] = useState([]);
   const [catResult, setCatResult] = useState(null);
 
-  if(screen==="profile") return <ProfileScreen onStart={p=>{ setProfile(p); setScreen("quiz"); }} />;
+  if(screen==="profile") return <ProfileScreen assessmentProfile={assessmentProfile} assessmentLoading={assessmentLoading} onStart={p=>{ setProfile(p); setScreen("quiz"); }} />;
   if(screen==="quiz") return <QuizScreen profile={profile} onFinish={(h,r)=>{ setFinalHistory(h); setCatResult(r); setScreen("results"); }} />;
   if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} catResult={catResult} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setScreen("profile"); }} />;
 }
