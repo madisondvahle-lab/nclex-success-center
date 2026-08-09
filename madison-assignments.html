@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Student assignments · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--green:#167052}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(880px,calc(100% - 36px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid #e2e8e3;gap:18px}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.nav a,.sign-out{border:0;background:transparent;color:var(--ink);font:800 .78rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px;text-decoration:none}.hero{padding:54px 0 28px}.eyebrow{margin:0 0 9px;color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.13em;font-size:.72rem}.hero h1{font:700 clamp(2.3rem,5vw,4.3rem)/.95 Georgia,serif;letter-spacing:-.06em;margin:0;color:var(--plum)}.hero p:last-child{max-width:640px;color:var(--muted);line-height:1.65;margin:18px 0 0}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 10px 32px #17344f0b;margin-bottom:26px}.card h2{font:700 1.48rem Georgia,serif;letter-spacing:-.035em;color:var(--plum);margin:0 0 8px}.help{color:var(--muted);line-height:1.5;margin:0 0 22px}.field-label{display:block;font-size:.76rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;margin:0 0 8px;color:var(--ink)}select{width:100%;border:1px solid #bfcfc7;border-radius:10px;background:#fff;padding:13px 14px;font:600 1rem Inter,sans-serif;color:var(--ink)}.assignments{display:grid;gap:12px;margin:20px 0}.choice{border:1px solid var(--line);border-radius:12px;padding:15px 16px;display:flex;gap:13px;align-items:flex-start;cursor:pointer;background:#fff}.choice input{margin:3px 0 0;accent-color:var(--plum);width:17px;height:17px}.choice strong{display:block;color:var(--plum);font-size:1rem}.choice span{display:block;color:var(--muted);font-size:.9rem;line-height:1.45;margin-top:3px}.button{appearance:none;border:0;border-radius:999px;background:var(--plum);color:#fff;padding:13px 20px;font:800 .92rem Inter,sans-serif;cursor:pointer}.button:disabled{opacity:.55;cursor:wait}.notice{display:none;margin-top:18px;padding:13px 15px;border-radius:10px;line-height:1.45;font-weight:650}.notice.success{display:block;background:#e7f5ee;color:#0f5d42}.notice.error{display:block;background:#fde9e7;color:#9c382d}.empty{padding:18px;border:1px dashed #b9c9c0;border-radius:12px;color:var(--muted)}.hidden{display:none!important}@media(max-width:600px){.top{align-items:flex-start;flex-direction:column}.nav{justify-content:flex-start}.card{padding:20px}.hero{padding-top:38px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand">Study With Madison, RN <small>· private admin</small></div><nav class="nav"><a href="madison-leads.html">Leads</a><a href="assessment-history-admin.html">Assessment history</a><a href="shared-progress.html">Student progress</a><a href="question-bank-review.html">Q bank review</a><button class="sign-out" id="sign-out" type="button">Sign out</button></nav></header>
+    <div id="loading" class="hero"><p class="eyebrow">Private admin view</p><h1>Loading assignments…</h1></div>
+    <section id="app" class="hidden">
+      <section class="hero"><p class="eyebrow">Private admin view</p><h1>Assign student work.</h1><p>Give a student access to specific modules and add a full mock CAT diagnostic to their dashboard. Existing module access stays intact.</p></section>
+      <section class="card">
+        <h2>Make an assignment</h2>
+        <p class="help">Choose a student, select the work to assign, then save. The CAT will appear as a practice set in their dashboard.</p>
+        <label class="field-label" for="student">Student</label>
+        <select id="student"><option value="">Choose a student…</option></select>
+        <div id="choices" class="assignments hidden">
+          <label class="choice"><input id="module1" type="checkbox"><span><strong>Module 1 · Newborn</strong><span>Assign access to the Newborn module.</span></span></label>
+          <label class="choice"><input id="module2" type="checkbox"><span><strong>Module 2 · Maternal &amp; OB</strong><span>Assign access to the Maternal &amp; OB module.</span></span></label>
+          <label class="choice"><input id="diagnostic" type="checkbox"><span><strong>Full mock CAT diagnostic</strong><span>Add the full mock CAT to the student’s dashboard as a practice set.</span></span></label>
+          <button id="save" class="button" type="button">Save assignments</button>
+        </div>
+        <p id="empty" class="empty hidden">No students are available yet.</p>
+        <div id="notice" class="notice" role="status"></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const $=id=>document.getElementById(id);
+    let students=[],catalog=[];
+    const show=(message,type)=>{const box=$('notice');box.textContent=message;box.className='notice '+type};
+    const clearNotice=()=>{$('notice').className='notice';$('notice').textContent=''};
+    function selected(){return students.find(item=>item.id===$('student').value)}
+    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load this student’s existing module access. Please refresh and try again.','error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));$('module1').checked=enabled.has('m1');$('module2').checked=enabled.has('m2');$('diagnostic').checked=false}
+    async function save(){clearNotice();const student=selected();if(!student){show('Choose a student first.','error');return}const requested=[['m1',$('module1').checked],['m2',$('module2').checked]].filter(([,enabled])=>enabled).map(([module_key])=>({student_id:student.id,module_key,enabled:true}));if(!requested.length&&!$('diagnostic').checked){show('Choose at least one assignment.','error');return}const button=$('save');button.disabled=true;button.textContent='Saving…';try{if(requested.length){const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw error}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw findError;if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw error}}const items=[];if($('module1').checked)items.push('Module 1');if($('module2').checked)items.push('Module 2');if($('diagnostic').checked)items.push('full mock CAT diagnostic');show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
+    async function init(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('student-login.html');return}const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();if(!admin){await db.auth.signOut();location.replace('student-login.html');return}const [{data:studentData,error:studentError},{data:moduleData,error:moduleError}]=await Promise.all([db.from('students').select('id,name,email').order('name'),db.from('modules').select('module_key,module_number').order('module_number')]);if(studentError){show('Could not load students. Please refresh and try again.','error')}else{students=studentData||[];$('student').innerHTML='<option value="">Choose a student…</option>'+students.map(item=>'<option value="'+item.id+'">'+item.name+(item.email?' · '+item.email:'')+'</option>').join('');if(!students.length)$('empty').classList.remove('hidden')}if(moduleError||!new Set((moduleData||[]).map(item=>item.module_key)).has('m1')||!new Set((moduleData||[]).map(item=>item.module_key)).has('m2'))show('Module catalog needs attention before module assignments can be saved.','error');$('student').addEventListener('change',loadStudent);$('save').addEventListener('click',save);$('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});$('loading').classList.add('hidden');$('app').classList.remove('hidden')}init();
+  </script>
+</body>
+</html>
