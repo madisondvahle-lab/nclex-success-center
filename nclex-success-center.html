@@ -282,6 +282,20 @@
     .start-btn:hover .start-btn-arrow {
       transform: translateX(3px);
     }
+    .module-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .start-btn.secondary {
+      color: #0f766e;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      box-shadow: none;
+    }
+    .start-btn.secondary:hover {
+      box-shadow: 0 6px 18px rgba(15,118,110,0.15);
+    }
 
     /* ── Coming Soon section ── */
     .coming-soon-grid {
@@ -344,6 +358,28 @@
       color: #94a3b8;
       letter-spacing: 0.8px;
       text-transform: uppercase;
+    }
+    .coming-card.available {
+      display: block;
+      opacity: 1;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .coming-card.available::after { display: none; }
+    .coming-card.available:hover,
+    .coming-card.available:focus-visible {
+      transform: translateY(-2px);
+      border-color: #93c5fd;
+      box-shadow: 0 8px 22px rgba(15,23,42,0.12);
+      outline: none;
+    }
+    .coming-card.available .coming-card-num { color: #0369a1; }
+    .coming-card.available .coming-card-name { color: #0f172a; }
+    .coming-card.available .coming-soon-badge {
+      color: #0369a1;
+      background: #e0f2fe;
+      border-color: #bae6fd;
     }
 
     /* ── Footer ── */
@@ -457,9 +493,14 @@
         </div>
 
         <!-- CTA -->
-        <a href="module1-newborn.html?start=1" class="start-btn">
-          Start Module 1 <span class="start-btn-arrow">→</span>
-        </a>
+        <div class="module-actions">
+          <a href="module1-guide.html" class="start-btn secondary">
+            Read Module 1 Guide <span class="start-btn-arrow">→</span>
+          </a>
+          <a href="module1-newborn.html?start=1" class="start-btn">
+            Start Practice Assessment <span class="start-btn-arrow">→</span>
+          </a>
+        </div>
 
       </div>
     </div>
@@ -525,45 +566,53 @@
           <span class="meta-pill">⚡ Includes NGN</span>
         </div>
 
-        <a href="module2-maternal.html?start=1" class="start-btn" style="background:linear-gradient(135deg,#7e22ce 0%,#a855f7 100%);box-shadow:0 4px 16px rgba(168,85,247,0.35);">
-          Start Module 2 <span class="start-btn-arrow">→</span>
-        </a>
+        <div class="module-actions">
+          <a href="module2-guide.html" class="start-btn secondary" style="color:#6b21a8;background:#faf5ff;border-color:#d8b4fe;">
+            Read Module 2 Guide <span class="start-btn-arrow">→</span>
+          </a>
+          <a href="module2-studyguide.html" class="start-btn secondary" style="color:#6b21a8;background:#faf5ff;border-color:#d8b4fe;">
+            Open Quick Review <span class="start-btn-arrow">→</span>
+          </a>
+          <a href="module2-maternal.html?start=1" class="start-btn" style="background:linear-gradient(135deg,#7e22ce 0%,#a855f7 100%);box-shadow:0 4px 16px rgba(168,85,247,0.35);">
+            Start Practice Assessment <span class="start-btn-arrow">→</span>
+          </a>
+        </div>
 
       </div>
     </div>
 
-    <!-- Coming Soon -->
-    <div class="section-label fade-up-2">Coming Soon</div>
+    <!-- Additional modules -->
+    <div class="section-label fade-up-2">More Study Guides</div>
 
     <div class="coming-soon-grid fade-up-2">
 
-      <div class="coming-card">
+      <a class="coming-card available" href="module3-guide.html">
         <div class="coming-card-icon">💊</div>
         <div class="coming-card-num">Module 3</div>
-        <div class="coming-card-name">Pharmacology</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
+        <div class="coming-card-name">Pharmacology Essentials</div>
+        <span class="coming-soon-badge">Open Study Guide</span>
+      </a>
 
-      <div class="coming-card">
-        <div class="coming-card-icon">🧸</div>
-        <div class="coming-card-num">Module 4</div>
-        <div class="coming-card-name">Pediatrics</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
-
-      <div class="coming-card">
+      <a class="coming-card available" href="module4-guide.html">
         <div class="coming-card-icon">❤️</div>
-        <div class="coming-card-num">Module 5</div>
-        <div class="coming-card-name">Cardiac</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
+        <div class="coming-card-num">Module 4</div>
+        <div class="coming-card-name">Cardiovascular Disorders</div>
+        <span class="coming-soon-badge">Open Study Guide</span>
+      </a>
 
-      <div class="coming-card">
+      <a class="coming-card available" href="module5-guide.html">
         <div class="coming-card-icon">🫁</div>
+        <div class="coming-card-num">Module 5</div>
+        <div class="coming-card-name">Respiratory Disorders</div>
+        <span class="coming-soon-badge">Open Study Guide</span>
+      </a>
+
+      <a class="coming-card available" href="module6-guide.html">
+        <div class="coming-card-icon">💧</div>
         <div class="coming-card-num">Module 6</div>
-        <div class="coming-card-name">Respiratory</div>
-        <span class="coming-soon-badge">Coming Soon</span>
-      </div>
+        <div class="coming-card-name">Fluids, Electrolytes &amp; Acid-Base</div>
+        <span class="coming-soon-badge">Open Study Guide</span>
+      </a>
 
       <div class="coming-card">
         <div class="coming-card-icon">🧠</div>
