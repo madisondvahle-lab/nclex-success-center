@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Assessment History · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--blue:#235f9f;--soft:#f5eee8}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1120px,calc(100% - 36px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid #e2e8e3}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.top a,.sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;text-decoration:none;border-bottom:1px solid currentColor;padding:0 0 3px}.hero{padding:44px 0 26px}.eyebrow{margin:0 0 12px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.25rem,5vw,4rem);line-height:1}h2{margin:0 0 14px;font-size:1.55rem}.hero p:not(.eyebrow){max-width:730px;color:var(--muted);line-height:1.65}.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:22px;padding-bottom:60px}.card{background:var(--paper);border:1px solid var(--line);padding:26px}.hint{margin:0 0 18px;color:var(--muted);font-size:.86rem;line-height:1.6}label{display:block;color:var(--muted);font-size:.72rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;margin:0 0 6px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cbd8d0;border-radius:8px;background:#fff;color:var(--ink);font:400 .92rem Inter,sans-serif}textarea{min-height:82px;resize:vertical}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.score label{font-size:.66rem;letter-spacing:.04em;text-transform:none;line-height:1.3}.submit{margin-top:17px;width:100%;padding:13px;border:0;border-radius:8px;background:var(--ink);color:#fff;font:800 .9rem Inter,sans-serif;cursor:pointer}.submit:disabled{opacity:.55;cursor:wait}.status{min-height:21px;margin:12px 0 0;font-size:.84rem;color:var(--muted)}.status.error{color:#a32828}.status.success{color:#17663c}.history{display:grid;gap:10px}.entry{border:1px solid var(--line);padding:15px;background:#fff}.entry h3{margin:0 0 5px;font-size:1.05rem}.entry p{margin:4px 0;color:var(--muted);font-size:.8rem;line-height:1.5}.badge{display:inline-block;margin-top:6px;padding:4px 7px;border-radius:999px;background:#e6f0fb;color:var(--blue);font-size:.65rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.empty{margin:0;color:var(--muted);line-height:1.6}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}.hidden{display:none}@media(max-width:800px){.grid{grid-template-columns:1fr}.fields,.scores{grid-template-columns:1fr}.shell{width:min(100% - 28px,1120px)}.top{gap:16px}.hero{padding-top:34px}}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Opening assessment history…</div>
+  <main class="shell hidden" id="app">
+    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><span><a href="madison-leads.html" style="margin-right:18px">Readiness leads</a><button class="sign-out" id="sign-out" type="button">Sign out</button></span></header>
+    <section class="hero"><p class="eyebrow">Private admin view</p><h1>Outside assessment history.</h1><p>Enter the category percentages from any CAT, readiness exam, or question bank. The adaptive engine gives lower-scoring Client Needs categories extra weight while preserving required core safety coverage and NCLEX blueprint ranges.</p></section>
+    <section class="grid">
+      <article class="card">
+        <h2>Add an assessment</h2>
+        <p class="hint">Use the report's Client Needs percentages when available. Leave any category blank if the platform does not report it.</p>
+        <form id="assessment-form">
+          <div class="fields">
+            <div><label for="student">Student</label><select id="student" required><option value="">Select a student</option></select></div>
+            <div><label for="platform">Platform</label><input id="platform" maxlength="120" placeholder="e.g. UWorld, ATI, Archer" required></div>
+            <div><label for="assessment-name">Assessment name</label><input id="assessment-name" maxlength="160" placeholder="e.g. CAT #2"></div>
+            <div><label for="taken-at">Date completed</label><input id="taken-at" type="date"></div>
+            <div><label for="overall-score">Overall score %</label><input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="Optional"></div>
+            <div><label for="readiness">Readiness label</label><input id="readiness" maxlength="80" placeholder="e.g. High chance of passing"></div>
+          </div>
+          <div class="scores" id="scores"></div>
+          <div><label for="notes">Private notes</label><textarea id="notes" maxlength="2000" placeholder="Optional context from the report or tutoring session"></textarea></div>
+          <button class="submit" id="save" type="submit">Save assessment history</button>
+          <p class="status" id="status" aria-live="polite"></p>
+        </form>
+      </article>
+      <aside class="card"><h2>Recent entries</h2><div class="history" id="history"><p class="empty">Loading saved assessment history…</p></div></aside>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const categories=['Management of Care','Safety & Infection Prevention','Health Promotion & Maintenance','Psychosocial Integrity','Basic Care & Comfort','Pharmacological & Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
+    const app=document.getElementById('app'),loading=document.getElementById('loading'),status=document.getElementById('status'),form=document.getElementById('assessment-form'),save=document.getElementById('save');
+    let currentUser=null;
+    const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&#39;'}[char]));
+    const date=value=>value?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(value+'T12:00:00')):'Date not recorded';
+    function message(value,type){status.textContent=value;status.className='status '+(type||'')}
+    function buildScores(){document.getElementById('scores').innerHTML=categories.map((category,index)=>'<div class="score"><label for="score-'+index+'">'+esc(category)+'</label><input id="score-'+index+'" data-category="'+esc(category)+'" type="number" min="0" max="100" step="0.1" placeholder="%"></div>').join('')}
+    function renderStudents(students){const select=document.getElementById('student');select.innerHTML='<option value="">Select a student</option>'+students.map(student=>'<option value="'+esc(student.id)+'">'+esc(student.name||student.email||'Student')+'</option>').join('')}
+    function renderHistory(rows){const target=document.getElementById('history');if(!rows.length){target.innerHTML='<p class="empty">No assessment history has been entered yet.</p>';return}target.innerHTML=rows.map(row=>{const student=row.students||{};const score=row.overall_score==null?'Overall score not recorded':Math.round(Number(row.overall_score))+'% overall';return '<article class="entry"><h3>'+esc(student.name||student.email||'Student')+'</h3><p><strong>'+esc(row.platform)+'</strong>'+ (row.assessment_name?' · '+esc(row.assessment_name):'')+'</p><p>'+esc(score)+' · '+esc(date(row.taken_at))+'</p><span class="badge">'+esc(row.readiness_level||'Assessment saved')+'</span></article>'}).join('')}
+    async function loadHistory(){const {data,error}=await db.from('external_assessments').select('id,platform,assessment_name,taken_at,overall_score,readiness_level,students(name,email)').order('taken_at',{ascending:false}).order('created_at',{ascending:false}).limit(30);if(error){document.getElementById('history').innerHTML='<p class="empty">The assessment-history table is not available yet. Run the included SQL migration once, then refresh this page.</p>';return}renderHistory(data||[])}
+    async function init(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('student-login.html');return}currentUser=session.user;const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();if(!admin){await db.auth.signOut();location.replace('student-login.html');return}const {data:students,error}=await db.from('students').select('id,name,email').order('name');if(error){message('Unable to load students. Please refresh and try again.','error')}else{renderStudents(students||[])}buildScores();await loadHistory();loading.classList.add('hidden');app.classList.remove('hidden')}
+    form.addEventListener('submit',async event=>{event.preventDefault();const studentId=document.getElementById('student').value;if(!studentId)return;const categoryScores={};document.querySelectorAll('[data-category]').forEach(input=>{if(input.value!=='')categoryScores[input.dataset.category]=Number(input.value)});save.disabled=true;message('Saving assessment history…');const overall=document.getElementById('overall-score').value;const payload={student_id:studentId,platform:document.getElementById('platform').value.trim(),assessment_name:document.getElementById('assessment-name').value.trim(),taken_at:document.getElementById('taken-at').value||null,overall_score:overall===''?null:Number(overall),readiness_level:document.getElementById('readiness').value.trim(),category_scores:categoryScores,notes:document.getElementById('notes').value.trim(),entered_by:currentUser.id};const {error}=await db.from('external_assessments').insert(payload);save.disabled=false;if(error){message(error.message||'Unable to save this assessment.','error');return}form.reset();message('Assessment history saved. It will personalize the student’s next CAT.','success');await loadHistory()});
+    document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
+  </script>
+</body>
+</html>
