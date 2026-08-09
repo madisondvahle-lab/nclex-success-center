@@ -29,6 +29,17 @@ create table if not exists student_assessment_insights (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists student_assessment_categories (
+  id uuid primary key default gen_random_uuid(),
+  assessment_id uuid not null references student_assessment_uploads(id) on delete cascade,
+  category text not null,
+  score numeric(5,2) check (score is null or score between 0 and 100),
+  correct_count integer check (correct_count is null or correct_count >= 0),
+  total_count integer check (total_count is null or total_count > 0),
+  created_at timestamptz not null default now(),
+  unique (assessment_id, category)
+);
+
 create table if not exists student_focus_areas (
   id uuid primary key default gen_random_uuid(),
   student_id uuid not null references students(id) on delete cascade,
@@ -45,6 +56,7 @@ create table if not exists student_focus_areas (
 
 alter table student_assessment_uploads enable row level security;
 alter table student_assessment_insights enable row level security;
+alter table student_assessment_categories enable row level security;
 alter table student_focus_areas enable row level security;
 
 drop policy if exists "admins manage assessment uploads" on student_assessment_uploads;
@@ -72,6 +84,18 @@ create policy "students view shared assessment insights" on student_assessment_i
     shared_with_student and exists (
       select 1 from student_assessment_uploads uploads join students on students.id = uploads.student_id
       where uploads.id = student_assessment_insights.assessment_id and students.auth_user_id = auth.uid()
+    )
+  );
+
+drop policy if exists "admins manage assessment categories" on student_assessment_categories;
+drop policy if exists "students view own assessment categories" on student_assessment_categories;
+create policy "admins manage assessment categories" on student_assessment_categories
+  for all to authenticated using (is_app_admin()) with check (is_app_admin());
+create policy "students view own assessment categories" on student_assessment_categories
+  for select to authenticated using (
+    exists (
+      select 1 from student_assessment_uploads uploads join students on students.id = uploads.student_id
+      where uploads.id = student_assessment_categories.assessment_id and students.auth_user_id = auth.uid()
     )
   );
 
