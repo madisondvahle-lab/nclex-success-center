@@ -17,6 +17,21 @@
     { key: 'psych_safety', label: 'Mental-health crisis, suicide, and therapeutic communication', itemIds: ['ps1', 'ps2', 'ps3', 'ps4', 'ps5', 'ps6', 'x031', 'x032', 'x033', 'x034', 'x035', 'x037', 'x038', 'x040'] }
   ];
 
+  // 2026 NCLEX-RN Client Needs content ranges. The CAT keeps every category
+  // within these guardrails while allowing assessment history to influence
+  // distribution inside the permitted range.
+  const nclexCategoryRanges = {
+    'Management of Care': { min: 15, max: 21 },
+    'Safety & Infection Prevention': { min: 10, max: 16 },
+    'Health Promotion & Maintenance': { min: 6, max: 12 },
+    'Psychosocial Integrity': { min: 6, max: 12 },
+    'Basic Care & Comfort': { min: 6, max: 12 },
+    'Pharmacological & Parenteral Therapies': { min: 13, max: 19 },
+    'Reduction of Risk Potential': { min: 9, max: 15 },
+    'Physiological Adaptation': { min: 11, max: 17 }
+  };
+
+  // Mid-range operating targets retained for reporting and balancing.
   const nclexCategoryTargets = {
     'Management of Care': 15,
     'Safety & Infection Prevention': 11,
@@ -39,6 +54,7 @@
   window.NCLEX_CORE_BLUEPRINT = {
     requirements,
     nclexCategoryTargets,
+    nclexCategoryRanges,
     tagsForItem: item => byItemId[item.id] || []
   };
 })();
