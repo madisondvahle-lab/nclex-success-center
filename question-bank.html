@@ -2038,6 +2038,9 @@ const QUESTIONS = [
 
 ];
 
+// Exposed for the private admin review queue; this does not change the public editor.
+window.NCLEX_LEGACY_QUESTIONS = QUESTIONS;
+
 const STORE_KEY = 'nclex_qbank_madison';
 
 function loadState() {
