@@ -12,14 +12,17 @@ PATH = Path("module5-guide.html")
 text = PATH.read_text(encoding="utf-8")
 
 
-def block(src, start, end):
+def array_block(src, start, next_decl):
+    """Return an embedded JS array through its closing ];, allowing blank lines before the next declaration."""
     a = src.index(start)
-    b = src.index(end, a) + len(end)
-    return src[a:b]
+    match = re.search(r"\n\];\s*\n+" + re.escape(next_decl), src[a:])
+    if not match:
+        raise SystemExit(f"Refusing to edit: clinical block boundary missing before {next_decl}")
+    return src[a : a + match.start() + 3]
 
 
-pq_before = block(text, "const PQ=[", "];\nlet pqCurrent")
-qq_before = block(text, "const QQ=[", "];\nlet qqIdx")
+pq_before = array_block(text, "const PQ=[", "let pqCurrent")
+qq_before = array_block(text, "const QQ=[", "let qqIdx")
 
 legacy_markers = ("Alyssa Dababneh", "alyssadababneh@yahoo.com", "mailto:", "quiz_results")
 for marker in legacy_markers:
@@ -61,8 +64,8 @@ for marker in legacy_markers:
     if marker in text:
         raise SystemExit(f"Refusing to write: legacy marker still present: {marker}")
 
-pq_after = block(text, "const PQ=[", "];\nlet pqCurrent")
-qq_after = block(text, "const QQ=[", "];\nlet qqIdx")
+pq_after = array_block(text, "const PQ=[", "let pqCurrent")
+qq_after = array_block(text, "const QQ=[", "let qqIdx")
 if pq_before != pq_after or qq_before != qq_after:
     raise SystemExit("Refusing to write: clinical question bank changed")
 
