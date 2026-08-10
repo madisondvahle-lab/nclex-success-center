@@ -10,23 +10,51 @@ This file describes the current intended state. When it conflicts with historica
 |---|---|---|
 | M1 | Newborn Care | Live/current |
 | M2 | Maternal & OB | Live/current |
-| M3 | Pharmacology | Content developed; student quiz/wiring incomplete; new assignment temporarily disabled |
-| M4 | Cardiac | Content developed; implementation incomplete |
-| M5 | Respiratory | Content developed; implementation incomplete |
-| M6 | Endocrine | Current curriculum direction; implementation incomplete |
+| M3 | Pharmacology | Secure recovery technically prepared; activation blocked by manual Supabase migrations/testing; new assignment remains disabled |
+| M4 | Cardiac | Secure recovery technically prepared; activation blocked by shared `module_results` migration/testing |
+| M5 | Respiratory | Secure recovery technically prepared; activation blocked by shared `module_results` migration/testing |
+| M6 | Endocrine | Current curriculum direction; authoritative implementation content is not present in this repo yet |
 | M7+ | TBD | Do not infer numbering from the historical catalog |
 
 ### Historical curriculum warning
 Previous repository versions assigned M6 to Fluids & Electrolytes and M10 to Endocrine. That historical numbering is not the current curriculum authority. Do not restore or renumber the curriculum without explicit approval.
 
-Historical M3-M6 guide content may be useful for selective recovery, but it must be reviewed against the current curriculum, current security architecture, and newer content before reuse.
+Historical M3-M5 guide content was selectively recovered from verified repository history and technically adapted on draft recovery branches. Historical M6 Fluids/Electrolytes remains archive material only and must not overwrite current M6 Endocrine.
+
+## Module recovery checkpoints
+
+### M3 Pharmacology — draft PR #19
+- Historical source recovered from verified commit history.
+- Secure launcher requires current Supabase Auth and verifies M3 assignment.
+- Prior-student identifiers, `mailto:`, legacy `quiz_results`, and old hub/module navigation were removed from the recovered source.
+- Practice results are designed to save through the authenticated student's RLS-protected `module_results` record.
+- New M3 assignment remains intentionally disabled.
+- Manual blockers: run/verify `supabase-module3-safe-placeholder-migration.sql`, run/verify `supabase-module-results-migration.sql`, then complete authenticated end-to-end result testing before restoring catalog/assignment access.
+
+### M4 Cardiac — draft PR #21
+- Historical source recovered and technically sanitized.
+- Secure launcher requires current Supabase Auth and verifies M4 assignment.
+- Legacy prior-student result/email behavior and navigation were removed.
+- Clinical PQ/QQ banks remain locked and are guarded by recovery validation.
+- Manual blocker: `supabase-module-results-migration.sql` must be run/verified, followed by authenticated end-to-end result testing before activation.
+
+### M5 Respiratory — draft PR #22
+- Historical source recovered and technically sanitized.
+- Secure launcher requires current Supabase Auth and verifies M5 assignment.
+- Legacy prior-student result/email behavior and navigation were removed.
+- Clinical PQ/QQ banks remain locked and are guarded by recovery validation.
+- Manual blocker: `supabase-module-results-migration.sql` must be run/verified, followed by authenticated end-to-end result testing before activation.
+
+### M6 Endocrine
+- Current M6 is Endocrine.
+- No authoritative Endocrine implementation commit or PR exists in this repository.
+- Do not invent clinical content from memory and do not restore historical Fluids/Electrolytes as M6.
+- Build work waits for the approved current Endocrine source content.
 
 ## Known issues
-- M3 does not yet have a finalized student-facing guide/quiz implementation. New M3 assignment is intentionally disabled until that work is complete.
-- A prior M3 catalog entry used the internal `question-bank.html` tool as both guide and quiz. Run `supabase-module3-safe-placeholder-migration.sql` once after deployment to clear those student-facing URLs while preserving existing access rows.
-- Historical M3-M6 guide pages contained substantive module content, but current `main` versions were replaced with secure-login redirects during later security work.
-- Historical M6 Fluids/Electrolytes content may be reusable later, but must not overwrite current M6 Endocrine work.
+- A prior M3 catalog entry used the internal `question-bank.html` tool as both guide and quiz. `supabase-module3-safe-placeholder-migration.sql` is the approved cleanup path for those URLs while preserving existing access rows.
 - Public blog content belongs in `study-with-madison-site`; the accidental Success Center blog copy has been removed.
+- M3-M5 recovery PRs must remain draft/unmerged until their documented manual database prerequisites and authenticated student-flow validation are complete.
 
 ## Current architecture snapshot
 
@@ -43,4 +71,4 @@ The repository contains an adaptive NCLEX-style readiness/CAT system with a 150-
 Admin functionality is distributed across secure tools for assignments, assessment history, shared progress, student management, and question-bank review. Do not assume `madison-admin.html` is a complete current admin application.
 
 ## Current priority
-Recover and rebuild M3-M6 against the current curriculum and secure architecture before expanding to later modules.
+Complete the documented manual Supabase prerequisites and authenticated validation for M3-M5 before activating those modules. M6 Endocrine remains blocked pending approved current source content.
