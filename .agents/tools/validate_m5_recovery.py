@@ -2,6 +2,7 @@
 """Fail-closed validation for the Module 5 secure recovery."""
 from pathlib import Path
 import hashlib
+import re
 import subprocess
 
 SOURCE_COMMIT="2d70267535c431a622cdde415dfb0c273d35b6a5"
@@ -9,10 +10,14 @@ GUIDE=Path("module5-guide.html")
 LAUNCHER=Path("module5-secure.html")
 
 def fail(msg): raise SystemExit(f"M5 VALIDATION FAILED: {msg}")
-def block(src,start,end):
+def array_block(src,start,next_decl):
     try:
-        a=src.index(start); b=src.index(end,a)+len(end); return src[a:b]
-    except ValueError as e: fail(f"clinical block marker missing: {e}")
+        a=src.index(start)
+    except ValueError as e:
+        fail(f"clinical block start missing: {e}")
+    match=re.search(r"\n\];\s*\n+"+re.escape(next_decl),src[a:])
+    if not match: fail(f"clinical block boundary missing before {next_decl}")
+    return src[a:a+match.start()+3]
 def git_show(spec):
     try: return subprocess.check_output(["git","show",spec],text=True,encoding="utf-8")
     except subprocess.CalledProcessError as e: fail(f"could not read historical source: {e}")
@@ -31,10 +36,8 @@ for marker in ("db.auth.getSession()",".eq('auth_user_id',session.user.id)",".eq
 for marker in ("question-bank.html","student_pin","localStorage.getItem('pin"):
     if marker in launcher: fail(f"unsafe launcher marker present: {marker}")
 
-pq_start,pq_end="const PQ=[","];\nlet pqCurrent"
-qq_start,qq_end="const QQ=[","];\nlet qqIdx"
-cpq,hpq=block(current,pq_start,pq_end),block(historical,pq_start,pq_end)
-cqq,hqq=block(current,qq_start,qq_end),block(historical,qq_start,qq_end)
+cpq,hpq=array_block(current,"const PQ=[","let pqCurrent"),array_block(historical,"const PQ=[","let pqCurrent")
+cqq,hqq=array_block(current,"const QQ=[","let qqIdx"),array_block(historical,"const QQ=[","let qqIdx")
 if cpq!=hpq: fail("PQ clinical bank differs from verified historical source")
 if cqq!=hqq: fail("Quick Quiz clinical bank differs from verified historical source")
 print("M5 recovery validation PASSED")
