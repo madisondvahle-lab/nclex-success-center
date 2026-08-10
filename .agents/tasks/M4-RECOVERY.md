@@ -10,7 +10,8 @@ Recover Module 4 Cardiovascular from verified repository history and adapt it to
 - Historical M4 uses the same legacy result/email pattern identified in M3: prior-student name/email values, writes to legacy `quiz_results`, opens a `mailto:`, and points navigation at historical hub/module files.
 - Added `.agents/tools/sanitize_m4_legacy.py`, a fail-closed source sanitizer that removes only legacy technical wiring and verifies the embedded PQ/QQ banks are byte-for-byte unchanged before writing.
 - Added `module4-secure.html`, which requires Supabase Auth, resolves the authenticated student, verifies `student_module_access` for `m4`, and saves results to the authenticated student's `module_results` record.
-- Do NOT merge this restored module to main yet. The sanitizer still needs to be executed against `module4-guide.html` and the resulting diff validated.
+- Main now contains `.github/workflows/recovery-sanitizers.yml`, restricted to same-repository M4/M5 recovery branches. This branch update intentionally triggers that guarded sanitizer/validator path.
+- Do NOT merge this restored module to main until sanitizer/validator completion is confirmed and the database dependency is satisfied.
 
 ## Clinical-content authorization
 - [x] Clinical content is locked for technical recovery.
@@ -25,14 +26,14 @@ Do not rewrite stems, answer choices, keyed answers, rationales, medication fact
 4. Result bridge targets the shared authenticated/RLS-protected `module_results` table.
 5. Fail-closed source sanitizer added to remove prior-student identifiers, `mailto:`, legacy `quiz_results`, and obsolete navigation.
 6. Sanitizer explicitly verifies PQ and QQ clinical question blocks remain identical.
+7. Guarded main-branch recovery workflow is available to execute and validate the sanitizer without regenerating the large clinical HTML file.
 
 ## Required next work
-1. In a patch-capable checkout of `restore/m4-verbatim`, run `python3 .agents/tools/sanitize_m4_legacy.py`.
-2. Run `git diff --check` and inspect the `module4-guide.html` diff. Only navigation/result plumbing should change.
-3. Confirm no prior-student identifiers, `mailto:`, or `quiz_results` remain in `module4-guide.html`.
-4. Validate `module4-secure.html` with an authenticated student who has M4 enabled and verify a result inserts into `module_results` under that student's ID.
-5. Keep M4 unassignable until the secure flow is validated.
-6. Only then update the module catalog/assignment UI and `.agents/STATUS.md`.
+1. Confirm the guarded recovery workflow sanitizes `module4-guide.html` and passes `validate_m4_recovery.py`.
+2. Confirm no prior-student identifiers, `mailto:`, or `quiz_results` remain in `module4-guide.html`.
+3. After the shared `module_results` migration is applied, validate `module4-secure.html` with an authenticated student who has M4 enabled and verify a result inserts under that student's ID.
+4. Keep M4 unassignable until the secure flow is validated.
+5. Only then update the module catalog/assignment UI and `.agents/STATUS.md`.
 
 ## Acceptance criteria
 - No hard-coded student name/email in the live M4 source or result workflow.
@@ -43,7 +44,7 @@ Do not rewrite stems, answer choices, keyed answers, rationales, medication fact
 - M4 assignment remains disabled until the secure student implementation is validated.
 
 ## Database dependency
-M4 result saving depends on the shared `module_results` migration introduced on the M3 recovery branch. Never assume it has been applied to production. Do not enable M4 result saving until that migration has been run and verified.
+M4 result saving depends on the shared `module_results` migration introduced with M3. Never assume it has been applied to production. Do not enable M4 result saving until that migration has been run and verified.
 
-## Runtime limitation observed
-The automation/container runtime cannot resolve `github.com` for local git clone, and the GitHub connector only performs whole-file replacements. Therefore the sanitizer is prepared but has not been executed from this runtime. Do not regenerate the 900+ line clinical source to work around that limitation.
+## Runtime limitation
+The local automation/container runtime cannot resolve `github.com`, so source patching is delegated only to the guarded GitHub recovery workflow and fail-closed module validator. Do not regenerate the 900+ line clinical source through the connector.
