@@ -16,12 +16,52 @@
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const gate=document.getElementById('gate'),frame=document.getElementById('module'),errorBox=document.getElementById('error');
+    let currentStudent=null;
     function fail(message){errorBox.textContent=message;errorBox.hidden=false}
+
+    window.saveM3Result=async function(score,total,answers){
+      if(!currentStudent)return{ok:false,message:'Student session is unavailable.'};
+      const {error}=await db.from('module_results').insert({student_id:currentStudent.id,module_key:'m3',score,total,answers});
+      if(error){console.error('Module result save failed:',error);return{ok:false,message:'Your score could not be saved yet.'}}
+      return{ok:true,message:'Results saved to your Success Center.'};
+    };
+
+    function modernizeLegacyModule(){
+      const doc=frame.contentDocument;
+      if(!doc)return;
+
+      doc.querySelectorAll('a[href="alyssa-hub.html"],a[href="module2-guide.html"],a[href="module4-guide.html"]').forEach(link=>{
+        link.href='student-dashboard.html';
+        link.textContent='← My Study Plan';
+      });
+
+      const saveButton=doc.querySelector('button[onclick*="emailResults"]');
+      if(saveButton)saveButton.textContent='💾 Save My Results';
+
+      const bridge=doc.createElement('script');
+      bridge.textContent=`
+        async function emailResults(mod){
+          const result=await parent.saveM3Result(pqScore,PQ.length,pqHistory);
+          const button=document.querySelector('button[onclick*="emailResults"]');
+          if(button){
+            button.disabled=false;
+            button.textContent=result.ok?'✅ Results Saved':'⚠️ Save Failed';
+            if(result.ok)setTimeout(()=>{button.textContent='💾 Save My Results';},2500);
+          }
+          if(!result.ok)alert(result.message||'Your score could not be saved yet.');
+        }
+      `;
+      doc.body.appendChild(bridge);
+    }
+
+    frame.addEventListener('load',modernizeLegacyModule);
+
     async function init(){
       const {data:{session}}=await db.auth.getSession();
       if(!session){location.replace('student-login.html');return}
       const {data:student,error:studentError}=await db.from('students').select('id').eq('auth_user_id',session.user.id).maybeSingle();
       if(studentError||!student){await db.auth.signOut();location.replace('student-login.html');return}
+      currentStudent=student;
       const {data:access,error:accessError}=await db.from('student_module_access').select('enabled').eq('student_id',student.id).eq('module_key','m3').maybeSingle();
       if(accessError){fail('We could not verify your Module 3 access. Please return to your study plan and try again.');return}
       if(!access?.enabled){fail('Module 3 is not currently assigned to your account.');return}
