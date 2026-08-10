@@ -7,8 +7,10 @@ Recover Module 4 Cardiovascular from verified repository history and adapt it to
 - Source commit reviewed: `2d70267535c431a622cdde415dfb0c273d35b6a5`.
 - Historical `module4-guide.html` blob SHA: `cfff8c587583d1b10ed5013b79f63ee280574697`.
 - Branch `restore/m4-verbatim` restores that exact historical blob at `module4-guide.html`.
-- Historical M4 uses the same legacy result/email pattern identified in M3: Alyssa-specific name/email values, writes to legacy `quiz_results`, opens a `mailto:`, and points navigation at historical hub/module files.
-- Do NOT merge this restored file directly to main yet.
+- Historical M4 uses the same legacy result/email pattern identified in M3: prior-student name/email values, writes to legacy `quiz_results`, opens a `mailto:`, and points navigation at historical hub/module files.
+- Added `.agents/tools/sanitize_m4_legacy.py`, a fail-closed source sanitizer that removes only legacy technical wiring and verifies the embedded PQ/QQ banks are byte-for-byte unchanged before writing.
+- Added `module4-secure.html`, which requires Supabase Auth, resolves the authenticated student, verifies `student_module_access` for `m4`, and saves results to the authenticated student's `module_results` record.
+- Do NOT merge this restored module to main yet. The sanitizer still needs to be executed against `module4-guide.html` and the resulting diff validated.
 
 ## Clinical-content authorization
 - [x] Clinical content is locked for technical recovery.
@@ -16,22 +18,32 @@ Recover Module 4 Cardiovascular from verified repository history and adapt it to
 
 Do not rewrite stems, answer choices, keyed answers, rationales, medication facts, case-study data, teaching points, or question IDs while performing architecture recovery.
 
-## Shared recovery pattern
-Use the same secure architecture being established for M3:
-1. Authenticated Supabase session required.
-2. Resolve current student through `students.auth_user_id`.
-3. Verify `student_module_access` for `m4` before launch.
-4. Save practice results through authenticated/RLS-protected `module_results`, not legacy `quiz_results` or hard-coded student data.
-5. Route navigation back to `student-dashboard.html` rather than historical personal hubs.
-6. Keep internal/admin question-bank tooling separate from student modules.
+## Completed technical preparation
+1. Exact historical M4 source recovered on a draft branch.
+2. Authenticated M4 launcher added.
+3. M4 assignment/access verification added before supported launch.
+4. Result bridge targets the shared authenticated/RLS-protected `module_results` table.
+5. Fail-closed source sanitizer added to remove prior-student identifiers, `mailto:`, legacy `quiz_results`, and obsolete navigation.
+6. Sanitizer explicitly verifies PQ and QQ clinical question blocks remain identical.
+
+## Required next work
+1. In a patch-capable checkout of `restore/m4-verbatim`, run `python3 .agents/tools/sanitize_m4_legacy.py`.
+2. Run `git diff --check` and inspect the `module4-guide.html` diff. Only navigation/result plumbing should change.
+3. Confirm no prior-student identifiers, `mailto:`, or `quiz_results` remain in `module4-guide.html`.
+4. Validate `module4-secure.html` with an authenticated student who has M4 enabled and verify a result inserts into `module_results` under that student's ID.
+5. Keep M4 unassignable until the secure flow is validated.
+6. Only then update the module catalog/assignment UI and `.agents/STATUS.md`.
 
 ## Acceptance criteria
-- No hard-coded student name/email in the live M4 result workflow.
+- No hard-coded student name/email in the live M4 source or result workflow.
 - No anonymous result writes.
 - No legacy personal-hub navigation in the supported student path.
 - Current Supabase Auth/RLS protections are preserved.
-- Clinical content is not silently rewritten during technical recovery.
+- PQ and QQ clinical question banks are unchanged during sanitization.
 - M4 assignment remains disabled until the secure student implementation is validated.
 
-## Important implementation note
-The GitHub connector available during this recovery can replace whole files but cannot safely apply a tiny partial patch to a 900+ line clinical HTML file. Do not regenerate the entire historical source merely to change a few technical lines. Prefer an auditable patch-capable coding workflow (Codex/Copilot/local git) for source-level sanitization, or preserve the module in draft recovery state until that is available.
+## Database dependency
+M4 result saving depends on the shared `module_results` migration introduced on the M3 recovery branch. Never assume it has been applied to production. Do not enable M4 result saving until that migration has been run and verified.
+
+## Runtime limitation observed
+The automation/container runtime cannot resolve `github.com` for local git clone, and the GitHub connector only performs whole-file replacements. Therefore the sanitizer is prepared but has not been executed from this runtime. Do not regenerate the 900+ line clinical source to work around that limitation.
