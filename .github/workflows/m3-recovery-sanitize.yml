@@ -10,6 +10,15 @@ on:
       - '.agents/tools/validate_m3_recovery.py'
       - 'module3-guide.html'
       - 'module3-secure.html'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/m3-recovery-sanitize.yml'
+      - '.agents/tools/sanitize_m3_legacy.py'
+      - '.agents/tools/validate_m3_recovery.py'
+      - 'module3-guide.html'
+      - 'module3-secure.html'
 
 permissions:
   contents: write
@@ -35,6 +44,7 @@ jobs:
       - name: Show scoped diff
         run: git diff -- module3-guide.html
       - name: Commit sanitized source if changed
+        if: github.event_name == 'push'
         shell: bash
         run: |
           if git diff --quiet -- module3-guide.html; then
