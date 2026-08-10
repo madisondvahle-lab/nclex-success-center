@@ -1,0 +1,59 @@
+name: Recovery sanitizers
+
+on:
+  pull_request_target:
+    types: [synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  sanitize-recovery-source:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (github.event.pull_request.head.ref == 'restore/m4-verbatim' ||
+       github.event.pull_request.head.ref == 'restore/m5-verbatim')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select module
+        id: module
+        shell: bash
+        run: |
+          case '${{ github.event.pull_request.head.ref }}' in
+            restore/m4-verbatim) echo 'n=4' >> "$GITHUB_OUTPUT" ;;
+            restore/m5-verbatim) echo 'n=5' >> "$GITHUB_OUTPUT" ;;
+            *) exit 1 ;;
+          esac
+      - name: Checkout same-repository recovery branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run fail-closed sanitizer
+        run: python3 .agents/tools/sanitize_m${{ steps.module.outputs.n }}_legacy.py
+      - name: Validate locked clinical banks and secure wiring
+        run: python3 .agents/tools/validate_m${{ steps.module.outputs.n }}_recovery.py
+      - name: Validate diff formatting
+        run: git diff --check
+      - name: Show scoped source diff
+        run: git diff -- module${{ steps.module.outputs.n }}-guide.html
+      - name: Commit only sanitized module source
+        shell: bash
+        run: |
+          file="module${{ steps.module.outputs.n }}-guide.html"
+          if git diff --quiet -- "$file"; then
+            echo 'No source changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$file"
+          test "$(git diff --cached --name-only)" = "$file"
+          git commit -m "fix: sanitize legacy M${{ steps.module.outputs.n }} student wiring"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
