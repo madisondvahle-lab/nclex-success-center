@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Surgically remove legacy student-specific M5 wiring without editing clinical content.
 
-Run from repo root on branch restore/m5-verbatim. The script fails closed if
-expected legacy markers or question-bank boundaries are missing.
+Run from repo root on branch restore/m5-verbatim. The script fails closed on
+partial/mixed legacy state or if question-bank boundaries are missing.
 """
 from pathlib import Path
 import hashlib
@@ -23,11 +23,21 @@ def array_block(src, start, next_decl):
 
 pq_before = array_block(text, "const PQ=[", "let pqCurrent")
 qq_before = array_block(text, "const QQ=[", "let qqIdx")
-
 legacy_markers = ("Alyssa Dababneh", "alyssadababneh@yahoo.com", "mailto:", "quiz_results")
-for marker in legacy_markers:
-    if marker not in text:
-        raise SystemExit(f"Refusing to edit: expected legacy marker missing: {marker}")
+secure_markers = ("window.parent.saveM5Result", "Open Module 5 from My Study Plan to save your results securely.", "💾 Save My Results")
+present = [marker in text for marker in legacy_markers]
+
+if not any(present):
+    missing = [marker for marker in secure_markers if marker not in text]
+    if missing:
+        raise SystemExit(f"Refusing to continue: legacy markers are gone but secure wiring is incomplete: {missing}")
+    print("M5 source already sanitized; no changes required")
+    print("PQ sha256:", hashlib.sha256(pq_before.encode()).hexdigest())
+    print("QQ sha256:", hashlib.sha256(qq_before.encode()).hexdigest())
+    raise SystemExit(0)
+if not all(present):
+    remaining = [marker for marker, is_present in zip(legacy_markers, present) if is_present]
+    raise SystemExit(f"Refusing to edit: mixed legacy state detected; remaining markers: {remaining}")
 
 text = text.replace('href="alyssa-hub.html"', 'href="student-dashboard.html"')
 text = text.replace('href="module4-guide.html"', 'href="student-dashboard.html"')
