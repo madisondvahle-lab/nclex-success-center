@@ -1,0 +1,48 @@
+name: M3 recovery sanitizer
+
+on:
+  push:
+    branches:
+      - restore/m3-verbatim
+    paths:
+      - '.github/workflows/m3-recovery-sanitize.yml'
+      - '.agents/tools/sanitize_m3_legacy.py'
+      - '.agents/tools/validate_m3_recovery.py'
+      - 'module3-guide.html'
+      - 'module3-secure.html'
+
+permissions:
+  contents: write
+
+jobs:
+  sanitize-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: restore/m3-verbatim
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Sanitize legacy M3 wiring
+        run: python3 .agents/tools/sanitize_m3_legacy.py
+      - name: Validate clinical integrity and secure wiring
+        run: python3 .agents/tools/validate_m3_recovery.py
+      - name: Validate diff formatting
+        run: git diff --check
+      - name: Show scoped diff
+        run: git diff -- module3-guide.html
+      - name: Commit sanitized source if changed
+        shell: bash
+        run: |
+          if git diff --quiet -- module3-guide.html; then
+            echo 'No source changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add module3-guide.html
+          git commit -m 'fix: sanitize legacy M3 student wiring'
+          git push origin HEAD:restore/m3-verbatim
