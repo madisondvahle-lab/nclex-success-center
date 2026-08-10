@@ -208,9 +208,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <!-- TOP NAV -->
 <nav class="top-nav">
   <span class="nav-title">💊 Module 3 · Pharmacology Essentials</span>
-  <a href="alyssa-hub.html">← Hub</a>
-  <a href="module2-guide.html">← M2</a>
-  <a href="module4-guide.html">M4 →</a>
+  <a href="student-dashboard.html">← Hub</a>
+  <a href="student-dashboard.html">← M2</a>
+  <a href="student-dashboard.html">M4 →</a>
 </nav>
 
 <!-- SECTION ANCHOR NAV -->
@@ -1046,15 +1046,25 @@ function showPQResults(){
     <div class="pq-score">${pqScore}/${PQ.length}</div>
     <div class="pq-score-label">${pct}% — ${pct>=80?'Great job! 🎉':pct>=60?'Good effort — review the rationales 📖':'Review the Deep Dive sections and retry 💪'}</div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
-      <button class="btn btn-primary" onclick="emailResults('Module 3 – Pharmacology Essentials')">📧 Email My Results</button>
+      <button class="btn btn-primary" onclick="emailResults('Module 3 – Pharmacology Essentials')">💾 Save My Results</button>
       <button class="btn btn-outline" onclick="pqCurrent=0;pqScore=0;pqHistory=[];renderPQ()">Retake Questions</button>
     </div>
   </div>`;
 }
-const SB_URL='https://pmjwwktwlsqpetwfvolb.supabase.co';const SB_KEY='sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
-async function emailResults(mod){const date=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const pct=Math.round((pqScore/PQ.length)*100);const wrong=pqHistory.filter(h=>!h.isCorrect);const correctNums=pqHistory.filter(h=>h.isCorrect).map(h=>'Q'+h.qNum).join(', ');let body=mod+' – Practice Quiz Results\nStudent: Alyssa Dababneh\nDate: '+date+'\nScore: '+pqScore+'/'+PQ.length+' ('+pct+'%)\n\n';if(wrong.length===0){body+='All answers correct!\n';}else{body+='QUESTIONS TO REVIEW ('+wrong.length+' incorrect):\n'+'─'.repeat(50)+'\n\n';wrong.forEach(item=>{body+='Q'+item.qNum+': '+item.q+'\n';if(item.type==='MCQ'){body+='Alyssa chose: '+item.opts[item.selected]+'\nCorrect answer: '+item.opts[item.correct]+'\n';}else{body+='Alyssa chose: '+item.selected.map(s=>item.opts[s]).join(' | ')+'\nCorrect answers: '+item.correct.map(c=>item.opts[c]).join(' | ')+'\n';}body+='Rationale: '+item.rat+'\n\n';});}if(correctNums)body+='\nCorrect: '+correctNums;
-try{const{createClient}=supabase;const db=createClient(SB_URL,SB_KEY);await db.from('quiz_results').insert({student_name:'Alyssa Dababneh',student_email:'alyssadababneh@yahoo.com',module:mod,score:pqScore,total:PQ.length,percentage:pct,answers:pqHistory});}catch(e){console.error('Supabase:',e);}
-const sub=encodeURIComponent(mod+' Results – Alyssa – '+pct+'% ('+pqScore+'/'+PQ.length+')');window.location.href='mailto:alyssadababneh@yahoo.com,studywithmadisonrn@gmail.com?subject='+sub+'&body='+encodeURIComponent(body);}
+async function emailResults(mod){
+  if(window.parent!==window && typeof window.parent.saveM3Result==='function'){
+    const result=await window.parent.saveM3Result(pqScore,PQ.length,pqHistory);
+    const button=document.querySelector('button[onclick*="emailResults"]');
+    if(button){
+      button.textContent=result.ok?'✅ Results Saved':'⚠️ Save Failed';
+      if(result.ok)setTimeout(()=>{button.textContent='💾 Save My Results';},2500);
+    }
+    if(!result.ok)alert(result.message||'Your score could not be saved yet.');
+    return;
+  }
+  alert('Open Module 3 from My Study Plan to save your results securely.');
+  location.href='student-dashboard.html';
+}
 
 renderPQ();
 </script>
@@ -1263,9 +1273,9 @@ renderQQ();
     <div class="checklist-bar"><div class="checklist-fill" id="m3CheckFill"></div></div>
   </div>
   <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
-    <a href="module2-guide.html" class="btn btn-outline">← Module 2</a>
-    <a href="alyssa-hub.html" class="btn btn-primary">Back to Hub 🏠</a>
-    <a href="module4-guide.html" class="btn btn-outline">Module 4 →</a>
+    <a href="student-dashboard.html" class="btn btn-outline">← Module 2</a>
+    <a href="student-dashboard.html" class="btn btn-primary">Back to Hub 🏠</a>
+    <a href="student-dashboard.html" class="btn btn-outline">Module 4 →</a>
   </div>
 </section>
 
