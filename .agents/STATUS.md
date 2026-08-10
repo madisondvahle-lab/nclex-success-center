@@ -10,7 +10,7 @@ This file describes the current intended state. When it conflicts with historica
 |---|---|---|
 | M1 | Newborn Care | Live/current |
 | M2 | Maternal & OB | Live/current |
-| M3 | Pharmacology | Content developed; student quiz/wiring incomplete |
+| M3 | Pharmacology | Content developed; student quiz/wiring incomplete; new assignment temporarily disabled |
 | M4 | Cardiac | Content developed; implementation incomplete |
 | M5 | Respiratory | Content developed; implementation incomplete |
 | M6 | Endocrine | Current curriculum direction; implementation incomplete |
@@ -22,11 +22,11 @@ Previous repository versions assigned M6 to Fluids & Electrolytes and M10 to End
 Historical M3-M6 guide content may be useful for selective recovery, but it must be reviewed against the current curriculum, current security architecture, and newer content before reuse.
 
 ## Known issues
-- M3 assignment wiring currently points toward the internal question-bank manager rather than a finalized student quiz.
+- M3 does not yet have a finalized student-facing guide/quiz implementation. New M3 assignment is intentionally disabled until that work is complete.
+- A prior M3 catalog entry used the internal `question-bank.html` tool as both guide and quiz. Run `supabase-module3-safe-placeholder-migration.sql` once after deployment to clear those student-facing URLs while preserving existing access rows.
 - Historical M3-M6 guide pages contained substantive module content, but current `main` versions were replaced with secure-login redirects during later security work.
 - Historical M6 Fluids/Electrolytes content may be reusable later, but must not overwrite current M6 Endocrine work.
-- An accidental public `blog.html` was added to this repository. Public blog content belongs in `study-with-madison-site`.
-- The older AI collaboration PR #1 predates major architecture changes and should not be treated as current project documentation.
+- Public blog content belongs in `study-with-madison-site`; the accidental Success Center blog copy has been removed.
 
 ## Current architecture snapshot
 
@@ -43,4 +43,4 @@ The repository contains an adaptive NCLEX-style readiness/CAT system with a 150-
 Admin functionality is distributed across secure tools for assignments, assessment history, shared progress, student management, and question-bank review. Do not assume `madison-admin.html` is a complete current admin application.
 
 ## Current priority
-Stabilize project architecture, documentation, module mapping, and safe AI collaboration before large-scale module expansion.
+Recover and rebuild M3-M6 against the current curriculum and secure architecture before expanding to later modules.
