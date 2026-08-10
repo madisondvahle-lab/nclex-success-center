@@ -29,15 +29,12 @@
     function modernizeLegacyModule(){
       const doc=frame.contentDocument;
       if(!doc)return;
-
       doc.querySelectorAll('a[href="alyssa-hub.html"],a[href="module2-guide.html"],a[href="module4-guide.html"]').forEach(link=>{
         link.href='student-dashboard.html';
         link.textContent='← My Study Plan';
       });
-
       const saveButton=doc.querySelector('button[onclick*="emailResults"]');
       if(saveButton)saveButton.textContent='💾 Save My Results';
-
       const bridge=doc.createElement('script');
       bridge.textContent=`
         async function emailResults(mod){
