@@ -7,6 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="in-house-item-bank.js"></script>
   <script src="diagnostic-question-expansion.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
   <script src="assessment-personalization.js"></script>
@@ -314,6 +315,7 @@ const QUESTION_BANK = [
         correct:[0,1,2,4], rationale:"Aspirin (antiplatelet), oxygen (treat hypoxemia), emergent PCI (reperfusion therapy), and morphine (reduce oxygen demand/pain) are all appropriate for STEMI management. Ambulation is contraindicated in acute STEMI. Fluid restriction is not appropriate — this client may need volume support given hypotension."}
     ]}
 ,
+  ...window.IN_HOUSE_ITEM_BANK,
   ...window.DIAGNOSTIC_EXPANSION
 ];
 
@@ -677,6 +679,39 @@ const getNCLEXCategory = item => {
 };
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const SUPABASE_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+
+async function saveInHouseAttempt(profile, history, ability, result) {
+  if (!window.supabase || !history.length) return;
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) return;
+  const { data: student } = await db.from('students').select('id').eq('auth_user_id', session.user.id).maybeSingle();
+  if (!student) return;
+  const correct = history.filter(entry => entry.correct).length;
+  const { data: attempt, error: attemptError } = await db.from('in_house_assessment_attempts').insert({
+    student_id: student.id,
+    mode: profile.mode,
+    result: result || null,
+    ability_estimate: Number(ability.toFixed(3)),
+    total_questions: history.length,
+    correct_questions: correct
+  }).select('id').single();
+  if (attemptError || !attempt) return;
+  const rows = history.map(entry => ({
+    attempt_id: attempt.id,
+    item_id: entry.id,
+    item_source: entry.source || 'nclex-success-center-original',
+    blueprint: entry.blueprint || null,
+    nclex_category: entry.nclexCategory || null,
+    topic: entry.topic || null,
+    cognitive_level: entry.cognitiveLevel || null,
+    difficulty: entry.difficulty,
+    is_correct: entry.correct
+  }));
+  await db.from('in_house_assessment_item_responses').insert(rows);
+}
 
 function itemProbability(ability, difficulty) {
   const itemDifficulty = ITEM_DIFFICULTIES[difficulty] ?? 0.50;
@@ -1221,6 +1256,10 @@ function QuizScreen({ profile, onFinish }) {
 
   const q = currentQ;
   if(!q){ onFinish(history, catResult); return null; }
+  function finishSession(records, result, abilityEstimate=ability) {
+    saveInHouseAttempt(profile, records, abilityEstimate, result).catch(() => {});
+    onFinish(records, result);
+  }
 
   const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
   const diffStyle = DIFF_COLORS[q.difficulty];
@@ -1271,6 +1310,9 @@ function QuizScreen({ profile, onFinish }) {
         blueprint:q.blueprint,
         nclexCategory:getNCLEXCategory(q),
         coreTags:getCoreTags(q),
+        source:q.source || 'existing-original-bank',
+        topic:q.topic || null,
+        cognitiveLevel:q.cognitiveLevel || null,
         stem:outcome.stem,
         correct:outcome.correct
       };
@@ -1281,16 +1323,16 @@ function QuizScreen({ profile, onFinish }) {
 
     if(isNCLEX) {
       const result = shouldStop(newHistory, newAbility);
-      if(result) { setCatResult(result); onFinish(newHistory, result); return; }
+      if(result) { setCatResult(result); finishSession(newHistory, result, newAbility); return; }
     } else if(isMock) {
       const result = shouldStopMock(newHistory, newAbility);
-      if(result) { setCatResult(result); onFinish(newHistory, result); return; }
+      if(result) { setCatResult(result); finishSession(newHistory, result, newAbility); return; }
     } else if(newHistory.length>=profile.qCount) {
-      onFinish(newHistory, null); return;
+      finishSession(newHistory, null, newAbility); return;
     }
 
     const next = pickNextQuestion(activeBank, newHistory, profile, newAbility);
-    if(!next){ const result = (isNCLEX||isMock) ? (newAbility>=PASS_THRESHOLD?"PASS":"FAIL") : null; setCatResult(result); onFinish(newHistory, result); return; }
+    if(!next){ const result = (isNCLEX||isMock) ? (newAbility>=PASS_THRESHOLD?"PASS":"FAIL") : null; setCatResult(result); finishSession(newHistory, result, newAbility); return; }
     setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
   }
 
