@@ -38,11 +38,12 @@
         else if(stage==='assessment'&&accessReady){ actions='<span class="label">Assessment ready</span><p class="consult-status">Their secure diagnostic portal is ready.</p><a href="assessment-dashboard.html">Open assessment view →</a><p><button class="button secondary" type="button" data-promote="'+esc(item.id)+'">Convert to active student</button></p>'; }
         else if(stage==='assessment'){ actions='<button class="button" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><p class="consult-status">Creates a secure email-link sign-in. No password needs to be sent.</p>'; }
         else if(accessReady){ actions='<span class="label">Portal access ready</span><p class="consult-status">They can sign in now.</p><a href="shared-progress.html?student='+esc(item.student_id)+'">Open student workspace →</a>'; }
-        else{ actions='<button class="button" type="button" data-create-login="'+esc(item.id)+'">Create login access</button><p class="consult-status">Creates a secure email-link sign-in.</p>'; }
+        else{ actions='<button class="button" type="button" data-create-diagnostic="'+esc(item.id)+'">Create diagnostic access</button><p class="consult-status">Moves this pre-purchase client into the assessment-only portal.</p>'; }
         return '<article class="consult"><div><h3>'+esc(item.full_name)+'</h3><a href="mailto:'+esc(item.email)+'">'+esc(item.email)+'</a><p class="meta">'+(item.phone?esc(item.phone)+' · ':'')+(item.nclex_exam?esc(item.nclex_exam):'NCLEX not specified')+'</p></div><div class="meta">'+(item.nclex_target_date?'Target date: <strong>'+esc(formatDate(item.nclex_target_date))+'</strong><br>':'')+(item.support_interest?esc(item.support_interest):'Support type not specified')+'<br>Saved '+esc(formatDate(item.created_at))+'</div><div>'+actions+'</div></article>';
       }).join(''):'<p class="empty">No consult intakes saved yet.</p>';
       document.querySelectorAll('[data-convert]').forEach(button=>button.addEventListener('click',()=>convertToStudent(button.dataset.convert)));
       document.querySelectorAll('[data-create-login]').forEach(button=>button.addEventListener('click',()=>createStudentLogin(button.dataset.createLogin)));
+      document.querySelectorAll('[data-create-diagnostic]').forEach(button=>button.addEventListener('click',()=>prepareDiagnosticAccess(button.dataset.createDiagnostic)));
       document.querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote)));
     }
 
@@ -57,6 +58,13 @@
       if(error||!data?.ok){ document.getElementById('consult-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.'; return; }
       document.getElementById('consult-status').textContent='Diagnostic access is ready for '+data.email+'. Send them the assessment invite.';
       init();
+    }
+    async function prepareDiagnosticAccess(id){
+      const item=consultIntakes.find(row=>row.id===id);
+      if(!item?.student_id)return;
+      const updated=await db.from('students').update({portal_stage:'assessment'}).eq('id',item.student_id);
+      if(updated.error){ document.getElementById('consult-status').textContent='Could not prepare diagnostic access. '+updated.error.message; return; }
+      await createStudentLogin(id);
     }
     async function promoteToActiveStudent(id){
       const item=consultIntakes.find(row=>row.id===id);
