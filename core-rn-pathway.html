@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Core RN Safety Pathway · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--muted:#567087;--line:#d8e1db;--soft:#f5eee8}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--cream);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1040px,calc(100% - 36px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}.brand,h1,h2{font-family:Georgia,"Times New Roman",serif}.brand{font-size:1.15rem;font-weight:700}.link{color:var(--ink);font-size:.8rem;font-weight:800;text-decoration:none;border-bottom:1px solid currentColor}.hero{padding:64px 0 34px;max-width:760px}.eyebrow{margin:0 0 11px;color:var(--rose);font-size:.72rem;letter-spacing:.14em;font-weight:900;text-transform:uppercase}h1{font-size:clamp(2.5rem,6vw,4.5rem);line-height:.98;letter-spacing:-.055em;margin:0}.intro{margin:20px 0 0;color:var(--muted);line-height:1.65}.notice{background:#f0f5f2;border-left:4px solid #688a75;padding:16px 18px;color:#3f5c4a;line-height:1.5;font-size:.91rem}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:28px 0 70px}.module{background:var(--paper);border:1px solid var(--line);padding:25px;min-height:250px}.number{color:var(--rose);font-size:.72rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.module h2{font-size:1.55rem;line-height:1.05;margin:13px 0 10px;letter-spacing:-.04em}.module p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.55}.module ul{margin:18px 0 0;padding-left:18px;color:var(--ink);font-size:.84rem;line-height:1.65}.module a{display:inline-block;margin-top:18px;color:var(--ink);font-size:.82rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}.full{grid-column:1/-1;background:var(--plum);color:#fff}.full h2{color:#fff}.full p{color:#eadde5}.full a{color:#fff}@media(max-width:700px){.shell{width:min(100% - 28px,1040px)}.hero{padding-top:42px}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><span class="brand">Study With Madison, RN</span><a class="link" href="student-dashboard.html">My dashboard</a></header>
+    <section class="hero"><p class="eyebrow">Your learning pathway</p><h1>Core RN safety, in the order it matters.</h1><p class="intro">This pathway focuses on the clinical decisions every new RN must make safely. Your assigned practice will be selected from these areas based on your results and target date.</p></section>
+    <p class="notice">You do not need to study everything at once. Start with the module Madison assigns, complete the linked practice, then use the results to choose the next focus.</p>
+    <section class="grid" id="modules"></section>
+  </main>
+  <script src="diagnostic-core-blueprint.js"></script>
+  <script>
+    const text=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const names={
+      'priority-frameworks':'ABCs and priority decisions','delegation':'delegation and assignment','blood-administration':'blood administration','infection-prevention':'infection prevention','procedure-safety':'procedure safety',
+      'insulin-hypoglycemia':'insulin and hypoglycemia','potassium-safety':'potassium safety','magnesium-sulfate':'magnesium sulfate safety','digoxin-toxicity':'digoxin safety','lithium-toxicity':'lithium safety','medication-calculations':'drug calculations','abg-acid-base':'ABGs and acid-base',
+      'preeclampsia':'preeclampsia','fetal-monitoring':'fetal heart tracing interventions','postpartum-complications':'postpartum complications','apgar-newborn-transition':'APGAR and newborn transition','newborn-safe-sleep':'newborn safety','pediatric-hydration':'pediatric hydration',
+      'airway-emergency':'airway emergencies','sepsis':'sepsis','shock':'shock','fluids-electrolytes':'fluids and electrolytes','postoperative-complications':'post-op complications','stroke-care':'stroke care',
+      'suicide-safety':'suicide safety','therapeutic-communication':'therapeutic communication','mania-care':'psych safety','neuroleptic-malignant-syndrome':'neuroleptic malignant syndrome','serotonin-syndrome':'serotonin syndrome','recognize-cues':'recognize cues','analyze-cues':'analyze cues','prioritize-hypotheses':'prioritize hypotheses','take-actions':'take action','evaluate-outcomes':'evaluate outcomes'
+    };
+    const links={
+      'core-safety-priority':'supplemental-practice.html?set=safety-priority-01',
+      'core-medication-calculations':'supplemental-practice.html?set=med-procedure-01',
+      'core-lifespan-reproductive':'module2-guide.html',
+      'core-acute-systems':'supplemental-practice.html?set=ngn-acute-01',
+      'core-psych-judgment':'diagnostic.html?mode=practice'
+    };
+    const modules=window.NCLEX_CORE_BLUEPRINT.learningPathway;
+    document.getElementById('modules').innerHTML=modules.map((item,index)=>`<article class="module ${index===4?'full':''}"><span class="number">Core module ${index+1}</span><h2>${text(item.emoji)} ${text(item.label)}</h2><p>${text(item.description)}</p><ul>${item.requiredTopics.slice(0,5).map(topic=>`<li>${text(names[topic]||topic.replace(/-/g,' '))}</li>`).join('')}</ul><a href="${text(links[item.key])}">Open assigned practice →</a></article>`).join('');
+  </script>
+</body>
+</html>

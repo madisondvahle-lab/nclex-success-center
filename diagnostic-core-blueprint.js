@@ -1,6 +1,50 @@
 // Core RN safety blueprint used by the CAT diagnostic and full mock simulations.
 // Item IDs are intentionally mapped rather than clinical wording being duplicated.
 (function () {
+  // Source of truth for organizing original learning content around entry-level RN safety.
+  const learningPathway = [
+    {
+      key: 'core-safety-priority',
+      moduleNumber: 101,
+      label: 'Safe Care, Priorities & Delegation',
+      emoji: '🛡️',
+      description: 'Who needs help first, who can do what, and how to prevent avoidable harm.',
+      requiredTopics: ['priority-frameworks', 'delegation', 'blood-administration', 'infection-prevention', 'procedure-safety']
+    },
+    {
+      key: 'core-medication-calculations',
+      moduleNumber: 102,
+      label: 'Medication, Fluids & Calculations',
+      emoji: '💊',
+      description: 'High-alert medications, safe administration, electrolyte risk, and dosage calculation.',
+      requiredTopics: ['insulin-hypoglycemia', 'potassium-safety', 'magnesium-sulfate', 'digoxin-toxicity', 'lithium-toxicity', 'medication-calculations', 'abg-acid-base']
+    },
+    {
+      key: 'core-lifespan-reproductive',
+      moduleNumber: 103,
+      label: 'OB, Newborn & Pediatric Safety',
+      emoji: '👶',
+      description: 'Pregnancy, labor, postpartum, newborn, and pediatric safety decisions.',
+      requiredTopics: ['preeclampsia', 'magnesium-sulfate', 'fetal-monitoring', 'postpartum-complications', 'apgar-newborn-transition', 'newborn-safe-sleep', 'pediatric-hydration']
+    },
+    {
+      key: 'core-acute-systems',
+      moduleNumber: 104,
+      label: 'Acute Care, Systems & Procedures',
+      emoji: '🫁',
+      description: 'Recognize deterioration early and take the safest first action.',
+      requiredTopics: ['airway-emergency', 'sepsis', 'shock', 'fluids-electrolytes', 'abg-acid-base', 'postoperative-complications', 'stroke-care']
+    },
+    {
+      key: 'core-psych-judgment',
+      moduleNumber: 105,
+      label: 'Psych, Clinical Judgment & NCLEX Integration',
+      emoji: '🧠',
+      description: 'Therapeutic care, safety, and applying a consistent clinical-judgment process.',
+      requiredTopics: ['suicide-safety', 'therapeutic-communication', 'mania-care', 'neuroleptic-malignant-syndrome', 'serotonin-syndrome', 'recognize-cues', 'analyze-cues', 'prioritize-hypotheses', 'take-actions', 'evaluate-outcomes']
+    }
+  ];
+
   const requirements = [
     { key: 'delegation', label: 'Delegation, assignment, and supervision', itemIds: ['m1', 'm2', 'x001', 'x002', 'x009', 'x100'] },
     { key: 'consent_rights', label: 'Informed consent, autonomy, and client rights', itemIds: ['x003', 'x004', 'x008'] },
@@ -52,6 +96,7 @@
   });
 
   window.NCLEX_CORE_BLUEPRINT = {
+    learningPathway,
     requirements,
     nclexCategoryTargets,
     nclexCategoryRanges,
