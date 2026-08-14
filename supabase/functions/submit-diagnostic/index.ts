@@ -1,23 +1,42 @@
 import { withSupabase } from 'jsr:@supabase/server@^1';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://madisondvahle-lab.github.io',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Content-Type': 'application/json',
+const allowedOrigins = new Set([
+  'https://portal.studywithmadison.com',
+  'https://madisondvahle-lab.github.io',
+]);
+
+const corsHeaders = (request: Request) => {
+  const origin = request.headers.get('Origin') ?? '';
+  const allowedOrigin = allowedOrigins.has(origin)
+    ? origin
+    : 'https://portal.studywithmadison.com';
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
+    'Vary': 'Origin',
+  };
 };
 
-const reply = (body: object, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: corsHeaders });
+const reply = (request: Request, body: object, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: corsHeaders(request) });
 
 export default {
   fetch: withSupabase({ auth: 'none' }, async (request) => {
     if (request.method === 'OPTIONS') {
-      return new Response('ok', { headers: corsHeaders });
+      return new Response('ok', { headers: corsHeaders(request) });
     }
 
     if (request.method !== 'POST') {
-      return reply({ error: 'Method not allowed.' }, 405);
+      return reply(request, { error: 'Method not allowed.' }, 405);
+    }
+
+    const origin = request.headers.get('Origin') ?? '';
+    if (origin && !allowedOrigins.has(origin)) {
+      return reply(request, { error: 'Origin not allowed.' }, 403);
     }
 
     try {
@@ -34,12 +53,12 @@ export default {
         !Number.isFinite(score) ||
         !token
       ) {
-        return reply({ error: 'Please complete the form and security check.' }, 400);
+        return reply(request, { error: 'Please complete the form and security check.' }, 400);
       }
 
       const secret = Deno.env.get('TURNSTILE_SECRET_KEY');
       if (!secret) {
-        return reply({ error: 'Security is not configured yet.' }, 503);
+        return reply(request, { error: 'Security is not configured yet.' }, 503);
       }
 
       const verifyResponse = await fetch(
@@ -53,7 +72,7 @@ export default {
 
       const verification = await verifyResponse.json();
       if (!verifyResponse.ok || verification.success !== true) {
-        return reply({ error: 'Please refresh the security check and try again.' }, 403);
+        return reply(request, { error: 'Please refresh the security check and try again.' }, 403);
       }
 
       let readinessBand = 'strong';
@@ -78,10 +97,10 @@ export default {
 
       if (error) throw error;
 
-      return reply({ readinessBand });
+      return reply(request, { readinessBand });
     } catch (error) {
       console.error(error);
-      return reply({ error: 'We could not save your diagnostic right now.' }, 500);
+      return reply(request, { error: 'We could not save your diagnostic right now.' }, 500);
     }
   }),
 };
