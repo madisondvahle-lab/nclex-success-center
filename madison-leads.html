@@ -37,7 +37,7 @@
         if(!item.student_id){ actions='<button class="button" type="button" data-convert="'+esc(item.id)+'">Set up assessment</button><p class="consult-status">Creates a diagnostic-only profile first.</p>'; }
         else if(stage==='assessment'&&accessReady){ actions='<span class="label">Assessment ready</span><p class="consult-status">Their secure diagnostic portal is ready.</p><a href="assessment-dashboard.html">Open assessment view →</a><p><button class="button secondary" type="button" data-promote="'+esc(item.id)+'">Convert to active student</button></p>'; }
         else if(stage==='assessment'){ actions='<button class="button" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><p class="consult-status">Creates a secure email-link sign-in. No password needs to be sent.</p>'; }
-        else if(accessReady){ actions='<span class="label">Portal access ready</span><p class="consult-status">They can sign in now.</p><a href="shared-progress.html?student='+esc(item.student_id)+'">Open student workspace →</a>'; }
+        else if(accessReady){ actions='<span class="label">Portal access ready</span><p class="consult-status">They can sign in now.</p><a href="shared-progress.html?student='+esc(item.student_id)+'">Open student workspace →</a><p><button class="button secondary" type="button" data-switch-assessment="'+esc(item.id)+'">Switch to assessment-only</button></p>'; }
         else{ actions='<button class="button" type="button" data-create-diagnostic="'+esc(item.id)+'">Create diagnostic access</button><p class="consult-status">Moves this pre-purchase client into the assessment-only portal.</p>'; }
         return '<article class="consult"><div><h3>'+esc(item.full_name)+'</h3><a href="mailto:'+esc(item.email)+'">'+esc(item.email)+'</a><p class="meta">'+(item.phone?esc(item.phone)+' · ':'')+(item.nclex_exam?esc(item.nclex_exam):'NCLEX not specified')+'</p></div><div class="meta">'+(item.nclex_target_date?'Target date: <strong>'+esc(formatDate(item.nclex_target_date))+'</strong><br>':'')+(item.support_interest?esc(item.support_interest):'Support type not specified')+'<br>Saved '+esc(formatDate(item.created_at))+'</div><div>'+actions+'</div></article>';
       }).join(''):'<p class="empty">No consult intakes saved yet.</p>';
@@ -45,6 +45,7 @@
       document.querySelectorAll('[data-create-login]').forEach(button=>button.addEventListener('click',()=>createStudentLogin(button.dataset.createLogin)));
       document.querySelectorAll('[data-create-diagnostic]').forEach(button=>button.addEventListener('click',()=>prepareDiagnosticAccess(button.dataset.createDiagnostic)));
       document.querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote)));
+      document.querySelectorAll('[data-switch-assessment]').forEach(button=>button.addEventListener('click',()=>switchToAssessmentOnly(button.dataset.switchAssessment)));
     }
 
     async function convertToStudent(id){const item=consultIntakes.find(row=>row.id===id);if(!item)return;const pin=window.prompt('Create a temporary 4-digit profile PIN for '+item.full_name+'.');if(pin===null)return;if(!/^\d{4}$/.test(pin)){document.getElementById('consult-status').textContent='Use exactly four digits for the profile PIN.';return}const existing=await db.from('students').select('id').eq('email',item.email).maybeSingle();let studentId=existing.data?.id;if(!studentId){const created=await db.from('students').insert({name:item.full_name,email:item.email,pin,portal_stage:'assessment'}).select('id').single();if(created.error){document.getElementById('consult-status').textContent='Student profile could not be created. '+created.error.message;return}studentId=created.data.id}const linked=await db.from('consult_intakes').update({student_id:studentId,converted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(linked.error){document.getElementById('consult-status').textContent='Student profile created, but this intake could not be linked. Please refresh.';return}document.getElementById('consult-status').textContent='Student profile created. Choose “Create login access” to finish onboarding.';init()}
@@ -57,6 +58,14 @@
       const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password}});
       if(error||!data?.ok){ document.getElementById('consult-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.'; return; }
       document.getElementById('consult-status').textContent='Diagnostic access is ready for '+data.email+'. Send them the assessment invite.';
+      init();
+    }
+    async function switchToAssessmentOnly(id){
+      const item=consultIntakes.find(row=>row.id===id);
+      if(!item?.student_id)return;
+      const updated=await db.from('students').update({portal_stage:'assessment'}).eq('id',item.student_id);
+      if(updated.error){ document.getElementById('consult-status').textContent='Could not change the portal stage. '+updated.error.message; return; }
+      document.getElementById('consult-status').textContent=item.full_name+' now has diagnostic-only access.';
       init();
     }
     async function prepareDiagnosticAccess(id){
