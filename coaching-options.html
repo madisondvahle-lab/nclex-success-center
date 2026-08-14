@@ -75,16 +75,27 @@
     .section-intro { max-width: 700px; margin-bottom: 34px; }
     .section-intro p:last-child { margin-top: 16px; color: var(--slate); font-size: 1.08rem; }
     .foundation { background: #f4efe8; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .rate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 16px; }
+    .rate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
     .rate-card, .premium-card {
       display: flex; flex-direction: column; min-height: 100%;
       padding: 27px; background: var(--paper); border: 1px solid var(--line);
     }
+    .rate-card { min-height: 430px; }
+    .momentum-card {
+      display: grid; grid-template-columns: minmax(250px, .92fr) minmax(330px, 1.35fr) auto;
+      align-items: center; gap: 30px; margin-top: 20px; padding: 31px 34px;
+      background: #fffaf4; border: 1px solid #dfc5bd; box-shadow: var(--shadow);
+    }
+    .momentum-card .price { margin-bottom: 0; }
+    .momentum-card > p { color: var(--slate); font-size: 1.03rem; }
+    .momentum-card ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; margin: 16px 0 0; }
+    .momentum-card li { padding-block: 6px; font-size: .92rem; }
+    .momentum-card .button { white-space: nowrap; }
     .card-kicker { color: var(--rose); font-size: .74rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
     .price { margin: 18px 0 10px; font-family: Georgia, serif; font-size: 2.45rem; line-height: 1; }
-    .price small { color: var(--slate); font-family: ui-rounded, "Avenir Next", sans-serif; font-size: .9rem; font-weight: 700; letter-spacing: 0; }
+    .price small { display: block; margin-top: 8px; color: var(--slate); font-family: ui-rounded, "Avenir Next", sans-serif; font-size: .9rem; font-weight: 700; letter-spacing: 0; }
     .card-description { color: var(--slate); }
-    .rate-card .button { margin-top: 22px; padding-inline: 14px; font-size: .85rem; }
+    .rate-card .button { margin-top: auto; padding-inline: 14px; font-size: .85rem; }
     .premium-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .premium-card { position: relative; padding: 38px; box-shadow: var(--shadow); }
     .premium-card.featured { background: var(--navy); color: white; border-color: var(--navy); }
@@ -117,8 +128,12 @@
     .bottom-cta .button.alt { color: white; background: transparent; }
     footer { padding: 28px 0; background: #102941; color: #c7d5e2; text-align: center; font-size: .86rem; }
     @media (max-width: 900px) {
-      .hero-grid, .premium-grid { grid-template-columns: 1fr; }
+      .hero-grid, .premium-grid, .momentum-card { grid-template-columns: 1fr; }
       .rate-grid { grid-template-columns: repeat(2, 1fr); }
+      .rate-card { min-height: 390px; }
+      .momentum-card { gap: 16px; }
+      .momentum-card ul { grid-template-columns: 1fr 1fr; }
+      .momentum-card .button { width: fit-content; }
       .hero { padding-bottom: 56px; }
       nav { margin-bottom: 58px; }
     }
@@ -127,9 +142,11 @@
       nav { align-items: flex-start; margin-bottom: 48px; }
       .nav-link { display: none; }
       section { padding: 58px 0; }
-      .rate-grid, .steps { grid-template-columns: 1fr; }
-      .premium-card { padding: 29px 24px; }
+      .rate-grid, .steps, .momentum-card ul { grid-template-columns: 1fr; }
+      .rate-card { min-height: 0; }
+      .premium-card, .momentum-card { padding: 29px 24px; }
       .premium-card h3 { padding-right: 0; }
+      .momentum-card .button { width: 100%; }
       .pill { position: static; display: inline-block; width: fit-content; margin-bottom: 14px; }
     }
   </style>
@@ -196,14 +213,25 @@
             <p class="card-description">Ongoing coaching for students who benefit from steady guidance and accountability.</p>
             <a class="button alt" href="https://calendly.com/studywithmadisonrn/packages/72afc34c-f344-47ad-802c-2e95db646cec">Choose 8-Session Coaching</a>
           </article>
-          <article class="rate-card">
+        </div>
+        <article class="momentum-card">
+          <div>
             <p class="card-kicker">Structured coaching</p>
             <h3>NCLEX Momentum Coaching</h3>
-            <p class="price">$400 <small>· 12 private 60-minute sessions</small></p>
-            <p class="card-description">Structured coaching with a readiness review, personalized roadmap, targeted assignments, portal access, and a mid-plan check-in.</p>
-            <a class="button alt" href="https://calendly.com/studywithmadisonrn/packages/5b6fa8d0-259e-4628-a5ad-7f7006ed279c">Choose Momentum Coaching</a>
-          </article>
-        </div>
+            <p class="price">$400 <small>12 private 60-minute sessions</small></p>
+          </div>
+          <div>
+            <p>A structured coaching plan for students who want consistency, a clear roadmap, and meaningful progress between sessions.</p>
+            <ul>
+              <li>Readiness and CPR review</li>
+              <li>Personalized study roadmap</li>
+              <li>Targeted practice assignments</li>
+              <li>Private progress portal</li>
+              <li>Mid-plan check-in and adjustment</li>
+            </ul>
+          </div>
+          <a class="button" href="https://calendly.com/studywithmadisonrn/packages/5b6fa8d0-259e-4628-a5ad-7f7006ed279c">Choose Momentum Coaching</a>
+        </article>
       </div>
     </section>
 
