@@ -1439,9 +1439,10 @@ function App() {
       if (!window.supabase || !ASSESSMENT_PERSONALIZATION) { if (active) setAssessmentLoading(false); return; }
       const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
       const { data: { session } } = await db.auth.getSession();
-      if (!session) { if (active) setAssessmentLoading(false); return; }
-      const { data: student } = await db.from('students').select('id,name').eq('auth_user_id', session.user.id).maybeSingle();
-      if (!student) { if (active) setAssessmentLoading(false); return; }
+      if (!session) { if (ASSESSMENT_ONLY) { location.replace('student-login.html'); return; } if (active) setAssessmentLoading(false); return; }
+      const { data: student } = await db.from('students').select('id,name,portal_stage').eq('auth_user_id', session.user.id).maybeSingle();
+      if (!student) { if (ASSESSMENT_ONLY) { await db.auth.signOut(); location.replace('student-login.html'); return; } if (active) setAssessmentLoading(false); return; }
+      if (ASSESSMENT_ONLY && student.portal_stage !== 'assessment') { location.replace('student-dashboard.html'); return; }
       const { data: assessments } = await db.from('external_assessments').select('platform,taken_at,created_at,category_scores').eq('student_id', student.id).order('taken_at',{ascending:false});
       const result = ASSESSMENT_PERSONALIZATION.buildProfile(assessments || []);
       if (active) { setAssessmentProfile({ ...result, studentName: student.name }); setAssessmentLoading(false); }
