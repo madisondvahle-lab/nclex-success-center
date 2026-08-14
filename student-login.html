@@ -41,6 +41,9 @@
     .help { margin:25px 0 0; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.55; }
     .help a { color:#176c67; font-weight:800; text-decoration:none; }
     .help a:hover { text-decoration:underline; }
+    .link-button { padding:0; border:0; color:#176c67; background:transparent; font:800 12px inherit; cursor:pointer; text-decoration:underline; }
+    .link-button:disabled { cursor:wait; opacity:.7; }
+    .hidden { display:none !important; }
     @media (max-width:760px) { body { padding:16px; } .shell { min-height:0; grid-template-columns:1fr; border-radius:22px; } .welcome { padding:32px 30px; } .eyebrow { margin:39px 0 10px; } .intro,.benefits { display:none; } h1 { font-size:34px; } .panel { padding:34px 30px; } }
   </style>
 </head>
@@ -60,19 +63,22 @@
 
     <section class="panel" aria-labelledby="sign-in-title">
       <h2 id="sign-in-title">Welcome back</h2>
-      <p class="panel-lead">Enter the email connected to your NCLEX Success Center account. We&apos;ll send a secure sign-in link—no password or PIN needed.</p>
+      <p class="panel-lead">Sign in with the email and password connected to your NCLEX Success Center account.</p>
       <div class="notice">
         <span aria-hidden="true">🔐</span>
-        <div><strong>Private access</strong>Your personal study plan, resources, and progress are available only through your secure email link.</div>
+        <div><strong>Private access</strong>Use the temporary password Madison gave you the first time you sign in. You can reset it whenever you need to.</div>
       </div>
       <form id="login-form">
         <label>Email address
           <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
         </label>
-        <button class="submit" id="submit" type="submit">Email me a secure sign-in link</button>
+        <label id="password-label"><span id="password-label-text">Password</span>
+          <span class="password-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="6"><button class="toggle" id="toggle-password" type="button" aria-label="Show password">Show</button></span>
+        </label>
+        <button class="submit" id="submit" type="submit">Sign in</button>
         <p class="status" id="status" aria-live="polite"></p>
       </form>
-      <p class="help">Having trouble signing in? <a href="mailto:studywithmadisonrn@gmail.com?subject=NCLEX%20Success%20Center%20sign-in%20help">Email Madison for help</a>.</p>
+      <p class="help"><button class="link-button" id="forgot-password" type="button">Forgot password?</button> We&apos;ll email you a reset link. Need help? <a href="mailto:studywithmadisonrn@gmail.com?subject=NCLEX%20Success%20Center%20sign-in%20help">Email Madison</a>.</p>
     </section>
   </main>
 
@@ -81,8 +87,12 @@
     const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co', 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const form = document.getElementById('login-form');
     const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordLabel = document.getElementById('password-label');
     const submitButton = document.getElementById('submit');
     const status = document.getElementById('status');
+    const forgotPassword = document.getElementById('forgot-password');
+    const isReset = new URLSearchParams(location.search).get('reset') === '1';
 
     function setStatus(message, type = '') {
       status.textContent = message;
@@ -113,32 +123,66 @@
       location.replace('student-dashboard.html');
     }
 
+    document.getElementById('toggle-password').addEventListener('click', () => {
+      const visible = passwordInput.type === 'text';
+      passwordInput.type = visible ? 'password' : 'text';
+      document.getElementById('toggle-password').textContent = visible ? 'Show' : 'Hide';
+      document.getElementById('toggle-password').setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+    });
+
+    function setResetMode() {
+      document.getElementById('sign-in-title').textContent = 'Set a new password';
+      document.querySelector('.panel-lead').textContent = 'Choose a new password, then continue to your study hub.';
+      document.querySelector('.notice div').innerHTML = '<strong>Password reset</strong>Choose a password you will remember. You will use it the next time you sign in.';
+      document.getElementById('password-label-text').textContent = 'New password';
+      passwordInput.autocomplete = 'new-password';
+      passwordInput.placeholder = 'Create a new password';
+      submitButton.textContent = 'Save new password';
+      emailInput.closest('label').classList.add('hidden');
+      forgotPassword.closest('.help').classList.add('hidden');
+    }
+
     form.addEventListener('submit', async event => {
       event.preventDefault();
       submitButton.disabled = true;
-      submitButton.textContent = 'Sending your link…';
+      submitButton.textContent = isReset ? 'Saving…' : 'Signing in…';
       setStatus('');
-      const { error } = await db.auth.signInWithOtp({
-        email: emailInput.value.trim(),
-        options: {
-          shouldCreateUser: false,
-          emailRedirectTo: `${location.origin}${location.pathname}`
-        }
-      });
+      const { error } = isReset
+        ? await db.auth.updateUser({ password: passwordInput.value })
+        : await db.auth.signInWithPassword({ email: emailInput.value.trim(), password: passwordInput.value });
       if (error) {
-        setStatus('Unable to send your link right now. Please try again or email Madison for help.', 'error');
+        setStatus(isReset ? 'Unable to save your new password. Request a fresh reset link and try again.' : 'That email and password do not match. Try again or use Forgot password.', 'error');
         submitButton.disabled = false;
-        submitButton.textContent = 'Email me a secure sign-in link';
+        submitButton.textContent = isReset ? 'Save new password' : 'Sign in';
         return;
       }
-      setStatus('Your secure sign-in link is on its way. Check your email, including spam or promotions.', 'info');
-      submitButton.textContent = 'Link sent — check your email';
+      const { data: { user } } = await db.auth.getUser();
+      if (isReset) history.replaceState({}, '', location.pathname);
+      await openStudentHub(user);
+    });
+
+    forgotPassword.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      if (!email) { setStatus('Enter your email address first, then choose Forgot password.', 'error'); emailInput.focus(); return; }
+      forgotPassword.disabled = true;
+      forgotPassword.textContent = 'Sending reset link…';
+      const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}?reset=1` });
+      if (error) {
+        setStatus('Unable to send a reset link right now. Please try again or email Madison for help.', 'error');
+        forgotPassword.disabled = false;
+        forgotPassword.textContent = 'Forgot password?';
+        return;
+      }
+      setStatus('A password-reset link is on its way. Check your email, including spam or promotions.', 'info');
+      forgotPassword.textContent = 'Reset link sent';
     });
 
     (async () => {
+      if (isReset) setResetMode();
       const { data: { session } } = await db.auth.getSession();
-      if (session) await openStudentHub(session.user);
+      if (session && !isReset) await openStudentHub(session.user);
     })();
   </script>
 </body>
 </html>
+
