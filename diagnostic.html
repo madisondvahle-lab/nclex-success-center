@@ -668,6 +668,7 @@ const MOCK_CATEGORY_MAXIMUMS = Object.fromEntries(
   Object.entries(MOCK_CATEGORY_RANGES).map(([category, range]) => [category, Math.floor(FULL_MOCK_MIN_Q * range.max / 100)])
 );
 const ASSESSMENT_PERSONALIZATION = window.NCLEX_ASSESSMENT_PERSONALIZATION;
+const ASSESSMENT_ONLY = new URLSearchParams(window.location.search).get('mode') === 'assessment';
 const getCoreTags = item => CORE_BLUEPRINT.tagsForItem(item);
 const getNCLEXCategory = item => {
   if (item.blueprint === "Safe & Effective Care Environment") {
@@ -811,7 +812,7 @@ function shouldStopMock(history, ability) {
 
 function pickNextQuestion(bank, history, profile, ability) {
   const usedIds = new Set(history.map(item => item.sourceId || item.id));
-  const isMock = profile?.mode === "mock";
+  const isMock = profile?.mode === "mock" || profile?.mode === "assessment";
   const available = bank.filter(item => {
     if (usedIds.has(item.id)) return false;
     if (isMock && item.type === "casestudy" && history.length + item.questions.length > FULL_MOCK_MAX_Q) return false;
@@ -1053,7 +1054,8 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
 
 function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
-  const [name,setName]=useState(""); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(""); const [mode,setMode]=useState("practice");
+  const [name,setName]=useState(''); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(''); const [mode,setMode]=useState(ASSESSMENT_ONLY?'assessment':'practice');
+  const availableModes=ASSESSMENT_ONLY?[{val:'assessment',label:'NCLEX Readiness Assessment',sub:'85 questions · adaptive blueprint · no pass/fail label'}]:[{val:'practice',label:'📝 Practice Mode',sub:'Custom length · See score'},{val:'nclex',label:'💻 Core-Safe CAT',sub:'30–45 items · adaptive + essential safety coverage'},{val:'mock',label:'🧭 Adaptive NCLEX Mock CAT',sub:'85–150 items · adaptive mock pass/fail + safety blueprint'},{val:'remediation',label:'🎯 Remediation Mode',sub:'Targeted student weaknesses'}];
   useEffect(() => {
     if (assessmentProfile?.studentName) setName(assessmentProfile.studentName);
   }, [assessmentProfile?.studentName]);
@@ -1063,8 +1065,8 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
-          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>Student Session Profile</div>
-          <div style={{ fontSize:14, color:"#64748b", marginTop:6 }}>Complete before starting to personalize the adaptive session.</div>
+          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>{ASSESSMENT_ONLY?"NCLEX Readiness Assessment":"Student Session Profile"}</div>
+          <div style={{ fontSize:14, color:"#64748b", marginTop:6 }}>{ASSESSMENT_ONLY?"This is a starting-point assessment, not a pass/fail test.":"Complete before starting to personalize the adaptive session."}</div>
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
           <div style={{ display:"flex", gap:14 }}>
@@ -1081,17 +1083,17 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
             <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#64748b", lineHeight:1.55 }}>No outside assessment scores are on file yet. This session will use the standard NCLEX blueprint plus any areas selected below.</div>
           )}
           {/* Mode Selection */}
-          <div>
+          {!ASSESSMENT_ONLY&&(<div>
             <label style={lbl}>Session Mode</label>
             <div style={{ display:"flex", gap:10 }}>
-              {[{val:"practice",label:"📝 Practice Mode",sub:"Custom length · See score"},{val:"nclex",label:"💻 Core-Safe CAT",sub:"30–45 items · adaptive + essential safety coverage"},{val:"mock",label:"🧭 Adaptive NCLEX Mock CAT",sub:"85–150 items · adaptive mock pass/fail + safety blueprint"},{val:"remediation",label:"🎯 Remediation Mode",sub:"Targeted student weaknesses"}].map(m=>(
+              {availableModes.map(m=>(
                 <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
                 </button>
               ))}
             </div>
-          </div>
+          </div>)}
 
           {mode==="practice"&&(
             <div>
@@ -1140,9 +1142,9 @@ function StartButton({ name, mode, weak, notes, assessmentProfile, onStart }) {
           </div>
         </div>
       )}
-      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:qCount,mode})}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?FULL_MOCK_MIN_Q:qCount,mode})}
         style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
-        {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : "Start Practice Session →") : "Enter student name to continue"}
+        {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →") : "Enter student name to continue"}
       </button>
     </div>
   );
@@ -1154,6 +1156,7 @@ const lbl={ fontSize:12, fontWeight:700, color:"#475569", letterSpacing:0.5, tex
 function ResultsScreen({ profile, history, catResult, onRestart }) {
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
+  const isAssessment = profile.mode==="assessment";
   const total=history.length, correct=history.filter(h=>h.correct).length, pct=total?Math.round((correct/total)*100):0;
   const isAdaptiveMock = isNCLEX || isMock;
   const passed = catResult==="PASS" || (isAdaptiveMock && !catResult && pct>=75);
@@ -1167,7 +1170,7 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"Adaptive NCLEX Mock CAT Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"Adaptive NCLEX Mock CAT Complete":isAssessment?"Readiness Assessment Complete":"Practice Session Complete"}</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
         </div>
@@ -1327,6 +1330,8 @@ function QuizScreen({ profile, onFinish }) {
     } else if(isMock) {
       const result = shouldStopMock(newHistory, newAbility);
       if(result) { setCatResult(result); finishSession(newHistory, result, newAbility); return; }
+    } else if(isAssessment && newHistory.length>=FULL_MOCK_MIN_Q) {
+      finishSession(newHistory, null, newAbility); return;
     } else if(newHistory.length>=profile.qCount) {
       finishSession(newHistory, null, newAbility); return;
     }
@@ -1339,7 +1344,7 @@ function QuizScreen({ profile, onFinish }) {
   const qNum = history.length+1;
   const correctSoFar = history.filter(h=>h.correct).length;
   const caseItemCount = q.type==="casestudy" ? q.questions.length : 1;
-  const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : isMock ? Math.min(100,(qNum/FULL_MOCK_MAX_Q)*100) : (qNum/profile.qCount)*100;
+  const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : isMock ? Math.min(100,(qNum/FULL_MOCK_MAX_Q)*100) : isAssessment ? Math.min(100,(qNum/FULL_MOCK_MIN_Q)*100) : (qNum/profile.qCount)*100;
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -1349,18 +1354,18 @@ function QuizScreen({ profile, onFinish }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, gap:12, flexWrap:"wrap" }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:"#0f172a", letterSpacing:2 }}>NCLEX-RN</div>
-            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"Adaptive Mock CAT":"Practice"}</div>
+            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"Adaptive Mock CAT":isAssessment?"Readiness Assessment":"Practice"}</div>
           </div>
           <div style={{ flex:1, maxWidth:260 }}>
             <div style={{ fontSize:11, color:"#64748b", marginBottom:5 }}>
-              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : `Question ${qNum} of ${profile.qCount}`}
+              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : isAssessment ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · readiness assessment` : `Question ${qNum} of ${profile.qCount}` }
             </div>
             <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
               <div style={{ height:"100%", width:`${progressPct}%`, background: isNCLEX?"#8b5cf6":"#0ea5e9", borderRadius:99, transition:"width 0.4s" }} />
             </div>
           </div>
           <div style={{ fontSize:12, fontWeight:600, color:"#475569", background:"#f8fafc", padding:"5px 12px", borderRadius:99, border:"1px solid #e2e8f0" }}>
-            {isNCLEX ? `Q${qNum}` : `${correctSoFar}/${history.length} correct`}
+            {isNCLEX ? `Q${qNum}` : isAssessment ? `Question ${qNum} of ${FULL_MOCK_MIN_Q}` : `${correctSoFar}/${history.length} correct`}
           </div>
         </div>
 
