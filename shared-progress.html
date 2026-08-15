@@ -117,11 +117,42 @@
       const existing=document.getElementById('supplemental-results-card');
       if(existing)existing.remove();
       if(!results.length)return;
+
       const card=document.createElement('article');
       card.id='supplemental-results-card';
       card.className='card full';
-      card.innerHTML='<div class="card-head"><div><p class="eyebrow">Supplemental practice</p><h2>Your recent practice</h2></div><span class="label">Shared view</span></div><div class="upload-list">'+results.slice(0,6).map(item=>'<article class="upload"><h3>'+esc(item.practice_title)+'</h3><p>'+esc(item.score)+' of '+esc(item.total_questions)+' correct · '+esc(Math.round(Number(item.score)/Number(item.total_questions)*100))+'%</p><p class="muted">Completed '+esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.completed_at)))+'</p></article>').join('')+'</div>';
-      const grid=document.querySelector('.grid'),anchor=document.getElementById('coach-review')||grid.lastElementChild;
+
+      const attempts=results.slice(0,6).map(item=>{
+        const percent=Math.round(Number(item.score)/Number(item.total_questions)*100);
+
+        const categories=Object.entries(item.category_scores||{}).map(([name,data])=>{
+          const correct=Number(data?.correct??0);
+          const total=Number(data?.total??0);
+          if(!total)return '';
+          return `<span class="focus-pill">${esc(name)} · ${correct}/${total}</span>`;
+        }).filter(Boolean).join('');
+
+        const missed=Array.isArray(item.missed_question_ids)
+          ? item.missed_question_ids
+          : [];
+
+        const missedDetail=isAdmin&&missed.length
+          ? `<p class="muted"><strong>Missed:</strong> ${esc(missed.join(', '))}</p>`
+          : '';
+
+        return `<article class="upload">
+          <h3>${esc(item.practice_title)}</h3>
+          <p><strong>${esc(item.score)}/${esc(item.total_questions)} · ${esc(percent)}%</strong></p>
+          ${categories?`<div class="focus-meta">${categories}</div>`:''}
+          ${missedDetail}
+          <p class="muted">Completed ${esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.completed_at)))}</p>
+        </article>`;
+      }).join('');
+
+      card.innerHTML='<div class="card-head"><div><p class="eyebrow">Supplemental practice</p><h2>Recent practice</h2></div><span class="label">Shared view</span></div><div class="upload-list">'+attempts+'</div>';
+
+      const grid=document.querySelector('.grid');
+      const anchor=document.getElementById('coach-review')||grid.lastElementChild;
       grid.insertBefore(card,anchor);
     }
     async function openReport(path){const {data,error}=await db.storage.from('assessment-reports').createSignedUrl(path,60);if(error)return alert('This report could not be opened right now.');window.open(data.signedUrl,'_blank','noopener')}
