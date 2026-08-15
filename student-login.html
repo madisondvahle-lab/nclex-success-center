@@ -92,7 +92,10 @@
     const submitButton = document.getElementById('submit');
     const status = document.getElementById('status');
     const forgotPassword = document.getElementById('forgot-password');
-    const isReset = new URLSearchParams(location.search).get('reset') === '1';
+    const urlParams = new URLSearchParams(location.search);
+    const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const isReset = urlParams.get('reset') === '1' || urlParams.has('code') || hashParams.get('type') === 'recovery';
+    let recoveryReady = !isReset;
 
     function setStatus(message, type = '') {
       status.textContent = message;
@@ -100,6 +103,13 @@
     }
 
     async function openStudentHub(user) {
+      if (!user) {
+        setStatus('Your password was saved, but your session could not be opened. Please return to sign in with your new password.', 'info');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Return to sign in';
+        submitButton.onclick = () => location.replace(location.pathname);
+        return;
+      }
       setStatus('Opening your study hub…', 'info');
       const { data: admin } = await db
         .from('app_admins')
@@ -137,27 +147,80 @@
       document.getElementById('password-label-text').textContent = 'New password';
       passwordInput.autocomplete = 'new-password';
       passwordInput.placeholder = 'Create a new password';
-      submitButton.textContent = 'Save new password';
+      submitButton.textContent = 'Preparing secure reset…';
+      submitButton.disabled = true;
       emailInput.closest('label').classList.add('hidden');
       forgotPassword.closest('.help').classList.add('hidden');
+      setStatus('Verifying your password-reset link…', 'info');
+    }
+
+    async function prepareRecoverySession() {
+      if (!isReset) return true;
+      try {
+        const code = urlParams.get('code');
+        if (code) {
+          const { error } = await db.auth.exchangeCodeForSession(code);
+          if (error && !String(error.message || '').toLowerCase().includes('code verifier')) throw error;
+        }
+
+        let { data: { session } } = await db.auth.getSession();
+        if (!session && hashParams.get('access_token') && hashParams.get('refresh_token')) {
+          const { data, error } = await db.auth.setSession({
+            access_token: hashParams.get('access_token'),
+            refresh_token: hashParams.get('refresh_token')
+          });
+          if (error) throw error;
+          session = data.session;
+        }
+
+        if (!session) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          ({ data: { session } } = await db.auth.getSession());
+        }
+
+        if (!session) throw new Error('No recovery session');
+        recoveryReady = true;
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save new password';
+        setStatus('Reset link verified. Enter your new password below.', 'info');
+        return true;
+      } catch (error) {
+        console.error('Password recovery setup failed:', error);
+        recoveryReady = false;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Reset link expired';
+        setStatus('This reset link is invalid or has expired. Return to sign in and request a fresh password-reset email.', 'error');
+        return false;
+      }
     }
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
+      if (isReset && !recoveryReady) {
+        setStatus('Your reset link is not ready. Please request a fresh password-reset email.', 'error');
+        return;
+      }
       submitButton.disabled = true;
       submitButton.textContent = isReset ? 'Saving…' : 'Signing in…';
       setStatus('');
-      const { error } = isReset
+      const { data, error } = isReset
         ? await db.auth.updateUser({ password: passwordInput.value })
         : await db.auth.signInWithPassword({ email: emailInput.value.trim(), password: passwordInput.value });
       if (error) {
-        setStatus(isReset ? 'Unable to save your new password. Request a fresh reset link and try again.' : 'That email and password do not match. Try again or use Forgot password.', 'error');
+        console.error('Authentication error:', error);
+        setStatus(isReset ? `Unable to save your new password: ${error.message || 'Please request a fresh reset link and try again.'}` : 'That email and password do not match. Try again or use Forgot password.', 'error');
         submitButton.disabled = false;
         submitButton.textContent = isReset ? 'Save new password' : 'Sign in';
         return;
       }
-      const { data: { user } } = await db.auth.getUser();
-      if (isReset) history.replaceState({}, '', location.pathname);
+      if (isReset) {
+        setStatus('Password updated successfully. Opening your study hub…', 'info');
+        history.replaceState({}, '', location.pathname);
+        const user = data?.user || (await db.auth.getUser()).data.user;
+        await openStudentHub(user);
+        return;
+      }
+      const user = data?.user || (await db.auth.getUser()).data.user;
       await openStudentHub(user);
     });
 
@@ -178,11 +241,14 @@
     });
 
     (async () => {
-      if (isReset) setResetMode();
+      if (isReset) {
+        setResetMode();
+        await prepareRecoverySession();
+        return;
+      }
       const { data: { session } } = await db.auth.getSession();
-      if (session && !isReset) await openStudentHub(session.user);
+      if (session) await openStudentHub(session.user);
     })();
   </script>
 </body>
 </html>
-
