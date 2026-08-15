@@ -11,7 +11,7 @@
 </head>
 <body>
   <main class="shell">
-    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" href="student-dashboard.html">My dashboard</a></header>
+    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">My dashboard</a></header>
     <section class="hero" id="library">
       <p class="eyebrow">Supplemental practice</p>
       <h1>Practice the next skill.</h1>
@@ -466,8 +466,8 @@
       return result.error?"Your score is shown here. We could not save it to the dashboard just yet.":"Saved to your shared dashboard.";
     }
     async function showResults(){const score=answers.reduce((total,answer,questionIndex)=>total+(answer===activeSet.questions[questionIndex].answer?1:0),0),percent=Math.round(score/activeSet.questions.length*100);$('quiz').innerHTML=`<section class="results"><p class="eyebrow">Practice complete</p><h2>${activeSet.title}</h2><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep this skill in mixed practice.':percent>=60?'Review the rationales, then return to this set once more.':'Review the connected module before retaking this set.'}</p><p class="status" id="save-status">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Try again</button><button class="primary" id="return" type="button">Back to assignments</button></div></section>`;$('save-status').textContent=await saveResult(score);$('retry').addEventListener('click',()=>startSet(activeSet.id));$('return').addEventListener('click',showLibrary)}
-    function showLibrary(){activeSet=null;$('quiz').classList.add('hidden');$('library').classList.remove('hidden');$('sets').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
-    async function init(){const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null}const assignedSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===assignedSet))startSet(assignedSet);else renderLibrary()}
+    function showLibrary(){if(new URLSearchParams(location.search).get("set")&&document.referrer){history.back();return}activeSet=null;$('quiz').classList.add('hidden');$('library').classList.remove('hidden');$('sets').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+    async function init(){const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const assignedSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===assignedSet))startSet(assignedSet);else renderLibrary()}
     init();
   </script>
 </body>
