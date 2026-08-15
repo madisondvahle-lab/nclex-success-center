@@ -149,6 +149,7 @@
       passwordInput.placeholder = 'Create a new password';
       submitButton.textContent = 'Preparing secure reset…';
       submitButton.disabled = true;
+      emailInput.required = false;
       emailInput.closest('label').classList.add('hidden');
       forgotPassword.closest('.help').classList.add('hidden');
       setStatus('Verifying your password-reset link…', 'info');
