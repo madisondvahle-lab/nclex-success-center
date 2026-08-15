@@ -157,40 +157,44 @@
 
     async function prepareRecoverySession() {
       if (!isReset) return true;
+
       try {
         const code = urlParams.get('code');
-        if (code) {
-          const { error } = await db.auth.exchangeCodeForSession(code);
-          if (error && !String(error.message || '').toLowerCase().includes('code verifier')) throw error;
-        }
 
-        let { data: { session } } = await db.auth.getSession();
-        if (!session && hashParams.get('access_token') && hashParams.get('refresh_token')) {
+        if (code) {
+          const { data, error } = await db.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+          if (!data?.session) throw new Error('Recovery session was not created.');
+        } else if (hashParams.get('access_token') && hashParams.get('refresh_token')) {
           const { data, error } = await db.auth.setSession({
             access_token: hashParams.get('access_token'),
             refresh_token: hashParams.get('refresh_token')
           });
           if (error) throw error;
-          session = data.session;
+          if (!data?.session) throw new Error('Recovery session was not created.');
+        } else {
+          throw new Error('This password-reset link does not contain a valid recovery code.');
         }
 
-        if (!session) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          ({ data: { session } } = await db.auth.getSession());
-        }
+        const { data: userData, error: userError } = await db.auth.getUser();
+        if (userError) throw userError;
+        if (!userData?.user) throw new Error('Recovery user could not be verified.');
 
-        if (!session) throw new Error('No recovery session');
         recoveryReady = true;
         submitButton.disabled = false;
         submitButton.textContent = 'Save new password';
         setStatus('Reset link verified. Enter your new password below.', 'info');
         return true;
+
       } catch (error) {
         console.error('Password recovery setup failed:', error);
         recoveryReady = false;
         submitButton.disabled = true;
         submitButton.textContent = 'Reset link expired';
-        setStatus('This reset link is invalid or has expired. Return to sign in and request a fresh password-reset email.', 'error');
+        setStatus(
+          'This reset link is invalid or has expired. Return to sign in and request a new password-reset email.',
+          'error'
+        );
         return false;
       }
     }
