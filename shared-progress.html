@@ -132,18 +132,29 @@
 
       const performance=sorted
         .filter(item=>item.current_score!==null&&item.current_score!==undefined&&item.current_score!=='')
+        .slice(0,6)
+        .map(item=>{
+          const current=Math.round(Number(item.current_score));
+          const previous=item.previous_score!==null&&item.previous_score!==undefined&&item.previous_score!=='' ? Math.round(Number(item.previous_score)) : null;
+          const arrow=previous===null?'':current>previous?' ↑':current<previous?' ↓':' →';
+          return `<div class="snapshot-score"><span>${esc(item.focus_area)}</span><strong>${esc(current)}%${arrow}</strong></div>`;
+        })
+        .join('');
+
+      const improving=sorted
+        .filter(item=>item.trend==='improving')
         .slice(0,4)
-        .map(item=>`<div class="snapshot-score"><span>${esc(item.focus_area)}</span><strong>${esc(Math.round(Number(item.current_score)))}%</strong></div>`)
+        .map(item=>`<span class="strength-pill">↑ ${esc(item.focus_area)}</span>`)
         .join('');
 
       const priorities=sorted
         .filter(item=>item.priority==='high')
-        .slice(0,4)
-        .map(item=>`<div class="snapshot-target">🔴 <strong>${esc(item.focus_area)}</strong></div>`)
+        .slice(0,3)
+        .map(item=>`<div class="snapshot-target">🎯 <strong>${esc(item.focus_area)}</strong></div>`)
         .join('');
 
       const strengths=sorted
-        .filter(item=>item.priority==='maintenance'||item.trend==='improving')
+        .filter(item=>item.priority==='maintenance')
         .slice(0,4)
         .map(item=>`<span class="strength-pill">✓ ${esc(item.focus_area)}</span>`)
         .join('');
