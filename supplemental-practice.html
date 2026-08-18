@@ -440,7 +440,7 @@
       if(!student)return "Your score is shown here. Sign in through the Success Center to save it to your dashboard.";
       const details=activeSet.questions.map((q,i)=>({
         question_id:q.id,
-        category:categoryForQuestion(q.id),
+        category:q.category||categoryForQuestion(q.id),
         selected_answer:answers[i],
         correct_answer:q.answer,
         correct:answers[i]===q.answer
@@ -467,7 +467,145 @@
     }
     async function showResults(){const score=answers.reduce((total,answer,questionIndex)=>total+(answer===activeSet.questions[questionIndex].answer?1:0),0),percent=Math.round(score/activeSet.questions.length*100);$('quiz').innerHTML=`<section class="results"><p class="eyebrow">Practice complete</p><h2>${activeSet.title}</h2><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep this skill in mixed practice.':percent>=60?'Review the rationales, then return to this set once more.':'Review the connected module before retaking this set.'}</p><p class="status" id="save-status">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Try again</button><button class="primary" id="return" type="button">Back to assignments</button></div></section>`;$('save-status').textContent=await saveResult(score);$('retry').addEventListener('click',()=>startSet(activeSet.id));$('return').addEventListener('click',showLibrary)}
     function showLibrary(){if(new URLSearchParams(location.search).get("set")&&document.referrer){history.back();return}activeSet=null;$('quiz').classList.add('hidden');$('library').classList.remove('hidden');$('sets').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
-    async function init(){const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const assignedSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===assignedSet))startSet(assignedSet);else renderLibrary()}
+
+    function shuffled(items){
+      return items.slice().sort(()=>Math.random()-.5);
+    }
+
+    function mixedCategory(q){
+      const text=[q.nclex_category,q.nclex_sub,q.topic,q.module_key,q.stem].filter(Boolean).join(' ').toLowerCase();
+
+      if(/priority|delegat|management of care|safety|acute|unstable|first|immediate|clinical judgment/.test(text))
+        return 'Priority & Clinical Judgment';
+
+      if(/maternal|obstetric|pregnan|postpartum|labor|fetal|newborn/.test(text))
+        return 'Maternal / OB';
+
+      if(/pediatric|child|infant|adolescent/.test(text))
+        return 'Pediatrics';
+
+      if(/psychi|mental|depress|anxiety|schizo|bipolar|suicid|therapeutic communication/.test(text))
+        return 'Mental Health';
+
+      if(/pharm|medication|drug|toxicity|antidote|insulin|heparin|warfarin|digoxin/.test(text))
+        return 'Pharmacology';
+
+      if(/fundamental|infection|isolation|ppe|fall|restraint|procedure|sterile/.test(text))
+        return 'Fundamentals / Safety';
+
+      return 'Adult Health';
+    }
+
+    async function buildMixedReview(count){
+      if(!student){
+        alert('Sign in through the Success Center before starting Mixed Review.');
+        return;
+      }
+
+      $('library').classList.add('hidden');
+      $('sets').classList.add('hidden');
+      $('quiz').classList.remove('hidden');
+      $('quiz').innerHTML='<p class="status">Building your mixed review…</p>';
+
+      const [{data:bank,error:bankError},{data:history,error:historyError}] = await Promise.all([
+        db.from('questions')
+          .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty')
+          .eq('active',true)
+          .limit(1000),
+        db.from('student_supplemental_practice_results')
+          .select('answer_details,missed_question_ids')
+          .eq('student_id',student.id)
+          .order('completed_at',{ascending:false})
+      ]);
+
+      if(bankError || historyError){
+        $('quiz').innerHTML='<p class="status">Mixed Review could not load. Please return to your dashboard and try again.</p>';
+        return;
+      }
+
+      const seen=new Set();
+      const missed=new Set();
+
+      (history||[]).forEach(result=>{
+        (result.answer_details||[]).forEach(item=>{
+          if(item.question_id) seen.add(String(item.question_id));
+          if(item.question_id && item.correct===false) missed.add(String(item.question_id));
+        });
+        (result.missed_question_ids||[]).forEach(id=>missed.add(String(id)));
+      });
+
+      const normalized=(bank||[]).map(q=>({
+        id:String(q.id),
+        stem:q.stem,
+        options:[q.option_a,q.option_b,q.option_c,q.option_d],
+        answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
+        rationale:q.rationale||'Review the underlying nursing principle for this item.',
+        category:mixedCategory(q),
+        difficulty:q.difficulty||'medium'
+      })).filter(q=>q.answer>=0);
+
+      const weights={
+        'Priority & Clinical Judgment':.40,
+        'Adult Health':.20,
+        'Pharmacology':.10,
+        'Maternal / OB':.10,
+        'Pediatrics':.10,
+        'Mental Health':.05,
+        'Fundamentals / Safety':.05
+      };
+
+      const chosen=[];
+      const chosenIds=new Set();
+
+      function addFrom(pool,amount){
+        shuffled(pool).forEach(q=>{
+          if(chosen.length>=count || amount<=0 || chosenIds.has(q.id)) return;
+          chosen.push(q);
+          chosenIds.add(q.id);
+          amount--;
+        });
+      }
+
+      Object.entries(weights).forEach(([category,weight])=>{
+        const amount=Math.max(1,Math.round(count*weight));
+        const pool=normalized.filter(q=>q.category===category && !seen.has(q.id));
+        addFrom(pool,amount);
+      });
+
+      if(chosen.length<count)
+        addFrom(normalized.filter(q=>!seen.has(q.id)),count-chosen.length);
+
+      if(chosen.length<count)
+        addFrom(normalized.filter(q=>missed.has(q.id)),count-chosen.length);
+
+      if(chosen.length<count)
+        addFrom(normalized,count-chosen.length);
+
+      activeSet={
+        id:'mixed-review-'+Date.now(),
+        title:'Mixed NCLEX Review',
+        tag:'Assigned mixed review',
+        description:'Mixed NCLEX-style review across priority, systems, medications, OB, pediatrics, mental health, and safety.',
+        questions:shuffled(chosen).slice(0,count)
+      };
+
+      index=0;
+      answers=[];
+      revealed=false;
+      renderQuestion();
+    }
+
+    async function init(){const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const params=new URLSearchParams(window.location.search);
+      const mixedCount=Number(params.get('mixed'));
+      const assignedSet=params.get('set');
+
+      if([10,20,30,40].includes(mixedCount)){
+        await buildMixedReview(mixedCount);
+      }else if(sets.some(set=>set.id===assignedSet)){
+        startSet(assignedSet);
+      }else{
+        renderLibrary();
+      }}
     init();
   </script>
 </body>
