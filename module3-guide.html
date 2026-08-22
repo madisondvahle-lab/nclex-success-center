@@ -1,2 +1,1328 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta http-equiv="refresh" content="0; url=student-login.html"><title>Secure Sign In · NCLEX Success Center</title><script>window.location.replace('student-login.html');</script></head><body><p>Redirecting to secure sign in… <a href="student-login.html">Continue</a></p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Module 3 – Pharmacology Essentials | NCLEX Tutor</title>
+<style>
+:root{--brand:#d97706;--brand-light:#fef3c7;--brand-mid:#f59e0b;--brand-dark:#92400e;--text:#1f2937;--muted:#6b7280;--card:#fff;--bg:#f9fafb;--border:#e5e7eb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+
+/* ── TOP NAV ── */
+.top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:2px solid var(--brand);padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.top-nav a{font-size:13px;color:var(--brand);text-decoration:none;font-weight:600;}
+.top-nav a:hover{text-decoration:underline;}
+.nav-title{font-weight:700;font-size:15px;color:var(--text);margin-right:auto;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#92400e 0%,#d97706 60%,#f59e0b 100%);color:#fff;padding:48px 32px 40px;text-align:center;}
+.hero-emoji{font-size:64px;display:block;margin-bottom:12px;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:8px;}
+.hero-sub{font-size:1.05rem;opacity:.9;margin-bottom:16px;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 16px;font-size:.85rem;font-weight:600;letter-spacing:.5px;}
+
+/* ── SECTION ANCHOR NAV ── */
+.section-nav{background:#fff;border-bottom:1px solid var(--border);padding:0;overflow-x:auto;white-space:nowrap;display:flex;}
+.section-nav a{display:inline-block;padding:12px 16px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;transition:all .2s;}
+.section-nav a:hover,.section-nav a.active{color:var(--brand);border-bottom-color:var(--brand);}
+
+/* ── SECTION WRAPPERS ── */
+.section{padding:40px 24px;max-width:900px;margin:0 auto;}
+.section-title{font-size:1.4rem;font-weight:800;color:var(--brand);border-left:5px solid var(--brand);padding-left:14px;margin-bottom:20px;}
+.section-subtitle{font-size:1rem;color:var(--muted);margin-top:-14px;margin-bottom:20px;padding-left:19px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--brand-dark);}
+.card p,.card li{font-size:.95rem;color:var(--text);}
+.card ul{padding-left:18px;}
+.card li{margin-bottom:4px;}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+
+/* ── OBJECTIVES ── */
+.obj-list{list-style:none;padding:0;}
+.obj-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.obj-list li:last-child{border-bottom:none;}
+.obj-num{background:var(--brand);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+
+/* ── BIG PICTURE ── */
+.big-picture-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+.bp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;border-top:4px solid var(--brand);}
+.bp-card .icon{font-size:2rem;margin-bottom:8px;}
+.bp-card h3{font-size:.95rem;font-weight:700;color:var(--brand-dark);margin-bottom:6px;}
+.bp-card p{font-size:.85rem;color:var(--muted);}
+
+/* ── INFOGRAPHIC PLACEHOLDER ── */
+.infographic{background:linear-gradient(135deg,var(--brand-light),#fff);border:2px dashed var(--brand-mid);border-radius:16px;padding:40px 24px;text-align:center;margin-bottom:20px;}
+.infographic .inf-title{font-size:1.1rem;font-weight:800;color:var(--brand-dark);margin-bottom:12px;}
+
+/* ── PHARMACOKINETIC CHART ── */
+.pk-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:20px 0;}
+.pk-box{background:var(--brand);color:#fff;border-radius:10px;padding:14px 18px;text-align:center;min-width:110px;}
+.pk-box .pk-letter{font-size:1.6rem;font-weight:900;}
+.pk-box .pk-word{font-size:.75rem;opacity:.85;}
+.pk-arrow{font-size:1.5rem;color:var(--brand-mid);}
+
+/* ── DEEP DIVE TABS ── */
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.tab-btn{background:#fff;border:2px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.tab-btn:hover{border-color:var(--brand);color:var(--brand);}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+.tab-panel{display:none;animation:fadeIn .3s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:16px;}
+.tbl th{background:var(--brand);color:#fff;padding:10px 12px;text-align:left;font-size:.85rem;}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);}
+.tbl tr:nth-child(even) td{background:#fef9ee;}
+.tbl tr:hover td{background:var(--brand-light);}
+
+/* ── ALERT BOXES ── */
+.alert{border-radius:10px;padding:16px 18px;margin-bottom:12px;border-left:5px solid;}
+.alert-red{background:#fef2f2;border-color:#ef4444;color:#7f1d1d;}
+.alert-green{background:#f0fdf4;border-color:#22c55e;color:#14532d;}
+.alert-yellow{background:#fffbeb;border-color:#f59e0b;color:#78350f;}
+.alert-blue{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a;}
+.alert-purple{background:#f5f3ff;border-color:#8b5cf6;color:#4c1d95;}
+.alert strong{display:block;margin-bottom:4px;font-size:.95rem;}
+
+/* ── MEMORY TRICKS ── */
+.trick-card{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid var(--brand-mid);border-radius:12px;padding:18px;margin-bottom:12px;}
+.trick-card .trick-label{font-size:.75rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.trick-card h3{font-size:1rem;font-weight:800;color:var(--brand-dark);margin-bottom:6px;}
+.trick-card p{font-size:.9rem;color:var(--text);}
+
+/* ── PEARLS + TRAPS ── */
+.pearl-list,.trap-list{list-style:none;padding:0;}
+.pearl-list li,.trap-list li{padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:.93rem;display:flex;gap:10px;align-items:flex-start;}
+.pearl-list li{background:#f0fdf4;border-left:4px solid #22c55e;}
+.trap-list li{background:#fef2f2;border-left:4px solid #ef4444;}
+
+/* ── MEDICATION CARDS ── */
+.med-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.med-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.med-card-header{background:var(--brand);color:#fff;padding:14px 18px;}
+.med-card-header h3{font-size:1rem;font-weight:800;margin-bottom:2px;}
+.med-card-header .med-class{font-size:.8rem;opacity:.85;}
+.med-card-body{padding:14px 18px;}
+.med-row{display:flex;gap:8px;margin-bottom:8px;font-size:.88rem;}
+.med-row-label{font-weight:700;color:var(--brand-dark);min-width:80px;flex-shrink:0;}
+.med-danger{background:#fef2f2;border-left:3px solid #ef4444;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:.85rem;color:#7f1d1d;}
+
+/* ── PRACTICE QUESTIONS ── */
+.pq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pq-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.pq-counter{font-size:.85rem;color:var(--muted);font-weight:600;}
+.pq-type-badge{background:var(--brand-light);color:var(--brand-dark);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--brand-mid);}
+.pq-q{font-size:1rem;font-weight:700;margin-bottom:16px;line-height:1.5;}
+.pq-options{list-style:none;padding:0;}
+.pq-options li{padding:10px 14px;border:2px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:.93rem;transition:all .2s;}
+.pq-options li:hover{border-color:var(--brand);background:var(--brand-light);}
+.pq-options li.selected{border-color:var(--brand);background:var(--brand-light);}
+.pq-options li.correct{border-color:#22c55e;background:#f0fdf4;}
+.pq-options li.incorrect{border-color:#ef4444;background:#fef2f2;}
+.pq-rationale{background:#f9fafb;border-left:4px solid var(--brand);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;font-size:.9rem;display:none;}
+.pq-rationale.show{display:block;}
+.pq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap;gap:10px;}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-dark);}
+.btn-outline{background:#fff;border:2px solid var(--brand);color:var(--brand);}
+.btn-outline:hover{background:var(--brand-light);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.pq-progress{height:6px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden;}
+.pq-progress-fill{height:100%;background:var(--brand);border-radius:3px;transition:width .3s;}
+.pq-results{text-align:center;padding:24px;}
+.pq-score{font-size:3rem;font-weight:900;color:var(--brand);}
+.pq-score-label{font-size:1rem;color:var(--muted);margin-bottom:16px;}
+/* SATA */
+.sata-hint{font-size:.8rem;color:var(--brand);font-weight:600;margin-bottom:10px;}
+
+/* ── CASE STUDIES ── */
+.case-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.case-header{background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.case-header h3{font-size:1rem;font-weight:800;}
+.case-toggle{font-size:1.2rem;transition:transform .3s;}
+.case-body{padding:20px 24px;display:none;}
+.case-body.open{display:block;}
+.case-scenario{background:#f9fafb;border-left:4px solid var(--brand-mid);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.93rem;}
+.case-question{font-weight:700;margin:14px 0 8px;font-size:.95rem;}
+.case-answer-btn{background:var(--brand-light);border:1px solid var(--brand-mid);color:var(--brand-dark);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;margin-bottom:8px;}
+.case-answer{background:#f9fafb;border-radius:8px;padding:14px;font-size:.9rem;margin-top:8px;display:none;}
+.case-answer.show{display:block;}
+
+/* ── QUICK QUIZ ── */
+.qq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.qq-q{font-size:1rem;font-weight:700;margin-bottom:14px;}
+.qq-options{list-style:none;padding:0;}
+.qq-options li{padding:10px 14px;border:2px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:.9rem;transition:all .2s;}
+.qq-options li:hover{border-color:var(--brand);background:var(--brand-light);}
+.qq-options li.qq-correct{border-color:#22c55e;background:#f0fdf4;font-weight:700;}
+.qq-options li.qq-incorrect{border-color:#ef4444;background:#fef2f2;}
+.qq-feedback{font-size:.88rem;margin-top:8px;padding:10px 14px;border-radius:8px;}
+.qq-feedback.correct{background:#f0fdf4;color:#166534;}
+.qq-feedback.incorrect{background:#fef2f2;color:#7f1d1d;}
+.qq-score{text-align:center;padding:24px;}
+.qq-score .score-num{font-size:3rem;font-weight:900;color:var(--brand);}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;padding:0;}
+.checklist li{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:.93rem;}
+.checklist li:hover{border-color:var(--brand);}
+.checklist li.done{background:#f0fdf4;border-color:#22c55e;color:#166534;text-decoration:line-through;}
+.check-icon{font-size:1.2rem;flex-shrink:0;}
+.checklist-progress{margin-top:16px;}
+.checklist-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:6px;}
+.checklist-fill{height:100%;background:var(--brand);border-radius:5px;transition:width .3s;}
+
+/* ── REMEDIATION ── */
+.remediation-box{background:#fffbeb;border:2px solid var(--brand-mid);border-radius:12px;padding:20px;margin-bottom:16px;}
+.remediation-box h3{color:var(--brand-dark);margin-bottom:12px;font-size:.95rem;}
+.write-line{border:none;border-bottom:1.5px solid var(--border);width:100%;padding:6px 0;margin-bottom:8px;background:transparent;font-size:.9rem;color:var(--text);}
+.write-line:focus{outline:none;border-bottom-color:var(--brand);}
+
+@media print{
+  .top-nav,.section-nav,.tab-bar,.pq-container,.qq-container,.case-answer-btn,.case-header{display:none!important;}
+  .case-body{display:block!important;}
+  .section:not(#remediation){display:none!important;}
+  #remediation{display:block!important;}
+  body{background:#fff;}
+}
+@media(max-width:600px){
+  .hero{padding:32px 16px;}
+  .section{padding:28px 16px;}
+  .pk-flow{gap:4px;}
+  .pk-arrow{font-size:1rem;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <span class="nav-title">💊 Module 3 · Pharmacology Essentials</span>
+  <a href="student-dashboard.html">← Hub</a>
+  <a href="student-dashboard.html">← M2</a>
+  <a href="student-dashboard.html">M4 →</a>
+</nav>
+
+<!-- SECTION ANCHOR NAV -->
+<div class="section-nav">
+  <a href="#overview">Overview</a>
+  <a href="#objectives">Objectives</a>
+  <a href="#bigpicture">Big Picture</a>
+  <a href="#graphic">Graphic</a>
+  <a href="#deepdive">Deep Dive</a>
+  <a href="#memory">Memory</a>
+  <a href="#pearls">Pearls</a>
+  <a href="#traps">Traps</a>
+  <a href="#clinical">Clinical</a>
+  <a href="#priority">Priority</a>
+  <a href="#meds">Meds</a>
+  <a href="#questions">Questions</a>
+  <a href="#cases">Cases</a>
+  <a href="#remediation">Remediation</a>
+  <a href="#quiz">Quiz</a>
+  <a href="#checklist">Checklist</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-emoji">💊</span>
+  <h1>Pharmacology Essentials</h1>
+  <p class="hero-sub">Master drug principles, high-alert meds, and safe administration for NCLEX success</p>
+  <span class="hero-badge">Phase 1 · Foundations</span>
+</div>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 1. MODULE OVERVIEW                          -->
+<!-- ─────────────────────────────────────────── -->
+<section id="overview" class="section">
+  <h2 class="section-title">1 · Module Overview</h2>
+  <div class="card">
+    <p><strong>Why this module matters:</strong> Pharmacology questions appear on <strong>every NCLEX</strong> — they're woven into med-surg, maternal, pediatric, and psych questions alike. You won't be asked to memorize every drug, but you MUST understand drug classes, mechanisms, key adverse effects, and nursing priorities.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>🎯 What You'll Master</h3>
+      <ul>
+        <li>Pharmacokinetics (ADME) in plain English</li>
+        <li>High-alert medications and why they're deadly</li>
+        <li>Top drug classes: anticoagulants, cardiac, antibiotics, psych, pain</li>
+        <li>Safe medication administration & the 10 Rights</li>
+        <li>Key antidotes and reversal agents</li>
+        <li>Priority nursing assessments before/after giving drugs</li>
+      </ul>
+    </div>
+    <div class="card"><h3>📊 NCLEX Weight</h3>
+      <p style="margin-bottom:10px">Pharmacological and Parenteral Therapies = <strong>~13–19% of NCLEX-RN</strong> questions (the single largest subcategory in Safe and Effective Care).</p>
+      <div class="alert alert-yellow"><strong>Pro Tip</strong> Know the drug class → you can reason about any drug in it. NCLEX loves new drug names you've never seen — if you know the class suffix, you know the mechanism.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 2. LEARNING OBJECTIVES                      -->
+<!-- ─────────────────────────────────────────── -->
+<section id="objectives" class="section" style="padding-top:0">
+  <h2 class="section-title">2 · Learning Objectives</h2>
+  <ul class="obj-list">
+    <li><span class="obj-num">1</span>Explain pharmacokinetics (ADME) and how organ dysfunction (renal/hepatic failure) alters drug action.</li>
+    <li><span class="obj-num">2</span>Identify high-alert medications and apply priority nursing assessments before administration.</li>
+    <li><span class="obj-num">3</span>Recognize key drug class suffixes and predict mechanism and common side effects.</li>
+    <li><span class="obj-num">4</span>Select appropriate antidotes and reversal agents for overdose or toxicity situations.</li>
+    <li><span class="obj-num">5</span>Apply the 10 Rights of medication administration to prevent errors.</li>
+    <li><span class="obj-num">6</span>Analyze NCLEX drug scenarios using a priority assessment framework (hold vs. give).</li>
+    <li><span class="obj-num">7</span>Differentiate adverse effects requiring immediate intervention from expected side effects.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 3. THE BIG PICTURE                          -->
+<!-- ─────────────────────────────────────────── -->
+<section id="bigpicture" class="section" style="padding-top:0">
+  <h2 class="section-title">3 · The Big Picture</h2>
+  <div class="big-picture-grid">
+    <div class="bp-card"><div class="icon">🔬</div><h3>Pharmacokinetics</h3><p>What the <em>body</em> does to the drug — absorb, distribute, metabolize, excrete (ADME)</p></div>
+    <div class="bp-card"><div class="icon">⚗️</div><h3>Pharmacodynamics</h3><p>What the <em>drug</em> does to the body — receptor binding, agonist vs. antagonist</p></div>
+    <div class="bp-card"><div class="icon">🚨</div><h3>High-Alert Meds</h3><p>Drugs with narrow therapeutic windows that can kill if given wrong</p></div>
+    <div class="bp-card"><div class="icon">🛡️</div><h3>Safe Administration</h3><p>10 Rights protect patients; 3 checks before giving any drug</p></div>
+    <div class="bp-card"><div class="icon">💉</div><h3>Drug Classes</h3><p>Know the suffix → know the class → predict action and side effects</p></div>
+    <div class="bp-card"><div class="icon">🔄</div><h3>Antidotes</h3><p>Every high-alert med has a reversal agent — know the pairs</p></div>
+  </div>
+  <div class="alert alert-blue" style="margin-top:20px">
+    <strong>NCLEX Mindset for Pharmacology</strong>
+    Always think: (1) Is it safe to give this drug <em>right now</em>? (2) What do I assess <em>before</em> giving it? (3) What am I watching for <em>after</em>? (4) What do I teach the patient?
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 4. HIGH-YIELD GRAPHIC                       -->
+<!-- ─────────────────────────────────────────── -->
+<section id="graphic" class="section" style="padding-top:0">
+  <h2 class="section-title">4 · High-Yield Graphic</h2>
+  <div class="infographic">
+    <div class="inf-title">💊 PHARMACOKINETICS: ADME Flow</div>
+    <div class="pk-flow">
+      <div class="pk-box"><div class="pk-letter">A</div><div class="pk-word">Absorption</div></div>
+      <div class="pk-arrow">→</div>
+      <div class="pk-box"><div class="pk-letter">D</div><div class="pk-word">Distribution</div></div>
+      <div class="pk-arrow">→</div>
+      <div class="pk-box"><div class="pk-letter">M</div><div class="pk-word">Metabolism</div></div>
+      <div class="pk-arrow">→</div>
+      <div class="pk-box"><div class="pk-letter">E</div><div class="pk-word">Excretion</div></div>
+    </div>
+    <div class="grid-2" style="margin-top:20px;text-align:left;">
+      <div class="card"><h3>🫁 Absorption factors</h3><ul><li>Route: IV = fastest; oral = slowest onset</li><li>First-pass effect: oral drugs metabolized in liver before systemic circulation (reduces bioavailability)</li><li>Food interactions can ↑ or ↓ absorption</li></ul></div>
+      <div class="card"><h3>🩸 Distribution factors</h3><ul><li>Protein binding: highly bound drugs stay in blood longer</li><li>Blood-brain barrier: only lipid-soluble drugs cross</li><li>Volume of distribution (Vd): large Vd = stored in tissues</li></ul></div>
+      <div class="card"><h3>🏥 Metabolism (Liver)</h3><ul><li>Cytochrome P450 enzymes (CYP450) — site of most interactions</li><li>Liver failure → drug toxicity risk</li><li>Prodrugs: metabolized INTO active form (codeine → morphine)</li></ul></div>
+      <div class="card"><h3>🫘 Excretion (Kidneys)</h3><ul><li>Most drugs excreted renally → renal failure = drug accumulation</li><li>Watch creatinine/GFR before renally cleared drugs</li><li>Some drugs excreted in bile (biliary) → feces</li></ul></div>
+    </div>
+  </div>
+
+  <!-- High-Yield Drug Cards -->
+  <h3 style="font-weight:800;color:var(--brand-dark);margin:28px 0 16px;">🃏 High-Yield Drug Cards — Study These First</h3>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;">These infographic cards cover the most tested drug classes on NCLEX. Study the graphics, then answer the practice questions. Reference back to these cards whenever you're unsure.</p>
+
+  <div style="margin-bottom:28px;">
+    <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">💊 ACE Inhibitors (-pril)</h4>
+    <img src="ace-inhibitors.png" alt="ACE Inhibitors Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">💊 ARBs (-sartan)</h4>
+    <img src="arbs.png" alt="ARBs Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">💊 Digoxin — The Complete Card</h4>
+    <img src="digoxin-main.png" alt="Digoxin Main Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">⚠️ Recognize Digoxin Toxicity</h4>
+    <img src="digoxin-toxicity.png" alt="Digoxin Toxicity Recognition Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <div style="margin-bottom:28px;">
+    <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">🔗 Dangerous Combo: Digoxin + Furosemide</h4>
+    <img src="digoxin-furosemide.png" alt="Digoxin and Furosemide Danger Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+  </div>
+
+  <!-- Never Crush List -->
+  <h3 style="font-weight:800;color:var(--brand-dark);margin:24px 0 12px;">🚫 Never Crush / Break / Chew List</h3>
+  <div class="card" style="margin-bottom:20px">
+    <p style="margin-bottom:12px;font-size:.9rem;color:var(--muted)">Crushing these medications causes dose dumping, GI damage, or destroys the time-release mechanism:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">ER · Extended Release</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">XR · Extended Release</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">XL · Extended Release</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">SR · Sustained Release</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">CR · Controlled Release</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">LA · Long Acting</span>
+      <span style="background:var(--brand);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:.9rem">EC · Enteric Coated</span>
+    </div>
+    <div class="alert alert-yellow" style="margin-bottom:0"><strong>NCLEX Application</strong> If a patient has a feeding tube or difficulty swallowing, always check if the tablet can be crushed BEFORE giving it. If it cannot → contact the provider for an alternative formulation (liquid, patch, different drug).</div>
+  </div>
+
+  <!-- Drug Calculations -->
+  <h3 style="font-weight:800;color:var(--brand-dark);margin:24px 0 12px;">🧮 Drug Calculation Conversions (Must Memorize)</h3>
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card">
+      <h3>Essential Conversions</h3>
+      <ul style="font-size:.9rem;line-height:2;">
+        <li><strong>1 g</strong> = 1,000 mg</li>
+        <li><strong>1 mg</strong> = 1,000 mcg</li>
+        <li><strong>1 mEq</strong> = 1 mmol (approx.)</li>
+        <li><strong>1 mL</strong> = 1 cc</li>
+        <li><strong>1 unit insulin</strong> = 1 mL in U-100 syringe</li>
+        <li><strong>mcg</strong> = microgram · <strong>mg</strong> = milligram · <strong>g</strong> = gram</li>
+        <li><strong>mL</strong> = milliliter · <strong>mEq</strong> = milliequivalent</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Key Medication Vocabulary</h3>
+      <ul style="font-size:.9rem;line-height:1.9;">
+        <li><strong>Loading dose:</strong> Higher initial dose to reach therapeutic level fast</li>
+        <li><strong>Maintenance dose:</strong> Ongoing dose to maintain therapeutic effect</li>
+        <li><strong>Peak:</strong> Highest drug concentration in blood</li>
+        <li><strong>Trough:</strong> Lowest drug concentration (drawn just before next dose)</li>
+        <li><strong>Half-life:</strong> Time for drug level to decrease by 50%</li>
+        <li><strong>Steady state:</strong> Drug intake = elimination; level is stable (4–5 half-lives)</li>
+        <li><strong>Therapeutic index:</strong> Difference between toxic and therapeutic levels</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Suffix Cheat Sheet -->
+  <h3 style="font-weight:800;color:var(--brand-dark);margin:24px 0 12px;">⚡ Drug Class Suffix Cheat Sheet</h3>
+  <table class="tbl">
+    <thead><tr><th>Suffix / Pattern</th><th>Drug Class</th><th>Key Action</th><th>Nurse Priority</th></tr></thead>
+    <tbody>
+      <tr><td>-olol</td><td>Beta blocker</td><td>↓ HR, ↓ BP, ↓ contractility</td><td>Hold if HR &lt;60; don't stop abruptly</td></tr>
+      <tr><td>-pril</td><td>ACE inhibitor</td><td>↓ BP via angiotensin blockade</td><td>Monitor K+; watch for dry cough</td></tr>
+      <tr><td>-sartan</td><td>ARB</td><td>↓ BP, similar to ACEi (no cough)</td><td>Monitor K+, renal function</td></tr>
+      <tr><td>-dipine</td><td>Calcium channel blocker</td><td>↓ BP, vasodilation</td><td>Watch for edema, flushing, reflex tachycardia</td></tr>
+      <tr><td>-statin</td><td>HMG-CoA reductase inhibitor</td><td>↓ LDL cholesterol</td><td>Monitor LFTs; report muscle pain (myopathy)</td></tr>
+      <tr><td>-mycin / -micin</td><td>Aminoglycoside antibiotic</td><td>Kills gram-negative bacteria</td><td>Monitor BUN/Cr (nephrotoxic) + hearing (ototoxic)</td></tr>
+      <tr><td>-azole</td><td>Antifungal</td><td>Disrupts fungal cell membrane</td><td>Check LFTs; many drug interactions</td></tr>
+      <tr><td>-mab</td><td>Monoclonal antibody</td><td>Targeted immune modulation</td><td>Infusion reactions; immunosuppression</td></tr>
+      <tr><td>-pam / -lam</td><td>Benzodiazepine</td><td>CNS depression / anxiolytic</td><td>Fall risk; flumazenil reversal; no abrupt D/C</td></tr>
+      <tr><td>-pine (antipsych)</td><td>Atypical antipsychotic</td><td>↓ dopamine/serotonin</td><td>Metabolic syndrome; EPS; NMS</td></tr>
+      <tr><td>-floxacin</td><td>Fluoroquinolone antibiotic</td><td>Broad-spectrum bactericidal</td><td>Tendon rupture risk; avoid in pregnancy</td></tr>
+      <tr><td>-tidine</td><td>H2 blocker</td><td>↓ gastric acid</td><td>Confusion in elderly (cimetidine)</td></tr>
+      <tr><td>-prazole</td><td>Proton pump inhibitor (PPI)</td><td>↓↓ gastric acid</td><td>Long-term: ↓ Mg, ↓ B12, fracture risk</td></tr>
+    </tbody>
+  </table>
+</section>
+<!-- ─────────────────────────────────────────── -->
+<!-- 5. DEEP DIVE LESSONS                        -->
+<!-- ─────────────────────────────────────────── -->
+<section id="deepdive" class="section" style="padding-top:0">
+  <h2 class="section-title">5 · Deep Dive Lessons</h2>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showLesson('pk')">🔬 Pharmacokinetics</button>
+    <button class="tab-btn" onclick="showLesson('highalert')">🚨 High-Alert Meds</button>
+    <button class="tab-btn" onclick="showLesson('antibiotics')">🦠 Antibiotics</button>
+    <button class="tab-btn" onclick="showLesson('cardiac')">❤️ Cardiac Drugs</button>
+    <button class="tab-btn" onclick="showLesson('psych')">🧠 Psych Meds</button>
+    <button class="tab-btn" onclick="showLesson('pain')">😣 Pain Meds</button>
+    <button class="tab-btn" onclick="showLesson('safe')">🛡️ Safe Admin</button>
+  </div>
+
+  <!-- TAB: Pharmacokinetics -->
+  <div id="tab-pk" class="tab-panel active">
+    <div class="alert alert-blue"><strong>Core Concept</strong> Pharmacokinetics = what the BODY does to the DRUG. Every step has NCLEX implications.</div>
+    <table class="tbl">
+      <thead><tr><th>Phase</th><th>What Happens</th><th>Clinical Relevance</th><th>NCLEX Watch</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Absorption</strong></td><td>Drug enters bloodstream from administration site</td><td>IV bypasses absorption → immediate effect; oral has variable absorption</td><td>IV = fastest onset; sublingual next; oral = slowest</td></tr>
+        <tr><td><strong>Distribution</strong></td><td>Drug moves from blood to tissues</td><td>Low albumin → more free drug → toxicity risk (elderly, malnourished)</td><td>Protein-bound drugs compete → drug interactions</td></tr>
+        <tr><td><strong>Metabolism</strong></td><td>Liver transforms drug (mainly CYP450)</td><td>Liver disease → reduced metabolism → drug accumulates</td><td>Check LFTs before hepatically metabolized drugs</td></tr>
+        <tr><td><strong>Excretion</strong></td><td>Kidneys remove drug from body</td><td>Renal failure → drug accumulates → toxicity</td><td>Check BUN/Cr before renally cleared drugs</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="alert alert-yellow"><strong>First-Pass Effect</strong> Oral drugs absorbed from GI → go straight to liver via portal circulation → partially metabolized BEFORE reaching systemic circulation. That's why oral morphine dose = much higher than IV dose.</div>
+      <div class="alert alert-red"><strong>Half-Life</strong> Time for plasma concentration to decrease by 50%. Drug reaches steady state after 4–5 half-lives. Drugs with long half-lives accumulate in renal/hepatic impairment → toxicity.</div>
+    </div>
+    <div class="card"><h3>⚗️ Pharmacodynamics in 60 Seconds</h3>
+      <ul>
+        <li><strong>Agonist:</strong> binds receptor → activates it (mimics normal signal) — ex: morphine is opioid agonist</li>
+        <li><strong>Antagonist:</strong> binds receptor → BLOCKS it (blocks normal signal) — ex: naloxone blocks opioid receptors</li>
+        <li><strong>Partial agonist:</strong> binds and partially activates — ex: buprenorphine</li>
+        <li><strong>Therapeutic index:</strong> ratio of toxic dose to therapeutic dose; <em>narrow</em> = high risk (warfarin, digoxin, lithium, aminoglycosides)</li>
+        <li><strong>Tolerance:</strong> need more drug for same effect (opioids, benzos)</li>
+        <li><strong>Tachyphylaxis:</strong> rapid tolerance after repeated doses</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TAB: High-Alert Meds -->
+  <div id="tab-highalert" class="tab-panel">
+    <div class="alert alert-red"><strong>High-Alert Medications</strong> These drugs have a narrow therapeutic window — small dosing errors can cause serious patient harm or death. NCLEX LOVES them.</div>
+    <table class="tbl">
+      <thead><tr><th>Drug</th><th>Why Dangerous</th><th>Before Giving</th><th>Antidote/Reversal</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Warfarin</strong></td><td>Narrow window; bleeding vs. clotting</td><td>Check INR (therapeutic = 2–3; mechanical valves = 2.5–3.5)</td><td>Vitamin K (slow); FFP (fast)</td></tr>
+        <tr><td><strong>Heparin (IV)</strong></td><td>Unpredictable dose-response</td><td>aPTT (therapeutic = 60–100 sec); platelet count (HIT)</td><td>Protamine sulfate</td></tr>
+        <tr><td><strong>Insulin</strong></td><td>Hypoglycemia → death</td><td>Blood glucose; meal ready; correct type/dose/route</td><td>D50W (IV), glucagon (IM)</td></tr>
+        <tr><td><strong>Digoxin</strong></td><td>Narrow window; toxicity common in elderly</td><td>Apical HR &lt;60 = hold; K+ level; dig level (0.5–2 ng/mL)</td><td>Digibind (digoxin immune Fab)</td></tr>
+        <tr><td><strong>Morphine/Opioids</strong></td><td>Respiratory depression → arrest</td><td>RR &lt;12 = hold; sedation level; BP</td><td>Naloxone (Narcan)</td></tr>
+        <tr><td><strong>Lithium</strong></td><td>Narrow window; toxicity signs subtle</td><td>Li+ level (0.6–1.2 mEq/L maintenance); renal function; Na+ (low Na = toxicity)</td><td>Supportive; dialysis if severe</td></tr>
+        <tr><td><strong>Methotrexate</strong></td><td>Myelosuppression, hepatotoxicity</td><td>CBC, LFTs; avoid NSAIDs</td><td>Leucovorin (folinic acid)</td></tr>
+        <tr><td><strong>Potassium (IV)</strong></td><td>Cardiac arrest if given too fast</td><td>NEVER give IV push; max 10 mEq/hr; monitor ECG</td><td>Calcium gluconate for hyperK</td></tr>
+      </tbody>
+    </table>
+    <div class="alert alert-yellow"><strong>ISMP High-Alert List — always verify these independently:</strong> Anticoagulants · Insulin · Opioids · Hypertonic saline · Neuromuscular blocking agents · Chemotherapy · Concentrated electrolytes</div>
+    <div class="card"><h3>🩸 HIT — Heparin-Induced Thrombocytopenia</h3>
+      <ul>
+        <li>Platelets drop >50% within 5–10 days of heparin exposure</li>
+        <li>Paradoxical CLOTTING (not bleeding) — white clot syndrome</li>
+        <li>Stop ALL heparin (including flushes, LMWH)</li>
+        <li>Switch to argatroban or bivalirudin (direct thrombin inhibitors)</li>
+        <li>Do NOT give platelets — worsens clotting</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TAB: Antibiotics -->
+  <div id="tab-antibiotics" class="tab-panel">
+    <div class="alert alert-blue"><strong>Framework</strong> Know: mechanism, spectrum (gram+ vs. gram-), major toxicities, key nursing considerations.</div>
+    <table class="tbl">
+      <thead><tr><th>Class</th><th>Examples</th><th>Coverage</th><th>Toxicity / Nurse Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Penicillins</strong></td><td>Amoxicillin, Ampicillin, Piperacillin</td><td>Gram+, some gram-</td><td>Allergy (anaphylaxis); cross-react with cephalosporins (10%)</td></tr>
+        <tr><td><strong>Cephalosporins</strong></td><td>Cefazolin (1st), Cefuroxime (2nd), Ceftriaxone (3rd)</td><td>Broad; each generation adds gram- coverage</td><td>Allergy; Ceftriaxone can displace bilirubin (neonates — avoid)</td></tr>
+        <tr><td><strong>Aminoglycosides</strong></td><td>Gentamicin, Tobramycin, Amikacin</td><td>Gram-negative rods</td><td>🚨 Nephrotoxic + Ototoxic; monitor BUN/Cr + hearing; peak/trough levels</td></tr>
+        <tr><td><strong>Vancomycin</strong></td><td>Vancomycin</td><td>MRSA, C. diff (oral)</td><td>🚨 Red Man Syndrome (infuse slowly >60 min); nephrotoxic; monitor trough</td></tr>
+        <tr><td><strong>Fluoroquinolones</strong></td><td>Ciprofloxacin, Levofloxacin</td><td>Broad gram-</td><td>Tendon rupture (esp. Achilles); avoid in pregnancy/children; C. diff risk</td></tr>
+        <tr><td><strong>Macrolides</strong></td><td>Azithromycin, Clarithromycin, Erythromycin</td><td>Atypicals (Mycoplasma, Chlamydia)</td><td>QT prolongation; GI upset; drug interactions (CYP3A4)</td></tr>
+        <tr><td><strong>Tetracyclines</strong></td><td>Doxycycline, Minocycline</td><td>Atypicals, Rickettsia, acne</td><td>Avoid in pregnancy/children &lt;8 (teeth staining); phototoxic; dairy ↓ absorption</td></tr>
+        <tr><td><strong>Sulfonamides</strong></td><td>TMP-SMX (Bactrim)</td><td>UTI, PCP prophylaxis</td><td>Stevens-Johnson syndrome; avoid in sulfa allergy; increase hydration</td></tr>
+        <tr><td><strong>Carbapenems</strong></td><td>Meropenem, Imipenem</td><td>Broadest spectrum — last resort</td><td>Seizure risk; C. diff risk; cross-react with penicillin (rare)</td></tr>
+        <tr><td><strong>Metronidazole</strong></td><td>Flagyl</td><td>Anaerobes, C. diff, protozoals</td><td>Disulfiram reaction with alcohol; metallic taste; neurotoxic (high dose)</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="alert alert-red"><strong>Red Man Syndrome (Vancomycin)</strong> Not a true allergy — rate-related. Flushing, rash, itching on face/neck/chest during infusion. Fix: slow the infusion rate, give diphenhydramine prophylactically. Do NOT stop the drug permanently.</div>
+      <div class="alert alert-yellow"><strong>Culture Before Antibiotics</strong> Always obtain cultures (blood, urine, wound) BEFORE starting antibiotics. Then start empiric therapy — don't wait for results. This is a classic NCLEX priority: CULTURE → then DRUG.</div>
+    </div>
+  </div>
+
+  <!-- TAB: Cardiac Drugs -->
+  <div id="tab-cardiac" class="tab-panel">
+    <div class="alert alert-blue"><strong>Cardiac Drug Families to Know</strong> Antihypertensives · Antiarrhythmics · Diuretics · Cardiac glycosides · Anticoagulants</div>
+    <table class="tbl">
+      <thead><tr><th>Drug/Class</th><th>Action</th><th>Key Side Effects</th><th>Nursing Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Beta-blockers (-olol)</strong></td><td>↓HR, ↓contractility, ↓BP</td><td>Bradycardia, hypotension, fatigue, bronchoconstriction</td><td>HR &lt;60 → hold; contraindicated in asthma; never stop abruptly (rebound tachycardia)</td></tr>
+        <tr><td><strong>ACE inhibitors (-pril)</strong></td><td>↓ Angiotensin II → ↓BP, ↓afterload</td><td>Dry cough (bradykinin), hyperkalemia, angioedema (STOP drug)</td><td>Monitor K+; do not give with K-sparing diuretics without close monitoring; 1st dose hypotension</td></tr>
+        <tr><td><strong>ARBs (-sartan)</strong></td><td>Block AT1 receptor → ↓BP</td><td>Hyperkalemia, renal impairment — no cough</td><td>Same as ACEi but no cough; do NOT combine with ACEi</td></tr>
+        <tr><td><strong>CCBs (-dipine)</strong></td><td>↓ Ca2+ influx → vasodilation, ↓HR</td><td>Edema, flushing, reflex tachycardia (nifedipine), constipation (verapamil)</td><td>Verapamil/diltiazem: monitor HR; grapefruit juice ↑ drug levels</td></tr>
+        <tr><td><strong>Loop diuretics (furosemide)</strong></td><td>Inhibit Na-K-2Cl in loop of Henle → ↑ urine</td><td>Hypokalemia, hyponatremia, ototoxicity (high dose IV)</td><td>Monitor K+ (replace prn); daily weights; ear ringing = call MD</td></tr>
+        <tr><td><strong>Thiazides (HCTZ)</strong></td><td>Inhibit NaCl reabsorption in DCT</td><td>Hypokalemia, hyperglycemia, hyperuricemia, hypercalcemia</td><td>Monitor K+; not effective if GFR &lt;30</td></tr>
+        <tr><td><strong>Spironolactone</strong></td><td>K+-sparing diuretic / aldosterone antagonist</td><td>Hyperkalemia, gynecomastia</td><td>Do NOT combine with ACEi/ARB without monitoring K+; avoid K+ supplements</td></tr>
+        <tr><td><strong>Digoxin</strong></td><td>↑ cardiac contractility, ↓ HR (vagal)</td><td>Toxicity: nausea, yellow-green halos, bradycardia, arrhythmias</td><td>Apical pulse &lt;60 → hold; K+ depletion → toxicity risk; therapeutic level 0.5–2 ng/mL</td></tr>
+        <tr><td><strong>Amiodarone</strong></td><td>Class III antiarrhythmic — broad action</td><td>Pulmonary toxicity, thyroid dysfunction, corneal deposits, photosensitivity, hepatotoxicity</td><td>Baseline PFTs/TFTs/LFTs; monitor for new cough/dyspnea; sunscreen; very long half-life</td></tr>
+        <tr><td><strong>Statins (-statin)</strong></td><td>↓ LDL via HMG-CoA inhibition</td><td>Myopathy, rhabdomyolysis (rare), elevated LFTs</td><td>Report muscle pain (hold drug); check CK if muscle pain; grapefruit ↑ levels (simvastatin/lovastatin)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Drug Card Infographics for Cardiac Tab -->
+    <h3 style="font-weight:800;color:var(--brand-dark);margin:28px 0 12px;">🃏 Deep Dive: Drug Cards</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;">Study each card below, then close the tab and answer the practice questions from memory. Come back here when you need to check your answers.</p>
+
+    <div style="margin-bottom:28px;">
+      <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">ACE Inhibitors (-pril)</h4>
+      <img src="ace-inhibitors.png" alt="ACE Inhibitors Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+    </div>
+
+    <div style="margin-bottom:28px;">
+      <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">ARBs (-sartan)</h4>
+      <img src="arbs.png" alt="ARBs Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+    </div>
+
+    <div style="margin-bottom:28px;">
+      <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">Digoxin — The Complete Card</h4>
+      <img src="digoxin-main.png" alt="Digoxin Main Drug Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+    </div>
+
+    <div style="margin-bottom:28px;">
+      <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">⚠️ Recognize Digoxin Toxicity</h4>
+      <img src="digoxin-toxicity.png" alt="Digoxin Toxicity Recognition Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+    </div>
+
+    <div style="margin-bottom:28px;">
+      <h4 style="font-weight:700;color:var(--brand-dark);margin-bottom:10px;">🔗 Dangerous Combo: Digoxin + Furosemide</h4>
+      <img src="digoxin-furosemide.png" alt="Digoxin and Furosemide Danger Card" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);">
+    </div>
+  </div>
+
+  <!-- TAB: Psych Meds -->
+  <div id="tab-psych" class="tab-panel">
+    <div class="alert alert-purple"><strong>Psych Medication Themes</strong> Side effect management and teaching are as important as the drug action itself. NCLEX focuses heavily on what to monitor and teach.</div>
+    <table class="tbl">
+      <thead><tr><th>Drug/Class</th><th>Used For</th><th>Key Adverse Effects</th><th>Nurse Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SSRIs (fluoxetine, sertraline)</strong></td><td>Depression, anxiety, OCD, PTSD</td><td>Sexual dysfunction, GI upset, serotonin syndrome (with MAOIs), suicidal ideation (↑ first 2 wk)</td><td>Monitor for ↑ suicide risk first 2 weeks; takes 2–4 weeks to work; do NOT combine with MAOIs (14-day washout)</td></tr>
+        <tr><td><strong>MAOIs (phenelzine)</strong></td><td>Refractory depression</td><td>Hypertensive crisis with tyramine foods; fatal combos with SSRIs/meperidine/dextromethorphan</td><td>Tyramine-restricted diet (aged cheese, cured meats, wine); carry MAOI card; 14-day washout before/after SSRIs</td></tr>
+        <tr><td><strong>Lithium</strong></td><td>Bipolar disorder (mood stabilizer)</td><td>Toxicity: tremor, confusion, ataxia, arrhythmia, seizure</td><td>Therapeutic 0.6–1.2 mEq/L; adequate Na+ and fluid intake; low Na → toxicity; check levels regularly</td></tr>
+        <tr><td><strong>Typical Antipsychotics (haloperidol)</strong></td><td>Schizophrenia, acute agitation</td><td>EPS (dystonia, akathisia, tardive dyskinesia), NMS</td><td>Tardive dyskinesia = involuntary movements → irreversible if not caught; NMS = EMERGENCY (high fever, rigidity, altered MS)</td></tr>
+        <tr><td><strong>Atypical Antipsychotics (clozapine, olanzapine)</strong></td><td>Schizophrenia, bipolar</td><td>Metabolic syndrome, weight gain, QT prolongation; clozapine: agranulocytosis</td><td>Clozapine: weekly CBC (monitor WBC); all atypicals: monitor glucose, lipids, weight</td></tr>
+        <tr><td><strong>Benzodiazepines (-pam/-lam)</strong></td><td>Anxiety, alcohol withdrawal, seizures</td><td>CNS depression, respiratory depression, dependence, falls</td><td>Fall precautions; flumazenil reversal; NEVER stop abruptly (seizure risk); additive with alcohol/opioids</td></tr>
+        <tr><td><strong>Buspirone</strong></td><td>Generalized anxiety (non-addictive)</td><td>Dizziness, headache (no CNS depression)</td><td>Takes 2–4 weeks; NO abuse potential; no cross-tolerance with benzos</td></tr>
+      </tbody>
+    </table>
+    <div class="alert alert-red"><strong>Neuroleptic Malignant Syndrome (NMS)</strong> — Medical Emergency<br>
+    Signs: HIGH fever, muscle rigidity, altered LOC, autonomic instability (labile BP, diaphoresis). Treatment: Stop antipsychotic immediately → dantrolene, bromocriptine, cooling measures, supportive care.</div>
+    <div class="alert alert-yellow"><strong>Serotonin Syndrome</strong> (SSRIs + MAOIs, or other serotonergic combos)<br>
+    Triad: Mental status changes + Autonomic instability + Neuromuscular abnormalities (clonus, tremor). Onset within 24 hrs. Stop serotonergic agent → cyproheptadine + supportive care.</div>
+  </div>
+
+  <!-- TAB: Pain Meds -->
+  <div id="tab-pain" class="tab-panel">
+    <div class="alert alert-blue"><strong>WHO Pain Ladder</strong> Step 1: Non-opioids (acetaminophen, NSAIDs) → Step 2: Mild opioids (tramadol, codeine) → Step 3: Strong opioids (morphine, oxycodone, fentanyl)</div>
+    <table class="tbl">
+      <thead><tr><th>Drug</th><th>Mechanism</th><th>Key Adverse Effects</th><th>Nursing Priority</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Acetaminophen</strong></td><td>Central prostaglandin inhibition</td><td>Hepatotoxicity (>4g/day or EtOH use); NO anti-inflammatory effect</td><td>Max 4g/day (2g elderly/liver disease); check all combo products for hidden acetaminophen; N-acetylcysteine antidote</td></tr>
+        <tr><td><strong>NSAIDs (ibuprofen, ketorolac)</strong></td><td>COX inhibition → ↓ prostaglandins</td><td>GI bleed, nephrotoxicity, ↑ bleeding, worsens HTN/HF, avoid in pregnancy 3rd trimester</td><td>Give with food; avoid in renal impairment; use lowest dose shortest time; ketorolac max 5 days IV/IM</td></tr>
+        <tr><td><strong>Morphine</strong></td><td>Mu-opioid receptor agonist</td><td>Respiratory depression, sedation, constipation (doesn't resolve), N/V, urinary retention, histamine release</td><td>RR &lt;12 → hold; assess sedation; bowel regimen always; naloxone at bedside</td></tr>
+        <tr><td><strong>Fentanyl</strong></td><td>Potent opioid agonist (100x morphine)</td><td>Rapid onset respiratory depression; chest wall rigidity (rapid IV)</td><td>Patch: 72-hr; avoid heat over patch; fever ↑ absorption; naloxone; do NOT use in opioid-naive pts (patch)</td></tr>
+        <tr><td><strong>Hydromorphone (Dilaudid)</strong></td><td>Potent opioid (5x morphine)</td><td>Same as morphine; higher potency = higher error risk</td><td>Confirm dose carefully; often confused with morphine — ISMP alert</td></tr>
+        <tr><td><strong>Tramadol</strong></td><td>Weak opioid + SNRI</td><td>Seizure threshold ↓; serotonin syndrome risk</td><td>Avoid with SSRIs/MAOIs; seizure precautions; DO NOT use if seizure history</td></tr>
+        <tr><td><strong>Gabapentin/Pregabalin</strong></td><td>Calcium channel modulation (neuropathic)</td><td>Dizziness, sedation, weight gain; enhanced with opioids → resp depression</td><td>Fall risk; taper to discontinue; additive sedation with opioids</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="alert alert-red"><strong>Opioid-Induced Constipation</strong> Unlike other GI side effects, constipation DOES NOT improve with time. Always prescribe a bowel regimen (senna ± polyethylene glycol) with any opioid order. Methylnaltrexone for refractory cases.</div>
+      <div class="alert alert-yellow"><strong>Equianalgesic Dosing</strong> When switching opioids, calculate equivalent dose. The test may ask about morphine equivalents. Know: oral morphine 30mg ≈ IV morphine 10mg. Always reduce new opioid by 25–50% for incomplete cross-tolerance.</div>
+    </div>
+  </div>
+
+  <!-- TAB: Safe Admin -->
+  <div id="tab-safe" class="tab-panel">
+    <div class="alert alert-green"><strong>The 10 Rights of Medication Administration</strong> NCLEX tests all 10 — know them all.</div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚡ The 10 Rights</h3>
+        <ol style="padding-left:18px;font-size:.93rem;line-height:2;">
+          <li>Right <strong>Patient</strong> (2 identifiers)</li>
+          <li>Right <strong>Drug</strong></li>
+          <li>Right <strong>Dose</strong></li>
+          <li>Right <strong>Route</strong></li>
+          <li>Right <strong>Time</strong></li>
+          <li>Right <strong>Documentation</strong></li>
+          <li>Right <strong>Reason/Indication</strong></li>
+          <li>Right <strong>Response</strong> (assess after)</li>
+          <li>Right <strong>Education</strong></li>
+          <li>Right to <strong>Refuse</strong> (patient right)</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>🔄 3 Checks Before Giving Any Drug</h3>
+        <ol style="padding-left:18px;font-size:.93rem;line-height:2.2;">
+          <li>Check label when removing from storage</li>
+          <li>Check label when preparing/drawing up</li>
+          <li>Check label before administering to patient</li>
+        </ol>
+        <div class="alert alert-yellow" style="margin-top:10px"><strong>Never document before giving the drug</strong> — document immediately after administration.</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card"><h3>💉 IV Compatibility</h3><ul>
+        <li>Always check compatibility before mixing/co-infusing</li>
+        <li>Flush line before and after each medication with incompatible drugs</li>
+        <li>Phenytoin: compatible ONLY with NS (not D5W — precipitates)</li>
+        <li>Amphotericin B: lipid formulations preferred to reduce nephrotoxicity</li>
+        <li>Blood products: ONLY NS (Lactated Ringer's can cause hemolysis)</li>
+      </ul></div>
+      <div class="card"><h3>🔴 When to Hold a Drug (NCLEX)</h3><ul>
+        <li>Digoxin: HR &lt;60 or K+ abnormal</li>
+        <li>Any beta blocker: HR &lt;60 or SBP &lt;90</li>
+        <li>Any antihypertensive: SBP &lt;90</li>
+        <li>Opioid: RR &lt;12 or sedation score too high</li>
+        <li>Insulin: blood glucose too low for meal not ready</li>
+        <li>Metformin: hold 48h before/after contrast dye</li>
+        <li>Anticoagulant: active bleeding or critically low platelets</li>
+      </ul></div>
+    </div>
+    <table class="tbl" style="margin-top:16px">
+      <thead><tr><th>Antidote</th><th>Reverses</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Naloxone (Narcan)</strong></td><td>Opioid overdose</td><td>Short half-life — may need repeat doses; watch for return of respiratory depression</td></tr>
+        <tr><td><strong>Flumazenil</strong></td><td>Benzodiazepine overdose</td><td>Short-acting; seizure risk in chronic benzo users; not used routinely</td></tr>
+        <tr><td><strong>Protamine sulfate</strong></td><td>Heparin</td><td>1 mg protamine per 100 units heparin; slow IV push</td></tr>
+        <tr><td><strong>Vitamin K</strong></td><td>Warfarin (slow reversal — 24h)</td><td>FFP for immediate reversal; Vitamin K for next-day</td></tr>
+        <tr><td><strong>Digibind</strong></td><td>Digoxin toxicity</td><td>Fab antibody fragments; binds free digoxin</td></tr>
+        <tr><td><strong>N-Acetylcysteine</strong></td><td>Acetaminophen overdose</td><td>Most effective within 8–10 hours; monitor LFTs</td></tr>
+        <tr><td><strong>Glucagon / D50W</strong></td><td>Insulin overdose / severe hypoglycemia</td><td>Glucagon IM if no IV access; D50W pushes glucose immediately</td></tr>
+        <tr><td><strong>Calcium gluconate</strong></td><td>Magnesium sulfate toxicity</td><td>Keep at bedside whenever mag is infusing</td></tr>
+        <tr><td><strong>Atropine</strong></td><td>Bradycardia; organophosphate poisoning</td><td>Blocks muscarinic receptors; start 0.5mg IV bolus</td></tr>
+        <tr><td><strong>Leucovorin</strong></td><td>Methotrexate toxicity</td><td>Folinic acid "rescue" — gives cells an alternate folate source</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 6. MEMORY TRICKS                            -->
+<!-- ─────────────────────────────────────────── -->
+<section id="memory" class="section" style="padding-top:0">
+  <h2 class="section-title">6 · Memory Tricks</h2>
+  <div class="grid-2">
+    <div class="trick-card">
+      <div class="trick-label">Mnemonic</div>
+      <h3>ADME = "A Drug Makes Everything"</h3>
+      <p><strong>A</strong>bsorption → <strong>D</strong>istribution → <strong>M</strong>etabolism → <strong>E</strong>xcretion. Remember: the body processes every drug in this order.</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Mnemonic</div>
+      <h3>HIGH-ALERT = "Wild Inmates Like Morphine Periodically Killing"</h3>
+      <p><strong>W</strong>arfarin · <strong>I</strong>nsulin · <strong>L</strong>ithium · <strong>M</strong>orphine/opioids · <strong>P</strong>otassium (IV) · <strong>K</strong>emo drugs · Digoxin</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Mnemonic</div>
+      <h3>Digoxin Toxicity = "Yellow HAB"</h3>
+      <p><strong>Y</strong>ellow-green halos (visual) · <strong>H</strong>eart block/bradycardia · <strong>A</strong>norexia/nausea/vomiting · <strong>B</strong>igeminy (irregular rhythm)</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Mnemonic</div>
+      <h3>NMS vs. Serotonin Syndrome</h3>
+      <p><strong>NMS</strong>: antipsychotics, SLOW onset (days), lead-pipe rigidity, no clonus. <strong>Serotonin</strong>: serotonergic drugs, FAST onset (&lt;24h), hyperreflexia + clonus. Both → stop the drug.</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Trick</div>
+      <h3>Warfarin: "I KAVe War"</h3>
+      <p>Warfarin inhibits clotting factors that need <strong>V</strong>itamin <strong>K</strong>: factors <strong>II, VII, IX, X</strong>. Antidote = Vitamin K. INR &gt;3 → bleeding risk.</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Trick</div>
+      <h3>-mycin Toxicities: "ENT"</h3>
+      <p>Aminoglycosides hurt the <strong>E</strong>ars (ototoxic) and <strong>N</strong>ephrons (nephrotoxic). Monitor for <strong>T</strong>ough trough levels. Always check BUN/Cr before giving.</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Trick</div>
+      <h3>ACE Inhibitors: "CAPTOPRIL Side Effects"</h3>
+      <p><strong>C</strong>ough · <strong>A</strong>ngioedema (STOP drug) · <strong>P</strong>otassium ↑ · <strong>T</strong>eratogenic · <strong>O</strong>rthostatic hypotension (first dose) · <strong>P</strong>roteinuria ↓ · <strong>R</strong>enal protection · <strong>I</strong>ncrease creatinine initially · <strong>L</strong>ow BP</p>
+    </div>
+    <div class="trick-card">
+      <div class="trick-label">Trick</div>
+      <h3>Lithium Toxicity: "DATT"</h3>
+      <p><strong>D</strong>iarrhea/nausea · <strong>A</strong>taxia (tremors, shaking) · <strong>T</strong>oxicity from low sodium (Na+ out → Li+ in) · <strong>T</strong>ransient memory issues → progresses to seizures/coma</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 7. NCLEX PEARLS                             -->
+<!-- ─────────────────────────────────────────── -->
+<section id="pearls" class="section" style="padding-top:0">
+  <h2 class="section-title">7 · NCLEX Pearls</h2>
+  <ul class="pearl-list">
+    <li>✅ <span>Always obtain cultures BEFORE starting antibiotics — then start empiric therapy. Don't wait for results.</span></li>
+    <li>✅ <span>Digoxin: hold if apical pulse &lt;60 OR if K+ is low (hypokalemia potentiates toxicity).</span></li>
+    <li>✅ <span>ACE inhibitors cause a persistent dry cough due to bradykinin accumulation — switch to ARB if intolerable.</span></li>
+    <li>✅ <span>Angioedema from ACE inhibitors = STOP drug immediately — it's a medical emergency (airway compromise).</span></li>
+    <li>✅ <span>Metformin: hold 48 hours before AND after IV contrast dye (risk of lactic acidosis in renal impairment).</span></li>
+    <li>✅ <span>Warfarin: many drug interactions (antibiotics ↑ INR, vitamin K foods ↓ INR). Consistent diet, not elimination.</span></li>
+    <li>✅ <span>Statins + muscle pain = stop the drug and check CK level (rhabdomyolysis can cause acute kidney injury).</span></li>
+    <li>✅ <span>SSRIs take 2–4 weeks to work — monitor closely for suicidal ideation in the FIRST 2 weeks as energy returns before mood lifts.</span></li>
+    <li>✅ <span>Clozapine (Clozaril) requires weekly WBC monitoring for agranulocytosis — if ANC &lt;1000, stop the drug.</span></li>
+    <li>✅ <span>Fentanyl patch: avoid heat (heating pads, fever) — increases absorption and can cause overdose.</span></li>
+    <li>✅ <span>Spironolactone + ACE inhibitor = dangerous hyperkalemia. Never give K+ supplements concurrently without close monitoring.</span></li>
+    <li>✅ <span>Vancomycin Red Man Syndrome: slow the infusion rate and pretreat with diphenhydramine — it's NOT an allergy.</span></li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 8. NCLEX TRAPS                              -->
+<!-- ─────────────────────────────────────────── -->
+<section id="traps" class="section" style="padding-top:0">
+  <h2 class="section-title">8 · NCLEX Traps</h2>
+  <ul class="trap-list">
+    <li>🚫 <span><strong>Trap:</strong> "Give the antibiotic, then get the cultures." WRONG — cultures FIRST, then antibiotics.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Thinking Red Man Syndrome = allergy. It's rate-related — slow down, don't stop forever.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Stopping beta-blockers abruptly in a hospitalized patient. ALWAYS taper — abrupt stop = rebound tachycardia/angina.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Treating opioid-induced GI upset with anti-emetics and expecting it to fix constipation. Constipation needs its own bowel regimen — always.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> INR 2.8 on warfarin = therapeutic if indicated for DVT/PE. Don't automatically hold — check the indication.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Cephalosporin in a penicillin-allergic patient. Cross-reactivity exists (~10%) — check allergy type (anaphylaxis vs. rash).</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving lithium to a patient on a low-sodium diet. Low Na = more lithium reabsorbed = toxicity. Na and hydration MUST be adequate.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving a fluoroquinolone to a patient with a history of tendon issues or in a pediatric patient. These are contraindications.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Documenting a medication BEFORE you give it. ALWAYS administer first, then document.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Assuming the oral and IV doses of opioids are equivalent. Oral morphine 30mg ≈ IV morphine 10mg (first-pass effect).</span></li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 9. CLINICAL CONNECTIONS                     -->
+<!-- ─────────────────────────────────────────── -->
+<section id="clinical" class="section" style="padding-top:0">
+  <h2 class="section-title">9 · Clinical Connections</h2>
+  <div class="grid-2">
+    <div class="card"><h3>🏥 Renal Failure Patient</h3>
+      <p>All renally cleared drugs accumulate → toxicity. Check BUN/Cr before: aminoglycosides, vancomycin, metformin, digoxin, gabapentin, methotrexate. Dose must be adjusted or drug held.</p>
+    </div>
+    <div class="card"><h3>🫀 Heart Failure Patient</h3>
+      <p>NSAIDs worsen HF (retain Na/fluid). CCBs (verapamil/diltiazem) decrease contractility → avoid in systolic HF. Loop diuretics → hypokalemia → digoxin toxicity risk. Monitor K+ closely.</p>
+    </div>
+    <div class="card"><h3>🍸 Alcohol Use Disorder</h3>
+      <p>Metronidazole + alcohol = severe disulfiram reaction (flushing, vomiting, palpitations). Acetaminophen max 2g/day (or avoid). MAOIs + alcohol = hypertensive crisis risk.</p>
+    </div>
+    <div class="card"><h3>👵 Elderly Patient</h3>
+      <p>Decreased renal/hepatic function → drugs stay longer → lower doses needed. High-risk: benzos (falls), anticholinergics (confusion), long-acting opioids. Beers Criteria lists drugs to avoid.</p>
+    </div>
+    <div class="card"><h3>🤰 Pregnant Patient</h3>
+      <p>Avoid: tetracyclines (teeth/bone), fluoroquinolones, ACE inhibitors (fetal renal anomalies), NSAIDs in 3rd trimester (premature ductus closure), live vaccines, warfarin (category X).</p>
+    </div>
+    <div class="card"><h3>🔬 Lab Values to Know</h3>
+      <ul style="font-size:.88rem;">
+        <li>INR 2–3 = therapeutic (most); 2.5–3.5 = mechanical valves</li>
+        <li>aPTT 60–100 sec = therapeutic heparin</li>
+        <li>Digoxin 0.5–2 ng/mL (therapeutic)</li>
+        <li>Lithium 0.6–1.2 mEq/L (maintenance)</li>
+        <li>Vancomycin trough 10–20 mcg/mL</li>
+        <li>Phenytoin 10–20 mcg/mL</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- ─────────────────────────────────────────── -->
+<!-- 10. PRIORITY FRAMEWORK                      -->
+<!-- ─────────────────────────────────────────── -->
+<section id="priority" class="section" style="padding-top:0">
+  <h2 class="section-title">10 · Priority Framework</h2>
+  <div class="card" style="border-top:4px solid var(--brand)">
+    <h3>💊 Before Giving ANY Drug — Ask Yourself:</h3>
+    <ol style="padding-left:18px;font-size:.93rem;line-height:2.4;">
+      <li><strong>Is there a HOLD parameter?</strong> (HR, BP, RR, blood glucose, lab values)</li>
+      <li><strong>Does the patient have allergies?</strong> (check MAR; 2 patient identifiers)</li>
+      <li><strong>Is the dose safe?</strong> (calculate; verify with pharmacy if unsure)</li>
+      <li><strong>Is the route appropriate?</strong> (can patient swallow? IV access patent?)</li>
+      <li><strong>Any drug interactions?</strong> (especially high-alert meds)</li>
+      <li><strong>Any relevant labs?</strong> (renal/hepatic function for clearance)</li>
+    </ol>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="alert alert-red"><strong>ALWAYS Intervene Immediately</strong><br>
+      • Angioedema from ACE inhibitor (airway) <br>
+      • RR &lt;12 on opioids (give naloxone)<br>
+      • Signs of anaphylaxis (epinephrine + stop drug)<br>
+      • NMS or serotonin syndrome (stop offending agent)<br>
+      • Signs of heparin-induced thrombocytopenia (stop all heparin)
+    </div>
+    <div class="alert alert-yellow"><strong>Notify Provider — Do Not Hold Without Order</strong><br>
+      • Digoxin: HR &lt;60 → hold + notify<br>
+      • New drug allergic reaction → stop + notify<br>
+      • INR supratherapeutic (warfarin) → hold + notify<br>
+      • Lithium toxicity signs → hold + notify<br>
+      • Patient refuses medication → document + notify
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>📋 "Hold vs. Give" Decision Tree (NCLEX Shortcut)</h3>
+    <table class="tbl">
+      <thead><tr><th>Finding</th><th>Drug</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>HR 52 bpm</td><td>Metoprolol (beta-blocker)</td><td>HOLD — HR &lt;60</td></tr>
+        <tr><td>K+ = 3.0 mEq/L</td><td>Digoxin</td><td>HOLD — hypokalemia → toxicity</td></tr>
+        <tr><td>RR = 10/min</td><td>Morphine</td><td>HOLD — RR &lt;12; give naloxone if needed</td></tr>
+        <tr><td>INR = 4.5</td><td>Warfarin</td><td>HOLD — supratherapeutic; notify provider</td></tr>
+        <tr><td>Glucose = 58</td><td>Regular insulin</td><td>HOLD — treat hypoglycemia first</td></tr>
+        <tr><td>SBP = 85 mmHg</td><td>Lisinopril</td><td>HOLD — SBP &lt;90</td></tr>
+        <tr><td>Platelets = 62,000</td><td>Heparin (patient on it 7 days)</td><td>HOLD all heparin — assess for HIT</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 11. MEDICATION FOCUS                        -->
+<!-- ─────────────────────────────────────────── -->
+<section id="meds" class="section" style="padding-top:0">
+  <h2 class="section-title">11 · Medication Focus</h2>
+  <div class="med-grid">
+
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3>Warfarin (Coumadin)</h3>
+        <div class="med-class">Anticoagulant · Vitamin K Antagonist</div>
+      </div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Inhibits Vitamin K-dependent clotting factors (II, VII, IX, X)</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>DVT/PE treatment/prevention; A-fib; mechanical heart valves</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>INR (therapeutic 2–3; mechanical valves 2.5–3.5)</span></div>
+        <div class="med-row"><span class="med-row-label">Antidote:</span><span>Vitamin K (slow); FFP or 4-factor PCC (fast)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Consistent green vegetable intake (don't eliminate); avoid NSAIDs; report any unusual bleeding; many drug interactions (antibiotics ↑ INR)</span></div>
+        <div class="med-danger">⚠️ NARROW therapeutic window · Onset 24–72 hours · Teratogenic (Category X)</div>
+      </div>
+    </div>
+
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3>Regular Insulin (Humulin R)</h3>
+        <div class="med-class">Antidiabetic · Short-Acting Insulin</div>
+      </div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Onset:</span><span>30–60 min; peak 2–4 hr; duration 5–8 hr</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>Type 1 & 2 diabetes; DKA; hyperkalemia (with dextrose)</span></div>
+        <div class="med-row"><span class="med-row-label">Before:</span><span>Check glucose; ensure meal ready; verify type, dose, route with 2nd RN</span></div>
+        <div class="med-row"><span class="med-row-label">Antidote:</span><span>D50W (IV); glucagon (IM/SC if no IV access); D10W (infusion)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Rotate injection sites; store opened insulin at room temp; signs of hypoglycemia (shakiness, sweating, confusion)</span></div>
+        <div class="med-danger">⚠️ HIGH-ALERT · Must have 2-nurse verification · Hypoglycemia risk</div>
+      </div>
+    </div>
+
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3>Morphine Sulfate</h3>
+        <div class="med-class">Opioid Analgesic · Mu-Agonist</div>
+      </div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>Binds mu-opioid receptors → analgesia, sedation, euphoria, resp. depression</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>Moderate-to-severe pain; acute pulmonary edema; MI pain</span></div>
+        <div class="med-row"><span class="med-row-label">Before:</span><span>RR, sedation level, BP, bowel function; have naloxone available</span></div>
+        <div class="med-row"><span class="med-row-label">Antidote:</span><span>Naloxone (Narcan) — 0.4–2 mg IV/IM/SC/IN; repeat q2–3 min</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Do not drive; take with food (nausea); always on a bowel regimen; report RR &lt;12, excessive drowsiness</span></div>
+        <div class="med-danger">⚠️ Hold if RR &lt;12 · Histamine release → itching (not allergy) · Constipation ALWAYS — give bowel regimen</div>
+      </div>
+    </div>
+
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3>Metformin (Glucophage)</h3>
+        <div class="med-class">Biguanide · Antidiabetic</div>
+      </div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Action:</span><span>↓ hepatic glucose production; ↑ insulin sensitivity; does NOT cause hypoglycemia alone</span></div>
+        <div class="med-row"><span class="med-row-label">Uses:</span><span>Type 2 diabetes (first-line); PCOS</span></div>
+        <div class="med-row"><span class="med-row-label">Hold When:</span><span>IV contrast dye (hold 48h before/after); GFR &lt;30; active HF; major surgery; acute illness</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>Renal function (BUN/Cr), B12 levels (long-term use depletes B12)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Take with food (↓ GI upset); lactic acidosis risk if given with renal impairment; no alcohol; notify provider before procedures with contrast</span></div>
+        <div class="med-danger">⚠️ Hold 48h before/after contrast dye · Lactic acidosis (rare but fatal)</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 12. PRACTICE QUESTIONS (25)                 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="questions" class="section" style="padding-top:0">
+  <h2 class="section-title">12 · Practice Questions</h2>
+  <div class="pq-container">
+    <div class="pq-progress"><div class="pq-progress-fill" id="pqFill" style="width:4%"></div></div>
+    <div id="pqArea"></div>
+  </div>
+</section>
+
+<script>
+// ── DEEP DIVE TAB SWITCHER ──
+function showLesson(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── CASE STUDY TOGGLE ──
+function toggleCase(header){
+  const body=header.nextElementSibling;
+  const icon=header.querySelector('.case-toggle');
+  body.classList.toggle('open');
+  icon.textContent=body.classList.contains('open')?'▲':'▼';
+}
+function toggleAnswer(btn){
+  const ans=btn.nextElementSibling;
+  ans.classList.toggle('show');
+  btn.textContent=ans.classList.contains('show')?'Hide Answer ▲':'Show Answer ▼';
+}
+
+// ── PRACTICE QUESTIONS ENGINE ──
+const PQ=[
+  {q:"A nurse is preparing to administer digoxin to a patient. Which finding should cause the nurse to hold the medication and notify the provider?",type:"MCQ",opts:["A. Blood pressure 118/72 mmHg","B. Apical pulse of 56 bpm","C. Potassium level of 4.1 mEq/L","D. Digoxin level of 1.4 ng/mL"],ans:1,rat:"Digoxin should be held when the apical pulse is below 60 bpm. A HR of 56 warrants holding the dose and notifying the provider. The other values are within normal/therapeutic range."},
+  {q:"A patient is receiving IV vancomycin. Thirty minutes into the infusion, the nurse notices flushing and redness spreading across the patient's face, neck, and chest. What is the priority nursing action?",type:"MCQ",opts:["A. Stop the infusion permanently and document a drug allergy","B. Administer epinephrine and notify the physician immediately","C. Slow the infusion rate and notify the provider","D. Increase the infusion rate to get the drug in faster"],ans:2,rat:"This presentation is Red Man Syndrome — a rate-related reaction (not a true allergy). The priority action is to slow the infusion rate. Diphenhydramine may be given. This is NOT anaphylaxis; stopping permanently or giving epinephrine is incorrect."},
+  {q:"A nurse is caring for a patient on warfarin therapy for atrial fibrillation. The patient's INR is 4.8. Which action by the nurse is MOST appropriate?",type:"MCQ",opts:["A. Administer the next dose of warfarin as scheduled","B. Hold the dose and notify the provider","C. Give the dose with extra vitamin K","D. Decrease the dose by half without an order"],ans:1,rat:"INR 4.8 is supratherapeutic (goal 2–3 for A-fib), significantly increasing bleeding risk. The nurse should hold the dose and notify the provider. Never adjust the dose independently."},
+  {q:"A nurse is preparing to administer morning medications. Which action BEST reflects the right of documentation?",type:"MCQ",opts:["A. Recording the medication given before leaving the patient's room to save time","B. Charting the medication after confirming it was administered","C. Letting the oncoming nurse document since the shift is ending","D. Documenting the medication at the start of the shift for all anticipated administrations"],ans:1,rat:"The right of documentation requires charting AFTER the medication is actually given — never before. Pre-charting is a serious medication error and a nursing license issue."},
+  {q:"A patient taking lithium for bipolar disorder reports nausea, tremors, and confusion. The nurse checks the lithium level and it is 1.9 mEq/L. What is the priority action?",type:"MCQ",opts:["A. Continue the current dose — the level is barely elevated","B. Administer the next dose at the scheduled time","C. Hold the dose, notify the provider, and monitor for worsening symptoms","D. Give the patient extra sodium-containing foods"],ans:2,rat:"A lithium level of 1.9 mEq/L is above the therapeutic maintenance range (0.6–1.2 mEq/L) and the patient has signs of toxicity. Hold the dose, notify the provider. Extra sodium can help (low Na → more Li+ retained) but does not replace provider notification."},
+  {q:"A nurse is administering morning medications and realizes the patient has a documented penicillin allergy (anaphylaxis). The prescribed antibiotic is cefazolin (a cephalosporin). What is the nurse's best action?",type:"MCQ",opts:["A. Administer cefazolin — cephalosporins are unrelated to penicillin","B. Hold the cefazolin and notify the provider about the allergy before administering","C. Ask the patient if they think it is safe to take","D. Give half the dose to test for reaction first"],ans:1,rat:"There is a cross-reactivity between penicillins and cephalosporins (~10%). A history of anaphylaxis (the most severe allergic reaction) warrants holding the drug and notifying the provider for an alternative antibiotic. Never give a partial dose as a 'test.'"},
+  {q:"A patient is prescribed metformin 1000 mg PO twice daily for type 2 diabetes. The patient is scheduled for a CT scan with IV contrast dye tomorrow. What is the nurse's priority action?",type:"MCQ",opts:["A. Give the metformin as scheduled — it does not interact with contrast","B. Hold the metformin 48 hours before the procedure and notify the provider","C. Double the dose today to compensate for tomorrow's missed dose","D. Give the dose only after the scan is complete"],ans:1,rat:"Metformin must be held 48 hours before AND after procedures using IV contrast dye due to the risk of lactic acidosis, particularly in patients with contrast-induced renal impairment. Notify the provider so alternative glucose management can be ordered."},
+  {q:"A patient on IV heparin for 8 days has a new platelet count of 58,000/mm³ (down from 220,000). The patient develops a new deep vein thrombosis. What complication does the nurse suspect?",type:"MCQ",opts:["A. Heparin-induced thrombocytopenia (HIT)","B. Disseminated intravascular coagulation (DIC)","C. Thrombocytopenic purpura (ITP)","D. Normal platelet nadir from heparin"],ans:0,rat:"HIT is characterized by a >50% drop in platelets 5–10 days after heparin exposure, paradoxically causing CLOTTING (not bleeding). The platelet drop combined with a new DVT on heparin = classic HIT. Stop ALL heparin products and switch to a direct thrombin inhibitor (argatroban)."},
+  {q:"A patient is prescribed furosemide (Lasix) 40 mg IV daily. The nurse should prioritize monitoring which laboratory value?",type:"MCQ",opts:["A. Serum potassium","B. Serum calcium","C. Platelet count","D. ALT/AST"],ans:0,rat:"Furosemide is a loop diuretic that causes significant potassium wasting (hypokalemia). Hypokalemia can cause cardiac arrhythmias and, in patients on digoxin, potentiates toxicity. Monitor potassium and replace as needed."},
+  {q:"The nurse is preparing to give insulin lispro (Humalog) to a patient. The patient states, 'I'm not hungry and don't think I want to eat my breakfast.' What is the nurse's best action?",type:"MCQ",opts:["A. Give the full insulin dose — the patient needs it regardless","B. Give half the dose and document the patient's refusal","C. Hold the insulin and notify the provider before administering","D. Give the insulin and have a snack available in case the patient eats a little"],ans:2,rat:"Rapid-acting insulin (lispro, aspart) must be given with a meal. If the patient is not eating, administering rapid-acting insulin creates serious hypoglycemia risk. Hold the dose and notify the provider for alternative orders. Do not administer without ensuring food intake."},
+  {q:"A nurse is caring for a patient with schizophrenia on haloperidol (Haldol). The patient develops a high fever (104°F), severe muscle rigidity, altered consciousness, and labile blood pressure. What condition does the nurse suspect?",type:"MCQ",opts:["A. Serotonin syndrome","B. Neuroleptic malignant syndrome (NMS)","C. Acute dystonia","D. Tardive dyskinesia"],ans:1,rat:"NMS is a life-threatening reaction to antipsychotics characterized by: hyperthermia, muscle rigidity (lead-pipe), altered LOC, and autonomic instability. Treatment: stop the antipsychotic immediately, dantrolene, bromocriptine, cooling measures. Serotonin syndrome features clonus/hyperreflexia (not rigidity) and is caused by serotonergic drugs."},
+  {q:"A patient has been prescribed an SSRI for depression. The patient asks, 'How long will it take for this medication to work?' What is the nurse's best response?",type:"MCQ",opts:["A. 'You should feel better within 24–48 hours'","B. 'Most people notice improvement within 2–4 weeks of consistent use'","C. 'If you don't feel better in a week, the medication isn't working for you'","D. 'The medication works immediately but you may not notice it right away'"],ans:1,rat:"SSRIs typically take 2–4 weeks to reach therapeutic effect. This is critical patient teaching. The nurse should also advise the patient to continue taking the medication even if they don't notice immediate improvement, and to watch for increased suicidal ideation in the first 2 weeks."},
+  {q:"A nurse administers morphine 4 mg IV to a post-operative patient. Thirty minutes later the patient has a respiratory rate of 8/min and is difficult to arouse. What is the priority intervention?",type:"MCQ",opts:["A. Place the patient in Trendelenburg position","B. Administer naloxone (Narcan) as ordered","C. Encourage the patient to take deep breaths","D. Notify the provider and continue monitoring"],ans:1,rat:"RR of 8/min in a patient who received morphine = opioid-induced respiratory depression — this is a medical emergency. Priority: administer naloxone (Narcan) to reverse the opioid effect. Encourage deep breathing is inadequate for this level of respiratory compromise. Notify the provider after administering naloxone."},
+  {q:"A patient is receiving IV potassium chloride (KCl) for hypokalemia. The nurse notes the concentration is 40 mEq in 100 mL NS. What is the maximum safe infusion rate for peripheral IV potassium?",type:"MCQ",opts:["A. 5–10 mEq/hr","B. 10 mEq/hr","C. 20 mEq/hr","D. 40 mEq/hr as a rapid infusion"],ans:1,rat:"The maximum safe rate for peripheral IV potassium is 10 mEq/hr. Faster rates can cause cardiac dysrhythmias. Concentrated potassium solutions require central line access. NEVER give potassium as an IV push — cardiac arrest risk."},
+  {q:"A nurse is teaching a patient prescribed clozapine (Clozaril) for schizophrenia. Which statement indicates correct understanding?",type:"MCQ",opts:["A. 'I can stop this medication whenever I want if I don't like the side effects'","B. 'I will need weekly blood draws to monitor my white blood cell count'","C. 'This medication will cause me to gain weight but that is not a concern'","D. 'I should avoid all physical activity while on this medication'"],ans:1,rat:"Clozapine can cause agranulocytosis (dangerously low WBCs), which is why patients require weekly CBC monitoring. If the ANC falls below 1000/mm³, the drug must be discontinued. This is a required safety monitoring program (REMS program in the US)."},
+  {q:"A patient on warfarin asks if they need to avoid all foods with vitamin K. What is the nurse's best response?",type:"MCQ",opts:["A. 'Yes, you should completely avoid spinach, kale, and other greens'","B. 'You should maintain a consistent intake of vitamin K foods rather than eliminating them'","C. 'Vitamin K foods have no effect on warfarin — eat what you like'","D. 'Increase your vitamin K intake to counteract the warfarin'"],ans:1,rat:"The key teaching point for warfarin is CONSISTENCY — not elimination. Drastically changing vitamin K intake will cause INR fluctuations. Patients should eat similar amounts of green vegetables each week. Sudden large increases in vitamin K will lower INR."},
+  {q:"A nurse is administering amoxicillin 500 mg PO to a patient. The patient mentions they had 'a reaction' to penicillin years ago. What is the nurse's priority action?",type:"MCQ",opts:["A. Give the medication — amoxicillin is not related to penicillin","B. Hold the medication and assess the nature of the prior reaction before proceeding","C. Give the medication but have epinephrine at the bedside","D. Cut the dose in half as a safety measure"],ans:1,rat:"Amoxicillin IS a penicillin-class antibiotic. Before administering to a patient with a reported penicillin reaction, the nurse must assess the type of reaction (rash vs. anaphylaxis). This information must be communicated to the provider before proceeding. Never give a penicillin to a patient with unknown/anaphylactic allergy history without provider clearance."},
+  {q:"The nurse is preparing to administer phenytoin (Dilantin) IV. Which IV fluid should the nurse use to flush the line?",type:"MCQ",opts:["A. D5W (5% dextrose in water)","B. Lactated Ringer's","C. Normal saline (0.9% NaCl)","D. D5½NS"],ans:2,rat:"Phenytoin is compatible ONLY with normal saline. D5W causes phenytoin to precipitate (crystallize) in the tubing, making it ineffective and potentially causing embolism. Always use NS for phenytoin administration and flushing."},
+  {q:"A patient is on a 72-hour fentanyl transdermal patch for chronic pain. The patient develops a fever of 103°F. What is the nurse's priority concern?",type:"MCQ",opts:["A. The fever may be caused by the fentanyl patch","B. The fever will increase skin absorption of fentanyl, risking overdose","C. The patient will need a higher dose patch due to increased metabolism","D. The fever indicates an allergy to the patch adhesive"],ans:1,rat:"Fever (and any heat source) increases transdermal absorption of fentanyl, which can cause opioid overdose. This is also why heating pads, electric blankets, and hot tubs are contraindicated with fentanyl patches. The nurse should notify the provider — the patch may need to be removed or the patient monitored for signs of opioid toxicity."},
+  {q:"A patient is prescribed tetracycline for acne. Which instruction should the nurse include in the teaching?",type:"MCQ",opts:["A. 'Take the medication with a full glass of milk to protect your stomach'","B. 'Avoid prolonged sun exposure and use sunscreen'","C. 'This medication is safe to take during pregnancy'","D. 'You can take this with your antacid to prevent GI upset'"],ans:1,rat:"Tetracyclines cause photosensitivity — patients must use sunscreen and avoid prolonged sun exposure. Dairy products (milk), antacids, and calcium/iron supplements reduce absorption (should be taken 1–2 hours apart). Tetracyclines are contraindicated in pregnancy and children under 8."},
+  {q:"A nurse is reviewing a patient's medications and notes the patient takes both spironolactone and lisinopril. Which laboratory value requires priority monitoring?",type:"MCQ",opts:["A. Serum sodium","B. Serum potassium","C. Serum magnesium","D. Serum calcium"],ans:1,rat:"Spironolactone is a potassium-SPARING diuretic, and lisinopril (ACE inhibitor) also raises potassium. Together, they significantly increase the risk of dangerous hyperkalemia (cardiac arrhythmias). Monitor potassium closely and avoid additional potassium supplementation."},
+  {q:"Which of the following medications requires the nurse to monitor trough levels to ensure therapeutic dosing and prevent toxicity? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Vancomycin","B. Metformin","C. Gentamicin","D. Digoxin","E. Acetaminophen","F. Phenytoin"],ans:[0,2,3,5],rat:"Vancomycin (A), Gentamicin/aminoglycosides (C), Digoxin (D), and Phenytoin (F) all have narrow therapeutic windows and require monitoring of drug levels (peaks/troughs or serum levels) to ensure efficacy and prevent toxicity. Metformin and acetaminophen do not require routine drug level monitoring."},
+  {q:"A nurse is educating a patient about the signs and symptoms of digoxin toxicity. Which findings should the nurse include? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Yellow-green halos around lights","B. Nausea and anorexia","C. Bradycardia","D. Increased urine output","E. Headache and confusion","F. Hypertension"],ans:[0,1,2,4],rat:"Classic signs of digoxin toxicity: yellow/green visual halos (A), nausea/anorexia (B), bradycardia (C), and CNS effects including headache and confusion (E). Hypokalemia worsens toxicity. Digoxin does NOT cause hypertension or diuresis."},
+  {q:"A nurse is reviewing discharge instructions for a patient prescribed warfarin. Which instructions are appropriate to include? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Avoid all green leafy vegetables completely","B. Use an electric razor for shaving","C. Report any unusual bruising or bleeding to the provider","D. Take ibuprofen for minor aches and pains","E. Keep all follow-up appointments for INR monitoring","F. Wear a medical alert bracelet indicating anticoagulant use"],ans:[1,2,4,5],rat:"Correct warfarin teaching: use electric razor (B — less bleeding risk), report bleeding (C), keep INR appointments (E), wear medical alert ID (F). Avoid eliminating vitamin K foods — maintain CONSISTENCY (A is wrong). NSAIDs like ibuprofen increase bleeding risk — use acetaminophen instead (D is wrong)."},
+  {q:"The nurse is preparing to administer insulin to four different patients. Which situations require the nurse to HOLD the insulin and notify the provider? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Patient A: blood glucose 52 mg/dL before rapid-acting insulin","B. Patient B: blood glucose 210 mg/dL before scheduled NPH insulin","C. Patient C: patient states they are not going to eat breakfast","D. Patient D: blood glucose 145 mg/dL, NPH insulin ordered","E. Patient E: patient's meal is delayed 30 minutes for a procedure"],ans:[0,2,4],rat:"Hold insulin and notify the provider when: glucose is hypoglycemic (A — 52 mg/dL is dangerous), patient is not eating (C), or meal is delayed (E — rapid-acting insulin given without a meal = hypoglycemia). Patient B (210 mg/dL) and D (145 mg/dL) are elevated and the scheduled insulins should be given."}
+];
+
+let pqCurrent=0,pqSelected=null,pqSATASelected=[],pqAnswered=false,pqScore=0,pqHistory=[];
+
+function renderPQ(){
+  if(pqCurrent>=PQ.length){showPQResults();return;}
+  const q=PQ[pqCurrent];
+  const isSATA=q.type==="SATA";
+  document.getElementById('pqFill').style.width=((pqCurrent/PQ.length)*100)+'%';
+  pqSelected=null;pqSATASelected=[];pqAnswered=false;
+  let html=`<div class="pq-header"><span class="pq-counter">Question ${pqCurrent+1} of ${PQ.length}</span><span class="pq-type-badge">${q.type}</span></div>
+  <div class="pq-q">${q.q}</div>`;
+  if(isSATA) html+=`<div class="sata-hint">Select all that apply — choose ALL correct answers before submitting.</div>`;
+  html+=`<ul class="pq-options">`;
+  q.opts.forEach((o,i)=>{html+=`<li id="pqOpt${i}" onclick="${isSATA?'pqToggleSATA('+i+')':'pqSelect('+i+')'}">${o}</li>`;});
+  html+=`</ul><div class="pq-rationale" id="pqRat"><strong>📝 Rationale:</strong> ${q.rat}</div>
+  <div class="pq-nav">`;
+  if(isSATA) html+=`<button class="btn btn-primary" onclick="pqSubmitSATA()">Submit Answer</button>`;
+  else html+=`<button class="btn btn-outline" id="pqSubmitBtn" disabled onclick="pqSubmitMCQ()">Submit</button>`;
+  html+=`<button class="btn btn-primary" id="pqNextBtn" disabled onclick="pqNext()">Next →</button></div>`;
+  document.getElementById('pqArea').innerHTML=html;
+}
+
+function pqSelect(i){
+  if(pqAnswered)return;
+  document.querySelectorAll('.pq-options li').forEach(l=>l.classList.remove('selected'));
+  document.getElementById('pqOpt'+i).classList.add('selected');
+  pqSelected=i;
+  const sb=document.getElementById('pqSubmitBtn');
+  if(sb)sb.disabled=false;
+}
+
+function pqSubmitMCQ(){
+  if(pqSelected===null||pqAnswered)return;
+  pqAnswered=true;
+  const q=PQ[pqCurrent];
+  const isC=pqSelected===q.ans;
+  if(isC){pqScore++;document.getElementById('pqOpt'+pqSelected).classList.add('correct');}
+  else{document.getElementById('pqOpt'+pqSelected).classList.add('incorrect');document.getElementById('pqOpt'+q.ans).classList.add('correct');}
+  pqHistory.push({qNum:pqCurrent+1,q:q.q,opts:q.opts,selected:pqSelected,correct:q.ans,isCorrect:isC,rat:q.rat,type:'MCQ'});
+  document.getElementById('pqRat').classList.add('show');
+  document.getElementById('pqNextBtn').disabled=false;
+  const sb=document.getElementById('pqSubmitBtn');if(sb)sb.disabled=true;
+}
+
+function pqToggleSATA(i){
+  if(pqAnswered)return;
+  const el=document.getElementById('pqOpt'+i);
+  if(pqSATASelected.includes(i)){pqSATASelected=pqSATASelected.filter(x=>x!==i);el.classList.remove('selected');}
+  else{pqSATASelected.push(i);el.classList.add('selected');}
+}
+
+function pqSubmitSATA(){
+  if(pqSATASelected.length===0||pqAnswered)return;
+  pqAnswered=true;
+  const q=PQ[pqCurrent];
+  const correct=JSON.stringify(q.ans.slice().sort())===JSON.stringify(pqSATASelected.slice().sort());
+  if(correct)pqScore++;
+  q.ans.forEach(i=>document.getElementById('pqOpt'+i).classList.add('correct'));
+  pqSATASelected.forEach(i=>{if(!q.ans.includes(i))document.getElementById('pqOpt'+i).classList.add('incorrect');});
+  pqHistory.push({qNum:pqCurrent+1,q:q.q,opts:q.opts,selected:[...pqSATASelected],correct:q.ans,isCorrect:correct,rat:q.rat,type:'SATA'});
+  document.getElementById('pqRat').classList.add('show');
+  const nb=document.getElementById('pqNextBtn');if(nb)nb.disabled=false;
+}
+
+function pqNext(){pqCurrent++;renderPQ();}
+
+function showPQResults(){
+  document.getElementById('pqFill').style.width='100%';
+  const pct=Math.round((pqScore/PQ.length)*100);
+  document.getElementById('pqArea').innerHTML=`<div class="pq-results">
+    <div class="pq-score">${pqScore}/${PQ.length}</div>
+    <div class="pq-score-label">${pct}% — ${pct>=80?'Great job! 🎉':pct>=60?'Good effort — review the rationales 📖':'Review the Deep Dive sections and retry 💪'}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
+      <button class="btn btn-primary" onclick="emailResults('Module 3 – Pharmacology Essentials')">💾 Save My Results</button>
+      <button class="btn btn-outline" onclick="pqCurrent=0;pqScore=0;pqHistory=[];renderPQ()">Retake Questions</button>
+    </div>
+  </div>`;
+}
+async function emailResults(mod){
+  if(window.parent!==window && typeof window.parent.saveM3Result==='function'){
+    const result=await window.parent.saveM3Result(pqScore,PQ.length,pqHistory);
+    const button=document.querySelector('button[onclick*="emailResults"]');
+    if(button){
+      button.textContent=result.ok?'✅ Results Saved':'⚠️ Save Failed';
+      if(result.ok)setTimeout(()=>{button.textContent='💾 Save My Results';},2500);
+    }
+    if(!result.ok)alert(result.message||'Your score could not be saved yet.');
+    return;
+  }
+  alert('Open Module 3 from My Study Plan to save your results securely.');
+  location.href='student-dashboard.html';
+}
+
+renderPQ();
+</script>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 13. CASE STUDIES                            -->
+<!-- ─────────────────────────────────────────── -->
+<section id="cases" class="section" style="padding-top:0">
+  <h2 class="section-title">13 · NGN Case Studies</h2>
+
+  <div class="case-card">
+    <div class="case-header" onclick="toggleCase(this)">
+      <h3>📋 Case 1: The Patient Who's "Too Tired" After Morphine</h3>
+      <span class="case-toggle">▼</span>
+    </div>
+    <div class="case-body">
+      <div class="case-scenario">
+        Mr. Rodriguez, 68 years old, is post-operative day 1 following a left hip replacement. He has a history of COPD and mild renal insufficiency (Cr 1.8). He is prescribed morphine sulfate 4 mg IV q4h PRN for pain (rated 7/10). At 1400, the nurse assesses him: RR 10/min, SpO₂ 89% on 2L O₂ NC (baseline 94%), HR 58, BP 102/64. The patient is drowsy but can be aroused. His last morphine dose was at 1200 (2 hours ago).
+      </div>
+      <div class="case-question">1. What is the nurse's PRIORITY assessment finding?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Respiratory rate of 10/min (below 12/min threshold) with SpO₂ of 89% — signs of opioid-induced respiratory depression. This is the priority life-threatening concern. COPD already compromises respiratory reserve, making this patient especially vulnerable.</div>
+
+      <div class="case-question">2. What immediate action should the nurse take?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Administer naloxone (Narcan) per PRN order (typically 0.4–2 mg IV). Stay with the patient. Apply oxygen/increase O₂ as needed. Notify the provider. Document the event. Note: naloxone's half-life is shorter than morphine's — monitor for return of respiratory depression and repeat doses may be needed.</div>
+
+      <div class="case-question">3. How do Mr. Rodriguez's co-morbidities (COPD + renal insufficiency) affect his pharmacokinetic response to morphine?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">COPD: already-compromised respiratory drive means morphine's respiratory depression effect is amplified at lower doses.<br><br>Renal insufficiency: morphine's active metabolite (morphine-6-glucuronide) is renally excreted. With reduced GFR, this active metabolite accumulates → prolonged and enhanced opioid effect even with standard dosing. The nurse should flag these risk factors and anticipate the provider may want to adjust the dose or switch to a different analgesic.</div>
+
+      <div class="case-question">4. What teaching will the nurse provide when Mr. Rodriguez is alert and ready for discharge with oral opioids?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Key discharge teaching for opioids:<br>• Do not drive or operate machinery<br>• Avoid alcohol and other CNS depressants<br>• Take with food to reduce nausea<br>• A bowel regimen (stool softener + laxative) is mandatory — constipation will NOT improve on its own<br>• Do not take more than prescribed or use more frequently<br>• Store safely, away from children (medication lockbox recommended)<br>• Have naloxone (Narcan) at home; ensure a family member knows how to use it<br>• Report persistent RR &lt;12, extreme drowsiness, inability to wake to 911</div>
+    </div>
+  </div>
+
+  <div class="case-card">
+    <div class="case-header" onclick="toggleCase(this)">
+      <h3>📋 Case 2: Anticoagulation Gone Wrong</h3>
+      <span class="case-toggle">▼</span>
+    </div>
+    <div class="case-body">
+      <div class="case-scenario">
+        Mrs. Thompson, 72 years old, was admitted with atrial fibrillation and started on IV heparin followed by oral warfarin. She is now on day 9 of heparin. This morning's labs: Platelets 61,000/mm³ (admission platelet count was 285,000). INR 2.6 (therapeutic range 2–3). The patient is complaining of right leg pain and swelling — her left leg was the previously affected limb for a prior DVT. She has no active bleeding symptoms.
+      </div>
+      <div class="case-question">1. What complication does this clinical picture suggest, and what is the pathophysiology?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Heparin-Induced Thrombocytopenia (HIT) — Type II. After 5–10 days of heparin exposure, the immune system creates antibodies against heparin-platelet factor 4 complexes. These antibodies activate platelets, causing platelet aggregation (thrombosis) and platelet consumption (thrombocytopenia). Paradoxically: platelets fall BUT the patient clots — "white clot syndrome." The new right leg DVT (opposite to her known affected limb) on heparin is the hallmark sign.</div>
+
+      <div class="case-question">2. What is the immediate nursing action?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Stop ALL heparin products immediately — this includes IV heparin, LMWH (enoxaparin), heparin flushes, and heparin-coated catheters. Notify the provider STAT. Do NOT transfuse platelets — this will worsen thrombosis ("feed the clot"). The provider will order an alternative anticoagulant (direct thrombin inhibitor: argatroban or bivalirudin). Warfarin should NOT be the only anticoagulant used during acute HIT (risk of venous limb gangrene).</div>
+
+      <div class="case-question">3. The provider orders the 4Ts score to be calculated. What four components make up this scoring tool?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">The 4Ts HIT probability score:<br>
+      • <strong>Thrombocytopenia</strong>: degree of platelet fall (>50% drop = 2 pts)<br>
+      • <strong>Timing</strong>: days 5–10 of heparin or ≤1 day if prior heparin within 30 days (2 pts)<br>
+      • <strong>Thrombosis</strong>: new thrombosis or skin necrosis (2 pts)<br>
+      • <strong>oTher causes</strong>: no other explanation for thrombocytopenia (2 pts)<br>
+      Score 6–8 = high probability of HIT → send anti-PF4/heparin antibody test; stop heparin and start alternative.</div>
+
+      <div class="case-question">4. Mrs. Thompson's INR is therapeutic on warfarin. Can warfarin alone be continued?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">No. Warfarin should NOT be used as the sole anticoagulant during active HIT. Warfarin depletes Protein C and S (natural anticoagulants) faster than clotting factors, creating a transient hypercoagulable state that can cause venous limb gangrene. A direct thrombin inhibitor (argatroban) must be bridged with warfarin until the INR is therapeutic on warfarin alone AND platelets have recovered (typically >150,000). Then warfarin can continue as monotherapy.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 14. REMEDIATION WORKSHEET                   -->
+<!-- ─────────────────────────────────────────── -->
+<section id="remediation" class="section" style="padding-top:0">
+  <h2 class="section-title">14 · Remediation Worksheet</h2>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;">Use this to identify and address gaps. Print this section for focused review. <button onclick="window.print()" style="background:var(--brand);color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;margin-left:8px;">🖨️ Print Worksheet</button></p>
+
+  <div class="remediation-box">
+    <h3>1. Pharmacokinetics</h3>
+    <p style="font-size:.88rem;margin-bottom:10px">Explain in your own words what happens to a drug that undergoes significant first-pass metabolism:</p>
+    <input class="write-line" placeholder="Your answer..."/>
+    <p style="font-size:.88rem;margin-bottom:10px">A patient with severe liver cirrhosis is prescribed a drug that is 90% hepatically metabolized. What do you anticipate and why?</p>
+    <input class="write-line" placeholder="Your answer..."/>
+  </div>
+
+  <div class="remediation-box">
+    <h3>2. High-Alert Medication Holds</h3>
+    <p style="font-size:.88rem;margin-bottom:10px">For each drug, write the hold parameter and your rationale:</p>
+    <p style="font-size:.88rem"><strong>Digoxin:</strong></p>
+    <input class="write-line" placeholder="Hold when... because..."/>
+    <p style="font-size:.88rem"><strong>Morphine:</strong></p>
+    <input class="write-line" placeholder="Hold when... because..."/>
+    <p style="font-size:.88rem"><strong>Metoprolol:</strong></p>
+    <input class="write-line" placeholder="Hold when... because..."/>
+    <p style="font-size:.88rem"><strong>Warfarin:</strong></p>
+    <input class="write-line" placeholder="Hold when... because..."/>
+  </div>
+
+  <div class="remediation-box">
+    <h3>3. Antidote Matching</h3>
+    <p style="font-size:.88rem;margin-bottom:10px">Match each drug to its antidote without looking at your notes:</p>
+    <p style="font-size:.88rem"><strong>Opioid overdose →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+    <p style="font-size:.88rem"><strong>Heparin overdose →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+    <p style="font-size:.88rem"><strong>Warfarin toxicity (fast reversal) →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+    <p style="font-size:.88rem"><strong>Acetaminophen overdose →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+    <p style="font-size:.88rem"><strong>Benzodiazepine overdose →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+    <p style="font-size:.88rem"><strong>Mag sulfate toxicity →</strong></p>
+    <input class="write-line" placeholder="Antidote:"/>
+  </div>
+
+  <div class="remediation-box">
+    <h3>4. Drug Class Suffix Recall</h3>
+    <p style="font-size:.88rem;margin-bottom:10px">For each suffix, write the drug class and one key nursing concern:</p>
+    <p style="font-size:.88rem"><strong>-olol</strong></p>
+    <input class="write-line" placeholder="Class: _____ | Nursing concern: _____"/>
+    <p style="font-size:.88rem"><strong>-pril</strong></p>
+    <input class="write-line" placeholder="Class: _____ | Nursing concern: _____"/>
+    <p style="font-size:.88rem"><strong>-mycin / -micin</strong></p>
+    <input class="write-line" placeholder="Class: _____ | Nursing concern: _____"/>
+    <p style="font-size:.88rem"><strong>-pam</strong></p>
+    <input class="write-line" placeholder="Class: _____ | Nursing concern: _____"/>
+  </div>
+
+  <div class="remediation-box">
+    <h3>5. NMS vs. Serotonin Syndrome</h3>
+    <p style="font-size:.88rem;margin-bottom:10px">In the table below, write the key differentiator for each:</p>
+    <table class="tbl">
+      <thead><tr><th>Feature</th><th>NMS</th><th>Serotonin Syndrome</th></tr></thead>
+      <tbody>
+        <tr><td>Causative drug</td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td></tr>
+        <tr><td>Onset</td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td></tr>
+        <tr><td>Muscle tone</td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td></tr>
+        <tr><td>Treatment</td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td><td><input class="write-line" style="border:none;border-bottom:1px solid #ccc;width:100%"/></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 15. QUICK QUIZ                              -->
+<!-- ─────────────────────────────────────────── -->
+<section id="quiz" class="section" style="padding-top:0">
+  <h2 class="section-title">15 · Quick Quiz</h2>
+  <div class="qq-container">
+    <div id="qqArea"></div>
+  </div>
+</section>
+
+<script>
+const QQ=[
+  {q:"A patient's apical pulse is 58 bpm before you give digoxin. You should:",opts:["Give it — 58 is close enough to 60","Hold and notify the provider","Give half the dose"],ans:1,exp:"Hold digoxin for HR <60. Notify the provider."},
+  {q:"The antidote for heparin overdose is:",opts:["Vitamin K","Protamine sulfate","Flumazenil"],ans:1,exp:"Protamine sulfate reverses heparin. Vitamin K reverses warfarin."},
+  {q:"A patient on an SSRI asks when it will start working. You say:",opts:["'Within 24-48 hours'","'2-4 weeks of consistent use'","'As soon as you take the first pill'"],ans:1,exp:"SSRIs take 2–4 weeks to reach therapeutic effect."},
+  {q:"Red Man Syndrome from vancomycin is best managed by:",opts:["Stopping vancomycin permanently","Slowing the infusion rate","Giving epinephrine"],ans:1,exp:"Red Man Syndrome is rate-related, not a true allergy. Slow the infusion."},
+  {q:"Before administering IV potassium chloride, the nurse must never:",opts:["Check the concentration","Give it as an IV push","Verify the order"],ans:1,exp:"IV potassium PUSH = cardiac arrest. Always infuse over time, max 10 mEq/hr peripherally."},
+  {q:"A patient on heparin for 7 days has platelets drop from 250,000 to 78,000 and develops a new clot. The nurse suspects:",opts:["DIC","HIT","Vitamin K deficiency"],ans:1,exp:"Heparin-Induced Thrombocytopenia (HIT): >50% platelet drop after 5-10 days + paradoxical clotting. Stop ALL heparin."},
+  {q:"Clozapine requires which unique monitoring compared to other antipsychotics?",opts:["Monthly ECG","Weekly CBC for agranulocytosis","Daily lithium levels"],ans:1,exp:"Clozapine can cause life-threatening agranulocytosis. Weekly CBC/ANC monitoring is mandatory."},
+  {q:"A patient on warfarin has an INR of 2.6 for atrial fibrillation. The nurse should:",opts:["Hold the next dose","Administer as scheduled — INR is therapeutic","Give vitamin K to lower the INR"],ans:1,exp:"INR 2–3 is therapeutic for A-fib. Give the scheduled dose. No intervention needed."},
+  {q:"Which drug suffix indicates a medication that should not be stopped abruptly due to rebound cardiac effects?",opts:["-prazole","-olol","-azole"],ans:1,exp:"-olol = beta blocker. Abrupt cessation causes rebound tachycardia and may precipitate angina or MI."},
+  {q:"The FIRST action before starting a patient on antibiotics is to:",opts:["Obtain cultures","Give the antibiotic immediately","Check the patient's temperature"],ans:0,exp:"Cultures FIRST, then start antibiotics. This allows identification of the organism and sensitivities while not delaying treatment."}
+];
+
+let qqIdx=0,qqScore=0,qqDone=false;
+
+function renderQQ(){
+  if(qqIdx>=QQ.length){
+    const pct=Math.round((qqScore/QQ.length)*100);
+    document.getElementById('qqArea').innerHTML=`<div class="qq-score"><div class="score-num">${qqScore}/${QQ.length}</div><p>${pct}% — ${pct>=80?'Excellent! 🎉':pct>=60?'Good — review misses 📖':'Review the module and retry 💪'}</p><button class="btn btn-primary" onclick="qqIdx=0;qqScore=0;renderQQ()">Retake Quiz</button></div>`;
+    return;
+  }
+  const q=QQ[qqIdx];
+  let html=`<div class="qq-q">Q${qqIdx+1}/${QQ.length}: ${q.q}</div><ul class="qq-options">`;
+  q.opts.forEach((o,i)=>html+=`<li id="qqOpt${i}" onclick="qqAnswer(${i})">${o}</li>`);
+  html+=`</ul><div id="qqFeedback"></div>`;
+  document.getElementById('qqArea').innerHTML=html;
+}
+
+function qqAnswer(i){
+  if(qqDone)return;
+  qqDone=true;
+  const q=QQ[qqIdx];
+  const fb=document.getElementById('qqFeedback');
+  document.getElementById('qqOpt'+i).classList.add(i===q.ans?'qq-correct':'qq-incorrect');
+  if(i!==q.ans)document.getElementById('qqOpt'+q.ans).classList.add('qq-correct');
+  if(i===q.ans)qqScore++;
+  fb.className='qq-feedback '+(i===q.ans?'correct':'incorrect');
+  fb.innerHTML=(i===q.ans?'✅ Correct! ':'❌ Incorrect. ')+q.exp+` <button class="btn btn-outline" style="margin-top:10px;font-size:.8rem;padding:6px 14px" onclick="qqIdx++;qqDone=false;renderQQ()">Next →</button>`;
+}
+
+renderQQ();
+</script>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- 16. MODULE CHECKLIST                        -->
+<!-- ─────────────────────────────────────────── -->
+<section id="checklist" class="section" style="padding-top:0;padding-bottom:60px">
+  <h2 class="section-title">16 · Module Checklist</h2>
+  <ul class="checklist" id="m3Checklist"></ul>
+  <div class="checklist-progress">
+    <span id="m3CheckPct" style="font-size:.9rem;color:var(--muted);font-weight:600"></span>
+    <div class="checklist-bar"><div class="checklist-fill" id="m3CheckFill"></div></div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+    <a href="student-dashboard.html" class="btn btn-outline">← Module 2</a>
+    <a href="student-dashboard.html" class="btn btn-primary">Back to Hub 🏠</a>
+    <a href="student-dashboard.html" class="btn btn-outline">Module 4 →</a>
+  </div>
+</section>
+
+<script>
+const M3_ITEMS=[
+  "I can explain ADME (pharmacokinetics) and how organ failure changes drug response",
+  "I know the 7 major high-alert medication classes and their hold parameters",
+  "I can match each high-alert drug to its antidote/reversal agent",
+  "I understand HIT — timing, paradoxical clotting, and management",
+  "I know drug class suffixes and can predict side effects from the suffix alone",
+  "I can differentiate NMS from serotonin syndrome and state the management of each",
+  "I applied the 10 Rights of medication administration in practice questions",
+  "I know when to hold vs. give (digoxin, beta blockers, opioids, warfarin, insulin)",
+  "I completed all 25 practice questions and reviewed incorrect rationales",
+  "I am confident with pharmacology content and ready for Module 4"
+];
+const M3_KEY='nclex_m3_checklist';
+
+function renderChecklist(){
+  const saved=JSON.parse(localStorage.getItem(M3_KEY)||'[]');
+  const ul=document.getElementById('m3Checklist');
+  ul.innerHTML='';
+  M3_ITEMS.forEach((item,i)=>{
+    const done=saved.includes(i);
+    const li=document.createElement('li');
+    li.className=done?'done':'';
+    li.innerHTML=`<span class="check-icon">${done?'✅':'⬜'}</span>${item}`;
+    li.onclick=()=>toggleCheck(i);
+    ul.appendChild(li);
+  });
+  const pct=Math.round((saved.length/M3_ITEMS.length)*100);
+  document.getElementById('m3CheckPct').textContent=`${saved.length}/${M3_ITEMS.length} complete (${pct}%)`;
+  document.getElementById('m3CheckFill').style.width=pct+'%';
+}
+
+function toggleCheck(i){
+  let saved=JSON.parse(localStorage.getItem(M3_KEY)||'[]');
+  if(saved.includes(i))saved=saved.filter(x=>x!==i);
+  else saved.push(i);
+  localStorage.setItem(M3_KEY,JSON.stringify(saved));
+  renderChecklist();
+}
+
+renderChecklist();
+</script>
+</body>
+</html>
+
+
+
