@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS student_supplemental_practice_results (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- The practice page stores these details when they are available.  Adding them
+-- separately keeps this migration safe for databases where the table already
+-- exists from an earlier version.
+ALTER TABLE student_supplemental_practice_results
+  ADD COLUMN IF NOT EXISTS answer_details jsonb NOT NULL DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS category_scores jsonb NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS missed_question_ids jsonb NOT NULL DEFAULT '[]'::jsonb;
+
 ALTER TABLE student_supplemental_practice_results ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "admins manage supplemental practice results" ON student_supplemental_practice_results;

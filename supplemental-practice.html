@@ -426,7 +426,7 @@
     let activeSet=null,index=0,answers=[],revealed=false,student=null;
     function renderLibrary(){const target=$('sets');target.innerHTML=sets.map(set=>`<article class="card"><p class="meta">${set.tag}</p><h2>${set.title}</h2><p>${set.description}</p><p class="meta">${set.questions.length} questions · original practice</p><button class="start" data-set="${set.id}">Start →</button></article>`).join('');document.querySelectorAll('[data-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.set)))}
     function startSet(id){activeSet=sets.find(set=>set.id===id);index=0;answers=[];revealed=false;$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');renderQuestion()}
-    function renderQuestion(){const q=activeSet.questions[index],selected=answers[index];$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Question ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><h2>${q.stem}</h2><div class="options">${q.options.map((option,optionIndex)=>`<label class="option"><input type="radio" name="answer" value="${optionIndex}" ${selected===optionIndex?'checked':''} ${revealed?'disabled':''}><span>${option}</span></label>`).join('')}</div>${revealed?`<div class="feedback ${selected===q.answer?'correct':'incorrect'}"><strong>${selected===q.answer?'Correct':'Review this one'}</strong>${q.rationale}</div>`:''}<div class="actions"><button class="secondary" id="leave" type="button">Back to sets</button><button class="primary" id="next" type="button" ${selected===undefined?'disabled':''}>${revealed?(index===activeSet.questions.length-1?'See results':'Next question'):'Check answer'}</button></div>`;document.querySelectorAll('input[name="answer"]').forEach(input=>input.addEventListener('change',event=>{answers[index]=Number(event.target.value);$('next').disabled=false}));$('leave').addEventListener('click',showLibrary);$('next').addEventListener('click',()=>{if(!revealed){revealed=true;renderQuestion();return}if(index===activeSet.questions.length-1){showResults();return}index++;revealed=false;renderQuestion()})}
+    function renderQuestion(){const q=activeSet.questions[index],selected=answers[index];$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Question ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><h2>${q.stem}</h2><div class="options">${q.options.map((option,optionIndex)=>`<label class="option"><input type="radio" name="answer" value="${optionIndex}" ${selected===optionIndex?'checked':''} ${revealed?'disabled':''}><span>${option}</span></label>`).join('')}</div>${revealed?`<div class="feedback ${selected===q.answer?'correct':'incorrect'}"><strong>${selected===q.answer?'Correct':'Review this one'}</strong>${q.rationale}</div>`:''}<div class="actions"><button class="secondary" id="leave" type="button">Back to sets</button>${index>0?'<button class="secondary" id="previous" type="button">← Previous question</button>':''}<button class="primary" id="next" type="button" ${selected===undefined?'disabled':''}>${revealed?(index===activeSet.questions.length-1?'See results':'Next question'):'Check answer'}</button></div>`;document.querySelectorAll('input[name="answer"]').forEach(input=>input.addEventListener('change',event=>{answers[index]=Number(event.target.value);$('next').disabled=false}));$('leave').addEventListener('click',showLibrary);const previous=$('previous');if(previous)previous.addEventListener('click',()=>{index--;revealed=false;renderQuestion()});$('next').addEventListener('click',()=>{if(!revealed){revealed=true;renderQuestion();return}if(index===activeSet.questions.length-1){showResults();return}index++;revealed=false;renderQuestion()})}
     function categoryForQuestion(id){
       const n=Number(String(id||"").replace("at01-q",""));
       if([1,11,29,30].includes(n))return "Priority & Acute Change";
@@ -452,18 +452,24 @@
         if(item.correct)categoryScores[item.category].correct++;
       });
       const missed=details.filter(item=>!item.correct).map(item=>item.question_id);
-      const result=await db.from("student_supplemental_practice_results").insert({
+      const baseResult={
         student_id:student.id,
         practice_key:activeSet.id,
         practice_title:activeSet.title,
         score,
         total_questions:activeSet.questions.length,
-        completed_at:new Date().toISOString(),
+        completed_at:new Date().toISOString()
+      };
+      let result=await db.from("student_supplemental_practice_results").insert({
+        ...baseResult,
         answer_details:details,
         category_scores:categoryScores,
         missed_question_ids:missed
       });
-      return result.error?"Your score is shown here. We could not save it to the dashboard just yet.":"Saved to your shared dashboard.";
+      if(result.error&&/answer_details|category_scores|missed_question_ids|schema cache|column/i.test(result.error.message||'')){
+        result=await db.from("student_supplemental_practice_results").insert(baseResult);
+      }
+      return result.error?`Your score is shown here, but it was not saved: ${result.error.message||'Please try again.'}`:"Saved to your shared dashboard.";
     }
     async function showResults(){const score=answers.reduce((total,answer,questionIndex)=>total+(answer===activeSet.questions[questionIndex].answer?1:0),0),percent=Math.round(score/activeSet.questions.length*100);$('quiz').innerHTML=`<section class="results"><p class="eyebrow">Practice complete</p><h2>${activeSet.title}</h2><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep this skill in mixed practice.':percent>=60?'Review the rationales, then return to this set once more.':'Review the connected module before retaking this set.'}</p><p class="status" id="save-status">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Try again</button><button class="primary" id="return" type="button">Back to assignments</button></div></section>`;$('save-status').textContent=await saveResult(score);$('retry').addEventListener('click',()=>startSet(activeSet.id));$('return').addEventListener('click',showLibrary)}
     function showLibrary(){if(new URLSearchParams(location.search).get("set")&&document.referrer){history.back();return}activeSet=null;$('quiz').classList.add('hidden');$('library').classList.remove('hidden');$('sets').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
