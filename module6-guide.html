@@ -1,2 +1,823 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta http-equiv="refresh" content="0; url=student-login.html"><title>Secure Sign In · NCLEX Success Center</title><script>window.location.replace('student-login.html');</script></head><body><p>Redirecting to secure sign in… <a href="student-login.html">Continue</a></p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Module 6 – Fluids, Electrolytes & Acid-Base | NCLEX Tutor</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--brand:#0d9488;--brand-light:#ccfbf1;--brand-mid:#2dd4bf;--brand-dark:#134e4a;--text:#1f2937;--muted:#6b7280;--card:#fff;--bg:#f9fafb;--border:#e5e7eb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:104px;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+.skip-link{position:fixed;top:8px;left:8px;z-index:1000;transform:translateY(-160%);background:#fff;color:var(--text);padding:10px 14px;border-radius:8px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.16);}
+.skip-link:focus{transform:translateY(0);}
+.top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:2px solid var(--brand);padding:10px 20px;min-height:48px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap;overflow-x:auto;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.top-nav a,.top-nav .nav-unavailable{min-height:44px;padding:0 6px;display:inline-flex;align-items:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.top-nav a{color:var(--brand);text-decoration:none;}
+.top-nav a:hover{text-decoration:underline;}
+.nav-title{font-weight:700;font-size:15px;color:var(--text);margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;}
+.nav-unavailable{color:var(--muted);opacity:.7;cursor:not-allowed;}
+.hero{background:linear-gradient(135deg,#134e4a 0%,#0d9488 60%,#2dd4bf 100%);color:#fff;padding:48px 32px 40px;text-align:center;}
+.hero-emoji{font-size:64px;display:block;margin-bottom:12px;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:8px;}
+.hero-sub{font-size:1.05rem;opacity:.9;margin-bottom:16px;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:4px 16px;font-size:.85rem;font-weight:600;letter-spacing:.5px;}
+.section-nav{background:#fff;border-bottom:1px solid var(--border);padding:0;overflow-x:auto;white-space:nowrap;display:flex;position:sticky;top:48px;z-index:90;}
+.section-nav a{display:inline-block;padding:12px 16px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;transition:all .2s;}
+.section-nav a:hover,.section-nav a.active{color:var(--brand);border-bottom-color:var(--brand);}
+.section-nav a[aria-current="location"]{color:var(--brand);border-bottom-color:var(--brand);background:var(--brand-light);}
+.section{padding:40px 24px;max-width:900px;margin:0 auto;}
+.section-title{font-size:1.4rem;font-weight:800;color:var(--brand);border-left:5px solid var(--brand);padding-left:14px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--brand-dark);}
+.card p,.card li{font-size:.95rem;color:var(--text);}
+.card ul{padding-left:18px;}
+.card li{margin-bottom:4px;}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.obj-list{list-style:none;padding:0;}
+.obj-list li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.obj-list li:last-child{border-bottom:none;}
+.obj-num{background:var(--brand);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.bp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;border-top:4px solid var(--brand);}
+.bp-card .icon{font-size:2rem;margin-bottom:8px;}
+.bp-card h3{font-size:.95rem;font-weight:700;color:var(--brand-dark);margin-bottom:6px;}
+.bp-card p{font-size:.85rem;color:var(--muted);}
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.tab-btn{min-height:44px;background:#fff;border:2px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.85rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.tab-btn:hover{border-color:var(--brand);color:var(--brand);}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+.tab-panel{display:none;animation:fadeIn .3s ease;max-width:100%;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:16px;}
+.tbl th{background:var(--brand);color:#fff;padding:10px 12px;text-align:left;font-size:.85rem;}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.tbl tr:nth-child(even) td{background:#f0fdfa;}
+.tbl tr:hover td{background:var(--brand-light);}
+.table-scroll{max-width:100%;overflow-x:auto;margin-bottom:16px;border-radius:8px;}
+.table-scroll .tbl{min-width:540px;margin-bottom:0;}
+.alert{border-radius:10px;padding:16px 18px;margin-bottom:12px;border-left:5px solid;}
+.alert-red{background:#fef2f2;border-color:#ef4444;color:#7f1d1d;}
+.alert-green{background:#f0fdf4;border-color:#22c55e;color:#14532d;}
+.alert-yellow{background:#fffbeb;border-color:#f59e0b;color:#78350f;}
+.alert-blue{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a;}
+.alert-teal{background:#ccfbf1;border-color:#0d9488;color:#134e4a;}
+.alert strong{display:block;margin-bottom:4px;}
+.iv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;}
+.iv-card{border-radius:12px;padding:16px;border:2px solid;}
+.iv-iso{background:#f0fdfa;border-color:#0d9488;}
+.iv-hypo{background:#eff6ff;border-color:#3b82f6;}
+.iv-hyper{background:#fef2f2;border-color:#ef4444;}
+.iv-card h4{font-size:.9rem;font-weight:800;margin-bottom:6px;}
+.iv-card p{font-size:.82rem;line-height:1.7;}
+.elec-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.elec-header{padding:12px 18px;font-weight:800;font-size:.95rem;color:#fff;}
+.elec-body{padding:16px 18px;}
+.elec-row{display:flex;gap:8px;margin-bottom:6px;font-size:.88rem;align-items:flex-start;}
+.elec-label{font-weight:700;color:var(--brand-dark);min-width:90px;flex-shrink:0;}
+.trick-card{background:linear-gradient(135deg,#ccfbf1,#f0fdfa);border:1px solid var(--brand-mid);border-radius:12px;padding:18px;margin-bottom:12px;}
+.trick-card .trick-label{font-size:.75rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.trick-card h3{font-size:1rem;font-weight:800;color:var(--brand-dark);margin-bottom:6px;}
+.trick-card p{font-size:.9rem;color:var(--text);}
+.pearl-list,.trap-list{list-style:none;padding:0;}
+.pearl-list li,.trap-list li{padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:.93rem;display:flex;gap:10px;align-items:flex-start;}
+.pearl-list li{background:#f0fdf4;border-left:4px solid #22c55e;}
+.trap-list li{background:#fef2f2;border-left:4px solid #ef4444;}
+.priority-list{list-style:none;padding:0;counter-reset:pri;}
+.priority-list li{counter-increment:pri;display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);font-size:.93rem;}
+.priority-list li:last-child{border-bottom:none;}
+.priority-list li::before{content:counter(pri);background:var(--brand);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.med-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.med-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.med-card-header{background:var(--brand);color:#fff;padding:14px 18px;}
+.med-card-header h3{font-size:1rem;font-weight:800;margin-bottom:2px;}
+.med-card-header .med-class{font-size:.8rem;opacity:.85;}
+.med-card-body{padding:14px 18px;}
+.med-row{display:flex;gap:8px;margin-bottom:8px;font-size:.88rem;}
+.med-row-label{font-weight:700;color:var(--brand-dark);min-width:80px;flex-shrink:0;}
+.med-danger{background:#fef2f2;border-left:3px solid #ef4444;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:.85rem;color:#7f1d1d;}
+.pq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pq-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.pq-counter{font-size:.85rem;color:var(--muted);font-weight:600;}
+.pq-type-badge{background:var(--brand-light);color:var(--brand-dark);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--brand-mid);}
+.pq-q{font-size:1rem;font-weight:700;margin-bottom:16px;line-height:1.5;}
+.pq-options{list-style:none;padding:0;}
+.pq-options li{margin-bottom:8px;list-style:none;}
+.pq-options button{width:100%;min-height:44px;padding:10px 14px;border:2px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:all .2s;}
+.pq-options button:hover{border-color:var(--brand);background:var(--brand-light);}
+.pq-options button.selected{border-color:var(--brand);background:var(--brand-light);}
+.pq-options button.correct{border-color:#22c55e;background:#f0fdf4;}
+.pq-options button.incorrect{border-color:#ef4444;background:#fef2f2;}
+.pq-rationale{background:#f9fafb;border-left:4px solid var(--brand);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;font-size:.9rem;display:none;}
+.pq-rationale.show{display:block;}
+.pq-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap;gap:10px;}
+.btn{min-height:44px;padding:10px 20px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;}
+.btn-primary{background:var(--brand);color:#fff;}
+.btn-primary:hover{background:var(--brand-dark);}
+.btn-outline{background:#fff;border:2px solid var(--brand);color:var(--brand);}
+.btn-outline:hover{background:var(--brand-light);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.nav-unavailable{opacity:.58;border-color:var(--muted);color:var(--muted);cursor:not-allowed;}
+.asset-status{display:none;background:#f8fafc;border:1px dashed var(--muted);border-radius:12px;padding:18px;color:var(--muted);font-size:.92rem;text-align:left;}
+.pq-progress{height:6px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden;}
+.pq-progress-fill{height:100%;background:var(--brand);border-radius:3px;transition:width .3s;}
+.pq-results{text-align:center;padding:24px;}
+.pq-score{font-size:3rem;font-weight:900;color:var(--brand);}
+.pq-score-label{font-size:1rem;color:var(--muted);margin-bottom:16px;}
+.sata-hint{font-size:.8rem;color:var(--brand);font-weight:600;margin-bottom:10px;}
+.case-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.case-header{width:100%;min-height:44px;background:linear-gradient(135deg,var(--brand-dark),var(--brand));color:#fff;border:0;padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left;font-family:inherit;}
+.case-header h3{font-size:1rem;font-weight:800;}
+.case-toggle{font-size:1.2rem;}
+.case-body{padding:20px 24px;display:none;}
+.case-body.open{display:block;}
+.case-scenario{background:#f9fafb;border-left:4px solid var(--brand-mid);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:.93rem;}
+.case-question{font-weight:700;margin:14px 0 8px;font-size:.95rem;}
+.case-answer-btn{min-height:44px;background:var(--brand-light);border:1px solid var(--brand-mid);color:var(--brand-dark);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;margin-bottom:8px;}
+.case-answer{background:#f9fafb;border-radius:8px;padding:14px;font-size:.9rem;margin-top:8px;display:none;}
+.case-answer.show{display:block;}
+.qq-container{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.qq-q{font-size:1rem;font-weight:700;margin-bottom:14px;}
+.qq-options{list-style:none;padding:0;}
+.qq-options li{margin-bottom:8px;list-style:none;}
+.qq-options button{width:100%;min-height:44px;padding:10px 14px;border:2px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:all .2s;}
+.qq-options button:hover{border-color:var(--brand);background:var(--brand-light);}
+.qq-options button.qq-correct{border-color:#22c55e;background:#f0fdf4;font-weight:700;}
+.qq-options button.qq-incorrect{border-color:#ef4444;background:#fef2f2;}
+.qq-feedback{font-size:.88rem;margin-top:8px;padding:10px 14px;border-radius:8px;}
+.qq-feedback.correct{background:#f0fdf4;color:#166534;}
+.qq-feedback.incorrect{background:#fef2f2;color:#7f1d1d;}
+.qq-score{text-align:center;padding:24px;}
+.qq-score .score-num{font-size:3rem;font-weight:900;color:var(--brand);}
+.checklist{list-style:none;padding:0;}
+.checklist li{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:.93rem;}
+.checklist li:hover{border-color:var(--brand);}
+.checklist li.done{background:#f0fdf4;border-color:#22c55e;color:#166534;text-decoration:line-through;}
+.check-icon{font-size:1.2rem;flex-shrink:0;}
+.checklist-bar{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-top:6px;}
+.checklist-fill{height:100%;background:var(--brand);border-radius:5px;transition:width .3s;}
+.checklist li{padding:0;}
+.checklist button{width:100%;min-height:44px;display:flex;align-items:center;gap:12px;padding:12px 16px;border:0;border-radius:8px;background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;}
+.checklist li.done button{text-decoration:line-through;}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #2563eb;outline-offset:3px;}
+.remediation-box{background:#f0fdfa;border:2px solid var(--brand-mid);border-radius:12px;padding:20px;margin-bottom:16px;}
+.remediation-box h3{color:var(--brand-dark);margin-bottom:12px;font-size:.95rem;}
+.write-line{border:none;border-bottom:1.5px solid var(--border);width:100%;padding:6px 0;margin-bottom:8px;background:transparent;font-size:.9rem;color:var(--text);}
+.write-line:focus{outline:none;border-bottom-color:var(--brand);}
+@media print{.top-nav,.section-nav,.tab-bar,.pq-container,.qq-container,.case-answer-btn,.case-header{display:none!important;}.case-body{display:block!important;}.section:not(#remediation){display:none!important;}#remediation{display:block!important;}body{background:#fff;}}
+@media(max-width:600px){.top-nav{padding:2px 8px;gap:4px;overflow-x:hidden;}.top-nav a,.top-nav .nav-unavailable{padding:0 5px;}.hero{padding:32px 16px;}.section{padding:28px 16px;}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to module content</a>
+<header><nav class="top-nav" aria-label="Module navigation">
+  <span class="nav-title">💧 Module 6 · Fluids, Electrolytes & Acid-Base</span>
+  <a href="nclex-success-center.html">← Hub</a>
+  <a href="module5-guide.html">← M5</a>
+  <span class="nav-unavailable" aria-disabled="true" aria-label="Module 7 is not available in this review package">M7 →</span>
+</nav></header>
+<nav class="section-nav" aria-label="Module sections">
+  <a href="#overview">Overview</a><a href="#objectives">Objectives</a><a href="#bigpicture">Big Picture</a><a href="#graphic">Graphic</a><a href="#deepdive">Deep Dive</a><a href="#memory">Memory</a><a href="#pearls">Pearls</a><a href="#traps">Traps</a><a href="#clinical">Clinical</a><a href="#priority">Priority</a><a href="#meds">Meds</a><a href="#questions">Questions</a><a href="#cases">Cases</a><a href="#remediation">Remediation</a><a href="#quiz">Quiz</a><a href="#checklist">Checklist</a>
+</nav>
+<div class="hero">
+  <span class="hero-emoji">💧</span>
+  <h1>Fluids, Electrolytes & Acid-Base</h1>
+  <p class="hero-sub">Balance is everything. Know the normals. Recognize the imbalances. Act before the heart does.</p>
+  <span class="hero-badge">Phase 1 · Foundations</span>
+</div>
+
+<!-- 1. OVERVIEW -->
+<main id="main-content" tabindex="-1">
+<section id="overview" class="section">
+  <h2 class="section-title">1 · Module Overview</h2>
+  <div class="card"><p><strong>Why this module matters:</strong> Electrolyte imbalances are behind some of the most dangerous NCLEX scenarios — cardiac arrest from hyperkalemia, seizures from hyponatremia, respiratory failure from hypomagnesemia. The NCLEX tests whether you can recognize these imbalances early and know which ones are immediately life-threatening.</p></div>
+  <div class="grid-2">
+    <div class="card"><h3>🎯 What the NCLEX Expects</h3>
+      <ul>
+        <li>Select the correct IV fluid type (isotonic/hypotonic/hypertonic) for each situation</li>
+        <li>Recognize signs of each electrolyte imbalance</li>
+        <li>Know which imbalances cause cardiac arrhythmias (priority)</li>
+        <li>Identify Chvostek's and Trousseau's signs (hypocalcemia)</li>
+        <li>Know foods high in each electrolyte for teaching</li>
+        <li>Prioritize the most dangerous imbalance when multiple are present</li>
+        <li>Understand third spacing and when to suspect it</li>
+      </ul>
+    </div>
+    <div class="card"><h3>🔑 The Golden Rule</h3>
+      <div class="alert alert-teal" style="margin-bottom:10px"><strong>Potassium is always the priority electrolyte on the NCLEX.</strong> Hyperkalemia → cardiac arrest. Hypokalemia → life-threatening arrhythmias. When K+ is abnormal, the heart is at risk — that always comes first.</div>
+      <div class="alert alert-red"><strong>Never give IV potassium as a bolus/IV push.</strong> This is a high-alert medication. Always dilute and give slowly via pump. Burning at the site is expected — this is normal but can be managed.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. OBJECTIVES -->
+<section id="objectives" class="section" style="padding-top:0">
+  <h2 class="section-title">2 · Learning Objectives</h2>
+  <ul class="obj-list">
+    <li><span class="obj-num">1</span>Select the correct IV fluid (isotonic, hypotonic, or hypertonic) based on the clinical scenario.</li>
+    <li><span class="obj-num">2</span>Identify signs and symptoms of hyponatremia and hypernatremia and the priority nursing actions.</li>
+    <li><span class="obj-num">3</span>Recognize hypokalemia and hyperkalemia by ECG changes, symptoms, and causes — and act accordingly.</li>
+    <li><span class="obj-num">4</span>Differentiate hypocalcemia from hypercalcemia including Chvostek's and Trousseau's signs.</li>
+    <li><span class="obj-num">5</span>Identify the signs of hypomagnesemia and its relationship to other electrolyte imbalances.</li>
+    <li><span class="obj-num">6</span>Distinguish fluid volume deficit from fluid volume excess and identify priority assessments.</li>
+    <li><span class="obj-num">7</span>Explain third-spacing and identify clinical situations where it occurs.</li>
+    <li><span class="obj-num">8</span>Apply the electrolyte priority framework to NCLEX-style prioritization questions.</li>
+  </ul>
+</section>
+
+<!-- 3. BIG PICTURE -->
+<section id="bigpicture" class="section" style="padding-top:0">
+  <h2 class="section-title">3 · The Big Picture</h2>
+  <div class="grid-3">
+    <div class="bp-card"><div class="icon">🧪</div><h3>IV Fluids</h3><p>Isotonic stays in vessels. Hypotonic moves into cells. Hypertonic pulls fluid out of cells.</p></div>
+    <div class="bp-card"><div class="icon">🧂</div><h3>Sodium</h3><p>Na controls water. Low Na → brain swells (seizures). High Na → brain shrinks (confusion). Correct SLOWLY.</p></div>
+    <div class="bp-card"><div class="icon">⚡</div><h3>Potassium</h3><p>K controls cardiac rhythm. Always the #1 priority electrolyte. Never IV push. Correct hypo before giving diuretics.</p></div>
+    <div class="bp-card"><div class="icon">🦴</div><h3>Calcium</h3><p>Low Ca → hyperexcitability (tetany, Chvostek's, Trousseau's). High Ca → everything slows (stones, groans, moans).</p></div>
+    <div class="bp-card"><div class="icon">💊</div><h3>Magnesium</h3><p>Low Mg → hard to correct K & Ca. Check Mg when K stays low. Low Mg → seizures, arrhythmias.</p></div>
+    <div class="bp-card"><div class="icon">💦</div><h3>Fluid Balance</h3><p>FVD → tachycardia first. FVE → crackles, edema, weight gain. Third spacing = fluid trapped where it can't work.</p></div>
+  </div>
+  <div class="alert alert-teal" style="margin-top:20px"><strong>Priority Order for Electrolyte Imbalances</strong> Potassium (cardiac) → Sodium (neuro) → Calcium (neuromuscular) → Magnesium (affects everything else). When potassium is abnormal, assess cardiac rhythm first.</div>
+</section>
+
+<!-- 4. GRAPHIC -->
+<section id="graphic" class="section" style="padding-top:0">
+  <h2 class="section-title">4 · High-Yield Graphic</h2>
+  <div style="text-align:center;margin-bottom:24px;">
+    <img src="module6-infographic.png" alt="Module 6 Fluids & Electrolytes Infographic" style="max-width:100%;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:2px solid var(--border);" onerror="this.style.display='none';document.getElementById('module6-asset-status').style.display='block'">
+    <div id="module6-asset-status" class="asset-status" role="status">The Module 6 infographic is not available in this review package. Continue with the IV Fluid Quick Reference below.</div>
+  </div>
+  <h3 style="font-weight:800;color:var(--brand-dark);margin-bottom:12px;">🧪 IV Fluid Quick Reference</h3>
+  <div class="iv-grid">
+    <div class="iv-card iv-iso">
+      <h4 style="color:#134e4a;">ISOTONIC (Same as blood)</h4>
+      <p><strong>Examples:</strong> 0.9% NS, Lactated Ringer's, D5W (acts isotonic in bag, becomes hypotonic once metabolized)</p>
+      <p style="margin-top:6px"><strong>Use:</strong> Fluid replacement, dehydration, blood loss, pre/post-op</p>
+      <p style="margin-top:6px"><strong>Effect:</strong> Stays in the vascular space — expands blood volume</p>
+      <p style="margin-top:6px;color:#dc2626;font-weight:700">⚠️ Caution in HF, renal failure — can cause fluid overload</p>
+    </div>
+    <div class="iv-card iv-hypo">
+      <h4 style="color:#1e3a8a;">HYPOTONIC (Less than blood)</h4>
+      <p><strong>Examples:</strong> 0.45% NS (half normal saline), 0.33% NS</p>
+      <p style="margin-top:6px"><strong>Use:</strong> Cellular dehydration, hypernatremia, DKA (after initial fluid resuscitation)</p>
+      <p style="margin-top:6px"><strong>Effect:</strong> Shifts fluid INTO cells — rehydrates cells</p>
+      <p style="margin-top:6px;color:#dc2626;font-weight:700">⚠️ Never in head injury, burns, or shock — can cause cerebral edema</p>
+    </div>
+    <div class="iv-card iv-hyper">
+      <h4 style="color:#7f1d1d;">HYPERTONIC (More than blood)</h4>
+      <p><strong>Examples:</strong> 3% NS, D10W, D5 0.9%NS, D5LR, TPN</p>
+      <p style="margin-top:6px"><strong>Use:</strong> Severe hyponatremia, cerebral edema, severe burns (later phase)</p>
+      <p style="margin-top:6px"><strong>Effect:</strong> Pulls fluid OUT of cells into vessels — shrinks cells</p>
+      <p style="margin-top:6px;color:#dc2626;font-weight:700">⚠️ Give SLOWLY via pump, central line preferred — monitor for fluid overload</p>
+    </div>
+  </div>
+  <div class="alert alert-yellow"><strong>Normal Electrolyte Values — Memorize These</strong><br>
+    Na⁺: 135–145 mEq/L &nbsp;|&nbsp; K⁺: 3.5–5.0 mEq/L &nbsp;|&nbsp; Ca²⁺: 8.5–10.5 mg/dL &nbsp;|&nbsp; Mg²⁺: 1.5–2.5 mEq/L &nbsp;|&nbsp; Phosphorus: 2.5–4.5 mg/dL &nbsp;|&nbsp; Cl⁻: 95–105 mEq/L
+  </div>
+</section>
+<!-- 5. DEEP DIVE -->
+<section id="deepdive" class="section" style="padding-top:0">
+  <h2 class="section-title">5 · Deep Dive Lessons</h2>
+  <div class="tab-bar" role="tablist" aria-label="Deep dive lessons">
+    <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-potassium" id="lesson-tab-potassium" onclick="showTab('potassium',this)">⚡ Potassium</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-sodium" id="lesson-tab-sodium" onclick="showTab('sodium',this)">🧂 Sodium</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-calcium" id="lesson-tab-calcium" onclick="showTab('calcium',this)">🦴 Calcium & Mag</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-ivfluids" id="lesson-tab-ivfluids" onclick="showTab('ivfluids',this)">🧪 IV Fluids</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-fvd" id="lesson-tab-fvd" onclick="showTab('fvd',this)">💦 FVD & FVE</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-third" id="lesson-tab-third" onclick="showTab('third',this)">🫧 Third Spacing</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-priority" id="lesson-tab-priority" onclick="showTab('priority',this)">📋 Priority Framework</button>
+  </div>
+
+  <!-- POTASSIUM -->
+  <div id="tab-potassium" class="tab-panel active">
+    <div class="alert alert-red"><strong>Potassium = #1 NCLEX Priority Electrolyte.</strong> Both hypo AND hyperkalemia cause life-threatening cardiac arrhythmias. Know both directions cold.</div>
+    <div class="grid-2">
+      <div class="elec-card">
+        <div class="elec-header" style="background:#2563eb">⬇️ HYPOKALEMIA — K⁺ &lt; 3.5</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>Diuretics (thiazide, loop), vomiting, NG suction, diarrhea, poor intake, steroids, insulin</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>Muscle weakness/cramps, fatigue, constipation, ↓ bowel sounds, leg cramps, U waves on ECG, flattened T waves, arrhythmias</span></div>
+          <div class="elec-row"><span class="elec-label">Priority:</span><span>Check cardiac rhythm first. Monitor ECG. Assess muscle strength.</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>Oral KCl (preferred if mild), IV KCl if severe (MUST be diluted — never IV push)</span></div>
+          <div class="elec-row"><span class="elec-label">Foods:</span><span>Bananas, oranges, potatoes, avocados, tomatoes, leafy greens, cantaloupe</span></div>
+          <div class="med-danger">⚠️ IV K⁺: max 10 mEq/hr peripheral, 20 mEq/hr central. Always via pump. Burning at IV site is expected — can dilute or slow rate.</div>
+        </div>
+      </div>
+      <div class="elec-card">
+        <div class="elec-header" style="background:#dc2626">⬆️ HYPERKALEMIA — K⁺ &gt; 5.0</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>Renal failure (can't excrete K), ACE inhibitors, K-sparing diuretics, tissue destruction (burns, rhabdo), acidosis, excess supplementation</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>Peaked T waves (first ECG sign), widened QRS, muscle weakness, paresthesias, bradycardia, cardiac arrest</span></div>
+          <div class="elec-row"><span class="elec-label">Priority:</span><span>Cardiac monitoring STAT. Call provider. Prepare to treat immediately.</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>Calcium gluconate (protects heart), sodium bicarbonate, insulin + D50 (drives K into cells), Kayexalate (eliminates K), dialysis</span></div>
+          <div class="elec-row"><span class="elec-label">Diet:</span><span>Restrict: bananas, oranges, potatoes, tomatoes, nuts, salt substitutes (contain KCl)</span></div>
+          <div class="med-danger">⚠️ Peaked T waves = CALL PROVIDER NOW. This progresses to ventricular fibrillation rapidly. Never delay cardiac monitoring.</div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-yellow"><strong>K⁺ + Digoxin = Double Danger</strong> Hypokalemia makes digoxin toxicity more likely — low K+ increases myocardial sensitivity to digoxin. Always check K+ before giving digoxin. Hold if K+ &lt;3.5 and notify provider.</div>
+  </div>
+
+  <!-- SODIUM -->
+  <div id="tab-sodium" class="tab-panel">
+    <div class="alert alert-teal"><strong>Sodium controls water distribution.</strong> Where Na goes, water follows. Think BRAIN — both hypo and hypernatremia cause neurological symptoms.</div>
+    <div class="grid-2">
+      <div class="elec-card">
+        <div class="elec-header" style="background:#7c3aed">⬇️ HYPONATREMIA — Na⁺ &lt; 135</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>SIADH, HF, excessive hypotonic fluids, NG irrigation with water, diuretics, excess water intake</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>Headache, confusion, nausea, lethargy, muscle cramps, seizures (severe), coma</span></div>
+          <div class="elec-row"><span class="elec-label">Mechanism:</span><span>Low Na → water moves INTO brain cells → cerebral edema → neuro symptoms</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>Fluid restriction (most common), hypertonic saline (3% NS) for severe, treat underlying cause</span></div>
+          <div class="med-danger">⚠️ Correct SLOWLY — rapid correction causes osmotic demyelination syndrome (ODS/central pontine myelinolysis). Max 8–12 mEq/L per 24 hours.</div>
+        </div>
+      </div>
+      <div class="elec-card">
+        <div class="elec-header" style="background:#b45309">⬆️ HYPERNATREMIA — Na⁺ &gt; 145</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>Dehydration, diabetes insipidus, excessive Na intake, inability to access water (elderly, confused)</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>Thirst, dry sticky mucous membranes, agitation, restlessness, confusion, seizures (severe)</span></div>
+          <div class="elec-row"><span class="elec-label">Mechanism:</span><span>High Na → water moves OUT of brain cells → brain shrinks → neuro symptoms</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>Hypotonic fluids (0.45% NS), free water via NG, treat underlying cause</span></div>
+          <div class="med-danger">⚠️ Correct SLOWLY — rapid correction causes cerebral edema. Lower Na no faster than 0.5 mEq/L/hr.</div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-yellow"><strong>Memory Hook:</strong> Both hyponatremia and hypernatremia → neurological symptoms (because the brain is most sensitive to osmotic shifts). Seizure risk is highest with RAPID changes in either direction.</div>
+  </div>
+
+  <!-- CALCIUM & MAGNESIUM -->
+  <div id="tab-calcium" class="tab-panel">
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="elec-card">
+        <div class="elec-header" style="background:#0369a1">⬇️ HYPOCALCEMIA — Ca²⁺ &lt; 8.5</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>Hypoparathyroidism, post-thyroidectomy/parathyroidectomy, vitamin D deficiency, pancreatitis, low Mg</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>Tetany, numbness/tingling (circumoral + extremities), muscle cramps, seizures, laryngospasm, prolonged QT</span></div>
+          <div class="elec-row"><span class="elec-label">Key Signs:</span><span><strong>Chvostek's</strong>: tap facial nerve → facial twitch. <strong>Trousseau's</strong>: inflate BP cuff → carpal spasm (more specific)</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>Oral calcium + vitamin D (mild), IV calcium gluconate (severe/symptomatic)</span></div>
+          <div class="elec-row"><span class="elec-label">Foods:</span><span>Dairy, dark leafy greens, sardines, fortified OJ</span></div>
+          <div class="med-danger">⚠️ Post-thyroid/parathyroid surgery: assess for hypocalcemia Q4-8h — keep IV calcium gluconate at bedside. Laryngospasm is life-threatening.</div>
+        </div>
+      </div>
+      <div class="elec-card">
+        <div class="elec-header" style="background:#b45309">⬆️ HYPERCALCEMIA — Ca²⁺ &gt; 10.5</div>
+        <div class="elec-body">
+          <div class="elec-row"><span class="elec-label">Causes:</span><span>Hyperparathyroidism, malignancy (bone mets), prolonged immobility, excess vitamin D/calcium, thiazide diuretics</span></div>
+          <div class="elec-row"><span class="elec-label">Signs:</span><span>"Bones, Groans, Psychic Moans, Stones": bone pain, constipation/nausea, confusion/depression, kidney stones</span></div>
+          <div class="elec-row"><span class="elec-label">ECG:</span><span>Shortened QT interval</span></div>
+          <div class="elec-row"><span class="elec-label">Treatment:</span><span>IV fluids (NS — to dilute + promote excretion), loop diuretics, bisphosphonates, calcitonin</span></div>
+          <div class="med-danger">⚠️ High fall risk — confusion + muscle weakness. Institute fall precautions. Encourage ambulation to prevent further Ca release from bones.</div>
+        </div>
+      </div>
+    </div>
+    <div class="elec-card">
+      <div class="elec-header" style="background:#0d9488">⬇️ HYPOMAGNESEMIA — Mg²⁺ &lt; 1.5 (Most Common Imbalance in Hospital)</div>
+      <div class="elec-body">
+        <div class="grid-2">
+          <div>
+            <div class="elec-row"><span class="elec-label">Causes:</span><span>Alcoholism, malnutrition, diarrhea, NG suction, loop/thiazide diuretics, PPIs long-term</span></div>
+            <div class="elec-row"><span class="elec-label">Signs:</span><span>Tremors, tetany, seizures, positive Chvostek's & Trousseau's, arrhythmias, hyperreflexia</span></div>
+            <div class="elec-row"><span class="elec-label">Key Fact:</span><span>Low Mg causes low K and low Ca that WON'T correct until Mg is replaced first</span></div>
+          </div>
+          <div>
+            <div class="elec-row"><span class="elec-label">Treatment:</span><span>IV magnesium sulfate (monitor for toxicity: loss of DTRs, respiratory depression, bradycardia)</span></div>
+            <div class="elec-row"><span class="elec-label">Antidote:</span><span>Calcium gluconate (for Mg toxicity)</span></div>
+            <div class="med-danger">⚠️ Before IV Mg: assess DTRs, RR ≥12, UO ≥25-30 mL/hr. If DTRs absent → hold Mg and call provider.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IV FLUIDS DEEP DIVE -->
+  <div id="tab-ivfluids" class="tab-panel">
+    <div class="alert alert-teal"><strong>Rule of Thumb:</strong> Think about where you WANT the fluid to go — vessels, cells, or pulling from cells.</div>
+    <table class="tbl">
+      <thead><tr><th>Fluid</th><th>Type</th><th>Use For</th><th>Cautions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0.9% Normal Saline</strong></td><td>Isotonic</td><td>Dehydration, blood loss, pre-op, hyponatremia with FVD, medication diluent</td><td>Fluid overload, hyperchloremic acidosis with large volumes</td></tr>
+        <tr><td><strong>Lactated Ringer's (LR)</strong></td><td>Isotonic</td><td>Burns, trauma, surgery — most physiologic isotonic fluid</td><td>Avoid in liver disease (can't metabolize lactate), hyperkalemia</td></tr>
+        <tr><td><strong>D5W</strong></td><td>Isotonic in bag → Hypotonic in body</td><td>Free water replacement, hypernatremia, medication diluent</td><td>NOT for resuscitation — acts hypotonic once dextrose metabolized; causes dilutional hyponatremia with large volumes</td></tr>
+        <tr><td><strong>0.45% NS (½NS)</strong></td><td>Hypotonic</td><td>Hypernatremia, cellular dehydration, DKA maintenance</td><td>Never in shock, ICP, burns, head injury — causes cerebral edema</td></tr>
+        <tr><td><strong>3% NS</strong></td><td>Hypertonic</td><td>Severe symptomatic hyponatremia (seizures), SIADH</td><td>Central line preferred; monitor Na q2-4h; give SLOWLY — rapid correction → ODS</td></tr>
+        <tr><td><strong>D5 0.9%NS / D5LR</strong></td><td>Hypertonic</td><td>Post-op fluid + caloric support</td><td>Monitor glucose, fluid overload</td></tr>
+        <tr><td><strong>TPN</strong></td><td>Hypertonic</td><td>Cannot take oral nutrition; GI rest needed</td><td>Central line ONLY; monitor glucose Q4-6h; refeeding syndrome risk</td></tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="alert alert-red"><strong>Never Give Hypotonic Fluids In:</strong> Shock (↓BP) · Head injury / ↑ICP · Burns (acute) · Third spacing · Hyponatremia<br>Reason: fluid shifts into cells → worsens edema/hypotension</div>
+      <div class="alert alert-yellow"><strong>D5W Trap</strong> D5W looks isotonic on paper (308 mOsm/L) but once the dextrose is metabolized, it's just free water — effectively hypotonic. Never use it for volume resuscitation or in patients prone to hyponatremia.</div>
+    </div>
+  </div>
+
+  <!-- FVD & FVE -->
+  <div id="tab-fvd" class="tab-panel">
+    <table class="tbl">
+      <thead><tr><th>Feature</th><th>Fluid Volume Deficit (FVD)</th><th>Fluid Volume Excess (FVE)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Also Called</strong></td><td>Hypovolemia, dehydration</td><td>Hypervolemia, fluid overload</td></tr>
+        <tr><td><strong>Causes</strong></td><td>Vomiting, diarrhea, burns, hemorrhage, excessive sweating, third spacing, NPO without IV fluids</td><td>Heart failure, renal failure, excess IV fluids, cirrhosis, SIADH, excess Na intake</td></tr>
+        <tr><td><strong>First Sign</strong></td><td>Tachycardia (compensatory)</td><td>Weight gain (1 kg = ~1 L fluid)</td></tr>
+        <tr><td><strong>Vital Signs</strong></td><td>↑HR, ↓BP (orthostatic first), ↑RR</td><td>↑BP, ↑HR (if severe), bounding pulse</td></tr>
+        <tr><td><strong>Assessment</strong></td><td>Dry mucous membranes, ↓skin turgor, sunken eyes, flat neck veins, ↓UO (&lt;30 mL/hr), dark urine, ↑BUN/Cr</td><td>Crackles, pitting edema, JVD, S3 heart sound, dyspnea, weight gain, ↑UO if kidneys compensating</td></tr>
+        <tr><td><strong>Lab Changes</strong></td><td>↑Hct (hemoconcentration), ↑BUN, ↑specific gravity (&gt;1.030)</td><td>↓Hct (hemodilution), ↓BUN, ↓specific gravity (&lt;1.010)</td></tr>
+        <tr><td><strong>Treatment</strong></td><td>IV fluids (isotonic — NS or LR), oral fluids if able, identify and treat cause</td><td>Diuretics, fluid restriction, sodium restriction, semi-Fowler's position, daily weights</td></tr>
+        <tr><td><strong>Nursing Priority</strong></td><td>Monitor HR and BP, UO hourly if severe, daily weights, I&O</td><td>Daily weights (same time, same scale, same clothes), monitor lung sounds, I&O, edema assessment</td></tr>
+      </tbody>
+    </table>
+    <div class="alert alert-yellow"><strong>Daily Weight = Best Fluid Monitor</strong> 1 kg weight gain = ~1 L fluid retained. Weigh every morning, same time, same scale, same clothes. Report gain &gt;1 kg/day (or 2-3 lb) to provider.</div>
+  </div>
+
+  <!-- THIRD SPACING -->
+  <div id="tab-third" class="tab-panel">
+    <div class="card"><h3>🫧 What Is Third Spacing?</h3>
+      <p style="font-size:.93rem;margin-bottom:12px">Third spacing occurs when fluid shifts from the vascular space into a space where it can't be used for circulation — such as the interstitium, peritoneal cavity, or pleural space. The patient looks like they have enough total body fluid but acts like they're hypovolemic because the fluid is trapped and non-functional.</p>
+      <div class="grid-2">
+        <div>
+          <p style="font-weight:700;font-size:.9rem;color:var(--brand-dark);margin-bottom:6px">Common Causes:</p>
+          <ul style="font-size:.9rem;line-height:2.;padding-left:18px">
+            <li>Burns (massive capillary leak)</li>
+            <li>Peritonitis, bowel obstruction</li>
+            <li>Major abdominal surgery</li>
+            <li>Sepsis (capillary leak syndrome)</li>
+            <li>Pancreatitis</li>
+            <li>Liver failure / ascites</li>
+            <li>Nephrotic syndrome</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:700;font-size:.9rem;color:var(--brand-dark);margin-bottom:6px">Signs (Look Like FVD):</p>
+          <ul style="font-size:.9rem;line-height:2.;padding-left:18px">
+            <li>↑HR, ↓BP (despite visible edema)</li>
+            <li>↓UO (fluid not in circulation)</li>
+            <li>Weight gain (fluid is in body, just trapped)</li>
+            <li>Edema, ascites, pleural effusion</li>
+            <li>Normal or low BUN early (dilution effect)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-red"><strong>Third Spacing Paradox:</strong> The patient has edema AND signs of dehydration at the same time. Don't be fooled by visible swelling — the vascular space is depleted. Treat the hypovolemia with IV fluids (as ordered) while managing the underlying cause.</div>
+    <div class="alert alert-teal"><strong>Fluid Remobilization (Fluid Recovery Phase):</strong> After the acute illness resolves, trapped fluid re-enters circulation. Watch for FVE during this phase — lungs fill with fluid that was previously trapped. Monitor for crackles, dyspnea, ↑BP, and distended neck veins during recovery.</div>
+  </div>
+
+  <!-- PRIORITY FRAMEWORK -->
+  <div id="tab-priority" class="tab-panel">
+    <div class="card" style="border-top:4px solid var(--brand);margin-bottom:16px"><h3>⚡ Electrolyte Priority Order (NCLEX)</h3>
+      <ol style="padding-left:18px;font-size:.93rem;line-height:2.4;">
+        <li><strong>Potassium (K⁺)</strong> — Cardiac arrhythmia risk. ALWAYS assess cardiac rhythm first when K⁺ is abnormal.</li>
+        <li><strong>Sodium (Na⁺)</strong> — Neurological risk (seizures, confusion, brain herniation). Correct slowly in both directions.</li>
+        <li><strong>Calcium (Ca²⁺)</strong> — Neuromuscular risk (tetany, laryngospasm, seizures). Check post-thyroid surgery patients.</li>
+        <li><strong>Magnesium (Mg²⁺)</strong> — Affects ability to correct K and Ca. Check when K stays low despite replacement.</li>
+        <li><strong>Fluid status</strong> — FVD vs. FVE vs. third spacing. Tachycardia is first sign of FVD.</li>
+      </ol>
+    </div>
+    <div class="grid-2">
+      <div class="alert alert-red"><strong>Call Provider Immediately:</strong><br>
+        K⁺ &gt;6.0 or &lt;2.5 (cardiac emergency)<br>
+        Na⁺ &lt;120 or &gt;160 (seizure/coma risk)<br>
+        Ca²⁺ &lt;7.0 (laryngospasm risk)<br>
+        Peaked T waves on ECG (hyperkalemia)<br>
+        UO &lt;30 mL/hr × 2 hours (kidney perfusion)<br>
+        Positive Trousseau's or Chvostek's (hypoCa)
+      </div>
+      <div class="alert alert-yellow"><strong>Which Patient First? (NCLEX)</strong><br>
+        Patient A: K⁺ = 6.2, peaked T waves on monitor<br>
+        Patient B: Na⁺ = 128, mild confusion<br>
+        Patient C: Ca²⁺ = 7.8, mild tingling<br>
+        Patient D: gaining 2 lb/day, mild ankle edema<br><br>
+        → Patient A: hyperkalemia with ECG changes = cardiac emergency, assess immediately.
+      </div>
+    </div>
+  </div>
+</section>
+<!-- 6. MEMORY -->
+<section id="memory" class="section" style="padding-top:0">
+  <h2 class="section-title">6 · Memory Tricks</h2>
+  <div class="grid-2">
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>Hypocalcemia: "CT Scan"</h3><p><strong>C</strong>hvostek's (tap Cheek → twitch) · <strong>T</strong>rousseau's (inflate cuff → carpal Spasm). Trousseau's is more specific — use it to confirm hypocalcemia.</p></div>
+    <div class="trick-card"><div class="trick-label">Mnemonic</div><h3>Hypercalcemia: "Bones, Groans, Psychic Moans, Stones"</h3><p>Bone pain · Constipation/N&V (groans) · Confusion/depression (psychic moans) · Kidney stones. Everything slows down with too much calcium.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Hypokalemia: "Flat as a Pancake"</h3><p>Flat T waves, U waves on ECG. Muscle weakness feels like being flat. Remember: diuretics waste K⁺ — always replace it.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Hyperkalemia: "Peaked Like a Mountain"</h3><p>Peaked T waves = first ECG change = DANGER. Think peaked mountain = tall dangerous K. This progresses to V-fib fast.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>IV Fluid Tonicity</h3><p><strong>ISO</strong>tonic = stays in the <strong>ISO</strong>lated vessel. <strong>HYPO</strong>tonic = goes <strong>INTO</strong> cells (HYPOdermic = into). <strong>HYPER</strong>tonic = pulls fluid <strong>OUT</strong> (HYPER = overpower the cell).</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Low Mg = Low Everything</h3><p>When K stays low despite replacement, check Mg. When Ca stays low, check Mg. Hypomagnesemia blocks the correction of both K and Ca — fix Mg first.</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Sodium Correction: SLOW DOWN</h3><p>Both hyponatremia and hypernatremia must be corrected SLOWLY. Too fast either direction = brain disaster (ODS or cerebral edema). "Slow and steady wins the sodium race."</p></div>
+    <div class="trick-card"><div class="trick-label">Trick</div><h3>Third Spacing = Edema + Dehydration</h3><p>Patient is swollen but dehydrated at the same time — the fluid is in the wrong compartment. Weight goes UP (fluid in body), BP goes DOWN (fluid not in vessels).</p></div>
+  </div>
+</section>
+
+<!-- 7. PEARLS -->
+<section id="pearls" class="section" style="padding-top:0">
+  <h2 class="section-title">7 · NCLEX Pearls</h2>
+  <ul class="pearl-list">
+    <li>✅ <span>Potassium is always the #1 priority electrolyte — both hypo and hyperkalemia cause life-threatening cardiac arrhythmias.</span></li>
+    <li>✅ <span>Never give IV potassium as a push or bolus — always dilute, always via pump, max 10 mEq/hr peripheral.</span></li>
+    <li>✅ <span>Peaked T waves on ECG = hyperkalemia until proven otherwise — notify provider immediately.</span></li>
+    <li>✅ <span>Hypokalemia + digoxin = double danger — low K increases digoxin toxicity risk. Check K before every digoxin dose.</span></li>
+    <li>✅ <span>Correct sodium slowly in both directions — max 8–12 mEq/L per 24 hours to prevent osmotic demyelination or cerebral edema.</span></li>
+    <li>✅ <span>Chvostek's = tap cheek → facial twitch. Trousseau's = inflate BP cuff → carpal spasm. Both = hypocalcemia.</span></li>
+    <li>✅ <span>Post-thyroid/parathyroid surgery: keep IV calcium gluconate at bedside — hypocalcemia risk is high.</span></li>
+    <li>✅ <span>When K stays low despite replacement, check magnesium — hypomagnesemia prevents K correction.</span></li>
+    <li>✅ <span>Daily weight is the most accurate way to monitor fluid status — 1 kg = 1 L of fluid.</span></li>
+    <li>✅ <span>Tachycardia is the FIRST sign of fluid volume deficit — precedes hypotension.</span></li>
+    <li>✅ <span>D5W acts isotonic in the bag but becomes hypotonic in the body — never use for resuscitation.</span></li>
+    <li>✅ <span>Before giving IV magnesium: check DTRs, RR ≥12, UO ≥25 mL/hr — absent DTRs = hold and call.</span></li>
+  </ul>
+</section>
+
+<!-- 8. TRAPS -->
+<section id="traps" class="section" style="padding-top:0">
+  <h2 class="section-title">8 · NCLEX Traps</h2>
+  <ul class="trap-list">
+    <li>🚫 <span><strong>Trap:</strong> Giving IV K+ by bolus or fast push. Always dilute and use a pump. IV push = cardiac arrest.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Using D5W for fluid resuscitation. It's not effective — it becomes free water once metabolized.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving hypotonic fluids to a patient in shock or with head injury. Causes cerebral edema and worsens hypotension.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Rapidly correcting hyponatremia with 3% NS. Causes osmotic demyelination syndrome — correct slowly, max 8–12 mEq/L/24h.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Missing hyperkalemia because the patient has edema (looks like FVE). Renal failure patients have both — check K+ on all renal patients.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Treating third-spacing edema like regular FVE by restricting fluids. The vascular space is depleted — the patient needs IV fluids, not restriction.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Giving K+ to a patient with renal failure without checking urine output. Renal failure = can't excrete K = risk of hyperkalemia.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Forgetting to give calcium gluconate before IV magnesium in a patient at risk for toxicity. Calcium gluconate is the antidote for Mg toxicity.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Assuming Lactated Ringer's is safe in all patients. It contains potassium — avoid in hyperkalemia. It contains lactate — avoid in liver failure.</span></li>
+    <li>🚫 <span><strong>Trap:</strong> Thinking a patient with third spacing who is gaining weight is fluid overloaded and needs diuretics. Weight gain = trapped fluid, not circulating fluid — diuretics could worsen the hypovolemia.</span></li>
+  </ul>
+</section>
+
+<!-- 9. CLINICAL -->
+<section id="clinical" class="section" style="padding-top:0">
+  <h2 class="section-title">9 · Clinical Connections</h2>
+  <div class="grid-2">
+    <div class="card"><h3>⚡ Renal Failure Patient</h3><p>Can't excrete K, Na, or water → hyperkalemia + fluid overload common. Check K every shift. Monitor ECG. Fluid restrict. Avoid K-containing fluids (LR). Dialysis removes what kidneys can't.</p></div>
+    <div class="card"><h3>💊 Loop Diuretic Patient (Furosemide)</h3><p>Wastes K, Mg, Ca, Na. Check K before every dose. Supplement K and Mg as ordered. Monitor for muscle weakness, arrhythmias. Weigh daily — 1–2 kg/day loss is goal in HF.</p></div>
+    <div class="card"><h3>🔥 Burn Patient</h3><p>Acute phase: massive third spacing → hypovolemia despite swelling. Aggressive IV fluid resuscitation (LR preferred). Monitor UO 30–50 mL/hr. Recovery phase: fluid remobilizes → watch for FVE and pulmonary edema.</p></div>
+    <div class="card"><h3>🦋 Post-Thyroidectomy</h3><p>High risk for hypocalcemia (parathyroids removed or damaged). Assess Chvostek's and Trousseau's Q4-8h for 24–48h. Keep calcium gluconate at bedside. Teach signs of tetany before discharge.</p></div>
+    <div class="card"><h3>🩺 SIADH Patient</h3><p>Syndrome of inappropriate ADH → water retention → dilutional hyponatremia. Hallmark: Na low, urine concentrated. Treatment: fluid restriction (not saline — worsens it). Demeclocycline or vasopressin antagonists for chronic cases.</p></div>
+    <div class="card"><h3>🍺 Alcoholic Patient</h3><p>Classic hypomagnesemia (poor intake + alcohol wastes Mg). May also have hypokalemia, hypocalcemia, hypophosphatemia. Always check Mg on admission. Seizure risk from electrolyte imbalances + alcohol withdrawal — monitor closely.</p></div>
+  </div>
+</section>
+
+<!-- 10. PRIORITY -->
+<section id="priority" class="section" style="padding-top:0">
+  <h2 class="section-title">10 · Priority Framework</h2>
+  <div class="card" style="border-top:4px solid var(--brand)"><h3>💧 Fluids & Electrolytes NCLEX Priority Sequence</h3>
+    <ol style="padding-left:18px;font-size:.93rem;line-height:2.4;">
+      <li><strong>Is the heart at risk?</strong> Check K⁺ first. ECG changes (peaked T, widened QRS)? Call provider, continuous monitoring.</li>
+      <li><strong>Is the brain at risk?</strong> Sodium abnormal? Assess neuro status — confusion, seizure precautions if Na &lt;125.</li>
+      <li><strong>Is neuromuscular function at risk?</strong> Check Ca²⁺ — tetany, Trousseau's, Chvostek's?</li>
+      <li><strong>Is Mg blocking correction?</strong> K or Ca not correcting with replacement? Check and replace Mg first.</li>
+      <li><strong>Is fluid status addressed?</strong> FVD → isotonic IV fluids, monitor UO. FVE → diuretics, fluid restriction, daily weights.</li>
+    </ol>
+  </div>
+  <div class="alert alert-red" style="margin-top:16px"><strong>Report Immediately:</strong> K⁺ &gt;6.0 or &lt;2.5 · Na⁺ &lt;120 or &gt;160 · Peaked T waves or widened QRS · UO &lt;30 mL/hr × 2h · Positive Trousseau's post-thyroid surgery · Absent DTRs during IV Mg infusion</div>
+</section>
+
+<!-- 11. MEDS -->
+<section id="meds" class="section" style="padding-top:0">
+  <h2 class="section-title">11 · Medication Focus</h2>
+  <div class="med-grid">
+    <div class="med-card">
+      <div class="med-card-header"><h3>Potassium Chloride (KCl)</h3><div class="med-class">Electrolyte Replacement · HIGH ALERT</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Use:</span><span>Hypokalemia replacement — oral or IV</span></div>
+        <div class="med-row"><span class="med-row-label">IV Rate:</span><span>Max 10 mEq/hr peripheral · 20 mEq/hr central · ALWAYS via pump</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>K⁺ levels, ECG, urine output (need UO to excrete excess K)</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Take oral form with food (GI upset); burning at IV site is expected</span></div>
+        <div class="med-danger">⚠️ NEVER IV push or bolus — causes cardiac arrest · Never give if UO &lt;30 mL/hr</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Magnesium Sulfate (IV)</h3><div class="med-class">Electrolyte · Anticonvulsant</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Use:</span><span>Hypomagnesemia, preeclampsia seizure prevention, torsades de pointes</span></div>
+        <div class="med-row"><span class="med-row-label">Before:</span><span>Check DTRs, RR ≥12, UO ≥25 mL/hr before each dose</span></div>
+        <div class="med-row"><span class="med-row-label">Toxicity:</span><span>Loss of DTRs (first sign) → respiratory depression → cardiac arrest</span></div>
+        <div class="med-row"><span class="med-row-label">Antidote:</span><span>Calcium gluconate — keep at bedside during IV Mg infusion</span></div>
+        <div class="med-danger">⚠️ Absent DTRs = STOP infusion, call provider · Monitor RR continuously</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Calcium Gluconate (IV)</h3><div class="med-class">Electrolyte · Cardiac Protectant</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Use:</span><span>Symptomatic hypocalcemia, hyperkalemia (cardiac protection), Mg toxicity antidote</span></div>
+        <div class="med-row"><span class="med-row-label">Action:</span><span>In hyperkalemia: stabilizes cardiac membrane (doesn't lower K — buys time)</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>HR, BP, ECG during infusion; extravasation causes tissue necrosis</span></div>
+        <div class="med-row"><span class="med-row-label">Teach:</span><span>Post-thyroid: take oral calcium with vitamin D for absorption</span></div>
+        <div class="med-danger">⚠️ Give slowly — rapid IV causes bradycardia and hypotension · Avoid extravasation</div>
+      </div>
+    </div>
+    <div class="med-card">
+      <div class="med-card-header"><h3>Sodium Polystyrene (Kayexalate)</h3><div class="med-class">Cation Exchange Resin · Hyperkalemia</div></div>
+      <div class="med-card-body">
+        <div class="med-row"><span class="med-row-label">Use:</span><span>Hyperkalemia — exchanges Na for K in the GI tract to eliminate K in stool</span></div>
+        <div class="med-row"><span class="med-row-label">Route:</span><span>Oral or rectal (enema) — rectal acts faster</span></div>
+        <div class="med-row"><span class="med-row-label">Onset:</span><span>Slow (hours) — not for immediate cardiac emergency (use calcium gluconate first)</span></div>
+        <div class="med-row"><span class="med-row-label">Monitor:</span><span>K⁺ levels, bowel function, Na⁺ (risk of hypernatremia), fluid status</span></div>
+        <div class="med-danger">⚠️ Avoid in bowel obstruction · Monitor for constipation or bowel necrosis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. PRACTICE QUESTIONS -->
+<section id="questions" class="section" style="padding-top:0">
+  <h2 class="section-title">12 · Practice Questions</h2>
+  <div class="pq-container">
+    <div class="pq-progress"><div class="pq-progress-fill" id="pqFill" style="width:4%"></div></div>
+    <div id="pqArea"></div>
+  </div>
+</section>
+
+<!-- 13. CASES -->
+<section id="cases" class="section" style="padding-top:0">
+  <h2 class="section-title">13 · NGN Case Studies</h2>
+  <div class="case-card">
+    <button type="button" class="case-header" aria-expanded="false" aria-controls="case-one-body" onclick="toggleCase(this)"><h3>📋 Case 1: "He's on Digoxin and Just Started Furosemide"</h3><span class="case-toggle">▼</span></button>
+    <div class="case-body" id="case-one-body">
+      <div class="case-scenario">Mr. Thompson, 68, has heart failure and is prescribed furosemide 40 mg daily and digoxin 0.125 mg daily. On day 3 after starting furosemide, he complains of muscle cramps and fatigue. Vitals: HR 58, BP 118/74, RR 16, SpO₂ 97%. Labs: K⁺ 2.9, Na⁺ 138, BUN 24, Cr 1.1. His digoxin level is 1.8 ng/mL (therapeutic range 0.5–2.0 ng/mL).</div>
+      <div class="case-question">1. What is the priority concern and why?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Priority: hypokalemia (K⁺ 2.9) in a patient on digoxin. Hypokalemia increases myocardial sensitivity to digoxin — even a "therapeutic" digoxin level becomes toxic when K⁺ is low. Signs: muscle cramps, fatigue, bradycardia (HR 58 — may be digoxin effect + low K interaction). This combination is a setup for serious arrhythmias.</div>
+      <div class="case-question">2. What nursing actions are priority?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Hold digoxin and notify provider — K⁺ is 2.9 (below 3.5). Place on continuous cardiac monitoring. Administer ordered potassium replacement (oral KCl preferred if able to tolerate; IV if severe). Recheck K⁺ after replacement. Assess for other signs of digoxin toxicity (nausea, visual changes — yellow-green halos, bradycardia). Teach patient high-K foods.</div>
+      <div class="case-question">3. The provider orders IV KCl 20 mEq in 100 mL NS over 1 hour. What must the nurse verify before and during administration?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Before: verify IV access is patent and not infiltrated (K extravasation causes tissue damage). Check UO ≥30 mL/hr (need kidneys to excrete excess K). Verify rate — 20 mEq/hr is the peripheral max, so this is at the limit; use a pump. During: monitor cardiac rhythm continuously, assess IV site for burning/redness (expected but manage with slower rate or more dilution), recheck K⁺ 1 hour after completion.</div>
+    </div>
+  </div>
+  <div class="case-card">
+    <button type="button" class="case-header" aria-expanded="false" aria-controls="case-two-body" onclick="toggleCase(this)"><h3>📋 Case 2: "Post-Op Day 1 and Something Isn't Right"</h3><span class="case-toggle">▼</span></button>
+    <div class="case-body" id="case-two-body">
+      <div class="case-scenario">Ms. Rivera, 54, had a total thyroidectomy yesterday for thyroid cancer. It is now post-op day 1. She reports numbness and tingling around her mouth and in her fingertips. She is anxious and says her hands feel like they're "cramping up." Vitals: HR 92, BP 128/82, RR 18, SpO₂ 98%, Temp 37.1°C. Labs are pending. The nurse taps the patient's cheek below the zygomatic bone and notes twitching of the facial muscles.</div>
+      <div class="case-question">1. What is happening and what does the facial twitching indicate?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">The patient has hypocalcemia — a common complication post-thyroidectomy when the parathyroid glands are accidentally removed or damaged during surgery. Parathyroid hormone (PTH) regulates calcium — without it, Ca²⁺ drops rapidly. The facial twitching when tapping the facial nerve = positive Chvostek's sign, confirming hypocalcemia. The perioral/fingertip tingling and hand cramping are classic neuromuscular excitability signs of low calcium.</div>
+      <div class="case-question">2. What is the nurse's priority action?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Notify the provider immediately — symptomatic hypocalcemia requires urgent treatment. Anticipate order for IV calcium gluconate (NOT calcium chloride — gluconate is safer peripherally). Also perform Trousseau's sign (inflate BP cuff above systolic for 3 min — carpal spasm = positive = confirms). Monitor for laryngospasm (life-threatening) — have emergency airway equipment available. Place on continuous cardiac monitoring (hypocalcemia → prolonged QT → arrhythmias).</div>
+      <div class="case-question">3. What teaching does Ms. Rivera need before discharge?</div>
+      <button class="case-answer-btn" onclick="toggleAnswer(this)">Show Answer ▼</button>
+      <div class="case-answer">Take oral calcium supplements with vitamin D (needed for absorption) as prescribed. Signs to report immediately: muscle cramps, tingling, numbness, difficulty swallowing or breathing (laryngospasm). Take calcium carbonate with meals (acid aids absorption). Avoid high-phosphorus foods (interfere with Ca absorption). Follow-up labs scheduled — Ca²⁺ levels must be monitored closely for weeks. She may need lifelong supplementation if parathyroids were removed.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. REMEDIATION -->
+<section id="remediation" class="section" style="padding-top:0">
+  <h2 class="section-title">14 · Remediation Worksheet</h2>
+  <p style="margin-bottom:16px"><button onclick="window.print()" style="background:var(--brand);color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;">🖨️ Print Worksheet</button></p>
+  <div class="remediation-box"><h3>1. IV Fluid Matching</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">Write the correct fluid type (isotonic/hypotonic/hypertonic) for each scenario:</p>
+    <p style="font-size:.88rem">Patient in hypovolemic shock, BP 80/50:</p><input class="write-line" placeholder="Fluid choice and why:"/>
+    <p style="font-size:.88rem">Patient with hypernatremia, Na⁺ 158:</p><input class="write-line" placeholder="Fluid choice and why:"/>
+    <p style="font-size:.88rem">Patient with severe symptomatic hyponatremia, Na⁺ 115, seizures:</p><input class="write-line" placeholder="Fluid choice and why:"/>
+  </div>
+  <div class="remediation-box"><h3>2. Electrolyte Imbalances</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">For each, write: direction (high/low), 2 signs, and priority action:</p>
+    <p style="font-size:.88rem"><strong>Hyperkalemia:</strong></p><input class="write-line" placeholder="Signs:"/><input class="write-line" placeholder="Priority action:"/>
+    <p style="font-size:.88rem"><strong>Hypocalcemia:</strong></p><input class="write-line" placeholder="Signs:"/><input class="write-line" placeholder="Priority action:"/>
+    <p style="font-size:.88rem"><strong>Hypomagnesemia:</strong></p><input class="write-line" placeholder="Signs:"/><input class="write-line" placeholder="Priority action:"/>
+  </div>
+  <div class="remediation-box"><h3>3. KCl IV Safety Rules</h3>
+    <p style="font-size:.88rem;margin-bottom:8px">List 4 things you must do before/during IV potassium administration:</p>
+    <input class="write-line" placeholder="1."/><input class="write-line" placeholder="2."/><input class="write-line" placeholder="3."/><input class="write-line" placeholder="4."/>
+  </div>
+  <div class="remediation-box"><h3>4. Chvostek's vs. Trousseau's</h3>
+    <p style="font-size:.88rem">How do you perform each test and what does a positive result look like?</p>
+    <input class="write-line" placeholder="Chvostek's: how to test + positive result"/><input class="write-line" placeholder="Trousseau's: how to test + positive result"/><input class="write-line" placeholder="What electrolyte imbalance do both indicate?"/>
+  </div>
+</section>
+
+<!-- 15. QUICK QUIZ -->
+<section id="quiz" class="section" style="padding-top:0">
+  <h2 class="section-title">15 · Quick Quiz</h2>
+  <div class="qq-container"><div id="qqArea"></div></div>
+</section>
+
+<!-- 16. CHECKLIST -->
+<section id="checklist" class="section" style="padding-top:0;padding-bottom:60px">
+  <h2 class="section-title">16 · Module Checklist</h2>
+  <ul class="checklist" id="m6Checklist"></ul>
+  <div style="margin-top:10px"><span id="m6CheckPct" style="font-size:.9rem;color:var(--muted);font-weight:600"></span><div class="checklist-bar"><div class="checklist-fill" id="m6CheckFill"></div></div></div>
+  <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+    <a href="module5-guide.html" class="btn btn-outline">← Module 5</a>
+    <a href="nclex-success-center.html" class="btn btn-primary">Back to Hub 🏠</a>
+    <span class="btn btn-outline nav-unavailable" aria-disabled="true" aria-label="Module 7 is not available in this review package">Module 7 →</span>
+  </div>
+</section>
+
+ </main>
+<script>
+function showTab(id,trigger){document.querySelectorAll('.tab-panel').forEach(p=>{p.classList.remove('active');p.hidden=true;});document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');b.tabIndex=-1;});const panel=document.getElementById('tab-'+id);panel.classList.add('active');panel.hidden=false;trigger.classList.add('active');trigger.setAttribute('aria-selected','true');trigger.tabIndex=0;}
+function toggleCase(h){const b=h.nextElementSibling;const i=h.querySelector('.case-toggle');b.classList.toggle('open');h.setAttribute('aria-expanded',String(b.classList.contains('open')));i.textContent=b.classList.contains('open')?'▲':'▼';}
+function toggleAnswer(btn){const a=btn.nextElementSibling;a.classList.toggle('show');btn.setAttribute('aria-expanded',String(a.classList.contains('show')));btn.textContent=a.classList.contains('show')?'Hide Answer ▲':'Show Answer ▼';}
+
+const SB_URL='https://pmjwwktwlsqpetwfvolb.supabase.co';const SB_KEY='sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+const PQ=[
+  {q:"A patient's potassium level is 6.4 mEq/L. The nurse reviews the ECG strip. Which finding is MOST expected?",type:"MCQ",opts:["A. Flattened T waves and U waves","B. Peaked T waves","C. Prolonged QT interval","D. Widened P waves"],ans:1,rat:"Hyperkalemia → peaked (tall, narrow, tent-shaped) T waves are the FIRST ECG change. This is the hallmark of hyperkalemia. Flattened T waves and U waves = hypokalemia. Prolonged QT = hypocalcemia. Peaked T → progresses to widened QRS → sine wave → V-fib."},
+  {q:"A nurse is preparing to administer IV potassium chloride 20 mEq in 100 mL NS over 1 hour. Which action is most important before starting the infusion?",type:"MCQ",opts:["A. Obtain a 12-lead ECG","B. Verify urine output is at least 30 mL/hr","C. Administer a test dose of 5 mEq first","D. Position the patient in Trendelenburg"],ans:1,rat:"Adequate urine output (≥30 mL/hr) is essential before IV K+ — the kidneys must be able to excrete excess potassium. If the patient is oliguric and you give IV K+, levels will rise to dangerous levels. A 12-lead ECG is good practice but not the priority check. There is no 'test dose' for KCl."},
+  {q:"A patient with heart failure is prescribed furosemide and digoxin. The morning potassium level returns at 3.2 mEq/L. What is the nurse's priority action?",type:"MCQ",opts:["A. Administer both medications as scheduled","B. Hold the furosemide and give digoxin","C. Hold the digoxin and notify the provider about the low potassium","D. Give both medications and recheck potassium in 4 hours"],ans:2,rat:"Hold digoxin when K⁺ is below 3.5. Hypokalemia increases myocardial sensitivity to digoxin → toxicity risk even at therapeutic levels. Notify the provider — K+ replacement is needed before resuming digoxin. Furosemide also wastes K+, so both issues need to be addressed together."},
+  {q:"A patient is admitted with Na⁺ of 118 mEq/L and is having a seizure. Which IV fluid does the nurse anticipate the provider will order?",type:"MCQ",opts:["A. 0.9% Normal Saline","B. 0.45% Normal Saline","C. 3% Normal Saline","D. Lactated Ringer's"],ans:2,rat:"Severe symptomatic hyponatremia (seizure, Na < 120) requires hypertonic saline (3% NS) to rapidly raise sodium and decrease cerebral edema. 0.9% NS is isotonic and will raise Na⁺ but too slowly for a seizing patient. 0.45% NS is hypotonic and would worsen hyponatremia. LR contains K+ but won't adequately treat this."},
+  {q:"Which patient is at HIGHEST risk for developing hypokalemia?",type:"MCQ",opts:["A. A patient with renal failure on a low-potassium diet","B. A patient with heart failure receiving furosemide 80 mg daily","C. A patient post-op who is NPO and receiving 0.9% NS IV","D. A patient with hyperparathyroidism"],ans:1,rat:"Furosemide (loop diuretic) causes significant renal wasting of potassium, magnesium, and sodium. High-dose furosemide in HF patients is a classic setup for hypokalemia. Renal failure causes hyperkalemia (can't excrete K). NPO on NS doesn't cause significant K loss. Hyperparathyroidism relates to calcium."},
+  {q:"A nurse assesses a patient 12 hours after a total thyroidectomy. The patient complains of tingling around the mouth and cramping in the hands. The nurse taps the facial nerve and observes facial twitching. What is the priority action?",type:"MCQ",opts:["A. Document findings and reassess in 2 hours","B. Administer the prescribed oral calcium supplement","C. Notify the provider immediately and anticipate IV calcium gluconate order","D. Encourage the patient to drink a glass of milk"],ans:2,rat:"Positive Chvostek's sign + perioral tingling + hand cramping = symptomatic hypocalcemia post-thyroidectomy — a medical urgency. Notify provider immediately. IV calcium gluconate is the treatment for symptomatic hypocalcemia. Oral calcium is too slow for symptomatic patients. Milk is not appropriate for acute symptomatic hypocalcemia."},
+  {q:"A nurse is administering IV magnesium sulfate. Which assessment finding requires the nurse to stop the infusion immediately?",type:"MCQ",opts:["A. The patient reports feeling flushed and warm","B. The patient's deep tendon reflexes are absent","C. The patient's blood pressure drops from 128/82 to 118/76","D. The patient's respiratory rate is 14"],ans:1,rat:"Absent deep tendon reflexes (DTRs) = magnesium toxicity — this is the first warning sign before respiratory depression and cardiac arrest. STOP the infusion, call the provider, and have calcium gluconate (the antidote) ready. Flushing and warmth are expected with Mg infusion. Mild BP drop and RR of 14 are not immediately dangerous with Mg infusion."},
+  {q:"A patient is admitted with severe diarrhea for 4 days. Which set of findings is MOST expected?",type:"MCQ",opts:["A. HR 58, BP 148/90, crackles, JVD","B. HR 118, BP 90/60, dry mucous membranes, skin tenting","C. HR 90, BP 122/78, 2+ pitting edema, weight gain of 3 kg","D. HR 76, BP 126/80, clear lung sounds, moist mucous membranes"],ans:1,rat:"Severe diarrhea → fluid volume deficit (FVD) → tachycardia (compensatory, first sign), hypotension, dry mucous membranes, poor skin turgor. The first vital sign change in FVD is tachycardia — hypotension comes later. The other options describe fluid volume excess or normal findings."},
+  {q:"A nurse is caring for a patient with third-spacing following major abdominal surgery. The patient has 3+ pitting edema but HR is 112 and BP is 90/58. What is the appropriate treatment?",type:"MCQ",opts:["A. Administer furosemide IV to reduce the edema","B. Restrict IV fluids to prevent worsening edema","C. Administer isotonic IV fluids as ordered to support vascular volume","D. Elevate all four extremities and monitor closely"],ans:2,rat:"Third spacing: fluid is trapped in non-functional compartments (edema, ascites, surgical space). Despite visible edema, the vascular space is depleted → hypovolemia (tachycardia, hypotension). Treatment: isotonic IV fluids to expand the vascular volume. Diuretics would worsen hypovolemia. Fluid restriction would also worsen shock. The edema resolves when the underlying condition is treated and fluid remobilizes."},
+  {q:"A patient's potassium is 2.8 mEq/L and magnesium is 1.1 mEq/L. The nurse administers KCl replacement as ordered, but after two doses the K+ remains at 2.9. What should the nurse suspect?",type:"MCQ",opts:["A. The patient is not absorbing oral potassium","B. The low magnesium is preventing potassium correction","C. The patient needs a higher dose of KCl","D. The lab results are inaccurate and should be redrawn"],ans:1,rat:"Hypomagnesemia prevents potassium correction — this is the key clinical pearl. Mg is required for the Na-K-ATPase pump to work properly. Until Mg is repleted, K will not correct regardless of how much KCl is given. The correct action is to notify the provider and anticipate a magnesium replacement order."},
+  {q:"Which IV fluid is MOST appropriate for a patient in hypovolemic shock with a BP of 78/50?",type:"MCQ",opts:["A. 0.45% Normal Saline","B. D5W","C. 0.9% Normal Saline or Lactated Ringer's","D. 3% Normal Saline"],ans:2,rat:"Isotonic fluids (0.9% NS or LR) are used for volume resuscitation — they stay in the vascular space and expand blood volume. Hypotonic fluids (0.45% NS, D5W) would shift into cells and worsen hypotension. Hypertonic (3% NS) would pull fluid into vessels but is too concentrated for rapid large-volume resuscitation and can cause hypernatremia."},
+  {q:"A patient with hypercalcemia is prescribed treatment. Which order is MOST expected?",type:"MCQ",opts:["A. 0.45% Normal Saline IV + thiazide diuretic","B. 0.9% Normal Saline IV + furosemide","C. Calcium gluconate IV","D. Fluid restriction and potassium supplementation"],ans:1,rat:"Hypercalcemia treatment: isotonic NS IV (dilutes calcium and promotes renal excretion) + loop diuretic (furosemide — promotes Ca excretion in urine). Thiazide diuretics actually CAUSE hypercalcemia (retain Ca) — never use for hypercalcemia. Calcium gluconate would worsen it. Fluid restriction is for hyponatremia, not hypercalcemia."},
+  {q:"A nurse is caring for a patient with SIADH. Which finding is consistent with this diagnosis?",type:"MCQ",opts:["A. Na⁺ 152, serum osmolality high, urine dilute","B. Na⁺ 118, serum osmolality low, urine concentrated","C. Na⁺ 140, K⁺ 2.8, urine dilute","D. Na⁺ 148, K⁺ 5.2, urine dilute"],ans:1,rat:"SIADH: excess ADH causes water retention → dilutional hyponatremia (Na⁺ low), serum is dilute (low osmolality), but urine is paradoxically concentrated (ADH tells kidneys to retain water and concentrate urine). Classic: low serum Na + low serum osmolality + high urine osmolality. Treatment: fluid restriction."},
+  {q:"A nurse is assessing a patient who is on a loop diuretic and reporting muscle weakness and fatigue. Which electrolyte imbalance is MOST likely?",type:"MCQ",opts:["A. Hyperkalemia","B. Hypernatremia","C. Hypokalemia","D. Hypercalcemia"],ans:2,rat:"Loop diuretics (furosemide) waste potassium → hypokalemia. Classic symptoms: muscle weakness, fatigue, leg cramps, constipation, and flattened T waves on ECG. This is one of the most common NCLEX setups — patient on diuretic + muscle weakness = check potassium first."},
+  {q:"A patient's daily weight shows a gain of 2.2 kg (approximately 5 lb) overnight. What is the nurse's interpretation?",type:"MCQ",opts:["A. The patient likely ate a large meal","B. This represents approximately 2 liters of fluid retention","C. The scale is likely inaccurate","D. This is expected variation in daily weights"],ans:1,rat:"1 kg weight gain = approximately 1 liter of fluid retention. A 2.2 kg gain = ~2.2 liters of fluid retained overnight — this is significant and not normal variation. Notify the provider. This is a classic finding in fluid volume excess (HF, renal failure). Daily weights are the most sensitive monitor for fluid changes — more reliable than intake/output measurements."},
+  {q:"Which statement about hyponatremia correction is correct?",type:"MCQ",opts:["A. Correct as fast as possible to prevent seizures","B. Sodium should be corrected no faster than 8–12 mEq/L per 24 hours","C. Use 3% NS for all cases of hyponatremia","D. Fluid restriction is never appropriate for hyponatremia"],ans:1,rat:"Sodium must be corrected SLOWLY — no faster than 8–12 mEq/L per 24 hours. Rapid correction of hyponatremia causes osmotic demyelination syndrome (ODS/central pontine myelinolysis) — irreversible neurological damage. 3% NS is only for severe/symptomatic cases. Fluid restriction is the primary treatment for SIADH-related hyponatremia."},
+  {q:"A patient is admitted with renal failure. Which electrolyte imbalance is the nurse MOST concerned about?",type:"MCQ",opts:["A. Hyponatremia","B. Hypokalemia","C. Hyperkalemia","D. Hypocalcemia"],ans:2,rat:"Renal failure → kidneys cannot excrete potassium → hyperkalemia. This is the most immediately life-threatening complication of renal failure because of the risk of fatal cardiac arrhythmias. Monitor K+ closely in all renal failure patients. Dietary K restriction is standard. Dialysis removes potassium when levels are critically high."},
+  {q:"A nurse is teaching a patient with chronic hypokalemia about dietary sources of potassium. Which foods should the nurse include? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Bananas","B. White bread","C. Oranges","D. Avocados","E. Potatoes","F. Butter"],ans:[0,2,3,4],rat:"High-potassium foods: bananas, oranges, avocados, potatoes, tomatoes, leafy greens, cantaloupe, beans, nuts. White bread and butter are low in potassium. The classic NCLEX-tested high-K foods: bananas, oranges, potatoes, avocados."},
+  {q:"Which nursing assessments are required BEFORE administering IV magnesium sulfate? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. Deep tendon reflexes","B. Respiratory rate","C. Blood glucose","D. Urine output","E. Serum potassium","F. Blood pressure"],ans:[0,1,3,5],rat:"Before IV Mg: check DTRs (absent = hold), RR ≥12 (respiratory depression risk), UO ≥25-30 mL/hr (Mg excreted by kidneys), BP (Mg can cause vasodilation/hypotension). Blood glucose and serum potassium are not specific pre-assessments for IV Mg. Calcium gluconate must also be at bedside as antidote."},
+  {q:"A nurse is caring for four patients. Which patient requires IMMEDIATE assessment?",type:"MCQ",opts:["A. Patient A: K⁺ 3.2, complaining of mild leg cramps, on oral KCl replacement","B. Patient B: Na⁺ 128, mild confusion, on fluid restriction","C. Patient C: K⁺ 6.8 with peaked T waves and widening QRS on monitor","D. Patient D: Ca²⁺ 7.9, positive Chvostek's, awaiting IV calcium gluconate order"],ans:2,rat:"Patient C is the priority — hyperkalemia K⁺ 6.8 with ECG changes (peaked T waves + widening QRS) = imminent cardiac emergency. This can rapidly progress to ventricular fibrillation. Immediate action: notify provider STAT, continuous monitoring, anticipate calcium gluconate (cardiac protection), sodium bicarb, insulin/D50, and Kayexalate orders. The other patients need attention but are not in immediate cardiac danger."},
+  {q:"A patient has been receiving isotonic IV fluids post-operatively. Assessment findings include crackles bilaterally, 2+ pitting edema, jugular vein distension, and a weight gain of 3 kg since surgery. What complication has occurred?",type:"MCQ",opts:["A. Third spacing with fluid remobilization","B. Fluid volume excess from over-aggressive IV fluid administration","C. Hyponatremia from isotonic fluids","D. Normal post-operative fluid retention"],ans:1,rat:"Crackles + JVD + pitting edema + 3 kg weight gain = classic fluid volume excess (hypervolemia). This is over-aggressive IV fluid administration — a common post-operative complication. Treatment: notify provider, anticipate diuretic order (furosemide), semi-Fowler's position, fluid restriction, daily weights, monitor I&O. A 3 kg gain = 3 liters of excess fluid."},
+  {q:"A patient's lab results show: K⁺ 2.6, Mg²⁺ 1.0, Ca²⁺ 7.8. Despite multiple doses of KCl, the potassium remains at 2.7. What is the priority nursing action?",type:"MCQ",opts:["A. Double the dose of KCl and continue monitoring","B. Notify the provider that potassium is not correcting — magnesium replacement is likely needed","C. Switch from oral to IV potassium","D. Check the patient's dietary intake of potassium"],ans:1,rat:"When K+ does not correct despite adequate replacement, the problem is almost always hypomagnesemia. Mg is required for the Na-K-ATPase pump — without it, potassium leaks out of cells regardless of how much is replaced. Notify the provider and anticipate a magnesium sulfate order. Correct Mg first, then K will correct."},
+  {q:"Which IV fluid choices are appropriate for a patient with hypernatremia (Na⁺ 158)? SELECT ALL THAT APPLY.",type:"SATA",opts:["A. 0.45% Normal Saline","B. 0.9% Normal Saline","C. D5W","D. 3% Normal Saline","E. Lactated Ringer's"],ans:[0,2],rat:"Hypernatremia (too much sodium) is treated with HYPOTONIC fluids to dilute the sodium and shift water into cells: 0.45% NS (half normal saline) and D5W (acts as free water once dextrose metabolizes). Isotonic (0.9% NS, LR) would maintain the high sodium level. Hypertonic (3% NS) would worsen hypernatremia critically."},
+  {q:"A nurse is reviewing orders for a patient in acute renal failure with K⁺ 5.8. Which order should the nurse question?",type:"MCQ",opts:["A. Sodium polystyrene (Kayexalate) 15 g orally","B. Cardiac monitoring continuous","C. Lactated Ringer's 125 mL/hr IV","D. Restrict dietary potassium"],ans:2,rat:"Lactated Ringer's contains potassium (4 mEq/L) — this should NOT be used in a patient who already has hyperkalemia and renal failure. The nurse should question this order and clarify — 0.9% NS is the appropriate isotonic fluid for this patient. Kayexalate, cardiac monitoring, and K restriction are all appropriate for hyperkalemia."},
+  {q:"A patient with suspected fluid volume deficit has the following findings: HR 108, BP 104/72 lying and 88/58 standing. What does the drop in BP from lying to standing indicate?",type:"MCQ",opts:["A. Normal variation in blood pressure with position change","B. Orthostatic hypotension — consistent with fluid volume deficit","C. Hypertensive urgency","D. Neurogenic shock"],ans:1,rat:"Orthostatic hypotension (a drop in systolic BP ≥20 mmHg or diastolic ≥10 mmHg when moving from lying to standing) is a hallmark of fluid volume deficit. The vascular space doesn't have enough volume to compensate for the position change. This patient has a 16 mmHg systolic drop — significant. Orthostatic hypotension = high fall risk — implement fall precautions and notify provider."}
+];
+
+let pqCurrent=0,pqSelected=null,pqSATASelected=[],pqAnswered=false,pqScore=0,pqHistory=[];
+function renderPQ(){
+  if(pqCurrent>=PQ.length){showPQResults();return;}
+  const q=PQ[pqCurrent];const isSATA=q.type==="SATA";
+  document.getElementById('pqFill').style.width=((pqCurrent/PQ.length)*100)+'%';
+  pqSelected=null;pqSATASelected=[];pqAnswered=false;
+  let html=`<div class="pq-header"><span class="pq-counter">Question ${pqCurrent+1} of ${PQ.length}</span><span class="pq-type-badge">${q.type}</span></div><div class="pq-q">${q.q}</div>`;
+  if(isSATA)html+=`<div class="sata-hint">Select all that apply.</div>`;
+  html+=`<ul class="pq-options">`;
+  q.opts.forEach((o,i)=>{html+=`<li><button type="button" id="pqOpt${i}" aria-pressed="false" onclick="${isSATA?'pqToggleSATA('+i+')':'pqSelect('+i+')'}">${o}</button></li>`;});
+  html+=`</ul><div class="pq-rationale" id="pqRat"><strong>📝 Rationale:</strong> ${q.rat}</div><div class="pq-nav">`;
+  if(isSATA)html+=`<button class="btn btn-primary" onclick="pqSubmitSATA()">Submit Answer</button>`;
+  else html+=`<button class="btn btn-outline" id="pqSubmitBtn" disabled onclick="pqSubmitMCQ()">Submit</button>`;
+  html+=`<button class="btn btn-primary" id="pqNextBtn" disabled onclick="pqNext()">Next →</button></div>`;
+  document.getElementById('pqArea').innerHTML=html;
+}
+function pqSelect(i){if(pqAnswered)return;document.querySelectorAll('.pq-options button').forEach(l=>{l.classList.remove('selected');l.setAttribute('aria-pressed','false');});document.getElementById('pqOpt'+i).classList.add('selected');document.getElementById('pqOpt'+i).setAttribute('aria-pressed','true');pqSelected=i;const sb=document.getElementById('pqSubmitBtn');if(sb)sb.disabled=false;}
+function pqSubmitMCQ(){if(pqSelected===null||pqAnswered)return;pqAnswered=true;const q=PQ[pqCurrent];const isC=pqSelected===q.ans;if(isC){pqScore++;document.getElementById('pqOpt'+pqSelected).classList.add('correct');}else{document.getElementById('pqOpt'+pqSelected).classList.add('incorrect');document.getElementById('pqOpt'+q.ans).classList.add('correct');}pqHistory.push({qNum:pqCurrent+1,q:q.q,opts:q.opts,selected:pqSelected,correct:q.ans,isCorrect:isC,rat:q.rat,type:'MCQ'});document.getElementById('pqRat').classList.add('show');document.getElementById('pqNextBtn').disabled=false;const sb=document.getElementById('pqSubmitBtn');if(sb)sb.disabled=true;}
+function pqToggleSATA(i){if(pqAnswered)return;const el=document.getElementById('pqOpt'+i);if(pqSATASelected.includes(i)){pqSATASelected=pqSATASelected.filter(x=>x!==i);el.classList.remove('selected');el.setAttribute('aria-pressed','false');}else{pqSATASelected.push(i);el.classList.add('selected');el.setAttribute('aria-pressed','true');}}
+function pqSubmitSATA(){if(pqSATASelected.length===0||pqAnswered)return;pqAnswered=true;const q=PQ[pqCurrent];const correct=JSON.stringify(q.ans.slice().sort())===JSON.stringify(pqSATASelected.slice().sort());if(correct)pqScore++;q.ans.forEach(i=>document.getElementById('pqOpt'+i).classList.add('correct'));pqSATASelected.forEach(i=>{if(!q.ans.includes(i))document.getElementById('pqOpt'+i).classList.add('incorrect');});pqHistory.push({qNum:pqCurrent+1,q:q.q,opts:q.opts,selected:[...pqSATASelected],correct:q.ans,isCorrect:correct,rat:q.rat,type:'SATA'});document.getElementById('pqRat').classList.add('show');const nb=document.getElementById('pqNextBtn');if(nb)nb.disabled=false;}
+function pqNext(){pqCurrent++;renderPQ();}
+function showPQResults(){document.getElementById('pqFill').style.width='100%';const pct=Math.round((pqScore/PQ.length)*100);document.getElementById('pqArea').innerHTML=`<div class="pq-results"><div class="pq-score">${pqScore}/${PQ.length}</div><div class="pq-score-label">${pct}% — ${pct>=80?'Great job! 🎉':pct>=60?'Good effort — review the rationales 📖':'Review the Deep Dive sections and retry 💪'}</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary" onclick="emailResults('Module 6 – Fluids, Electrolytes & Acid-Base')">📧 Email My Results</button><button class="btn btn-outline" onclick="pqCurrent=0;pqScore=0;pqHistory=[];renderPQ()">Retake Questions</button></div></div>`;}
+async function emailResults(mod){const date=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const pct=Math.round((pqScore/PQ.length)*100);const wrong=pqHistory.filter(h=>!h.isCorrect);const correctNums=pqHistory.filter(h=>h.isCorrect).map(h=>'Q'+h.qNum).join(', ');let body=mod+' – Practice Quiz Results\nStudent: Alyssa Dababneh\nDate: '+date+'\nScore: '+pqScore+'/'+PQ.length+' ('+pct+'%)\n\n';if(wrong.length===0){body+='All answers correct!\n';}else{body+='QUESTIONS TO REVIEW ('+wrong.length+' incorrect):\n'+'─'.repeat(50)+'\n\n';wrong.forEach(item=>{body+='Q'+item.qNum+': '+item.q+'\n';if(item.type==='MCQ'){body+='Alyssa chose: '+item.opts[item.selected]+'\nCorrect answer: '+item.opts[item.correct]+'\n';}else{body+='Alyssa chose: '+item.selected.map(s=>item.opts[s]).join(' | ')+'\nCorrect answers: '+item.correct.map(c=>item.opts[c]).join(' | ')+'\n';}body+='Rationale: '+item.rat+'\n\n';});}if(correctNums)body+='\nCorrect: '+correctNums;
+try{const{createClient}=supabase;const db=createClient(SB_URL,SB_KEY);await db.from('quiz_results').insert({student_name:'Alyssa Dababneh',student_email:'alyssadababneh@yahoo.com',module:mod,score:pqScore,total:PQ.length,percentage:pct,answers:pqHistory});}catch(e){console.error('Supabase:',e);}
+const sub=encodeURIComponent(mod+' Results – Alyssa – '+pct+'% ('+pqScore+'/'+PQ.length+')');window.location.href='mailto:alyssadababneh@yahoo.com,studywithmadisonrn@gmail.com?subject='+sub+'&body='+encodeURIComponent(body);}
+renderPQ();
+
+const QQ=[
+  {q:"What is the FIRST ECG change seen in hyperkalemia?",opts:["Flattened T waves","Peaked T waves","Prolonged QT"],ans:1,exp:"Peaked (tall, narrow, tent-shaped) T waves are the first ECG change in hyperkalemia. This progresses to widened QRS → sine wave → V-fib."},
+  {q:"What is the maximum rate for IV potassium via a peripheral line?",opts:["5 mEq/hr","10 mEq/hr","20 mEq/hr"],ans:1,exp:"Maximum 10 mEq/hr peripheral. Central lines allow up to 20 mEq/hr. Always via infusion pump — never IV push."},
+  {q:"Chvostek's sign is tested by:",opts:["Inflating BP cuff above systolic","Tapping the facial nerve below the cheekbone","Dorsiflexing the foot"],ans:1,exp:"Tap the facial nerve just below and in front of the ear → facial twitching = positive Chvostek's = hypocalcemia. Trousseau's = inflate BP cuff."},
+  {q:"A patient on furosemide with K⁺ 3.1 is about to receive digoxin. The nurse should:",opts:["Give digoxin as scheduled","Hold digoxin and notify the provider","Give digoxin and recheck K⁺ in 2 hours"],ans:1,exp:"Hold digoxin when K⁺ < 3.5. Hypokalemia dramatically increases digoxin toxicity risk even at therapeutic levels. Notify provider for K replacement."},
+  {q:"D5W acts as which type of fluid once the dextrose is metabolized?",opts:["Isotonic","Hypertonic","Hypotonic"],ans:2,exp:"D5W is isotonic in the bag but acts hypotonic once dextrose is metabolized — leaving only free water. Never use for resuscitation."},
+  {q:"When potassium replacement fails to correct hypokalemia, what should the nurse suspect?",opts:["The dose is too low","Hypomagnesemia is blocking correction","The lab values are wrong"],ans:1,exp:"Hypomagnesemia prevents K+ correction — Mg is required for the Na-K pump. Fix Mg first, then K will correct."},
+  {q:"Which finding indicates fluid volume deficit?",opts:["JVD, crackles, weight gain","Tachycardia, dry mucous membranes, dark urine","Hypertension, pitting edema, S3 heart sound"],ans:1,exp:"FVD signs: tachycardia (first sign), hypotension, dry mucous membranes, poor skin turgor, dark concentrated urine, ↓UO."},
+  {q:"Third-spacing patients have edema yet show signs of:",opts:["Fluid volume excess","Fluid volume deficit","Normal fluid balance"],ans:1,exp:"Third spacing paradox: edema is present but the vascular space is depleted → tachycardia, hypotension, ↓UO. Treat the hypovolemia with IV fluids."},
+  {q:"The antidote for magnesium sulfate toxicity is:",opts:["Naloxone","Potassium chloride","Calcium gluconate"],ans:2,exp:"Calcium gluconate reverses magnesium toxicity. Keep it at the bedside during any IV Mg infusion. Give if DTRs are absent or RR drops below 12."},
+  {q:"How much fluid does a 1 kg weight gain represent?",opts:["500 mL","1 liter","2 liters"],ans:1,exp:"1 kg = ~1 liter of fluid. Daily weights are the most accurate way to monitor fluid balance. Report gains >1 kg/day to the provider."}
+];
+let qqIdx=0,qqScore=0,qqDone=false;
+function renderQQ(){
+  if(qqIdx>=QQ.length){const pct=Math.round((qqScore/QQ.length)*100);document.getElementById('qqArea').innerHTML=`<div class="qq-score"><div class="score-num">${qqScore}/${QQ.length}</div><p>${pct}% — ${pct>=80?'Excellent! 🎉':pct>=60?'Good — review misses 📖':'Review the module and retry 💪'}</p><button class="btn btn-primary" onclick="qqIdx=0;qqScore=0;renderQQ()">Retake Quiz</button></div>`;return;}
+  const q=QQ[qqIdx];let html=`<div class="qq-q">Q${qqIdx+1}/${QQ.length}: ${q.q}</div><ul class="qq-options">`;
+  q.opts.forEach((o,i)=>html+=`<li><button type="button" id="qqOpt${i}" onclick="qqAnswer(${i})">${o}</button></li>`);
+  html+=`</ul><div id="qqFeedback"></div>`;
+  document.getElementById('qqArea').innerHTML=html;qqDone=false;
+}
+function qqAnswer(i){if(qqDone)return;qqDone=true;const q=QQ[qqIdx];document.getElementById('qqOpt'+i).classList.add(i===q.ans?'qq-correct':'qq-incorrect');if(i!==q.ans)document.getElementById('qqOpt'+q.ans).classList.add('qq-correct');if(i===q.ans)qqScore++;const fb=document.getElementById('qqFeedback');fb.className='qq-feedback '+(i===q.ans?'correct':'incorrect');fb.innerHTML=(i===q.ans?'✅ Correct! ':'❌ Incorrect. ')+q.exp+` <button class="btn btn-outline" style="margin-top:10px;font-size:.8rem;padding:6px 14px" onclick="qqIdx++;qqDone=false;renderQQ()">Next →</button>`;}
+renderQQ();
+
+const M6_ITEMS=[
+  "I know the 3 IV fluid types and when to use each (isotonic, hypotonic, hypertonic)",
+  "I can state the normal range for Na, K, Ca, Mg, and Phosphorus",
+  "I know the signs of hypokalemia and hyperkalemia and the ECG changes",
+  "I understand why IV potassium is NEVER given as a push or bolus",
+  "I can perform Chvostek's and Trousseau's and explain what they indicate",
+  "I know why low magnesium prevents potassium and calcium from correcting",
+  "I can differentiate fluid volume deficit from fluid volume excess",
+  "I understand third spacing and why these patients need IV fluids despite edema",
+  "I completed all 25 practice questions and reviewed rationales",
+  "I'm confident with fluids and electrolytes and ready for Module 7"
+];
+const M6_KEY='nclex_m6_checklist';
+function renderChecklist(){const saved=JSON.parse(localStorage.getItem(M6_KEY)||'[]');const ul=document.getElementById('m6Checklist');ul.innerHTML='';M6_ITEMS.forEach((item,i)=>{const done=saved.includes(i);const li=document.createElement('li');li.className=done?'done':'';li.innerHTML=`<button type="button" aria-pressed="${done}" onclick="toggleCheck(${i})"><span class="check-icon" aria-hidden="true">${done?'✅':'⬜'}</span><span>${item}</span></button>`;ul.appendChild(li);});const pct=Math.round((saved.length/M6_ITEMS.length)*100);document.getElementById('m6CheckPct').textContent=`${saved.length}/${M6_ITEMS.length} complete (${pct}%)`;document.getElementById('m6CheckFill').style.width=pct+'%';}
+function toggleCheck(i){let saved=JSON.parse(localStorage.getItem(M6_KEY)||'[]');if(saved.includes(i))saved=saved.filter(x=>x!==i);else saved.push(i);localStorage.setItem(M6_KEY,JSON.stringify(saved));renderChecklist();}
+renderChecklist();
+document.querySelectorAll('.tab-panel').forEach((panel,i)=>{const tab=document.querySelectorAll('.tab-btn')[i];panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',tab.id);panel.hidden=i!==0;tab.tabIndex=i===0?0:-1;});
+document.querySelectorAll('.tab-btn').forEach((tab,i,tabs)=>tab.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[next].focus();tabs[next].click();}));
+document.querySelectorAll('.case-answer-btn').forEach((btn,i)=>{const answer=btn.nextElementSibling;answer.id=answer.id||`case-answer-${i+1}`;btn.setAttribute('aria-controls',answer.id);btn.setAttribute('aria-expanded','false');});
+document.querySelectorAll('.tbl').forEach((table,i)=>{const wrapper=document.createElement('div');wrapper.className='table-scroll';table.parentNode.insertBefore(wrapper,table);wrapper.appendChild(table);const section=table.closest('section');table.setAttribute('aria-label',`${section?.querySelector('h2')?.textContent.trim()||'Module 6'} reference table ${i+1}`);});
+const sectionLinks=[...document.querySelectorAll('.section-nav a')];
+const sectionObserver=new IntersectionObserver(entries=>{const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;sectionLinks.forEach(link=>link.removeAttribute('aria-current'));const current=sectionLinks.find(link=>link.getAttribute('href')==='#'+visible.target.id);if(current){current.setAttribute('aria-current','location');current.scrollIntoView({block:'nearest',inline:'center'});}}, {rootMargin:'-110px 0px -65% 0px',threshold:[.1,.35,.7]});
+document.querySelectorAll('main > section[id]').forEach(section=>sectionObserver.observe(section));
+</script>
+</body>
+</html>
+
+</body>
+</html>

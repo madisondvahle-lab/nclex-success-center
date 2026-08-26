@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Module 1 — Newborn Care · Study with Madison, RN</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -15,6 +15,9 @@
     }
     html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--navy); }
+    .skip-link { position: fixed; left: 12px; top: 8px; z-index: 500; transform: translateY(-160%); background: #fff; color: var(--navy); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+    .skip-link:focus { transform: translateY(0); }
+    :focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
 
     /* ── TOP NAV ── */
     .top-bar {
@@ -22,9 +25,9 @@
       display: flex; align-items: center; gap: 16px; height: 52px;
       position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
-    .top-bar a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .top-bar a { min-height: 44px; display: inline-flex; align-items: center; color: var(--muted); text-decoration: none; font-size: 13px; }
     .top-bar a:hover { color: #fff; }
-    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; }
+    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .top-bar-badge { background: var(--green); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
 
     /* ── HERO ── */
@@ -47,14 +50,16 @@
     .progress-nav {
       background: var(--white); border-bottom: 1px solid #e2e8f0;
       overflow-x: auto; white-space: nowrap; padding: 0 20px;
-      display: flex; gap: 4px;
+      display: flex; gap: 4px; position: sticky; top: 52px; z-index: 190;
+      scrollbar-width: thin; scroll-snap-type: x proximity;
     }
     .progress-nav a {
-      display: inline-block; padding: 10px 14px; font-size: 12px; font-weight: 600;
+      display: inline-flex; align-items: center; min-height: 44px; padding: 10px 14px; font-size: 12px; font-weight: 600;
       color: var(--slate); text-decoration: none; border-bottom: 2px solid transparent;
-      transition: all 0.15s; flex-shrink: 0;
+      transition: all 0.15s; flex-shrink: 0; scroll-snap-align: start;
     }
     .progress-nav a:hover { color: var(--green); border-bottom-color: var(--green-mid); }
+    .progress-nav a[aria-current="location"] { color: #047857; border-bottom-color: var(--green); background: #f0fdf4; }
 
     /* ── LAYOUT ── */
     .page { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
@@ -104,16 +109,16 @@
     /* ── LESSON TABS ── */
     .lesson-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
     .lesson-tab {
-      padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+      min-height: 44px; padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 700;
       border: 1.5px solid #e2e8f0; background: #f8fafc; color: var(--slate);
       cursor: pointer; transition: all 0.15s;
     }
     .lesson-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
-    .lesson-panel { display: none; }
+    .lesson-panel { display: none; overflow-x: auto; padding: 2px; }
     .lesson-panel.active { display: block; }
 
     /* ── LESSON TABLE ── */
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
     .data-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
     .data-table th:first-child { border-radius: 8px 0 0 0; }
     .data-table th:last-child { border-radius: 0 8px 0 0; }
@@ -177,7 +182,7 @@
     .pq-stem { font-size: 15px; color: var(--navy); line-height: 1.65; margin-bottom: 16px; font-weight: 500; }
     .pq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .pq-option {
-      padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0;
+      min-height: 44px; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0;
       background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155;
       transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif;
     }
@@ -190,7 +195,7 @@
     .pq-rationale strong { color: var(--navy); }
     .pq-rationale.show { display: block; }
     .pq-nav { display: flex; gap: 8px; align-items: center; }
-    .btn-pq { padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-pq { min-height: 44px; padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
     .btn-pq-primary { background: var(--green); color: #fff; }
     .btn-pq-primary:hover { background: #047857; }
     .btn-pq-secondary { background: #f1f5f9; color: var(--slate); }
@@ -198,7 +203,7 @@
     .pq-results { text-align: center; padding: 32px 20px; }
     .pq-results-score { font-size: 52px; font-weight: 800; color: var(--green); }
     .pq-results-label { font-size: 16px; color: var(--slate); margin-bottom: 20px; }
-    .pq-restart { padding: 12px 28px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .pq-restart { min-height: 44px; padding: 12px 28px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
 
     /* ── CASE STUDY ── */
     .case-scenario { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
@@ -206,7 +211,10 @@
     .case-scenario p { font-size: 14px; color: #1e3a8a; line-height: 1.65; }
     .case-questions { display: flex; flex-direction: column; gap: 14px; }
     .case-q { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-    .case-q-header { padding: 12px 16px; background: #f8fafc; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .case-q-header { width: 100%; min-height: 48px; padding: 12px 16px; border: 0; background: #f8fafc; font-family: 'Inter', sans-serif; text-align: left; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .case-q-header:hover { background: #f1f5f9; }
+    .case-q-header[aria-expanded="true"] span { transform: rotate(180deg); }
+    .case-q-header span { transition: transform 0.15s ease; }
     .case-q-body { padding: 14px 16px; display: none; font-size: 13px; color: #334155; line-height: 1.65; }
     .case-q-body.open { display: block; }
     .case-answer { background: #f0fdf4; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-weight: 600; color: #065f46; font-size: 13px; }
@@ -216,11 +224,11 @@
     .remed-title { font-size: 13px; font-weight: 800; color: var(--navy); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 10px; }
     .remed-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px; color: #334155; }
     .remed-blank { width: 120px; border-bottom: 1.5px solid var(--navy); height: 18px; }
-    .btn-print { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+    .btn-print { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
 
     /* ── QUICK QUIZ ── */
     #qq-container { }
-    .qq-option { padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+    .qq-option { min-height: 44px; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
     .qq-option:hover:not(:disabled) { border-color: var(--green); background: #f0fdf4; }
     .qq-option.correct { background: #f0fdf4; border-color: var(--green); color: #065f46; font-weight: 600; }
     .qq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
@@ -230,11 +238,11 @@
     .qq-feedback.incorrect { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
     .qq-results { text-align: center; padding: 24px; }
     .qq-results-score { font-size: 42px; font-weight: 800; }
-    .qq-restart { padding: 10px 24px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+    .qq-restart { min-height: 44px; padding: 10px 24px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
 
     /* ── CHECKLIST ── */
     .checklist-items { display: flex; flex-direction: column; gap: 8px; }
-    .checklist-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
+    .checklist-item { width: 100%; min-height: 44px; display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
     .checklist-item.checked { background: #f0fdf4; border-color: var(--green-mid); }
     .checklist-box { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 1px; }
     .checklist-item.checked .checklist-box { background: var(--green); border-color: var(--green); color: #fff; font-size: 12px; }
@@ -243,28 +251,38 @@
     .checklist-progress { margin-top: 16px; font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
     .checklist-bar-wrap { height: 8px; background: #e2e8f0; border-radius: 99px; margin: 8px 0; }
     .checklist-bar { height: 8px; background: var(--green); border-radius: 99px; transition: width 0.3s; }
+    .completion-nav { margin-top: 20px; padding-top: 18px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .completion-link { min-height: 44px; padding: 10px 18px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .completion-link-secondary { background: #f1f5f9; color: var(--slate); }
+    .completion-link-primary { background: var(--green); color: #fff; }
 
     @media print {
       .top-bar, .progress-nav, .hero, .section-card:not(#section-remediation) { display: none !important; }
       #section-remediation { box-shadow: none; border: none; }
     }
     @media(max-width:480px) {
+      .top-bar { padding-left: 8px; padding-right: 8px; gap: 6px; }
       .section-card { padding: 20px 16px; }
       .hero h1 { font-size: 24px; }
+      .page { padding-left: 12px; padding-right: 12px; }
+      .progress-nav { padding-left: 8px; padding-right: 8px; }
     }
   </style>
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to module content</a>
+
 <!-- TOP BAR -->
-<div class="top-bar">
-  <a href="alyssa-hub.html">← Hub</a>
+<header class="top-bar">
+  <a href="nclex-success-center.html">← Hub</a>
   <div class="top-bar-title">Module 1 — Newborn Care</div>
   <span class="top-bar-badge">Phase 1</span>
-</div>
+  <a href="module2-guide.html">M2 →</a>
+</header>
 
 <!-- SECTION NAV -->
-<div class="progress-nav">
+<nav class="progress-nav" aria-label="Module sections">
   <a href="#section-overview">Overview</a>
   <a href="#section-objectives">Objectives</a>
   <a href="#section-bigpicture">Big Picture</a>
@@ -281,7 +299,7 @@
   <a href="#section-remediation">Remediation</a>
   <a href="#section-quickquiz">Quick Quiz</a>
   <a href="#section-checklist">Checklist</a>
-</div>
+</nav>
 
 <!-- HERO -->
 <div class="hero">
@@ -296,7 +314,7 @@
   </div>
 </div>
 
-<div class="page">
+<main class="page" id="main-content" tabindex="-1">
 
 <!-- ① OVERVIEW -->
 <div class="section-card" id="section-overview">
@@ -384,19 +402,19 @@
     <div class="section-num">5</div>
     <div><h2>Deep Dive Lessons</h2><p>Select a lesson to expand</p></div>
   </div>
-  <div class="lesson-tabs">
-    <button class="lesson-tab active" onclick="showLesson('apgar')">A · APGAR</button>
-    <button class="lesson-tab" onclick="showLesson('findings')">B · Normal vs. Abnormal</button>
-    <button class="lesson-tab" onclick="showLesson('circulation')">C · Circulation</button>
-    <button class="lesson-tab" onclick="showLesson('thermo')">D · Thermoregulation</button>
-    <button class="lesson-tab" onclick="showLesson('feeding')">E · Feeding</button>
-    <button class="lesson-tab" onclick="showLesson('jaundice')">F · Jaundice</button>
-    <button class="lesson-tab" onclick="showLesson('safety')">G · Safety</button>
+  <div class="lesson-tabs" role="tablist" aria-label="Deep dive lessons">
+    <button type="button" id="tab-apgar" class="lesson-tab active" role="tab" aria-selected="true" aria-controls="lesson-apgar" tabindex="0" onclick="showLesson('apgar', this)">A · APGAR</button>
+    <button type="button" id="tab-findings" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-findings" tabindex="-1" onclick="showLesson('findings', this)">B · Normal vs. Abnormal</button>
+    <button type="button" id="tab-circulation" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-circulation" tabindex="-1" onclick="showLesson('circulation', this)">C · Circulation</button>
+    <button type="button" id="tab-thermo" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-thermo" tabindex="-1" onclick="showLesson('thermo', this)">D · Thermoregulation</button>
+    <button type="button" id="tab-feeding" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-feeding" tabindex="-1" onclick="showLesson('feeding', this)">E · Feeding</button>
+    <button type="button" id="tab-jaundice" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-jaundice" tabindex="-1" onclick="showLesson('jaundice', this)">F · Jaundice</button>
+    <button type="button" id="tab-safety" class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-safety" tabindex="-1" onclick="showLesson('safety', this)">G · Safety</button>
   </div>
 
-  <div id="lesson-apgar" class="lesson-panel active">
+  <div id="lesson-apgar" class="lesson-panel active" role="tabpanel" aria-labelledby="tab-apgar" tabindex="0">
     <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">APGAR is scored at <strong>1 minute</strong> and <strong>5 minutes</strong> of life. It does <em>not</em> predict long-term neurological outcome — that's an NCLEX trap.</p>
-    <table class="data-table">
+    <table class="data-table" aria-label="APGAR scoring by category">
       <thead><tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr></thead>
       <tbody>
         <tr><td><strong>A</strong>ppearance</td><td>Blue all over</td><td>Blue extremities (pink body)</td><td>Pink all over</td></tr>
@@ -413,8 +431,8 @@
     </div>
   </div>
 
-  <div id="lesson-findings" class="lesson-panel">
-    <table class="data-table">
+  <div id="lesson-findings" class="lesson-panel" role="tabpanel" aria-labelledby="tab-findings" tabindex="0">
+    <table class="data-table" aria-label="Normal and reportable newborn findings">
       <thead><tr><th>Finding</th><th>Normal or Not?</th><th>Key Point</th></tr></thead>
       <tbody>
         <tr><td>Acrocyanosis (blue hands/feet)</td><td><span class="normal">Normal</span></td><td>Peripheral, not central. Goes away in days.</td></tr>
@@ -433,9 +451,9 @@
     </table>
   </div>
 
-  <div id="lesson-circulation" class="lesson-panel">
+  <div id="lesson-circulation" class="lesson-panel" role="tabpanel" aria-labelledby="tab-circulation" tabindex="0">
     <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">Three fetal structures close after birth. Know each one's job and what happens when they fail to close.</p>
-    <table class="data-table">
+    <table class="data-table" aria-label="Fetal circulation shunts">
       <thead><tr><th>Structure</th><th>Connects</th><th>Purpose</th><th>What closes it</th></tr></thead>
       <tbody>
         <tr><td><strong>Ductus Venosus</strong></td><td>Umbilical vein → IVC</td><td>Bypasses liver</td><td>First breath / cord clamping</td></tr>
@@ -448,13 +466,13 @@
     </div>
   </div>
 
-  <div id="lesson-thermo" class="lesson-panel">
+  <div id="lesson-thermo" class="lesson-panel" role="tabpanel" aria-labelledby="tab-thermo" tabindex="0">
     <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:12px;">Newborns cannot shiver. They use <strong>nonshivering thermogenesis</strong> (burning brown adipose tissue) to generate heat — which consumes enormous amounts of oxygen and glucose.</p>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
       <div style="padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #fde047;font-size:13px;color:#92400e;"><strong>Cold stress → </strong>↑ O₂ consumption → hypoxia → respiratory distress</div>
       <div style="padding:10px 14px;border-radius:10px;background:#fef3c7;border:1px solid #fde047;font-size:13px;color:#92400e;"><strong>Cold stress → </strong>↑ glucose use → hypoglycemia → jitteriness/seizures</div>
     </div>
-    <table class="data-table">
+    <table class="data-table" aria-label="Newborn heat loss types and prevention">
       <thead><tr><th>Heat Loss Type</th><th>Example</th><th>Prevention</th></tr></thead>
       <tbody>
         <tr><td><strong>Evaporation</strong></td><td>Wet baby after delivery</td><td>Dry immediately with warm blankets</td></tr>
@@ -466,9 +484,9 @@
     <p style="margin-top:12px;font-size:13px;color:#334155;line-height:1.65;">Interventions: dry + swaddle, skin-to-skin, knit cap, radiant warmer, pre-warm blankets.</p>
   </div>
 
-  <div id="lesson-feeding" class="lesson-panel">
+  <div id="lesson-feeding" class="lesson-panel" role="tabpanel" aria-labelledby="tab-feeding" tabindex="0">
     <p style="font-size:14px;color:#334155;line-height:1.7;margin-bottom:14px;">Wet diapers are your best daily indicator of adequate intake in breastfed newborns.</p>
-    <table class="data-table">
+    <table class="data-table" aria-label="Expected wet diapers by day of life">
       <thead><tr><th>Day of Life</th><th>Expected Wet Diapers</th></tr></thead>
       <tbody>
         <tr><td>Day 1</td><td>1 wet diaper</td></tr>
@@ -484,7 +502,7 @@
     </div>
   </div>
 
-  <div id="lesson-jaundice" class="lesson-panel">
+  <div id="lesson-jaundice" class="lesson-panel" role="tabpanel" aria-labelledby="tab-jaundice" tabindex="0">
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
       <div style="padding:14px 16px;border-radius:12px;background:#fff1f2;border:1.5px solid #fecdd3;">
         <div style="font-size:12px;font-weight:800;color:#9f1239;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Pathological Jaundice</div>
@@ -498,7 +516,7 @@
     <p style="font-size:13px;color:#334155;line-height:1.65;"><strong>Treatment:</strong> Phototherapy (blue light breaks down bilirubin in skin). Eyes must be protected. Increase fluid intake. Monitor skin color head-to-toe (jaundice progresses cephalocaudally — head first, feet last).</p>
   </div>
 
-  <div id="lesson-safety" class="lesson-panel">
+  <div id="lesson-safety" class="lesson-panel" role="tabpanel" aria-labelledby="tab-safety" tabindex="0">
     <div style="display:flex;flex-direction:column;gap:8px;">
       <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Safe Sleep (ABCs):</strong> Alone · Back · Crib (firm, flat surface). No soft objects, no bed-sharing, room-sharing OK.</div>
       <div style="padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:14px;color:#065f46;"><strong>Umbilical Cord:</strong> Keep dry and clean. Fold diaper below stump. Falls off in 7–14 days. No tub baths until it falls off. Report redness, foul odor, drainage.</div>
@@ -727,16 +745,16 @@
     </div>
     <div class="case-questions">
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q1: Which finding is most immediately life-threatening? <span>▾</span></div>
-        <div class="case-q-body"><p>SpO₂ 86% with central cyanosis is the most immediately life-threatening finding. This indicates severe hypoxemia. Airway and oxygenation are always the first priority.</p><div class="case-answer">✓ Central cyanosis with SpO₂ 86% — ABCs first</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case1-q1" onclick="toggleCase(this)">Q1: Which finding is most immediately life-threatening? <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case1-q1"><p>SpO₂ 86% with central cyanosis is the most immediately life-threatening finding. This indicates severe hypoxemia. Airway and oxygenation are always the first priority.</p><div class="case-answer">✓ Central cyanosis with SpO₂ 86% — ABCs first</div></div>
       </div>
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q2: Select ALL signs of neonatal respiratory distress present in this case. <span>▾</span></div>
-        <div class="case-q-body"><p>Signs of RDS: nasal flaring, grunting on expiration, intercostal retractions, central cyanosis, low SpO₂. Normal temperature and HR (if normal) are not RDS signs. Peripheral cyanosis (acrocyanosis) alone would not count.</p><div class="case-answer">✓ Nasal flaring · Expiratory grunting · Intercostal retractions · Central cyanosis · SpO₂ 86%</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case1-q2" onclick="toggleCase(this)">Q2: Select ALL signs of neonatal respiratory distress present in this case. <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case1-q2"><p>Signs of RDS: nasal flaring, grunting on expiration, intercostal retractions, central cyanosis, low SpO₂. Normal temperature and HR (if normal) are not RDS signs. Peripheral cyanosis (acrocyanosis) alone would not count.</p><div class="case-answer">✓ Nasal flaring · Expiratory grunting · Intercostal retractions · Central cyanosis · SpO₂ 86%</div></div>
       </div>
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q3: What is the nurse's FIRST priority action? <span>▾</span></div>
-        <div class="case-q-body"><p>Using the ABC framework: Airway → ensure patent airway and call for immediate respiratory assistance. Documentation and glucose assessment come after stabilizing the airway.</p><div class="case-answer">✓ Ensure airway patency and call for immediate respiratory support</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case1-q3" onclick="toggleCase(this)">Q3: What is the nurse's FIRST priority action? <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case1-q3"><p>Using the ABC framework: Airway → ensure patent airway and call for immediate respiratory assistance. Documentation and glucose assessment come after stabilizing the airway.</p><div class="case-answer">✓ Ensure airway patency and call for immediate respiratory support</div></div>
       </div>
     </div>
   </div>
@@ -748,16 +766,16 @@
     </div>
     <div class="case-questions">
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q1: How should the nurse classify this jaundice? <span>▾</span></div>
-        <div class="case-q-body"><p>Jaundice appearing within the first 24 hours of life is ALWAYS pathological. This is the critical NCLEX distinction. Physiologic jaundice does not appear until after 24 hours.</p><div class="case-answer">✓ Pathological — jaundice within 24 hours is always pathological</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case2-q1" onclick="toggleCase(this)">Q1: How should the nurse classify this jaundice? <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case2-q1"><p>Jaundice appearing within the first 24 hours of life is ALWAYS pathological. This is the critical NCLEX distinction. Physiologic jaundice does not appear until after 24 hours.</p><div class="case-answer">✓ Pathological — jaundice within 24 hours is always pathological</div></div>
       </div>
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q2: What is the most likely cause? <span>▾</span></div>
-        <div class="case-q-body"><p>O+ mother with A+ infant = ABO incompatibility. Maternal anti-A antibodies cross the placenta and destroy fetal RBCs, causing hemolysis and elevated bilirubin.</p><div class="case-answer">✓ ABO incompatibility (O+ mother / A+ infant)</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case2-q2" onclick="toggleCase(this)">Q2: What is the most likely cause? <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case2-q2"><p>O+ mother with A+ infant = ABO incompatibility. Maternal anti-A antibodies cross the placenta and destroy fetal RBCs, causing hemolysis and elevated bilirubin.</p><div class="case-answer">✓ ABO incompatibility (O+ mother / A+ infant)</div></div>
       </div>
       <div class="case-q">
-        <div class="case-q-header" onclick="toggleCase(this)">Q3: Select ALL appropriate nursing actions. <span>▾</span></div>
-        <div class="case-q-body"><p>Actions: Notify provider immediately, monitor bilirubin levels per order, encourage frequent feeding (helps eliminate bilirubin via stool), assess for hemolysis signs (pallor, lethargy), prepare for phototherapy. Do NOT reassure parents this is normal — it is pathological.</p><div class="case-answer">✓ Notify provider · Monitor bilirubin · Encourage feeding · Assess for hemolysis · Prepare for phototherapy</div></div>
+        <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case2-q3" onclick="toggleCase(this)">Q3: Select ALL appropriate nursing actions. <span aria-hidden="true">▾</span></button>
+        <div class="case-q-body" id="case2-q3"><p>Actions: Notify provider immediately, monitor bilirubin levels per order, encourage frequent feeding (helps eliminate bilirubin via stool), assess for hemolysis signs (pallor, lethargy), prepare for phototherapy. Do NOT reassure parents this is normal — it is pathological.</p><div class="case-answer">✓ Notify provider · Monitor bilirubin · Encourage feeding · Assess for hemolysis · Prepare for phototherapy</div></div>
       </div>
     </div>
   </div>
@@ -830,20 +848,44 @@
   <div class="checklist-items" id="checklist-items"></div>
   <div class="checklist-bar-wrap"><div class="checklist-bar" id="checklist-bar" style="width:0%"></div></div>
   <div class="checklist-progress" id="checklist-progress">0 of 10 completed</div>
+  <nav class="completion-nav" aria-label="Module completion navigation">
+    <a class="completion-link completion-link-secondary" href="nclex-success-center.html">Back to Hub</a>
+    <a class="completion-link completion-link-primary" href="module2-guide.html">Continue to Module 2 →</a>
+  </nav>
 </div>
 
-</div><!-- end .page -->
+</main><!-- end .page -->
 
 <script>
 // ═══════════════════════════════════════════
 // LESSON TABS
 // ═══════════════════════════════════════════
-function showLesson(id) {
+function showLesson(id, trigger) {
   document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.lesson-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.lesson-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+    t.setAttribute('tabindex', '-1');
+  });
   document.getElementById('lesson-' + id).classList.add('active');
-  event.target.classList.add('active');
+  trigger.classList.add('active');
+  trigger.setAttribute('aria-selected', 'true');
+  trigger.setAttribute('tabindex', '0');
 }
+
+document.querySelector('.lesson-tabs').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+  const tabs = [...document.querySelectorAll('.lesson-tab')];
+  const current = tabs.indexOf(document.activeElement);
+  let next = current;
+  if (e.key === 'ArrowRight') next = (current + 1) % tabs.length;
+  if (e.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+  if (e.key === 'Home') next = 0;
+  if (e.key === 'End') next = tabs.length - 1;
+  e.preventDefault();
+  tabs[next].click();
+  tabs[next].focus();
+});
 
 // ═══════════════════════════════════════════
 // CASE STUDY TOGGLES
@@ -851,6 +893,7 @@ function showLesson(id) {
 function toggleCase(header) {
   const body = header.nextElementSibling;
   body.classList.toggle('open');
+  header.setAttribute('aria-expanded', body.classList.contains('open') ? 'true' : 'false');
 }
 
 // ═══════════════════════════════════════════
@@ -897,7 +940,7 @@ function renderPQ() {
   const tagColor = isSATA ? 'background:#ede9fe;color:#5b21b6;' : 'background:#e0f2fe;color:#0369a1;';
   document.getElementById('pq-label').textContent = `Question ${pqIdx+1} of ${PQ.length}`;
   document.getElementById('pq-bar').style.width = ((pqIdx/PQ.length)*100) + '%';
-  const optHtml = q.options.map((o,i) => `<button class="pq-option" id="pqo-${i}" onclick="pqSelect(${i})">${o}</button>`).join('');
+  const optHtml = q.options.map((o,i) => `<button type="button" class="pq-option" id="pqo-${i}" aria-pressed="false" onclick="pqSelect(${i})">${o}</button>`).join('');
   document.getElementById('pq-question-area').innerHTML = `
     <div class="pq-q-num">Question ${pqIdx+1} · ${q.type}</div>
     <span class="pq-type-tag" style="${tagColor}">${q.type}</span>
@@ -932,9 +975,11 @@ function pqSelect(i) {
     const btn = document.getElementById('pqo-'+i);
     if (pqSelected.includes(i)) {
       pqSelected = pqSelected.filter(x=>x!==i);
+      btn.setAttribute('aria-pressed', 'false');
       btn.style.background = ''; btn.style.borderColor = ''; btn.style.fontWeight = '';
     } else {
       pqSelected.push(i);
+      btn.setAttribute('aria-pressed', 'true');
       btn.style.background = '#f0fdf4'; btn.style.borderColor = '#059669'; btn.style.fontWeight = '600';
     }
   }
@@ -998,7 +1043,7 @@ function renderQQ() {
     return;
   }
   const q = QQ[qqIdx];
-  const opts = q.options.map((o,i)=>`<button class="qq-option" onclick="qqAnswer(${i})">${o}</button>`).join('');
+  const opts = q.options.map((o,i)=>`<button type="button" class="qq-option" onclick="qqAnswer(${i})">${o}</button>`).join('');
   document.getElementById('qq-container').innerHTML = `
     <div class="pq-progress" style="margin-bottom:14px;">
       <span class="pq-progress-label">Question ${qqIdx+1} of ${QQ.length}</span>
@@ -1055,10 +1100,10 @@ function renderChecklist() {
   const container = document.getElementById('checklist-items');
   container.innerHTML = CHECKLIST_ITEMS.map((item,i) => {
     const isChecked = checked.includes(i);
-    return `<div class="checklist-item ${isChecked?'checked':''}" onclick="toggleCheck(${i})">
+    return `<button type="button" class="checklist-item ${isChecked?'checked':''}" aria-pressed="${isChecked?'true':'false'}" onclick="toggleCheck(${i})">
       <div class="checklist-box">${isChecked?'✓':''}</div>
       <div class="checklist-label">${item}</div>
-    </div>`;
+    </button>`;
   }).join('');
   const pct = Math.round((checked.length/CHECKLIST_ITEMS.length)*100);
   document.getElementById('checklist-bar').style.width = pct + '%';
@@ -1074,6 +1119,20 @@ function toggleCheck(i) {
 }
 
 renderChecklist();
+
+const sectionNavLinks = [...document.querySelectorAll('.progress-nav a')];
+const observedSections = sectionNavLinks.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+const sectionObserver = new IntersectionObserver(entries => {
+  const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (!visible) return;
+  sectionNavLinks.forEach(link => link.removeAttribute('aria-current'));
+  const activeLink = sectionNavLinks.find(link => link.getAttribute('href') === '#' + visible.target.id);
+  if (activeLink) {
+    activeLink.setAttribute('aria-current', 'location');
+    activeLink.scrollIntoView({block:'nearest', inline:'center'});
+  }
+}, {rootMargin:'-110px 0px -65% 0px', threshold:[0.1, 0.35, 0.7]});
+observedSections.forEach(section => sectionObserver.observe(section));
 </script>
 </body>
 </html>

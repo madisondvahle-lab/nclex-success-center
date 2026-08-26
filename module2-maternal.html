@@ -13,7 +13,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; }
-    button:focus { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 3px; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
     @keyframes scaleIn { from { opacity:0; transform:scale(0.82); } to { opacity:1; transform:scale(1); } }
     .fade-up  { animation: fadeUp  0.38s cubic-bezier(0.22,1,0.36,1) both; }
@@ -28,6 +28,19 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+    @media (max-width: 640px) {
+      .screen-card { padding: 32px 20px !important; }
+      .quiz-card-body { padding: 22px 18px !important; }
+      .bowtie-grid { flex-direction: column; gap: 12px !important; }
+      .bowtie-column { width: 100%; min-width: 0 !important; max-width: none !important; }
+      .bowtie-arrow { align-self: center; padding-top: 0 !important; transform: rotate(90deg); }
+      .rationale-grid, .mastery-grid { grid-template-columns: 1fr !important; }
+      .section-scores { flex-wrap: wrap; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up, .scale-in { animation: none; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -479,7 +492,7 @@ function Btn({ children, onClick, disabled, variant="primary" }) {
     primary: { background:disabled?"#e2e8f0":"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:disabled?"#94a3b8":"#fff", boxShadow:disabled?"none":"0 2px 8px rgba(15,23,42,0.18)" },
     outline:  { background:"#f8fafc", color:"#475569", border:"1.5px solid #cbd5e1" }
   };
-  return <button onClick={onClick} disabled={disabled} className={variant==="primary"?"btn-primary":"btn-outline"} style={{ ...base, ...styles[variant] }}>{children}</button>;
+  return <button type="button" onClick={onClick} disabled={disabled} className={variant==="primary"?"btn-primary":"btn-outline"} style={{ ...base, ...styles[variant] }}>{children}</button>;
 }
 function OptionBtn({ letter, text, state, onClick }) {
   const base = { display:"flex", alignItems:"flex-start", gap:12, padding:"13px 16px", borderRadius:12, border:"2px solid #e2e8f0", background:"#fafbfc", cursor:"pointer", textAlign:"left", width:"100%", fontFamily:"'Inter',sans-serif", fontSize:15 };
@@ -487,7 +500,7 @@ function OptionBtn({ letter, text, state, onClick }) {
   const cs = { selected:{ background:"#0ea5e9", color:"#fff" }, correct:{ background:"#10b981", color:"#fff" }, wrong:{ background:"#ef4444", color:"#fff" }, dim:{ background:"#e2e8f0", color:"#94a3b8" }, neutral:{ background:"#e2e8f0", color:"#475569" } };
   const s = state||"neutral", c = cs[s]||cs.neutral;
   return (
-    <button style={{ ...base, ...(ss[s]||{}) }} className={(!s||s==="neutral"||s==="selected")?"opt-btn":""} onClick={onClick}>
+    <button type="button" aria-pressed={s==="selected"} style={{ ...base, ...(ss[s]||{}) }} className={(!s||s==="neutral"||s==="selected")?"opt-btn":""} onClick={onClick}>
       <span style={{ minWidth:26, height:26, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, flexShrink:0, marginTop:1, transition:"all 0.18s ease", ...c }}>{letter}</span>
       <span style={{ flex:1, color:"#1e293b", lineHeight:1.6, fontWeight:400 }}>{text}</span>
       {s==="correct"&&<span style={{ width:22, height:22, borderRadius:"50%", background:"#10b981", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:12, fontWeight:700, flexShrink:0 }}>✓</span>}
@@ -531,7 +544,7 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
     if(isSelected){bg="#f0f9ff";border="2px solid #0ea5e9";}
     if(isCorrect){bg="#f0fdf4";border="2px solid #10b981";color="#065f46";}
     if(isWrong){bg="#fef2f2";border="2px solid #ef4444";color="#991b1b";}
-    return <button onClick={onClick} className={!isCorrect&&!isWrong&&!isDim?"opt-btn":""} style={{ padding:"9px 11px", borderRadius:10, border, background:bg, color, fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", fontFamily:"'Inter',sans-serif", lineHeight:1.45, width:"100%", transition:"all 0.18s ease" }}>{isCorrect&&<span style={{color:"#10b981",fontWeight:700}}>✓ </span>}{isWrong&&<span style={{color:"#ef4444",fontWeight:700}}>✗ </span>}{label}</button>;
+    return <button type="button" aria-pressed={isSelected} onClick={onClick} className={!isCorrect&&!isWrong&&!isDim?"opt-btn":""} style={{ padding:"9px 11px", borderRadius:10, border, background:bg, color, fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", fontFamily:"'Inter',sans-serif", lineHeight:1.45, width:"100%", transition:"all 0.18s ease" }}>{isCorrect&&<span style={{color:"#10b981",fontWeight:700}}>✓ </span>}{isWrong&&<span style={{color:"#ef4444",fontWeight:700}}>✗ </span>}{label}</button>;
   }
   function handle(key,idx){ if(submitted)return; const lim=limit[key],sel=btState[key]||[]; let next; if(sel.includes(idx))next=sel.filter(x=>x!==idx); else if(sel.length<lim)next=[...sel,idx]; else next=lim===1?[idx]:sel; onBTSelect(key,next); }
   function renderCol(opts,corr,key){ const sel=btState[key]||[],lim=limit[key]; return opts.map((opt,idx)=>{ const isSel=sel.includes(idx),isC=submitted&&corr.includes(idx),isW=submitted&&isSel&&!corr.includes(idx),isDm=submitted&&!isC&&!isSel,isDis=!submitted&&!isSel&&sel.length>=lim; return <BtOpt key={idx} label={opt} isSelected={!submitted&&isSel} isCorrect={isC} isWrong={isW} isDim={isDm||isDis} onClick={isDis?null:()=>handle(key,idx)} />; }); }
@@ -540,12 +553,12 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
   return (
     <div>
       {!submitted&&<div style={{ fontSize:13,color:"#0c4a6e",marginBottom:14,fontWeight:500,background:"#f0f9ff",padding:"10px 14px",borderRadius:10,border:"1px solid #bae6fd",display:"flex",alignItems:"flex-start",gap:8 }}><span style={{fontSize:16}}>🎯</span><span><strong>Bow-Tie:</strong> Select <strong>2 actions</strong> → <strong>1 condition</strong> → <strong>2 parameters</strong></span></div>}
-      <div style={{ display:"flex",gap:8,marginBottom:20,alignItems:"flex-start" }}>
-        <div style={col}><div style={{ fontSize:10,fontWeight:700,color:"#10b981",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>⚕️ {q.leftLabel}</div><Pill cur={(btState.left||[]).length} tot={2} />{renderCol(q.leftOptions,q.correctLeft,"left")}</div>
-        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
-        <div style={{ ...col,maxWidth:185 }}><div style={{ fontSize:10,fontWeight:700,color:"#8b5cf6",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🔍 {q.centerLabel}</div><Pill cur={(btState.center||[]).length} tot={1} />{renderCol(q.centerOptions,q.correctCenter,"center")}</div>
-        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
-        <div style={col}><div style={{ fontSize:10,fontWeight:700,color:"#f59e0b",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🎯 {q.rightLabel}</div><Pill cur={(btState.right||[]).length} tot={2} />{renderCol(q.rightOptions,q.correctRight,"right")}</div>
+      <div className="bowtie-grid" style={{ display:"flex",gap:8,marginBottom:20,alignItems:"flex-start" }}>
+        <div className="bowtie-column" style={col}><div style={{ fontSize:10,fontWeight:700,color:"#10b981",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>⚕️ {q.leftLabel}</div><Pill cur={(btState.left||[]).length} tot={2} />{renderCol(q.leftOptions,q.correctLeft,"left")}</div>
+        <div className="bowtie-arrow" aria-hidden="true" style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
+        <div className="bowtie-column" style={{ ...col,maxWidth:185 }}><div style={{ fontSize:10,fontWeight:700,color:"#8b5cf6",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🔍 {q.centerLabel}</div><Pill cur={(btState.center||[]).length} tot={1} />{renderCol(q.centerOptions,q.correctCenter,"center")}</div>
+        <div className="bowtie-arrow" aria-hidden="true" style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}><div style={{ fontSize:22,color:"#0ea5e9",fontWeight:700 }}>→</div></div>
+        <div className="bowtie-column" style={col}><div style={{ fontSize:10,fontWeight:700,color:"#f59e0b",letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>🎯 {q.rightLabel}</div><Pill cur={(btState.right||[]).length} tot={2} />{renderCol(q.rightOptions,q.correctRight,"right")}</div>
       </div>
     </div>
   );
@@ -561,7 +574,7 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
               <span style={{ width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,#1e293b,#0f172a)",color:"#fff",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{si+1}</span>
               <span style={{ fontSize:11,fontWeight:600,color:"#64748b",letterSpacing:0.4 }}>of {q.questions.length}</span>
             </div>
-            <div style={{ fontFamily:"'Inter',sans-serif",fontSize:15,lineHeight:1.65,color:"#0f172a",marginBottom:12,fontWeight:500 }}>{sub.stem}</div>
+            <h2 style={{ fontFamily:"'Inter',sans-serif",fontSize:15,lineHeight:1.65,color:"#0f172a",marginBottom:12,fontWeight:600 }}>{sub.stem}</h2>
             {sub.type==="sata"&&<div style={{ fontSize:12,color:"#94a3b8",marginBottom:8,fontStyle:"italic" }}>Select all that apply</div>}
             <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
               {sub.options.map((opt,idx) => {
@@ -571,7 +584,7 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
                 return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={s} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const c=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,c.includes(idx)?c.filter(x=>x!==idx):[...c,idx]); }}} />;
               })}
             </div>
-            {submitted&&<div style={{ marginTop:12,padding:"12px 14px",background:"#fff",borderRadius:8,borderLeft:"3px solid #0ea5e9",border:"1px solid #e2e8f0",borderLeftWidth:3,fontSize:13,color:"#374151",lineHeight:1.65 }}><strong style={{color:"#0369a1"}}>Rationale:</strong> {sub.rationale}</div>}
+            {submitted&&<div role="status" aria-live="polite" style={{ marginTop:12,padding:"12px 14px",background:"#fff",borderRadius:8,borderLeft:"3px solid #0ea5e9",border:"1px solid #e2e8f0",borderLeftWidth:3,fontSize:13,color:"#374151",lineHeight:1.65 }}><strong style={{color:"#0369a1"}}>Rationale:</strong> {sub.rationale}</div>}
           </div>
         );
       })}
@@ -589,13 +602,13 @@ function RationalePanel({ q, isCorrect }) {
   }
   const sc=isCorrect?"#10b981":"#ef4444", sb=isCorrect?"#f0fdf4":"#fef2f2", sbr=isCorrect?"#86efac":"#fca5a5";
   return (
-    <div style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
+    <div role="status" aria-live="polite" style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
       <div style={{ display:"flex",alignItems:"center",gap:10,padding:"12px 16px",borderRadius:12,background:sb,border:`1.5px solid ${sbr}` }}>
         <span style={{ width:28,height:28,borderRadius:"50%",background:sc,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:14,fontWeight:700,flexShrink:0 }}>{isCorrect?"✓":"✗"}</span>
         <span style={{ fontWeight:700,fontSize:15,color:isCorrect?"#166534":"#991b1b" }}>{isCorrect?"Correct!":"Review This Concept"}</span>
       </div>
       {q.type==="bowtie"&&(
-        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:10 }}>
+        <div className="rationale-grid" style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:10 }}>
           {[{label:"Condition",icon:"🔍",text:q.rationale.condition,accent:"#8b5cf6"},{label:"Actions",icon:"⚕️",text:q.rationale.actions,accent:"#10b981"},{label:"Monitoring",icon:"🎯",text:q.rationale.outcomes,accent:"#f59e0b"},{label:"Distractors",icon:"⚠️",text:q.rationale.wrong,accent:"#ef4444"}].map(({label,icon,text,accent})=>(
             <div key={label} style={{ background:"#fff",borderRadius:10,padding:"12px 14px",border:`1px solid #e8ecf2`,borderLeftWidth:4,borderLeftColor:accent,borderLeft:`4px solid ${accent}` }}>
               <div style={{ fontSize:10,fontWeight:700,color:accent,letterSpacing:0.8,textTransform:"uppercase",marginBottom:6 }}>{icon} {label}</div>
@@ -628,12 +641,12 @@ function RationalePanel({ q, isCorrect }) {
 
 function WelcomeScreen({ onStart }) {
   return (
-    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
-      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:660,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+    <main aria-labelledby="welcome-title" style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up screen-card" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:660,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
         <div style={{ textAlign:"center",marginBottom:30 }}>
           <span style={{ display:"inline-block",padding:"4px 14px",borderRadius:99,background:"rgba(14,165,233,0.1)",border:"1px solid rgba(14,165,233,0.35)",fontSize:11,fontWeight:700,color:"#0ea5e9",letterSpacing:1.2,textTransform:"uppercase",marginBottom:14 }}>NCLEX-RN · 2026 Blueprint</span>
           <div style={{ fontSize:12,fontWeight:700,color:"#94a3b8",marginBottom:6,letterSpacing:2,textTransform:"uppercase" }}>Module 2</div>
-          <h1 style={{ fontSize:30,fontWeight:800,color:"#0f172a",marginBottom:10,lineHeight:1.2 }}>🤰 Maternal & OB</h1>
+          <h1 id="welcome-title" style={{ fontSize:30,fontWeight:800,color:"#0f172a",marginBottom:10,lineHeight:1.2 }}>🤰 Maternal & OB</h1>
           <p style={{ color:"#64748b",fontSize:15,lineHeight:1.7,maxWidth:480,margin:"0 auto" }}>25 targeted questions aligned to your study guide — covering RH incompatibility, preeclampsia/HELLP, fetal monitoring, obstetric emergencies, vaccines, and clinical priorities.</p>
         </div>
         <div style={{ display:"flex",flexDirection:"column",gap:10,marginBottom:26 }}>
@@ -654,27 +667,27 @@ function WelcomeScreen({ onStart }) {
         <div style={{ borderLeft:"4px solid #f59e0b",background:"#fffbeb",borderRadius:"0 10px 10px 0",padding:"12px 16px",marginBottom:26,fontSize:13,color:"#78350f",lineHeight:1.65 }}>
           💡 <strong>Safety tip:</strong> Always assess MOM before FETUS. A stable mom = a stable baby.
         </div>
-        <button onClick={onStart} className="btn-primary" style={{ width:"100%",padding:"16px",border:"none",borderRadius:14,fontSize:17,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:0.3,background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)" }}>Begin Module 2 →</button>
+        <button type="button" onClick={onStart} className="btn-primary" style={{ width:"100%",padding:"16px",border:"none",borderRadius:14,fontSize:17,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",letterSpacing:0.3,background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)" }}>Begin Module 2 →</button>
       </div>
-    </div>
+    </main>
   );
 }
 
 function SectionIntroScreen({ sectionNum, onContinue }) {
   const s=SECTIONS[sectionNum], count=QUESTIONS.filter(q=>q.section===sectionNum).length;
   return (
-    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
-      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:520,width:"100%",textAlign:"center",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+    <main aria-labelledby="section-intro-title" style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"center",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up screen-card" style={{ background:"#fff",borderRadius:24,padding:"44px 40px",maxWidth:520,width:"100%",textAlign:"center",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
         <div style={{ width:90,height:90,borderRadius:"50%",margin:"0 auto 20px",background:`linear-gradient(135deg,${s.light},#fff)`,border:`2px solid ${s.border}`,boxShadow:`0 8px 28px ${s.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44 }}>{s.emoji}</div>
         <span style={{ display:"inline-block",padding:"3px 12px",borderRadius:99,background:s.light,border:`1px solid ${s.border}`,fontSize:10,fontWeight:700,color:s.color,letterSpacing:1.4,textTransform:"uppercase",marginBottom:12 }}>Section {sectionNum} of 3</span>
-        <h2 style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:10 }}>{s.title}</h2>
+        <h2 id="section-intro-title" style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:10 }}>{s.title}</h2>
         <p style={{ fontSize:15,color:"#475569",lineHeight:1.7,marginBottom:22 }}>{s.desc}</p>
         <div style={{ borderLeft:`4px solid ${s.color}`,background:s.light,borderRadius:"0 10px 10px 0",padding:"12px 16px",marginBottom:28,fontSize:13,color:"#374151",textAlign:"left" }}>
           <strong>{count} questions</strong> · If you miss one, the rationale explains exactly which concept to review.
         </div>
-        <button onClick={onContinue} className="btn-primary" style={{ width:"100%",padding:"15px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:`linear-gradient(135deg,${s.color}dd,${s.color})`,color:"#fff",boxShadow:`0 4px 16px ${s.color}44` }}>Start {s.label} →</button>
+        <button type="button" onClick={onContinue} className="btn-primary" style={{ width:"100%",padding:"15px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:`linear-gradient(135deg,${s.color}dd,${s.color})`,color:"#fff",boxShadow:`0 4px 16px ${s.color}44` }}>Start {s.label} →</button>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -703,11 +716,11 @@ function ResultsScreen({ history, onRestart }) {
     navigator.clipboard.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),3000);}).catch(()=>{window.prompt('Copy your results:',text);});
   }
   return (
-    <div style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
-      <div className="fade-up" style={{ background:"#fff",borderRadius:24,padding:"36px 40px",maxWidth:700,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
+    <main aria-labelledby="results-title" style={{ minHeight:"100vh",background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:"32px 16px",fontFamily:"'Inter',sans-serif" }}>
+      <div className="fade-up screen-card" style={{ background:"#fff",borderRadius:24,padding:"36px 40px",maxWidth:700,width:"100%",boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
         <div style={{ textAlign:"center",marginBottom:22 }}>
           <div style={{ fontSize:11,letterSpacing:2,color:"#94a3b8",textTransform:"uppercase",marginBottom:6,fontWeight:600 }}>Module 2 Complete</div>
-          <h2 style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4 }}>🤰 Maternal & OB</h2>
+          <h1 id="results-title" style={{ fontSize:24,fontWeight:800,color:"#0f172a",marginBottom:4 }}>🤰 Maternal & OB</h1>
         </div>
         <div className="scale-in" style={{ display:"flex",justifyContent:"center",marginBottom:20 }}>
           <div style={{ width:160,height:160,borderRadius:"50%",border:`8px solid ${ringColor}`,boxShadow:`0 0 40px ${ringColor}44`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:2 }}>
@@ -715,7 +728,7 @@ function ResultsScreen({ history, onRestart }) {
             <span style={{ fontSize:13,color:"#64748b",fontWeight:500 }}>{correct}/{total} correct</span>
           </div>
         </div>
-        <div style={{ display:"flex",justifyContent:"center",gap:10,marginBottom:24 }}>
+        <div className="section-scores" style={{ display:"flex",justifyContent:"center",gap:10,marginBottom:24 }}>
           {sectionScores.map(({sNum,correct:sc,total:st,sec})=>(
             <div key={sNum} style={{ padding:"6px 14px",borderRadius:10,background:sec.light,border:`1px solid ${sec.border}`,textAlign:"center" }}>
               <div style={{ fontSize:10,fontWeight:700,color:sec.color,letterSpacing:0.8,textTransform:"uppercase",marginBottom:2 }}>{sec.label}</div>
@@ -725,7 +738,7 @@ function ResultsScreen({ history, onRestart }) {
         </div>
         <div style={{ marginBottom:22 }}>
           <div style={{ fontSize:11,fontWeight:700,color:"#374151",letterSpacing:1,textTransform:"uppercase",marginBottom:12 }}>Concept Mastery</div>
-          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:8 }}>
+          <div className="mastery-grid" style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:8 }}>
             {masteryData.map(m=>(
               <div key={m.num} style={{ display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"#fff",border:`1px solid ${m.mastered?"#d1fae5":"#fde68a"}`,borderLeft:`4px solid ${m.mastered?"#10b981":"#f59e0b"}`,borderRadius:"0 10px 10px 0" }}>
                 <div style={{ width:28,height:28,borderRadius:"50%",flexShrink:0,background:m.mastered?"#d1fae5":"#fef3c7",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:m.mastered?"#059669":"#92400e" }}>{m.num}</div>
@@ -741,11 +754,11 @@ function ResultsScreen({ history, onRestart }) {
         {needsReview.length>0&&<div style={{ background:"#fffbeb",border:"1px solid #fcd34d",borderLeft:"4px solid #f59e0b",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#78350f",lineHeight:1.65 }}><strong>⚠️ Before moving to Bootcamp/UWorld — review:</strong><div style={{ marginTop:8,display:"flex",flexWrap:"wrap",gap:6 }}>{needsReview.map(m=><span key={m.num} style={{ background:"#fef3c7",border:"1px solid #fcd34d",borderRadius:99,padding:"4px 11px",fontSize:12,fontWeight:600,color:"#92400e" }}>#{m.num} {m.name}</span>)}</div></div>}
         {needsReview.length===0&&<div style={{ background:"#f0fdf4",border:"1px solid #86efac",borderLeft:"4px solid #10b981",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:18,fontSize:13,color:"#166534",lineHeight:1.65 }}><strong>✅ Excellent work!</strong> You demonstrated mastery across all concept areas. You're ready for Bootcamp/UWorld.</div>}
         <div style={{ background:"#f0f9ff",border:"1px solid #bae6fd",borderLeft:"4px solid #0ea5e9",borderRadius:"0 12px 12px 0",padding:"14px 18px",marginBottom:24,fontSize:13,color:"#0c4a6e",lineHeight:1.65 }}><strong>📚 Next Step:</strong> Complete <strong>40–50 Bootcamp or UWorld questions</strong> on Maternal & OB. Focus on your ⚠️ concepts first.</div>
-        <button onClick={handleShare} className="btn-primary" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:copied?"linear-gradient(135deg,#059669,#10b981)":"linear-gradient(135deg,#0369a1,#0ea5e9)",color:"#fff",boxShadow:"0 4px 16px rgba(14,165,233,0.28)",marginBottom:10,transition:"all 0.25s ease" }}>{copied?"✅ Copied! Send to Madison now.":"📤 Share Results with Madison"}</button>
-        <button onClick={onRestart} className="btn-primary" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)",marginBottom:10 }}>Retake Module 2</button>
-        <a href="alyssa-hub.html" style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px",borderRadius:14,border:"1.5px solid #e2e8f0",background:"#f8fafc",color:"#64748b",fontSize:14,fontWeight:600,textDecoration:"none",transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>← Back to My Hub</a>
+        <button type="button" onClick={handleShare} className="btn-primary" aria-live="polite" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:copied?"linear-gradient(135deg,#059669,#10b981)":"linear-gradient(135deg,#0369a1,#0ea5e9)",color:"#fff",boxShadow:"0 4px 16px rgba(14,165,233,0.28)",marginBottom:10,transition:"all 0.25s ease" }}>{copied?"✅ Copied! Send to Madison now.":"📤 Share Results with Madison"}</button>
+        <button type="button" onClick={onRestart} className="btn-primary" style={{ width:"100%",padding:"14px",border:"none",borderRadius:14,fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Inter',sans-serif",background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)",color:"#fff",boxShadow:"0 4px 16px rgba(15,23,42,0.25)",marginBottom:10 }}>Retake Module 2</button>
+        <a href="nclex-success-center.html" style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:8,minHeight:44,padding:"13px",borderRadius:14,border:"1.5px solid #e2e8f0",background:"#f8fafc",color:"#64748b",fontSize:14,fontWeight:600,textDecoration:"none",transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>← Back to My Hub</a>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -792,18 +805,18 @@ function QuizScreen({ onFinish }) {
   const TYPE={mcq:"MCQ",sata:"SATA",bowtie:"NGN · Bow-Tie",casestudy:"NGN · Case Study"};
   const dc=DC[q.difficulty]; const isNGN=q.type==="bowtie"||q.type==="casestudy";
   return (
-    <div style={{ minHeight:"100vh",background:"#f0f2f8",fontFamily:"'Inter',sans-serif" }}>
-      <div style={{ background:"#fff",borderBottom:"1px solid #e8ecf2",padding:"0 24px",height:60,display:"flex",alignItems:"center",gap:16,boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
+    <main aria-label="Module 2 practice question" style={{ minHeight:"100vh",background:"#f0f2f8",fontFamily:"'Inter',sans-serif" }}>
+      <header style={{ background:"#fff",borderBottom:"1px solid #e8ecf2",padding:"0 24px",height:60,display:"flex",alignItems:"center",gap:16,boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
         <span style={{ padding:"4px 12px",borderRadius:99,fontSize:11,fontWeight:700,background:sec.light,border:`1px solid ${sec.border}`,color:sec.color,whiteSpace:"nowrap" }}>{sec.label}</span>
-        <div style={{ flex:1,background:"#e8ecf2",borderRadius:99,height:8 }}>
+        <div role="progressbar" aria-valuemin={1} aria-valuemax={QUESTIONS.length} aria-valuenow={currentIdx+1} aria-label={`Question ${currentIdx+1} of ${QUESTIONS.length}`} style={{ flex:1,background:"#e8ecf2",borderRadius:99,height:8 }}>
           <div style={{ width:`${((currentIdx+1)/QUESTIONS.length)*100}%`,background:`linear-gradient(90deg,${sec.color},${sec.color}bb)`,borderRadius:99,height:8,transition:"width 0.4s ease" }} />
         </div>
         <div style={{ whiteSpace:"nowrap",fontSize:13,fontWeight:600 }}><span style={{color:"#0f172a"}}>Q{currentIdx+1}</span><span style={{color:"#94a3b8"}}> / {QUESTIONS.length}</span></div>
-      </div>
+      </header>
       <div style={{ maxWidth:800,margin:"0 auto",padding:"24px 16px" }}>
         <div className="fade-up" style={{ background:"#fff",borderRadius:20,overflow:"hidden",boxShadow:"0 2px 16px rgba(15,23,42,0.08)" }}>
           <div style={{ height:5,background:`linear-gradient(90deg,${sec.color},${sec.color}99)` }} />
-          <div style={{ padding:"28px 32px" }}>
+          <div className="quiz-card-body" style={{ padding:"28px 32px" }}>
             <div style={{ display:"inline-flex",alignItems:"center",gap:8,borderLeft:`4px solid ${sec.color}`,background:sec.light,borderRadius:"0 8px 8px 0",padding:"9px 14px",marginBottom:18 }}>
               <span style={{ width:8,height:8,borderRadius:"50%",background:sec.color,flexShrink:0 }}/>
               <div>
@@ -817,7 +830,7 @@ function QuizScreen({ onFinish }) {
               <Tag bg={sec.light} color={sec.color} border={sec.border}>{sec.label} · Q{qNumInSec} of {qInSec.length}</Tag>
             </div>
             {q.caseIntro&&<div style={{ borderLeft:"4px solid #0ea5e9",background:"#f0f9ff",borderRadius:"0 10px 10px 0",padding:"14px 16px",marginBottom:18 }}><div style={{ fontSize:10,fontWeight:700,color:"#0369a1",letterSpacing:1,textTransform:"uppercase",marginBottom:6 }}>Clinical Scenario</div><div style={{ fontSize:14,lineHeight:1.7,color:"#0c4a6e",fontWeight:400 }}>{q.caseIntro}</div></div>}
-            <div style={{ fontSize:16,lineHeight:1.7,color:"#0f172a",marginBottom:20,fontWeight:600 }}>{q.stem}</div>
+            <h1 style={{ fontSize:16,lineHeight:1.7,color:"#0f172a",marginBottom:20,fontWeight:600 }}>{q.stem||q.concept.name}</h1>
             {q.type==="mcq"       &&<MCQQuestion       q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
             {q.type==="sata"      &&<SATAQuestion      q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
             {q.type==="bowtie"    &&<BowTieQuestion    q={q} submitted={submitted} btState={btState} onBTSelect={(key,val)=>setBtState(s=>({...s,[key]:val}))} />}
@@ -829,7 +842,7 @@ function QuizScreen({ onFinish }) {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

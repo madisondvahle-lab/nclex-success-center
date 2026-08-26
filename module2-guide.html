@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Module 2 — Maternal &amp; OB · Study with Madison, RN</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -13,13 +13,15 @@
       --bg: #f0f4f8; --white: #ffffff;
       --yellow: #f59e0b; --red: #ef4444; --green: #059669; --blue: #0ea5e9;
     }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 106px; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--navy); }
+    .skip-link { position: fixed; top: 8px; left: 8px; z-index: 1000; transform: translateY(-150%); background: #fff; color: var(--navy); padding: 10px 14px; border-radius: 8px; font-weight: 700; }
+    .skip-link:focus { transform: translateY(0); }
 
     .top-bar { background: var(--navy); color: #fff; padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 52px; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
-    .top-bar a { color: var(--muted); text-decoration: none; font-size: 13px; }
+    .top-bar a { min-height: 44px; display: inline-flex; align-items: center; color: var(--muted); text-decoration: none; font-size: 13px; flex-shrink: 0; }
     .top-bar a:hover { color: #fff; }
-    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; }
+    .top-bar-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .top-bar-badge { background: var(--purple); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
 
     .hero { background: linear-gradient(135deg, var(--navy) 0%, #3b1071 100%); padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden; }
@@ -30,9 +32,10 @@
     .hero-meta { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
     .hero-meta span { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 5px; }
 
-    .progress-nav { background: var(--white); border-bottom: 1px solid #e2e8f0; overflow-x: auto; white-space: nowrap; padding: 0 20px; display: flex; gap: 4px; }
+    .progress-nav { background: var(--white); border-bottom: 1px solid #e2e8f0; overflow-x: auto; white-space: nowrap; padding: 0 20px; display: flex; gap: 4px; position: sticky; top: 52px; z-index: 190; }
     .progress-nav a { display: inline-block; padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--slate); text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.15s; flex-shrink: 0; }
     .progress-nav a:hover { color: var(--purple); border-bottom-color: var(--purple-mid); }
+    .progress-nav a[aria-current="location"] { color: var(--purple); border-bottom-color: var(--purple); background: #faf5ff; }
 
     .page { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
 
@@ -63,9 +66,9 @@
     .infographic-wrap p { font-size: 12px; color: var(--muted); margin-top: 10px; }
 
     .lesson-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
-    .lesson-tab { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; border: 1.5px solid #e2e8f0; background: #f8fafc; color: var(--slate); cursor: pointer; transition: all 0.15s; }
+    .lesson-tab { min-height: 44px; padding: 8px 14px; border-radius: 99px; font-size: 12px; font-weight: 700; border: 1.5px solid #e2e8f0; background: #f8fafc; color: var(--slate); cursor: pointer; transition: all 0.15s; }
     .lesson-tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
-    .lesson-panel { display: none; }
+    .lesson-panel { display: none; max-width: 100%; overflow-x: auto; }
     .lesson-panel.active { display: block; }
 
     .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -124,7 +127,7 @@
     .pq-type-tag { display: inline-flex; padding: 2px 9px; border-radius: 99px; font-size: 10px; font-weight: 700; margin-bottom: 10px; }
     .pq-stem { font-size: 15px; color: var(--navy); line-height: 1.65; margin-bottom: 16px; font-weight: 500; }
     .pq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-    .pq-option { padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; }
+    .pq-option { min-height: 44px; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; }
     .pq-option:hover:not(:disabled) { border-color: var(--purple); background: #faf5ff; }
     .pq-option.correct { background: #f0fdf4; border-color: #059669; color: #065f46; font-weight: 600; }
     .pq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
@@ -133,7 +136,7 @@
     .pq-rationale { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; font-size: 13px; color: #334155; line-height: 1.65; margin-bottom: 14px; display: none; }
     .pq-rationale.show { display: block; }
     .pq-nav { display: flex; gap: 8px; align-items: center; }
-    .btn-pq { padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+    .btn-pq { min-height: 44px; padding: 10px 20px; border-radius: 10px; border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
     .btn-pq-primary { background: var(--purple); color: #fff; }
     .btn-pq-primary:hover { background: #6d28d9; }
     .btn-pq-secondary { background: #f1f5f9; color: var(--slate); }
@@ -147,7 +150,7 @@
     .case-scenario p { font-size: 14px; color: #1e3a8a; line-height: 1.65; }
     .case-questions { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
     .case-q { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-    .case-q-header { padding: 12px 16px; background: #f8fafc; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .case-q-header { width: 100%; min-height: 44px; padding: 12px 16px; border: 0; background: #f8fafc; font-family: 'Inter', sans-serif; text-align: left; font-size: 14px; color: var(--navy); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .case-q-body { padding: 14px 16px; display: none; font-size: 13px; color: #334155; line-height: 1.65; }
     .case-q-body.open { display: block; }
     .case-answer { background: #f0fdf4; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-weight: 600; color: #065f46; font-size: 13px; }
@@ -156,9 +159,9 @@
     .remed-title { font-size: 13px; font-weight: 800; color: var(--navy); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 10px; }
     .remed-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 13px; color: #334155; }
     .remed-blank { width: 120px; border-bottom: 1.5px solid var(--navy); height: 18px; }
-    .btn-print { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
+    .btn-print { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 16px; }
 
-    .qq-option { padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
+    .qq-option { min-height: 44px; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; font-size: 14px; color: #334155; transition: all 0.15s; text-align: left; width: 100%; font-family: 'Inter', sans-serif; margin-bottom: 8px; }
     .qq-option:hover:not(:disabled) { border-color: var(--purple); background: #faf5ff; }
     .qq-option.correct { background: #f0fdf4; border-color: #059669; color: #065f46; font-weight: 600; }
     .qq-option.incorrect { background: #fff1f2; border-color: #fca5a5; color: #9f1239; }
@@ -168,10 +171,10 @@
     .qq-feedback.incorrect { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
     .qq-results { text-align: center; padding: 24px; }
     .qq-results-score { font-size: 42px; font-weight: 800; }
-    .qq-restart { padding: 10px 24px; background: var(--purple); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+    .qq-restart { min-height: 44px; padding: 10px 24px; background: var(--purple); color: #fff; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; }
 
     .checklist-items { display: flex; flex-direction: column; gap: 8px; }
-    .checklist-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; cursor: pointer; transition: all 0.15s; }
+    .checklist-item { width: 100%; min-height: 44px; display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-family: 'Inter', sans-serif; text-align: left; cursor: pointer; transition: all 0.15s; }
     .checklist-item.checked { background: #faf5ff; border-color: var(--purple-mid); }
     .checklist-box { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 1px; }
     .checklist-item.checked .checklist-box { background: var(--purple); border-color: var(--purple); color: #fff; font-size: 12px; }
@@ -180,6 +183,7 @@
     .checklist-bar-wrap { height: 8px; background: #e2e8f0; border-radius: 99px; margin: 12px 0 6px; }
     .checklist-bar { height: 8px; background: var(--purple); border-radius: 99px; transition: width 0.3s; }
     .checklist-progress { font-size: 13px; color: var(--muted); font-weight: 600; text-align: center; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 
     .fhr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media(max-width:580px){ .fhr-grid { grid-template-columns: 1fr; } }
@@ -192,18 +196,26 @@
       .top-bar, .progress-nav, .hero, .section-card:not(#section-remediation) { display: none !important; }
       #section-remediation { box-shadow: none; border: none; }
     }
-    @media(max-width:480px) { .section-card { padding: 20px 16px; } .hero h1 { font-size: 24px; } }
+    .completion-nav { margin-top: 20px; padding-top: 18px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .completion-link { min-height: 44px; padding: 10px 16px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .completion-link-secondary { background: #f1f5f9; color: var(--slate); }
+    .completion-link-primary { background: var(--purple); color: #fff; }
+    @media(max-width:480px) { .top-bar { padding-left: 8px; padding-right: 8px; gap: 6px; } .section-card { padding: 20px 16px; } .hero h1 { font-size: 24px; } }
   </style>
 </head>
 <body>
 
-<div class="top-bar">
-  <a href="alyssa-hub.html">← Hub</a>
+<a class="skip-link" href="#main-content">Skip to module content</a>
+
+<header class="top-bar">
+  <a href="nclex-success-center.html">← Hub</a>
+  <a href="module1-guide.html">← M1</a>
   <div class="top-bar-title">Module 2 — Maternal &amp; OB</div>
   <span class="top-bar-badge">Phase 1</span>
-</div>
+  <a href="module3-guide.html">M3 →</a>
+</header>
 
-<div class="progress-nav">
+<nav class="progress-nav" aria-label="Module sections">
   <a href="#section-overview">Overview</a>
   <a href="#section-objectives">Objectives</a>
   <a href="#section-bigpicture">Big Picture</a>
@@ -220,7 +232,7 @@
   <a href="#section-remediation">Remediation</a>
   <a href="#section-quickquiz">Quick Quiz</a>
   <a href="#section-checklist">Checklist</a>
-</div>
+</nav>
 
 <div class="hero">
   <div class="hero-phase">Phase 1 · Foundations</div>
@@ -234,7 +246,7 @@
   </div>
 </div>
 
-<div class="page">
+<main class="page" id="main-content" tabindex="-1">
 
 <!-- ① OVERVIEW -->
 <div class="section-card" id="section-overview">
@@ -245,16 +257,6 @@
   <div class="prose">
     <p>Maternal and OB nursing is one of the <strong>highest-yield areas on the NCLEX</strong>. It tests your ability to prioritize the mother's safety, interpret fetal monitoring strips, recognize obstetric emergencies, and act fast — before harm reaches mom or baby.</p>
     <p>The guiding principle of this entire module is <strong>"Mom First, Then Baby."</strong> When you're unsure of the priority, start there. Assess, recognize, prioritize, and ACT.</p>
-  </div>
-  <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-    <div style="background:#faf5ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
-      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#7c3aed;margin-bottom:4px;">Prerequisite</div>
-      <div style="font-size:13px;color:#334155;">Module 1 — Newborn Care (fetal circulation)</div>
-    </div>
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;flex:1;min-width:180px;">
-      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#1d4ed8;margin-bottom:4px;">Assigned Resources</div>
-      <div style="font-size:13px;color:#334155;">Archer CAT · Bootcamp OB Review · 40–50 Bootcamp OB Qs</div>
-    </div>
   </div>
 </div>
 
@@ -322,14 +324,14 @@
     <div class="section-num">5</div>
     <div><h2>Deep Dive Lessons</h2><p>Select a lesson to expand</p></div>
   </div>
-  <div class="lesson-tabs">
-    <button class="lesson-tab active" onclick="showLesson('rh')">A · RH</button>
-    <button class="lesson-tab" onclick="showLesson('htn')">B · HTN Disorders</button>
-    <button class="lesson-tab" onclick="showLesson('fhr')">C · Fetal HR</button>
-    <button class="lesson-tab" onclick="showLesson('emerg')">D · Emergencies</button>
-    <button class="lesson-tab" onclick="showLesson('gdm')">E · GDM</button>
-    <button class="lesson-tab" onclick="showLesson('prenatal')">F · Prenatal Pearls</button>
-    <button class="lesson-tab" onclick="showLesson('vaccines')">G · Vaccines &amp; Report</button>
+  <div class="lesson-tabs" role="tablist" aria-label="Deep dive lessons">
+    <button class="lesson-tab active" role="tab" aria-selected="true" aria-controls="lesson-rh" id="tab-rh" onclick="showLesson('rh', this)">A · RH</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-htn" id="tab-htn" onclick="showLesson('htn', this)">B · HTN Disorders</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-fhr" id="tab-fhr" onclick="showLesson('fhr', this)">C · Fetal HR</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-emerg" id="tab-emerg" onclick="showLesson('emerg', this)">D · Emergencies</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-gdm" id="tab-gdm" onclick="showLesson('gdm', this)">E · GDM</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-prenatal" id="tab-prenatal" onclick="showLesson('prenatal', this)">F · Prenatal Pearls</button>
+    <button class="lesson-tab" role="tab" aria-selected="false" aria-controls="lesson-vaccines" id="tab-vaccines" onclick="showLesson('vaccines', this)">G · Vaccines &amp; Report</button>
   </div>
 
   <!-- A: RH -->
@@ -805,16 +807,16 @@
       <p>A 32-week patient is admitted with BP 162/110, severe headache, RUQ pain, and 3+ proteinuria on dipstick. Deep tendon reflexes are 3+. The provider orders IV magnesium sulfate. One hour into the infusion, the nurse assesses: respirations 9/min, DTRs absent, and urine output 18 mL/hr over the past hour.</p>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q1: Before starting Mag, what assessment is the priority? <span>▾</span></div>
-      <div class="case-q-body"><p>Establish a baseline of the three parameters used to monitor for mag toxicity: respiratory rate (must be ≥12), deep tendon reflexes (must be present), and urine output (must be ≥30 mL/hr). Without a baseline, you can't recognize toxicity.</p><div class="case-answer">✓ Baseline respirations, DTRs, and urine output</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-1-answer" onclick="toggleCase(this)">Q1: Before starting Mag, what assessment is the priority? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-1-answer"><p>Establish a baseline of the three parameters used to monitor for mag toxicity: respiratory rate (must be ≥12), deep tendon reflexes (must be present), and urine output (must be ≥30 mL/hr). Without a baseline, you can't recognize toxicity.</p><div class="case-answer">✓ Baseline respirations, DTRs, and urine output</div></div>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q2: The 1-hour assessment shows RR 9, absent DTRs, UO 18 mL/hr. What does this indicate and what is the priority action? <span>▾</span></div>
-      <div class="case-q-body"><p>All three signs indicate magnesium toxicity (resp &lt;12, absent DTRs, UO &lt;30 mL/hr). Priority: STOP the infusion immediately, then administer calcium gluconate IV (the antidote). Call for help and prepare for respiratory support.</p><div class="case-answer">✓ Magnesium toxicity → STOP infusion + give calcium gluconate immediately</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-2-answer" onclick="toggleCase(this)">Q2: The 1-hour assessment shows RR 9, absent DTRs, UO 18 mL/hr. What does this indicate and what is the priority action? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-2-answer"><p>All three signs indicate magnesium toxicity (resp &lt;12, absent DTRs, UO &lt;30 mL/hr). Priority: STOP the infusion immediately, then administer calcium gluconate IV (the antidote). Call for help and prepare for respiratory support.</p><div class="case-answer">✓ Magnesium toxicity → STOP infusion + give calcium gluconate immediately</div></div>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q3: The patient then has a generalized tonic-clonic seizure (eclampsia). Priority nursing action during the seizure? <span>▾</span></div>
-      <div class="case-q-body"><p>During a seizure: protect from injury (pad rails, clear environment), turn to side-lying (protect airway, prevent aspiration), call for help, and time the seizure. Do NOT put anything in the mouth. Note: calcium gluconate is the Mag antidote, not the seizure treatment.</p><div class="case-answer">✓ Protect from injury · Side-lying for airway · Call for help · Time the seizure</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-3-answer" onclick="toggleCase(this)">Q3: The patient then has a generalized tonic-clonic seizure (eclampsia). Priority nursing action during the seizure? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-3-answer"><p>During a seizure: protect from injury (pad rails, clear environment), turn to side-lying (protect airway, prevent aspiration), call for help, and time the seizure. Do NOT put anything in the mouth. Note: calcium gluconate is the Mag antidote, not the seizure treatment.</p><div class="case-answer">✓ Protect from injury · Side-lying for airway · Call for help · Time the seizure</div></div>
     </div>
   </div>
 
@@ -824,16 +826,16 @@
       <p>Four antepartum patients present simultaneously. Patient A: 38 weeks, Braxton Hicks every 15 min, no cervical change. Patient B: 32 weeks, BP 174/116, severe headache, visual changes, RUQ pain. Patient C: 30 weeks, painless bright red vaginal bleeding (suspected placenta previa). Patient D: 28 weeks, regular contractions every 5 min, cervix dilated to 3 cm.</p>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q1: Using "Mom First" — which patient is the priority? <span>▾</span></div>
-      <div class="case-q-body"><p>Patient B is the priority. BP 174/116 + severe headache + visual changes + RUQ pain = severe preeclampsia with imminent risk of eclampsia (seizure). This is the most immediately life-threatening presentation.</p><div class="case-answer">✓ Patient B — severe preeclampsia with imminent eclampsia risk</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-4-answer" onclick="toggleCase(this)">Q1: Using "Mom First" — which patient is the priority? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-4-answer"><p>Patient B is the priority. BP 174/116 + severe headache + visual changes + RUQ pain = severe preeclampsia with imminent risk of eclampsia (seizure). This is the most immediately life-threatening presentation.</p><div class="case-answer">✓ Patient B — severe preeclampsia with imminent eclampsia risk</div></div>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q2: For Patient C (placenta previa), what is the CONTRAINDICATED action? <span>▾</span></div>
-      <div class="case-q-body"><p>Vaginal examination is absolutely contraindicated with placenta previa. The placenta overlies the cervical os — any digital examination can rupture vessels and cause massive, potentially fatal hemorrhage. Bed rest, fetal monitoring, and IV access are appropriate.</p><div class="case-answer">✓ Vaginal exam — NEVER with suspected placenta previa</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-5-answer" onclick="toggleCase(this)">Q2: For Patient C (placenta previa), what is the CONTRAINDICATED action? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-5-answer"><p>Vaginal examination is absolutely contraindicated with placenta previa. The placenta overlies the cervical os — any digital examination can rupture vessels and cause massive, potentially fatal hemorrhage. Bed rest, fetal monitoring, and IV access are appropriate.</p><div class="case-answer">✓ Vaginal exam — NEVER with suspected placenta previa</div></div>
     </div>
     <div class="case-q">
-      <div class="case-q-header" onclick="toggleCase(this)">Q3: For Patient D (28 weeks, preterm labor), which medications would the nurse MOST LIKELY anticipate? <span>▾</span></div>
-      <div class="case-q-body"><p>Betamethasone (corticosteroid) to accelerate fetal lung maturity, and magnesium sulfate as a tocolytic and for fetal neuroprotection before 32 weeks. Pitocin would worsen labor. Calcium gluconate is Mag's antidote, not a treatment here.</p><div class="case-answer">✓ Betamethasone (lung maturity) + Magnesium sulfate (tocolytic + neuroprotection)</div></div>
+      <button type="button" class="case-q-header" aria-expanded="false" aria-controls="case-6-answer" onclick="toggleCase(this)">Q3: For Patient D (28 weeks, preterm labor), which medications would the nurse MOST LIKELY anticipate? <span aria-hidden="true">▾</span></button>
+      <div class="case-q-body" id="case-6-answer"><p>Betamethasone (corticosteroid) to accelerate fetal lung maturity, and magnesium sulfate as a tocolytic and for fetal neuroprotection before 32 weeks. Pitocin would worsen labor. Calcium gluconate is Mag's antidote, not a treatment here.</p><div class="case-answer">✓ Betamethasone (lung maturity) + Magnesium sulfate (tocolytic + neuroprotection)</div></div>
     </div>
   </div>
 </div>
@@ -900,19 +902,28 @@
   <div class="checklist-items" id="checklist-items"></div>
   <div class="checklist-bar-wrap"><div class="checklist-bar" id="checklist-bar" style="width:0%"></div></div>
   <div class="checklist-progress" id="checklist-progress">0 of 10 completed</div>
+  <nav class="completion-nav" aria-label="Module completion navigation">
+    <a class="completion-link completion-link-secondary" href="module1-guide.html">← Module 1</a>
+    <a class="completion-link completion-link-secondary" href="nclex-success-center.html">Back to Hub</a>
+    <a class="completion-link completion-link-primary" href="module3-guide.html">Continue to Module 3 →</a>
+  </nav>
 </div>
 
-</div>
+</main>
 
 <script>
 // ── LESSON TABS ──
-function showLesson(id) {
-  document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.lesson-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('lesson-' + id).classList.add('active');
-  event.target.classList.add('active');
+function showLesson(id, trigger) {
+  document.querySelectorAll('.lesson-panel').forEach(p => { p.classList.remove('active'); p.hidden = true; });
+  document.querySelectorAll('.lesson-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); t.tabIndex = -1; });
+  const panel = document.getElementById('lesson-' + id);
+  panel.classList.add('active'); panel.hidden = false;
+  trigger.classList.add('active'); trigger.setAttribute('aria-selected', 'true'); trigger.tabIndex = 0;
 }
-function toggleCase(h) { h.nextElementSibling.classList.toggle('open'); }
+function toggleCase(h) { const body=h.nextElementSibling; const open=body.classList.toggle('open'); h.setAttribute('aria-expanded', String(open)); }
+document.querySelectorAll('.lesson-panel').forEach((p,i) => { p.setAttribute('role','tabpanel'); p.setAttribute('aria-labelledby', document.querySelectorAll('.lesson-tab')[i].id); p.hidden = i !== 0; });
+document.querySelectorAll('.lesson-tab').forEach((tab,i,tabs) => { tab.tabIndex=i===0?0:-1; tab.addEventListener('keydown', e => { if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return; e.preventDefault(); let next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length; tabs[next].focus(); tabs[next].click(); }); });
+document.querySelectorAll('.data-table').forEach((table,i) => { const panel=table.closest('.lesson-panel'); const label=panel ? document.getElementById(panel.getAttribute('aria-labelledby'))?.textContent.trim() : 'Module 2'; table.setAttribute('aria-label', `${label || 'Module 2'} reference table ${i+1}`); });
 
 // ── PRACTICE QUESTIONS ──
 const PQ = [
@@ -1063,7 +1074,7 @@ function renderChecklist(){
   const checked=loadChecklist();
   document.getElementById('checklist-items').innerHTML=ITEMS.map((item,i)=>{
     const isChecked=checked.includes(i);
-    return `<div class="checklist-item ${isChecked?'checked':''}" onclick="toggleCheck(${i})"><div class="checklist-box">${isChecked?'✓':''}</div><div class="checklist-label">${item}</div></div>`;
+    return `<button type="button" class="checklist-item ${isChecked?'checked':''}" aria-pressed="${isChecked}" onclick="toggleCheck(${i})"><span class="checklist-box" aria-hidden="true">${isChecked?'✓':''}</span><span class="checklist-label">${item}</span></button>`;
   }).join('');
   const pct=Math.round((checked.length/ITEMS.length)*100);
   document.getElementById('checklist-bar').style.width=pct+'%';
@@ -1071,6 +1082,16 @@ function renderChecklist(){
 }
 function toggleCheck(i){let c=loadChecklist();if(c.includes(i))c=c.filter(x=>x!==i);else c.push(i);saveChecklist(c);renderChecklist();}
 renderChecklist();
+
+const sectionLinks = [...document.querySelectorAll('.progress-nav a')];
+const sectionObserver = new IntersectionObserver(entries => {
+  const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio-a.intersectionRatio)[0];
+  if (!visible) return;
+  sectionLinks.forEach(link => link.removeAttribute('aria-current'));
+  const current = sectionLinks.find(link => link.getAttribute('href') === '#' + visible.target.id);
+  if (current) { current.setAttribute('aria-current','location'); current.scrollIntoView({block:'nearest',inline:'center'}); }
+}, {rootMargin:'-110px 0px -65% 0px', threshold:[0.1,0.35,0.7]});
+document.querySelectorAll('.section-card[id]').forEach(section => sectionObserver.observe(section));
 </script>
 </body>
 </html>

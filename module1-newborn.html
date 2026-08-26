@@ -13,7 +13,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; }
-    button:focus { outline: 2px solid #0ea5e9; outline-offset: 2px; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 3px; }
 
     /* ── Entrance animation ── */
     @keyframes fadeUp {
@@ -61,6 +61,18 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+    @media (max-width: 640px) {
+      .quiz-card-body { padding: 22px 18px !important; }
+      .bowtie-grid { flex-direction: column; gap: 12px !important; }
+      .bowtie-column { width: 100%; min-width: 0 !important; max-width: none !important; }
+      .bowtie-arrow { align-self: center; padding-top: 0 !important; transform: rotate(90deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up, .scale-in { animation: none; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -533,6 +545,7 @@ function Btn({ children, onClick, disabled, variant="primary" }) {
   };
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
       className={variant === "primary" ? "btn-primary" : "btn-outline"}
@@ -569,6 +582,8 @@ function OptionBtn({ letter, text, state, onClick }) {
 
   return (
     <button
+      type="button"
+      aria-pressed={state === "selected"}
       style={{ ...base, ...(stateStyles[state || "neutral"]) }}
       className={(!state || state === "neutral" || state === "selected") ? "opt-btn" : ""}
       onClick={onClick}
@@ -639,6 +654,8 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
     if(isWrong){ bg="#fef2f2"; border="2px solid #ef4444"; color="#991b1b"; }
     return (
       <button
+        type="button"
+        aria-pressed={isSelected}
         onClick={onClick}
         className={!isCorrect && !isWrong && !isDim ? "opt-btn" : ""}
         style={{
@@ -694,24 +711,24 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
           <span><strong>Bow-Tie:</strong> Select <strong>2 nursing actions</strong> → <strong>1 condition</strong> → <strong>2 parameters to monitor</strong></span>
         </div>
       )}
-      <div style={{ display:"flex", gap:8, marginBottom:20, alignItems:"flex-start" }}>
-        <div style={col}>
+      <div className="bowtie-grid" style={{ display:"flex", gap:8, marginBottom:20, alignItems:"flex-start" }}>
+        <div className="bowtie-column" style={col}>
           <div style={{ fontSize:10, fontWeight:700, color:"#10b981", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>⚕️ {q.leftLabel}</div>
           <CountPill current={leftSel} total={2} />
           {renderCol(q.leftOptions,q.correctLeft,"left")}
         </div>
-        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
+        <div className="bowtie-arrow" aria-hidden="true" style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
           <div style={{ fontSize:22, color:"#0ea5e9", fontWeight:700 }}>→</div>
         </div>
-        <div style={{ ...col, maxWidth:185 }}>
+        <div className="bowtie-column" style={{ ...col, maxWidth:185 }}>
           <div style={{ fontSize:10, fontWeight:700, color:"#8b5cf6", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>🔍 {q.centerLabel}</div>
           <CountPill current={centerSel} total={1} />
           {renderCol(q.centerOptions,q.correctCenter,"center")}
         </div>
-        <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
+        <div className="bowtie-arrow" aria-hidden="true" style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,paddingTop:44 }}>
           <div style={{ fontSize:22, color:"#0ea5e9", fontWeight:700 }}>→</div>
         </div>
-        <div style={col}>
+        <div className="bowtie-column" style={col}>
           <div style={{ fontSize:10, fontWeight:700, color:"#f59e0b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:2 }}>🎯 {q.rightLabel}</div>
           <CountPill current={rightSel} total={2} />
           {renderCol(q.rightOptions,q.correctRight,"right")}
@@ -776,7 +793,7 @@ function RationalePanel({ q, isCorrect }) {
   const statusBorder= isCorrect ? "#86efac"  : "#fca5a5";
 
   return (
-    <div style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
+    <div role="status" aria-live="polite" style={{ marginBottom:20, display:"flex", flexDirection:"column", gap:10 }}>
 
       {/* Status header */}
       <div style={{
@@ -876,7 +893,7 @@ function RationalePanel({ q, isCorrect }) {
 function WelcomeScreen({ onStart }) {
   const sectionQCounts = { 1:10, 2:10, 3:5 };
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+    <main aria-labelledby="welcome-title" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
       <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"44px 40px", maxWidth:660, width:"100%", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
 
         {/* Header */}
@@ -888,7 +905,7 @@ function WelcomeScreen({ onStart }) {
             textTransform:"uppercase", marginBottom:14
           }}>NCLEX-RN · 2026 Blueprint</span>
           <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:6, letterSpacing:2, textTransform:"uppercase" }}>Module 1</div>
-          <h1 style={{ fontSize:30, fontWeight:800, color:"#0f172a", marginBottom:10, lineHeight:1.2 }}>🍼 Newborn Care</h1>
+          <h1 id="welcome-title" style={{ fontSize:30, fontWeight:800, color:"#0f172a", marginBottom:10, lineHeight:1.2 }}>🍼 Newborn Care</h1>
           <p style={{ color:"#64748b", fontSize:15, lineHeight:1.7, maxWidth:480, margin:"0 auto" }}>
             25 targeted questions aligned to the <strong style={{color:"#0f172a"}}>20 Things the NCLEX Wants You to Know About Newborn Care</strong> infographic. Reinforce your content before completing Bootcamp/UWorld.
           </p>
@@ -921,6 +938,7 @@ function WelcomeScreen({ onStart }) {
         </div>
 
         <button
+          type="button"
           onClick={onStart}
           className="btn-primary"
           style={{
@@ -933,7 +951,7 @@ function WelcomeScreen({ onStart }) {
           Begin Module 1 →
         </button>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -942,7 +960,7 @@ function SectionIntroScreen({ sectionNum, onContinue }) {
   const s = SECTIONS[sectionNum];
   const count = QUESTIONS.filter(q=>q.section===sectionNum).length;
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+    <main aria-labelledby="section-intro-title" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
       <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"44px 40px", maxWidth:520, width:"100%", textAlign:"center", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
 
         {/* Glow emoji */}
@@ -962,7 +980,7 @@ function SectionIntroScreen({ sectionNum, onContinue }) {
           textTransform:"uppercase", marginBottom:12
         }}>Section {sectionNum} of 3</span>
 
-        <h2 style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:10 }}>{s.title}</h2>
+        <h2 id="section-intro-title" style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:10 }}>{s.title}</h2>
         <p style={{ fontSize:15, color:"#475569", lineHeight:1.7, marginBottom:22 }}>{s.desc}</p>
 
         <div style={{ borderLeft:`4px solid ${s.color}`, background:s.light, borderRadius:"0 10px 10px 0", padding:"12px 16px", marginBottom:28, fontSize:13, color:"#374151", textAlign:"left" }}>
@@ -970,6 +988,7 @@ function SectionIntroScreen({ sectionNum, onContinue }) {
         </div>
 
         <button
+          type="button"
           onClick={onContinue}
           className="btn-primary"
           style={{
@@ -982,7 +1001,7 @@ function SectionIntroScreen({ sectionNum, onContinue }) {
           Start {s.label} →
         </button>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -1037,13 +1056,13 @@ function ResultsScreen({ history, onRestart }) {
   });
 
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
+    <main aria-labelledby="results-title" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"'Inter',sans-serif" }}>
       <div className="fade-up" style={{ background:"#fff", borderRadius:24, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 32px 72px rgba(0,0,0,0.45)" }}>
 
         {/* Header */}
         <div style={{ textAlign:"center", marginBottom:22 }}>
           <div style={{ fontSize:11, letterSpacing:2, color:"#94a3b8", textTransform:"uppercase", marginBottom:6, fontWeight:600 }}>Module 1 Complete</div>
-          <h2 style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:4 }}>🍼 Newborn Care</h2>
+          <h2 id="results-title" style={{ fontSize:24, fontWeight:800, color:"#0f172a", marginBottom:4 }}>🍼 Newborn Care</h2>
         </div>
 
         {/* Score ring */}
@@ -1128,19 +1147,19 @@ function ResultsScreen({ history, onRestart }) {
         </div>
 
         {/* Share with Madison */}
-        <button onClick={handleShare} className="btn-primary" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background: copied ? "linear-gradient(135deg,#059669,#10b981)" : "linear-gradient(135deg,#0369a1,#0ea5e9)", color:"#fff", boxShadow:"0 4px 16px rgba(14,165,233,0.28)", marginBottom:10, transition:"all 0.25s ease" }}>
+        <button type="button" onClick={handleShare} className="btn-primary" aria-live="polite" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background: copied ? "linear-gradient(135deg,#059669,#10b981)" : "linear-gradient(135deg,#0369a1,#0ea5e9)", color:"#fff", boxShadow:"0 4px 16px rgba(14,165,233,0.28)", marginBottom:10, transition:"all 0.25s ease" }}>
           {copied ? "✅ Copied! Send to Madison now." : "📤 Share Results with Madison"}
         </button>
 
-        <button onClick={onRestart} className="btn-primary" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff", boxShadow:"0 4px 16px rgba(15,23,42,0.25)", marginBottom:10 }}>
+        <button type="button" onClick={onRestart} className="btn-primary" style={{ width:"100%", padding:"14px", border:"none", borderRadius:14, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", background:"linear-gradient(135deg,#1e293b 0%,#0f172a 100%)", color:"#fff", boxShadow:"0 4px 16px rgba(15,23,42,0.25)", marginBottom:10 }}>
           Retake Module 1
         </button>
 
-        <a href="alyssa-hub.html" style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"13px", borderRadius:14, border:"1.5px solid #e2e8f0", background:"#f8fafc", color:"#64748b", fontSize:14, fontWeight:600, textDecoration:"none", transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>
+        <a href="nclex-success-center.html" style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, minHeight:44, padding:"13px", borderRadius:14, border:"1.5px solid #e2e8f0", background:"#f8fafc", color:"#64748b", fontSize:14, fontWeight:600, textDecoration:"none", transition:"all 0.18s ease" }} onMouseOver={e=>e.currentTarget.style.background="#f1f5f9"} onMouseOut={e=>e.currentTarget.style.background="#f8fafc"}>
           ← Back to My Hub
         </a>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -1212,10 +1231,10 @@ function QuizScreen({ onFinish }) {
   const isNGN = q.type==="bowtie"||q.type==="casestudy";
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f0f2f8", fontFamily:"'Inter',sans-serif" }}>
+    <main aria-label="Module 1 practice question" style={{ minHeight:"100vh", background:"#f0f2f8", fontFamily:"'Inter',sans-serif" }}>
 
       {/* Top bar */}
-      <div style={{ background:"#fff", borderBottom:"1px solid #e8ecf2", padding:"0 24px", height:60, display:"flex", alignItems:"center", gap:16, boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
+      <header style={{ background:"#fff", borderBottom:"1px solid #e8ecf2", padding:"0 24px", height:60, display:"flex", alignItems:"center", gap:16, boxShadow:"0 1px 4px rgba(15,23,42,0.06)" }}>
         {/* Section pill */}
         <span style={{
           padding:"4px 12px", borderRadius:99, fontSize:11, fontWeight:700,
@@ -1224,7 +1243,7 @@ function QuizScreen({ onFinish }) {
         }}>{sec.label}</span>
 
         {/* Progress bar */}
-        <div style={{ flex:1, background:"#e8ecf2", borderRadius:99, height:8 }}>
+        <div role="progressbar" aria-valuemin={1} aria-valuemax={QUESTIONS.length} aria-valuenow={overallNum} aria-label={`Question ${overallNum} of ${QUESTIONS.length}`} style={{ flex:1, background:"#e8ecf2", borderRadius:99, height:8 }}>
           <div style={{
             width:`${(overallNum/QUESTIONS.length)*100}%`,
             background:`linear-gradient(90deg, ${sec.color}, ${sec.color}bb)`,
@@ -1237,7 +1256,7 @@ function QuizScreen({ onFinish }) {
           <span style={{color:"#0f172a"}}>Q{overallNum}</span>
           <span style={{color:"#94a3b8"}}> / {QUESTIONS.length}</span>
         </div>
-      </div>
+      </header>
 
       <div style={{ maxWidth:800, margin:"0 auto", padding:"24px 16px" }}>
         <div
@@ -1250,7 +1269,7 @@ function QuizScreen({ onFinish }) {
           {/* Section color accent bar */}
           <div style={{ height:5, background:`linear-gradient(90deg, ${sec.color}, ${sec.color}99)` }} />
 
-          <div style={{ padding:"28px 32px" }}>
+          <div className="quiz-card-body" style={{ padding:"28px 32px" }}>
 
             {/* Concept tag */}
             <div style={{
@@ -1290,7 +1309,7 @@ function QuizScreen({ onFinish }) {
             )}
 
             {/* Stem */}
-            <div style={{ fontSize:16, lineHeight:1.7, color:"#0f172a", marginBottom:20, fontWeight:600 }}>{q.stem}</div>
+            <h1 style={{ fontSize:16, lineHeight:1.7, color:"#0f172a", marginBottom:20, fontWeight:600 }}>{q.stem}</h1>
 
             {/* Question */}
             {q.type==="mcq" && <MCQQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
@@ -1314,7 +1333,7 @@ function QuizScreen({ onFinish }) {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

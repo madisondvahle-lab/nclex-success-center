@@ -10,6 +10,9 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f0f2f8; color: #1e293b; min-height: 100vh; }
+    .skip-link { position: fixed; left: 12px; top: -60px; z-index: 1000; background: #fff; color: #4c1d95; padding: 12px 16px; border-radius: 10px; font-weight: 800; box-shadow: 0 4px 18px rgba(15,23,42,.2); }
+    .skip-link:focus { top: 12px; }
+    a:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 3px; }
 
     .site-header {
       background: linear-gradient(135deg, #0f172a 0%, #4c1d95 100%);
@@ -25,10 +28,14 @@
     .header-title { font-size: clamp(28px,5vw,44px); font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.5px; }
     .header-sub { font-size: 16px; color: #c4b5fd; font-style: italic; margin-bottom: 12px; }
     .header-byline { font-size: 13px; color: #a78bfa; font-weight: 600; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; color: #a78bfa; font-size: 13px; font-weight: 600; text-decoration: none; opacity: 0.85; }
+    .back-link { min-height: 44px; padding: 8px 4px; display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; color: #a78bfa; font-size: 13px; font-weight: 600; text-decoration: none; opacity: 0.85; }
     .back-link:hover { opacity: 1; }
 
     .main { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+    .contents-nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px; margin-bottom: 28px; box-shadow: 0 4px 16px rgba(15,23,42,.08); backdrop-filter: blur(8px); }
+    .contents-list { display: flex; gap: 7px; overflow-x: auto; list-style: none; padding-bottom: 2px; }
+    .contents-list a { display: inline-flex; min-height: 44px; align-items: center; white-space: nowrap; padding: 8px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; font-size: 12px; font-weight: 700; text-decoration: none; }
+    .contents-list a:hover { background: #f3e8ff; color: #6d28d9; border-color: #d8b4fe; }
 
     /* Infographic */
     .infographic-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 2px 12px rgba(15,23,42,0.07); border: 1px solid #e8ecf2; margin-bottom: 28px; text-align: center; }
@@ -92,6 +99,8 @@
     .data-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; line-height: 1.5; vertical-align: top; }
     .data-table tr:last-child td { border-bottom: none; }
     .data-table tr:hover td { background: #fafbfc; }
+    .table-card { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+    .table-card .data-table { min-width: 680px; }
 
     /* Tags */
     .tag { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; }
@@ -140,31 +149,72 @@
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     .fade-up { animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both; }
+    .report-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    @media (max-width: 580px) {
+      .main { padding: 24px 14px 56px; }
+      .site-header { padding: 38px 18px 34px; }
+      .infographic-card, .card { padding: 16px; }
+      .big-picture, .rapid-fire, .quiz-cta { padding: 22px 18px; }
+      .report-grid { grid-template-columns: 1fr; }
+      .contents-nav { margin-left: -4px; margin-right: -4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { animation: none; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      body { background: #fff; color: #111827; }
+      .skip-link, .back-link, .contents-nav, .quiz-cta { display: none !important; }
+      .site-header { background: #fff !important; padding: 18px 0; border-bottom: 2px solid #4c1d95; }
+      .header-title { color: #111827; }
+      .header-badge, .header-sub, .header-byline { color: #4c1d95; }
+      .main { max-width: none; padding: 20px 0; }
+      .section, .card, .big-picture, .rapid-fire, .bottom-line { break-inside: avoid; box-shadow: none; }
+      .table-card { overflow: visible !important; }
+      .table-card .data-table { min-width: 0; }
+      .fade-up { animation: none; }
+    }
   </style>
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to study guide</a>
+
 <header class="site-header">
   <div class="header-badge">Study with Madison, RN · Module 2</div>
-  <div class="header-title">🤰 Maternal &amp; OB</div>
+  <h1 class="header-title">🤰 Maternal &amp; OB</h1>
   <div class="header-sub">Normal Changes. Safe Care. Healthy Outcomes.</div>
   <div class="header-byline">High-Yield Review for NCLEX Success</div>
   <br>
-  <a href="alyssa-hub.html" class="back-link">← Back to My Hub</a>
+  <a href="nclex-success-center.html" class="back-link">← Back to My Hub</a>
 </header>
 
-<main class="main">
+<main class="main" id="main-content">
+
+  <nav class="contents-nav" aria-label="Study guide sections">
+    <ol class="contents-list">
+      <li><a href="#section-1">1 RH Incompatibility</a></li>
+      <li><a href="#section-2">2 Hypertensive Disorders</a></li>
+      <li><a href="#section-3">3 Fetal Heart Rate</a></li>
+      <li><a href="#section-4">4 Obstetric Emergencies</a></li>
+      <li><a href="#section-5">5 Gestational Diabetes</a></li>
+      <li><a href="#section-6">6 Prenatal Care</a></li>
+      <li><a href="#section-7">7 Testing Timeline</a></li>
+      <li><a href="#section-8">8 Vaccines</a></li>
+      <li><a href="#section-9">9 Report Immediately</a></li>
+    </ol>
+  </nav>
 
   <!-- INFOGRAPHIC -->
   <div class="infographic-card fade-up">
     <div class="infographic-label">📊 Madison's Module 2 Infographic</div>
-    <img src="module2-infographic.png" alt="Module 2 Maternal & OB Infographic" />
+    <img src="module2-infographic.png" alt="Module 2 Maternal & OB Infographic" loading="lazy" />
     <p>Full breakdown of every section continues below ↓</p>
   </div>
 
   <!-- BIG PICTURE -->
   <div class="big-picture fade-up">
-    <div class="big-picture-title">🎯 The Big Picture</div>
+    <h2 class="big-picture-title">🎯 The Big Picture</h2>
     <div class="big-picture-grid">
       <div class="bp-item"><strong>Pregnancy =</strong><p>A NORMAL physiologic state — ask "expected or dangerous?" for every finding</p></div>
       <div class="bp-item"><strong>Your Priority is TWO</strong><p>Mom first, then fetus. A stable mom = a stable baby.</p></div>
@@ -173,11 +223,11 @@
   </div>
 
   <!-- 1. RH INCOMPATIBILITY -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-1" aria-labelledby="section-1-title">
     <div class="section-header">
       <div class="section-num" style="background:#be123c;">1</div>
       <div>
-        <div class="section-title" style="color:#be123c;">RH Incompatibility</div>
+        <h2 class="section-title" id="section-1-title" style="color:#be123c;">RH Incompatibility</h2>
       </div>
     </div>
 
@@ -210,20 +260,20 @@
         <div class="alert-text">Do <strong>NOT</strong> give RhoGAM if the mother already has a positive antibody screen. RhoGAM prevents sensitization — it cannot treat existing sensitization.</div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 2. HYPERTENSIVE DISORDERS -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-2" aria-labelledby="section-2-title">
     <div class="section-header">
       <div class="section-num" style="background:#7c3aed;">2</div>
       <div>
-        <div class="section-title" style="color:#7c3aed;">Hypertensive Disorders</div>
+        <h2 class="section-title" id="section-2-title" style="color:#7c3aed;">Hypertensive Disorders</h2>
         <div class="section-sub">Know the differences.</div>
       </div>
     </div>
 
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="data-table">
+    <div class="card table-card" style="padding:0;overflow:hidden;" role="region" aria-label="Hypertensive disorders comparison" tabindex="0">
+      <table class="data-table" aria-label="Hypertensive disorders comparison">
         <thead>
           <tr><th>Disorder</th><th>Key Features</th><th>Clues / Notes</th></tr>
         </thead>
@@ -281,19 +331,19 @@
       </div>
     </div>
     <style>.mag-grid { grid-template-columns: 1fr 1fr 1fr; } @media(max-width:580px){.mag-grid{grid-template-columns:1fr;}}</style>
-  </div>
+  </section>
 
   <!-- 3. FETAL HEART RATE -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-3" aria-labelledby="section-3-title">
     <div class="section-header">
       <div class="section-num" style="background:#0369a1;">3</div>
       <div>
-        <div class="section-title" style="color:#0369a1;">Fetal Heart Rate Patterns</div>
+        <h2 class="section-title" id="section-3-title" style="color:#0369a1;">Fetal Heart Rate Patterns</h2>
         <div class="section-sub">What the monitor is telling you.</div>
       </div>
     </div>
-    <div class="card" style="padding:0;overflow:hidden;">
-      <table class="data-table">
+    <div class="card table-card" style="padding:0;overflow:hidden;" role="region" aria-label="Fetal heart rate patterns" tabindex="0">
+      <table class="data-table" aria-label="Fetal heart rate patterns">
         <thead>
           <tr><th>Pattern</th><th>Cause</th><th>Meaning / Nursing Action</th></tr>
         </thead>
@@ -326,14 +376,14 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
 
   <!-- 4. OBSTETRIC EMERGENCIES -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-4" aria-labelledby="section-4-title">
     <div class="section-header">
       <div class="section-num" style="background:#be123c;">4</div>
       <div>
-        <div class="section-title" style="color:#be123c;">Obstetric Emergencies</div>
+        <h2 class="section-title" id="section-4-title" style="color:#be123c;">Obstetric Emergencies</h2>
         <div class="section-sub">Know these. Act FAST.</div>
       </div>
     </div>
@@ -377,14 +427,14 @@
         </ul>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 5. GDM -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-5" aria-labelledby="section-5-title">
     <div class="section-header">
       <div class="section-num" style="background:#059669;">5</div>
       <div>
-        <div class="section-title" style="color:#059669;">Gestational Diabetes Mellitus (GDM)</div>
+        <h2 class="section-title" id="section-5-title" style="color:#059669;">Gestational Diabetes Mellitus (GDM)</h2>
         <div class="section-sub">High-yield facts.</div>
       </div>
     </div>
@@ -439,14 +489,14 @@
         <li><span class="ck">→</span> Insulin preferred if medication needed — <strong>oral meds not first line in pregnancy</strong></li>
       </ul>
     </div>
-  </div>
+  </section>
 
   <!-- 6. PRENATAL CARE PEARLS -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-6" aria-labelledby="section-6-title">
     <div class="section-header">
       <div class="section-num" style="background:#7c3aed;">6</div>
       <div>
-        <div class="section-title" style="color:#7c3aed;">Prenatal Care Pearls</div>
+        <h2 class="section-title" id="section-6-title" style="color:#7c3aed;">Prenatal Care Pearls</h2>
         <div class="section-sub">Key things to remember.</div>
       </div>
     </div>
@@ -489,19 +539,19 @@
         </ul>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 7. PRENATAL TESTING TIMELINE -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-7" aria-labelledby="section-7-title">
     <div class="section-header">
       <div class="section-num" style="background:#0369a1;">7</div>
       <div>
-        <div class="section-title" style="color:#0369a1;">Prenatal Testing Timeline</div>
+        <h2 class="section-title" id="section-7-title" style="color:#0369a1;">Prenatal Testing Timeline</h2>
         <div class="section-sub">When things happen.</div>
       </div>
     </div>
     <div class="card">
-      <div class="timeline">
+      <div class="timeline" role="region" aria-label="Prenatal testing timeline" tabindex="0">
         <div class="timeline-step">
           <div class="timeline-inner">
             <div class="timeline-week">First Visit</div>
@@ -546,14 +596,14 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 8. VACCINES -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-8" aria-labelledby="section-8-title">
     <div class="section-header">
       <div class="section-num" style="background:#059669;">8</div>
       <div>
-        <div class="section-title" style="color:#059669;">Vaccines in Pregnancy</div>
+        <h2 class="section-title" id="section-8-title" style="color:#059669;">Vaccines in Pregnancy</h2>
       </div>
     </div>
     <div class="grid-2">
@@ -584,18 +634,18 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 9. REPORT IMMEDIATELY -->
-  <div class="section fade-up">
+  <section class="section fade-up" id="section-9" aria-labelledby="section-9-title">
     <div class="section-header">
       <div class="section-num" style="background:#be123c;">9</div>
       <div>
-        <div class="section-title" style="color:#be123c;">Report Immediately (Not Normal!)</div>
+        <h2 class="section-title" id="section-9-title" style="color:#be123c;">Report Immediately (Not Normal!)</h2>
       </div>
     </div>
     <div class="card">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="report-grid">
         <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:flex-start;"><span style="color:#ef4444;font-weight:800;flex-shrink:0;">!</span>Vaginal bleeding</div>
         <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:flex-start;"><span style="color:#ef4444;font-weight:800;flex-shrink:0;">!</span>Severe headache or visual changes</div>
         <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:flex-start;"><span style="color:#ef4444;font-weight:800;flex-shrink:0;">!</span>RUQ or epigastric pain</div>
@@ -607,12 +657,12 @@
         <div style="display:flex;gap:8px;font-size:13px;color:#991b1b;align-items:flex-start;"><span style="color:#ef4444;font-weight:800;flex-shrink:0;">!</span>Shortness of breath / chest pain</div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- RAPID FIRE -->
-  <div class="section fade-up">
+  <section class="section fade-up" aria-labelledby="rapid-fire-title">
     <div class="rapid-fire">
-      <div class="rf-title">⚡ NCLEX Rapid Fire</div>
+      <h2 class="rf-title" id="rapid-fire-title">⚡ NCLEX Rapid Fire</h2>
       <div class="rf-grid">
         <div class="rf-item">Leukocytosis (↑ WBC) can be <strong>NORMAL</strong> in pregnancy</div>
         <div class="rf-item">Mild dilutional anemia is <strong>EXPECTED</strong></div>
@@ -626,7 +676,7 @@
         <div class="rf-item">Late decels = <strong>placental insufficiency</strong> — never benign</div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- BOTTOM LINE -->
   <div class="bottom-line fade-up">
