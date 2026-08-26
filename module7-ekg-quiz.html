@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Module 7 · EKG Challenge</title>
+
+<style>
+:root{
+--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;
+--rose:#bd6f7f;--plum:#382338;--muted:#567087;
+--line:#d8e1db;--soft:#f5eee8;--green:#167052;
+--red:#9c382d
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.shell{width:min(820px,calc(100% - 36px));margin:auto}
+.top{padding:24px 0;border-bottom:1px solid #e2e8e3}
+.brand{font:700 1.2rem Georgia,serif}
+.hero{padding:48px 0 26px}
+.eyebrow{color:var(--rose);font-weight:900;text-transform:uppercase;letter-spacing:.13em;font-size:.7rem;margin:0 0 8px}
+h1{font:700 clamp(2.4rem,6vw,4rem)/.95 Georgia,serif;color:var(--plum);letter-spacing:-.055em;margin:0}
+.hero p:last-child{color:var(--muted);line-height:1.6;max-width:650px}
+.progress{height:8px;background:#e8e1dc;border-radius:999px;overflow:hidden;margin:20px 0}
+.progress span{display:block;height:100%;background:var(--rose);transition:width .25s}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:27px;box-shadow:0 10px 32px #17344f0b;margin-bottom:35px}
+.meta{font-size:.72rem;color:var(--rose);font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.stem{font:700 1.25rem/1.45 Georgia,serif;color:var(--plum);margin:0 0 20px}
+.strip{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 20px;background:#fff}
+.strip img{width:100%;display:block}
+.options{display:grid;gap:10px}
+.option{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:11px;padding:14px 15px;color:var(--ink);font:650 .94rem/1.4 Inter,sans-serif;cursor:pointer}
+.option:hover{border-color:var(--rose)}
+.option.selected{border:2px solid var(--plum);background:var(--soft)}
+.option.correct{border:2px solid var(--green);background:#e7f5ee}
+.option.wrong{border:2px solid var(--red);background:#fde9e7}
+.actions{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+button.action{border:0;border-radius:999px;padding:12px 19px;font-weight:850;cursor:pointer}
+.primary{background:var(--plum);color:#fff}
+.secondary{background:var(--soft);color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{display:none;margin-top:18px;border-radius:12px;padding:15px;line-height:1.5}
+.feedback.show{display:block}
+.feedback.good{background:#e7f5ee;color:#0f5d42}
+.feedback.bad{background:#fde9e7;color:#7e3029}
+.result{text-align:center;padding:15px 0}
+.score{font:700 4rem Georgia,serif;color:var(--plum)}
+.hidden{display:none!important}
+@media(max-width:600px){.card{padding:20px}.actions{flex-direction:column}}
+</style>
+</head>
+
+<body>
+<main class="shell">
+
+<header class="top">
+<div class="brand">Study With Madison, RN · NCLEX Success Center</div>
+</header>
+
+<section class="hero">
+<p class="eyebrow">Module 7 · Final Challenge</p>
+<h1>EKG Challenge</h1>
+<p>25 NCLEX-style questions. Recognize the rhythm, assess the patient, and choose the safest next action.</p>
+<div class="progress"><span id="bar"></span></div>
+</section>
+
+<section class="card" id="quiz">
+<div class="meta" id="meta"></div>
+<div id="strip"></div>
+<p class="stem" id="stem"></p>
+<div class="options" id="options"></div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="actions">
+<button class="action secondary" id="back">Previous</button>
+<button class="action primary" id="submit">Check answer</button>
+<button class="action primary hidden" id="next">Next question</button>
+</div>
+</section>
+
+<section class="card hidden" id="results">
+<div class="result">
+<p class="eyebrow">Challenge Complete</p>
+<h2>Your Score</h2>
+<div class="score" id="score"></div>
+<p id="summary"></p>
+<button class="action primary" onclick="location.href='module7-ekg.html'">Review Module 7</button>
+</div>
+</section>
+
+<script>
+const Q=[
+{
+type:"Rhythm Recognition",
+img:"assets/ekg-openrn/afib.jpg",
+q:"Which rhythm is shown?",
+o:["Atrial flutter","Atrial fibrillation","SVT","Sinus arrhythmia"],
+a:1,
+r:"Atrial fibrillation is irregularly irregular and lacks consistent P waves."
+},
+{
+type:"Clinical Application",
+img:"assets/ekg-openrn/vtach.jpg",
+q:"The client is awake with a carotid pulse, BP 72/40 mm Hg, and chest pressure. Which intervention should the nurse anticipate?",
+o:["Defibrillation","Synchronized cardioversion","Vagal maneuvers","Atropine"],
+a:1,
+r:"This is unstable ventricular tachycardia with a pulse. Synchronized cardioversion is indicated."
+},
+{
+type:"Priority",
+img:"assets/ekg-openrn/vtach.jpg",
+q:"The monitor suddenly displays this rhythm. What should the nurse determine FIRST?",
+o:["Serum potassium level","Presence of a pulse","Current medications","Last oral intake"],
+a:1,
+r:"V-tach treatment depends immediately on whether the patient has a pulse."
+},
+{
+type:"Cardiac Arrest",
+img:"assets/ekg-openrn/vfib.jpg",
+q:"The client is unresponsive and pulseless. Which action has the highest priority?",
+o:["Synchronized cardioversion","CPR and rapid defibrillation","Atropine IV","Obtain a 12-lead ECG"],
+a:1,
+r:"V-fib is a shockable cardiac-arrest rhythm. Begin CPR and defibrillate as soon as possible."
+},
+{
+type:"Cardiac Arrest",
+img:"assets/ekg-openrn/asystole.jpg",
+q:"Which intervention should the nurse question for this pulseless client?",
+o:["High-quality CPR","Epinephrine","Evaluation for reversible causes","Defibrillation"],
+a:3,
+r:"Asystole is not shockable. CPR and epinephrine are priorities."
+},
+{
+type:"Clinical Judgment",
+q:"The monitor shows an organized rhythm, but the client is unresponsive and has no palpable pulse. How should the nurse interpret this finding?",
+o:["Stable sinus rhythm","Pulseless electrical activity","Ventricular fibrillation","Complete heart block"],
+a:1,
+r:"PEA is electrical activity without effective mechanical contraction and therefore without a pulse."
+},
+{
+type:"Rhythm Recognition",
+img:"assets/ekg-openrn/aflutter.jpg",
+q:"Which characteristic most strongly identifies this rhythm?",
+o:["Progressively lengthening PR intervals","Sawtooth atrial waves","Wide bizarre QRS complexes","Absent electrical activity"],
+a:1,
+r:"Atrial flutter produces characteristic repeating flutter or sawtooth waves."
+},
+{
+type:"Complication",
+img:"assets/ekg-openrn/afib.jpg",
+q:"Which complication is most important for the nurse to associate with this rhythm?",
+o:["Embolic stroke","Tension pneumothorax","Hypercalcemia","Cardiac tamponade"],
+a:0,
+r:"Ineffective atrial contraction promotes blood stasis and thrombus formation, increasing embolic stroke risk."
+},
+{
+type:"Medication",
+img:"assets/ekg-openrn/svt.jpg",
+q:"A stable client has this regular narrow-complex tachycardia. Vagal maneuvers are unsuccessful. Which medication may the nurse anticipate?",
+o:["Atropine","Adenosine","Epinephrine","Digoxin immune Fab"],
+a:1,
+r:"Adenosine may be used for appropriate stable regular narrow-complex SVT."
+},
+{
+type:"Medication Safety",
+q:"Which technique is appropriate when administering adenosine for SVT?",
+o:["Slow infusion over 30 minutes","Rapid IV push followed by a saline flush","Intramuscular injection","Dilute in 1 liter of saline"],
+a:1,
+r:"Adenosine has an extremely short half-life and is administered rapidly followed immediately by a saline flush."
+},
+{
+type:"Assessment",
+img:"assets/ekg-openrn/sinus-brady.jpg",
+q:"The client has this rhythm with HR 48/min but is alert, BP 118/70 mm Hg, and asymptomatic. What is the best nursing action?",
+o:["Administer atropine immediately","Begin transcutaneous pacing","Continue assessment and monitoring","Defibrillate"],
+a:2,
+r:"Asymptomatic sinus bradycardia does not automatically require emergency treatment."
+},
+{
+type:"Clinical Judgment",
+img:"assets/ekg-openrn/sinus-tach.jpg",
+q:"A postoperative client develops this rhythm at 128/min. Which assessment is most important?",
+o:["Identify possible pain, bleeding, hypoxia, fever, or hypovolemia","Prepare for immediate defibrillation","Administer atropine","Begin chest compressions"],
+a:0,
+r:"Sinus tachycardia is commonly a physiologic response. Identify and treat the underlying cause."
+},
+{
+type:"Rhythm Recognition",
+img:"assets/ekg-openrn/pvc.jpg",
+q:"Which finding is demonstrated on this strip?",
+o:["Premature ventricular contraction","Atrial flutter","First-degree AV block","Asystole"],
+a:0,
+r:"A PVC is an early ventricular beat that appears wide and bizarre compared with the underlying rhythm."
+},
+{
+type:"Assessment",
+img:"assets/ekg-openrn/pvc.jpg",
+q:"A hospitalized client develops frequent new PVCs. Which assessment is most appropriate?",
+o:["Assess oxygenation and electrolyte abnormalities","Immediately defibrillate","Administer adenosine","Prepare for carotid massage"],
+a:0,
+r:"New or frequent PVCs warrant evaluation for causes such as hypoxia, ischemia, electrolyte abnormalities, stimulants, and medications."
+},
+{
+type:"Heart Blocks",
+img:"assets/ekg-openrn/first-degree.jpg",
+q:"Which description best matches this rhythm?",
+o:["PR interval progressively lengthens until a QRS drops","PR interval is prolonged but every P wave conducts","P waves and QRS complexes are unrelated","PR interval is constant with sudden dropped QRS complexes"],
+a:1,
+r:"First-degree AV block has a prolonged, constant PR interval with 1:1 conduction."
+},
+{
+type:"Heart Blocks",
+img:"assets/ekg-openrn/mobitz-1.svg",
+q:"Which pattern identifies this rhythm?",
+o:["Longer, longer, longer, drop","Constant PR then unexpected drop","No P waves","P waves and QRS complexes completely dissociated"],
+a:0,
+r:"Mobitz I progressively prolongs the PR interval until a QRS complex is dropped."
+},
+{
+type:"Heart Blocks",
+img:"assets/ekg-openrn/mobitz-2.jpg",
+q:"Which finding differentiates Mobitz II from Mobitz I?",
+o:["No QRS complexes occur","PR intervals remain consistent before an unexpected dropped QRS","The rhythm is always tachycardic","P waves disappear completely"],
+a:1,
+r:"Mobitz II has consistent PR intervals in conducted beats with intermittent nonconducted P waves."
+},
+{
+type:"Priority",
+img:"assets/ekg-openrn/mobitz-2.jpg",
+q:"Why is this rhythm particularly concerning?",
+o:["It always causes atrial thrombi","It can progress to complete heart block","It is always shockable","It requires adenosine"],
+a:1,
+r:"Mobitz II can progress to complete heart block and may require pacing."
+},
+{
+type:"Heart Blocks",
+img:"assets/ekg-openrn/third-degree.jpg",
+q:"Which characteristic best identifies this rhythm?",
+o:["Progressive PR prolongation","Irregularly irregular rhythm","P waves and QRS complexes occur independently","Sawtooth flutter waves"],
+a:2,
+r:"Third-degree AV block causes complete AV dissociation. Atrial and ventricular activity occur independently."
+},
+{
+type:"Priority",
+img:"assets/ekg-openrn/third-degree.jpg",
+q:"A client with this rhythm is hypotensive and dizzy. Which intervention should the nurse anticipate?",
+o:["Adenosine","Pacing","Defibrillation regardless of pulse","Vagal maneuvers"],
+a:1,
+r:"Symptomatic complete heart block commonly requires pacing."
+},
+{
+type:"Shock vs Sync",
+q:"Which pair contains ONLY shockable cardiac-arrest rhythms?",
+o:["Asystole and PEA","V-fib and pulseless V-tach","SVT and A-fib","Mobitz II and third-degree block"],
+a:1,
+r:"V-fib and pulseless V-tach are the two shockable cardiac-arrest rhythms."
+},
+{
+type:"Shock vs Sync",
+q:"Which client is the best candidate for synchronized cardioversion?",
+o:["Pulseless client in V-fib","Pulseless client in asystole","Client with unstable tachyarrhythmia and a pulse","Stable client with sinus bradycardia"],
+a:2,
+r:"Synchronized cardioversion is used for selected unstable tachyarrhythmias when a pulse is present."
+},
+{
+type:"Medication",
+q:"Which medication should the nurse most closely associate with symptomatic bradycardia?",
+o:["Adenosine","Atropine","Epinephrine infusion for every stable patient","Digoxin immune Fab"],
+a:1,
+r:"Atropine is a first-line medication used for clinically significant symptomatic bradycardia."
+},
+{
+type:"NCLEX Trap",
+img:"assets/ekg-openrn/vtach.jpg",
+q:"Which statement by a nursing student requires correction?",
+o:["I need to assess for a pulse before deciding how V-tach is treated.","Pulseless V-tach is shockable.","All V-tach should be immediately defibrillated.","Unstable V-tach with a pulse may require synchronized cardioversion."],
+a:2,
+r:"V-tach treatment depends on pulse and stability. V-tach with a pulse is not automatically defibrillated."
+},
+{
+type:"Clinical Judgment",
+q:"Which sequence best represents the safest NCLEX approach when a dangerous rhythm appears on the monitor?",
+o:["Rhythm → medication → pulse → patient","Medication → rhythm → patient → pulse","Patient → pulse → rhythm → action","Defibrillate → assess → identify rhythm"],
+a:2,
+r:"Assess the patient first, determine whether a pulse is present, interpret the rhythm, then choose the appropriate action."
+}
+];
+
+let i=0,selected=null,answered=false,score=0;
+const responses=Array(Q.length).fill(null);
+
+const meta=document.getElementById("meta");
+const stem=document.getElementById("stem");
+const options=document.getElementById("options");
+const strip=document.getElementById("strip");
+const feedback=document.getElementById("feedback");
+const submit=document.getElementById("submit");
+const next=document.getElementById("next");
+const back=document.getElementById("back");
+const bar=document.getElementById("bar");
+
+function render(){
+ const q=Q[i];
+ selected=responses[i]?.selected ?? null;
+ answered=responses[i]?.answered ?? false;
+
+ meta.textContent=`Question ${i+1} of ${Q.length} · ${q.type}`;
+ stem.textContent=q.q;
+ bar.style.width=`${((i+1)/Q.length)*100}%`;
+
+ strip.innerHTML=q.img?`<div class="strip"><img src="${q.img}" alt="ECG rhythm strip"></div>`:"";
+
+ options.innerHTML="";
+ q.o.forEach((txt,n)=>{
+   const b=document.createElement("button");
+   b.className="option";
+   b.textContent=String.fromCharCode(65+n)+". "+txt;
+
+   if(selected===n)b.classList.add("selected");
+
+   if(answered){
+     b.disabled=true;
+     if(n===q.a)b.classList.add("correct");
+     if(n===selected && selected!==q.a)b.classList.add("wrong");
+   }
+
+   b.onclick=()=>{
+     if(answered)return;
+     selected=n;
+     [...options.children].forEach(x=>x.classList.remove("selected"));
+     b.classList.add("selected");
+     submit.disabled=false;
+   };
+
+   options.appendChild(b);
+ });
+
+ feedback.className="feedback";
+ feedback.innerHTML="";
+
+ if(answered){
+   const correct=selected===q.a;
+   feedback.className="feedback show "+(correct?"good":"bad");
+   feedback.innerHTML=`<strong>${correct?"Correct":"Not quite."}</strong><br>${q.r}`;
+ }
+
+ submit.classList.toggle("hidden",answered);
+ next.classList.toggle("hidden",!answered);
+ submit.disabled=selected===null;
+ back.disabled=i===0;
+ next.textContent=i===Q.length-1?"See results":"Next question";
+}
+
+submit.onclick=()=>{
+ if(selected===null)return;
+
+ answered=true;
+
+ if(!responses[i]?.answered && selected===Q[i].a)score++;
+
+ responses[i]={selected,answered:true};
+ render();
+};
+
+next.onclick=()=>{
+ if(i===Q.length-1){
+   showResults();
+ }else{
+   i++;
+   render();
+ }
+};
+
+back.onclick=()=>{
+ if(i>0){
+   i--;
+   render();
+ }
+};
+
+function showResults(){
+ document.getElementById("quiz").classList.add("hidden");
+ document.getElementById("results").classList.remove("hidden");
+
+ const pct=Math.round((score/Q.length)*100);
+ document.getElementById("score").textContent=`${score}/${Q.length}`;
+
+ let msg="";
+ if(pct>=88)msg="Strong rhythm recognition and clinical judgment.";
+ else if(pct>=76)msg="Good foundation. Review the questions you missed before moving on.";
+ else msg="Review Module 7 again, especially rhythm-to-action decisions, then repeat the challenge.";
+
+ document.getElementById("summary").textContent=`${pct}% · ${msg}`;
+ bar.style.width="100%";
+}
+
+render();
+</script>
+
+</main>
+</body>
+</html>
