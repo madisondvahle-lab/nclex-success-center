@@ -658,7 +658,6 @@ const BLUEPRINT_MINIMUMS = {
   "Physiological Integrity": 14
 };
 const CORE_BLUEPRINT = window.NCLEX_CORE_BLUEPRINT;
-if (!CORE_BLUEPRINT) { document.getElementById('root').innerHTML = '<div style="font-family:Georgia,serif;padding:60px;text-align:center;color:#64748b"><p style="font-size:18px;font-weight:700;color:#0f172a">Unable to load the question engine.</p><p style="margin-top:12px;font-size:14px">Please refresh the page. If this continues, contact Madison.</p></div>'; throw new Error("NCLEX_CORE_BLUEPRINT not loaded"); }
 const CORE_REQUIREMENTS = CORE_BLUEPRINT.requirements;
 const MOCK_CATEGORY_TARGETS = CORE_BLUEPRINT.nclexCategoryTargets;
 const MOCK_CATEGORY_RANGES = CORE_BLUEPRINT.nclexCategoryRanges;
@@ -1055,30 +1054,37 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
 
 function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
-  const [weak,setWeak]=useState([]);
-  const [mode,setMode]=useState(ASSESSMENT_ONLY?'assessment':'practice');
-  const [qCount,setQCount]=useState(10);
+  const [name,setName]=useState(''); const [weak,setWeak]=useState([]); const [notes,setNotes]=useState(''); const [mode,setMode]=useState(ASSESSMENT_ONLY?'assessment':'practice');
   const availableModes=ASSESSMENT_ONLY?[{val:'assessment',label:'NCLEX Readiness Assessment',sub:'85 questions · adaptive blueprint · no pass/fail label'}]:[{val:'practice',label:'📝 Practice Mode',sub:'Custom length · See score'},{val:'nclex',label:'💻 Core-Safe CAT',sub:'30–45 items · adaptive + essential safety coverage'},{val:'mock',label:'🧭 Adaptive NCLEX Mock CAT',sub:'85–150 items · adaptive mock pass/fail + safety blueprint'},{val:'remediation',label:'🎯 Remediation Mode',sub:'Targeted student weaknesses'}];
-  const studentName = assessmentProfile?.studentName || 'Student';
-  const handleStart = () => onStart({name:studentName,weakAreas:weak,notes:'',externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?FULL_MOCK_MIN_Q:qCount,mode});
+  useEffect(() => {
+    if (assessmentProfile?.studentName) setName(assessmentProfile.studentName);
+  }, [assessmentProfile?.studentName]);
+  const inp={ width:"100%", padding:"10px 14px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, fontFamily:"Georgia,serif", color:"#0f172a", background:"#fff", outline:"none", boxSizing:"border-box" };
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
-          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>{ASSESSMENT_ONLY?"NCLEX Readiness Assessment":"Adaptive Practice"}</div>
-          {assessmentLoading ? (
-            <div style={{ fontSize:13, color:"#94a3b8", marginTop:8 }}>Loading your personalization…</div>
-          ) : assessmentProfile?.hasPersonalization ? (
-            <div style={{ marginTop:10, background:"#eff6ff", border:"1px solid #bfdbfe", borderRadius:10, padding:"10px 14px", fontSize:13, color:"#1e40af", lineHeight:1.55 }}>
-              <strong>Assessment history is shaping this session.</strong>
-              <span style={{ color:"#475569" }}> Core safety coverage remains required in every CAT.</span>
-            </div>
-          ) : (
-            <div style={{ fontSize:13, color:"#64748b", marginTop:8 }}>Standard NCLEX blueprint{weak.length>0?" + your selected focus areas.":"."}</div>
-          )}
+          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>{ASSESSMENT_ONLY?"NCLEX Readiness Assessment":"Student Session Profile"}</div>
+          <div style={{ fontSize:14, color:"#64748b", marginTop:6 }}>{ASSESSMENT_ONLY?"This is a starting-point assessment, not a pass/fail test.":"Complete before starting to personalize the adaptive session."}</div>
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
+          <div style={{ display:"flex", gap:14 }}>
+            <div style={{ flex:1 }}>
+              <label style={lbl}>Student</label>
+              <div style={{...inp, background:"#f7f7f7", color:"#5f6b76"}}>{name || "Loading student profile..."}</div>
+            </div>
+          </div>
+          {assessmentLoading ? (
+            <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#64748b" }}>Loading your assessment-history personalization…</div>
+          ) : assessmentProfile?.hasPersonalization ? (
+            <div style={{ background:"#eff6ff", border:"1px solid #bfdbfe", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#1e40af", lineHeight:1.55 }}>
+              <strong>Outside assessment history is shaping this session.</strong>
+              <div style={{ color:"#475569", marginTop:4 }}>Core safety coverage and Client Needs guardrails remain required in every CAT.</div>
+            </div>
+          ) : (
+            <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:10, padding:"12px 14px", fontSize:13, color:"#64748b", lineHeight:1.55 }}>No outside assessment scores are on file yet. This session will use the standard NCLEX blueprint plus any areas selected below.</div>
+          )}
           {/* Mode Selection */}
           {!ASSESSMENT_ONLY&&(<div>
             <label style={lbl}>Session Mode</label>
@@ -1097,29 +1103,52 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
               <label style={lbl}>Number of Questions</label>
               <div style={{ display:"flex", gap:10 }}>
                 {[5,10,15,20,30].map(n=>(
-                  <button key={n} onClick={()=>setQCount(n)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:qCount===n?"#0f172a":"#f8fafc", color:qCount===n?"#fff":"#475569", borderColor:qCount===n?"#0f172a":"#e2e8f0" }}>{n}</button>
+                  <button key={n} onClick={()=>setNotes(prev=>prev)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:"#f8fafc", color:"#475569", borderColor:"#e2e8f0" }} data-qcount={n}>{n}</button>
                 ))}
               </div>
+              <div style={{ fontSize:11, color:"#94a3b8", marginTop:6 }}>Click a number above to set question count (selected will highlight).</div>
             </div>
           )}
 
           <div>
-            <label style={lbl}>Focus Areas <span style={{ color:"#94a3b8", fontWeight:400 }}>(optional — adaptive engine prioritizes these)</span></label>
+            <label style={lbl}>Weak Areas <span style={{ color:"#94a3b8", fontWeight:400 }}>(select all — adaptive engine prioritizes these)</span></label>
             <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
               {BLUEPRINT_AREAS.map(area=>(
                 <button key={area} onClick={()=>setWeak(w=>w.includes(area)?w.filter(x=>x!==area):[...w,area])} style={{ padding:"6px 13px", borderRadius:99, fontSize:12, fontWeight:600, cursor:"pointer", border:"1.5px solid", background:weak.includes(area)?"#0f172a":"#f8fafc", color:weak.includes(area)?"#fff":"#475569", borderColor:weak.includes(area)?"#0f172a":"#e2e8f0", fontFamily:"Georgia,serif" }}>{area}</button>
               ))}
             </div>
           </div>
+
+          <div>
+            <label style={lbl}>Tutor Notes <span style={{ color:"#94a3b8", fontWeight:400 }}>(optional)</span></label>
+            <textarea style={{ ...inp, minHeight:70, resize:"vertical" }} placeholder="e.g. Struggled with priority questions last session. Focus on pharm today." value={notes} onChange={e=>setNotes(e.target.value)} />
+          </div>
         </div>
 
-        <div style={{ marginTop:24 }}>
-          <button onClick={handleStart}
-            style={{ width:"100%", padding:"14px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
-            {mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →"}
-          </button>
-        </div>
+        <StartButton name={name} mode={mode} weak={weak} notes={notes} assessmentProfile={assessmentProfile} onStart={onStart} />
       </div>
+    </div>
+  );
+}
+
+function StartButton({ name, mode, weak, notes, assessmentProfile, onStart }) {
+  const [qCount, setQCount] = useState(10);
+  return (
+    <div style={{ marginTop:24 }}>
+      {mode==="practice"&&(
+        <div style={{ marginBottom:14 }}>
+          <label style={lbl}>Number of Questions</label>
+          <div style={{ display:"flex", gap:10 }}>
+            {[5,10,15,20,30].map(n=>(
+              <button key={n} onClick={()=>setQCount(n)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:qCount===n?"#0f172a":"#f8fafc", color:qCount===n?"#fff":"#475569", borderColor:qCount===n?"#0f172a":"#e2e8f0" }}>{n}</button>
+            ))}
+          </div>
+        </div>
+      )}
+      <button onClick={()=>name.trim()&&onStart({name,weakAreas:weak,notes,externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?FULL_MOCK_MIN_Q:qCount,mode})}
+        style={{ width:"100%", padding:"14px", background:name.trim()?"#0f172a":"#e2e8f0", color:name.trim()?"#fff":"#94a3b8", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:name.trim()?"pointer":"default", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
+        {name.trim() ? (mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →") : "Loading your profile..."}
+      </button>
     </div>
   );
 }
