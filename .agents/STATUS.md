@@ -1,74 +1,164 @@
 # Current Project Status
 
-Last reviewed: August 2026
+Last reviewed: August 26, 2026
 
-This file describes the current intended state. When it conflicts with historical commits, legacy files, or an older curriculum catalog, use this file unless the task explicitly says otherwise.
+This file describes the current intended state of the NCLEX Success Center.
+When it conflicts with historical commits, legacy files, or an older curriculum catalog, use this file unless the task explicitly says otherwise.
 
 ## Current curriculum
 
 | Module | Topic | Current status |
-|---|---|---|
-| M1 | Newborn Care | Live/current |
-| M2 | Maternal & OB | Live/current |
-| M3 | Pharmacology | Secure recovery technically prepared; activation blocked by manual Supabase migrations/testing; new assignment remains disabled |
-| M4 | Cardiac | Secure recovery technically prepared; activation blocked by shared `module_results` migration/testing |
-| M5 | Respiratory | Secure recovery technically prepared; activation blocked by shared `module_results` migration/testing |
-| M6 | Endocrine | Current curriculum direction; authoritative implementation content is not present in this repo yet |
-| M7+ | TBD | Do not infer numbering from the historical catalog |
+| ------ | ----- | -------------- |
+| M1 | Newborn Care | Current implementation present |
+| M2 | Maternal & OB | Current implementation present |
+| M3 | Pharmacology | Current guide implementation present |
+| M4 | Cardiac | Current guide implementation present |
+| M5 | Respiratory | Current guide implementation present |
+| M6 | Endocrine | Current guide implementation present |
+| M7 | EKG / Rhythm Recognition | Current implementation present in `module7-ekg.html` |
+| M8+ | TBD | Do not infer future numbering without explicit approval |
 
-### Historical curriculum warning
-Previous repository versions assigned M6 to Fluids & Electrolytes and M10 to Endocrine. That historical numbering is not the current curriculum authority. Do not restore or renumber the curriculum without explicit approval.
+## Current module files
 
-Historical M3-M5 guide content was selectively recovered from verified repository history and technically adapted on draft recovery branches. Historical M6 Fluids/Electrolytes remains archive material only and must not overwrite current M6 Endocrine.
+Authoritative current module files presently include:
 
-## Module recovery checkpoints
+- `module1-newborn.html`
+- `module1-guide.html`
+- `module2-maternal.html`
+- `module2-guide.html`
+- `module2-studyguide.html`
+- `module3-guide.html`
+- `module4-guide.html`
+- `module5-guide.html`
+- `module6-guide.html`
+- `module7-ekg.html`
 
-### M3 Pharmacology — draft PR #19
-- Historical source recovered from verified commit history.
-- Secure launcher requires current Supabase Auth and verifies M3 assignment.
-- Prior-student identifiers, `mailto:`, legacy `quiz_results`, and old hub/module navigation were removed from the recovered source.
-- Practice results are designed to save through the authenticated student's RLS-protected `module_results` record.
-- New M3 assignment remains intentionally disabled.
-- Manual blockers: run/verify `supabase-module3-safe-placeholder-migration.sql`, run/verify `supabase-module-results-migration.sql`, then complete authenticated end-to-end result testing before restoring catalog/assignment access.
+Supporting infographic and asset files may also exist.
 
-### M4 Cardiac — draft PR #21
-- Historical source recovered and technically sanitized.
-- Secure launcher requires current Supabase Auth and verifies M4 assignment.
-- Legacy prior-student result/email behavior and navigation were removed.
-- Clinical PQ/QQ banks remain locked and are guarded by recovery validation.
-- Manual blocker: `supabase-module-results-migration.sql` must be run/verified, followed by authenticated end-to-end result testing before activation.
+Files with names such as `.pre-*`, backups, historical copies, or archived recovery files are not automatically authoritative. Inspect the current implementation before making changes.
 
-### M5 Respiratory — draft PR #22
-- Historical source recovered and technically sanitized.
-- Secure launcher requires current Supabase Auth and verifies M5 assignment.
-- Legacy prior-student result/email behavior and navigation were removed.
-- Clinical PQ/QQ banks remain locked and are guarded by recovery validation.
-- Manual blocker: `supabase-module-results-migration.sql` must be run/verified, followed by authenticated end-to-end result testing before activation.
+## Module 7 — EKG / Rhythm Recognition
 
-### M6 Endocrine
-- Current M6 is Endocrine.
-- No authoritative Endocrine implementation commit or PR exists in this repository.
-- Do not invent clinical content from memory and do not restore historical Fluids/Electrolytes as M6.
-- Build work waits for the approved current Endocrine source content.
+M7 is now assigned to EKG / Rhythm Recognition.
 
-## Known issues
-- A prior M3 catalog entry used the internal `question-bank.html` tool as both guide and quiz. `supabase-module3-safe-placeholder-migration.sql` is the approved cleanup path for those URLs while preserving existing access rows.
-- Public blog content belongs in `study-with-madison-site`; the accidental Success Center blog copy has been removed.
-- M3-M5 recovery PRs must remain draft/unmerged until their documented manual database prerequisites and authenticated student-flow validation are complete.
+Current implementation:
+
+- Primary file: `module7-ekg.html`
+- EKG asset directory: `assets/ekg/`
+- A pre-strip backup may exist as `module7-ekg.pre-strips.html`
+- Do not rename or renumber M7 without explicit approval.
+- Preserve the established Success Center module design and navigation patterns.
+- Clinical EKG content changes must follow `.agents/CLINICAL-STANDARDS.md`.
+
+## Historical curriculum warning
+
+Previous repository versions used different module numbering, including Fluids & Electrolytes as M6 and Endocrine at a later module number.
+
+Those historical assignments are NOT current curriculum authority.
+
+Current numbering is:
+
+M1 Newborn  
+M2 Maternal & OB  
+M3 Pharmacology  
+M4 Cardiac  
+M5 Respiratory  
+M6 Endocrine  
+M7 EKG / Rhythm Recognition
+
+Do not restore historical numbering unless explicitly instructed.
+
+## M3-M5 recovery history
+
+M3-M5 were previously recovered and sanitized from verified repository history.
+
+Older task files and draft PR notes may describe activation blockers that were accurate during the recovery phase. Treat those documents as historical context unless the current repository, Supabase state, or an active handoff confirms the blocker still exists.
+
+Do not undo current working implementations merely to match an older recovery document.
+
+## Known implementation considerations
+
+- `supabase-module3-safe-placeholder-migration.sql` exists from the M3 recovery/assignment cleanup work.
+- `supabase-core-rn-module-catalog.sql` exists and may affect module catalog state.
+- Student module access is driven through Supabase and `student_module_access`.
+- Guide presence on disk does not by itself prove every quiz, catalog entry, or student assignment path is enabled.
+- Inspect the current code and Supabase state before changing access behavior.
+- Do not use old recovery notes as proof that a current module is disabled.
+- Do not expose internal admin tools as student-facing guide or quiz URLs.
 
 ## Current architecture snapshot
 
 ### Student access
-The current direction uses Supabase Auth, authenticated student-specific access, and Row Level Security. Legacy browser PIN or public hub implementations are historical only.
+
+The current architecture uses Supabase Auth, authenticated student-specific access, and Row Level Security.
+
+Legacy browser PIN systems and historical public hub implementations are not authoritative.
 
 ### Module availability
-Student module access is driven through the Supabase module catalog and `student_module_access`. Do not assume a static historical module array is authoritative.
+
+Student module access is driven through the Supabase module catalog and `student_module_access`.
+
+Do not assume a historical static module array or old SQL migration represents the live state.
+
+Before changing assignment behavior, inspect:
+
+1. Current module catalog configuration
+2. `student_module_access`
+3. Current assignment UI/code
+4. Existing Supabase/RLS behavior
 
 ### Diagnostic / CAT
-The repository contains an adaptive NCLEX-style readiness/CAT system with a 150-question bank, core-safety blueprint logic, mock CAT behavior, and assessment-history personalization. It is an educational readiness tool, not the official NCLEX CAT.
+
+The repository contains an adaptive NCLEX-style readiness/CAT system with a large question bank, core-safety blueprint logic, mock CAT behavior, and assessment-history personalization.
+
+It is an educational readiness tool, not the official NCLEX CAT.
 
 ### Admin
-Admin functionality is distributed across secure tools for assignments, assessment history, shared progress, student management, and question-bank review. Do not assume `madison-admin.html` is a complete current admin application.
+
+Admin functionality is distributed across secure tools for assignments, assessment history, shared progress, student management, and question-bank review.
+
+Do not assume one historical admin HTML file represents the complete current admin system.
+
+## Clinical content
+
+Before changing:
+
+- nursing facts
+- NCLEX teaching
+- questions
+- answer choices
+- rationales
+- EKG interpretation
+- medication guidance
+- priority/delegation logic
+
+read `.agents/CLINICAL-STANDARDS.md`.
+
+Technical work does not authorize clinical rewriting.
+
+## Multi-agent coordination
+
+Multiple AI agents may work on this repository concurrently.
+
+Before starting substantial work:
+
+1. Read `AGENTS.md`.
+2. Read this file.
+3. Read `.agents/PROJECT.md` when architecture is relevant.
+4. Read `.agents/CLINICAL-STANDARDS.md` for clinical work.
+5. Inspect `.agents/tasks/` for an active handoff.
+6. Inspect current repository files before editing.
+7. Keep the task tightly scoped.
+8. Do not modify another agent's active work unless the task requires it.
+
+For substantial work, create or update a task handoff in `.agents/tasks/`.
 
 ## Current priority
-Complete the documented manual Supabase prerequisites and authenticated validation for M3-M5 before activating those modules. M6 Endocrine remains blocked pending approved current source content.
+
+Continue building and refining the current Success Center without regressing existing modules.
+
+Immediate work should use the current M1-M7 curriculum as authoritative.
+
+M7 is EKG / Rhythm Recognition.
+
+Future modules M8+ remain unassigned until explicitly defined.
