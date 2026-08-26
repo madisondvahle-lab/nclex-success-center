@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Module 7 · EKG & Cardiac Rhythms</title>
+
+  <style>
+    :root{
+      --ink:#17344f;
+      --cream:#fcf8f2;
+      --paper:#fffdf9;
+      --rose:#bd6f7f;
+      --plum:#382338;
+      --muted:#567087;
+      --line:#d8e1db;
+      --soft:#f5eee8;
+      --green:#167052;
+      --red:#9c382d;
+      --red-soft:#fde9e7;
+      --green-soft:#e7f5ee;
+      --gold:#a26916;
+      --gold-soft:#fff4d8;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--cream);
+      color:var(--ink);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.55;
+    }
+
+    .shell{
+      width:min(980px,calc(100% - 36px));
+      margin:auto;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      padding:24px 0;
+      border-bottom:1px solid #e2e8e3;
+    }
+
+    .brand{
+      font:700 1.2rem Georgia,serif;
+      letter-spacing:-.04em;
+    }
+
+    .brand small{
+      font:600 .62em Inter,sans-serif;
+    }
+
+    .back{
+      color:var(--ink);
+      font-weight:800;
+      font-size:.82rem;
+      text-decoration:none;
+      border-bottom:1px solid currentColor;
+      padding-bottom:3px;
+    }
+
+    .hero{
+      padding:54px 0 30px;
+    }
+
+    .eyebrow{
+      margin:0 0 9px;
+      color:var(--rose);
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      font-size:.72rem;
+    }
+
+    h1{
+      font:700 clamp(2.5rem,6vw,4.7rem)/.95 Georgia,serif;
+      letter-spacing:-.06em;
+      margin:0;
+      color:var(--plum);
+    }
+
+    .hero-copy{
+      max-width:720px;
+      color:var(--muted);
+      font-size:1.05rem;
+      margin:20px 0 0;
+    }
+
+    .rule{
+      margin-top:24px;
+      background:var(--plum);
+      color:#fff;
+      border-radius:16px;
+      padding:20px 22px;
+      font-weight:750;
+    }
+
+    .section{
+      margin:0 0 26px;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:28px;
+      box-shadow:0 10px 32px #17344f0b;
+    }
+
+    .section h2{
+      font:700 1.75rem Georgia,serif;
+      color:var(--plum);
+      letter-spacing:-.04em;
+      margin:0 0 8px;
+    }
+
+    .section-intro{
+      color:var(--muted);
+      margin:0 0 22px;
+    }
+
+    .steps{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin-top:20px;
+    }
+
+    .step{
+      background:var(--soft);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+      font-weight:800;
+      font-size:.86rem;
+    }
+
+    .rhythm-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+
+    .rhythm{
+      border:1px solid var(--line);
+      border-radius:15px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .rhythm-head{
+      padding:16px 18px 11px;
+      border-bottom:1px solid var(--line);
+    }
+
+    
+.rhythm-number{
+  display:block;
+  margin-bottom:4px;
+  color:var(--rose);
+  font-size:.66rem;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.rhythm-head h3{
+      margin:0;
+      color:var(--plum);
+      font-size:1.08rem;
+    }
+
+    .strip{
+      min-height:130px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:16px;
+      border:1px dashed #c9b6b8;
+      border-radius:10px;
+      background:
+        linear-gradient(#efcfd4 1px, transparent 1px),
+        linear-gradient(90deg,#efcfd4 1px, transparent 1px),
+        linear-gradient(#e8b4bd 1px, transparent 1px),
+        linear-gradient(90deg,#e8b4bd 1px, transparent 1px);
+      background-size:10px 10px,10px 10px,50px 50px,50px 50px;
+      color:#855c67;
+      font-weight:800;
+      text-align:center;
+      padding:18px;
+    }
+
+    .strip{padding:0;overflow:hidden}.strip img{display:block;width:100%;height:auto}
+.reveal{
+  margin:0 18px 16px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  overflow:hidden;
+  background:#fff;
+}
+.reveal summary{
+  cursor:pointer;
+  list-style:none;
+  padding:11px 14px;
+  font-size:.82rem;
+  font-weight:850;
+  color:var(--plum);
+  background:var(--soft);
+}
+.reveal summary::-webkit-details-marker{display:none}
+.reveal summary::after{
+  content:" +";
+  float:right;
+  color:var(--rose);
+  font-weight:900;
+}
+.reveal[open] summary::after{content:" −"}
+.reveal-answer{
+  padding:13px 14px;
+  color:var(--ink);
+  font-size:.9rem;
+  line-height:1.5;
+}
+.reveal-answer strong{color:var(--plum)}
+.rhythm-body{
+      padding:0 18px 18px;
+    }
+
+    .label{
+      display:inline-block;
+      margin-top:8px;
+      font-size:.68rem;
+      text-transform:uppercase;
+      letter-spacing:.11em;
+      font-weight:900;
+      color:var(--rose);
+    }
+
+    .rhythm-body p{
+      margin:4px 0 10px;
+    }
+
+    .danger{
+      border-left:5px solid var(--red);
+    }
+
+    .warning{
+      border-left:5px solid var(--gold);
+    }
+
+    .shock-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .shock{
+      border-radius:15px;
+      padding:22px;
+    }
+
+    .shock.yes{
+      background:var(--red-soft);
+      border:1px solid #efc8c4;
+    }
+
+    .shock.no{
+      background:var(--green-soft);
+      border:1px solid #c6e5d8;
+    }
+
+    .shock h3{
+      margin:0 0 10px;
+      color:var(--plum);
+    }
+
+    .shock ul{
+      margin:8px 0 0;
+      padding-left:20px;
+    }
+
+    .memory{
+      background:var(--gold-soft);
+      border:1px solid #ead398;
+      border-radius:14px;
+      padding:18px 20px;
+      margin-top:18px;
+      font-weight:750;
+    }
+
+    .med-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .med{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:18px;
+      background:#fff;
+    }
+
+    .med strong{
+      display:block;
+      color:var(--plum);
+      font-size:1.05rem;
+      margin-bottom:5px;
+    }
+
+    .trap{
+      background:var(--red-soft);
+      border:1px solid #efc8c4;
+      border-radius:14px;
+      padding:17px 19px;
+      margin:12px 0;
+    }
+
+    .trap strong{
+      color:var(--red);
+    }
+
+    
+.checkpoint{
+  margin:26px 0;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px;
+}
+.checkpoint-title{
+  margin:0 0 5px;
+  color:var(--rose);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-weight:900;
+}
+.checkpoint h3{
+  margin:0 0 16px;
+  color:var(--plum);
+  font:700 1.35rem Georgia,serif;
+}
+.question{
+  padding:16px 0;
+  border-top:1px solid var(--line);
+}
+.question:first-of-type{
+  border-top:0;
+  padding-top:0;
+}
+.question p{
+  margin:0 0 10px;
+}
+.answer{
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--paper);
+}
+.answer summary{
+  cursor:pointer;
+  list-style:none;
+  padding:10px 13px;
+  background:var(--soft);
+  color:var(--plum);
+  font-size:.8rem;
+  font-weight:850;
+}
+.answer summary::-webkit-details-marker{display:none}
+.answer summary::after{
+  content:" +";
+  float:right;
+  color:var(--rose);
+  font-weight:900;
+}
+.answer[open] summary::after{content:" −"}
+.answer-body{
+  padding:12px 13px;
+  font-size:.9rem;
+  line-height:1.5;
+}
+.answer-body strong{color:var(--plum)}
+.footer{
+      color:var(--muted);
+      text-align:center;
+      padding:10px 0 45px;
+      font-size:.86rem;
+    }
+
+    @media(max-width:760px){
+      .steps{grid-template-columns:1fr}
+      .rhythm-grid,.shock-grid,.med-grid{grid-template-columns:1fr}
+      .section{padding:21px}
+      .top{align-items:flex-start}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+
+    <header class="top">
+      <div class="brand">Study With Madison, RN <small>· NCLEX Success Center</small></div>
+      <a class="back" href="student-dashboard.html">Back to dashboard</a>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Targeted Deep Dive · Module 7</p>
+      <h1>EKG & Cardiac Rhythms</h1>
+      <p class="hero-copy">
+        NCLEX does not require you to become a telemetry expert. Your job is to recognize the important rhythm, assess the patient, and choose the safest next action.
+      </p>
+
+      <div class="rule">
+        PATIENT → PULSE → RHYTHM → ACTION
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>How to read the strip</h2>
+      <p class="section-intro">
+        Use the same sequence every time. Consistency makes rhythm questions much easier.
+      </p>
+
+      <div class="steps">
+        <div class="step">1 · RATE</div>
+        <div class="step">2 · RHYTHM</div>
+        <div class="step">3 · P WAVES</div>
+        <div class="step">4 · QRS</div>
+        <div class="step">5 · PATIENT</div>
+      </div>
+
+      <div class="memory">
+        NCLEX priority: Is the patient stable? Do they have a pulse? What needs to happen first?
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Sinus rhythms</h2>
+      <p class="section-intro">
+        Sinus rhythms originate from the SA node. Focus first on the rate and whether the patient is symptomatic.
+      </p>
+
+      <div class="rhythm-grid">
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 01</span>
+            <h3>Normal Sinus Rhythm</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/nsr.jpg" alt="Normal sinus rhythm ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Regular + normal rate + one P before every QRS.</strong> Everything is conducting in the expected sequence.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Rate 60–100, regular rhythm, P before every QRS.</p>
+            <span class="label">Think</span>
+            <p>Normal SA-node conduction.</p>
+            <span class="label">Do</span>
+            <p>No rhythm-specific emergency intervention.</p>
+          </div>
+        </article>
+
+        <article class="rhythm warning">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 02</span>
+            <h3>Sinus Bradycardia</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/sinus-brady.jpg" alt="Sinus bradycardia ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>It looks like normal sinus rhythm, just slow.</strong> Rate is under 60. The NCLEX question is whether the patient is symptomatic.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Normal sinus pattern with rate under 60.</p>
+            <span class="label">Think</span>
+            <p>Is the patient symptomatic?</p>
+            <span class="label">Do</span>
+            <p>Monitor if stable. Symptomatic bradycardia may require atropine and pacing.</p>
+          </div>
+        </article>
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 03</span>
+            <h3>Sinus Tachycardia</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/sinus-tach.jpg" alt="Sinus tachycardia ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>It looks like normal sinus rhythm, just fast.</strong> Rate is over 100. Look for the reason: pain, fever, hypovolemia, hypoxia, anxiety, or infection.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Normal sinus pattern with rate over 100.</p>
+            <span class="label">Think</span>
+            <p>Why is the heart fast?</p>
+            <span class="label">Do</span>
+            <p>Treat the cause such as pain, fever, hypovolemia, hypoxia, or infection.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    
+    <section class="checkpoint">
+      <p class="checkpoint-title">Your Turn · Checkpoint 1</p>
+      <h3>Sinus Rhythms</h3>
+
+      <div class="question">
+        <p><strong>1.</strong> A client has a heart rate of 48/min but is alert, normotensive, and denies dizziness or chest discomfort. Which action is best?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Continue assessment and monitoring.</strong><br><br>NCLEX does not treat the number alone. Sinus bradycardia becomes urgent when it is causing poor perfusion or symptoms.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>2.</strong> A postoperative client develops sinus tachycardia at 124/min. Which finding should the nurse investigate first?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>The cause of the tachycardia.</strong><br><br>Think pain, fever, bleeding, hypovolemia, hypoxia, or infection. Sinus tachycardia is often a response to another problem.</div>
+        </details>
+      </div>
+    </section>
+
+
+    <section class="section">
+      <h2>Atrial rhythms</h2>
+
+      <div class="rhythm-grid">
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 04</span>
+            <h3>Atrial Fibrillation</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/afib.jpg" alt="Atrial fibrillation ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Irregularly irregular + no consistent P waves.</strong> On NCLEX, immediately connect A-fib with blood stasis, clot formation, and stroke risk.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Irregularly irregular rhythm with no consistent P waves.</p>
+            <span class="label">Think</span>
+            <p>Atrial quivering creates blood stasis and increases embolic stroke risk.</p>
+            <span class="label">Do</span>
+            <p>Think rate control, anticoagulation concepts, and synchronized cardioversion if unstable.</p>
+          </div>
+        </article>
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 05</span>
+            <h3>Atrial Flutter</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/aflutter.jpg" alt="Atrial flutter ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Sawtooth flutter waves.</strong> The repeating atrial activity is the visual clue that separates flutter from A-fib.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Classic repeating sawtooth flutter waves.</p>
+            <span class="label">Think</span>
+            <p>Rapid organized atrial activity.</p>
+            <span class="label">Do</span>
+            <p>Rate control, anticoagulation when indicated, cardioversion if unstable.</p>
+          </div>
+        </article>
+
+        <article class="rhythm warning">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 06</span>
+            <h3>SVT</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/svt.jpg" alt="Supraventricular tachycardia ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Very fast + regular + narrow.</strong> P waves may disappear into the rapid rhythm. Then ask: stable or unstable?</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Very fast, usually regular, narrow-complex rhythm. P waves may be hidden.</p>
+            <span class="label">Do</span>
+            <p>Stable: vagal maneuvers or adenosine when appropriate. Unstable: synchronized cardioversion.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    
+    <section class="checkpoint">
+      <p class="checkpoint-title">Your Turn · Checkpoint 2</p>
+      <h3>Atrial Rhythms</h3>
+
+      <div class="question">
+        <p><strong>3.</strong> Rhythm 04 is noted on the monitor. Which complication is the nurse most concerned about?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Embolic stroke.</strong><br><br>Atrial fibrillation causes ineffective atrial contraction and blood stasis, increasing thromboembolic risk.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>4.</strong> Which finding most strongly suggests Rhythm 05 rather than Rhythm 04?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Repeating sawtooth atrial waves.</strong><br><br>Atrial flutter has organized flutter waves. A-fib is irregularly irregular with no consistent P waves.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>5.</strong> A client with SVT is hypotensive, confused, and reporting chest pain. Which intervention should the nurse anticipate?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Synchronized cardioversion.</strong><br><br>This is an unstable tachyarrhythmia with a pulse.</div>
+        </details>
+      </div>
+    </section>
+
+
+    <section class="section">
+      <h2>Ventricular rhythms</h2>
+
+      <div class="rhythm-grid">
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 07</span>
+            <h3>PVCs</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/pvc.jpg" alt="ECG strip showing premature ventricular contraction"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>An early beat suddenly looks wide and bizarre.</strong> It arrives before the next expected normal beat because it originated in the ventricle.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Early, wide, bizarre ventricular beat.</p>
+            <span class="label">Think</span>
+            <p>Assess oxygenation, ischemia, electrolytes, stimulants, and medications.</p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 08</span>
+            <h3>Ventricular Tachycardia</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/vtach.jpg" alt="Ventricular tachycardia ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>FAST + WIDE + usually regular.</strong> Your next thought should not be “shock.” Your next thought is: <strong>DOES THE PATIENT HAVE A PULSE?</strong></div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Fast, wide, usually regular ventricular rhythm.</p>
+            <span class="label">First Question</span>
+            <p><strong>Does the patient have a pulse?</strong></p>
+            <span class="label">Do</span>
+            <p>No pulse: CPR + defibrillation. Pulse but unstable: synchronized cardioversion.</p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 09</span>
+            <h3>Ventricular Fibrillation</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/vfib.jpg" alt="Ventricular fibrillation ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Chaotic electrical activity with no organized QRS complexes.</strong> This is a pulseless shockable rhythm: CPR + defibrillation.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>Chaotic electrical activity with no organized QRS complexes.</p>
+            <span class="label">Do</span>
+            <p><strong>CPR + DEFIBRILLATE.</strong></p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 10</span>
+            <h3>Asystole</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/asystole.jpg" alt="Asystole ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>No meaningful ventricular electrical activity.</strong> Confirm the rhythm/leads, then CPR + epinephrine. <strong>Do not defibrillate.</strong></div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">Do</span>
+            <p>Confirm rhythm and leads, begin CPR, give epinephrine per arrest protocol.</p>
+            <span class="label">Never</span>
+            <p><strong>Do not defibrillate asystole.</strong></p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 11</span>
+            <h3>PEA</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/nsr.jpg" alt="Organized electrical rhythm used to teach pulseless electrical activity"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>You cannot diagnose PEA from the strip alone.</strong> The monitor shows electrical activity, but the patient has <strong>no palpable pulse.</strong> That clinical finding is what makes it PEA.</div>
+          </details>
+          <div class="rhythm-body">
+            <span class="label">See</span>
+            <p>The monitor can show organized electrical activity.</p>
+            <span class="label">Critical Finding</span>
+            <p><strong>The patient has no pulse.</strong></p>
+            <span class="label">Do</span>
+            <p>CPR + epinephrine. Search for reversible causes. Do not defibrillate.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    
+    <section class="checkpoint">
+      <p class="checkpoint-title">Your Turn · Checkpoint 3</p>
+      <h3>Ventricular Rhythms</h3>
+
+      <div class="question">
+        <p><strong>6.</strong> The monitor suddenly shows Rhythm 08. What assessment must occur before choosing the treatment pathway?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Check for a pulse.</strong><br><br>V-tach with a pulse and pulseless V-tach are treated differently.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>7.</strong> A client is unresponsive and pulseless with Rhythm 09. What is the priority intervention?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Begin CPR and defibrillate as soon as possible.</strong><br><br>V-fib is a shockable cardiac-arrest rhythm.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>8.</strong> A client is pulseless and the monitor shows Rhythm 10. Which action is inappropriate?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Defibrillation.</strong><br><br>Asystole is not shockable. Priorities are CPR, epinephrine, and evaluation for reversible causes.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>9.</strong> The monitor shows organized electrical activity, but the client has no palpable pulse. Which rhythm should the nurse suspect?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>PEA.</strong><br><br>PEA is defined clinically by electrical activity without a pulse. The ECG appearance alone does not diagnose it.</div>
+        </details>
+      </div>
+    </section>
+
+
+    <section class="section">
+      <h2>Heart blocks</h2>
+
+      <div class="rhythm-grid">
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 12</span>
+            <h3>First-Degree AV Block</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/first-degree.jpg" alt="First-degree AV block ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Every P still gets a QRS, but the PR interval is prolonged and stays prolonged.</strong> Think delayed conduction, not dropped conduction.</div>
+          </details>
+          <div class="rhythm-body">
+            <p>Every P wave conducts to a QRS, but the PR interval is prolonged and constant.</p>
+          </div>
+        </article>
+
+        <article class="rhythm">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 13</span>
+            <h3>Mobitz I · Wenckebach</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/mobitz-1.svg" alt="Second-degree AV block Mobitz I ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>Longer → longer → longer → DROP.</strong> The PR interval progressively lengthens until one QRS complex disappears.</div>
+          </details>
+          <div class="rhythm-body">
+            <p><strong>Longer → longer → longer → DROP.</strong></p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 14</span>
+            <h3>Mobitz II</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/mobitz-2.jpg" alt="Second-degree AV block Mobitz II ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>The PR interval stays consistent, then a QRS suddenly drops.</strong> Mobitz II is more dangerous because it can progress to complete heart block.</div>
+          </details>
+          <div class="rhythm-body">
+            <p>PR intervals stay consistent, but some P waves suddenly are not followed by QRS complexes.</p>
+            <p><strong>More dangerous. Think pacing.</strong></p>
+          </div>
+        </article>
+
+        <article class="rhythm danger">
+          <div class="rhythm-head">
+            <span class="rhythm-number">RHYTHM 15</span>
+            <h3>Third-Degree AV Block</h3>
+          </div>
+          <div class="strip"><img src="assets/ekg-openrn/third-degree.jpg" alt="Third-degree AV block ECG strip"></div>
+          <details class="reveal">
+            <summary>👁 What gives it away?</summary>
+            <div class="reveal-answer"><strong>P waves and QRS complexes have no consistent relationship.</strong> The atria and ventricles are marching independently. Think complete heart block + pacing.</div>
+          </details>
+          <div class="rhythm-body">
+            <p>P waves and QRS complexes have no consistent relationship.</p>
+            <p><strong>Think complete heart block and pacing.</strong></p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    
+    <section class="checkpoint">
+      <p class="checkpoint-title">Your Turn · Checkpoint 4</p>
+      <h3>Heart Blocks</h3>
+
+      <div class="question">
+        <p><strong>10.</strong> Which feature best distinguishes Rhythm 13 from Rhythm 14?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Rhythm 13 progressively lengthens the PR interval before a QRS drops.</strong><br><br>Mobitz I lengthens progressively. Mobitz II has consistent PR intervals with unexpected dropped QRS complexes.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>11.</strong> Which heart block should make the nurse most concerned about progression to complete heart block?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Mobitz II.</strong><br><br>Second-degree AV block Type II is more unstable and often requires pacing.</div>
+        </details>
+      </div>
+
+      <div class="question">
+        <p><strong>12.</strong> Rhythm 15 shows P waves and QRS complexes occurring independently. What treatment should the nurse anticipate if the client is symptomatic?</p>
+        <details class="answer">
+          <summary>Check answer</summary>
+          <div class="answer-body"><strong>Pacing.</strong><br><br>Third-degree AV block is complete AV dissociation and can cause severe bradycardia and poor perfusion.</div>
+        </details>
+      </div>
+    </section>
+
+
+    <section class="section">
+      <h2>Shock or don't shock?</h2>
+
+      <div class="shock-grid">
+        <div class="shock yes">
+          <h3>⚡ SHOCKABLE</h3>
+          <ul>
+            <li>Ventricular fibrillation</li>
+            <li>Pulseless ventricular tachycardia</li>
+          </ul>
+          <p><strong>CPR + DEFIBRILLATION</strong></p>
+        </div>
+
+        <div class="shock no">
+          <h3>🚫 NOT SHOCKABLE</h3>
+          <ul>
+            <li>Asystole</li>
+            <li>PEA</li>
+          </ul>
+          <p><strong>CPR + EPINEPHRINE</strong></p>
+        </div>
+      </div>
+
+      <div class="memory">
+        No pulse + V-fib/V-tach = DEFIB<br>
+        Pulse + unstable tachyarrhythmia = SYNCHRONIZED CARDIOVERSION
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>High-yield rhythm medications</h2>
+
+      <div class="med-grid">
+        <div class="med">
+          <strong>Adenosine</strong>
+          Think regular narrow-complex SVT. Rapid IV push followed immediately by saline flush.
+        </div>
+
+        <div class="med">
+          <strong>Atropine</strong>
+          Think symptomatic bradycardia.
+        </div>
+
+        <div class="med">
+          <strong>Epinephrine</strong>
+          Think cardiac arrest, including asystole and PEA.
+        </div>
+
+        <div class="med">
+          <strong>Amiodarone</strong>
+          Think ventricular dysrhythmias, including refractory V-fib/pulseless V-tach in the arrest algorithm.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>NCLEX danger zone</h2>
+
+      <div class="trap">
+        <strong>Trap:</strong> “The monitor shows V-tach, so defibrillate.”
+        <br>First determine whether the patient has a pulse.
+      </div>
+
+      <div class="trap">
+        <strong>Trap:</strong> “There is electrical activity, so there must be a pulse.”
+        <br>PEA specifically disproves this.
+      </div>
+
+      <div class="trap">
+        <strong>Trap:</strong> “Asystole means shock immediately.”
+        <br>Asystole is not shockable.
+      </div>
+
+      <div class="trap">
+        <strong>Trap:</strong> “Heart rate 48 means give atropine.”
+        <br>Assess symptoms and perfusion first.
+      </div>
+
+      <div class="memory">
+        Final memory rule: <strong>PATIENT → PULSE → RHYTHM → ACTION</strong>
+      </div>
+    </section>
+
+    
+<section style="text-align:center;margin:42px 0 30px">
+  <p style="font-weight:800;margin-bottom:8px">Ready to test yourself?</p>
+  <p style="margin:0 auto 18px;max-width:600px">
+    Identify the rhythm, recognize the danger, and choose the NCLEX priority action.
+  </p>
+  <a href="module7-ekg-quiz.html"
+     style="display:inline-block;background:#382338;color:#fff;text-decoration:none;
+     padding:14px 24px;border-radius:999px;font-weight:800">
+     Take the EKG Challenge →
+  </a>
+</section>
+
+<p class="footer">
+      ECG rhythm images adapted from Open RN, <em>Nursing Advanced Skills</em>, Chapter 7,
+      licensed under CC BY 4.0. Mobitz I ECG strip is CC0 via Wikimedia Commons.
+    </p>
+
+  </main>
+</body>
+</html>
