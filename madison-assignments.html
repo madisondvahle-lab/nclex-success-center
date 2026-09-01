@@ -49,6 +49,14 @@
             </select>
           </div>
 
+          <label class="choice">
+            <input id="nur321-ob-exam1" type="checkbox">
+            <span>
+              <strong>NUR 321 OB · Exam 1 Practice</strong>
+              <span>25 questions built from the current Exam 1 course content and study materials.</span>
+            </span>
+          </label>
+
           <button id="save" class="button" type="button">Save assignments</button>
         </div>
         <p id="empty" class="empty hidden">No students are available yet.</p>
@@ -66,8 +74,8 @@
     const clearNotice=()=>{$('notice').className='notice';$('notice').textContent=''};
     function selected(){return students.find(item=>item.id===$('student').value)}
     const assignmentKeys=['m1','m2','m7','core-safety-priority','core-medication-calculations','core-lifespan-reproductive','core-acute-systems','core-psych-judgment'];
-    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load this student’s existing module access. Please refresh and try again.','error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=false;$('mixed-review').checked=false;$('mixed-options').classList.add('hidden')}
-    async function save(){clearNotice();const student=selected();if(!student){show('Choose a student first.','error');return}const selectedKeys=assignmentKeys.filter(key=>$(key).checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));if(!requested.length&&!$('diagnostic').checked&&!$('mixed-review').checked){show('Choose at least one assignment.','error');return}const button=$('save');button.disabled=true;button.textContent='Saving…';try{if(requested.length){const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw catalogError;const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw error}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw findError;if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw error}}
+    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load this student’s existing module access. Please refresh and try again.','error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=false;$('mixed-review').checked=false;$('nur321-ob-exam1').checked=false;$('mixed-options').classList.add('hidden')}
+    async function save(){clearNotice();const student=selected();if(!student){show('Choose a student first.','error');return}const selectedKeys=assignmentKeys.filter(key=>$(key).checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));if(!requested.length&&!$('diagnostic').checked&&!$('mixed-review').checked&&!$('nur321-ob-exam1').checked){show('Choose at least one assignment.','error');return}const button=$('save');button.disabled=true;button.textContent='Saving…';try{if(requested.length){const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw catalogError;const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw error}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw findError;if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw error}}
 
 if($('mixed-review').checked){
   const count=Number($('mixed-count').value)||20;
@@ -92,9 +100,32 @@ if($('mixed-review').checked){
   }
 }
 
+if($('nur321-ob-exam1').checked){
+  const url='supplemental-practice.html?course=nur321-ob&exam=exam1';
+  const {data:existing,error:findError}=await db.from('student_resources')
+    .select('id')
+    .eq('student_id',student.id)
+    .eq('url',url)
+    .limit(1);
+
+  if(findError)throw findError;
+
+  if(!existing?.length){
+    const {error}=await db.from('student_resources').insert({
+      student_id:student.id,
+      title:'NUR 321 OB · Exam 1 Practice',
+      resource_type:'practice_set',
+      url,
+      note:'Complete these 25 Exam 1 practice questions before your next coaching session.'
+    });
+    if(error)throw error;
+  }
+}
+
 const items=selectedKeys.map(key=>coreModules[key].name);
 if($('diagnostic').checked)items.push('full mock CAT diagnostic');
 if($('mixed-review').checked)items.push('mixed NCLEX review');
+if($('nur321-ob-exam1').checked)items.push('NUR 321 OB · Exam 1 Practice');
 show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
     async function init(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('student-login.html');return}const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();if(!admin){await db.auth.signOut();location.replace('student-login.html');return}const [{data:studentData,error:studentError},{data:moduleData,error:moduleError}]=await Promise.all([db.from('students').select('id,name,email').order('name'),db.from('modules').select('module_key,module_number').order('module_number')]);if(studentError){show('Could not load students. Please refresh and try again.','error')}else{students=studentData||[];$('student').innerHTML='<option value="">Choose a student…</option>'+students.map(item=>'<option value="'+item.id+'">'+item.name+(item.email?' · '+item.email:'')+'</option>').join('');if(!students.length)$('empty').classList.remove('hidden')}$('student').addEventListener('change',loadStudent);$('mixed-review').addEventListener('change',()=>{$('mixed-options').classList.toggle('hidden',!$('mixed-review').checked)});$('save').addEventListener('click',save);$('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});$('loading').classList.add('hidden');$('app').classList.remove('hidden')}init();
   </script>
