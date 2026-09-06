@@ -244,6 +244,10 @@
           <p class="empty">Upload your Kaplan, Archer, Bootcamp, UWorld, or CPR reports and review your focus areas with Madison in one shared workspace.</p>
           <a class="resource-link" href="shared-progress.html">Open shared progress →</a>
         </article>
+        <article class="card" id="cat-results-card" style="display:none">
+          <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
+          <div id="cat-results-body"></div>
+        </article>
         <article class="card">
           <div class="card-head"><div><p class="eyebrow">Adaptive practice</p><h2>Personalized question bank</h2></div><span class="label">CAT</span></div>
           <p>Your CAT uses Madison's assessment-history guidance while keeping essential RN safety coverage in every session.</p>
@@ -611,6 +615,33 @@
       }
       renderResources(resources, 'resources-nclex');
       renderModulesInto('modules-nclex', catalog, access);
+
+      // Render CAT results if present
+      const catResource = resources.find(r => r.resource_type === 'cat_results');
+      if (catResource && catResource.note) {
+        try {
+          const cats = JSON.parse(catResource.note);
+          const card = document.getElementById('cat-results-card');
+          const body = document.getElementById('cat-results-body');
+          const rows = cats.map(c => {
+            const pct = c.score;
+            const cls = pct < 55 ? 'score-needs' : pct < 70 ? 'score-ok' : 'score-good';
+            const bar = `<div style="height:6px;border-radius:3px;background:#e5e7eb;margin-top:4px"><div style="height:6px;border-radius:3px;width:${pct}%;background:${pct<55?'#9c3535':pct<70?'#b07830':'var(--teal)'}"></div></div>`;
+            const flag = pct < 55 ? ' 🔴' : pct < 70 ? ' 🟡' : ' ✅';
+            return `<div style="padding:10px 0;border-bottom:1px solid #f0f0f0">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-size:.9rem;font-weight:600">${c.area}${flag}</span>
+                <span class="${cls}" style="font-weight:700;font-size:1rem">${pct}%</span>
+              </div>
+              <div style="font-size:.78rem;color:#888;margin-top:1px">Peer avg: ${c.peer}%</div>
+              ${bar}
+            </div>`;
+          }).join('');
+          body.innerHTML = `<p style="font-size:.8rem;color:#888;margin-bottom:8px">Source: ${catResource.title} · <span style="color:var(--teal)">${cats.filter(c=>c.score>=70).length} strong</span> · <span style="color:#b07830">${cats.filter(c=>c.score>=55&&c.score<70).length} developing</span> · <span style="color:#9c3535">${cats.filter(c=>c.score<55).length} needs focus</span></p>${rows}`;
+          card.style.display = '';
+        } catch(e) {}
+      }
+
       document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
