@@ -480,6 +480,7 @@
     });
     document.getElementById('ob-skip-all').addEventListener('click', () => {
       try { localStorage.setItem(OB_KEY + (_student?.id || 'anon'), '1'); } catch(e){}
+      try { sessionStorage.setItem(OB_KEY + (_student?.id || 'anon'), '1'); } catch(e){}
       document.getElementById('onboarding-modal').classList.add('hidden');
     });
     document.getElementById('ob-next-1').addEventListener('click', () => showObStep(2));
@@ -730,9 +731,11 @@
       if (isPreview) return false;
       try {
         if (localStorage.getItem(OB_KEY + student.id)) return false;
+        if (sessionStorage.getItem(OB_KEY + student.id)) return false;
       } catch(e) {}
-      // Show if no course name AND no exam date (truly first login)
-      return !student.course_name && !student.exam_date;
+      // Show only if BOTH course_name AND exam_date are missing (truly first login)
+      if (student.course_name || student.exam_date) return false;
+      return true;
     }
 
     // ── Main init ─────────────────────────────────────────────────────
