@@ -479,8 +479,9 @@
       showObStep(1);
     });
     document.getElementById('ob-skip-all').addEventListener('click', () => {
-      try { localStorage.setItem(OB_KEY + (_student?.id || 'anon'), '1'); } catch(e){}
-      try { sessionStorage.setItem(OB_KEY + (_student?.id || 'anon'), '1'); } catch(e){}
+      const sid = (_student && _student.id) ? _student.id : 'anon';
+      try { localStorage.setItem(OB_KEY + sid, '1'); } catch(e){}
+      try { sessionStorage.setItem(OB_KEY + sid, '1'); } catch(e){}
       document.getElementById('onboarding-modal').classList.add('hidden');
     });
     document.getElementById('ob-next-1').addEventListener('click', () => showObStep(2));
@@ -796,8 +797,8 @@
 
       if (isNursing) {
         renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview);
-        // Show onboarding modal if first login
-        if (shouldShowOnboarding(student, isPreview)) {
+        // Show onboarding modal only on true first login (never in preview)
+        if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');
         }
       } else {
