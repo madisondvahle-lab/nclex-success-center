@@ -804,7 +804,7 @@
       renderQuestion();
     }
 
-    async function init(){const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const params=new URLSearchParams(window.location.search);
+    async function init(){const immediateSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===immediateSet)){startSet(immediateSet);return}const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const params=new URLSearchParams(window.location.search);
       const mixedCount=Number(params.get('mixed'));
       const assignedSet=params.get('set');
       const courseKey=params.get('course');
