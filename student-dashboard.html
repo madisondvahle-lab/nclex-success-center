@@ -6,21 +6,221 @@
   <meta name="description" content="Private student dashboard · Study with Madison RN">
   <title>My Study Plan · NCLEX Success Center</title>
   <style>
-    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--cream);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1160px,calc(100% - 38px));margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 0;border-bottom:1px solid #e1e8e2}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}.hero{padding:61px 0 46px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end}.eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.7rem,6vw,4.9rem);line-height:1}.hero p:not(.eyebrow){max-width:620px;margin:19px 0 0;color:var(--muted);line-height:1.65}.countdown{min-width:170px;padding:20px 22px;background:var(--plum);color:#fff}.countdown strong{display:block;font:400 2rem Georgia,serif}.countdown span{display:block;margin-top:5px;color:#eedce5;font-size:.75rem;line-height:1.35}.countdown.nursing{background:var(--teal)}.countdown.nursing span{color:#b8e0da}.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:20px;padding-bottom:68px}.card{padding:30px;background:var(--paper);border:1px solid #e5e9e4}.card h2{margin:0;font-size:1.85rem;line-height:1.1}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}.label{display:inline-flex;align-items:center;min-height:25px;padding:5px 10px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.67rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.label.teal{background:var(--teal-light);color:var(--teal)}.roadmap{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}.roadmap li{display:grid;grid-template-columns:29px 1fr;gap:11px;padding:16px 0;border-bottom:1px solid var(--line)}.roadmap li span:first-child{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--sage);font-size:.71rem;font-weight:900}.roadmap strong{display:block;font-size:.9rem}.roadmap p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}.empty{margin:0;padding:18px 0;color:var(--muted);font-size:.88rem;line-height:1.55}.resource-link{display:inline-block;margin-top:18px;color:var(--ink);font-size:.8rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}.weekly{background:var(--ink);color:#fff}.weekly .label{background:#f2c2c9;color:var(--plum)}.weekly .card-head{margin-bottom:14px}.weekly p{color:#d7e1e8}.weekly.nursing-week{background:var(--teal)}.weekly.nursing-week .label{background:var(--teal-sage);color:#0f3d35}.task-list{display:grid;gap:1px;margin-top:20px;background:#35516a}.task{padding:15px;background:#1d3c57;color:#eef4f5}.task strong{display:block;font-size:.88rem}.task span{display:block;margin-top:5px;color:#c9d8e1;font-size:.78rem;line-height:1.45}.task-list.nursing-tasks{background:#1e5f52}.task.nursing-task{background:#145a4c}.resources{grid-column:1/-1}.resource-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.resource{min-height:138px;padding:19px;background:var(--soft)}.resource-type{display:block;margin-bottom:14px;color:var(--rose);font-size:.66rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.resource h3{margin:0 0 7px;font-size:1.12rem}.resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}.resource a{display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}.modules{grid-column:1/-1}.module-group+.module-group{margin-top:25px;padding-top:23px;border-top:1px solid var(--line)}.module-group-label{margin:0 0 11px;color:var(--rose);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.module-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.module{padding:18px;background:#f2f5f2}.module strong{display:block;font-size:.88rem}.module span{display:block;margin-top:6px;color:var(--muted);font-size:.75rem;line-height:1.35}.module a{display:inline-block;margin-top:12px;color:var(--ink);font-size:.75rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}.progress-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}.progress-item{padding:16px;background:var(--soft)}.progress-item strong{display:block;font-size:1.5rem;font-family:Georgia,serif;letter-spacing:-.04em;margin-bottom:3px}.progress-item span{color:var(--muted);font-size:.75rem;line-height:1.4}.score-good{color:var(--teal)}.score-ok{color:#b07830}.score-needs{color:#9c3535}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);z-index:9;color:var(--muted);font-size:.9rem}.exam-prompt{background:var(--teal);color:#fff;padding:18px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:0}.exam-prompt p{margin:0;font-size:.88rem;line-height:1.5;flex:1}.exam-prompt strong{font-size:1rem}.exam-prompt-form{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.exam-prompt input[type=date]{padding:8px 12px;border:0;border-radius:3px;font-size:.85rem;font-family:inherit;color:var(--ink)}.exam-prompt button{padding:8px 16px;background:#fff;color:var(--teal);border:0;border-radius:3px;font-size:.82rem;font-weight:900;cursor:pointer;font-family:inherit}.exam-prompt button:hover{background:#e4f5f2}.exam-prompt-skip{background:transparent!important;color:#b8e0da!important;text-decoration:underline;padding:0!important}.my-classes{grid-column:1/-1}.class-list{display:grid;gap:12px;margin-top:4px}.class-card{padding:20px;background:var(--soft);border:1px solid var(--line)}.class-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.class-card h3{margin:0;font-size:1rem;font-family:Georgia,serif}.class-exam-list{display:grid;gap:6px;margin-top:10px}.class-exam{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--line);font-size:.8rem}.class-exam-name{font-weight:700}.class-exam-date{color:var(--muted)}.class-exam-days{font-size:.75rem;font-weight:900;color:var(--teal)}.add-class-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:9px 16px;background:var(--teal);color:#fff;border:0;border-radius:3px;font-size:.8rem;font-weight:900;cursor:pointer;font-family:inherit}.add-class-btn:hover{background:#1f6358}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:grid;place-items:center;padding:20px}.modal{background:#fff;width:min(480px,100%);padding:32px;position:relative}.modal h2{margin:0 0 20px;font-size:1.4rem}.modal-close{position:absolute;top:14px;right:16px;border:0;background:transparent;font-size:1.2rem;cursor:pointer;color:var(--muted)}.form-group{margin-bottom:16px}.form-group label{display:block;font-size:.78rem;font-weight:900;margin-bottom:5px;color:var(--ink)}.form-group input,.form-group select{width:100%;padding:9px 12px;border:1px solid var(--line);font-size:.88rem;font-family:inherit;color:var(--ink);background:#fff}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-submit{width:100%;padding:11px;background:var(--teal);color:#fff;border:0;font-size:.88rem;font-weight:900;cursor:pointer;font-family:inherit;margin-top:4px}.form-submit:hover{background:#1f6358}.form-submit:disabled{opacity:.6;cursor:not-allowed}.upload-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-size:.75rem;font-weight:900;cursor:pointer;font-family:inherit;border-radius:2px}.upload-btn:hover{background:var(--teal-light)}.file-list{margin-top:8px;display:grid;gap:4px}.file-item{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--teal-light);font-size:.75rem}.file-item a{color:var(--teal);font-weight:700;text-decoration:none}.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--line);margin-bottom:16px}.tab{padding:8px 16px;border:0;background:transparent;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;font-family:inherit}.tab.active{color:var(--teal);border-bottom-color:var(--teal)}.hidden{display:none}@media(max-width:800px){.hero{grid-template-columns:1fr;align-items:start}.countdown{width:max-content}.grid{grid-template-columns:1fr}.resources,.modules{grid-column:auto}.resource-list,.module-list,.progress-grid{grid-template-columns:1fr}.shell{width:min(100% - 28px,1160px)}.hero{padding:40px 0}.card{padding:24px 20px}}
+    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}
+    *{box-sizing:border-box}
+    body{margin:0;color:var(--ink);background:var(--cream);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(1160px,calc(100% - 38px));margin:auto}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 0;border-bottom:1px solid #e1e8e2}
+    .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
+    .brand small{font:600 .62em Inter,sans-serif}
+    .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
+    .hero{padding:61px 0 46px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end}
+    .eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+    h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}
+    h1{margin:0;font-size:clamp(2.7rem,6vw,4.9rem);line-height:1}
+    .hero p:not(.eyebrow){max-width:620px;margin:19px 0 0;color:var(--muted);line-height:1.65}
+    .countdown{min-width:170px;padding:20px 22px;background:var(--plum);color:#fff}
+    .countdown strong{display:block;font:400 2rem Georgia,serif}
+    .countdown span{display:block;margin-top:5px;color:#eedce5;font-size:.75rem;line-height:1.35}
+    .countdown.nursing{background:var(--teal)}
+    .countdown.nursing span{color:#b8e0da}
+    .grid{display:grid;grid-template-columns:1.12fr .88fr;gap:20px;padding-bottom:68px}
+    .card{padding:30px;background:var(--paper);border:1px solid #e5e9e4}
+    .card h2{margin:0;font-size:1.85rem;line-height:1.1}
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}
+    .card-desc{margin:0 0 20px;color:var(--muted);font-size:.83rem;line-height:1.55}
+    .label{display:inline-flex;align-items:center;min-height:25px;padding:5px 10px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.67rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+    .label.teal{background:var(--teal-light);color:var(--teal)}
+    .roadmap{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+    .roadmap li{display:grid;grid-template-columns:29px 1fr;gap:11px;padding:16px 0;border-bottom:1px solid var(--line)}
+    .roadmap li span:first-child{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--sage);font-size:.71rem;font-weight:900}
+    .roadmap strong{display:block;font-size:.9rem}
+    .roadmap p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}
+    .empty{margin:0;padding:18px 0;color:var(--muted);font-size:.88rem;line-height:1.55}
+    .resource-link{display:inline-block;margin-top:18px;color:var(--ink);font-size:.8rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
+    .weekly{background:var(--ink);color:#fff}
+    .weekly .label{background:#f2c2c9;color:var(--plum)}
+    .weekly .card-head{margin-bottom:14px}
+    .weekly p{color:#d7e1e8}
+    .weekly.nursing-week{background:var(--teal)}
+    .weekly.nursing-week .label{background:var(--teal-sage);color:#0f3d35}
+    .task-list{display:grid;gap:1px;margin-top:20px;background:#35516a}
+    .task{padding:15px;background:#1d3c57;color:#eef4f5}
+    .task strong{display:block;font-size:.88rem}
+    .task span{display:block;margin-top:5px;color:#c9d8e1;font-size:.78rem;line-height:1.45}
+    .task-list.nursing-tasks{background:#1e5f52}
+    .task.nursing-task{background:#145a4c}
+    .resources{grid-column:1/-1}
+    .resource-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .resource{min-height:138px;padding:19px;background:var(--soft)}
+    .resource-type{display:block;margin-bottom:14px;color:var(--rose);font-size:.66rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .resource h3{margin:0 0 7px;font-size:1.12rem}
+    .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
+    .resource a{display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
+    .modules{grid-column:1/-1}
+    .module-group+.module-group{margin-top:25px;padding-top:23px;border-top:1px solid var(--line)}
+    .module-group-label{margin:0 0 11px;color:var(--rose);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .module-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .module{padding:18px;background:#f2f5f2}
+    .module strong{display:block;font-size:.88rem}
+    .module span{display:block;margin-top:6px;color:var(--muted);font-size:.75rem;line-height:1.35}
+    .module a{display:inline-block;margin-top:12px;color:var(--ink);font-size:.75rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
+    .progress-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
+    .progress-item{padding:16px;background:var(--soft)}
+    .progress-item strong{display:block;font-size:1.5rem;font-family:Georgia,serif;letter-spacing:-.04em;margin-bottom:3px}
+    .progress-item span{color:var(--muted);font-size:.75rem;line-height:1.4}
+    .score-good{color:var(--teal)}.score-ok{color:#b07830}.score-needs{color:#9c3535}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);z-index:9;color:var(--muted);font-size:.9rem}
+    .hidden{display:none}
+
+    /* ── Onboarding modal ────────────────────────────────────── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
     .modal-overlay.hidden{display:none!important}
-    .modal-backdrop.hidden{display:none!important}
+    .modal{background:var(--paper);width:min(560px,100%);padding:40px;position:relative;max-height:90vh;overflow-y:auto}
+    .modal-logo{font:700 1rem Georgia,serif;letter-spacing:-.04em;margin-bottom:28px;color:var(--teal)}
+    .modal h2{margin:0 0 10px;font-size:1.7rem}
+    .modal > p{margin:0 0 28px;color:var(--muted);font-size:.9rem;line-height:1.6}
+    .modal-step{display:none}
+    .modal-step.active{display:block}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+    .field input,.field textarea,.field select{width:100%;padding:11px 14px;border:1.5px solid var(--line);background:#fff;font-family:inherit;font-size:.9rem;color:var(--ink);outline:none}
+    .field input:focus,.field textarea:focus{border-color:var(--teal)}
+    .field textarea{resize:vertical;min-height:80px}
+    .field-hint{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.45}
+    .modal-actions{display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap}
+    .btn-primary{padding:12px 24px;background:var(--teal);color:#fff;border:0;font:800 .85rem Inter,sans-serif;cursor:pointer;letter-spacing:.04em}
+    .btn-primary:hover{background:#236b5f}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .btn-skip{background:transparent;border:0;font:600 .8rem Inter,sans-serif;color:var(--muted);cursor:pointer;padding:0;text-decoration:underline}
+    .step-dots{display:flex;gap:6px;margin-bottom:24px}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--line)}
+    .dot.active{background:var(--teal)}
+
+    /* ── Upload area ─────────────────────────────────────────── */
+    .upload-zone{border:2px dashed var(--teal-sage);padding:24px;text-align:center;cursor:pointer;background:var(--teal-light);transition:background .2s}
+    .upload-zone:hover{background:#d0eeea}
+    .upload-zone p{margin:8px 0 0;font-size:.82rem;color:var(--muted)}
+    .upload-zone input{display:none}
+    .upload-file-name{font-size:.82rem;color:var(--teal);font-weight:700;margin-top:8px}
+
+    /* ── Student uploads card ────────────────────────────────── */
+    .uploads-full{grid-column:1/-1}
+    .upload-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--teal-light);border:1px solid var(--teal-sage);margin-bottom:8px}
+    .upload-item-icon{font-size:1.3rem;flex-shrink:0}
+    .upload-item-body{flex:1;min-width:0}
+    .upload-item-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .upload-item-meta{font-size:.75rem;color:var(--muted);margin-top:2px}
+    .upload-action-btn{padding:9px 20px;background:var(--teal);color:#fff;border:0;font:800 .8rem Inter,sans-serif;cursor:pointer;margin-top:4px}
+    .upload-action-btn:hover{background:#236b5f}
+
+    /* ── Exam date inline prompt ─────────────────────────────── */
+    .exam-prompt{background:var(--teal);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .exam-prompt p{margin:0;font-size:.88rem;line-height:1.5;flex:1}
+    .exam-prompt strong{font-size:1rem}
+    .exam-prompt-form{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .exam-prompt input[type=date]{padding:8px 12px;border:0;border-radius:3px;font-size:.85rem;font-family:inherit;color:var(--ink)}
+    .exam-prompt button{padding:8px 16px;background:#fff;color:var(--teal);border:0;border-radius:3px;font-size:.82rem;font-weight:900;cursor:pointer;font-family:inherit}
+    .exam-prompt button:hover{background:#e4f5f2}
+    .exam-prompt-skip{background:transparent!important;color:#b8e0da!important;text-decoration:underline;padding:0!important}
+
+    /* ── Practice set items ──────────────────────────────────── */
+    .practice-item{margin-bottom:12px;padding:18px;background:var(--teal-light);border:1px solid var(--teal-sage)}
+    .practice-item-title{font-size:.95rem;font-weight:700;display:block;margin-bottom:5px}
+    .practice-item-note{font-size:.8rem;color:var(--muted);display:block;margin-bottom:12px;line-height:1.45}
+    .practice-item-open{font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor}
+    .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
+
+    @media(max-width:800px){
+      .hero{grid-template-columns:1fr;align-items:start}
+      .countdown{width:max-content}
+      .grid{grid-template-columns:1fr}
+      .resources,.modules,.uploads-full{grid-column:auto}
+      .resource-list,.module-list,.progress-grid{grid-template-columns:1fr}
+      .shell{width:min(100% - 28px,1160px)}
+      .hero{padding:40px 0}
+      .card{padding:24px 20px}
+    }
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening your private study plan…</div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ONBOARDING MODAL  (nursing students, first login)
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="ob-title">
+    <div class="modal">
+      <div class="modal-logo">Study With Madison RN</div>
+      <div class="step-dots">
+        <div class="dot active" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+
+      <!-- Step 0 → Welcome + course name -->
+      <div class="modal-step active" id="ob-step-0">
+        <h2 id="ob-title">Welcome! Let's set up your hub.</h2>
+        <p>Before your first session, give Madison a few details so she can prepare your personalized study plan and practice questions.</p>
+        <div class="field">
+          <label for="ob-course">Your course name</label>
+          <input id="ob-course" type="text" placeholder="e.g. NUR 321 OB, Fundamentals, Med-Surg II…">
+          <div class="field-hint">This tells Madison what class you're in so she can assign the right materials.</div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="ob-next-0">Next →</button>
+          <button class="btn-skip" id="ob-skip-all">Set up later</button>
+        </div>
+      </div>
+
+      <!-- Step 1 → Exam date + topics -->
+      <div class="modal-step" id="ob-step-1">
+        <h2>When is your next exam?</h2>
+        <p>Your exam countdown and weekly priority list are built around this date. You can update it anytime.</p>
+        <div class="field">
+          <label for="ob-exam-date">Next exam date</label>
+          <input id="ob-exam-date" type="date">
+        </div>
+        <div class="field">
+          <label for="ob-topics">What topics will be covered?</label>
+          <textarea id="ob-topics" placeholder="e.g. Labor & delivery, postpartum complications, newborn assessment…"></textarea>
+          <div class="field-hint">Madison uses this to assign practice questions and study guides that match your actual exam content.</div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="ob-next-1">Next →</button>
+          <button class="btn-skip" id="ob-back-1">← Back</button>
+        </div>
+      </div>
+
+      <!-- Step 2 → Upload materials -->
+      <div class="modal-step" id="ob-step-2">
+        <h2>Upload your course materials</h2>
+        <p>Share your syllabus, study guide, or professor notes so Madison can pull from your actual course content when building your practice sets.</p>
+        <div class="upload-zone" id="ob-upload-zone" onclick="document.getElementById('ob-file-input').click()">
+          <div style="font-size:2rem">📄</div>
+          <div style="font-weight:700;margin-top:8px;font-size:.9rem">Click to upload a file</div>
+          <p>PDF, Word doc, or image · Max 10 MB</p>
+          <input type="file" id="ob-file-input" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="handleObFile(this)">
+          <div class="upload-file-name" id="ob-file-name"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="ob-finish">Save &amp; open my hub</button>
+          <button class="btn-skip" id="ob-skip-upload">Skip for now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <main class="shell hidden" id="app">
-    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><button class="sign-out" id="sign-out" type="button">Sign out</button></header>
+    <header class="top">
+      <span class="brand">Study With Madison <small>RN</small></span>
+      <button class="sign-out" id="sign-out" type="button">Sign out</button>
+    </header>
     <p id="preview-banner" style="display:none;padding:12px 14px;background:#fff0e8;border-left:3px solid var(--rose);font-size:.82rem;font-weight:800"><span id="preview-label"></span> <a id="preview-back" href="shared-progress.html">Return to student progress</a></p>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         NCLEX STUDENT PORTAL  (student_type = 'nclex', the default)
-         Unchanged from original — all existing students land here.
-    ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         NCLEX STUDENT PORTAL
+    ═══════════════════════════════════════════════════════════════ -->
     <div id="portal-nclex" class="hidden">
       <section class="hero">
         <div>
@@ -45,6 +245,10 @@
           <p class="empty">Upload your Kaplan, Archer, Bootcamp, UWorld, or CPR reports and review your focus areas with Madison in one shared workspace.</p>
           <a class="resource-link" href="shared-progress.html">Open shared progress →</a>
         </article>
+        <article class="card" id="cat-results-card" style="display:none">
+          <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
+          <div id="cat-results-body"></div>
+        </article>
         <article class="card">
           <div class="card-head"><div><p class="eyebrow">Adaptive practice</p><h2>Personalized question bank</h2></div><span class="label">CAT</span></div>
           <p>Your CAT uses Madison's assessment-history guidance while keeping essential RN safety coverage in every session.</p>
@@ -61,28 +265,39 @@
       </section>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         NURSING STUDENT PORTAL  (student_type = 'nursing_student')
-         Class-focused layout — no NCLEX/CAT/Archer language.
-    ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         NURSING STUDENT PORTAL
+    ═══════════════════════════════════════════════════════════════ -->
     <div id="portal-nursing" class="hidden">
-    <div id="exam-prompt-banner" class="exam-prompt hidden"><p><strong>When is your next exam?</strong><br>Set your exam date so you can see your countdown and track how many days you have to prepare.</p><form class="exam-prompt-form" id="exam-prompt-form"><input type="date" id="exam-date-input" required><button type="submit">Save date</button><button type="button" class="exam-prompt-skip" id="exam-prompt-skip">Skip for now</button></form></div>
+
+      <!-- Exam date prompt (shows only if no exam date set, not first login) -->
+      <div id="exam-prompt-banner" class="exam-prompt hidden">
+        <p><strong>When is your next exam?</strong><br>Set your exam date so you can see your countdown and track how many days you have to prepare.</p>
+        <form class="exam-prompt-form" id="exam-prompt-form">
+          <input type="date" id="exam-date-input" required>
+          <button type="submit">Save date</button>
+          <button type="button" class="exam-prompt-skip" id="exam-prompt-skip">Skip for now</button>
+        </form>
+      </div>
+
       <section class="hero">
         <div>
           <p class="eyebrow" style="color:var(--teal)">Nursing Student Hub</p>
           <h1 id="welcome-nursing">Welcome back.</h1>
-          <p>Your private place for class resources, exam prep, and the next steps Madison has selected for you.</p>
+          <p id="hero-course-line">Your private place for class resources, exam prep, and the next steps Madison has selected for you.</p>
         </div>
         <aside class="countdown nursing" id="countdown-nursing"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
       </section>
+
       <section class="grid">
 
-        <!-- 1 · Course plan (unit schedule / roadmap) -->
+        <!-- 1 · Course plan -->
         <article class="card">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your course plan</p><h2 id="plan-title-nursing">This Semester</h2></div>
             <span class="label teal">Personal plan</span>
           </div>
+          <p class="card-desc">Madison builds this roadmap based on your course and upcoming tests. It shows the units and topics you should tackle in order.</p>
           <ol class="roadmap" id="roadmap-nursing">
             <li><span>1</span><div><strong>Your plan is being prepared.</strong><p>Madison will add your unit schedule and focus areas here after your session.</p></div></li>
           </ol>
@@ -104,8 +319,9 @@
             <div><p class="eyebrow" style="color:var(--teal)">Upcoming exam</p><h2>Exam date &amp; focus</h2></div>
             <span class="label teal">Exam prep</span>
           </div>
-          <div id="exam-info-nursing"><p class="empty">Madison will add your upcoming exam date and the topics to prioritize here.</p></div>
-          <a class="resource-link" href="shared-progress.html">Open shared workspace →</a>
+          <p class="card-desc">Your next test date and the specific topics Madison recommends you prioritize before it.</p>
+          <div id="exam-info-nursing"><p class="empty">No exam date set yet. Use the prompt above to add one, or Madison will add it after your session.</p></div>
+          <a class="resource-link" href="shared-progress.html" style="color:var(--teal)">Open shared workspace →</a>
         </article>
 
         <!-- 4 · Assigned practice quiz -->
@@ -114,29 +330,52 @@
             <div><p class="eyebrow" style="color:var(--teal)">Practice quiz</p><h2>Assigned practice</h2></div>
             <span class="label teal">Quiz</span>
           </div>
-          <p>Work through the practice questions Madison has assigned to build confidence before your exam.</p>
-          <div id="practice-shortcut-nursing" style="margin-top:18px"><p class="empty">No practice set assigned yet — Madison will add one before your next session.</p></div>
+          <p class="card-desc">Madison assigns these practice sets specifically for your upcoming exam. Work through them before your next coaching session.</p>
+          <div id="practice-shortcut-nursing">
+            <p class="empty">No practice set assigned yet — Madison will add one before your next session.</p>
+          </div>
         </article>
 
-        <!-- 5 · Study resources (full width) -->
+        <!-- 5 · Study resources (full width) — non-practice content only -->
         <article class="card resources">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
             <span class="label teal">Assigned</span>
           </div>
-          <div class="resource-list" id="resources-nursing"><p class="empty">No resources assigned yet. Madison will add study guides and materials for your current unit.</p></div>
+          <p class="card-desc">Study guides, infographics, and reference materials Madison has chosen to support your current unit. These are different from your practice quizzes above.</p>
+          <div class="resource-list" id="resources-nursing"><p class="empty">No study resources assigned yet. Madison will add materials for your current unit here.</p></div>
         </article>
 
-        <!-- 6 · Recent quiz scores (full width) -->
+        <!-- 6 · Student uploads (full width) -->
+        <article class="card uploads-full" id="student-uploads-card">
+          <div class="card-head">
+            <div><p class="eyebrow" style="color:var(--teal)">Your course materials</p><h2>Uploaded content</h2></div>
+            <span class="label teal">My uploads</span>
+          </div>
+          <p class="card-desc">Files you've uploaded — your syllabus, professor notes, or study guides. Madison uses these to generate practice questions that match your actual course content.</p>
+          <div id="student-uploads-list"></div>
+          <div style="margin-top:16px">
+            <div class="upload-zone" id="dashboard-upload-zone" onclick="document.getElementById('dashboard-file-input').click()">
+              <div style="font-size:1.5rem">📎</div>
+              <div style="font-weight:700;font-size:.85rem;margin-top:6px">Upload a file</div>
+              <p>Syllabus, notes, or study guide · PDF, Word, or image</p>
+              <input type="file" id="dashboard-file-input" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="handleDashboardUpload(this)">
+            </div>
+            <p id="dashboard-upload-status" style="font-size:.8rem;color:var(--teal);font-weight:700;margin-top:8px;display:none"></p>
+          </div>
+        </article>
+
+        <!-- 7 · Recent quiz scores (full width) -->
         <article class="card" style="grid-column:1/-1">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
             <span class="label teal">Performance</span>
           </div>
+          <p class="card-desc">Scores from the practice sets Madison assigned. Your scores are shared with Madison so she can adjust your plan between sessions.</p>
           <div class="progress-grid" id="progress-nursing"><p class="empty" style="grid-column:1/-1">Quiz scores will appear here after you complete your first practice set.</p></div>
         </article>
 
-        <!-- 7 · Class modules / study guides (full width) -->
+        <!-- 8 · Class modules / study guides (full width) -->
         <article class="card modules">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
@@ -145,64 +384,170 @@
           <div class="module-library" id="modules-nursing"><p class="empty">Your assigned study guides and modules will appear here.</p></div>
         </article>
 
-
-        <!-- 8 · My Classes (full width, nursing only) -->
-        <article class="card my-classes">
-          <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Your schedule</p><h2>My Classes</h2></div>
-            <span class="label teal">Self-managed</span>
-          </div>
-          <div id="class-list-nursing"><p class="empty">No classes added yet.</p></div>
-          <button class="add-class-btn" id="add-class-btn" type="button">+ Add a class</button>
-        </article>
-
-        <!-- Add Class Modal -->
-        <div class="modal-backdrop hidden" id="class-modal">
-          <div class="modal">
-            <button class="modal-close" id="class-modal-close" type="button">✕</button>
-            <h2>Add a class</h2>
-            <div class="tab-bar">
-              <button class="tab active" data-tab="class">New class</button>
-              <button class="tab" data-tab="exam">Add exam to class</button>
-            </div>
-            <div id="tab-class">
-              <form id="add-class-form">
-                <div class="form-group"><label>Class name *</label><input type="text" id="new-course-name" placeholder="e.g. NUR 330 Pediatric Nursing" required></div>
-                <div class="form-row">
-                  <div class="form-group"><label>School</label><input type="text" id="new-school-name" placeholder="e.g. University of Memphis"></div>
-                  <div class="form-group"><label>Term</label><input type="text" id="new-term-label" placeholder="e.g. Fall 2026"></div>
-                </div>
-                <button class="form-submit" type="submit" id="add-class-submit">Add class</button>
-              </form>
-            </div>
-            <div id="tab-exam" style="display:none">
-              <form id="add-exam-form">
-                <div class="form-group"><label>Class *</label><select id="exam-course-select" required><option value="">Select a class…</option></select></div>
-                <div class="form-group"><label>Exam name *</label><input type="text" id="new-exam-name" placeholder="e.g. Exam 2 — Respiratory" required></div>
-                <div class="form-row">
-                  <div class="form-group"><label>Exam date *</label><input type="date" id="new-exam-date" required></div>
-                  <div class="form-group"><label>Total points</label><input type="number" id="new-exam-points" placeholder="100" min="1"></div>
-                </div>
-                <div class="form-group"><label>Notes</label><input type="text" id="new-exam-notes" placeholder="e.g. Chapters 12–15, priority questions"></div>
-                <button class="form-submit" type="submit" id="add-exam-submit">Add exam</button>
-              </form>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
 
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
-    const app=document.getElementById('app'),loading=document.getElementById('loading');
-    const asArray=v=>Array.isArray(v)?v:[];
-    const text=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const db = supabase.createClient(
+      'https://pmjwwktwlsqpetwfvolb.supabase.co',
+      'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT'
+    );
+    const app     = document.getElementById('app');
+    const loading = document.getElementById('loading');
+    const asArray = v => Array.isArray(v) ? v : [];
+    const text    = v => String(v ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-    // ── Shared helpers ──────────────────────────────────────────────────────────────────────
+    // ── Onboarding state ─────────────────────────────────────────────
+    let _student = null;
+    let _obStep  = 0;
+    let _obFile  = null;
+    const OB_KEY = 'ob_seen_'; // localStorage key prefix
 
-    // Renders weekly_focus into an <ol> and returns daily_priorities array for caller
+    function showObStep(n) {
+      document.querySelectorAll('.modal-step').forEach((el,i) => el.classList.toggle('active', i === n));
+      document.querySelectorAll('.dot').forEach((el,i) => el.classList.toggle('active', i === n));
+      _obStep = n;
+    }
+
+    function handleObFile(input) {
+      _obFile = input.files[0] || null;
+      document.getElementById('ob-file-name').textContent = _obFile ? _obFile.name : '';
+    }
+
+    async function finishOnboarding(skipUpload) {
+      const btn = document.getElementById('ob-finish');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const courseName = document.getElementById('ob-course').value.trim();
+      const examDate   = document.getElementById('ob-exam-date').value;
+      const topics     = document.getElementById('ob-topics').value.trim();
+
+      // Build update payload
+      const update = {};
+      if (courseName) update.course_name = courseName;
+      if (examDate)   update.exam_date   = examDate;
+
+      // Save to students table
+      if (Object.keys(update).length) {
+        await db.from('students').update(update).eq('id', _student.id);
+      }
+
+      // Save exam topics as a resource note
+      if (topics) {
+        await db.from('student_resources').insert({
+          student_id:    _student.id,
+          title:         'Exam topics: ' + (courseName || 'Upcoming exam'),
+          note:          topics,
+          resource_type: 'exam_topic',
+        });
+      }
+
+      // Upload file to Supabase storage
+      if (!skipUpload && _obFile) {
+        try {
+          const ext  = _obFile.name.split('.').pop();
+          const path = `${_student.id}/${Date.now()}.${ext}`;
+          const { data: upData, error: upErr } = await db.storage
+            .from('student-materials')
+            .upload(path, _obFile);
+          if (!upErr && upData) {
+            const { data: { publicUrl } } = db.storage
+              .from('student-materials')
+              .getPublicUrl(path);
+            await db.from('student_resources').insert({
+              student_id:    _student.id,
+              title:         _obFile.name,
+              note:          'Uploaded by student during setup',
+              resource_type: 'student_upload',
+              url:           publicUrl,
+            });
+          }
+        } catch(e) { /* non-fatal */ }
+      }
+
+      // Mark onboarding seen
+      try { localStorage.setItem(OB_KEY + _student.id, '1'); } catch(e){}
+
+      document.getElementById('onboarding-modal').classList.add('hidden');
+      window.location.reload();
+    }
+
+    // Onboarding button wiring (done after DOM ready)
+    document.getElementById('ob-next-0').addEventListener('click', () => {
+      const courseName = document.getElementById('ob-course').value.trim();
+      if (!courseName) { document.getElementById('ob-course').focus(); return; }
+      showObStep(1);
+    });
+    document.getElementById('ob-skip-all').addEventListener('click', () => {
+      const sid = (_student && _student.id) ? _student.id : 'anon';
+      try { localStorage.setItem(OB_KEY + sid, '1'); } catch(e){}
+      try { sessionStorage.setItem(OB_KEY + sid, '1'); } catch(e){}
+      document.getElementById('onboarding-modal').classList.add('hidden');
+    });
+    document.getElementById('ob-next-1').addEventListener('click', () => showObStep(2));
+    document.getElementById('ob-back-1').addEventListener('click', () => showObStep(0));
+    document.getElementById('ob-finish').addEventListener('click', () => finishOnboarding(false));
+    document.getElementById('ob-skip-upload').addEventListener('click', () => finishOnboarding(true));
+
+    // ── Dashboard file upload ─────────────────────────────────────────
+    async function handleDashboardUpload(input) {
+      const file = input.files[0];
+      if (!file || !_student) return;
+      const statusEl = document.getElementById('dashboard-upload-status');
+      statusEl.textContent = 'Uploading…';
+      statusEl.style.display = 'block';
+      try {
+        const ext  = file.name.split('.').pop();
+        const path = `${_student.id}/${Date.now()}.${ext}`;
+        const { data: upData, error: upErr } = await db.storage
+          .from('student-materials')
+          .upload(path, file);
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = db.storage.from('student-uploads').getPublicUrl(path);
+        await db.from('student_resources').insert({
+          student_id:    _student.id,
+          title:         file.name,
+          note:          'Uploaded by student',
+          resource_type: 'student_upload',
+          url:           publicUrl,
+        });
+        statusEl.textContent = '✓ Uploaded! Madison will see this before your next session.';
+        loadStudentUploads(_student.id);
+      } catch(e) {
+        statusEl.textContent = 'Upload failed — please try again.';
+        statusEl.style.color = '#9c3535';
+      }
+      input.value = '';
+    }
+
+    async function loadStudentUploads(studentId) {
+      const { data } = await db.from('student_resources')
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('resource_type', 'student_upload')
+        .order('created_at', { ascending: false });
+      const list = document.getElementById('student-uploads-list');
+      if (!data || !data.length) {
+        list.innerHTML = '<p class="empty">No files uploaded yet. Use the area below to share your course materials with Madison.</p>';
+        return;
+      }
+      list.innerHTML = data.map(f => `
+        <div class="upload-item">
+          <div class="upload-item-icon">📄</div>
+          <div class="upload-item-body">
+            <div class="upload-item-name">${text(f.title)}</div>
+            ${f.note ? `<div class="upload-item-meta">${text(f.note)}</div>` : ''}
+          </div>
+          ${f.url ? `<a href="${text(f.url)}" target="_blank" rel="noopener" style="font-size:.78rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor;flex-shrink:0">View →</a>` : ''}
+        </div>`).join('');
+    }
+
+    // ── Shared helpers ───────────────────────────────────────────────
     function renderRoadmapInto(listEl, titleEl, plan) {
       if (!plan) return [];
       if (titleEl && plan.title) titleEl.textContent = plan.title;
@@ -210,364 +555,294 @@
       const daily  = asArray(plan.daily_priorities);
       if (weekly.length && listEl) {
         listEl.innerHTML = weekly.map((item, i) => {
-          const title  = typeof item==='string' ? item : (item.title||item.week||'Study focus');
-          const detail = typeof item==='object'  ? (item.detail||item.description||'') : '';
-          return `<li><span>${i+1}</span><div><strong>${text(title)}</strong>${detail?`<p>${text(detail)}</p>`:''}</div></li>`;
+          const title  = typeof item === 'string' ? item : (item.title || item.week || 'Study focus');
+          const detail = typeof item === 'object'  ? (item.detail || item.description || '') : '';
+          return `<li><span>${i+1}</span><div><strong>${text(title)}</strong>${detail ? `<p>${text(detail)}</p>` : ''}</div></li>`;
         }).join('');
       }
       return daily;
     }
 
+    // Resources — only types that are NOT practice_set or student_upload
     function renderResources(items, containerId) {
-      if (!items.length) return;
-      document.getElementById(containerId).innerHTML = items.map(item =>
-        `<article class="resource"><span class="resource-type">${text((item.resource_type||'resource').replace(/_/g,' '))}</span><h3>${text(item.title)}</h3>${item.note?`<p>${text(item.note)}</p>`:''}${item.url?`<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>`:''}</article>`
+      const filtered = items.filter(r =>
+        r.resource_type !== 'practice_set' && r.resource_type !== 'student_upload'
+      );
+      if (!filtered.length) return;
+      document.getElementById(containerId).innerHTML = filtered.map(item =>
+        `<article class="resource">
+          <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
+          <h3>${text(item.title)}</h3>
+          ${item.note ? `<p>${text(item.note)}</p>` : ''}
+          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+        </article>`
       ).join('');
     }
 
     function renderModulesInto(containerId, catalog, access) {
-      const enabled  = new Set(access.filter(i=>i.enabled).map(i=>i.module_key));
-      const modules  = catalog.filter(i=>enabled.has(i.module_key));
+      const enabled  = new Set(access.filter(i => i.enabled).map(i => i.module_key));
+      const modules  = catalog.filter(i => enabled.has(i.module_key));
       if (!modules.length) return;
-      const core     = modules.filter(i=>String(i.module_key||'').startsWith('core-'));
-      const deepDive = modules.filter(i=>!String(i.module_key||'').startsWith('core-'));
-      const card     = m=>`<article class="module"><strong>${text(m.emoji||'📚')} ${text(m.name)}</strong><span>${text(m.description||'Assigned learning module')}</span>${m.guide_url?`<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open module →</a>`:''}</article>`;
-      document.getElementById(containerId).innerHTML=
-        (core.length    ?`<div class="module-group"><p class="module-group-label">Core RN Safety Pathway</p><div class="module-list">${core.map(card).join('')}</div></div>`:'') +
-        (deepDive.length?`<div class="module-group"><p class="module-group-label">Assigned modules</p><div class="module-list">${deepDive.map(card).join('')}</div></div>`:'');
+      const core     = modules.filter(i =>  String(i.module_key || '').startsWith('core-'));
+      const deepDive = modules.filter(i => !String(i.module_key || '').startsWith('core-'));
+      const card     = m => `<article class="module">
+        <strong>${text(m.emoji || '📚')} ${text(m.name)}</strong>
+        <span>${text(m.description || 'Assigned learning module')}</span>
+        ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open module →</a>` : ''}
+      </article>`;
+      document.getElementById(containerId).innerHTML =
+        (core.length     ? `<div class="module-group"><p class="module-group-label">Core RN Safety Pathway</p><div class="module-list">${core.map(card).join('')}</div></div>` : '') +
+        (deepDive.length ? `<div class="module-group"><p class="module-group-label">Assigned modules</p><div class="module-list">${deepDive.map(card).join('')}</div></div>` : '');
     }
 
-    // ── NCLEX portal ────────────────────────────────────────────────────────────────────────
-
+    // ── NCLEX portal ─────────────────────────────────────────────────
     function renderNclex(student, plans, resources, catalog, access) {
-      document.getElementById('welcome-nclex').textContent=`Welcome back, ${(student.name||'student').split(' ')[0]}.`;
+      document.getElementById('welcome-nclex').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       if (student.nclex_target_date) {
-        const days=Math.ceil((new Date(`${student.nclex_target_date}T12:00:00`)-new Date())/86400000);
-        const box=document.getElementById('countdown-nclex');
-        box.innerHTML=days>=0?`<strong>${days} days</strong><span>until your target NCLEX date</span>`:`<strong>My plan</strong><span>Your next priorities are below.</span>`;
+        const days = Math.ceil((new Date(`${student.nclex_target_date}T12:00:00`) - new Date()) / 86400000);
+        const box  = document.getElementById('countdown-nclex');
+        box.innerHTML = days >= 0
+          ? `<strong>${days} days</strong><span>until your target NCLEX date</span>`
+          : `<strong>My plan</strong><span>Your next priorities are below.</span>`;
       }
-      const daily=renderRoadmapInto(document.getElementById('roadmap-nclex'),document.getElementById('plan-title-nclex'),plans[0]);
+      const daily = renderRoadmapInto(document.getElementById('roadmap-nclex'), document.getElementById('plan-title-nclex'), plans[0]);
       if (daily.length) {
-        document.getElementById('weekly-intro-nclex').textContent='These are the focused next steps Madison has selected for your current plan.';
-        document.getElementById('daily-priorities-nclex').innerHTML=daily.map(item=>{
-          const title=typeof item==='string'?item:(item.title||item.task||'Study priority');
-          const detail=typeof item==='object'?(item.detail||item.description||''):'';
-          return `<div class="task"><strong>${text(title)}</strong>${detail?`<span>${text(detail)}</span>`:''}</div>`;
+        document.getElementById('weekly-intro-nclex').textContent = 'These are the focused next steps Madison has selected for your current plan.';
+        document.getElementById('daily-priorities-nclex').innerHTML = daily.map(item => {
+          const title  = typeof item === 'string' ? item : (item.title || item.task || 'Study priority');
+          const detail = typeof item === 'object'  ? (item.detail || item.description || '') : '';
+          return `<div class="task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
         }).join('');
       }
-      renderResources(resources,'resources-nclex');
-      renderModulesInto('modules-nclex',catalog,access);
+      renderResources(resources, 'resources-nclex');
+      renderModulesInto('modules-nclex', catalog, access);
+
+      // Render CAT results if present
+      const catResource = resources.find(r => r.resource_type === 'cat_results');
+      if (catResource && catResource.note) {
+        try {
+          const cats = JSON.parse(catResource.note);
+          const card = document.getElementById('cat-results-card');
+          const body = document.getElementById('cat-results-body');
+          const rows = cats.map(c => {
+            const pct = c.score;
+            const cls = pct < 55 ? 'score-needs' : pct < 70 ? 'score-ok' : 'score-good';
+            const bar = `<div style="height:6px;border-radius:3px;background:#e5e7eb;margin-top:4px"><div style="height:6px;border-radius:3px;width:${pct}%;background:${pct<55?'#9c3535':pct<70?'#b07830':'var(--teal)'}"></div></div>`;
+            const flag = pct < 55 ? ' 🔴' : pct < 70 ? ' 🟡' : ' ✅';
+            return `<div style="padding:10px 0;border-bottom:1px solid #f0f0f0">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-size:.9rem;font-weight:600">${c.area}${flag}</span>
+                <span class="${cls}" style="font-weight:700;font-size:1rem">${pct}%</span>
+              </div>
+              <div style="font-size:.78rem;color:#888;margin-top:1px">Peer avg: ${c.peer}%</div>
+              ${bar}
+            </div>`;
+          }).join('');
+          body.innerHTML = `<p style="font-size:.8rem;color:#888;margin-bottom:8px">Source: ${catResource.title} · <span style="color:var(--teal)">${cats.filter(c=>c.score>=70).length} strong</span> · <span style="color:#b07830">${cats.filter(c=>c.score>=55&&c.score<70).length} developing</span> · <span style="color:#9c3535">${cats.filter(c=>c.score<55).length} needs focus</span></p>${rows}`;
+          card.style.display = '';
+        } catch(e) {}
+      }
+
       document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
-    // ── Nursing student portal ─────────────────────────────────────────────────────────────────────
-
+    // ── Nursing portal ────────────────────────────────────────────────
     function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview) {
-      document.getElementById('welcome-nursing').textContent=`Welcome back, ${(student.name||'student').split(' ')[0]}.`;
+      document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
 
-      // Exam countdown (uses exam_date, not nclex_target_date)
-      const box=document.getElementById('countdown-nursing');
-      // Show prompt banner if no exam date set (and not in preview/admin mode)
+      // Course name in hero subtitle
+      if (student.course_name) {
+        document.getElementById('hero-course-line').textContent =
+          `Your private hub for ${student.course_name} — class resources, exam prep, and the next steps Madison has selected for you.`;
+        document.getElementById('plan-title-nursing').textContent = student.course_name;
+      }
+
+      // Exam countdown
+      const box = document.getElementById('countdown-nursing');
       if (!student.exam_date && !isPreview) {
-        const banner=document.getElementById('exam-prompt-banner');
-        banner.classList.remove('hidden');
-        document.getElementById('exam-prompt-form').addEventListener('submit', async function(e){
+        document.getElementById('exam-prompt-banner').classList.remove('hidden');
+        document.getElementById('exam-prompt-form').addEventListener('submit', async function(e) {
           e.preventDefault();
-          const val=document.getElementById('exam-date-input').value;
-          if(!val) return;
-          const btn=this.querySelector('button[type=submit]');
-          btn.textContent='Saving…'; btn.disabled=true;
-          const {error}=await db.from('students').update({exam_date:val}).eq('id',student.id);
-          if(!error){ window.location.reload(); } else { btn.textContent='Error — try again'; btn.disabled=false; }
+          const val = document.getElementById('exam-date-input').value;
+          if (!val) return;
+          const btn = this.querySelector('button[type=submit]');
+          btn.textContent = 'Saving…'; btn.disabled = true;
+          const { error } = await db.from('students').update({ exam_date: val }).eq('id', student.id);
+          if (!error) { window.location.reload(); } else { btn.textContent = 'Error — try again'; btn.disabled = false; }
         });
-        document.getElementById('exam-prompt-skip').addEventListener('click',function(){
+        document.getElementById('exam-prompt-skip').addEventListener('click', () => {
           document.getElementById('exam-prompt-banner').classList.add('hidden');
         });
       }
       if (student.exam_date) {
-        const days=Math.ceil((new Date(`${student.exam_date}T12:00:00`)-new Date())/86400000);
-        box.innerHTML=days>=0?`<strong>${days} day${days===1?'':'s'}</strong><span>until your next exam</span>`:`<strong>My plan</strong><span>Your next priorities are below.</span>`;
+        const days = Math.ceil((new Date(`${student.exam_date}T12:00:00`) - new Date()) / 86400000);
+        box.innerHTML = days >= 0
+          ? `<strong>${days} day${days === 1 ? '' : 's'}</strong><span>until your next exam</span>`
+          : `<strong>My plan</strong><span>Your next priorities are below.</span>`;
       }
 
-      // Course plan
-      const daily=renderRoadmapInto(document.getElementById('roadmap-nursing'),document.getElementById('plan-title-nursing'),plans[0]);
+      // Course plan roadmap
+      const daily = renderRoadmapInto(document.getElementById('roadmap-nursing'), document.getElementById('plan-title-nursing'), plans[0]);
 
-      // This week
+      // This week priorities
       if (daily.length) {
-        document.getElementById('weekly-intro-nursing').textContent='These are the focused next steps Madison has selected for your current unit.';
-        document.getElementById('daily-priorities-nursing').innerHTML=daily.map(item=>{
-          const title=typeof item==='string'?item:(item.title||item.task||'Study priority');
-          const detail=typeof item==='object'?(item.detail||item.description||''):'';
-          return `<div class="task nursing-task"><strong>${text(title)}</strong>${detail?`<span>${text(detail)}</span>`:''}</div>`;
+        document.getElementById('weekly-intro-nursing').textContent = 'These are the focused next steps Madison has selected for your current unit.';
+        document.getElementById('daily-priorities-nursing').innerHTML = daily.map(item => {
+          const title  = typeof item === 'string' ? item : (item.title || item.task || 'Study priority');
+          const detail = typeof item === 'object'  ? (item.detail || item.description || '') : '';
+          return `<div class="task nursing-task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
         }).join('');
       }
 
-      // Upcoming exam card — show date + any resources flagged as exam topics
+      // Upcoming exam card
       if (student.exam_date) {
-        const formatted=new Date(`${student.exam_date}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-        const examRes=resources.filter(r=>r.resource_type==='exam_topic'||(r.note&&r.note.toLowerCase().includes('exam')));
-        let html=`<p style="font-size:.95rem;font-weight:700;color:var(--teal);margin:0 0 10px">${text(formatted)}</p>`;
+        const formatted = new Date(`${student.exam_date}T12:00:00`).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+        const examRes   = resources.filter(r => r.resource_type === 'exam_topic');
+        let html = `<p style="font-size:.95rem;font-weight:700;color:var(--teal);margin:0 0 10px">${text(formatted)}</p>`;
         if (examRes.length) {
-          html+=`<p style="font-size:.82rem;color:var(--muted);margin:0 0 8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Topics to focus on</p>`;
-          html+=examRes.map(r=>`<p style="margin:4px 0;font-size:.85rem;color:var(--ink)">${text(r.title)}${r.note?` — <span style="color:var(--muted)">${text(r.note)}</span>`:''}</p>`).join('');
+          html += `<p style="font-size:.78rem;color:var(--muted);margin:0 0 8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Topics to focus on</p>`;
+          html += examRes.map(r =>
+            `<p style="margin:4px 0;font-size:.85rem;color:var(--ink)">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`
+          ).join('');
         }
-        document.getElementById('exam-info-nursing').innerHTML=html;
+        document.getElementById('exam-info-nursing').innerHTML = html;
       }
 
-      // Practice shortcut — surface assigned practice_set resources prominently
-      const practiceSets=resources.filter(r=>r.resource_type==='practice_set');
+      // ── Practice sets — ONLY in the practice card ──
+      const practiceSets = resources.filter(r => r.resource_type === 'practice_set');
       if (practiceSets.length) {
-        document.getElementById('practice-shortcut-nursing').innerHTML=practiceSets.map(ps=>
-          `<div style="margin-bottom:12px;padding:16px;background:var(--teal-light);border:1px solid var(--teal-sage)"><strong style="font-size:.9rem;display:block;margin-bottom:5px">${text(ps.title)}</strong>${ps.note?`<span style="font-size:.8rem;color:var(--muted);display:block;margin-bottom:10px">${text(ps.note)}</span>`:''}${ps.url?`<a href="${text(ps.url)}" target="_blank" rel="noopener" style="font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor">Open practice quiz →</a>`:''}</div>`
+        document.getElementById('practice-shortcut-nursing').innerHTML = practiceSets.map(ps => `
+          <div class="practice-item">
+            <span class="practice-item-meta">Practice set</span>
+            <span class="practice-item-title">${text(ps.title)}</span>
+            ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
+            ${ps.url  ? `<a class="practice-item-open" href="${text(/^NUR 312\b/i.test(ps.title||'') ? 'supplemental-practice.html?set=jack-nur312-exam1' : ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
+          </div>`
         ).join('');
       }
 
-      // Study resources — show all non-practice_set resources; fall back to all if none
-      const studyRes=resources.filter(r=>r.resource_type!=='practice_set');
-      renderResources(studyRes.length?studyRes:resources,'resources-nursing');
+      // ── Study resources — everything EXCEPT practice_set, student_upload, exam_topic ──
+      const studyRes = resources.filter(r =>
+        r.resource_type !== 'practice_set' &&
+        r.resource_type !== 'student_upload' &&
+        r.resource_type !== 'exam_topic'
+      );
+      if (studyRes.length) {
+        document.getElementById('resources-nursing').innerHTML = studyRes.map(item =>
+          `<article class="resource">
+            <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
+            <h3>${text(item.title)}</h3>
+            ${item.note ? `<p>${text(item.note)}</p>` : ''}
+            ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+          </article>`
+        ).join('');
+      }
 
-      // Recent quiz scores from student_supplemental_practice_results
-      if (practiceResults&&practiceResults.length) {
-        document.getElementById('progress-nursing').innerHTML=practiceResults.slice(0,3).map(r=>{
-          const pct=Math.round((r.score/r.total_questions)*100);
-          const cls=pct>=75?'score-good':pct>=60?'score-ok':'score-needs';
-          const date=new Date(r.completed_at).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-          return `<div class="progress-item"><strong class="${cls}">${pct}%</strong><span>${text(r.practice_title)}<br>${r.score}/${r.total_questions} correct · ${date}</span></div>`;
+      // Student uploads
+      loadStudentUploads(student.id);
+
+      // Recent quiz scores
+      if (practiceResults && practiceResults.length) {
+        document.getElementById('progress-nursing').innerHTML = practiceResults.slice(0, 3).map(r => {
+          const pct  = Math.round((r.score / r.total_questions) * 100);
+          const cls  = pct >= 75 ? 'score-good' : pct >= 60 ? 'score-ok' : 'score-needs';
+          const date = new Date(r.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+          return `<div class="progress-item">
+            <strong class="${cls}">${pct}%</strong>
+            <span>${text(r.practice_title)}<br>${r.score}/${r.total_questions} correct · ${date}</span>
+          </div>`;
         }).join('');
       }
 
-      // Class modules / study guides
-      renderModulesInto('modules-nursing',catalog,access);
+      // Class modules
+      renderModulesInto('modules-nursing', catalog, access);
       document.getElementById('portal-nursing').classList.remove('hidden');
     }
 
-
-    // ── My Classes ───────────────────────────────────────────────────────────────────────────
-
-    let studentCourses = [];
-    let currentStudentId = null;
-    let currentAuthUid = null;
-
-    async function loadClasses(studentId) {
-      const {data:courses} = await db.from('student_courses')
-        .select('*').eq('student_id', studentId).eq('active', true).order('created_at');
-      const {data:exams} = await db.from('course_exams')
-        .select('*').eq('active', true).order('exam_date');
-      studentCourses = (courses||[]).map(c => ({
-        ...c,
-        exams: (exams||[]).filter(e => e.student_course_id === c.id)
-      }));
-      renderClasses(studentId);
-      populateCourseSelect();
+    // ── Should we show onboarding? ────────────────────────────────────
+    function shouldShowOnboarding(student, isPreview) {
+      if (isPreview) return false;
+      try {
+        if (localStorage.getItem(OB_KEY + student.id)) return false;
+        if (sessionStorage.getItem(OB_KEY + student.id)) return false;
+      } catch(e) {}
+      // Show only if BOTH course_name AND exam_date are missing (truly first login)
+      if (student.course_name || student.exam_date) return false;
+      return true;
     }
 
-    function renderClasses(studentId) {
-      const el = document.getElementById('class-list-nursing');
-      if (!studentCourses.length) {
-        el.innerHTML = '<p class="empty">No classes added yet. Click "Add a class" to get started.</p>';
-        return;
-      }
-      el.innerHTML = '<div class="class-list">' + studentCourses.map(c => {
-        const examsHtml = c.exams.length ? '<div class="class-exam-list">' + c.exams.map(ex => {
-          const days = Math.ceil((new Date(ex.exam_date+'T12:00:00') - new Date()) / 86400000);
-          const daysStr = days > 0 ? `${days}d away` : days === 0 ? 'Today!' : 'Past';
-          return `<div class="class-exam">
-            <span class="class-exam-name">${text(ex.exam_name)}</span>
-            <span class="class-exam-date">${new Date(ex.exam_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
-            <span class="class-exam-days">${daysStr}</span>
-          </div>`;
-        }).join('') + '</div>' : '<p class="empty" style="padding:8px 0;font-size:.8rem">No exams added yet.</p>';
-
-        const filesHtml = `<div id="files-${c.id}"><p class="empty" style="font-size:.78rem;padding:6px 0">Loading materials…</p></div>`;
-
-        return `<div class="class-card">
-          <div class="class-card-head">
-            <div><h3>${text(c.course_name)}</h3>${c.term_label?`<span style="font-size:.75rem;color:var(--muted)">${text(c.term_label)}${c.school_name?' · '+text(c.school_name):''}</span>`:''}
-            </div>
-            <label class="upload-btn" style="cursor:pointer">
-              📎 Upload material
-              <input type="file" accept=".pdf,.doc,.docx,.pptx,.txt,.png,.jpg" style="display:none" onchange="handleUpload(event,'${c.id}')">
-            </label>
-          </div>
-          ${examsHtml}
-          ${filesHtml}
-        </div>`;
-      }).join('') + '</div>';
-
-      // Load files for each class
-      studentCourses.forEach(c => loadFiles(c.id));
-    }
-
-    async function loadFiles(courseId) {
-      if (!currentAuthUid) return;
-      const path = `${currentAuthUid}/${courseId}/`;
-      const {data:files} = await db.storage.from('student-materials').list(path.replace(/\/$/, ''), {limit:20});
-      const el = document.getElementById(`files-${courseId}`);
-      if (!el) return;
-      if (!files||!files.length) { el.innerHTML = '<p class="empty" style="font-size:.78rem;padding:6px 0">No materials uploaded yet.</p>'; return; }
-      el.innerHTML = '<div class="file-list">' + files.map(f => {
-        const {data:{publicUrl}} = db.storage.from('student-materials').getPublicUrl(path+f.name);
-        const signedUrl = `#file-${f.name}`; // will use signed URL on click
-        return `<div class="file-item"><a href="#" onclick="openFile('${currentAuthUid}','${courseId}','${f.name}');return false">📄 ${text(f.name)}</a><span style="color:var(--muted);font-size:.72rem">${(f.metadata?.size/1024).toFixed(0)} KB</span></div>`;
-      }).join('') + '</div>';
-    }
-
-    async function openFile(uid, courseId, name) {
-      const {data} = await db.storage.from('student-materials').createSignedUrl(`${uid}/${courseId}/${name}`, 3600);
-      if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-    }
-
-    async function handleUpload(event, courseId) {
-      if (!currentAuthUid) return;
-      const file = event.target.files[0];
-      if (!file) return;
-      const path = `${currentAuthUid}/${courseId}/${file.name}`;
-      const btn = event.target.closest('label');
-      const origText = btn.textContent.trim();
-      btn.textContent = 'Uploading…';
-      const {error} = await db.storage.from('student-materials').upload(path, file, {upsert:true});
-      btn.innerHTML = '📎 Upload material<input type="file" accept=".pdf,.doc,.docx,.pptx,.txt,.png,.jpg" style="display:none" onchange="handleUpload(event,'' + courseId + '')">';
-      if (!error) loadFiles(courseId);
-      else alert('Upload failed — please try again.');
-    }
-
-    function populateCourseSelect() {
-      const sel = document.getElementById('exam-course-select');
-      if (!sel) return;
-      sel.innerHTML = '<option value="">Select a class…</option>' +
-        studentCourses.map(c => `<option value="${c.id}">${text(c.course_name)}</option>`).join('');
-    }
-
-    function initClassModal(studentId) {
-      const modal = document.getElementById('class-modal');
-      document.getElementById('add-class-btn').addEventListener('click', () => {
-        modal.classList.remove('hidden');
-      });
-      document.getElementById('class-modal-close').addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
-      modal.addEventListener('click', e => { if (e.target===modal) modal.classList.add('hidden'); });
-
-      // Tabs
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          document.getElementById('tab-class').style.display = tab.dataset.tab==='class' ? '' : 'none';
-          document.getElementById('tab-exam').style.display  = tab.dataset.tab==='exam'  ? '' : 'none';
-        });
-      });
-
-      // Add class form
-      document.getElementById('add-class-form').addEventListener('submit', async e => {
-        e.preventDefault();
-        const btn = document.getElementById('add-class-submit');
-        btn.textContent = 'Saving…'; btn.disabled = true;
-        const courseKey = document.getElementById('new-course-name').value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40);
-        const {error} = await db.from('student_courses').insert({
-          student_id: studentId,
-          course_key: courseKey,
-          course_name: document.getElementById('new-course-name').value.trim(),
-          school_name: document.getElementById('new-school-name').value.trim()||null,
-          term_label:  document.getElementById('new-term-label').value.trim()||null,
-          active: true
-        });
-        if (error) { btn.textContent = 'Error — try again'; btn.disabled = false; return; }
-        modal.classList.add('hidden');
-        document.getElementById('add-class-form').reset();
-        btn.textContent = 'Add class'; btn.disabled = false;
-        await loadClasses(studentId);
-      });
-
-      // Add exam form
-      document.getElementById('add-exam-form').addEventListener('submit', async e => {
-        e.preventDefault();
-        const btn = document.getElementById('add-exam-submit');
-        btn.textContent = 'Saving…'; btn.disabled = true;
-        const courseId = document.getElementById('exam-course-select').value;
-        const examName = document.getElementById('new-exam-name').value.trim();
-        const examKey  = examName.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40)+'-'+Date.now();
-        const {error} = await db.from('course_exams').insert({
-          student_course_id: courseId,
-          exam_key:   examKey,
-          exam_name:  examName,
-          exam_date:  document.getElementById('new-exam-date').value,
-          total_points: parseInt(document.getElementById('new-exam-points').value)||null,
-          notes:      document.getElementById('new-exam-notes').value.trim()||null,
-          active: true
-        });
-        if (error) { btn.textContent = 'Error — try again'; btn.disabled = false; return; }
-        modal.classList.add('hidden');
-        document.getElementById('add-exam-form').reset();
-        btn.textContent = 'Add exam'; btn.disabled = false;
-        await loadClasses(studentId);
-      });
-    }
-
-    // ── Main init ────────────────────────────────────────────────────────────────────────────
-
+    // ── Main init ─────────────────────────────────────────────────────
     async function init() {
-      const {data:{session}}=await db.auth.getSession();
-      if (!session){location.replace('student-login.html');return}
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { location.replace('student-login.html'); return; }
 
-      const previewStudent=new URLSearchParams(location.search).get('previewStudent');
-      const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      const previewStudent = new URLSearchParams(location.search).get('previewStudent');
+      const { data: admin } = await db.from('app_admins').select('user_id').eq('user_id', session.user.id).maybeSingle();
 
-      let student,error,isPreview=false;
-      if (admin&&previewStudent) {
-        const r=await db.from('students').select('id,name,nclex_target_date,exam_date,portal_stage,student_type').eq('id',previewStudent).maybeSingle();
-        student=r.data;error=r.error;isPreview=!!student;
+      let student, error, isPreview = false;
+      if (admin && previewStudent) {
+        const r = await db.from('students')
+          .select('id,name,nclex_target_date,exam_date,portal_stage,student_type,course_name')
+          .eq('id', previewStudent).maybeSingle();
+        student = r.data; error = r.error; isPreview = !!student;
       } else {
-        const r=await db.from('students').select('id,name,nclex_target_date,exam_date,portal_stage,student_type').eq('auth_user_id',session.user.id).maybeSingle();
-        student=r.data;error=r.error;
+        const r = await db.from('students')
+          .select('id,name,nclex_target_date,exam_date,portal_stage,student_type,course_name')
+          .eq('auth_user_id', session.user.id).maybeSingle();
+        student = r.data; error = r.error;
       }
 
-      if (error||!student){await db.auth.signOut();location.replace('student-login.html');return}
-      if (student.portal_stage==='assessment'&&!isPreview){location.replace('assessment-dashboard.html');return}
+      if (error || !student) { await db.auth.signOut(); location.replace('student-login.html'); return; }
+      if (student.portal_stage === 'assessment' && !isPreview) { location.replace('assessment-dashboard.html'); return; }
+
+      _student = student;
 
       if (isPreview) {
-        document.getElementById('preview-label').textContent='Previewing as '+(student.name||'this student')+'. This uses the same assignments and dashboard logic as the student login.';
-        document.getElementById('preview-back').href='shared-progress.html?student='+encodeURIComponent(student.id);
-        document.getElementById('preview-banner').style.display='block';
+        document.getElementById('preview-label').textContent = 'Previewing as ' + (student.name || 'this student') + '. This uses the same assignments and dashboard logic as the student login.';
+        document.getElementById('preview-back').href = 'shared-progress.html?student=' + encodeURIComponent(student.id);
+        document.getElementById('preview-banner').style.display = 'block';
       }
 
-      const isNursing=student.student_type==='nursing_student';
-      currentStudentId=student.id;
-      currentAuthUid=session.user.id;
+      const isNursing = student.student_type === 'nursing_student';
 
-      // Fetch shared data + practice results for nursing students
-      const fetches=[
-        db.from('student_study_plans').select('*').eq('student_id',student.id).order('updated_at',{ascending:false}).limit(1),
-        db.from('student_resources').select('*').eq('student_id',student.id).order('due_on',{ascending:true}),
+      const fetches = [
+        db.from('student_study_plans').select('*').eq('student_id', student.id).order('updated_at', { ascending: false }).limit(1),
+        db.from('student_resources').select('*').eq('student_id', student.id).order('due_on', { ascending: true }),
         db.from('modules').select('*').order('module_number'),
-        db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),
+        db.from('student_module_access').select('module_key,enabled').eq('student_id', student.id),
       ];
       if (isNursing) {
         fetches.push(
           db.from('student_supplemental_practice_results')
             .select('practice_key,practice_title,score,total_questions,completed_at')
-            .eq('student_id',student.id)
-            .order('completed_at',{ascending:false})
+            .eq('student_id', student.id)
+            .order('completed_at', { ascending: false })
             .limit(6)
         );
       }
 
-      const results=await Promise.all(fetches);
-      const [plans,resources,catalog,access,practiceRes]=results;
-
-      if (isNursing) {
-        renderNursing(student,plans.data||[],resources.data||[],catalog.data||[],access.data||[],practiceRes?practiceRes.data||[]:[],isPreview);
-        await loadClasses(student.id);
-        initClassModal(student.id);
-      } else {
-        renderNclex(student,plans.data||[],resources.data||[],catalog.data||[],access.data||[]);
-      }
+      const results = await Promise.all(fetches);
+      const [plans, resources, catalog, access, practiceRes] = results;
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
+
+      if (isNursing) {
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview);
+        // Show onboarding modal only on true first login (never in preview)
+        if (!isPreview && shouldShowOnboarding(student, false)) {
+          document.getElementById('onboarding-modal').classList.remove('hidden');
+        }
+      } else {
+        renderNclex(student, plans.data || [], resources.data || [], catalog.data || [], access.data || []);
+      }
     }
 
-    document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+    document.getElementById('sign-out').addEventListener('click', async () => {
+      await db.auth.signOut();
+      location.replace('student-login.html');
+    });
+
     init();
   </script>
 </body>
