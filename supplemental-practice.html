@@ -810,7 +810,9 @@
       const courseKey=params.get('course');
       const examKey=params.get('exam');
 
-      if(courseKey&&examKey){
+      if(courseKey==='nur312'&&examKey==='exam1'){
+        startSet('jack-nur312-exam1');
+      }else if(courseKey&&examKey){
         await buildCourseExamPractice(courseKey,examKey);
       }else if([10,20,30,40].includes(mixedCount)){
         await buildMixedReview(mixedCount);
