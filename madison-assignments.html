@@ -91,8 +91,8 @@
     const clearNotice=()=>{$('notice').className='notice';$('notice').textContent=''};
     function selected(){return students.find(item=>item.id===$('student').value)}
     const assignmentKeys=['m1','m2','m7','core-safety-priority','core-medication-calculations','core-lifespan-reproductive','core-acute-systems','core-psych-judgment'];
-    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load this student’s existing module access. Please refresh and try again.','error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=false;$('mixed-review').checked=false;$('nur321-ob-exam1').checked=false;$('mixed-options').classList.add('hidden')}
-    async function save(){clearNotice();const student=selected();if(!student){show('Choose a student first.','error');return}const selectedKeys=assignmentKeys.filter(key=>$(key).checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));if(!requested.length&&!$('diagnostic').checked&&!$('mixed-review').checked&&!$('nur321-ob-exam1').checked){show('Choose at least one assignment.','error');return}const button=$('save');button.disabled=true;button.textContent='Saving…';try{if(requested.length){const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw catalogError;const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw error}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw findError;if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw error}}
+    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load module access for '+student.name+': '+(error.message||'unknown Supabase error'),'error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=false;$('mixed-review').checked=false;$('nur321-ob-exam1').checked=false;$('mixed-options').classList.add('hidden')}
+    async function save(){clearNotice();const student=selected();if(!student){show('Choose a student first.','error');return}const selectedKeys=assignmentKeys.filter(key=>$(key).checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));if(!requested.length&&!$('diagnostic').checked&&!$('mixed-review').checked&&!$('nur321-ob-exam1').checked){show('Choose at least one assignment before saving.','error');return}const button=$('save');button.disabled=true;button.textContent='Saving…';try{if(requested.length){const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw new Error('Module catalog save failed: '+catalogError.message);const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw new Error('Student module access save failed: '+error.message)}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
 
 if($('mixed-review').checked){
   const count=Number($('mixed-count').value)||20;
@@ -103,7 +103,7 @@ if($('mixed-review').checked){
     .eq('url',url)
     .limit(1);
 
-  if(findError)throw findError;
+  if(findError)throw new Error('Mixed review lookup failed: '+findError.message);
 
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
@@ -113,7 +113,7 @@ if($('mixed-review').checked){
       url,
       note:'Complete this mixed review before your next coaching session.'
     });
-    if(error)throw error;
+    if(error)throw new Error('Mixed review assignment failed: '+error.message);
   }
 }
 
@@ -125,7 +125,7 @@ if($('nur321-ob-exam1').checked){
     .eq('url',url)
     .limit(1);
 
-  if(findError)throw findError;
+  if(findError)throw new Error('NUR 321 practice lookup failed: '+findError.message);
 
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
@@ -135,7 +135,7 @@ if($('nur321-ob-exam1').checked){
       url,
       note:'Complete these 25 Exam 1 practice questions before your next coaching session.'
     });
-    if(error)throw error;
+    if(error)throw new Error('NUR 321 practice assignment failed: '+error.message);
   }
 }
 
@@ -232,9 +232,6 @@ show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error
     async function selectStudentFromQuery() {
       const requestedId = new URLSearchParams(location.search).get('student');
       if (!requestedId) return;
-      while (!$('loading').classList.contains('hidden')) {
-        await new Promise(resolve => setTimeout(resolve, 25));
-      }
       if (!students.some(item => item.id === requestedId)) {
         show('The requested student could not be found. Choose a student from the list.', 'error');
         return;
@@ -243,8 +240,9 @@ show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error
       await loadStudent();
     }
 
-    init();
-    selectStudentFromQuery();
+    init().then(selectStudentFromQuery).catch(error => {
+      show('Assignment page initialization failed: '+(error.message||'unknown error'),'error');
+    });
   </script>
 </body>
 </html>
