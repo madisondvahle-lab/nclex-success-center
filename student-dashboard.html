@@ -716,7 +716,7 @@
             <span class="practice-item-meta">Practice set</span>
             <span class="practice-item-title">${text(ps.title)}</span>
             ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
-            ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
+            ${ps.url  ? `<a class="practice-item-open" href="${text(/^NUR 312\b/i.test(ps.title||'') ? 'supplemental-practice.html?set=jack-nur312-exam1' : ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
           </div>`
         ).join('');
       }
