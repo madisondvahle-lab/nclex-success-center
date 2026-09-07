@@ -810,7 +810,8 @@
       const courseKey=params.get('course');
       const examKey=params.get('exam');
 
-      if(courseKey==='nur312'&&examKey==='exam1'){
+      const isJack=student?.name?.toLowerCase().includes('jack');
+      if(examKey==='exam1'&&(courseKey==='nur312'||(courseKey==='nur321-ob'&&isJack))){
         startSet('jack-nur312-exam1');
       }else if(courseKey&&examKey){
         await buildCourseExamPractice(courseKey,examKey);
