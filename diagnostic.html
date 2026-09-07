@@ -1247,6 +1247,7 @@ function QuizScreen({ profile, onFinish }) {
   const [catResult, setCatResult] = useState(null);
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
+  const isAssessment = profile.mode === "assessment";
 
   const q = currentQ;
   if(!q){ onFinish(history, catResult); return null; }
