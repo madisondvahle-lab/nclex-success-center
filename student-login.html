@@ -117,7 +117,7 @@
         .eq('user_id', user.id)
         .maybeSingle();
       if (admin) {
-        location.replace('madison-leads.html');
+        location.replace('madison-admin.html');
         return;
       }
       const { data: student, error } = await db
