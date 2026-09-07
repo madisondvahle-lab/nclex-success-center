@@ -12,12 +12,20 @@
     .brand{font:700 1.15rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.sign-out{border:0;background:transparent;color:var(--ink);font:800 .78rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
     main{padding:72px 0}.eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.7rem,7vw,4.7rem);line-height:1}
     .lead{max-width:620px;margin:19px 0 31px;color:var(--muted);font-size:1.02rem;line-height:1.65}.card{padding:28px;background:var(--paper);border:1px solid var(--line)}.card h2{margin:0 0 14px;font-size:1.75rem}.steps{display:grid;gap:1px;margin:18px 0 25px;background:var(--line)}.step{display:grid;grid-template-columns:31px 1fr;gap:12px;padding:16px;background:var(--paper)}.number{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#dce6dc;font-size:.75rem;font-weight:900}.step strong{display:block;font-size:.9rem}.step span{display:block;margin-top:4px;color:var(--muted);font-size:.82rem;line-height:1.45}
-    .button{display:inline-block;width:100%;padding:15px 18px;border:0;background:var(--ink);color:#fff;text-align:center;text-decoration:none;font:800 .92rem Inter,sans-serif;cursor:pointer}.button:hover{background:#294d68}.note{margin:19px 0 0;color:var(--muted);font-size:.78rem;line-height:1.55}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted)}
+    .button{display:inline-block;width:100%;padding:15px 18px;border:0;background:var(--ink);color:#fff;text-align:center;text-decoration:none;font:800 .92rem Inter,sans-serif;cursor:pointer}.button:hover{background:#294d68}.note{margin:19px 0 0;color:var(--muted);font-size:.78rem;line-height:1.55}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted)}.loading.error{padding:24px;text-align:center}.error-state{width:min(480px,100%)}.error-state h1{margin:0;font-size:clamp(2rem,6vw,3rem);line-height:1.05}.error-state p{margin:18px 0 25px;line-height:1.5}.error-sign-out{display:block;margin:17px auto 0;border:0;background:transparent;color:var(--ink);font:800 .85rem Inter,sans-serif;text-decoration:underline;cursor:pointer}
     @media(max-width:640px){.shell{width:min(100% - 28px,760px)}main{padding:45px 0}.card{padding:23px 19px}}
   </style>
 </head>
 <body>
-  <div class="loading" id="loading">Opening your readiness assessment…</div>
+  <div class="loading" id="loading">
+    <span id="loading-message">Opening your readiness assessment…</span>
+    <div id="error-state" hidden>
+      <h1>We couldn't open your readiness assessment.</h1>
+      <p>Please try again, or sign out and return to the student login.</p>
+      <button class="button" id="retry" type="button">Retry</button>
+      <button class="error-sign-out" id="error-sign-out" type="button">Sign out</button>
+    </div>
+  </div>
   <div class="shell" id="app" hidden>
     <header class="top"><span class="brand">Study With Madison <small>RN</small></span><button class="sign-out" id="sign-out" type="button">Sign out</button></header>
     <main>
@@ -38,17 +46,53 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    let db=null;
+    let initTimeout=null;
+    const loading=document.getElementById('loading');
+    const showError=()=>{
+      clearTimeout(initTimeout);
+      loading.classList.add('error');
+      document.getElementById('loading-message').hidden=true;
+      document.getElementById('error-state').hidden=false;
+    };
+    const redirectTo=(url)=>{
+      clearTimeout(initTimeout);
+      location.replace(url);
+    };
+    const signOutAndReturn=async()=>{
+      try{
+        if(db?.auth){
+          const {error}=await db.auth.signOut();
+          if(error) console.error('Sign out failed:',error);
+        }
+      }catch(error){
+        console.error('Sign out failed:',error);
+      }finally{
+        redirectTo('student-login.html');
+      }
+    };
     async function init(){
-      const {data:{session}}=await db.auth.getSession();
-      if(!session){location.replace('student-login.html');return}
-      const {data:student,error}=await db.from('students').select('name,portal_stage').eq('auth_user_id',session.user.id).maybeSingle();
-      if(error||!student){await db.auth.signOut();location.replace('student-login.html');return}
-      if(student.portal_stage!=='assessment'){location.replace('student-dashboard.html');return}
-      document.getElementById('welcome').textContent='Welcome, '+(student.name||'there').split(' ')[0]+'.';
-      document.getElementById('loading').hidden=true;document.getElementById('app').hidden=false;
+      initTimeout=setTimeout(showError,10000);
+      try{
+        if(!window.supabase||typeof window.supabase.createClient!=='function') throw new Error('Supabase client unavailable');
+        db=window.supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+        const {data:{session},error:sessionError}=await db.auth.getSession();
+        if(sessionError) throw sessionError;
+        if(!session){redirectTo('student-login.html');return}
+        const {data:student,error}=await db.from('students').select('name,portal_stage').eq('auth_user_id',session.user.id).maybeSingle();
+        if(error||!student){await db.auth.signOut();redirectTo('student-login.html');return}
+        if(student.portal_stage!=='assessment'){redirectTo('student-dashboard.html');return}
+        document.getElementById('welcome').textContent='Welcome, '+(student.name||'there').split(' ')[0]+'.';
+        clearTimeout(initTimeout);
+        loading.hidden=true;document.getElementById('app').hidden=false;
+      }catch(error){
+        console.error('Assessment dashboard initialization failed:',error);
+        showError();
+      }
     }
-    document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+    document.getElementById('retry').addEventListener('click',()=>location.reload());
+    document.getElementById('sign-out').addEventListener('click',signOutAndReturn);
+    document.getElementById('error-sign-out').addEventListener('click',signOutAndReturn);
     init();
   </script>
 </body>
