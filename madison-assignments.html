@@ -229,7 +229,22 @@ show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error
       document.getElementById('urow-' + resourceId)?.remove();
     };
 
+    async function selectStudentFromQuery() {
+      const requestedId = new URLSearchParams(location.search).get('student');
+      if (!requestedId) return;
+      while (!$('loading').classList.contains('hidden')) {
+        await new Promise(resolve => setTimeout(resolve, 25));
+      }
+      if (!students.some(item => item.id === requestedId)) {
+        show('The requested student could not be found. Choose a student from the list.', 'error');
+        return;
+      }
+      $('student').value = requestedId;
+      await loadStudent();
+    }
+
     init();
+    selectStudentFromQuery();
   </script>
 </body>
 </html>
