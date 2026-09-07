@@ -11,6 +11,7 @@
   <script src="diagnostic-question-expansion.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
   <script src="assessment-personalization.js"></script>
+  <script src="assessment-persistence.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -684,35 +685,32 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const SUPABASE_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
 
-async function saveInHouseAttempt(profile, history, ability, result) {
-  if (!window.supabase || !history.length) return;
+async function saveInHouseAttempt(profile, history, ability, result, sessionKey) {
+  if (!window.supabase || !history.length) throw new Error('Assessment persistence is unavailable');
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data: { session } } = await db.auth.getSession();
-  if (!session) return;
-  const { data: student } = await db.from('students').select('id').eq('auth_user_id', session.user.id).maybeSingle();
-  if (!student) return;
-  const correct = history.filter(entry => entry.correct).length;
-  const { data: attempt, error: attemptError } = await db.from('in_house_assessment_attempts').insert({
-    student_id: student.id,
-    mode: profile.mode,
+  return NCLEX_ASSESSMENT_PERSISTENCE.saveAttempt({
+    supabase: db,
+    sessionKey,
+    assessmentKey: profile.mode === 'assessment' ? 'readiness-assessment' : `diagnostic-${profile.mode}`,
+    assessmentTitle: profile.mode === 'assessment' ? 'NCLEX Readiness Assessment' : profile.name,
+    mode: profile.mode === 'assessment' ? 'practice' : profile.mode,
     result: result || null,
-    ability_estimate: Number(ability.toFixed(3)),
-    total_questions: history.length,
-    correct_questions: correct
-  }).select('id').single();
-  if (attemptError || !attempt) return;
-  const rows = history.map(entry => ({
-    attempt_id: attempt.id,
-    item_id: entry.id,
-    item_source: entry.source || 'nclex-success-center-original',
-    blueprint: entry.blueprint || null,
-    nclex_category: entry.nclexCategory || null,
-    topic: entry.topic || null,
-    cognitive_level: entry.cognitiveLevel || null,
-    difficulty: entry.difficulty,
-    is_correct: entry.correct
-  }));
-  await db.from('in_house_assessment_item_responses').insert(rows);
+    abilityEstimate: Number(ability.toFixed(3)),
+    responses: history.map(entry => ({
+      itemId: entry.id,
+      itemSource: entry.source || 'nclex-success-center-original',
+      blueprint: entry.blueprint || null,
+      nclexCategory: entry.nclexCategory || null,
+      system: entry.system || null,
+      topic: entry.topic || null,
+      cognitiveLevel: entry.cognitiveLevel || null,
+      difficulty: entry.difficulty,
+      questionType: entry.type || null,
+      selectedAnswer: entry.selectedAnswer,
+      correctAnswer: entry.correctAnswer,
+      isCorrect: entry.correct
+    }))
+  });
 }
 
 function itemProbability(ability, difficulty) {
@@ -1127,7 +1125,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
 const lbl={ fontSize:12, fontWeight:700, color:"#475569", letterSpacing:0.5, textTransform:"uppercase", display:"block", marginBottom:6 };
 
 // ─── RESULTS SCREEN ───────────────────────────────────────────────────────────
-function ResultsScreen({ profile, history, catResult, onRestart }) {
+function ResultsScreen({ profile, history, ability, catResult, sessionKey, onRestart }) {
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
   const isAssessment = profile.mode==="assessment";
@@ -1139,6 +1137,21 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
   history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
   const coveredCore = new Set(history.flatMap(h=>h.coreTags||[]));
   const missingCore = CORE_REQUIREMENTS.filter(requirement=>!coveredCore.has(requirement.key));
+  const [saveState, setSaveState] = useState({ status:"saving", attemptId:null, error:null });
+  const savePayload = { profile, history, ability, result: catResult };
+  useEffect(() => {
+    let active = true;
+    saveInHouseAttempt(savePayload.profile, savePayload.history, savePayload.ability, savePayload.result, sessionKey)
+      .then(attemptId => { if (active) setSaveState({ status:"saved", attemptId, error:null }); })
+      .catch(error => { if (active) setSaveState({ status:"failed", attemptId:null, error:error.message || "Unable to save this result." }); });
+    return () => { active = false; };
+  }, []);
+  const retrySave = () => {
+    setSaveState({ status:"saving", attemptId:null, error:null });
+    saveInHouseAttempt(savePayload.profile, savePayload.history, savePayload.ability, savePayload.result, sessionKey)
+      .then(attemptId => setSaveState({ status:"saved", attemptId, error:null }))
+      .catch(error => setSaveState({ status:"failed", attemptId:null, error:error.message || "Unable to save this result." }));
+  };
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
@@ -1147,6 +1160,10 @@ function ResultsScreen({ profile, history, catResult, onRestart }) {
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"Adaptive NCLEX Mock CAT Complete":isAssessment?"Readiness Assessment Complete":"Practice Session Complete"}</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
+        </div>
+        <div style={{ background:saveState.status==="saved"?"#f0fdf4":"#fff7ed", border:`1px solid ${saveState.status==="saved"?"#86efac":"#fdba74"}`, borderRadius:10, padding:"12px 15px", marginBottom:20, fontSize:13, color:saveState.status==="saved"?"#166534":"#9a3412" }}>
+          {saveState.status==="saved" ? `✓ Result saved (attempt ${saveState.attemptId}).` : saveState.status==="saving" ? "Saving your result…" : `Your result is shown above, but saving failed: ${saveState.error}`}
+          {saveState.status==="failed" && <button onClick={retrySave} style={{ marginLeft:10, border:0, background:"transparent", color:"#9a3412", textDecoration:"underline", fontWeight:700, cursor:"pointer" }}>Retry save</button>}
         </div>
 
         {/* Score Ring */}
@@ -1234,8 +1251,7 @@ function QuizScreen({ profile, onFinish }) {
   const q = currentQ;
   if(!q){ onFinish(history, catResult); return null; }
   function finishSession(records, result, abilityEstimate=ability) {
-    saveInHouseAttempt(profile, records, abilityEstimate, result).catch(() => {});
-    onFinish(records, result);
+    onFinish(records, result, abilityEstimate);
   }
 
   const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
@@ -1250,14 +1266,16 @@ function QuizScreen({ profile, onFinish }) {
   }
 
   function calcCorrect() {
-    if(q.type==="mcq") return selected[0]===q.correct[0];
-    if(q.type==="sata") return [...selected].sort().join(",")===q.correct.slice().sort().join(",");
+    if(q.type==="mcq") return NCLEX_ASSESSMENT_PERSISTENCE.answersEqual(selected[0], q.correct[0]);
+    if(q.type==="sata") return NCLEX_ASSESSMENT_PERSISTENCE.answersEqual(selected, q.correct);
     if(q.type==="bowtie") {
-      return [...(btState.left||[])].sort().join(",")===q.correctLeft.slice().sort().join(",")&&
-             [...(btState.center||[])].sort().join(",")===q.correctCenter.slice().sort().join(",")&&
-             [...(btState.right||[])].sort().join(",")===q.correctRight.slice().sort().join(",");
+      return NCLEX_ASSESSMENT_PERSISTENCE.answersEqual(btState, {
+        left:q.correctLeft,
+        center:q.correctCenter,
+        right:q.correctRight
+      });
     }
-    if(q.type==="casestudy") return q.questions.every(sq=>[...(csAnswers[sq.qid]||[])].sort().join(",")===sq.correct.slice().sort().join(","));
+    if(q.type==="casestudy") return q.questions.every(sq=>NCLEX_ASSESSMENT_PERSISTENCE.answersEqual(csAnswers[sq.qid] || null, sq.correct));
     return false;
   }
 
@@ -1272,9 +1290,18 @@ function QuizScreen({ profile, onFinish }) {
           id:`${q.id}:${sub.qid}`,
           type:sub.type,
           stem:sub.stem,
-          correct:[...(csAnswers[sub.qid]||[])].sort().join(",")===sub.correct.slice().sort().join(",")
+          selectedAnswer:csAnswers[sub.qid] || null,
+          correctAnswer:sub.correct,
+          correct:NCLEX_ASSESSMENT_PERSISTENCE.answersEqual(csAnswers[sub.qid] || null, sub.correct)
         }))
-      : [{ id:q.id, type:q.type, stem:q.stem||null, correct:calcCorrect() }];
+      : [{
+          id:q.id,
+          type:q.type,
+          stem:q.stem||null,
+          selectedAnswer:q.type==="mcq" ? selected[0] : q.type==="sata" ? selected : q.type==="bowtie" ? btState : null,
+          correctAnswer:q.type==="mcq" ? q.correct[0] : q.type==="sata" ? q.correct : q.type==="bowtie" ? { left:q.correctLeft, center:q.correctCenter, right:q.correctRight } : null,
+          correct:calcCorrect()
+        }];
 
     let newAbility = ability;
     const newRecords = caseOutcomes.map(outcome => {
@@ -1291,6 +1318,8 @@ function QuizScreen({ profile, onFinish }) {
         topic:q.topic || null,
         cognitiveLevel:q.cognitiveLevel || null,
         stem:outcome.stem,
+        selectedAnswer:outcome.selectedAnswer,
+        correctAnswer:outcome.correctAnswer,
         correct:outcome.correct
       };
     });
@@ -1427,10 +1456,18 @@ function App() {
   const [profile, setProfile] = useState(null);
   const [finalHistory, setFinalHistory] = useState([]);
   const [catResult, setCatResult] = useState(null);
+  const [finalAbility, setFinalAbility] = useState(0.5);
+  const [finalSessionKey, setFinalSessionKey] = useState(null);
 
   if(screen==="profile") return <ProfileScreen assessmentProfile={assessmentProfile} assessmentLoading={assessmentLoading} onStart={p=>{ setProfile(p); setScreen("quiz"); }} />;
-  if(screen==="quiz") return <QuizScreen profile={profile} onFinish={(h,r)=>{ setFinalHistory(h); setCatResult(r); setScreen("results"); }} />;
-  if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} catResult={catResult} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setScreen("profile"); }} />;
+  if(screen==="quiz") return <QuizScreen profile={profile} onFinish={(h,r,a)=>{
+    setFinalHistory(h);
+    setCatResult(r);
+    setFinalAbility(a);
+    setFinalSessionKey(globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `assessment-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    setScreen("results");
+  }} />;
+  if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} ability={finalAbility} catResult={catResult} sessionKey={finalSessionKey} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setFinalAbility(0.5); setFinalSessionKey(null); setScreen("profile"); }} />;
 }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
