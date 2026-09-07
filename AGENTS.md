@@ -35,3 +35,15 @@ Historical commits may contain recoverable content but are NOT authoritative for
 
 ## Handoff
 For substantial unfinished work, create or update the appropriate file in `.agents/tasks/` so another AI or human can continue without reconstructing the project from scratch.
+
+## Deployment source of truth
+- The live portal domain is `portal.studywithmadison.com`.
+- DNS and response headers currently identify GitHub Pages (`madisondvahle-lab.github.io`, `server: GitHub.com`).
+- GitHub Pages deploys from the repository `main` branch and repository root.
+- Netlify and Cloudflare Pages are not the active web host for this portal. Do not recommend purging their caches unless the hosting configuration is intentionally changed and verified.
+- Use a cache-busting query parameter only to verify a newly published source; it does not replace committing and pushing the fix to `main`.
+
+## Multi-assistant workflow
+- Before changing deployment or authentication, read this file and `.agents/PROJECT.md`.
+- Preserve the deployment facts above in future handoffs so Claude, ChatGPT, and Copilot do not infer a different host from an old conversation.
+- The repository files are the shared source of truth; other assistants will only use these instructions when their workflow loads `AGENTS.md` or they are explicitly told to read it.
