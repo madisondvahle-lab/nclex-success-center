@@ -44,16 +44,27 @@
       </section>
     </main>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.__assessmentRenderError=()=>{
+      clearTimeout(window.__assessmentCdnWatchdog);
+      document.getElementById('loading').classList.add('error');
+      document.getElementById('loading-message').hidden=true;
+      document.getElementById('error-state').hidden=false;
+    };
+    window.__assessmentCdnError=()=>{
+      window.__assessmentCdnFailed=true;
+      window.__assessmentRenderError();
+    };
+    window.__assessmentCdnWatchdog=setTimeout(window.__assessmentCdnError,10000);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="clearTimeout(window.__assessmentCdnWatchdog)" onerror="window.__assessmentCdnError()"></script>
   <script>
     let db=null;
     let initTimeout=null;
     const loading=document.getElementById('loading');
     const showError=()=>{
       clearTimeout(initTimeout);
-      loading.classList.add('error');
-      document.getElementById('loading-message').hidden=true;
-      document.getElementById('error-state').hidden=false;
+      window.__assessmentRenderError();
     };
     const redirectTo=(url)=>{
       clearTimeout(initTimeout);
@@ -93,7 +104,7 @@
     document.getElementById('retry').addEventListener('click',()=>location.reload());
     document.getElementById('sign-out').addEventListener('click',signOutAndReturn);
     document.getElementById('error-sign-out').addEventListener('click',signOutAndReturn);
-    init();
+    if(window.__assessmentCdnFailed) showError(); else init();
   </script>
 </body>
 </html>
