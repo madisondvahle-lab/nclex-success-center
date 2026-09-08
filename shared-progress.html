@@ -89,6 +89,23 @@
       line-height:1.6;
     }
 
+    .coach-snapshot{border-top:0;margin-top:18px;padding-top:0}
+    .coach-snapshot-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:14px}
+    .coach-panel h3{margin:0 0 10px;font-size:.95rem}
+    .coach-weak-list,.coach-feed,.coach-assign-list{display:grid;gap:8px}
+    .coach-weak-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--soft);border-left:4px solid var(--rose)}
+    .coach-weak-row.repeated{border-left-color:#b04e61}
+    .coach-weak-row h4{margin:0;font-size:.9rem;line-height:1.25}
+    .coach-weak-row .muted{margin-top:4px;font-size:.76rem}
+    .coach-weak-row strong{font:400 1.3rem Georgia,serif;white-space:nowrap}
+    .miss-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#f7e5e3;color:#b04e61;font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+    .coach-feed-row,.coach-assign-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 12px;background:var(--soft);font-size:.8rem}
+    .coach-feed-row .feed-label{color:var(--ink);font-weight:700}
+    .coach-feed-row .feed-meta{color:var(--muted);font-size:.72rem;white-space:nowrap}
+    .coach-assign-row .status-ok{color:#315c46;font-weight:800}
+    .coach-assign-row .status-none{color:#b04e61;font-weight:800}
+    @media(max-width:760px){.coach-snapshot-grid{grid-template-columns:1fr}}
+
   </style>
 </head>
 <body>
@@ -97,6 +114,7 @@
     <header class="top"><span class="brand">Study With Madison <small>RN</small></span><div class="actions"><a class="link" id="back" href="student-dashboard.html">My dashboard</a><button class="sign-out" id="sign-out">Sign out</button></div></header>
     <section class="hero"><p class="eyebrow" id="role-label">Shared coaching workspace</p><h1 id="title">Your assessment progress.</h1><p id="intro"></p><select class="student-picker" id="student-picker" aria-label="Choose a student"></select></section>
     <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Target NCLEX date</span></article><article class="stat"><strong>—</strong><span>Average report score</span></article><article class="stat"><strong>—</strong><span>Uploaded reports</span></article><article class="stat"><strong>—</strong><span>Shared focus areas</span></article></section>
+    <section class="coach-only coach-snapshot" id="coach-snapshot"><article class="card"><div class="card-head"><div><p class="eyebrow">Session prep</p><h2>Next-session snapshot</h2></div><span class="label">Tutor only</span></div><p class="muted">Pulls together portal assessments, supplemental practice, uploaded reports, and module assignments for the selected student.</p><div class="coach-snapshot-grid"><div class="coach-panel"><h3>Next-session focus · weakest areas</h3><div class="coach-weak-list" id="coach-weak-list"><p class="empty">Loading…</p></div></div><div class="coach-panel"><h3>Assignments status</h3><div class="coach-assign-list" id="coach-assign-list"><p class="empty">Loading…</p></div></div></div><div class="coach-panel" style="margin-top:18px"><h3>Recent activity</h3><div class="coach-feed" id="coach-activity-feed"><p class="empty">Loading…</p></div></div><p class="muted" id="coach-snapshot-error" role="status"></p></article></section>
     <section class="card hidden" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><p class="muted" style="margin:16px 0 0"><a class="link" id="manage-access" href="madison-assignments.html">Manage access &amp; assignments →</a> <span aria-hidden="true">·</span> <a class="link" id="preview-student" href="student-dashboard.html">View as student →</a></p></section>
     <section class="grid">
       <article class="card full hidden" id="client-needs-card"><div class="card-head"><div><p class="eyebrow">UWorld Client Needs</p><h2>Your study-category snapshot</h2></div><span class="label">Shared view</span></div><p class="client-needs-copy" id="client-needs-source"></p><div class="client-needs-grid" id="client-needs"></div><p class="client-needs-copy" style="margin:16px 0 0"></p></article>
@@ -140,7 +158,7 @@
       );
     }
 
-    function renderSummary(items,uploads){
+    function renderSummary(items,uploads,extraScores){
       const target=$('summary');
       const scored=uploads
         .filter(isProgressAssessment)
@@ -149,9 +167,17 @@
         .filter(item=>Number.isFinite(item.score))
         .sort((a,b)=>assessmentDate(a)-assessmentDate(b));
 
-      const latest=scored.length?scored[scored.length-1]:null;
-      const previous=scored.length>1?scored[scored.length-2]:null;
-      const best=scored.length?Math.max(...scored.map(item=>item.score)):null;
+      const portal=isAdmin?(extraScores||[])
+        .map(item=>({score:Number(item.score),date:item.date?new Date(item.date):new Date(0)}))
+        .filter(item=>Number.isFinite(item.score)):[];
+      const combined=scored
+        .map(item=>({score:item.score,date:assessmentDate(item)}))
+        .concat(portal)
+        .sort((a,b)=>a.date-b.date);
+
+      const latest=combined.length?combined[combined.length-1]:null;
+      const previous=combined.length>1?combined[combined.length-2]:null;
+      const best=combined.length?Math.max(...combined.map(item=>item.score)):null;
       const change=latest&&previous?Math.round(latest.score-previous.score):null;
 
       const targetDate=student&&student.nclex_target_date
@@ -285,6 +311,144 @@
       }).join('');
     }
 
+    const fmtDateTime=value=>{
+      const parsed=new Date(value);
+      return isNaN(parsed)?'':new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(parsed);
+    };
+
+    function buildPortalScores(attempts,practice){
+      const fromAttempts=(attempts||[]).map(item=>{
+        const total=Number(item.total_questions),correct=Number(item.correct_questions);
+        if(!Number.isFinite(total)||total<=0||!Number.isFinite(correct))return null;
+        return {score:correct/total*100,date:item.completed_at||item.created_at};
+      }).filter(Boolean);
+      const fromPractice=(practice||[]).map(item=>{
+        const total=Number(item.total_questions),score=Number(item.score);
+        if(!Number.isFinite(total)||total<=0||!Number.isFinite(score))return null;
+        return {score:score/total*100,date:item.completed_at};
+      }).filter(Boolean);
+      return fromAttempts.concat(fromPractice);
+    }
+
+    function renderCoachSnapshot(payload){
+      if(!isAdmin)return;
+      const attempts=payload.attempts||[];
+      const responses=payload.responses||[];
+      const practice=payload.practice||[];
+      const categories=payload.categories||[];
+      const accessRows=payload.access||[];
+      const modules=payload.modules||[];
+      const uploads=payload.uploads||[];
+
+      const errors=(payload.errors||[]).filter(Boolean);
+      $('coach-snapshot-error').textContent=errors.length
+        ?'Some portal data could not be loaded: '+errors.map(item=>item.message||'unknown error').join(' · ')
+        :'';
+
+      const areas=new Map();
+      const bump=(rawName,correct,total,misses,source,missKey)=>{
+        const name=String(rawName||'').trim();
+        if(!name||!(total>0))return;
+        const key=name.toLowerCase();
+        const entry=areas.get(key)||{name,correct:0,total:0,misses:0,sources:new Set(),missAttempts:new Set()};
+        entry.correct+=correct;
+        entry.total+=total;
+        entry.misses+=misses;
+        entry.sources.add(source);
+        if(misses>0&&missKey!==null&&missKey!==undefined)entry.missAttempts.add(missKey);
+        areas.set(key,entry);
+      };
+
+      responses.forEach(row=>{
+        if(row.is_correct===null||row.is_correct===undefined)return;
+        bump(row.nclex_category||row.topic||row.system||row.blueprint||'General',row.is_correct?1:0,1,row.is_correct?0:1,'Portal practice',row.attempt_id);
+      });
+
+      practice.forEach((item,index)=>{
+        const scores=item&&item.category_scores&&typeof item.category_scores==='object'?item.category_scores:{};
+        Object.entries(scores).forEach(([name,data])=>{
+          const correct=Number(data?.correct??0),total=Number(data?.total??0);
+          if(!Number.isFinite(total)||total<=0)return;
+          bump(name,correct,total,Math.max(total-correct,0),'Supplemental practice',item.id??('practice-'+index));
+        });
+      });
+
+      categories.forEach(item=>{
+        const score=Number(item.score);
+        const name=String(item.category||'').replace(/^latest\s+/i,'').trim();
+        if(!name||!Number.isFinite(score))return;
+        bump(name,score,100,0,'Uploaded assessments',null);
+      });
+
+      const ranked=[...areas.values()]
+        .map(entry=>({...entry,pct:Math.round(entry.correct/entry.total*100),repeatCount:entry.missAttempts.size,sources:[...entry.sources]}))
+        .sort((a,b)=>a.pct-b.pct||b.misses-a.misses||b.total-a.total)
+        .slice(0,6);
+
+      $('coach-weak-list').innerHTML=ranked.length?ranked.map(entry=>{
+        const repeated=entry.repeatCount>=2||entry.misses>=2;
+        const missText=entry.misses>0?' · missed ×'+entry.misses+(entry.repeatCount>=2?' across '+entry.repeatCount+' attempts':''):'';
+        return '<div class="coach-weak-row'+(repeated?' repeated':'')+'"><div><h4>'+esc(entry.name)+'</h4><p class="muted">'+esc(entry.sources.join(' · ')+missText)+'</p></div><strong>'+esc(entry.pct)+'%</strong>'+(repeated?'<span class="miss-pill">Repeated</span>':'')+'</div>';
+      }).join(''):'<p class="empty">No scored practice data yet — complete a portal assessment, supplemental set, or upload a report.</p>';
+
+      const moduleNames=new Map(modules.map(item=>[item.module_key,item.name]));
+      const enabled=accessRows.filter(item=>item.enabled);
+      const activityIndex=attempts.map(item=>(String(item.assessment_key||'')+' '+String(item.assessment_title||'')).toLowerCase()).join(' | ');
+      $('coach-assign-list').innerHTML=enabled.length?enabled.map(item=>{
+        const label=moduleNames.get(item.module_key)||item.module_key;
+        const key=String(item.module_key||'').toLowerCase();
+        const hasActivity=key.length>2&&activityIndex.includes(key);
+        const assignedOn=item.assigned_at||item.created_at||item.updated_at;
+        const assignedText=assignedOn?' · assigned '+fmtDateTime(assignedOn):'';
+        return '<div class="coach-assign-row"><span>'+esc(label+assignedText)+'</span><span class="'+(hasActivity?'status-ok':'status-none')+'">'+(hasActivity?'portal activity matched':'no portal quiz activity yet')+'</span></div>';
+      }).join(''):'<p class="empty">No modules assigned yet. Use Manage access &amp; assignments below.</p>';
+
+      const attemptCounter=new Map();
+      attempts.slice()
+        .sort((a,b)=>new Date(a.completed_at||a.created_at||0)-new Date(b.completed_at||b.created_at||0))
+        .forEach(item=>{
+          const key=item.assessment_key||item.assessment_title||'assessment';
+          const next=(attemptCounter.get(key)||0)+1;
+          attemptCounter.set(key,next);
+          item._attemptNumber=next;
+        });
+
+      const feed=[];
+      attempts.forEach(item=>{
+        const total=Number(item.total_questions),correct=Number(item.correct_questions);
+        const scored=Number.isFinite(total)&&total>0&&Number.isFinite(correct);
+        feed.push({
+          date:item.completed_at||item.created_at,
+          source:'Portal assessment',
+          label:(item.assessment_title||'Portal assessment')+(item._attemptNumber?' · Attempt '+item._attemptNumber:''),
+          score:scored?Math.round(correct/total*100)+'% ('+correct+'/'+total+')':'score unavailable'
+        });
+      });
+      practice.forEach(item=>{
+        const total=Number(item.total_questions),score=Number(item.score);
+        const scored=Number.isFinite(total)&&total>0&&Number.isFinite(score);
+        feed.push({
+          date:item.completed_at,
+          source:'Supplemental practice',
+          label:item.practice_title||'Supplemental practice',
+          score:scored?Math.round(score/total*100)+'% ('+score+'/'+total+')':'score unavailable'
+        });
+      });
+      uploads.forEach(item=>{
+        feed.push({
+          date:assessmentDate(item),
+          source:'Uploaded report',
+          label:item.report_label||((item.platform||'Report')+' · '+String(item.assessment_type||'').replace('_',' ')),
+          score:item.overall_score!==null&&item.overall_score!==undefined&&item.overall_score!==''?item.overall_score+'%':'no score'
+        });
+      });
+      const feedRows=feed
+        .filter(item=>item.date&&!isNaN(new Date(item.date)))
+        .sort((a,b)=>new Date(b.date)-new Date(a.date))
+        .slice(0,8);
+      $('coach-activity-feed').innerHTML=feedRows.length?feedRows.map(item=>'<div class="coach-feed-row"><span><span class="feed-meta">'+esc(fmtDateTime(item.date))+'</span> · <span class="feed-label">'+esc(item.source)+'</span> · '+esc(item.label)+'</span><span class="feed-meta">'+esc(item.score)+'</span></div>').join(''):'<p class="empty">No activity recorded yet.</p>';
+    }
+
     const clientNeedOrder=['Management of Care','Safety and Infection Prevention and Control','Health Promotion and Maintenance','Psychosocial Integrity','Basic Care and Comfort','Pharmacological and Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
     function renderClientNeeds(categories){const grouped=new Map;categories.forEach(item=>grouped.set(item.assessment_id,[...(grouped.get(item.assessment_id)||[]),item]));const candidates=currentUploads.map(upload=>({upload,categories:grouped.get(upload.id)||[]})).filter(item=>item.categories.filter(category=>clientNeedOrder.includes(category.category)).length>=4);const selected=candidates.find(item=>/client needs/i.test(item.upload.report_label||item.upload.report_filename||''))||candidates[0];const card=$('client-needs-card');if(!selected){card.classList.add('hidden');return}const scoreByName=new Map(selected.categories.map(item=>[item.category,item.score]));const title=selected.upload.report_label||selected.upload.report_filename||'Latest Client Needs report';$('client-needs-source').textContent=title+'';$('client-needs').innerHTML=clientNeedOrder.map(name=>{const score=scoreByName.get(name);return `<article class="client-need"><h3>${esc(name)}</h3><strong>${score==null?'—':esc(score)+'%'}</strong><span>QBank</span></article>`}).join('');card.classList.remove('hidden');card.style.display='none'}
     function renderSystemNeeds(categories){const grouped=new Map;categories.forEach(item=>grouped.set(item.assessment_id,[...(grouped.get(item.assessment_id)||[]),item]));const selected=currentUploads.map(upload=>({upload,categories:grouped.get(upload.id)||[]})).find(item=>/system needs/i.test(item.upload.report_label||item.upload.report_filename||''));const card=$('system-needs-card');if(!selected||!selected.categories.length){card.classList.add('hidden');return}const title=selected.upload.report_label||selected.upload.report_filename||'Latest System Needs report';$('system-needs-source').textContent=title+' · Highest-priority systems from your cumulative QBank data';$('system-needs').innerHTML=selected.categories.slice().sort((a,b)=>Number(a.score)-Number(b.score)).map(item=>`<article class="system-need"><h3>${esc(item.category)}</h3><strong>${item.score==null?'—':esc(item.score)+'%'}</strong><span>QBank</span></article>`).join('');card.classList.remove('hidden');card.style.display='none'}
@@ -398,8 +562,54 @@
   });
 }
 document.querySelectorAll('[data-path]').forEach(button=>button.addEventListener('click',()=>openReport(button.dataset.path)))}
-    async function loadStudent(target){student=target;$('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';$('intro').textContent=isAdmin?'':'';const [focus,uploads,insights,categories,practiceResults,access,modules,resources,notes]=await Promise.all([db.from('student_focus_areas').select('*').eq('student_id',student.id).order('updated_at',{ascending:false}),db.from('student_assessment_uploads').select('*').eq('student_id',student.id).order('taken_on',{ascending:false}),db.from('student_assessment_insights').select('*'),db.from('student_assessment_categories').select('*'),db.from('student_supplemental_practice_results').select('*').eq('student_id',student.id).order('completed_at',{ascending:false}),db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),db.from('modules').select('module_key,name'),db.from('student_resources').select('title,url').eq('student_id',student.id),isAdmin?db.from('session_notes').select('id,note,created_at').eq('student_id',student.id).order('created_at',{ascending:false}).limit(8):Promise.resolve({data:[],error:null})]);currentUploads=uploads.data||[];renderSummary(focus.data||[],currentUploads);renderTrend(currentUploads);renderRecentAssessments(currentUploads);renderClientNeeds(categories.data||[]);renderSystemNeeds(categories.data||[]);renderPracticeSuggestions(categories.data||[]);$('practice-plan-card').style.display='none';renderFocus(focus.data||[]);renderUploads(currentUploads,insights.data||[],categories.data||[]);renderSupplementalResults(practiceResults.data||[]);renderAccessOverview(access.data||[],modules.data||[],resources.data||[]);renderCoachNotes(notes.data||[],notes.error);if(isAdmin){$('review-assessment').innerHTML=currentUploads.length?currentUploads.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!currentUploads.length}}
-    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;if(isAdmin){$('role-label').textContent='Private coach view';$('back').href='madison-leads.html';$('back').textContent='Diagnostic leads';$('coach-review').style.display='block';$('coach-notes').style.display='block';$('upload-eyebrow').textContent='Add a student report';$('upload-title').textContent='Upload on a student’s behalf';$('upload-intro').textContent='Choose a student above, then upload a report you already received by email. It will appear in that student’s private timeline, marked as uploaded by you.';$('upload-button').textContent='Upload to student timeline';const {data:students}=await db.from('students').select('id,name,email,nclex_target_date').is('archived_at',null).order('name');const picker=$('student-picker');picker.style.display='block';picker.innerHTML=(students||[]).map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');const requested=new URLSearchParams(location.search).get('student');const selected=(students||[]).find(row=>row.id===requested)||(students||[])[0];if(!selected){$('loading').textContent='Add a student before opening a shared workspace.';return}picker.value=selected.id;picker.addEventListener('change',()=>{const next=(students||[]).find(row=>row.id===picker.value);history.replaceState(null,'','?student='+encodeURIComponent(next.id));loadStudent(next)});await loadStudent(selected)}else{const {data:own}=await db.from('students').select('id,name,email,nclex_target_date').eq('auth_user_id',session.user.id).maybeSingle();if(!own){await db.auth.signOut();location.replace('student-login.html');return}await loadStudent(own)}$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
+    async function loadStudent(target){
+      student=target;
+      $('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';
+      $('intro').textContent=isAdmin?'':'';
+      const [focus,uploads,insights,categories,practiceResults,access,modules,resources,notes,inhouse]=await Promise.all([
+        db.from('student_focus_areas').select('*').eq('student_id',student.id).order('updated_at',{ascending:false}),
+        db.from('student_assessment_uploads').select('*').eq('student_id',student.id).order('taken_on',{ascending:false}),
+        db.from('student_assessment_insights').select('*'),
+        db.from('student_assessment_categories').select('*'),
+        db.from('student_supplemental_practice_results').select('*').eq('student_id',student.id).order('completed_at',{ascending:false}),
+        db.from('student_module_access').select('*').eq('student_id',student.id),
+        db.from('modules').select('module_key,name'),
+        db.from('student_resources').select('title,url').eq('student_id',student.id),
+        isAdmin?db.from('session_notes').select('id,note,created_at').eq('student_id',student.id).order('created_at',{ascending:false}).limit(8):Promise.resolve({data:[],error:null}),
+        isAdmin?db.from('in_house_assessment_attempts').select('id,assessment_key,assessment_title,mode,total_questions,correct_questions,completed_at,created_at').eq('student_id',student.id).order('completed_at',{ascending:false}).limit(60):Promise.resolve({data:[],error:null})
+      ]);
+      const inhouseAttempts=inhouse.data||[];
+      let itemResponses={data:[],error:null};
+      if(isAdmin&&inhouseAttempts.length){
+        itemResponses=await db.from('in_house_assessment_item_responses').select('attempt_id,nclex_category,system,topic,blueprint,is_correct').in('attempt_id',inhouseAttempts.map(item=>item.id)).limit(10000);
+      }
+      currentUploads=uploads.data||[];
+      const practiceRows=practiceResults.data||[];
+      renderSummary(focus.data||[],currentUploads,buildPortalScores(inhouseAttempts,practiceRows));
+      renderTrend(currentUploads);
+      renderRecentAssessments(currentUploads);
+      renderClientNeeds(categories.data||[]);
+      renderSystemNeeds(categories.data||[]);
+      renderPracticeSuggestions(categories.data||[]);
+      $('practice-plan-card').style.display='none';
+      renderFocus(focus.data||[]);
+      renderUploads(currentUploads,insights.data||[],categories.data||[]);
+      renderSupplementalResults(practiceRows);
+      renderAccessOverview(access.data||[],modules.data||[],resources.data||[]);
+      renderCoachNotes(notes.data||[],notes.error);
+      renderCoachSnapshot({
+        attempts:inhouseAttempts,
+        responses:itemResponses.data||[],
+        practice:practiceRows,
+        categories:categories.data||[],
+        access:access.data||[],
+        modules:modules.data||[],
+        uploads:currentUploads,
+        errors:[inhouse.error,itemResponses.error]
+      });
+      if(isAdmin){$('review-assessment').innerHTML=currentUploads.length?currentUploads.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!currentUploads.length}
+    }
+    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;if(isAdmin){$('role-label').textContent='Private coach view';$('back').href='madison-leads.html';$('back').textContent='Diagnostic leads';$('coach-snapshot').style.display='block';$('coach-review').style.display='block';$('coach-notes').style.display='block';$('upload-eyebrow').textContent='Add a student report';$('upload-title').textContent='Upload on a student’s behalf';$('upload-intro').textContent='Choose a student above, then upload a report you already received by email. It will appear in that student’s private timeline, marked as uploaded by you.';$('upload-button').textContent='Upload to student timeline';const {data:students}=await db.from('students').select('id,name,email,nclex_target_date').is('archived_at',null).order('name');const picker=$('student-picker');picker.style.display='block';picker.innerHTML=(students||[]).map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');const requested=new URLSearchParams(location.search).get('student');const selected=(students||[]).find(row=>row.id===requested)||(students||[])[0];if(!selected){$('loading').textContent='Add a student before opening a shared workspace.';return}picker.value=selected.id;picker.addEventListener('change',()=>{const next=(students||[]).find(row=>row.id===picker.value);history.replaceState(null,'','?student='+encodeURIComponent(next.id));loadStudent(next)});await loadStudent(selected)}else{const {data:own}=await db.from('students').select('id,name,email,nclex_target_date').eq('auth_user_id',session.user.id).maybeSingle();if(!own){await db.auth.signOut();location.replace('student-login.html');return}await loadStudent(own)}$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
     $('upload-form').addEventListener('submit',async event=>{event.preventDefault();const files=Array.from($('report-file').files||[]);const message=$('upload-message');if(!files.length)return;const oversized=files.find(file=>file.size>10485760);if(oversized){message.textContent='Please choose files under 10 MB each.';return}const values={platform:$('platform').value,assessment_type:$('assessment-type').value,report_label:$('report-label').value.trim()||null,attempt_number:$('attempt-number').value||null,taken_on:$('taken-on').value||null,overall_score:$('overall-score').value||null};let uploaded=0,failed=0;for(let index=0;index<files.length;index++){const file=files[index];message.textContent=(isAdmin?'Uploading to the student’s private timeline…':'Uploading your private reports…')+' ('+(index+1)+' of '+files.length+')';const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');const path=`${student.id}/${crypto.randomUUID()}-${safe}`;const upload=await db.storage.from('assessment-reports').upload(path,file,{contentType:file.type,upsert:false});if(upload.error){failed++;continue}const row={student_id:student.id,platform:values.platform,assessment_type:values.assessment_type,report_label:files.length===1?values.report_label:null,attempt_number:files.length===1?values.attempt_number:null,taken_on:values.taken_on,overall_score:values.overall_score,report_path:path,report_filename:file.name,report_mime_type:file.type,uploaded_by:session.user.id};const saved=await db.from('student_assessment_uploads').insert(row);if(saved.error){failed++;continue}uploaded++}message.textContent=uploaded?uploaded+' report'+(uploaded===1?'':'s')+' added to the private timeline.'+(failed?' '+failed+' could not be added.':''):'No reports could be added. Please try again.';$('upload-form').reset();if(uploaded)loadStudent(student)});
     $('focus-form').addEventListener('submit',async event=>{event.preventDefault();const message=$('focus-message');const row={student_id:student.id,focus_area:$('focus-name').value.trim(),priority:$('focus-priority').value,current_score:$('focus-current').value||null,previous_score:$('focus-previous').value||null,trend:$('focus-trend').value,next_step:$('focus-next').value.trim()||null,updated_by:session.user.id,updated_at:new Date().toISOString()};const saved=await db.from('student_focus_areas').upsert(row,{onConflict:'student_id,focus_area'});message.textContent=saved.error?'We could not save that focus area. Please try again.':'Shared focus area saved.';if(!saved.error){$('focus-form').reset();loadStudent(student)}});
         function parseImportedScores(raw){const scores=new Map;String(raw||'').split(/\r?\n/).forEach(source=>{const line=source.replace(/\u00a0/g,' ').trim();let match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d{1,3}(?:\.\d+)?)\s*%\s*$/);let score;if(match){score=Number(match[2])}else{match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d+)\s*\/\s*(\d+)\s*$/);if(match&&Number(match[3]))score=Math.round(Number(match[2])/Number(match[3])*100)}if(!match||!Number.isFinite(score)||score<0||score>100)return;const category=match[1].replace(/^[-•\s]+/,'').trim();if(category.length>2)scores.set(category,score)});return [...scores.entries()].map(([category,score])=>({category,score}))}
