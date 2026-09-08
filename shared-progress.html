@@ -104,6 +104,9 @@
     .coach-feed-row .feed-meta{color:var(--muted);font-size:.72rem;white-space:nowrap}
     .coach-assign-row .status-ok{color:#315c46;font-weight:800}
     .coach-assign-row .status-none{color:#b04e61;font-weight:800}
+    #access-items{display:block}
+    #access-items .coach-assign-group{margin:18px 0 4px;font-size:.68rem}
+    #access-items .coach-assign-row h4{margin:0;font:700 .92rem Inter,sans-serif;color:var(--ink)}
     @media(max-width:760px){.coach-snapshot-grid{grid-template-columns:1fr}}
 
   </style>
@@ -194,14 +197,66 @@
         '<article class="stat"><strong>'+esc(days===null?'—':days>=0?days+' days':'Past')+'</strong><span>Until NCLEX</span></article>';
     }
 
-    function renderAccessOverview(accessRows,modules,resources){
+    function assignmentActivity(title,url,attempts,practice){
+      const label=String(title||'').toLowerCase();
+      const link=String(url||'').toLowerCase();
+      const tokens=label.split(/[^a-z0-9]+/).filter(token=>token.length>2);
+      const matchesLink=assessment=>(assessment.link.includes('diagnostic.html')&&link.includes('diagnostic.html'))
+        ||(link.includes('supplemental-practice.html')&&assessment.link.includes('supplemental-practice.html'));
+      const matchesToken=text=>tokens.some(token=>text.includes(token));
+      const matchingAttempts=(attempts||[]).filter(item=>{
+        const text=(String(item.assessment_title||'')+' '+String(item.assessment_key||'')).toLowerCase();
+        return matchesLink({link:text})||matchesToken(text);
+      });
+      const matchingPractice=(practice||[]).filter(item=>{
+        const text=(String(item.set_title||'')+' '+String(item.title||'')+' '+String(item.set_key||'')+' '+String(item.set_id||'')).toLowerCase();
+        return matchesToken(text);
+      });
+      const events=[];
+      matchingAttempts.forEach(item=>{
+        const total=Number(item.total_questions),correct=Number(item.correct_questions);
+        const score=Number.isFinite(total)&&total>0&&Number.isFinite(correct)?Math.round(correct/total*100):null;
+        events.push({date:item.completed_at||item.created_at,label:(score===null?'Attempt recorded':score+'%')});
+      });
+      matchingPractice.forEach(item=>{
+        const total=Number(item.total_questions),score=Number(item.score);
+        const pct=Number.isFinite(total)&&total>0&&Number.isFinite(score)?Math.round(score/total*100):null;
+        events.push({date:item.completed_at,label:(pct===null?'Practice completed':pct+'%')});
+      });
+      events.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+      const latest=events[0]||null;
+      return {count:events.length,latest,latestDate:latest&&latest.date?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric'}).format(new Date(latest.date)):null};
+    }
+
+    function renderAccessOverview(accessRows,modules,resources,attempts,practice){
       if(!isAdmin)return;
       const card=$('access-overview');
       const names=new Map((modules||[]).map(item=>[item.module_key,item.name]));
-      const enabled=(accessRows||[]).filter(item=>item.enabled).map(item=>names.get(item.module_key)||item.module_key);
-      const items=[...enabled,...(resources||[]).map(item=>item.title||item.url).filter(Boolean)];
-      $('access-summary').textContent=items.length?items.length+' current assignment'+(items.length===1?'':'s')+' shown below.':'No modules or practice resources are assigned yet.';
-      $('access-items').innerHTML=items.length?items.map(item=>'<span class="focus-pill">'+esc(item)+'</span>').join(''):'<span class="muted">Use Manage access & assignments to add work.</span>';
+      const moduleRows=(accessRows||[]).filter(item=>item.enabled).map(item=>{
+        const name=names.get(item.module_key)||item.module_key;
+        const assigned=item.assigned_at||item.created_at||item.updated_at||null;
+        const activity=assignmentActivity(name,item.module_key,attempts,practice);
+        return {name,assigned,activity};
+      });
+      const resourceRows=(resources||[]).filter(item=>item&&(item.title||item.url)).map(item=>{
+        const url=String(item.url||'');
+        const group=url.includes('supplemental-practice.html')?'practice':(url.includes('diagnostic.html')||url.includes('quiz')?'practice':'resource');
+        return {name:item.title||item.url,url,assigned:item.created_at||null,group,activity:assignmentActivity(item.title,url,attempts,practice)};
+      });
+      const practiceRows=resourceRows.filter(item=>item.group==='practice');
+      const otherRows=resourceRows.filter(item=>item.group==='resource');
+      const total=moduleRows.length+resourceRows.length;
+      $('access-summary').textContent=total?total+' current assignment'+(total===1?'':'s')+', grouped by type.':'No modules or practice resources are assigned yet.';
+      const rowHtml=item=>{
+        const assigned=item.assigned?'Assigned '+new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric'}).format(new Date(item.assigned)):'';
+        const act=item.activity;
+        const status=act.count?esc(act.count)+' attempt'+(act.count===1?'':'s')+' · latest '+esc(act.latest.label)+(act.latestDate?' on '+esc(act.latestDate):''):'No activity yet';
+        return '<div class="coach-assign-row'+(act.count?'':' no-activity')+'"><div><h4>'+esc(item.name)+'</h4>'+(assigned?'<p class="muted">'+esc(assigned)+'</p>':'')+'</div><p class="muted">'+status+'</p></div>';
+      };
+      const groupHtml=(title,rows)=>rows.length?'<p class="eyebrow coach-assign-group">'+esc(title)+'</p>'+rows.map(rowHtml).join(''):'';
+      $('access-items').innerHTML=total
+        ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets &amp; diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
+        :'<span class="muted">Use Manage access & assignments to add work.</span>';
       $('manage-access').href='madison-assignments.html?student='+encodeURIComponent(student.id);
       $('preview-student').href='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
       card.classList.remove('hidden');
@@ -595,7 +650,7 @@ document.querySelectorAll('[data-path]').forEach(button=>button.addEventListener
       renderFocus(focus.data||[]);
       renderUploads(currentUploads,insights.data||[],categories.data||[]);
       renderSupplementalResults(practiceRows);
-      renderAccessOverview(access.data||[],modules.data||[],resources.data||[]);
+      renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       renderCoachSnapshot({
         attempts:inhouseAttempts,
