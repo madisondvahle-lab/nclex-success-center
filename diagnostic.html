@@ -17,6 +17,36 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; }
     button:focus { outline: none; }
+    .assessment-interface,
+    .assessment-interface button {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .clinical-scenario {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #164e63;
+      font-style: normal;
+    }
+    .question-stem {
+      font-size: 17px;
+      line-height: 1.7;
+      color: #0f172a;
+      font-weight: 400;
+    }
+    .instruction-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #475569;
+      font-style: normal;
+    }
+    .category-pill {
+      font-size: 11px;
+      letter-spacing: 0.4px;
+    }
+    .progress-text {
+      font-size: 12px;
+      color: #475569;
+    }
   </style>
 </head>
 <body>
@@ -890,11 +920,11 @@ const NGN_LABELS = { mcq:"MCQ", sata:"SATA", bowtie:"NGN · Bow-Tie", casestudy:
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────────────────
 function Tag({ children, color, bg, border }) {
-  return <span style={{ fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:99, letterSpacing:0.8, textTransform:"uppercase", background:bg||"#f1f5f9", color:color||"#64748b", border:border?`1px solid ${border}`:"none" }}>{children}</span>;
+  return <span className="category-pill" style={{ fontWeight:700, padding:"3px 10px", borderRadius:99, textTransform:"uppercase", background:bg||"#f1f5f9", color:color||"#64748b", border:border?`1px solid ${border}`:"none" }}>{children}</span>;
 }
 
 function Btn({ children, onClick, disabled, variant="primary", small }) {
-  const base = { border:"none", borderRadius:10, fontFamily:"Georgia,serif", fontWeight:700, cursor:disabled?"default":"pointer", letterSpacing:0.5, padding: small?"9px 18px":"13px 28px", fontSize: small?13:15 };
+  const base = { border:"none", borderRadius:10, fontWeight:700, cursor:disabled?"default":"pointer", letterSpacing:0.5, padding: small?"9px 18px":"13px 28px", fontSize: small?13:15 };
   const variants = {
     primary:{ background:disabled?"#e2e8f0":"#0f172a", color:disabled?"#94a3b8":"#fff" },
     outline:{ background:"#f8fafc", color:"#475569", border:"1.5px solid #e2e8f0" }
@@ -903,12 +933,12 @@ function Btn({ children, onClick, disabled, variant="primary", small }) {
 }
 
 function OptionBtn({ letter, text, state, onClick }) {
-  const base = { display:"flex", alignItems:"flex-start", gap:12, padding:"13px 16px", borderRadius:10, border:"2px solid #e2e8f0", background:"#f8fafc", cursor:"pointer", textAlign:"left", width:"100%", fontFamily:"Georgia,serif", fontSize:15, transition:"all 0.15s" };
+  const base = { display:"flex", alignItems:"flex-start", gap:12, padding:"13px 16px", borderRadius:10, border:"2px solid #e2e8f0", background:"#f8fafc", cursor:"pointer", textAlign:"left", width:"100%", fontSize:16, transition:"all 0.15s" };
   const states = { selected:{ border:"2px solid #0ea5e9", background:"#f0f9ff" }, correct:{ border:"2px solid #10b981", background:"#f0fdf4", cursor:"default" }, wrong:{ border:"2px solid #ef4444", background:"#fef2f2", cursor:"default" }, dim:{ border:"2px solid #f1f5f9", background:"#f8fafc", opacity:0.45, cursor:"default" }, neutral:{} };
   return (
     <button style={{...base,...states[state||"neutral"]}} onClick={onClick}>
       <span style={{ minWidth:26, height:26, borderRadius:"50%", background:"#e2e8f0", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"#475569", flexShrink:0, marginTop:1 }}>{letter}</span>
-      <span style={{ flex:1, color:"#1e293b", lineHeight:1.55 }}>{text}</span>
+      <span style={{ flex:1, color:"#1e293b", lineHeight:1.6 }}>{text}</span>
       {state==="correct" && <span style={{ color:"#10b981", fontWeight:700, fontSize:16 }}>✓</span>}
       {state==="wrong" && <span style={{ color:"#ef4444", fontWeight:700, fontSize:16 }}>✗</span>}
     </button>
@@ -932,7 +962,7 @@ function MCQQuestion({ q, submitted, selected, onSelect }) {
 function SATAQuestion({ q, submitted, selected, onSelect }) {
   return (
     <div>
-      <div style={{ fontSize:12, color:"#64748b", marginBottom:10, fontStyle:"italic" }}>Select all that apply — choose every correct option.</div>
+      <div className="instruction-text" style={{ marginBottom:10 }}>Select all that apply — choose every correct option.</div>
       <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
         {q.options.map((opt,idx) => {
           let state = "neutral";
@@ -956,7 +986,7 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
     if(selected){bg="#f0f9ff";border="1.5px solid #0ea5e9";}
     if(correct){bg="#f0fdf4";border="1.5px solid #10b981";color="#065f46";}
     if(wrong){bg="#fef2f2";border="1.5px solid #ef4444";color="#991b1b";}
-    return <button onClick={onClick} style={{ padding:"8px 10px", borderRadius:8, border, background:bg, color, fontSize:13, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", fontFamily:"Georgia,serif", lineHeight:1.4, width:"100%" }}>{correct&&"✓ "}{wrong&&"✗ "}{label}</button>;
+    return <button onClick={onClick} style={{ padding:"8px 10px", borderRadius:8, border, background:bg, color, fontSize:14, textAlign:"left", cursor:(submitted||!onClick)?"default":"pointer", lineHeight:1.5, width:"100%" }}>{correct&&"✓ "}{wrong&&"✗ "}{label}</button>;
   }
 
   function handleSelect(key, idx) {
@@ -986,13 +1016,13 @@ function BowTieQuestion({ q, submitted, btState, onBTSelect }) {
   const leftSel=(btState.left||[]).length, centerSel=(btState.center||[]).length, rightSel=(btState.right||[]).length;
 
   function SlotBadge({ filled, total }) {
-    return <div style={{ fontSize:10, color: filled===total?"#10b981":"#94a3b8", marginBottom:6, fontWeight:600 }}>{filled}/{total} selected</div>;
+    return <div style={{ fontSize:12, color: filled===total?"#10b981":"#64748b", marginBottom:6, fontWeight:600 }}>{filled}/{total} selected</div>;
   }
 
   return (
     <div>
       {!submitted&&(
-        <div style={{ fontSize:12, color:"#64748b", marginBottom:14, fontStyle:"italic", background:"#f0f9ff", padding:"10px 14px", borderRadius:8, border:"1px solid #bae6fd" }}>
+        <div className="instruction-text" style={{ marginBottom:14, background:"#f0f9ff", padding:"10px 14px", borderRadius:8, border:"1px solid #bae6fd" }}>
           🎯 <strong>Bow-Tie Format:</strong> Select <strong>2 nursing actions</strong> (left) → identify <strong>1 condition</strong> (center) → select <strong>2 parameters to monitor</strong> (right)
         </div>
       )}
@@ -1031,8 +1061,8 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
         return (
           <div key={sub.qid} style={{ background:"#f8fafc", borderRadius:12, padding:"16px 18px", border:"1px solid #e2e8f0" }}>
             <div style={{ fontWeight:700, fontSize:12, color:"#64748b", marginBottom:8, letterSpacing:0.5 }}>QUESTION {si+1} OF {q.questions.length}</div>
-            <div style={{ fontFamily:"Georgia,serif", fontSize:15, lineHeight:1.65, color:"#0f172a", marginBottom:12 }}>{sub.stem}</div>
-            {sub.type==="sata"&&<div style={{ fontSize:11, color:"#94a3b8", marginBottom:8, fontStyle:"italic" }}>Select all that apply</div>}
+            <div className="question-stem" style={{ marginBottom:12 }}>{sub.stem}</div>
+            {sub.type==="sata"&&<div className="instruction-text" style={{ marginBottom:8 }}>Select all that apply</div>}
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {sub.options.map((opt,idx) => {
                 let state="neutral";
@@ -1060,7 +1090,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
   const studentName = assessmentProfile?.studentName || 'Student';
   const handleStart = () => onStart({name:studentName,weakAreas:weak,notes:'',externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?FULL_MOCK_MIN_Q:qCount,mode});
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+    <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
@@ -1082,7 +1112,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
             <label style={lbl}>Session Mode</label>
             <div style={{ display:"flex", gap:10 }}>
               {availableModes.map(m=>(
-                <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
+                <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
                 </button>
@@ -1095,7 +1125,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
               <label style={lbl}>Number of Questions</label>
               <div style={{ display:"flex", gap:10 }}>
                 {[5,10,15,20,30].map(n=>(
-                  <button key={n} onClick={()=>setQCount(n)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", fontFamily:"Georgia,serif", background:qCount===n?"#0f172a":"#f8fafc", color:qCount===n?"#fff":"#475569", borderColor:qCount===n?"#0f172a":"#e2e8f0" }}>{n}</button>
+                  <button key={n} onClick={()=>setQCount(n)} style={{ flex:1, padding:"9px", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer", border:"1.5px solid", background:qCount===n?"#0f172a":"#f8fafc", color:qCount===n?"#fff":"#475569", borderColor:qCount===n?"#0f172a":"#e2e8f0" }}>{n}</button>
                 ))}
               </div>
             </div>
@@ -1105,7 +1135,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
             <label style={lbl}>Focus Areas <span style={{ color:"#94a3b8", fontWeight:400 }}>(optional — adaptive engine prioritizes these)</span></label>
             <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:6 }}>
               {BLUEPRINT_AREAS.map(area=>(
-                <button key={area} onClick={()=>setWeak(w=>w.includes(area)?w.filter(x=>x!==area):[...w,area])} style={{ padding:"6px 13px", borderRadius:99, fontSize:12, fontWeight:600, cursor:"pointer", border:"1.5px solid", background:weak.includes(area)?"#0f172a":"#f8fafc", color:weak.includes(area)?"#fff":"#475569", borderColor:weak.includes(area)?"#0f172a":"#e2e8f0", fontFamily:"Georgia,serif" }}>{area}</button>
+                <button key={area} onClick={()=>setWeak(w=>w.includes(area)?w.filter(x=>x!==area):[...w,area])} style={{ padding:"6px 13px", borderRadius:99, fontSize:12, fontWeight:600, cursor:"pointer", border:"1.5px solid", background:weak.includes(area)?"#0f172a":"#f8fafc", color:weak.includes(area)?"#fff":"#475569", borderColor:weak.includes(area)?"#0f172a":"#e2e8f0" }}>{area}</button>
               ))}
             </div>
           </div>
@@ -1113,7 +1143,7 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
 
         <div style={{ marginTop:24 }}>
           <button onClick={handleStart}
-            style={{ width:"100%", padding:"14px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5, fontFamily:"Georgia,serif" }}>
+            style={{ width:"100%", padding:"14px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5 }}>
             {mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →"}
           </button>
         </div>
@@ -1154,7 +1184,7 @@ function ResultsScreen({ profile, history, ability, catResult, sessionKey, onRes
   };
 
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+    <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"Adaptive NCLEX Mock CAT Complete":isAssessment?"Readiness Assessment Complete":"Practice Session Complete"}</div>
@@ -1228,7 +1258,7 @@ function ResultsScreen({ profile, history, ability, catResult, sessionKey, onRes
         </div>
 
         {profile.notes&&<div style={{ background:"#f8fafc", borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:13, color:"#475569", border:"1px solid #e2e8f0" }}><strong>Tutor Notes:</strong> {profile.notes}</div>}
-        <button onClick={onRestart} style={{ width:"100%", padding:"13px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"Georgia,serif" }}>New Session</button>
+        <button onClick={onRestart} style={{ width:"100%", padding:"13px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer" }}>New Session</button>
       </div>
     </div>
   );
@@ -1351,17 +1381,17 @@ function QuizScreen({ profile, onFinish }) {
   const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : isMock ? Math.min(100,(qNum/FULL_MOCK_MAX_Q)*100) : isAssessment ? Math.min(100,(qNum/FULL_MOCK_MIN_Q)*100) : (qNum/profile.qCount)*100;
 
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px", fontFamily:"Georgia,serif" }}>
+    <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"30px 34px", maxWidth:860, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
 
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, gap:12, flexWrap:"wrap" }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:"#0f172a", letterSpacing:2 }}>NCLEX-RN</div>
-            <div style={{ fontSize:10, color:"#94a3b8", letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"Adaptive Mock CAT":isAssessment?"Readiness Assessment":"Practice"}</div>
+            <div className="progress-text" style={{ letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"Adaptive Mock CAT":isAssessment?"Readiness Assessment":"Practice"}</div>
           </div>
           <div style={{ flex:1, maxWidth:260 }}>
-            <div style={{ fontSize:11, color:"#64748b", marginBottom:5 }}>
+            <div className="progress-text" style={{ marginBottom:5 }}>
               {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : isAssessment ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · readiness assessment` : `Question ${qNum} of ${profile.qCount}` }
             </div>
             <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
@@ -1383,13 +1413,13 @@ function QuizScreen({ profile, onFinish }) {
 
         {/* Case intro */}
         {q.caseIntro&&(
-          <div style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderRadius:10, padding:"14px 16px", marginBottom:16, fontSize:14, lineHeight:1.7, color:"#0c4a6e", fontStyle:"italic" }}>
+          <div className="clinical-scenario" style={{ background:"#f0f9ff", border:"1px solid #bae6fd", borderRadius:10, padding:"14px 16px", marginBottom:16 }}>
             <strong style={{ fontStyle:"normal", color:"#0369a1" }}>Clinical Scenario: </strong>{q.caseIntro}
           </div>
         )}
 
         {/* Stem */}
-        <div style={{ fontSize:16, lineHeight:1.7, color:"#0f172a", marginBottom:18, fontFamily:"Georgia,serif" }}>{q.stem}</div>
+        <div className="question-stem" style={{ marginBottom:18 }}>{q.stem}</div>
 
         {/* Question */}
         {q.type==="mcq"&&<MCQQuestion q={q} submitted={submitted} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
