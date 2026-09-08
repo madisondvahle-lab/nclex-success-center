@@ -52,8 +52,8 @@
           <label class="choice">
             <input id="nur321-ob-exam1" type="checkbox">
             <span>
-              <strong>NUR 321 OB · Exam 1 Practice</strong>
-              <span>25 questions built from the current Exam 1 course content and study materials.</span>
+              <strong>Jack · NUR 312 Exam 1 Practice</strong>
+              <span>100 questions covering aneurysm, head injury, brain tumors, seizures, spinal cord injuries, shock, and burns.</span>
             </span>
           </label>
 
@@ -91,7 +91,7 @@
     const clearNotice=()=>{$('notice').className='notice';$('notice').textContent=''};
     function selected(){return students.find(item=>item.id===$('student').value)}
     const assignmentKeys=['m1','m2','m7','core-safety-priority','core-medication-calculations','core-lifespan-reproductive','core-acute-systems','core-psych-judgment'];
-    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const {data,error}=await db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id);if(error){show('Could not load module access for '+student.name+': '+(error.message||'unknown Supabase error'),'error');return}const enabled=new Set((data||[]).filter(item=>item.enabled).map(item=>item.module_key));assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=false;$('mixed-review').checked=false;$('nur321-ob-exam1').checked=false;$('mixed-options').classList.add('hidden')}
+    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const [{data:access,error:accessError},{data:resources,error:resourcesError}]=await Promise.all([db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),db.from('student_resources').select('url,title,resource_type').eq('student_id',student.id).eq('resource_type','practice_set')]);if(accessError){show('Could not load module access for '+student.name+': '+(accessError.message||'unknown Supabase error'),'error');return}if(resourcesError){show('Could not load practice assignments for '+student.name+': '+(resourcesError.message||'unknown Supabase error'),'error');return}const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));const assignedResources=resources||[];assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=assignedResources.some(item=>item.url==='diagnostic.html?mode=mock');$('mixed-review').checked=assignedResources.some(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));$('nur321-ob-exam1').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=jack-nur312-exam1'||/^NUR 312 Exam 1 Practice\b/i.test(item.title||''));$('mixed-options').classList.toggle('hidden',!$('mixed-review').checked);const mixedAssignment=assignedResources.find(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));if(mixedAssignment){const count=new URL(mixedAssignment.url,window.location.href).searchParams.get('mixed');if(['10','20','30','40'].includes(count))$('mixed-count').value=count}}
     async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur321-ob-exam1')?.checked;if(!requested.length&&!hasExtra)throw new Error('Choose at least one assignment before saving.');show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');if(requested.length){const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw new Error('Student module access save failed: '+error.message);const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw new Error('Assignments saved, but module catalog update failed: '+catalogError.message)}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
 if($('mixed-review').checked){
   const count=Number($('mixed-count').value)||20;
@@ -117,31 +117,31 @@ if($('mixed-review').checked){
 }
 
 if($('nur321-ob-exam1').checked){
-  const url='supplemental-practice.html?course=nur321-ob&exam=exam1';
+  const url='supplemental-practice.html?set=jack-nur312-exam1';
   const {data:existing,error:findError}=await db.from('student_resources')
     .select('id')
     .eq('student_id',student.id)
     .eq('url',url)
     .limit(1);
 
-  if(findError)throw new Error('NUR 321 practice lookup failed: '+findError.message);
+  if(findError)throw new Error('Jack practice lookup failed: '+findError.message);
 
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'NUR 321 OB · Exam 1 Practice',
+      title:'NUR 312 Exam 1 Practice · 100 questions',
       resource_type:'practice_set',
       url,
-      note:'Complete these 25 Exam 1 practice questions before your next coaching session.'
+      note:'Complete these 100 Exam 1 practice questions before your next coaching session.'
     });
-    if(error)throw new Error('NUR 321 practice assignment failed: '+error.message);
+    if(error)throw new Error('Jack practice assignment failed: '+error.message);
   }
 }
 
 const items=selectedKeys.map(key=>coreModules[key].name);
 if($('diagnostic').checked)items.push('full mock CAT diagnostic');
 if($('mixed-review').checked)items.push('mixed NCLEX review');
-if($('nur321-ob-exam1').checked)items.push('NUR 321 OB · Exam 1 Practice');
+if($('nur321-ob-exam1').checked)items.push('Jack · NUR 312 Exam 1 Practice (100 questions)');
 show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
     $('save').addEventListener('click',() => { save().catch(error => show('Assignment save failed: '+(error.message||'unknown error'),'error')); });
     window.addEventListener('error', event => show('Assignment page error: '+(event.error?.message||event.message||'unknown error'),'error'));
