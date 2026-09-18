@@ -1,0 +1,1474 @@
+[
+  {
+    "id": "jack-ekg-001",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "A regular rhythm has 4 large boxes between consecutive R waves. Which ventricular rate should the nurse document?",
+    "o": [
+      "60/min",
+      "100/min",
+      "150/min",
+      "75/min"
+    ],
+    "a": 3,
+    "r": "For a regular rhythm, divide 300 by the number of large boxes between R waves. 300 divided by 4 equals 75/min.",
+    "difficulty": 3,
+    "topic": "Rate calculation"
+  },
+  {
+    "id": "jack-ekg-002",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "On a 6-second strip, the nurse counts 13 QRS complexes. Which rate is most accurate using the six-second method?",
+    "o": [
+      "78/min",
+      "120/min",
+      "150/min",
+      "130/min"
+    ],
+    "a": 3,
+    "r": "The six-second method applies to regular and irregular rhythms. Thirteen QRS complexes multiplied by 10 equals 130/min.",
+    "difficulty": 3,
+    "topic": "Rate calculation"
+  },
+  {
+    "id": "jack-ekg-003",
+    "source": "jack-ekg-practice-v1",
+    "type": "Waveform Interpretation",
+    "q": "Which ECG component represents ventricular repolarization in the course presentation?",
+    "o": [
+      "P wave",
+      "QRS complex",
+      "PR interval",
+      "T wave"
+    ],
+    "a": 3,
+    "r": "The T wave represents ventricular repolarization, the ventricular resting or recovery phase.",
+    "difficulty": 3,
+    "topic": "EKG fundamentals"
+  },
+  {
+    "id": "jack-ekg-004",
+    "source": "jack-ekg-practice-v1",
+    "type": "Waveform Interpretation",
+    "q": "A nurse measures a PR interval of 0.24 seconds. This finding most directly reflects delayed conduction through which pathway?",
+    "o": [
+      "Purkinje fibers to ventricular muscle",
+      "Ventricular myocardium during repolarization",
+      "The J point into the ST segment",
+      "The SA node through the AV node"
+    ],
+    "a": 3,
+    "r": "The PR interval measures impulse travel from the SA node through the AV node to the beginning of ventricular depolarization. A PR interval above 0.20 seconds is prolonged.",
+    "difficulty": 4,
+    "topic": "PR interval"
+  },
+  {
+    "id": "jack-ekg-005",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Telemetry shows an irregularly irregular rhythm, absent identifiable P waves, narrow QRS complexes, and a ventricular rate of 148/min. Which rhythm is most consistent with these findings?",
+    "o": [
+      "Atrial flutter with controlled response",
+      "Sinus tachycardia with PACs",
+      "Supraventricular tachycardia",
+      "Atrial fibrillation with rapid ventricular response"
+    ],
+    "a": 3,
+    "r": "Atrial fibrillation has no organized P waves and is irregularly irregular. A rapid ventricular rate identifies atrial fibrillation with rapid ventricular response.",
+    "difficulty": 4,
+    "topic": "Atrial fibrillation with RVR"
+  },
+  {
+    "id": "jack-ekg-006",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient with atrial fibrillation has a palpable irregular pulse of 146/min, BP 82/48 mm Hg, chest pressure, and new confusion. Which action should the nurse anticipate first?",
+    "o": [
+      "Administer a beta blocker and reassess in 30 minutes",
+      "Begin CPR and prepare for defibrillation",
+      "Prepare transcutaneous pacing",
+      "Prepare for synchronized cardioversion"
+    ],
+    "a": 3,
+    "r": "The patient has a pulse but is unstable, with hypotension, chest discomfort, and altered mental status. The presentation supports synchronized cardioversion.",
+    "difficulty": 4,
+    "topic": "Unstable atrial fibrillation"
+  },
+  {
+    "id": "jack-ekg-007",
+    "source": "jack-ekg-practice-v1",
+    "type": "Complication Recognition",
+    "q": "Which complication is most specifically linked to the loss of effective atrial contraction in atrial fibrillation?",
+    "o": [
+      "Immediate ventricular standstill from hyperkalemia",
+      "Pericardial compression of the ventricles",
+      "Fixed left ventricular outflow obstruction",
+      "Atrial blood stasis followed by embolic stroke"
+    ],
+    "a": 3,
+    "r": "Ineffective atrial contraction promotes atrial blood stasis, thrombus formation, and embolization to the brain.",
+    "difficulty": 3,
+    "topic": "Atrial fibrillation complications"
+  },
+  {
+    "id": "jack-ekg-008",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Comparison",
+    "q": "Which finding best supports atrial flutter rather than atrial fibrillation?",
+    "o": [
+      "Irregularly irregular ventricular rhythm with no P waves",
+      "Early abnormal P wave followed by a narrow QRS",
+      "Regular narrow-complex rhythm with upright P waves before every QRS",
+      "Sawtooth atrial activity with a ventricular response that may be regular or irregular"
+    ],
+    "a": 3,
+    "r": "Atrial flutter is characterized by flutter or sawtooth atrial activity. Its ventricular response may be regular or irregular.",
+    "difficulty": 4,
+    "topic": "Atrial flutter"
+  },
+  {
+    "id": "jack-ekg-009",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Comparison",
+    "q": "A rhythm is regular at 116/min with upright P waves in lead II, a PR interval of 0.16 seconds, and narrow QRS complexes. Which interpretation is best?",
+    "o": [
+      "Supraventricular tachycardia",
+      "Atrial flutter",
+      "Atrial fibrillation",
+      "Sinus tachycardia"
+    ],
+    "a": 3,
+    "r": "The course describes sinus tachycardia as regular, 101 to 120/min, with upright lead II P waves, a normal PR interval, and a narrow QRS.",
+    "difficulty": 3,
+    "topic": "Sinus tachycardia"
+  },
+  {
+    "id": "jack-ekg-010",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient has a regular narrow-complex rhythm at 154/min with palpitations and dyspnea. The patient is awake, has a palpable pulse, BP 118/72 mm Hg, and no chest discomfort. Which rhythm is most likely?",
+    "o": [
+      "Sinus bradycardia",
+      "Atrial fibrillation with RVR",
+      "Complete heart block",
+      "Supraventricular tachycardia"
+    ],
+    "a": 3,
+    "r": "SVT is a regular rhythm of 130/min or more and P waves may be difficult to see. The stable patient has a pulse and no signs of poor perfusion.",
+    "difficulty": 4,
+    "topic": "SVT"
+  },
+  {
+    "id": "jack-ekg-011",
+    "source": "jack-ekg-practice-v1",
+    "type": "Ectopy Recognition",
+    "q": "Which telemetry finding identifies a premature atrial complex rather than a premature ventricular complex?",
+    "o": [
+      "A wide bizarre early QRS with no preceding P wave",
+      "Two consecutive wide bizarre ventricular beats",
+      "An early abnormal P wave followed by a usually narrow QRS",
+      "A pause with progressive PR prolongation"
+    ],
+    "a": 2,
+    "r": "A PAC starts in the atrium before the next sinus impulse and has an abnormal P wave that can be hidden in the preceding T wave. A PVC is wide and bizarre.",
+    "difficulty": 4,
+    "topic": "PAC versus PVC"
+  },
+  {
+    "id": "jack-ekg-012",
+    "source": "jack-ekg-practice-v1",
+    "type": "Ectopy Recognition",
+    "q": "On telemetry, every third complex is a premature wide bizarre QRS without a preceding P wave. How should the nurse document this pattern?",
+    "o": [
+      "Ventricular bigeminy",
+      "Atrial trigeminy",
+      "Ventricular trigeminy",
+      "A ventricular couplet"
+    ],
+    "a": 2,
+    "r": "A PVC every third complex is ventricular trigeminy. Bigeminy means every other complex, and a couplet is two consecutive PVCs.",
+    "difficulty": 3,
+    "topic": "PVC patterns"
+  },
+  {
+    "id": "jack-ekg-013",
+    "source": "jack-ekg-practice-v1",
+    "type": "Ectopy Recognition",
+    "q": "A rhythm strip shows two consecutive PVCs followed by a sinus beat. Which ectopy term is correct?",
+    "o": [
+      "Bigeminy",
+      "Triplet",
+      "Couplet",
+      "Wandering atrial pacemaker"
+    ],
+    "a": 2,
+    "r": "Two consecutive PVCs form a ventricular couplet. Three or more PVCs in a row meet the course description of ventricular tachycardia.",
+    "difficulty": 3,
+    "topic": "PVC patterns"
+  },
+  {
+    "id": "jack-ekg-014",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "Telemetry shows a regular wide-complex rhythm at 166/min. The patient has a palpable pulse, BP 122/74 mm Hg, is alert, and denies chest pain or dyspnea. Which action is most appropriate to anticipate?",
+    "o": [
+      "Begin CPR and deliver unsynchronized defibrillation",
+      "Prepare for transcutaneous pacing",
+      "Administer atropine for symptomatic bradycardia",
+      "Provide oxygen and anticipate antiarrhythmic therapy such as amiodarone"
+    ],
+    "a": 3,
+    "r": "This is ventricular tachycardia with a pulse in a stable patient. The course lists oxygen and antiarrhythmic therapy such as amiodarone or lidocaine; defibrillation is for VT without a pulse.",
+    "difficulty": 4,
+    "topic": "Stable ventricular tachycardia"
+  },
+  {
+    "id": "jack-ekg-015",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient has a regular wide-complex rhythm at 174/min with a palpable pulse, BP 76/40 mm Hg, chest discomfort, and decreased level of consciousness. Which intervention is indicated?",
+    "o": [
+      "Defibrillation with CPR",
+      "Adenosine followed by observation",
+      "Synchronized cardioversion",
+      "Atropine followed by pacing"
+    ],
+    "a": 2,
+    "r": "Ventricular tachycardia with a pulse plus hypotension, chest discomfort, and altered mental status is unstable. Synchronized cardioversion is the indicated electrical intervention.",
+    "difficulty": 4,
+    "topic": "Unstable ventricular tachycardia"
+  },
+  {
+    "id": "jack-ekg-016",
+    "source": "jack-ekg-practice-v1",
+    "type": "Priority",
+    "q": "A patient suddenly becomes unresponsive. The monitor shows a chaotic, disorganized waveform with no identifiable QRS complexes. The patient has no pulse and no breathing. Which action should occur immediately?",
+    "o": [
+      "Synchronized cardioversion",
+      "Transcutaneous pacing",
+      "Defibrillation with CPR",
+      "IV magnesium only"
+    ],
+    "a": 2,
+    "r": "The findings describe ventricular fibrillation. VF causes cardiovascular collapse with no pulse and requires defibrillation and CPR.",
+    "difficulty": 4,
+    "topic": "Ventricular fibrillation"
+  },
+  {
+    "id": "jack-ekg-017",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "Telemetry shows polymorphic wide-complex tachycardia that appears to oscillate around the baseline. The patient has a pulse of 132/min, BP 110/68 mm Hg, and reports lightheadedness. Which medication is most specifically anticipated?",
+    "o": [
+      "IV atropine",
+      "IV digoxin",
+      "IV magnesium",
+      "IV calcium"
+    ],
+    "a": 2,
+    "r": "The oscillating polymorphic ventricular rhythm is torsades de pointes. The course lists IV magnesium as treatment and connects hypomagnesemia with increased torsades risk.",
+    "difficulty": 4,
+    "topic": "Torsades de pointes"
+  },
+  {
+    "id": "jack-ekg-018",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Which combination is most consistent with first-degree AV block?",
+    "o": [
+      "Progressively longer PR intervals until a QRS is absent",
+      "More P waves than QRS complexes with constant conducted PR intervals",
+      "P waves and QRS complexes with no consistent relationship",
+      "A PR interval greater than 0.20 seconds with a 1:1 P-to-QRS relationship"
+    ],
+    "a": 3,
+    "r": "First-degree AV block has a prolonged PR interval greater than 0.20 seconds while each P wave conducts to a QRS complex.",
+    "difficulty": 3,
+    "topic": "First-degree AV block"
+  },
+  {
+    "id": "jack-ekg-019",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "A strip shows PR intervals that lengthen beat by beat until a P wave is not followed by a QRS complex. Which rhythm is present?",
+    "o": [
+      "Second-degree AV block type I",
+      "Second-degree AV block type II",
+      "Third-degree AV block",
+      "First-degree AV block"
+    ],
+    "a": 0,
+    "r": "Mobitz I, or Wenckebach, shows progressive PR prolongation until a QRS complex drops.",
+    "difficulty": 4,
+    "topic": "Mobitz I"
+  },
+  {
+    "id": "jack-ekg-020",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient has intermittent dropped QRS complexes. Conducted beats have a constant PR interval. Pulse is 42/min, BP 84/50 mm Hg, and the patient reports dizziness. Which plan best matches the course guidance?",
+    "o": [
+      "Observe because the rhythm is usually tolerated",
+      "Prepare synchronized cardioversion because the patient has a pulse",
+      "Prepare for a permanent pacemaker and provide oxygen",
+      "Give magnesium because torsades is expected"
+    ],
+    "a": 2,
+    "r": "The findings support Mobitz II with symptomatic bradycardia and decreased cardiac output. The course lists PPM, oxygen, and atropine, epinephrine, or dopamine as treatments.",
+    "difficulty": 4,
+    "topic": "Mobitz II"
+  },
+  {
+    "id": "jack-ekg-021",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Which finding best identifies third-degree AV block?",
+    "o": [
+      "A prolonged PR interval with every P followed by QRS",
+      "Progressive PR prolongation before a dropped QRS",
+      "Constant PR intervals with occasional nonconducted P waves",
+      "Atrial and ventricular activity that is regular but not associated"
+    ],
+    "a": 3,
+    "r": "Complete heart block has AV dissociation: atrial and ventricular activity are regular but P waves and QRS complexes are not associated.",
+    "difficulty": 4,
+    "topic": "Third-degree AV block"
+  },
+  {
+    "id": "jack-ekg-022",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "Which ECG pattern most strongly supports hypokalemia?",
+    "o": [
+      "Tall peaked T waves with a short QT interval",
+      "Flattened T waves with a prominent U wave",
+      "Diffuse ST elevation with PR depression",
+      "Shortened ST segment with a short QT interval"
+    ],
+    "a": 1,
+    "r": "Hypokalemia causes flattened or decreased-amplitude T waves, prominent U waves, ST depression, and dysrhythmia risk.",
+    "difficulty": 4,
+    "topic": "Hypokalemia"
+  },
+  {
+    "id": "jack-ekg-023",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "A patient with renal failure has potassium 6.2 mEq/L. Which ECG change is the key finding the nurse should anticipate?",
+    "o": [
+      "Tall peaked T waves",
+      "Prominent U waves",
+      "Prolonged ST segment",
+      "Diffuse PR depression"
+    ],
+    "a": 0,
+    "r": "The course identifies tall peaked T waves as the key ECG finding in hyperkalemia. Severe hyperkalemia can also widen the QRS and cause cardiac standstill.",
+    "difficulty": 3,
+    "topic": "Hyperkalemia"
+  },
+  {
+    "id": "jack-ekg-024",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "Which electrolyte imbalance carries the course-specific risk of prolonged QT and PR intervals, multifocal ventricular tachycardia, treatment-resistant VF, and torsades?",
+    "o": [
+      "Hypernatremia",
+      "Hypercalcemia",
+      "Hypomagnesemia",
+      "Hypokalemia"
+    ],
+    "a": 2,
+    "r": "Hypomagnesemia prolongs QT and PR intervals and increases risk for multifocal VT, treatment-resistant VF, and torsades de pointes.",
+    "difficulty": 4,
+    "topic": "Hypomagnesemia"
+  },
+  {
+    "id": "jack-ekg-025",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "Which ECG effect is expected with hypercalcemia according to the course presentation?",
+    "o": [
+      "A shortened ST segment causing a short QT interval",
+      "A prolonged ST segment causing a long QT interval",
+      "A prominent U wave after the T wave",
+      "A tall peaked T wave with widened QRS"
+    ],
+    "a": 0,
+    "r": "Hypercalcemia shortens the ST segment and therefore shortens the QT interval. Hypocalcemia prolongs the ST segment and QT interval.",
+    "difficulty": 3,
+    "topic": "Calcium effects"
+  },
+  {
+    "id": "jack-ekg-026",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication",
+    "q": "Before administering digoxin, which nursing action is specifically taught in the course materials?",
+    "o": [
+      "Obtain an apical pulse for one full minute",
+      "Give with an antacid to prevent nausea",
+      "Hold all anticoagulants for the day",
+      "Check for an elevated U wave first"
+    ],
+    "a": 0,
+    "r": "The course directs nurses to monitor the apical pulse for one full minute before digoxin administration and to avoid antacids two hours before or after it.",
+    "difficulty": 3,
+    "topic": "Digoxin nursing care"
+  },
+  {
+    "id": "jack-ekg-027",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication",
+    "q": "A patient taking digoxin reports fatigue, muscle weakness, confusion, visual changes, and loss of appetite. Which interpretation is most appropriate?",
+    "o": [
+      "Expected effects of a calcium channel blocker",
+      "Possible digoxin toxicity",
+      "Expected effects of a potassium-sparing diuretic",
+      "Typical findings of hypocalcemia"
+    ],
+    "a": 1,
+    "r": "Fatigue, muscle weakness, confusion, visual changes, and loss of appetite are listed as findings of digoxin toxicity.",
+    "difficulty": 4,
+    "topic": "Digoxin toxicity"
+  },
+  {
+    "id": "jack-ekg-028",
+    "source": "jack-ekg-practice-v1",
+    "type": "Procedure Safety",
+    "q": "Why is cardioversion synchronized to the QRS complex?",
+    "o": [
+      "It maximizes atrial contraction",
+      "It prevents the R-on-T phenomenon",
+      "It eliminates the need for sedation",
+      "It makes anticoagulation unnecessary"
+    ],
+    "a": 1,
+    "r": "Cardioversion delivers a countershock synchronized to the QRS complex to prevent the R-on-T phenomenon.",
+    "difficulty": 4,
+    "topic": "Synchronized cardioversion"
+  },
+  {
+    "id": "jack-ekg-029",
+    "source": "jack-ekg-practice-v1",
+    "type": "Procedure Preparation",
+    "q": "A stable patient is scheduled for cardioversion of atrial fibrillation. Which preprocedure history most directly supports proceeding without waiting four to six weeks of anticoagulation?",
+    "o": [
+      "A transesophageal echocardiogram was completed before the procedure",
+      "The patient has a normal chest x-ray",
+      "The patient takes a beta blocker daily",
+      "The patient has a narrow QRS complex"
+    ],
+    "a": 0,
+    "r": "The course states that a patient needs anticoagulation for four to six weeks before cardioversion or a TEE before the procedure.",
+    "difficulty": 4,
+    "topic": "Cardioversion preparation"
+  },
+  {
+    "id": "jack-ekg-030",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient with symptomatic sinus bradycardia has a pulse of 38/min, BP 86/52 mm Hg, dizziness, and decreased urine output. Which intervention should the nurse anticipate first?",
+    "o": [
+      "Adenosine",
+      "Atropine",
+      "Synchronized cardioversion",
+      "Defibrillation"
+    ],
+    "a": 1,
+    "r": "For symptomatic bradycardia, the course lists atropine first, followed by dopamine or epinephrine infusion if unresponsive and pacing when needed.",
+    "difficulty": 4,
+    "topic": "Symptomatic bradycardia"
+  },
+  {
+    "id": "jack-ekg-031",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "A patient has a harsh midsystolic ejection murmur at the second intercostal space that radiates to the neck. The patient reports exertional angina, dyspnea, and near-syncope. Which disorder is most likely?",
+    "o": [
+      "Mitral regurgitation",
+      "Aortic stenosis",
+      "Aortic regurgitation",
+      "Mitral stenosis"
+    ],
+    "a": 1,
+    "r": "Aortic stenosis produces a harsh midsystolic ejection murmur at the second intercostal space radiating to the neck, with angina, dyspnea, or exertional syncope.",
+    "difficulty": 4,
+    "topic": "Aortic stenosis"
+  },
+  {
+    "id": "jack-ekg-032",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "Which assessment finding is most consistent with mitral regurgitation?",
+    "o": [
+      "A holosystolic murmur at the apex radiating to the axilla",
+      "A harsh systolic murmur at the second intercostal space radiating to the neck",
+      "A low-pitched rumble after S2 with an opening snap",
+      "A decrescendo murmur at the third intercostal space along the left sternal border"
+    ],
+    "a": 0,
+    "r": "Mitral regurgitation produces a holosystolic murmur at the apex that radiates into the axilla and may be heard with an S3 gallop.",
+    "difficulty": 4,
+    "topic": "Mitral regurgitation"
+  },
+  {
+    "id": "jack-ekg-033",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "A nurse hears a low-pitched, decrescendo, rumbling murmur after S2 with an opening snap at the apex and little radiation. Which condition is most likely?",
+    "o": [
+      "Aortic stenosis",
+      "Mitral regurgitation",
+      "Mitral stenosis",
+      "Aortic regurgitation"
+    ],
+    "a": 2,
+    "r": "Mitral stenosis is a diastolic murmur after S2 with an opening snap, low-pitched rumbling quality, and apical location with little radiation.",
+    "difficulty": 4,
+    "topic": "Mitral stenosis"
+  },
+  {
+    "id": "jack-ekg-034",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "Which patient finding most closely matches aortic regurgitation in the course deck?",
+    "o": [
+      "A decrescendo murmur at the third intercostal space radiating along the left sternal border",
+      "A midsystolic click at the apex that increases with squatting",
+      "A holosystolic murmur at the lower left sternal border from a left-to-right shunt",
+      "A harsh midsystolic ejection murmur at the pulmonic area"
+    ],
+    "a": 0,
+    "r": "Aortic regurgitation is a diastolic decrescendo murmur at the third intercostal space that radiates along the left sternal border.",
+    "difficulty": 3,
+    "topic": "Aortic regurgitation"
+  },
+  {
+    "id": "jack-ekg-035",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication",
+    "q": "Which medication class requires monitoring for decreased potassium according to the valve-disease medication slide?",
+    "o": [
+      "Loop diuretics",
+      "Potassium-sparing diuretics",
+      "Anticoagulants",
+      "Inotropic agents"
+    ],
+    "a": 0,
+    "r": "The course specifically identifies loop diuretics as requiring monitoring for decreased potassium.",
+    "difficulty": 3,
+    "topic": "Cardiac medications"
+  },
+  {
+    "id": "jack-ekg-036",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient reports sharp chest pressure after a recent respiratory infection. Pain worsens with inspiration and coughing and improves when sitting forward. A friction rub is heard at the lower left sternal border. Which condition best explains these findings?",
+    "o": [
+      "Myocarditis",
+      "Acute pericarditis",
+      "Infective endocarditis",
+      "Aortic stenosis"
+    ],
+    "a": 1,
+    "r": "Pericarditis often follows a respiratory infection and causes pain worsened by inspiration, coughing, and swallowing, relieved by sitting forward, with a pericardial friction rub.",
+    "difficulty": 4,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "jack-ekg-037",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Interpretation",
+    "q": "Which ECG pattern is the classic course finding for pericarditis?",
+    "o": [
+      "Diffuse ST-segment elevation with PR-segment depression",
+      "ST depression limited to one ischemic zone",
+      "Tall peaked T waves with a shortened QT",
+      "A large Q wave as the only abnormality"
+    ],
+    "a": 0,
+    "r": "The pericarditis deck identifies diffuse ST-segment elevation in multiple leads with PR-segment depression as the classic pattern.",
+    "difficulty": 4,
+    "topic": "Pericarditis ECG"
+  },
+  {
+    "id": "jack-ekg-038",
+    "source": "jack-ekg-practice-v1",
+    "type": "Priority",
+    "q": "A patient with a large pericardial effusion becomes hypotensive with worsening dyspnea and signs of reduced cardiac output. Which complication should the nurse escalate immediately?",
+    "o": [
+      "Cardiac tamponade",
+      "Mitral valve prolapse",
+      "First-degree AV block",
+      "Stable sinus tachycardia"
+    ],
+    "a": 0,
+    "r": "A large amount of fluid in the pericardial sac can put pressure on the heart and cause cardiac tamponade. The course emphasizes monitoring and escalation for tamponade.",
+    "difficulty": 4,
+    "topic": "Cardiac tamponade"
+  },
+  {
+    "id": "jack-ekg-039",
+    "source": "jack-ekg-practice-v1",
+    "type": "Inflammatory Cardiac",
+    "q": "Which condition involves inflammation of the myocardium and may produce tachycardia, chest pain, dysrhythmias, cardiomegaly, and ST elevation or T-wave inversion?",
+    "o": [
+      "Pericarditis",
+      "Myocarditis",
+      "Rheumatic endocarditis",
+      "Infective endocarditis"
+    ],
+    "a": 1,
+    "r": "Myocarditis is inflammation of the myocardium and may cause tachycardia, chest pain, dysrhythmias, cardiomegaly, and ECG abnormalities.",
+    "difficulty": 3,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "jack-ekg-040",
+    "source": "jack-ekg-practice-v1",
+    "type": "Infective Endocarditis",
+    "q": "A patient with a prosthetic valve develops flu-like symptoms, a new murmur, petechiae on mucous membranes, splinter hemorrhages, and positive blood cultures. Which diagnosis is most consistent?",
+    "o": [
+      "Acute pericarditis",
+      "Infective endocarditis",
+      "Rheumatic endocarditis from resolved pharyngitis",
+      "Myocarditis"
+    ],
+    "a": 1,
+    "r": "Infective endocarditis may occur with prosthetic valves and presents with flu-like symptoms, murmur, petechiae, splinter hemorrhages, and positive blood cultures.",
+    "difficulty": 4,
+    "topic": "Infective endocarditis"
+  },
+  {
+    "id": "jack-ekg-041",
+    "source": "jack-ekg-practice-v1",
+    "type": "Infective Endocarditis",
+    "q": "Which diagnostic approach is emphasized for improving detection of the causative organism in suspected infective endocarditis?",
+    "o": [
+      "Draw at least three sets of blood cultures",
+      "Obtain one urine culture after antibiotics begin",
+      "Use a chest x-ray as the only diagnostic test",
+      "Delay cultures until the fever resolves"
+    ],
+    "a": 0,
+    "r": "The course states that at least three sets of blood cultures are typically drawn to increase the chance of detecting bacteria.",
+    "difficulty": 3,
+    "topic": "Infective endocarditis diagnostics"
+  },
+  {
+    "id": "jack-ekg-042",
+    "source": "jack-ekg-practice-v1",
+    "type": "Infective Endocarditis",
+    "q": "Which discharge instruction most directly supports prevention of recurrent infective endocarditis complications?",
+    "o": [
+      "Stop antibiotics when the fever resolves",
+      "Avoid all activity for six months",
+      "Maintain good oral hygiene and tell dental providers about the endocarditis history",
+      "Take over-the-counter products containing ephedrine for fatigue"
+    ],
+    "a": 2,
+    "r": "Course discharge teaching includes good oral hygiene, completing prescribed antibiotics, and advising all providers including dentists about a history of endocarditis.",
+    "difficulty": 3,
+    "topic": "Endocarditis education"
+  },
+  {
+    "id": "jack-ekg-043",
+    "source": "jack-ekg-practice-v1",
+    "type": "Cardiac Procedures",
+    "q": "After a left cardiac catheterization through the groin, which position is appropriate while bedrest is ordered?",
+    "o": [
+      "Sit upright with the affected hip flexed",
+      "Remain flat and avoid bending the hip",
+      "Ambulate immediately to assess circulation",
+      "Lie prone with knees flexed"
+    ],
+    "a": 1,
+    "r": "Following a groin approach, the patient remains flat and avoids bending at the hip while on prescribed bedrest.",
+    "difficulty": 4,
+    "topic": "Cardiac catheterization"
+  },
+  {
+    "id": "jack-ekg-044",
+    "source": "jack-ekg-practice-v1",
+    "type": "Cardiac Procedures",
+    "q": "Which complication is specifically associated with radial or brachial cardiac catheterization access in the course deck?",
+    "o": [
+      "Compartment syndrome",
+      "Pericardial friction rub",
+      "Atrial blood stasis",
+      "Opening-snap murmur"
+    ],
+    "a": 0,
+    "r": "The course identifies compartment syndrome as a complication of radial and brachial approaches. Circulation, puncture site, and pain require monitoring.",
+    "difficulty": 4,
+    "topic": "Cardiac catheterization"
+  },
+  {
+    "id": "jack-ekg-045",
+    "source": "jack-ekg-practice-v1",
+    "type": "CABG Care",
+    "q": "Which nursing instruction best reflects sternal precautions after CABG?",
+    "o": [
+      "Push up from the bed with both arms",
+      "Use a pillow to splint the sternum and avoid pushing with the arms",
+      "Keep the patient on strict bedrest until discharge",
+      "Avoid checking pulses in the grafted extremity"
+    ],
+    "a": 1,
+    "r": "After CABG, the course directs patients not to push with their arms and to splint the sternum with a pillow.",
+    "difficulty": 3,
+    "topic": "CABG postoperative care"
+  },
+  {
+    "id": "jack-ekg-046",
+    "source": "jack-ekg-practice-v1",
+    "type": "Device Care",
+    "q": "A paced rhythm shows pacing spikes, but no complex follows each spike. How should the nurse identify this malfunction?",
+    "o": [
+      "Undersensing",
+      "Oversensing",
+      "Loss of capture",
+      "Loss of pacing"
+    ],
+    "a": 2,
+    "r": "Loss of capture occurs when a pacing spike is not followed by the expected complex.",
+    "difficulty": 4,
+    "topic": "Pacemaker malfunction"
+  },
+  {
+    "id": "jack-ekg-047",
+    "source": "jack-ekg-practice-v1",
+    "type": "Device Care",
+    "q": "Which finding describes pacemaker undersensing?",
+    "o": [
+      "No pacing artifacts are visible at all",
+      "A pacing spike occurs at the preset interval despite an intrinsic rhythm",
+      "A pacing spike is followed by no complex",
+      "A generator incision has a small hematoma"
+    ],
+    "a": 1,
+    "r": "Undersensing means the device does not recognize intrinsic activity, so a pacing spike occurs at the preset interval despite the intrinsic rhythm.",
+    "difficulty": 4,
+    "topic": "Pacemaker malfunction"
+  },
+  {
+    "id": "jack-ekg-048",
+    "source": "jack-ekg-practice-v1",
+    "type": "Device Education",
+    "q": "Which statement by a patient with a new pacemaker or ICD shows correct understanding of home care?",
+    "o": [
+      "I can carry my cell phone directly over the generator",
+      "I should raise the affected arm fully above my head today",
+      "I will check my pulse daily and wear a medical alert bracelet",
+      "I should avoid all household appliances indefinitely"
+    ],
+    "a": 2,
+    "r": "The course teaches daily pulse checks, medical alert identification, avoiding large magnetic fields, and avoiding carrying a cell phone on the same side as the generator.",
+    "difficulty": 3,
+    "topic": "Pacemaker and ICD education"
+  },
+  {
+    "id": "jack-ekg-049",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valve Procedures",
+    "q": "Which patient-teaching point applies after valve replacement according to the surgical procedures presentation?",
+    "o": [
+      "Use prophylactic antibiotics before invasive dental or respiratory procedures",
+      "Avoid daily weights because fluid changes are expected",
+      "Use over-the-counter products with ephedrine for congestion",
+      "Stop reporting petechial rash after the incision closes"
+    ],
+    "a": 0,
+    "r": "The course teaches prophylactic antibiotics before invasive dental or respiratory procedures, daily weights, wound care, and reporting CHF symptoms or petechial rash.",
+    "difficulty": 4,
+    "topic": "Valve replacement education"
+  },
+  {
+    "id": "jack-ekg-050",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication Calculation",
+    "q": "An IV infusion contains 400 mg in 250 mL. The prescription is 32 mg/hr. What pump rate should the nurse set?",
+    "o": [
+      "12.5 mL/hr",
+      "20 mL/hr",
+      "25 mL/hr",
+      "32 mL/hr"
+    ],
+    "a": 1,
+    "r": "The concentration is 400 mg divided by 250 mL, or 1.6 mg/mL. At 32 mg/hr, the rate is 32 divided by 1.6, or 20 mL/hr.",
+    "difficulty": 4,
+    "topic": "IV pump calculation"
+  },
+  {
+    "id": "jack-ekg-051",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication Calculation",
+    "q": "Heparin is supplied as 25,000 units in 500 mL. A 70-kg patient is prescribed 12 units/kg/hr. What pump rate is required?",
+    "o": [
+      "8.4 mL/hr",
+      "12 mL/hr",
+      "16.8 mL/hr",
+      "24 mL/hr"
+    ],
+    "a": 2,
+    "r": "The order is 70 kg multiplied by 12 units/kg/hr, or 840 units/hr. The bag contains 50 units/mL, so 840 divided by 50 equals 16.8 mL/hr.",
+    "difficulty": 4,
+    "topic": "Weight-based IV calculation"
+  },
+  {
+    "id": "jack-ekg-052",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication Calculation",
+    "q": "A medication concentration is 4 mg/mL. The prescribed dose is 0.75 mg. How many mL should the nurse prepare?",
+    "o": [
+      "0.075 mL",
+      "0.1875 mL",
+      "0.75 mL",
+      "3 mL"
+    ],
+    "a": 1,
+    "r": "Divide the dose by the concentration: 0.75 mg divided by 4 mg/mL equals 0.1875 mL.",
+    "difficulty": 3,
+    "topic": "Medication calculation"
+  },
+  {
+    "id": "jack-ekg-053",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "A regular rhythm has 6 large squares between consecutive R waves. Which ventricular rate should the nurse calculate?",
+    "o": [
+      "50/min",
+      "30/min",
+      "60/min",
+      "75/min"
+    ],
+    "a": 0,
+    "r": "For a regular rhythm, divide 300 by the number of large squares between R waves. 300 divided by 6 equals 50/min.",
+    "difficulty": 3,
+    "topic": "Rate calculation"
+  },
+  {
+    "id": "jack-ekg-054",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "Which statement correctly applies the 1,500 method for a regular rhythm?",
+    "o": [
+      "Multiply the number of small squares in six seconds by 10",
+      "Divide 1,500 by the number of small squares between two R waves",
+      "Divide 300 by the number of small squares between P waves",
+      "Count all T waves in a six-second strip and multiply by 10"
+    ],
+    "a": 1,
+    "r": "For a regular rhythm, the small-square method divides 1,500 by the number of small squares between two R waves.",
+    "difficulty": 3,
+    "topic": "Rate calculation"
+  },
+  {
+    "id": "jack-ekg-055",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "During systematic telemetry analysis, which assessment should the nurse make after determining rate and regularity?",
+    "o": [
+      "Determine whether the patient has a murmur",
+      "Assess P-wave shape and presence",
+      "Measure the chest-tube output",
+      "Inspect the radial catheter site"
+    ],
+    "a": 1,
+    "r": "The course rhythm-analysis sequence includes rate, regularity, P waves, PR interval, QRS width and appearance, ST segment, T wave, and QT interval.",
+    "difficulty": 3,
+    "topic": "Rhythm analysis"
+  },
+  {
+    "id": "jack-ekg-056",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Fundamentals",
+    "q": "A telemetry monitor displays a normal rhythm while a patient reports new chest pain and dyspnea. Which interpretation is most accurate?",
+    "o": [
+      "Telemetry excludes acute coronary syndrome symptoms",
+      "A normal monitor rules out hypoxia",
+      "ECG monitoring does not detect symptoms such as chest pain or shortness of breath",
+      "The patient should remain still until the monitor shows ST elevation"
+    ],
+    "a": 2,
+    "r": "The presentation states that electrocardiography records electrical activity but does not detect chest pain, dyspnea, or other acute coronary syndrome symptoms.",
+    "difficulty": 4,
+    "topic": "Cardiac monitoring"
+  },
+  {
+    "id": "jack-ekg-057",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Interpretation",
+    "q": "Which finding most closely supports myocardial ischemia in the course presentation?",
+    "o": [
+      "Diffuse PR-segment depression",
+      "A prominent U wave",
+      "A shortened QT interval",
+      "ST-segment depression"
+    ],
+    "a": 3,
+    "r": "The EKG presentation identifies ST-segment depression as a typical ischemia finding.",
+    "difficulty": 3,
+    "topic": "ST-segment changes"
+  },
+  {
+    "id": "jack-ekg-058",
+    "source": "jack-ekg-practice-v1",
+    "type": "EKG Interpretation",
+    "q": "A nurse identifies a large Q wave in the QRS complex. In the course framing, this most strongly suggests which process?",
+    "o": [
+      "A zone of infarction",
+      "A zone of ischemia",
+      "A zone of early repolarization",
+      "A zone of hypokalemia"
+    ],
+    "a": 0,
+    "r": "The course distinguishes ischemia as ST depression, injury as ST elevation, and infarction as a large Q wave in the QRS complex.",
+    "difficulty": 3,
+    "topic": "Injury and infarction"
+  },
+  {
+    "id": "jack-ekg-059",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "A regular rhythm is 54/min. P waves are inverted before or after the QRS, or hidden in the QRS, and QRS complexes are narrow. Which rhythm is most likely?",
+    "o": [
+      "Sinus bradycardia",
+      "Third-degree AV block",
+      "Junctional rhythm",
+      "Idioventricular rhythm"
+    ],
+    "a": 2,
+    "r": "A junctional rhythm is regular at 40 to 60/min and has inverted, retrograde, or hidden P waves with a narrow QRS.",
+    "difficulty": 4,
+    "topic": "Junctional rhythm"
+  },
+  {
+    "id": "jack-ekg-060",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient has a junctional rhythm at 44/min, pulse 44/min, BP 84/48 mm Hg, dizziness, and cool skin. Which action should the nurse anticipate?",
+    "o": [
+      "Synchronized cardioversion",
+      "Atropine and preparation for pacing",
+      "Defibrillation with CPR",
+      "Adenosine administration"
+    ],
+    "a": 1,
+    "r": "The course lists atropine or a pacemaker for symptomatic junctional rhythm, along with holding medications that slow heart rate and providing oxygen.",
+    "difficulty": 4,
+    "topic": "Symptomatic junctional rhythm"
+  },
+  {
+    "id": "jack-ekg-061",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "A rhythm is regular at 82/min, with at least three distinct P-wave shapes, variable PR intervals, and normal QRS complexes. Which rhythm is most likely?",
+    "o": [
+      "Atrial fibrillation",
+      "Multifocal ventricular tachycardia",
+      "Second-degree AV block type II",
+      "Wandering atrial pacemaker"
+    ],
+    "a": 3,
+    "r": "Wandering atrial pacemaker has changing P-wave shape and size from beat to beat, variable PR intervals, a normal QRS, and a rate of 60 to 100/min.",
+    "difficulty": 4,
+    "topic": "Wandering atrial pacemaker"
+  },
+  {
+    "id": "jack-ekg-062",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Which ECG combination best matches Wolff-Parkinson-White syndrome in the course deck?",
+    "o": [
+      "Long PR interval with a narrow QRS",
+      "Short PR interval with a usually wide QRS",
+      "No P waves with an irregularly irregular rhythm",
+      "Progressively longer PR intervals with a dropped QRS"
+    ],
+    "a": 1,
+    "r": "WPW involves an extra electrical pathway and may show a short PR interval less than 0.12 seconds with a usually wide QRS.",
+    "difficulty": 4,
+    "topic": "Wolff-Parkinson-White syndrome"
+  },
+  {
+    "id": "jack-ekg-063",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient with SVT has a regular pulse of 156/min, BP 124/76 mm Hg, palpitations, and mild dyspnea but no chest discomfort or altered mental status. Which treatment is included in the course options for this stable presentation?",
+    "o": [
+      "Transcutaneous pacing",
+      "Immediate defibrillation",
+      "Adenosine",
+      "Atropine"
+    ],
+    "a": 2,
+    "r": "The SVT slide lists oxygen, adenosine, amiodarone, calcium channel blockers, beta blockers, and cardioversion as possible treatments. This patient has no course-defined instability signs.",
+    "difficulty": 4,
+    "topic": "Stable SVT"
+  },
+  {
+    "id": "jack-ekg-064",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient with a regular narrow-complex rhythm at 160/min becomes pale and confused. Pulse is present at 160/min, BP 78/44 mm Hg, and chest discomfort is reported. Which escalation is most appropriate?",
+    "o": [
+      "Prepare for defibrillation and CPR",
+      "Administer atropine for bradycardia",
+      "Observe until the P waves become visible",
+      "Prepare for synchronized cardioversion"
+    ],
+    "a": 3,
+    "r": "A rapid rhythm with a pulse and hypotension, chest discomfort, and altered mental status meets the course description of hemodynamic instability requiring synchronized cardioversion.",
+    "difficulty": 4,
+    "topic": "Unstable SVT"
+  },
+  {
+    "id": "jack-ekg-065",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Three or more consecutive wide, bizarre ventricular complexes occur at 138/min. Which interpretation is best?",
+    "o": [
+      "Ventricular tachycardia",
+      "A ventricular couplet",
+      "Ventricular bigeminy",
+      "A nonconducted PAC"
+    ],
+    "a": 0,
+    "r": "The course defines ventricular tachycardia as three or more PVCs in a row, typically 100 to 200/min or more, with wide bizarre QRS complexes.",
+    "difficulty": 4,
+    "topic": "Ventricular tachycardia"
+  },
+  {
+    "id": "jack-ekg-066",
+    "source": "jack-ekg-practice-v1",
+    "type": "Rhythm Recognition",
+    "q": "Which finding distinguishes polymorphic ventricular tachycardia from monomorphic ventricular tachycardia?",
+    "o": [
+      "A narrow QRS complex",
+      "Upright P waves in lead II",
+      "Varying QRS shapes",
+      "A constant PR interval"
+    ],
+    "a": 2,
+    "r": "Monomorphic VT has consistent QRS shapes. Polymorphic VT has varying QRS shapes and includes torsades de pointes.",
+    "difficulty": 3,
+    "topic": "Ventricular tachycardia morphology"
+  },
+  {
+    "id": "jack-ekg-067",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient has ventricular tachycardia and suddenly loses consciousness. No carotid pulse is palpable, BP is unobtainable, and respirations are absent. Which response is correct?",
+    "o": [
+      "Perform synchronized cardioversion",
+      "Give adenosine and reassess",
+      "Prepare for permanent pacemaker placement",
+      "Begin CPR and prepare for defibrillation"
+    ],
+    "a": 3,
+    "r": "Pulseless VT is treated like ventricular fibrillation in the course material: CPR and defibrillation, with medications such as amiodarone, lidocaine, and epinephrine.",
+    "difficulty": 4,
+    "topic": "Pulseless ventricular tachycardia"
+  },
+  {
+    "id": "jack-ekg-068",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "A patient has a potassium level below 3.5 mEq/L after prolonged diarrhea. Which additional finding is most expected?",
+    "o": [
+      "Tall peaked T waves and a shortened QT",
+      "Flattened T waves and a prominent U wave",
+      "Shortened ST segment and a short QT",
+      "No primary ECG effect"
+    ],
+    "a": 1,
+    "r": "Hypokalemia can follow diarrhea and is associated with flattened T waves, prominent U waves, ST depression, and dysrhythmias.",
+    "difficulty": 4,
+    "topic": "Hypokalemia"
+  },
+  {
+    "id": "jack-ekg-069",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "Which ECG change is expected with hypocalcemia?",
+    "o": [
+      "Shortened ST segment and shortened QT interval",
+      "Tall peaked T waves with a wide QRS",
+      "Prolonged ST segment and prolonged QT interval",
+      "Prominent U waves with flattened T waves"
+    ],
+    "a": 2,
+    "r": "Hypocalcemia prolongs the ST segment, producing a prolonged QT interval. Hypercalcemia shortens both.",
+    "difficulty": 3,
+    "topic": "Calcium effects"
+  },
+  {
+    "id": "jack-ekg-070",
+    "source": "jack-ekg-practice-v1",
+    "type": "Electrolytes",
+    "q": "A patient with renal failure has weakness, flushing, confusion, hypotension, increasing PR and QT intervals, and AV block. Which imbalance best explains this pattern?",
+    "o": [
+      "Hypomagnesemia",
+      "Hypernatremia",
+      "Hypokalemia",
+      "Hypermagnesemia"
+    ],
+    "a": 3,
+    "r": "Hypermagnesemia is associated with renal failure and can cause weakness, flushing, confusion, hypotension, increased PR and QT intervals, AV block, and asystole.",
+    "difficulty": 4,
+    "topic": "Hypermagnesemia"
+  },
+  {
+    "id": "jack-ekg-071",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication",
+    "q": "Which medication order deserves special attention in a patient with a potassium of 3.1 mEq/L because the course identifies the drug as a possible cause of further potassium loss?",
+    "o": [
+      "Potassium-sparing diuretic",
+      "Loop diuretic",
+      "Anticoagulant",
+      "Amoxicillin"
+    ],
+    "a": 1,
+    "r": "The medication deck notes that loop diuretics require monitoring for decreased potassium. This could worsen hypokalemia and dysrhythmia risk.",
+    "difficulty": 4,
+    "topic": "Diuretics and potassium"
+  },
+  {
+    "id": "jack-ekg-072",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication",
+    "q": "Which medication teaching point is correct for a patient prescribed ibuprofen for pericarditis?",
+    "o": [
+      "Stop it abruptly once pain improves",
+      "Take it on an empty stomach with antacids",
+      "Take it with food and avoid alcohol",
+      "Use it despite active peptic ulcer disease"
+    ],
+    "a": 2,
+    "r": "The pericarditis slide teaches that ibuprofen should be taken with food, alcohol should be avoided, and it should not be given to patients with peptic ulcer disease.",
+    "difficulty": 3,
+    "topic": "Pericarditis medications"
+  },
+  {
+    "id": "jack-ekg-073",
+    "source": "jack-ekg-practice-v1",
+    "type": "AV Block",
+    "q": "Which finding distinguishes Mobitz II from Mobitz I?",
+    "o": [
+      "The PR interval progressively lengthens before a dropped QRS complex",
+      "Every P wave conducts with a prolonged PR interval",
+      "Atrial and ventricular activity are not associated",
+      "The PR interval remains constant on conducted beats before dropped QRS complexes"
+    ],
+    "a": 3,
+    "r": "Mobitz II has a constant PR interval on conducted beats with more P waves than QRS complexes. Mobitz I has progressive PR prolongation.",
+    "difficulty": 4,
+    "topic": "Mobitz II"
+  },
+  {
+    "id": "jack-ekg-074",
+    "source": "jack-ekg-practice-v1",
+    "type": "AV Block",
+    "q": "A patient has atrial activity at 80/min and ventricular activity at 34/min. Both are regular, but P waves have no consistent relationship to QRS complexes. Which rhythm is present?",
+    "o": [
+      "Second-degree AV block type I",
+      "Third-degree AV block",
+      "First-degree AV block",
+      "Accelerated junctional rhythm"
+    ],
+    "a": 1,
+    "r": "Third-degree AV block has AV dissociation. Atrial and ventricular rhythms are regular but not associated, and the ventricular rate may be 20 to 60/min.",
+    "difficulty": 4,
+    "topic": "Third-degree AV block"
+  },
+  {
+    "id": "jack-ekg-075",
+    "source": "jack-ekg-practice-v1",
+    "type": "Clinical Judgment",
+    "q": "A patient with complete heart block has a ventricular pulse of 30/min, BP 80/44 mm Hg, altered mentation, and weak pulses. Which intervention should the nurse anticipate?",
+    "o": [
+      "Prepare synchronized cardioversion",
+      "Deliver unsynchronized defibrillation",
+      "Prepare for permanent pacing with supportive bradycardia treatment",
+      "Administer adenosine"
+    ],
+    "a": 2,
+    "r": "Complete heart block reduces cardiac output and the course lists PPM, oxygen, and atropine, epinephrine, or dopamine as treatment options.",
+    "difficulty": 4,
+    "topic": "Symptomatic complete heart block"
+  },
+  {
+    "id": "jack-ekg-076",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "A patient has a midsystolic click best heard at the apex. The sound increases with Valsalva and diminishes with squatting. Which disorder is most likely?",
+    "o": [
+      "Mitral stenosis",
+      "Aortic stenosis",
+      "Aortic regurgitation",
+      "Mitral valve prolapse"
+    ],
+    "a": 3,
+    "r": "Mitral valve prolapse produces a midsystolic click at the apex that is enhanced with Valsalva and diminished with squatting.",
+    "difficulty": 4,
+    "topic": "Mitral valve prolapse"
+  },
+  {
+    "id": "jack-ekg-077",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "Which heart sound is described in the course as an abnormal low-pitched sound associated with heart failure, although it may be normal in children and young adults?",
+    "o": [
+      "S4",
+      "S3",
+      "S1",
+      "S2"
+    ],
+    "a": 1,
+    "r": "S3 is an abnormal low-pitched sound associated with heart failure, though the course notes it may be normal in children and young adults.",
+    "difficulty": 3,
+    "topic": "Heart sounds"
+  },
+  {
+    "id": "jack-ekg-078",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "Which situation best supports an S4 finding in the course materials?",
+    "o": [
+      "A child with a physiologic third heart sound",
+      "A patient with a prosthetic valve and petechiae",
+      "A stiff hypertrophic ventricle in a patient with hypertension",
+      "A patient with pericarditis and diffuse ST elevation"
+    ],
+    "a": 2,
+    "r": "S4 is a presystolic atrial gallop associated with hypertrophic ventricles, hypertension, aortic stenosis, and fibrosis after MI.",
+    "difficulty": 4,
+    "topic": "Heart sounds"
+  },
+  {
+    "id": "jack-ekg-079",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "Which test best evaluates chamber size, valve-specific disease, ejection fraction, and regurgitant flow according to the murmur presentation?",
+    "o": [
+      "Chest x-ray",
+      "12-lead ECG",
+      "Angiography",
+      "Echocardiogram"
+    ],
+    "a": 3,
+    "r": "The course identifies echocardiography for chamber size, hypertrophy, valve-specific assessment, ejection fraction, and regurgitant flow.",
+    "difficulty": 3,
+    "topic": "Valvular diagnostics"
+  },
+  {
+    "id": "jack-ekg-080",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valvular Disease",
+    "q": "A patient has a holosystolic murmur heard at the lower left sternal border and a left-to-right shunt. Which diagnosis matches the course description?",
+    "o": [
+      "Atrial septal defect",
+      "Ventricular septal defect",
+      "Mitral valve prolapse",
+      "Aortic regurgitation"
+    ],
+    "a": 1,
+    "r": "The course describes ventricular septal defect as a left-to-right shunt with a holosystolic murmur best heard in the tricuspid area at the lower left sternal border.",
+    "difficulty": 4,
+    "topic": "Septal defects"
+  },
+  {
+    "id": "jack-ekg-081",
+    "source": "jack-ekg-practice-v1",
+    "type": "Inflammatory Cardiac",
+    "q": "A patient with known pericarditis now has a progressively enlarging cardiac silhouette and worsening dyspnea. Which complication is most concerning?",
+    "o": [
+      "Atrial fibrillation from loss of atrial kick",
+      "Aortic stenosis from calcification",
+      "Pericardial effusion that may progress to tamponade",
+      "Mobitz I from medication effects"
+    ],
+    "a": 2,
+    "r": "A pericardial effusion is fluid in the pericardial sac. If enough fluid accumulates, it can compress surrounding structures and progress to cardiac tamponade.",
+    "difficulty": 4,
+    "topic": "Pericardial effusion"
+  },
+  {
+    "id": "jack-ekg-082",
+    "source": "jack-ekg-practice-v1",
+    "type": "Inflammatory Cardiac",
+    "q": "Which condition follows group A beta-hemolytic streptococcal pharyngitis and can produce fever, chest pain, joint pain, murmur, and rash?",
+    "o": [
+      "Infective endocarditis",
+      "Myocarditis",
+      "Acute pericarditis",
+      "Rheumatic endocarditis"
+    ],
+    "a": 3,
+    "r": "Rheumatic endocarditis follows group A beta-hemolytic streptococcal pharyngitis and can cause fever, chest pain, joint pain, tachycardia, dyspnea, rash, friction rub, and murmur.",
+    "difficulty": 4,
+    "topic": "Rheumatic endocarditis"
+  },
+  {
+    "id": "jack-ekg-083",
+    "source": "jack-ekg-practice-v1",
+    "type": "Infective Endocarditis",
+    "q": "For a patient with suspected infective endocarditis and a prosthetic valve, which echocardiographic study is more sensitive for vegetations when TTE is inconclusive?",
+    "o": [
+      "Stress echocardiography",
+      "Radionuclide study",
+      "Fluoroscopy",
+      "Transesophageal echocardiography"
+    ],
+    "a": 3,
+    "r": "The endocarditis presentation identifies TEE as more sensitive than TTE for vegetations, especially with prosthetic valves or complex anatomy.",
+    "difficulty": 4,
+    "topic": "Endocarditis diagnostics"
+  },
+  {
+    "id": "jack-ekg-084",
+    "source": "jack-ekg-practice-v1",
+    "type": "Infective Endocarditis",
+    "q": "Which finding is a course-listed reason surgery may be needed for infective endocarditis?",
+    "o": [
+      "Persistent infection despite antibiotics",
+      "A normal echocardiogram",
+      "A single episode of mild fatigue",
+      "A stable first-degree AV block"
+    ],
+    "a": 0,
+    "r": "Surgery may be required for severe valve damage, heart failure, persistent infection despite antibiotics, or a large vegetation at high embolic risk.",
+    "difficulty": 4,
+    "topic": "Endocarditis treatment"
+  },
+  {
+    "id": "jack-ekg-085",
+    "source": "jack-ekg-practice-v1",
+    "type": "Cardiac Procedures",
+    "q": "Which statement about cardiac catheterization access is correct?",
+    "o": [
+      "Left cardiac catheterization uses arterial access",
+      "Right cardiac catheterization uses arterial access",
+      "Radial access requires the patient to remain flat with the hip straight",
+      "All catheterizations require sternotomy"
+    ],
+    "a": 0,
+    "r": "The cardiac-procedures deck states that right catheterization is venous and left catheterization is arterial. Radial and brachial approaches do not require bedrest.",
+    "difficulty": 4,
+    "topic": "Cardiac catheterization"
+  },
+  {
+    "id": "jack-ekg-086",
+    "source": "jack-ekg-practice-v1",
+    "type": "Cardiac Procedures",
+    "q": "Which procedure destroys specific cells responsible for tachydysrhythmias?",
+    "o": [
+      "Ablation during electrophysiologic testing",
+      "Percutaneous balloon valvuloplasty",
+      "Coronary artery bypass grafting",
+      "Insertion of an LVAD"
+    ],
+    "a": 0,
+    "r": "The course describes electrophysiologic testing with ablation as destruction of specific cells causing tachydysrhythmias.",
+    "difficulty": 3,
+    "topic": "Electrophysiology and ablation"
+  },
+  {
+    "id": "jack-ekg-087",
+    "source": "jack-ekg-practice-v1",
+    "type": "Cardiac Procedures",
+    "q": "A patient asks why CABG is planned. Which explanation is most accurate?",
+    "o": [
+      "A grafted blood vessel bypasses an occluded artery to restore flow beyond it",
+      "The procedure delivers a synchronized shock to reset the rhythm",
+      "The procedure places an electrical lead to treat bradycardia",
+      "The procedure removes fluid from the pericardial sac"
+    ],
+    "a": 0,
+    "r": "CABG uses a grafted blood vessel to bypass an occluded coronary artery and allow blood flow beyond the obstruction.",
+    "difficulty": 3,
+    "topic": "CABG"
+  },
+  {
+    "id": "jack-ekg-088",
+    "source": "jack-ekg-practice-v1",
+    "type": "Device Care",
+    "q": "Which patient is a course-listed candidate for an implantable cardioverter defibrillator?",
+    "o": [
+      "A survivor of cardiac arrest with spontaneous ventricular tachycardia",
+      "A patient with an occasional PAC after caffeine",
+      "A patient with asymptomatic first-degree AV block",
+      "A patient with a single benign systolic murmur"
+    ],
+    "a": 0,
+    "r": "ICDs detect and terminate life-threatening VT and VF. Candidates include survivors of cardiac arrest, people with spontaneous VT, and some post-MI patients with left ventricular dysfunction.",
+    "difficulty": 4,
+    "topic": "ICD indications"
+  },
+  {
+    "id": "jack-ekg-089",
+    "source": "jack-ekg-practice-v1",
+    "type": "Device Care",
+    "q": "After pacemaker or ICD implantation, which assessment is appropriate before discharge?",
+    "o": [
+      "Inspect the generator incision for infection, bleeding, or hematoma",
+      "Encourage immediate heavy lifting to test the lead",
+      "Place a cell phone directly over the generator to test interference",
+      "Skip an ECG because the device cannot be evaluated electrically"
+    ],
+    "a": 0,
+    "r": "The course directs nurses to monitor the generator incision for infection, bleeding, or hematoma and use chest x-ray and ECG to verify placement and function.",
+    "difficulty": 4,
+    "topic": "Pacemaker and ICD postoperative care"
+  },
+  {
+    "id": "jack-ekg-090",
+    "source": "jack-ekg-practice-v1",
+    "type": "Valve Procedures",
+    "q": "Which complication is specifically listed after valvuloplasty?",
+    "o": [
+      "Ventricular dysrhythmias",
+      "Pericardial friction rub",
+      "Atrial standstill",
+      "Pulmonary embolism from a chest tube"
+    ],
+    "a": 0,
+    "r": "The valvuloplasty slide lists complications including aortic regurgitation, emboli, ventricular perforation, aortic-valve rupture, and ventricular dysrhythmias.",
+    "difficulty": 4,
+    "topic": "Valvuloplasty complications"
+  },
+  {
+    "id": "jack-ekg-091",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication Calculation",
+    "q": "A pump contains 600 mg of medication in 300 mL. The prescription is 45 mg/hr. What rate should the nurse program?",
+    "o": [
+      "15 mL/hr",
+      "22.5 mL/hr",
+      "30 mL/hr",
+      "45 mL/hr"
+    ],
+    "a": 1,
+    "r": "The concentration is 600 mg divided by 300 mL, or 2 mg/mL. A 45 mg/hr dose requires 45 divided by 2, or 22.5 mL/hr.",
+    "difficulty": 4,
+    "topic": "IV pump calculation"
+  },
+  {
+    "id": "jack-ekg-092",
+    "source": "jack-ekg-practice-v1",
+    "type": "Medication Calculation",
+    "q": "An infusion contains 10,000 units in 250 mL. The order is 1,200 units/hr. What pump rate is required?",
+    "o": [
+      "20 mL/hr",
+      "25 mL/hr",
+      "30 mL/hr",
+      "40 mL/hr"
+    ],
+    "a": 2,
+    "r": "The concentration is 10,000 units divided by 250 mL, or 40 units/mL. Dividing 1,200 units/hr by 40 units/mL gives 30 mL/hr.",
+    "difficulty": 4,
+    "topic": "IV pump calculation"
+  }
+]
