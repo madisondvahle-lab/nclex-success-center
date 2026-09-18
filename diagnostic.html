@@ -714,6 +714,7 @@ const getNCLEXCategory = item => {
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const SUPABASE_URL = 'https://pmjwwktwlsqpetwfvolb.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT';
+const assessmentKeyForMode = mode => mode === 'assessment' ? 'readiness-assessment' : `diagnostic-${mode}`;
 
 async function saveInHouseAttempt(profile, history, ability, result, sessionKey) {
   if (!window.supabase || !history.length) throw new Error('Assessment persistence is unavailable');
@@ -741,6 +742,46 @@ async function saveInHouseAttempt(profile, history, ability, result, sessionKey)
       isCorrect: entry.correct
     }))
   });
+}
+
+function assessmentDb() {
+  if (!window.supabase) throw new Error('Supabase is unavailable');
+  return supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+function readinessCheckpoint({ currentQ, ability, history, selected, btState, csAnswers, submitted }) {
+  return {
+    schemaVersion: 1,
+    assessmentVersion: 'in-house-core-v1',
+    currentItemId: currentQ?.id || null,
+    ability,
+    answeredItemIds: history.map(item => item.id),
+    draft: {
+      selected,
+      btState,
+      csAnswers,
+      submitted: Boolean(submitted)
+    }
+  };
+}
+
+function restoreResponseHistory(responses) {
+  return (responses || []).map(response => ({
+    id: response.item_id,
+    sourceId: response.item_id.includes(':') ? response.item_id.split(':')[0] : response.item_id,
+    type: response.question_type || 'mcq',
+    difficulty: response.difficulty,
+    blueprint: response.blueprint,
+    nclexCategory: response.nclex_category,
+    coreTags: [],
+    source: response.item_source,
+    system: response.system,
+    topic: response.topic,
+    cognitiveLevel: response.cognitive_level,
+    selectedAnswer: response.selected_answer,
+    correctAnswer: response.correct_answer,
+    correct: response.is_correct
+  }));
 }
 
 function itemProbability(ability, difficulty) {
@@ -1082,13 +1123,26 @@ function CaseStudyQuestion({ q, submitted, csAnswers, onCSAnswer }) {
 // ─── PROFILE SCREEN ───────────────────────────────────────────────────────────
 const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","Health Promotion","Psychosocial Integrity","Basic Care & Comfort","Pharmacological & Parenteral Therapies","Reduction of Risk Potential","Physiological Adaptation"];
 
-function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
+function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmentLoading }) {
   const [weak,setWeak]=useState([]);
   const [mode,setMode]=useState(ASSESSMENT_ONLY?'assessment':'practice');
   const [qCount,setQCount]=useState(10);
+  const [actionState,setActionState]=useState({ status:null, error:null });
   const availableModes=ASSESSMENT_ONLY?[{val:'assessment',label:'NCLEX Readiness Assessment',sub:'85 questions · adaptive blueprint · no pass/fail label'}]:[{val:'practice',label:'📝 Practice Mode',sub:'Custom length · See score'},{val:'nclex',label:'💻 Core-Safe CAT',sub:'30–45 items · adaptive + essential safety coverage'},{val:'mock',label:'🧭 Adaptive NCLEX Mock CAT',sub:'85–150 items · adaptive mock pass/fail + safety blueprint'},{val:'remediation',label:'🎯 Remediation Mode',sub:'Targeted student weaknesses'}];
   const studentName = assessmentProfile?.studentName || 'Student';
-  const handleStart = () => onStart({name:studentName,weakAreas:weak,notes:'',externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?FULL_MOCK_MIN_Q:qCount,mode});
+  const activeAttempt = assessmentProfile?.activeAttempts?.[assessmentKeyForMode(mode)] || null;
+  const baseProfile = {name:studentName,studentId:assessmentProfile?.studentId||null,weakAreas:weak,notes:'',externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?(activeAttempt?.target_questions||FULL_MOCK_MIN_Q):qCount,mode};
+  const handleStart = () => onStart(baseProfile);
+  const handleStartNew = async () => {
+    setActionState({ status:"abandoning", error:null });
+    try {
+      await onAbandonAttempt(activeAttempt);
+      setActionState({ status:null, error:null });
+      onStart(baseProfile);
+    } catch (error) {
+      setActionState({ status:"failed", error:error.message || "Unable to start a new assessment." });
+    }
+  };
   return (
     <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
       <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
@@ -1142,10 +1196,29 @@ function ProfileScreen({ onStart, assessmentProfile, assessmentLoading }) {
         </div>
 
         <div style={{ marginTop:24 }}>
-          <button onClick={handleStart}
+          {activeAttempt ? (
+            <div style={{ background:"#eff6ff", border:"1px solid #bfdbfe", borderRadius:10, padding:"12px 14px", marginBottom:12, color:"#1e40af", fontSize:13, lineHeight:1.5 }}>
+              <strong>Continue this assessment?</strong>
+              <div>{activeAttempt.total_questions || 0} submitted · saved {new Date(activeAttempt.updated_at).toLocaleString()}</div>
+            </div>
+          ) : null}
+          {actionState.status==="failed" && <div style={{ color:"#b91c1c", fontSize:13, marginBottom:10 }}>{actionState.error}</div>}
+          {activeAttempt && (
+            <button onClick={()=>onStart({...baseProfile,resumeAttempt:activeAttempt})} disabled={actionState.status==="abandoning"}
+              style={{ width:"100%", padding:"14px", marginBottom:10, background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5 }}>
+              Continue Assessment →
+            </button>
+          )}
+          {activeAttempt && (
+            <button onClick={handleStartNew} disabled={actionState.status==="abandoning"}
+              style={{ width:"100%", padding:"11px", marginBottom:10, background:"#fff", color:"#475569", border:"1.5px solid #cbd5e1", borderRadius:10, fontSize:13, fontWeight:700, cursor:"pointer" }}>
+              {actionState.status==="abandoning" ? "Starting new assessment…" : "Start New Assessment"}
+            </button>
+          )}
+          {!activeAttempt ? <button onClick={handleStart}
             style={{ width:"100%", padding:"14px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5 }}>
             {mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin Adaptive Mock CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →"}
-          </button>
+          </button> : null}
         </div>
       </div>
     </div>
@@ -1265,24 +1338,74 @@ function ResultsScreen({ profile, history, ability, catResult, sessionKey, onRes
 }
 
 // ─── QUIZ SCREEN ──────────────────────────────────────────────────────────────
-function QuizScreen({ profile, onFinish }) {
-  const [history, setHistory] = useState([]);
-  const [ability, setAbility] = useState(0.5);
+function QuizScreen({ profile, onFinish, onPause }) {
+  const isAssessment = profile.mode === "assessment";
+  const persistenceEnabled = Boolean(profile.studentId);
   const activeBank = profile.mode==="remediation" ? REMEDIATION_BANK : QUESTION_BANK;
-  const [currentQ, setCurrentQ] = useState(()=>pickNextQuestion(activeBank,[],profile,0.5));
-  const [selected, setSelected] = useState([]);
-  const [btState, setBtState] = useState({left:[],center:[],right:[]});
-  const [csAnswers, setCsAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const resumeCheckpoint = profile.resumeAttempt?.checkpoint || {};
+  const resumeDraft = resumeCheckpoint.draft || {};
+  const resumeQuestion = resumeCheckpoint.currentItemId
+    ? activeBank.find(item => item.id === resumeCheckpoint.currentItemId)
+    : null;
+  const [history, setHistory] = useState(() => restoreResponseHistory(profile.resumeAttempt?.responses));
+  const [ability, setAbility] = useState(() => Number(resumeCheckpoint.ability ?? 0.5));
+  const [currentQ, setCurrentQ] = useState(() => resumeQuestion || pickNextQuestion(activeBank,[],profile,ability));
+  const [selected, setSelected] = useState(resumeDraft.selected || []);
+  const [btState, setBtState] = useState(resumeDraft.btState || {left:[],center:[],right:[]});
+  const [csAnswers, setCsAnswers] = useState(resumeDraft.csAnswers || {});
+  const [submitted, setSubmitted] = useState(Boolean(resumeDraft.submitted));
   const [catResult, setCatResult] = useState(null);
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
-  const isAssessment = profile.mode === "assessment";
+  const [attempt, setAttempt] = useState(profile.resumeAttempt ? {
+    id:profile.resumeAttempt.id,
+    sessionKey:profile.resumeAttempt.session_key,
+    revision:profile.resumeAttempt.checkpoint_revision,
+    targetQuestions:profile.resumeAttempt.target_questions,
+    qaMode:profile.resumeAttempt.qa_mode,
+    assessmentKey:profile.resumeAttempt.assessment_key || assessmentKeyForMode(profile.mode)
+  } : null);
+  const [persistenceState, setPersistenceState] = useState({ status:persistenceEnabled ? "starting" : "idle", error:null });
+
+  useEffect(() => {
+    if (!persistenceEnabled || attempt) return;
+    let active = true;
+    const startAttempt = async () => {
+      try {
+        const created = await NCLEX_ASSESSMENT_PERSISTENCE.createAttempt({
+          supabase: assessmentDb(),
+          studentId: profile.studentId,
+          sessionKey: profile.sessionKey,
+          assessmentKey: assessmentKeyForMode(profile.mode),
+          assessmentTitle: isAssessment ? 'NCLEX Readiness Assessment' : profile.name,
+          targetQuestions: profile.qCount,
+          qaMode: false,
+          checkpoint: readinessCheckpoint({ currentQ, ability, history, selected, btState, csAnswers, submitted })
+        });
+        if (active) {
+          setAttempt({ id:created.attempt_id, sessionKey:created.session_key || profile.sessionKey, revision:created.checkpoint_revision, targetQuestions:created.target_questions, qaMode:created.qa_mode, assessmentKey:assessmentKeyForMode(profile.mode) });
+          setPersistenceState({ status:"ready", error:null });
+        }
+      } catch (error) {
+        if (active) setPersistenceState({ status:"failed", error:error.message || "Unable to start the readiness assessment." });
+      }
+    };
+    startAttempt();
+    return () => { active = false; };
+  }, [persistenceEnabled, attempt, profile.sessionKey]);
+
+  useEffect(() => {
+    if (!history.length) return;
+    setHistory(current => current.map(record => {
+      const sourceItem = activeBank.find(item => item.id === record.sourceId);
+      return sourceItem ? {...record, coreTags:getCoreTags(sourceItem)} : record;
+    }));
+  }, []);
 
   const q = currentQ;
   if(!q){ onFinish(history, catResult); return null; }
   function finishSession(records, result, abilityEstimate=ability) {
-    onFinish(records, result, abilityEstimate);
+    onFinish(records, result, abilityEstimate, attempt?.sessionKey || profile.sessionKey);
   }
 
   const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
@@ -1311,11 +1434,55 @@ function QuizScreen({ profile, onFinish }) {
   }
 
   function handleSubmit() {
-    if(!isAnswered()) return;
+    if(!isAnswered() || (persistenceEnabled && !attempt)) return;
     setSubmitted(true);
   }
 
-  function handleNext() {
+  async function persistAssessmentRecords(records, newAbility, nextQuestion, nextHistory) {
+    if (!attempt) throw new Error('Readiness assessment is still starting. Please try again.');
+    let revision = attempt.revision;
+    const checkpoint = readinessCheckpoint({
+      currentQ: nextQuestion,
+      ability: newAbility,
+      history: nextHistory,
+      selected: [],
+      btState: {left:[],center:[],right:[]},
+      csAnswers: {},
+      submitted: false
+    });
+    for (const record of records) {
+      const saved = await NCLEX_ASSESSMENT_PERSISTENCE.recordResponse({
+        supabase: assessmentDb(),
+        attemptId: attempt.id,
+        expectedRevision: revision,
+        response: record,
+        checkpoint,
+        abilityEstimate: newAbility
+      });
+      revision = saved.checkpointRevision;
+    }
+    setAttempt(current => current ? {...current, revision} : current);
+    return revision;
+  }
+
+  async function handleSaveExit() {
+    if (!persistenceEnabled || !attempt || persistenceState.status==="saving") return;
+    setPersistenceState({ status:"saving", error:null });
+    try {
+      const checkpoint = readinessCheckpoint({ currentQ, ability, history, selected, btState, csAnswers, submitted });
+      const revision = await NCLEX_ASSESSMENT_PERSISTENCE.checkpointAttempt({
+        supabase: assessmentDb(),
+        attemptId: attempt.id,
+        expectedRevision: attempt.revision,
+        checkpoint
+      });
+      onPause({...attempt, assessment_key:attempt.assessmentKey, session_key:attempt.sessionKey, checkpoint, checkpoint_revision:revision, total_questions:history.length, updated_at:new Date().toISOString()});
+    } catch (error) {
+      setPersistenceState({ status:"failed", error:error.message || "Unable to save your progress." });
+    }
+  }
+
+  async function handleNext() {
     const caseOutcomes = q.type==="casestudy"
       ? q.questions.map(sub => ({
           id:`${q.id}:${sub.qid}`,
@@ -1358,14 +1525,51 @@ function QuizScreen({ profile, onFinish }) {
     setHistory(newHistory);
     setAbility(newAbility);
 
+    if(persistenceEnabled) {
+      const targetQuestions = attempt.targetQuestions || profile.qCount;
+      let completionResult = null;
+      if (isAssessment) {
+        if (newHistory.length >= targetQuestions) completionResult = newAbility >= PASS_THRESHOLD ? "PASS" : "FAIL";
+      } else if (isNCLEX) {
+        completionResult = shouldStop(newHistory, newAbility);
+      } else if (isMock) {
+        completionResult = shouldStopMock(newHistory, newAbility);
+      } else if (newHistory.length >= profile.qCount) {
+        completionResult = null;
+      }
+      const reachedTarget = isAssessment ? newHistory.length >= targetQuestions : Boolean(completionResult) || (!isNCLEX && !isMock && newHistory.length >= profile.qCount);
+      const next = reachedTarget ? null : pickNextQuestion(activeBank, newHistory, profile, newAbility);
+      setPersistenceState({ status:"saving", error:null });
+      try {
+        await persistAssessmentRecords(newRecords, newAbility, reachedTarget ? null : next, newHistory);
+        if (reachedTarget) {
+          await NCLEX_ASSESSMENT_PERSISTENCE.finalizeAttempt({
+            supabase: assessmentDb(),
+            attemptId: attempt.id,
+            result: completionResult,
+            abilityEstimate: Number(newAbility.toFixed(3))
+          });
+          setCatResult(completionResult);
+          finishSession(newHistory, completionResult, newAbility);
+          return;
+        }
+        if(!next) {
+          throw new Error('The assessment question bank ended before the target was reached.');
+        }
+        setPersistenceState({ status:"ready", error:null });
+        setCurrentQ(next); setSelected([]); setBtState({left:[],center:[],right:[]}); setCsAnswers({}); setSubmitted(false);
+      } catch (error) {
+        setPersistenceState({ status:"failed", error:error.message || "Unable to save this response." });
+      }
+      return;
+    }
+
     if(isNCLEX) {
       const result = shouldStop(newHistory, newAbility);
       if(result) { setCatResult(result); finishSession(newHistory, result, newAbility); return; }
     } else if(isMock) {
       const result = shouldStopMock(newHistory, newAbility);
       if(result) { setCatResult(result); finishSession(newHistory, result, newAbility); return; }
-    } else if(isAssessment && newHistory.length>=FULL_MOCK_MIN_Q) {
-      finishSession(newHistory, null, newAbility); return;
     } else if(newHistory.length>=profile.qCount) {
       finishSession(newHistory, null, newAbility); return;
     }
@@ -1392,14 +1596,14 @@ function QuizScreen({ profile, onFinish }) {
           </div>
           <div style={{ flex:1, maxWidth:260 }}>
             <div className="progress-text" style={{ marginBottom:5 }}>
-              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : isAssessment ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · readiness assessment` : `Question ${qNum} of ${profile.qCount}` }
+              {isNCLEX ? `Question ${qNum} · CAT range ${MIN_Q}–${MAX_Q}` : isMock ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} · mock CAT range ${FULL_MOCK_MIN_Q}–${FULL_MOCK_MAX_Q}` : isAssessment ? `${caseItemCount>1?"Questions":"Question"} ${qNum}${caseItemCount>1?`–${qNum+caseItemCount-1}`:""} of ${profile.qCount} · readiness assessment` : `Question ${qNum} of ${profile.qCount}` }
             </div>
             <div style={{ height:5, background:"#e2e8f0", borderRadius:99 }}>
               <div style={{ height:"100%", width:`${progressPct}%`, background: isNCLEX?"#8b5cf6":"#0ea5e9", borderRadius:99, transition:"width 0.4s" }} />
             </div>
           </div>
           <div style={{ fontSize:12, fontWeight:600, color:"#475569", background:"#f8fafc", padding:"5px 12px", borderRadius:99, border:"1px solid #e2e8f0" }}>
-            {isNCLEX ? `Q${qNum}` : isAssessment ? `Question ${qNum} of ${FULL_MOCK_MIN_Q}` : `${correctSoFar}/${history.length} correct`}
+            {isNCLEX ? `Q${qNum}` : isAssessment ? `Question ${qNum} of ${profile.qCount}` : `${correctSoFar}/${history.length} correct`}
           </div>
         </div>
 
@@ -1449,14 +1653,22 @@ function QuizScreen({ profile, onFinish }) {
 
         {/* Actions */}
         <div style={{ display:"flex", justifyContent:"flex-end", gap:10 }}>
+          {persistenceEnabled && <Btn onClick={handleSaveExit} disabled={!attempt || persistenceState.status==="saving"} variant="outline" small>
+            {persistenceState.status==="saving" ? "Saving…" : "Save & Exit"}
+          </Btn>}
           {!submitted ? (
-            <Btn onClick={handleSubmit} disabled={!isAnswered()}>Submit Answer</Btn>
+            <Btn onClick={handleSubmit} disabled={!isAnswered() || (persistenceEnabled && (!attempt || persistenceState.status==="saving"))}>Submit Answer</Btn>
           ) : (
-            <Btn onClick={handleNext}>
+            <Btn onClick={handleNext} disabled={persistenceEnabled && persistenceState.status==="saving"}>
               {isNCLEX ? "Continue Exam →" : (qNum>=profile.qCount?"View Results →":"Next Question →")}
             </Btn>
           )}
         </div>
+        {persistenceEnabled && persistenceState.status==="failed" && (
+          <div style={{ marginTop:10, color:"#b91c1c", fontSize:13, textAlign:"right" }}>
+            {persistenceState.error} <button onClick={handleSaveExit} style={{ border:0, background:"transparent", color:"#991b1b", textDecoration:"underline", fontWeight:700, cursor:"pointer" }}>Retry</button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1479,7 +1691,25 @@ function App() {
       if (ASSESSMENT_ONLY && student.portal_stage !== 'assessment') { location.replace('student-dashboard.html'); return; }
       const { data: assessments } = await db.from('external_assessments').select('platform,taken_at,created_at,category_scores').eq('student_id', student.id).order('taken_at',{ascending:false});
       const result = ASSESSMENT_PERSONALIZATION.buildProfile(assessments || []);
-      if (active) { setAssessmentProfile({ ...result, studentName: student.name }); setAssessmentLoading(false); }
+      const modes = ASSESSMENT_ONLY ? ['assessment'] : ['practice', 'nclex', 'mock', 'remediation'];
+      const activeAttempts = {};
+      await Promise.all(modes.map(async mode => {
+        activeAttempts[assessmentKeyForMode(mode)] = await NCLEX_ASSESSMENT_PERSISTENCE.resumeAttempt({
+          supabase:db,
+          studentId:student.id,
+          assessmentKey:assessmentKeyForMode(mode)
+        });
+      }));
+      if (active) {
+        setAssessmentProfile({
+          ...result,
+          studentId:student.id,
+          studentName: student.name,
+          activeAttempt: activeAttempts['readiness-assessment'] || null,
+          activeAttempts
+        });
+        setAssessmentLoading(false);
+      }
     }
     loadAssessmentHistory().catch(() => { if (active) setAssessmentLoading(false); });
     return () => { active = false; };
@@ -1490,12 +1720,30 @@ function App() {
   const [finalAbility, setFinalAbility] = useState(0.5);
   const [finalSessionKey, setFinalSessionKey] = useState(null);
 
-  if(screen==="profile") return <ProfileScreen assessmentProfile={assessmentProfile} assessmentLoading={assessmentLoading} onStart={p=>{ setProfile(p); setScreen("quiz"); }} />;
-  if(screen==="quiz") return <QuizScreen profile={profile} onFinish={(h,r,a)=>{
+  if(screen==="profile") return <ProfileScreen assessmentProfile={assessmentProfile} assessmentLoading={assessmentLoading}
+    onAbandonAttempt={async attempt => {
+      await NCLEX_ASSESSMENT_PERSISTENCE.abandonAttempt({ supabase:assessmentDb(), attemptId:attempt.id });
+      setAssessmentProfile(current => {
+        if (!current) return current;
+        const activeAttempts = {...(current.activeAttempts || {})};
+        delete activeAttempts[attempt.assessment_key];
+        return {...current, activeAttempt:activeAttempts['readiness-assessment'] || null, activeAttempts};
+      });
+    }}
+    onStart={p=>{ const sessionKey=p.resumeAttempt?.session_key || (globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `assessment-${Date.now()}-${Math.random().toString(36).slice(2)}`); setProfile({...p,sessionKey}); setScreen("quiz"); }} />;
+  if(screen==="quiz") return <QuizScreen profile={profile} onPause={attempt=>{
+    setAssessmentProfile(current => {
+      if (!current) return current;
+      const activeAttempts = {...(current.activeAttempts || {}), [attempt.assessment_key]:attempt};
+      return {...current, activeAttempt:activeAttempts['readiness-assessment'] || null, activeAttempts};
+    });
+    setProfile(null);
+    setScreen("profile");
+  }} onFinish={(h,r,a,sessionKey)=>{
     setFinalHistory(h);
     setCatResult(r);
     setFinalAbility(a);
-    setFinalSessionKey(globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `assessment-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    setFinalSessionKey(sessionKey || (globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `assessment-${Date.now()}-${Math.random().toString(36).slice(2)}`));
     setScreen("results");
   }} />;
   if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} ability={finalAbility} catResult={catResult} sessionKey={finalSessionKey} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setFinalAbility(0.5); setFinalSessionKey(null); setScreen("profile"); }} />;
