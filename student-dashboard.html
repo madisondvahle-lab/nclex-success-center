@@ -717,9 +717,21 @@
       // ── Practice sets — ONLY in the practice card ──
       const practiceSets = resources.filter(r => r.resource_type === 'practice_set');
       if (practiceSets.length) {
+        const practiceLabel = ps => {
+          const source = `${ps.title || ''} ${ps.url || ''}`;
+          if (/jack-ob-study-guide|OB Study Guide/i.test(source)) return 'NUR 321 · Exam 2';
+          if (/NUR 321|OB.*Exam 1|Exam 1.*OB|case.?stud/i.test(source)) return 'NUR 321 · Exam 1';
+          if (/NUR 312|jack-nur312/i.test(source)) return 'NUR 312';
+          return 'Other practice';
+        };
+        const practiceTitle = ps =>
+          /jack-ob-study-guide|OB Study Guide/i.test(`${ps.title || ''} ${ps.url || ''}`)
+            ? 'NUR 321 OB · Exam 2 Practice (40 questions)'
+            : ps.title;
         const practiceGroups = [
-          {label:'NUR 312', sets:practiceSets.filter(ps => /NUR 312|jack-nur312/i.test(`${ps.title||''} ${ps.url||''}`))},
-          {label:'NUR 321', sets:practiceSets.filter(ps => /NUR 321|OB|jack-ob/i.test(`${ps.title||''} ${ps.url||''}`))}
+          {label:'NUR 321 · Exam 1', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 1')},
+          {label:'NUR 321 · Exam 2', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 2')},
+          {label:'NUR 312', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 312')}
         ];
         const groupedSets = new Set(practiceGroups.flatMap(group => group.sets));
         const otherSets = practiceSets.filter(ps => !groupedSets.has(ps));
@@ -730,7 +742,7 @@
             <div class="practice-list">${group.sets.map(ps => `
               <div class="practice-item">
                 <span class="practice-item-meta">Practice set</span>
-                <span class="practice-item-title">${text(ps.title)}</span>
+                <span class="practice-item-title">${text(practiceTitle(ps))}</span>
                 ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
                 ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
               </div>`
@@ -759,7 +771,7 @@
             <div class="resource-list">${group.items.map(item =>
               `<article class="resource">
                 <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
-                <h3>${text(item.title)}</h3>
+                <h3>${text(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>
                 ${item.note ? `<p>${text(item.note)}</p>` : ''}
                 ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
               </article>`
