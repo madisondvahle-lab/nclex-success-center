@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" role="img" aria-labelledby="title desc">
+  <title id="title">Schematic ECG strip demonstrating a premature atrial contraction</title>
+  <desc id="desc">Regular narrow-complex beats followed by an early abnormal atrial wave and a narrow conducted QRS complex.</desc>
+  <defs>
+    <pattern id="small" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#b8c7df" stroke-width="0.8"/>
+    </pattern>
+    <pattern id="large" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#small)"/>
+      <path d="M100 0H0V100" fill="none" stroke="#819ac0" stroke-width="1.2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="260" fill="#fffdf9"/>
+  <rect x="0" y="0" width="1200" height="260" fill="url(#large)"/>
+  <path d="M0 142
+    C18 142 22 142 28 138 C34 132 38 132 44 142
+    L58 142 L64 82 L70 196 L78 142 L104 142
+    C122 142 126 142 132 138 C138 132 142 132 148 142
+    L162 142 L168 82 L174 196 L182 142 L208 142
+    C226 142 230 142 236 138 C242 132 246 132 252 142
+    L266 142 L272 82 L278 196 L286 142
+    C300 142 306 142 312 126
+    C318 112 326 112 332 126
+    C338 140 344 142 350 142
+    L364 142 L370 82 L376 196 L384 142
+    C402 142 406 142 412 138 C418 132 422 132 428 142
+    L442 142 L448 82 L454 196 L462 142
+    C480 142 484 142 490 138 C496 132 500 132 506 142
+    L520 142 L526 82 L532 196 L540 142
+    C558 142 562 142 568 138 C574 132 578 132 584 142
+    L598 142 L604 82 L610 196 L618 142
+    C636 142 640 142 646 138 C652 132 656 132 662 142
+    L676 142 L682 82 L688 196 L696 142
+    C714 142 718 142 724 138 C730 132 734 132 740 142
+    L754 142 L760 82 L766 196 L774 142
+    C792 142 796 142 802 138 C808 132 812 132 818 142
+    L832 142 L838 82 L844 196 L852 142
+    C870 142 874 142 880 138 C886 132 890 132 896 142
+    L910 142 L916 82 L922 196 L930 142
+    C948 142 952 142 958 138 C964 132 968 132 974 142
+    L988 142 L994 82 L1000 196 L1008 142
+    C1026 142 1030 142 1036 138 C1042 132 1046 132 1052 142
+    L1066 142 L1072 82 L1078 196 L1086 142
+    C1104 142 1108 142 1114 138 C1120 132 1124 132 1130 142
+    L1144 142 L1150 82 L1156 196 L1164 142
+    C1180 142 1190 142 1200 142" fill="none" stroke="#28538f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="24" y="28" fill="#234879" font-family="Arial, sans-serif" font-size="18" font-weight="700">PAC practice strip · schematic</text>
+</svg>

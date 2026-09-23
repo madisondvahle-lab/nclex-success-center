@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Module 7 · EKG Challenge</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assessment-persistence.js"></script>
 
 <style>
 :root{
@@ -46,6 +48,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .feedback.bad{background:#fde9e7;color:#7e3029}
 .result{text-align:center;padding:15px 0}
 .score{font:700 4rem Georgia,serif;color:var(--plum)}
+.save-status{min-height:1.4em;margin-top:12px;color:var(--muted);font-size:.82rem;text-align:center}
+.save-status.saved{color:var(--green)}
+.save-status.saving{color:var(--gold)}
+.save-status.error{color:var(--red)}
+.save-status.unsaved{color:var(--muted)}
 .hidden{display:none!important}
 @media(max-width:600px){.card{padding:20px}.actions{flex-direction:column}}
 </style>
@@ -61,8 +68,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <section class="hero">
 <p class="eyebrow">Module 7 · Final Challenge</p>
 <h1>EKG Challenge</h1>
-<p>25 NCLEX-style questions. Recognize the rhythm, assess the patient, and choose the safest next action.</p>
+<p>26 NCLEX-style questions. Recognize the rhythm, assess the patient, and choose the safest next action.</p>
 <div class="progress"><span id="bar"></span></div>
+<div class="save-status" id="saveStatus" aria-live="polite"></div>
 </section>
 
 <section class="card" id="quiz">
@@ -188,7 +196,7 @@ r:"Sinus tachycardia is commonly a physiologic response. Identify and treat the 
 },
 {
 type:"Rhythm Recognition",
-img:"assets/ekg-openrn/pvc.jpg",
+img:"assets/ekg-openrn/pvc-practice.svg",
 q:"Which finding is demonstrated on this strip?",
 o:["Premature ventricular contraction","Atrial flutter","First-degree AV block","Asystole"],
 a:0,
@@ -196,7 +204,7 @@ r:"A PVC is an early ventricular beat that appears wide and bizarre compared wit
 },
 {
 type:"Assessment",
-img:"assets/ekg-openrn/pvc.jpg",
+img:"assets/ekg-openrn/pvc-practice.svg",
 q:"A hospitalized client develops frequent new PVCs. Which assessment is most appropriate?",
 o:["Assess oxygenation and electrolyte abnormalities","Immediately defibrillate","Administer adenosine","Prepare for carotid massage"],
 a:0,
@@ -241,6 +249,14 @@ q:"Which characteristic best identifies this rhythm?",
 o:["Progressive PR prolongation","Irregularly irregular rhythm","P waves and QRS complexes occur independently","Sawtooth flutter waves"],
 a:2,
 r:"Third-degree AV block causes complete AV dissociation. Atrial and ventricular activity occur independently."
+},
+{
+type:"Rhythm Comparison",
+img:"assets/ekg-openrn/pac-practice.svg",
+q:"Which finding best distinguishes this premature beat from a PVC?",
+o:["The premature beat has an early abnormal P wave followed by a narrow QRS","The premature beat is wide and bizarre without a preceding P wave","The premature beat is always followed by a fully compensatory pause","The premature beat occurs only when the client is pulseless"],
+a:0,
+r:"A PAC begins in the atria, so an early abnormal P wave is present and the conducted QRS is usually narrow. A PVC originates in the ventricle and typically produces a wide bizarre QRS without a preceding P wave."
 },
 {
 type:"Priority",
@@ -290,6 +306,21 @@ r:"Assess the patient first, determine whether a pulse is present, interpret the
 
 let i=0,selected=null,answered=false,score=0;
 const responses=Array(Q.length).fill(null);
+Q.forEach((question,index)=>{ question.id=`module7-ekg-${String(index+1).padStart(3,"0")}`; });
+const optionOrders=Q.map(question=>{
+ const order=question.o.map((_,index)=>index);
+ for(let index=order.length-1;index>0;index--){
+   const swapIndex=Math.floor(Math.random()*(index+1));
+   [order[index],order[swapIndex]]=[order[swapIndex],order[index]];
+ }
+ return order;
+});
+
+const SUPABASE_URL="https://pmjwwktwlsqpetwfvolb.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT";
+const assessmentKey="module7-ekg-practice";
+const sessionKey=globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `module7-ekg-${Date.now()}`;
+let persistence={db:null,attempt:null,revision:0,status:"checking"};
 
 const meta=document.getElementById("meta");
 const stem=document.getElementById("stem");
@@ -300,6 +331,71 @@ const submit=document.getElementById("submit");
 const next=document.getElementById("next");
 const back=document.getElementById("back");
 const bar=document.getElementById("bar");
+const saveStatus=document.getElementById("saveStatus");
+
+function setSaveStatus(status,message){
+ persistence.status=status;
+ saveStatus.textContent=message;
+ saveStatus.className=`save-status ${status}`;
+}
+
+async function initializePersistence(){
+ if(!window.supabase || !window.NCLEX_ASSESSMENT_PERSISTENCE){
+   setSaveStatus("unsaved","Practice results are not being saved in this browser.");
+   return;
+ }
+ persistence.db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const {data:{session},error}=await persistence.db.auth.getSession();
+ if(error) throw error;
+ if(!session){
+   setSaveStatus("unsaved","Sign in through Student Login to save this practice attempt.");
+   return;
+ }
+ try{
+   persistence.attempt=await NCLEX_ASSESSMENT_PERSISTENCE.createAttempt({
+     supabase:persistence.db,
+     sessionKey,
+     assessmentKey,
+     assessmentTitle:"Module 7 EKG Strip Practice",
+     assessmentVersion:"module7-ekg-v1",
+     targetQuestions:Q.length,
+     checkpoint:{schemaVersion:1,currentQuestion:0,answered:[]}
+   });
+   persistence.revision=Number(persistence.attempt.checkpoint_revision||0);
+   setSaveStatus("saved","Your EKG practice progress is being saved.");
+ }catch(error){
+   persistence.attempt=null;
+   setSaveStatus("error",error.message||"Practice progress could not be saved.");
+ }
+}
+
+async function saveResponse(questionIndex,selectedAnswer,isCorrect){
+ if(!persistence.attempt || !persistence.db) return;
+ setSaveStatus("saving","Saving your response…");
+ const result=await NCLEX_ASSESSMENT_PERSISTENCE.recordResponse({
+   supabase:persistence.db,
+   attemptId:persistence.attempt.id,
+   expectedRevision:persistence.revision,
+   response:{
+     id:Q[questionIndex].id,
+     source:"module7-ekg",
+     type:"mcq",
+     difficulty:2,
+     topic:Q[questionIndex].type,
+     selectedAnswer,
+     correctAnswer:Q[questionIndex].a,
+     correct:isCorrect
+   },
+   checkpoint:{
+     schemaVersion:1,
+     currentQuestion:questionIndex,
+     answered:responses.map((entry,index)=>entry?.answered?{id:Q[index].id,selected:entry.selected}:null).filter(Boolean)
+   },
+   abilityEstimate:score/Q.length
+ });
+ persistence.revision=result.checkpointRevision;
+ setSaveStatus("saved","Your EKG practice progress is being saved.");
+}
 
 function render(){
  const q=Q[i];
@@ -313,22 +409,24 @@ function render(){
  strip.innerHTML=q.img?`<div class="strip"><img src="${q.img}" alt="ECG rhythm strip"></div>`:"";
 
  options.innerHTML="";
- q.o.forEach((txt,n)=>{
+ const correctDisplayIndex=optionOrders[i].indexOf(q.a);
+ optionOrders[i].forEach((originalIndex,displayIndex)=>{
+   const txt=q.o[originalIndex];
    const b=document.createElement("button");
    b.className="option";
-   b.textContent=String.fromCharCode(65+n)+". "+txt;
+   b.textContent=String.fromCharCode(65+displayIndex)+". "+txt;
 
-   if(selected===n)b.classList.add("selected");
+   if(selected===displayIndex)b.classList.add("selected");
 
    if(answered){
      b.disabled=true;
-     if(n===q.a)b.classList.add("correct");
-     if(n===selected && selected!==q.a)b.classList.add("wrong");
+     if(displayIndex===correctDisplayIndex)b.classList.add("correct");
+     if(displayIndex===selected && selected!==correctDisplayIndex)b.classList.add("wrong");
    }
 
    b.onclick=()=>{
      if(answered)return;
-     selected=n;
+     selected=displayIndex;
      [...options.children].forEach(x=>x.classList.remove("selected"));
      b.classList.add("selected");
      submit.disabled=false;
@@ -353,15 +451,22 @@ function render(){
  next.textContent=i===Q.length-1?"See results":"Next question";
 }
 
-submit.onclick=()=>{
+submit.onclick=async()=>{
  if(selected===null)return;
 
  answered=true;
 
- if(!responses[i]?.answered && selected===Q[i].a)score++;
+ const selectedOriginalIndex=optionOrders[i][selected];
+ const isCorrect=selected===optionOrders[i].indexOf(Q[i].a);
+ if(!responses[i]?.answered && isCorrect)score++;
 
  responses[i]={selected,answered:true};
  render();
+ try{
+   await saveResponse(i,selectedOriginalIndex,isCorrect);
+ }catch(error){
+   setSaveStatus("error",error.message||"This response could not be saved.");
+ }
 };
 
 next.onclick=()=>{
@@ -394,8 +499,19 @@ function showResults(){
 
  document.getElementById("summary").textContent=`${pct}% · ${msg}`;
  bar.style.width="100%";
+ if(persistence.attempt && persistence.db){
+   setSaveStatus("saving","Saving your completed EKG practice result…");
+   NCLEX_ASSESSMENT_PERSISTENCE.finalizeAttempt({
+     supabase:persistence.db,
+     attemptId:persistence.attempt.id,
+     result:null,
+     abilityEstimate:pct/100
+   }).then(()=>setSaveStatus("saved","Your completed EKG practice result was saved."))
+     .catch(error=>setSaveStatus("error",error.message||"Your completed result could not be saved."));
+ }
 }
 
+initializePersistence().catch(error=>setSaveStatus("error",error.message||"Practice saving is unavailable."));
 render();
 </script>
 
