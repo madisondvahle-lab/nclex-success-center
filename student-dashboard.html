@@ -713,7 +713,7 @@
         document.querySelectorAll('#practice-shortcut-nursing .practice-group, #resources-nursing .resource-group').forEach(group => {
           group.hidden = !group.dataset.class || group.dataset.class !== classCode;
         });
-        document.getElementById('countdown-nursing').innerHTML = '<strong>Class selected</strong><span>Use the materials below to prepare.</span>';
+        document.getElementById('countdown-nursing').innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
       renderClassSchedule(student, schedules, isPreview, activateClass);
 
