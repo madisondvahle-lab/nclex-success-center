@@ -789,6 +789,7 @@
           const source = `${ps.title || ''} ${ps.url || ''}`;
           if (/jack-ob-study-guide|OB Study Guide/i.test(source)) return 'NUR 321 · Exam 2';
           if (/NUR 321|OB.*Exam 1|Exam 1.*OB|case.?stud/i.test(source)) return 'NUR 321 · Exam 1';
+          if (/NUR 416|nur416/i.test(source)) return 'NUR 416';
           if (/NUR 312|jack-nur312/i.test(source)) return 'NUR 312';
           return 'Other practice';
         };
@@ -799,7 +800,8 @@
         const practiceGroups = [
           {label:'NUR 321 · Exam 1', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 1')},
           {label:'NUR 321 · Exam 2', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 2')},
-          {label:'NUR 312', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 312')}
+          {label:'NUR 312', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 312')},
+          {label:'NUR 416', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 416')}
         ];
         const groupedSets = new Set(practiceGroups.flatMap(group => group.sets));
         const otherSets = practiceSets.filter(ps => !groupedSets.has(ps));
@@ -828,7 +830,8 @@
       if (studyRes.length) {
         const resourceGroups = [
           {label:'NUR 312', items:studyRes.filter(item => /NUR 312|jack-nur312/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
-          {label:'NUR 321', items:studyRes.filter(item => /NUR 321|OB|jack-ob/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))}
+          {label:'NUR 321', items:studyRes.filter(item => /NUR 321|OB|jack-ob/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
+          {label:'NUR 416', items:studyRes.filter(item => /NUR 416|nur416/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))}
         ];
         const groupedResources = new Set(resourceGroups.flatMap(group => group.items));
         const otherResources = studyRes.filter(item => !groupedResources.has(item));
