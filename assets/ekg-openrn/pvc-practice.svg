@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" role="img" aria-labelledby="title desc">
+  <title id="title">Schematic ECG strip demonstrating a premature ventricular contraction</title>
+  <desc id="desc">Regular narrow-complex beats followed by an early wide bizarre ventricular complex and a compensatory pause.</desc>
+  <defs>
+    <pattern id="small" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#f2b7b7" stroke-width="0.8"/>
+    </pattern>
+    <pattern id="large" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#small)"/>
+      <path d="M100 0H0V100" fill="none" stroke="#d98b8b" stroke-width="1.2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="260" fill="#fffdf9"/>
+  <rect x="0" y="0" width="1200" height="260" fill="url(#large)"/>
+  <path d="M0 142
+    C18 142 22 142 28 138 C34 132 38 132 44 142
+    L58 142 L64 82 L70 196 L78 142 L104 142
+    C122 142 126 142 132 138 C138 132 142 132 148 142
+    L162 142 L168 82 L174 196 L182 142 L208 142
+    C226 142 230 142 236 138 C242 132 246 132 252 142
+    L266 142 L272 82 L278 196 L286 142
+    C300 142 306 142 312 146
+    L326 142 L340 142
+    C348 142 354 142 360 150
+    C370 160 380 172 392 174
+    C406 176 418 166 430 148
+    L442 90 L454 214 L468 142
+    C482 126 492 126 502 142
+    L520 142
+    C538 142 542 142 548 138 C554 132 558 132 564 142
+    L578 142 L584 82 L590 196 L598 142
+    C616 142 620 142 626 138 C632 132 636 132 642 142
+    L656 142 L662 82 L668 196 L676 142
+    C694 142 698 142 704 138 C710 132 714 132 720 142
+    L734 142 L740 82 L746 196 L754 142
+    C772 142 776 142 782 138 C788 132 792 132 798 142
+    L812 142 L818 82 L824 196 L832 142
+    C850 142 854 142 860 138 C866 132 870 132 876 142
+    L890 142 L896 82 L902 196 L910 142
+    C928 142 932 142 938 138 C944 132 948 132 954 142
+    L968 142 L974 82 L980 196 L988 142
+    C1006 142 1010 142 1016 138 C1022 132 1026 132 1032 142
+    L1046 142 L1052 82 L1058 196 L1066 142
+    C1084 142 1088 142 1094 138 C1100 132 1104 132 1110 142
+    L1124 142 L1130 82 L1136 196 L1144 142
+    C1160 142 1174 142 1200 142" fill="none" stroke="#a22f2f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="24" y="28" fill="#7b2d2d" font-family="Arial, sans-serif" font-size="18" font-weight="700">PVC practice strip · schematic</text>
+</svg>
