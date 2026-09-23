@@ -135,6 +135,12 @@
     .nursing-primary .card-desc{max-width:700px;font-size:.9rem}
     .exam-summary{display:grid;grid-template-columns:minmax(180px,.45fr) 1fr;gap:28px;align-items:start;padding-top:20px;border-top:1px solid var(--line)}
     .exam-date{font:400 1.35rem Georgia,serif;color:var(--teal);line-height:1.2}
+    .exam-edit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+    .exam-edit summary{color:var(--teal);cursor:pointer;font-size:.8rem;font-weight:900}
+    .exam-edit-form{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px}
+    .exam-edit-form input{padding:8px 10px;border:1px solid var(--line);color:var(--ink);font:400 .85rem Inter,sans-serif}
+    .exam-edit-form button{padding:8px 12px;border:0;background:var(--teal);color:#fff;font:800 .78rem Inter,sans-serif;cursor:pointer}
+    .exam-edit-message{color:var(--muted);font-size:.75rem}
     .exam-topics-label{display:block;margin:0 0 8px;color:var(--muted);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
     .exam-topic{margin:0 0 6px;font-size:.88rem;line-height:1.45}
     .practice-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
@@ -684,7 +690,28 @@
           ).join('');
         }
         html += `</div></div>`;
+        if (!isPreview) {
+          html += `<details class="exam-edit"><summary>Edit next exam date</summary><form class="exam-edit-form" id="exam-edit-form"><input id="exam-edit-date" type="date" value="${text(student.exam_date)}" required><button type="submit">Save date</button><span class="exam-edit-message" id="exam-edit-message" role="status"></span></form></details>`;
+        }
         document.getElementById('exam-info-nursing').innerHTML = html;
+        const editForm = document.getElementById('exam-edit-form');
+        if (editForm) editForm.addEventListener('submit', async event => {
+          event.preventDefault();
+          const button = editForm.querySelector('button');
+          const message = document.getElementById('exam-edit-message');
+          const value = document.getElementById('exam-edit-date').value;
+          if (!value) return;
+          button.disabled = true;
+          button.textContent = 'Saving…';
+          const {error} = await db.from('students').update({exam_date:value}).eq('id', student.id);
+          if (error) {
+            message.textContent = 'Could not save the date. Please try again.';
+            button.disabled = false;
+            button.textContent = 'Save date';
+            return;
+          }
+          window.location.reload();
+        });
       }
 
       // ── Practice sets — ONLY in the practice card ──
