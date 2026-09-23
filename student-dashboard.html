@@ -302,16 +302,6 @@
     ═══════════════════════════════════════════════════════════════ -->
     <div id="portal-nursing" class="hidden">
 
-      <!-- Exam date prompt (shows only if no exam date set, not first login) -->
-      <div id="exam-prompt-banner" class="exam-prompt hidden">
-        <p><strong>When is your next exam?</strong><br>Set your exam date so you can see your countdown and track how many days you have to prepare.</p>
-        <form class="exam-prompt-form" id="exam-prompt-form">
-          <input type="date" id="exam-date-input" required>
-          <button type="submit">Save date</button>
-          <button type="button" class="exam-prompt-skip" id="exam-prompt-skip">Skip for now</button>
-        </form>
-      </div>
-
       <section class="hero">
         <div>
           <p class="eyebrow" style="color:var(--teal)">Nursing Student Hub</p>
@@ -333,7 +323,7 @@
         </article>
 
         <!-- 1 · Upcoming exam -->
-        <article class="card nursing-primary">
+        <article class="card nursing-primary class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your next test</p><h2>Upcoming exam</h2></div>
             <span class="label teal">Exam prep</span>
@@ -343,7 +333,7 @@
         </article>
 
         <!-- 2 · Assigned practice quiz -->
-        <article class="card nursing-primary">
+        <article class="card nursing-primary class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Choose your practice</p><h2>Practice sets</h2></div>
             <span class="label teal">Available now</span>
@@ -355,7 +345,7 @@
         </article>
 
         <!-- 3 · Study resources (full width) — non-practice content only -->
-        <article class="card resources nursing-support">
+        <article class="card resources nursing-support class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
             <span class="label teal">Assigned</span>
@@ -365,7 +355,7 @@
         </article>
 
         <!-- 4 · Student uploads (full width) -->
-        <article class="card uploads-full nursing-support" id="student-uploads-card">
+        <article class="card uploads-full nursing-support class-dependent-panel hidden" id="student-uploads-card">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your course materials</p><h2>Uploaded content</h2></div>
             <span class="label teal">My uploads</span>
@@ -384,7 +374,7 @@
         </article>
 
         <!-- 5 · Recent quiz scores (full width) -->
-        <article class="card nursing-support" style="grid-column:1/-1">
+        <article class="card nursing-support class-dependent-panel hidden" style="grid-column:1/-1">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
             <span class="label teal">Performance</span>
@@ -394,7 +384,7 @@
         </article>
 
         <!-- 6 · Class modules / study guides (full width) -->
-        <article class="card modules nursing-support">
+        <article class="card modules nursing-support class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
             <span class="label teal">Course access</span>
@@ -665,7 +655,7 @@
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
-    function renderClassSchedule(student, schedules, isPreview) {
+    function renderClassSchedule(student, schedules, isPreview, onSelect) {
       const classes = [
         { code: 'NUR 312', name: 'NUR 312' },
         { code: 'NUR 321', name: 'NUR 321' },
@@ -674,17 +664,27 @@
       const byClass = new Map((schedules || []).map(item => [item.class_code, item]));
       const tabs = document.getElementById('class-tabs');
       const panel = document.getElementById('class-schedule-panel');
-      let selected = classes[0].code;
+      let selected = null;
       const render = () => {
         tabs.innerHTML = classes.map(item =>
           `<button class="class-tab" type="button" role="tab" aria-selected="${item.code === selected}" data-class="${item.code}">${item.name}</button>`
         ).join('');
+        if (!selected) {
+          panel.innerHTML = '<p class="class-choice-prompt">Choose a class to open its exam date, resources, and practice sets.</p>';
+          tabs.querySelectorAll('[data-class]').forEach(button => button.addEventListener('click', () => {
+            selected = button.dataset.class;
+            render();
+            if (onSelect) onSelect(selected);
+          }));
+          return;
+        }
         const item = byClass.get(selected);
         const date = item?.next_exam_date || '';
         panel.innerHTML = `<h3>${selected}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
         tabs.querySelectorAll('[data-class]').forEach(button => button.addEventListener('click', () => {
           selected = button.dataset.class;
           render();
+          if (onSelect) onSelect(selected);
         }));
         const form = panel.querySelector('form');
         if (form) form.addEventListener('submit', async event => {
@@ -708,42 +708,40 @@
           }
           byClass.set(selected, data);
           render();
+          if (onSelect) onSelect(selected);
         });
       };
       render();
     }
     function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules) {
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
-      renderClassSchedule(student, schedules, isPreview);
+      const classPanels = document.querySelectorAll('.class-dependent-panel');
+      const classState = { selected: null };
+      const activateClass = classCode => {
+        classState.selected = classCode;
+        classPanels.forEach(panel => panel.classList.remove('hidden'));
+        const schedule = (schedules || []).find(item => item.class_code === classCode);
+        const date = schedule?.next_exam_date || '';
+        const examRes = resources.filter(r => r.resource_type === 'exam_topic' && new RegExp(classCode.replace(' ', '\\s+'), 'i').test(`${r.title || ''} ${r.note || ''}`));
+        const formatted = date
+          ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })
+          : '';
+        let examHtml = `<p class="empty">${date ? text(formatted) : 'No test date set for this class yet. Use the class date field above to add one.'}</p>`;
+        if (date && examRes.length) {
+          examHtml = `<div class="exam-summary"><div class="exam-date">${text(formatted)}</div><div><span class="exam-topics-label">Topics to review</span>${examRes.map(r => `<p class="exam-topic">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`).join('')}</div></div>`;
+        }
+        document.getElementById('exam-info-nursing').innerHTML = examHtml;
+        document.querySelectorAll('#practice-shortcut-nursing .practice-group, #resources-nursing .resource-group').forEach(group => {
+          group.hidden = !group.dataset.class || group.dataset.class !== classCode;
+        });
+        document.getElementById('countdown-nursing').innerHTML = '<strong>Class selected</strong><span>Use the materials below to prepare.</span>';
+      };
+      renderClassSchedule(student, schedules, isPreview, activateClass);
 
       // Course name in hero subtitle
       if (student.course_name) {
         document.getElementById('hero-course-line').textContent =
           `Your private hub for ${student.course_name} — upcoming tests, practice sets, and class resources in one place.`;
-      }
-
-      // Exam countdown
-      const box = document.getElementById('countdown-nursing');
-      if (!student.exam_date && !isPreview) {
-        document.getElementById('exam-prompt-banner').classList.remove('hidden');
-        document.getElementById('exam-prompt-form').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const val = document.getElementById('exam-date-input').value;
-          if (!val) return;
-          const btn = this.querySelector('button[type=submit]');
-          btn.textContent = 'Saving…'; btn.disabled = true;
-          const { error } = await db.from('students').update({ exam_date: val }).eq('id', student.id);
-          if (!error) { window.location.reload(); } else { btn.textContent = 'Error — try again'; btn.disabled = false; }
-        });
-        document.getElementById('exam-prompt-skip').addEventListener('click', () => {
-          document.getElementById('exam-prompt-banner').classList.add('hidden');
-        });
-      }
-      if (student.exam_date) {
-        const days = Math.ceil((new Date(`${student.exam_date}T12:00:00`) - new Date()) / 86400000);
-        box.innerHTML = days >= 0
-          ? `<strong>${days} day${days === 1 ? '' : 's'}</strong><span>until your next exam</span>`
-          : `<strong>My plan</strong><span>Your next priorities are below.</span>`;
       }
 
       // Upcoming exam card
@@ -807,7 +805,7 @@
         const otherSets = practiceSets.filter(ps => !groupedSets.has(ps));
         if (otherSets.length) practiceGroups.push({label:'Other practice',sets:otherSets});
         document.getElementById('practice-shortcut-nursing').innerHTML = practiceGroups.filter(group => group.sets.length).map(group => `
-          <section class="practice-group">
+          <section class="practice-group" data-class="${group.label.replace(/ · Exam [12]$/, '').trim()}">
             <div class="practice-group-heading"><h3>${group.label}</h3><span>${group.sets.length} set${group.sets.length===1?'':'s'}</span></div>
             <div class="practice-list">${group.sets.map(ps => `
               <div class="practice-item">
@@ -837,7 +835,7 @@
         const otherResources = studyRes.filter(item => !groupedResources.has(item));
         if (otherResources.length) resourceGroups.push({label:'Other resources',items:otherResources});
         document.getElementById('resources-nursing').innerHTML = resourceGroups.filter(group => group.items.length).map(group => `
-          <section class="resource-group">
+          <section class="resource-group" data-class="${group.label}">
             <div class="resource-group-heading"><h3>${group.label}</h3><span>${group.items.length} item${group.items.length===1?'':'s'}</span></div>
             <div class="resource-list">${group.items.map(item =>
               `<article class="resource">
