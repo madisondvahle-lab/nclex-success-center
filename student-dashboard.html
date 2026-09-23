@@ -130,6 +130,17 @@
     .practice-item-note{font-size:.8rem;color:var(--muted);display:block;margin-bottom:12px;line-height:1.45}
     .practice-item-open{font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor}
     .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
+    .class-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px}
+    .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem Inter,sans-serif;cursor:pointer}
+    .class-tab[aria-selected="true"]{background:var(--teal);color:#fff}
+    .class-schedule-panel{padding:15px;background:var(--teal-light);border-left:3px solid var(--teal)}
+    .class-schedule-panel h3{margin:0;font-size:1rem}
+    .class-schedule-panel p{margin:5px 0 0;color:var(--muted);font-size:.82rem}
+    .class-schedule-form{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .class-schedule-form label{display:grid;gap:5px;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .class-schedule-form input{padding:9px 10px;border:1px solid var(--teal-sage);background:#fff;color:var(--ink);font:400 .86rem Inter,sans-serif}
+    .class-schedule-form button{border:0;background:var(--ink);color:#fff;padding:10px 13px;font:800 .76rem Inter,sans-serif;cursor:pointer}
+    .class-schedule-message{color:var(--muted);font-size:.75rem}
     .nursing-primary{grid-column:1/-1}
     .nursing-primary .card-head{margin-bottom:16px}
     .nursing-primary .card-desc{max-width:700px;font-size:.9rem}
@@ -311,6 +322,15 @@
       </section>
 
       <section class="grid">
+        <article class="card full nursing-support" id="class-schedule-card">
+          <div class="card-head">
+            <div><p class="eyebrow" style="color:var(--teal)">Your classes</p><h2>Class schedule</h2></div>
+            <span class="label teal">Choose a class</span>
+          </div>
+          <p class="card-desc">Select a class to see its next test date. You can update each date as your schedule changes.</p>
+          <div class="class-tabs" id="class-tabs" role="tablist" aria-label="Classes"></div>
+          <div id="class-schedule-panel"></div>
+        </article>
 
         <!-- 1 · Upcoming exam -->
         <article class="card nursing-primary">
@@ -645,8 +665,56 @@
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
-    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview) {
+    function renderClassSchedule(student, schedules, isPreview) {
+      const classes = [
+        { code: 'NUR 312', name: 'NUR 312' },
+        { code: 'NUR 321', name: 'NUR 321' },
+        { code: 'NUR 416', name: 'NUR 416' }
+      ];
+      const byClass = new Map((schedules || []).map(item => [item.class_code, item]));
+      const tabs = document.getElementById('class-tabs');
+      const panel = document.getElementById('class-schedule-panel');
+      let selected = classes[0].code;
+      const render = () => {
+        tabs.innerHTML = classes.map(item =>
+          `<button class="class-tab" type="button" role="tab" aria-selected="${item.code === selected}" data-class="${item.code}">${item.name}</button>`
+        ).join('');
+        const item = byClass.get(selected);
+        const date = item?.next_exam_date || '';
+        panel.innerHTML = `<h3>${selected}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
+        tabs.querySelectorAll('[data-class]').forEach(button => button.addEventListener('click', () => {
+          selected = button.dataset.class;
+          render();
+        }));
+        const form = panel.querySelector('form');
+        if (form) form.addEventListener('submit', async event => {
+          event.preventDefault();
+          const button = form.querySelector('button');
+          const message = form.querySelector('.class-schedule-message');
+          button.disabled = true;
+          button.textContent = 'Saving…';
+          const value = form.elements.next_exam_date.value || null;
+          const { data, error } = await db.from('student_class_schedules').upsert({
+            student_id: student.id,
+            class_code: selected,
+            class_name: selected,
+            next_exam_date: value
+          }, { onConflict: 'student_id,class_code' }).select('id,class_code,class_name,next_exam_date').single();
+          if (error) {
+            message.textContent = 'Class dates are not available yet. Madison needs to finish setup first.';
+            button.disabled = false;
+            button.textContent = 'Save date';
+            return;
+          }
+          byClass.set(selected, data);
+          render();
+        });
+      };
+      render();
+    }
+    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules) {
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
+      renderClassSchedule(student, schedules, isPreview);
 
       // Course name in hero subtitle
       if (student.course_name) {
@@ -855,6 +923,7 @@
       ];
       if (isNursing) {
         fetches.push(
+          db.from('student_class_schedules').select('id,class_code,class_name,next_exam_date').eq('student_id', student.id).order('class_code'),
           db.from('student_supplemental_practice_results')
             .select('practice_key,practice_title,score,total_questions,completed_at')
             .eq('student_id', student.id)
@@ -864,13 +933,13 @@
       }
 
       const results = await Promise.all(fetches);
-      const [plans, resources, catalog, access, practiceRes] = results;
+      const [plans, resources, catalog, access, schedules, practiceRes] = results;
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
 
       if (isNursing) {
-        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview);
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : []);
         // Show onboarding modal only on true first login (never in preview)
         if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');
