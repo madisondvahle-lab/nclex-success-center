@@ -130,6 +130,17 @@
     .practice-item-note{font-size:.8rem;color:var(--muted);display:block;margin-bottom:12px;line-height:1.45}
     .practice-item-open{font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor}
     .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
+    .nursing-primary{grid-column:1/-1}
+    .nursing-primary .card-head{margin-bottom:16px}
+    .nursing-primary .card-desc{max-width:700px;font-size:.9rem}
+    .exam-summary{display:grid;grid-template-columns:minmax(180px,.45fr) 1fr;gap:28px;align-items:start;padding-top:20px;border-top:1px solid var(--line)}
+    .exam-date{font:400 1.35rem Georgia,serif;color:var(--teal);line-height:1.2}
+    .exam-topics-label{display:block;margin:0 0 8px;color:var(--muted);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    .exam-topic{margin:0 0 6px;font-size:.88rem;line-height:1.45}
+    .practice-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .practice-item{margin:0;min-height:132px}
+    .practice-item-open{margin-top:4px}
+    .nursing-support{grid-column:1/-1}
 
     @media(max-width:800px){
       .hero{grid-template-columns:1fr;align-items:start}
@@ -137,6 +148,7 @@
       .grid{grid-template-columns:1fr}
       .resources,.modules,.uploads-full{grid-column:auto}
       .resource-list,.module-list,.progress-grid{grid-template-columns:1fr}
+      .exam-summary,.practice-list{grid-template-columns:1fr}
       .shell{width:min(100% - 28px,1160px)}
       .hero{padding:40px 0}
       .card{padding:24px 20px}
@@ -240,11 +252,6 @@
           <p id="weekly-intro-nclex">Your current weekly priorities will appear here after Madison updates your plan.</p>
           <div class="task-list" id="daily-priorities-nclex"></div>
         </article>
-        <article class="card">
-          <div class="card-head"><div><p class="eyebrow">Shared coaching</p><h2>Assessment progress</h2></div><span class="label">Private</span></div>
-          <p class="empty">Upload your Kaplan, Archer, Bootcamp, UWorld, or CPR reports and review your focus areas with Madison in one shared workspace.</p>
-          <a class="resource-link" href="shared-progress.html">Open shared progress →</a>
-        </article>
         <article class="card" id="cat-results-card" style="display:none">
           <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
           <div id="cat-results-body"></div>
@@ -291,53 +298,30 @@
 
       <section class="grid">
 
-        <!-- 1 · Course plan -->
-        <article class="card">
+        <!-- 1 · Upcoming exam -->
+        <article class="card nursing-primary">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Your course plan</p><h2 id="plan-title-nursing">This Semester</h2></div>
-            <span class="label teal">Personal plan</span>
-          </div>
-          <p class="card-desc">Madison builds this roadmap based on your course and upcoming tests. It shows the units and topics you should tackle in order.</p>
-          <ol class="roadmap" id="roadmap-nursing">
-            <li><span>1</span><div><strong>Your plan is being prepared.</strong><p>Madison will add your unit schedule and focus areas here after your session.</p></div></li>
-          </ol>
-        </article>
-
-        <!-- 2 · This week -->
-        <article class="card weekly nursing-week">
-          <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal-sage)">This week</p><h2>What to study now</h2></div>
-            <span class="label teal">Next steps</span>
-          </div>
-          <p id="weekly-intro-nursing" style="color:#b8e0da">Your weekly priorities will appear here after Madison updates your plan.</p>
-          <div class="task-list nursing-tasks" id="daily-priorities-nursing"></div>
-        </article>
-
-        <!-- 3 · Upcoming exam -->
-        <article class="card">
-          <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Upcoming exam</p><h2>Exam date &amp; focus</h2></div>
+            <div><p class="eyebrow" style="color:var(--teal)">Your next test</p><h2>Upcoming exam</h2></div>
             <span class="label teal">Exam prep</span>
           </div>
-          <p class="card-desc">Your next test date and the specific topics Madison recommends you prioritize before it.</p>
+          <p class="card-desc">Your next test date and the topics to review before you choose a practice set.</p>
           <div id="exam-info-nursing"><p class="empty">No exam date set yet. Use the prompt above to add one, or Madison will add it after your session.</p></div>
-          <a class="resource-link" href="shared-progress.html" style="color:var(--teal)">Open shared workspace →</a>
         </article>
 
-        <!-- 4 · Assigned practice quiz -->
-        <article class="card">
+        <!-- 2 · Assigned practice quiz -->
+        <article class="card nursing-primary">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Practice quiz</p><h2>Assigned practice</h2></div>
-            <span class="label teal">Quiz</span>
+            <div><p class="eyebrow" style="color:var(--teal)">Choose your practice</p><h2>Practice sets</h2></div>
+            <span class="label teal">Available now</span>
           </div>
-          <p class="card-desc">Madison assigns these practice sets specifically for your upcoming exam. Work through them before your next coaching session.</p>
+          <p class="card-desc">Choose a set that matches the test you are preparing for. You can work through these in any order.</p>
           <div id="practice-shortcut-nursing">
             <p class="empty">No practice set assigned yet — Madison will add one before your next session.</p>
           </div>
         </article>
 
-        <!-- 5 · Study resources (full width) — non-practice content only -->
-        <article class="card resources">
+        <!-- 3 · Study resources (full width) — non-practice content only -->
+        <article class="card resources nursing-support">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
             <span class="label teal">Assigned</span>
@@ -346,8 +330,8 @@
           <div class="resource-list" id="resources-nursing"><p class="empty">No study resources assigned yet. Madison will add materials for your current unit here.</p></div>
         </article>
 
-        <!-- 6 · Student uploads (full width) -->
-        <article class="card uploads-full" id="student-uploads-card">
+        <!-- 4 · Student uploads (full width) -->
+        <article class="card uploads-full nursing-support" id="student-uploads-card">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your course materials</p><h2>Uploaded content</h2></div>
             <span class="label teal">My uploads</span>
@@ -365,8 +349,8 @@
           </div>
         </article>
 
-        <!-- 7 · Recent quiz scores (full width) -->
-        <article class="card" style="grid-column:1/-1">
+        <!-- 5 · Recent quiz scores (full width) -->
+        <article class="card nursing-support" style="grid-column:1/-1">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
             <span class="label teal">Performance</span>
@@ -375,8 +359,8 @@
           <div class="progress-grid" id="progress-nursing"><p class="empty" style="grid-column:1/-1">Quiz scores will appear here after you complete your first practice set.</p></div>
         </article>
 
-        <!-- 8 · Class modules / study guides (full width) -->
-        <article class="card modules">
+        <!-- 6 · Class modules / study guides (full width) -->
+        <article class="card modules nursing-support">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
             <span class="label teal">Course access</span>
@@ -653,8 +637,7 @@
       // Course name in hero subtitle
       if (student.course_name) {
         document.getElementById('hero-course-line').textContent =
-          `Your private hub for ${student.course_name} — class resources, exam prep, and the next steps Madison has selected for you.`;
-        document.getElementById('plan-title-nursing').textContent = student.course_name;
+          `Your private hub for ${student.course_name} — upcoming tests, practice sets, and class resources in one place.`;
       }
 
       // Exam countdown
@@ -681,44 +664,32 @@
           : `<strong>My plan</strong><span>Your next priorities are below.</span>`;
       }
 
-      // Course plan roadmap
-      const daily = renderRoadmapInto(document.getElementById('roadmap-nursing'), document.getElementById('plan-title-nursing'), plans[0]);
-
-      // This week priorities
-      if (daily.length) {
-        document.getElementById('weekly-intro-nursing').textContent = 'These are the focused next steps Madison has selected for your current unit.';
-        document.getElementById('daily-priorities-nursing').innerHTML = daily.map(item => {
-          const title  = typeof item === 'string' ? item : (item.title || item.task || 'Study priority');
-          const detail = typeof item === 'object'  ? (item.detail || item.description || '') : '';
-          return `<div class="task nursing-task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
-        }).join('');
-      }
-
       // Upcoming exam card
       if (student.exam_date) {
         const formatted = new Date(`${student.exam_date}T12:00:00`).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
         const examRes   = resources.filter(r => r.resource_type === 'exam_topic');
-        let html = `<p style="font-size:.95rem;font-weight:700;color:var(--teal);margin:0 0 10px">${text(formatted)}</p>`;
+        let html = `<div class="exam-summary"><div class="exam-date">${text(formatted)}</div><div>`;
         if (examRes.length) {
-          html += `<p style="font-size:.78rem;color:var(--muted);margin:0 0 8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Topics to focus on</p>`;
+          html += `<span class="exam-topics-label">Topics to review</span>`;
           html += examRes.map(r =>
-            `<p style="margin:4px 0;font-size:.85rem;color:var(--ink)">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`
+            `<p class="exam-topic">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`
           ).join('');
         }
+        html += `</div></div>`;
         document.getElementById('exam-info-nursing').innerHTML = html;
       }
 
       // ── Practice sets — ONLY in the practice card ──
       const practiceSets = resources.filter(r => r.resource_type === 'practice_set');
       if (practiceSets.length) {
-        document.getElementById('practice-shortcut-nursing').innerHTML = practiceSets.map(ps => `
+        document.getElementById('practice-shortcut-nursing').innerHTML = `<div class="practice-list">${practiceSets.map(ps => `
           <div class="practice-item">
             <span class="practice-item-meta">Practice set</span>
             <span class="practice-item-title">${text(ps.title)}</span>
             ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
-            ${ps.url  ? `<a class="practice-item-open" href="${text(/^NUR 312\b/i.test(ps.title||'') ? 'supplemental-practice.html?set=jack-nur312-exam1' : ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
+            ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
           </div>`
-        ).join('');
+        ).join('')}</div>`;
       }
 
       // ── Study resources — everything EXCEPT practice_set, student_upload, exam_topic ──
