@@ -66,14 +66,14 @@
           <label class="choice">
             <input id="jack-ob-study-guide" type="checkbox">
             <span>
-              <strong>Jack · OB Study Guide</strong>
-              <span>View the browser version or download the original DOCX for NUR 321 OB preparation.</span>
+              <strong>Jack · NUR 321 Exam 2 Study Guide</strong>
+              <span>View the browser version or download the original DOCX for NUR 321 OB Exam 2 preparation.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-ob-study-questions" type="checkbox">
             <span>
-              <strong>Jack · OB Study Guide Practice</strong>
+              <strong>Jack · NUR 321 Exam 2 Practice</strong>
               <span>40 focused questions based on the uploaded OB study guide.</span>
             </span>
           </label>
@@ -180,7 +180,7 @@ if($('jack-ob-study-guide').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · OB Study Guide',
+      title:'Jack · NUR 321 Exam 2 Study Guide',
       resource_type:'study_guide',
       url,
       note:'View the study guide online or download the original DOCX.'
@@ -195,7 +195,7 @@ if($('jack-ob-study-questions').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · OB Study Guide Practice (40 questions)',
+      title:'Jack · NUR 321 Exam 2 Practice (40 questions)',
       resource_type:'practice_set',
       url,
       note:'40 practice questions based on the Jack OB Study Guide.'
@@ -209,8 +209,8 @@ if($('diagnostic').checked)items.push('full mock CAT diagnostic');
 if($('mixed-review').checked)items.push('mixed NCLEX review');
 if($('nur321-ob-exam1').checked)items.push('Jack · NUR 312 Exam 1 Practice (100 questions)');
 if($('jack-nur312-exam2').checked)items.push('Jack · NUR 312 Exam 2 Practice (92 questions)');
-if($('jack-ob-study-guide').checked)items.push('Jack · OB Study Guide');
-if($('jack-ob-study-questions').checked)items.push('Jack · OB Study Guide Practice (40 questions)');
+if($('jack-ob-study-guide').checked)items.push('Jack · NUR 321 Exam 2 Study Guide');
+if($('jack-ob-study-questions').checked)items.push('Jack · NUR 321 Exam 2 Practice (40 questions)');
 show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
     $('save').addEventListener('click',() => { save().catch(error => show('Assignment save failed: '+(error.message||'unknown error'),'error')); });
     window.addEventListener('error', event => show('Assignment page error: '+(event.error?.message||event.message||'unknown error'),'error'));
