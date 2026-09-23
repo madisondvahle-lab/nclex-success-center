@@ -140,6 +140,14 @@
     .practice-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .practice-item{margin:0;min-height:132px}
     .practice-item-open{margin-top:4px}
+    .practice-group+.practice-group{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+    .practice-group-heading{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+    .practice-group-heading h3{margin:0;color:var(--ink);font-size:1.18rem}
+    .practice-group-heading span{color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .resource-group+.resource-group{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+    .resource-group-heading{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+    .resource-group-heading h3{margin:0;color:var(--ink);font-size:1.18rem}
+    .resource-group-heading span{color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
     .nursing-support{grid-column:1/-1}
 
     @media(max-width:800px){
@@ -682,14 +690,26 @@
       // ── Practice sets — ONLY in the practice card ──
       const practiceSets = resources.filter(r => r.resource_type === 'practice_set');
       if (practiceSets.length) {
-        document.getElementById('practice-shortcut-nursing').innerHTML = `<div class="practice-list">${practiceSets.map(ps => `
-          <div class="practice-item">
-            <span class="practice-item-meta">Practice set</span>
-            <span class="practice-item-title">${text(ps.title)}</span>
-            ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
-            ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
-          </div>`
-        ).join('')}</div>`;
+        const practiceGroups = [
+          {label:'NUR 312', sets:practiceSets.filter(ps => /NUR 312|jack-nur312/i.test(`${ps.title||''} ${ps.url||''}`))},
+          {label:'NUR 321', sets:practiceSets.filter(ps => /NUR 321|OB|jack-ob/i.test(`${ps.title||''} ${ps.url||''}`))}
+        ];
+        const groupedSets = new Set(practiceGroups.flatMap(group => group.sets));
+        const otherSets = practiceSets.filter(ps => !groupedSets.has(ps));
+        if (otherSets.length) practiceGroups.push({label:'Other practice',sets:otherSets});
+        document.getElementById('practice-shortcut-nursing').innerHTML = practiceGroups.filter(group => group.sets.length).map(group => `
+          <section class="practice-group">
+            <div class="practice-group-heading"><h3>${group.label}</h3><span>${group.sets.length} set${group.sets.length===1?'':'s'}</span></div>
+            <div class="practice-list">${group.sets.map(ps => `
+              <div class="practice-item">
+                <span class="practice-item-meta">Practice set</span>
+                <span class="practice-item-title">${text(ps.title)}</span>
+                ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
+                ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
+              </div>`
+            ).join('')}</div>
+          </section>
+        `).join('');
       }
 
       // ── Study resources — everything EXCEPT practice_set, student_upload, exam_topic ──
@@ -699,14 +719,26 @@
         r.resource_type !== 'exam_topic'
       );
       if (studyRes.length) {
-        document.getElementById('resources-nursing').innerHTML = studyRes.map(item =>
-          `<article class="resource">
-            <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
-            <h3>${text(item.title)}</h3>
-            ${item.note ? `<p>${text(item.note)}</p>` : ''}
-            ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
-          </article>`
-        ).join('');
+        const resourceGroups = [
+          {label:'NUR 312', items:studyRes.filter(item => /NUR 312|jack-nur312/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
+          {label:'NUR 321', items:studyRes.filter(item => /NUR 321|OB|jack-ob/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))}
+        ];
+        const groupedResources = new Set(resourceGroups.flatMap(group => group.items));
+        const otherResources = studyRes.filter(item => !groupedResources.has(item));
+        if (otherResources.length) resourceGroups.push({label:'Other resources',items:otherResources});
+        document.getElementById('resources-nursing').innerHTML = resourceGroups.filter(group => group.items.length).map(group => `
+          <section class="resource-group">
+            <div class="resource-group-heading"><h3>${group.label}</h3><span>${group.items.length} item${group.items.length===1?'':'s'}</span></div>
+            <div class="resource-list">${group.items.map(item =>
+              `<article class="resource">
+                <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
+                <h3>${text(item.title)}</h3>
+                ${item.note ? `<p>${text(item.note)}</p>` : ''}
+                ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+              </article>`
+            ).join('')}</div>
+          </section>
+        `).join('');
       }
 
       // Student uploads
