@@ -324,17 +324,7 @@
           <div id="class-schedule-panel"></div>
         </article>
 
-        <!-- 1 · Upcoming exam -->
-        <article class="card nursing-primary class-dependent-panel hidden">
-          <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Your next test</p><h2>Upcoming exam</h2></div>
-            <span class="label teal">Exam prep</span>
-          </div>
-          <p class="card-desc">Your next test date and the topics to review before you choose a practice set.</p>
-          <div id="exam-info-nursing"><p class="empty">No exam date set yet. Use the prompt above to add one, or Madison will add it after your session.</p></div>
-        </article>
-
-        <!-- 2 · Assigned practice quiz -->
+        <!-- 1 · Assigned practice quiz -->
         <article class="card nursing-primary class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Choose your practice</p><h2>Practice sets</h2></div>
@@ -346,7 +336,7 @@
           </div>
         </article>
 
-        <!-- 3 · Study resources (full width) — non-practice content only -->
+        <!-- 2 · Study resources (full width) — non-practice content only -->
         <article class="card resources nursing-support class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
@@ -356,7 +346,7 @@
           <div class="resource-list" id="resources-nursing"><p class="empty">No study resources assigned yet. Madison will add materials for your current unit here.</p></div>
         </article>
 
-        <!-- 4 · Student uploads (full width) -->
+        <!-- 3 · Student uploads (full width) -->
         <article class="card uploads-full nursing-support class-dependent-panel hidden" id="student-uploads-card">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your course materials</p><h2>Uploaded content</h2></div>
@@ -375,7 +365,7 @@
           </div>
         </article>
 
-        <!-- 5 · Recent quiz scores (full width) -->
+        <!-- 4 · Recent quiz scores (full width) -->
         <article class="card nursing-support class-dependent-panel hidden" style="grid-column:1/-1">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
@@ -385,7 +375,7 @@
           <div class="progress-grid" id="progress-nursing"><p class="empty" style="grid-column:1/-1">Quiz scores will appear here after you complete your first practice set.</p></div>
         </article>
 
-        <!-- 6 · Class modules / study guides (full width) -->
+        <!-- 5 · Class modules / study guides (full width) -->
         <article class="card modules nursing-support class-dependent-panel hidden">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
@@ -718,21 +708,8 @@
     function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules) {
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
-      const classState = { selected: null };
       const activateClass = classCode => {
-        classState.selected = classCode;
         classPanels.forEach(panel => panel.classList.remove('hidden'));
-        const schedule = (schedules || []).find(item => item.class_code === classCode);
-        const date = schedule?.next_exam_date || '';
-        const examRes = resources.filter(r => r.resource_type === 'exam_topic' && new RegExp(classCode.replace(' ', '\\s+'), 'i').test(`${r.title || ''} ${r.note || ''}`));
-        const formatted = date
-          ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })
-          : '';
-        let examHtml = `<p class="empty">${date ? text(formatted) : 'No test date set for this class yet. Use the class date field above to add one.'}</p>`;
-        if (date && examRes.length) {
-          examHtml = `<div class="exam-summary"><div class="exam-date">${text(formatted)}</div><div><span class="exam-topics-label">Topics to review</span>${examRes.map(r => `<p class="exam-topic">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`).join('')}</div></div>`;
-        }
-        document.getElementById('exam-info-nursing').innerHTML = examHtml;
         document.querySelectorAll('#practice-shortcut-nursing .practice-group, #resources-nursing .resource-group').forEach(group => {
           group.hidden = !group.dataset.class || group.dataset.class !== classCode;
         });
@@ -744,42 +721,6 @@
       if (student.course_name) {
         document.getElementById('hero-course-line').textContent =
           `Your private hub for ${student.course_name} — upcoming tests, practice sets, and class resources in one place.`;
-      }
-
-      // Upcoming exam card
-      if (student.exam_date) {
-        const formatted = new Date(`${student.exam_date}T12:00:00`).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-        const examRes   = resources.filter(r => r.resource_type === 'exam_topic');
-        let html = `<div class="exam-summary"><div class="exam-date">${text(formatted)}</div><div>`;
-        if (examRes.length) {
-          html += `<span class="exam-topics-label">Topics to review</span>`;
-          html += examRes.map(r =>
-            `<p class="exam-topic">${text(r.title.replace(/^exam topics:\s*/i,''))}${r.note ? ` — <span style="color:var(--muted)">${text(r.note)}</span>` : ''}</p>`
-          ).join('');
-        }
-        html += `</div></div>`;
-        if (!isPreview) {
-          html += `<details class="exam-edit"><summary>Edit next exam date</summary><form class="exam-edit-form" id="exam-edit-form"><input id="exam-edit-date" type="date" value="${text(student.exam_date)}" required><button type="submit">Save date</button><span class="exam-edit-message" id="exam-edit-message" role="status"></span></form></details>`;
-        }
-        document.getElementById('exam-info-nursing').innerHTML = html;
-        const editForm = document.getElementById('exam-edit-form');
-        if (editForm) editForm.addEventListener('submit', async event => {
-          event.preventDefault();
-          const button = editForm.querySelector('button');
-          const message = document.getElementById('exam-edit-message');
-          const value = document.getElementById('exam-edit-date').value;
-          if (!value) return;
-          button.disabled = true;
-          button.textContent = 'Saving…';
-          const {error} = await db.from('students').update({exam_date:value}).eq('id', student.id);
-          if (error) {
-            message.textContent = 'Could not save the date. Please try again.';
-            button.disabled = false;
-            button.textContent = 'Save date';
-            return;
-          }
-          window.location.reload();
-        });
       }
 
       // ── Practice sets — ONLY in the practice card ──
