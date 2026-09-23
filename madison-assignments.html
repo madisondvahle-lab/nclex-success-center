@@ -74,7 +74,7 @@
             <input id="jack-ob-study-questions" type="checkbox">
             <span>
               <strong>Jack · OB Study Guide Practice</strong>
-              <span>20 focused questions based on the uploaded OB study guide.</span>
+              <span>40 focused questions based on the uploaded OB study guide.</span>
             </span>
           </label>
 
@@ -195,10 +195,10 @@ if($('jack-ob-study-questions').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · OB Study Guide Practice (20 questions)',
+      title:'Jack · OB Study Guide Practice (40 questions)',
       resource_type:'practice_set',
       url,
-      note:'Practice questions based on the Jack OB Study Guide.'
+      note:'40 practice questions based on the Jack OB Study Guide.'
     });
     if(error)throw new Error('OB practice assignment failed: '+error.message);
   }
@@ -210,7 +210,7 @@ if($('mixed-review').checked)items.push('mixed NCLEX review');
 if($('nur321-ob-exam1').checked)items.push('Jack · NUR 312 Exam 1 Practice (100 questions)');
 if($('jack-nur312-exam2').checked)items.push('Jack · NUR 312 Exam 2 Practice (92 questions)');
 if($('jack-ob-study-guide').checked)items.push('Jack · OB Study Guide');
-if($('jack-ob-study-questions').checked)items.push('Jack · OB Study Guide Practice (20 questions)');
+if($('jack-ob-study-questions').checked)items.push('Jack · OB Study Guide Practice (40 questions)');
 show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
     $('save').addEventListener('click',() => { save().catch(error => show('Assignment save failed: '+(error.message||'unknown error'),'error')); });
     window.addEventListener('error', event => show('Assignment page error: '+(event.error?.message||event.message||'unknown error'),'error'));
