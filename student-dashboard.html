@@ -55,6 +55,7 @@
     .resource{min-height:138px;padding:19px;background:var(--soft);display:flex;flex-direction:column}
     .resource-type{display:block;margin-bottom:14px;color:var(--rose);font-size:.66rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
     .resource-thumb{display:block;width:100%;height:112px;object-fit:contain;background:#fff;border:1px solid var(--line);margin:-2px 0 16px}
+    .resource-number{display:block;margin:0 0 16px;color:var(--ink);font:700 1.5rem Georgia,serif}
     .resource-button{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;padding:10px 15px;border:2px solid var(--teal);border-radius:999px;color:var(--teal);background:transparent;font-size:.78rem;font-weight:900;line-height:1.1;text-decoration:none}
     .resource-button:hover{color:#fff;background:var(--teal)}
     .resource-button.disabled{border-color:var(--muted);color:var(--muted);cursor:not-allowed}
@@ -787,16 +788,15 @@
         if (otherResources.length) resourceGroups.push({label:'Other resources',items:otherResources});
         document.getElementById('resources-nursing').innerHTML = resourceGroups.filter(group => group.items.length).map(group => `
           <section class="resource-group" data-class="${group.label}">
-            <div class="resource-group-heading"><h3>${group.label}</h3><span>${group.items.length} item${group.items.length===1?'':'s'}</span></div>
-            <div class="resource-list">${group.items.map(item =>
-              `<article class="resource">
-                ${/\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(item.url || '') ? `<img class="resource-thumb" src="${text(item.url)}" alt="${text(item.title || 'Study resource')}" loading="lazy">` : ''}
-                <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
-                <h3>${text(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>
-                ${item.note ? `<p>${text(item.note)}</p>` : ''}
-                ${item.url  ? `<a class="resource-button" href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : '<span class="resource-button disabled" aria-disabled="true">Resource unavailable</span>'}
-              </article>`
-            ).join('')}</div>
+            ${group.items.every(item => /\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(item.url || '')) ? '' : `<div class="resource-group-heading"><h3>${group.label}</h3><span>${group.items.length} item${group.items.length===1?'':'s'}</span></div>`}
+            <div class="resource-list">${group.items.map((item,index) => {
+              const imageResource=/\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(item.url || '');
+              const number=String(index+1).padStart(2,'0');
+              return `<article class="resource">
+                ${imageResource ? `<img class="resource-thumb" src="${text(item.url)}" alt="Study graphic ${number}" loading="lazy"><span class="resource-number" aria-label="Study graphic ${number}">${number}</span>` : `<span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span><h3>${text(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>${item.note ? `<p>${text(item.note)}</p>` : ''}`}
+                ${item.url  ? `<a class="resource-button" href="${text(item.url)}" target="_blank" rel="noopener">${imageResource ? 'Open graphic →' : 'Open resource →'}</a>` : '<span class="resource-button disabled" aria-disabled="true">Resource unavailable</span>'}
+              </article>`;
+            }).join('')}</div>
           </section>
         `).join('');
       }
