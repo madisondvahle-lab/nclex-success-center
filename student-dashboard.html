@@ -735,7 +735,9 @@
           return 'Other practice';
         };
         const practiceTitle = ps =>
-          /jack-ob-study-guide|OB Study Guide/i.test(`${ps.title || ''} ${ps.url || ''}`)
+          ps.url === 'jack-nur312-exam2.html'
+            ? 'Jack · NUR 312 Exam 2 Practice (116 questions)'
+            : /jack-ob-study-guide|OB Study Guide/i.test(`${ps.title || ''} ${ps.url || ''}`)
             ? 'NUR 321 OB · Exam 2 Practice (40 questions)'
             : ps.title;
         const practiceGroups = [
