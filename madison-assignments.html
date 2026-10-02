@@ -60,7 +60,15 @@
             <input id="jack-nur312-exam2" type="checkbox">
             <span>
               <strong>Jack · NUR 312 Exam 2 Practice</strong>
-              <span>92 questions covering EKG interpretation, dysrhythmias, cardiac conditions, procedures, devices, medications, and calculations.</span>
+              <span>116 questions covering cardiac and respiratory assessment, dysrhythmias, procedures, devices, medications, and calculations.</span>
+            </span>
+          </label>
+          <p style="margin:-4px 0 4px 30px;font-size:.82rem;color:var(--muted)">Admin preview: <a href="jack-nur312-exam2.html?preview=1" target="_blank" rel="noopener">open the 116-question bank</a> without a linked student profile.</p>
+          <label class="choice">
+            <input id="jack-nur312-exam2-resources" type="checkbox">
+            <span>
+              <strong>Jack — NUR 312 Exam 2</strong>
+              <span>Six private study graphics covering pneumothorax, flail chest, pulmonary emboli, chest tubes, and ventilator settings.</span>
             </span>
           </label>
           <label class="choice">
@@ -126,8 +134,9 @@
     const clearNotice=()=>{$('notice').className='notice';$('notice').textContent=''};
     function selected(){return students.find(item=>item.id===$('student').value)}
     const assignmentKeys=['m1','m2','m7','core-safety-priority','core-medication-calculations','core-lifespan-reproductive','core-acute-systems','core-psych-judgment'];
-    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const [{data:access,error:accessError},{data:resources,error:resourcesError}]=await Promise.all([db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),db.from('student_resources').select('url,title,resource_type').eq('student_id',student.id).in('resource_type',['practice_set','study_guide'])]);if(accessError){show('Could not load module access for '+student.name+': '+(accessError.message||'unknown Supabase error'),'error');return}if(resourcesError){show('Could not load practice assignments for '+student.name+': '+(resourcesError.message||'unknown Supabase error'),'error');return}const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));const assignedResources=resources||[];assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=assignedResources.some(item=>item.url==='diagnostic.html?mode=mock');$('mixed-review').checked=assignedResources.some(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));$('nur321-ob-exam1').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=jack-nur312-exam1'||/^NUR 312 Exam 1 Practice\b/i.test(item.title||''));$('jack-nur312-exam2').checked=assignedResources.some(item=>item.url==='jack-nur312-exam2.html');$('jack-ob-study-guide').checked=assignedResources.some(item=>item.url==='jack-ob-study-guide.html');    $('jack-ob-study-questions').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=jack-ob-study-guide');$('jack-nur416-exam2-guide').checked=assignedResources.some(item=>item.url==='nur416-exam2-study-guide.html');$('jack-nur416-exam2-questions').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=nur416-exam2');$('mixed-options').classList.toggle('hidden',!$('mixed-review').checked);const mixedAssignment=assignedResources.find(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));if(mixedAssignment){const count=new URL(mixedAssignment.url,window.location.href).searchParams.get('mixed');if(['10','20','30','40'].includes(count))$('mixed-count').value=count}}
-    async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));        const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;if(!requested.length&&!hasExtra)throw new Error('Choose at least one assignment before saving.');show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');if(requested.length){const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw new Error('Student module access save failed: '+error.message);const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw new Error('Assignments saved, but module catalog update failed: '+catalogError.message)}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
+    const jackExam2ResourceUrls=['assets/jack-nur312-exam2/Pneumo%20vs%20tension%20pneumo.png','assets/jack-nur312-exam2/Flail%20chest.png','assets/jack-nur312-exam2/Pneumo%3Ahemo%3Aeffusion.png','assets/jack-nur312-exam2/PEs.png','assets/jack-nur312-exam2/Chest%20Tubes.png','assets/jack-nur312-exam2/Vent%20settings.png'];
+    async function loadStudent(){clearNotice();const student=selected();$('choices').classList.toggle('hidden',!student);if(!student)return;const [{data:access,error:accessError},{data:resources,error:resourcesError}]=await Promise.all([db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),db.from('student_resources').select('url,title,resource_type').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document'])]);if(accessError){show('Could not load module access for '+student.name+': '+(accessError.message||'unknown Supabase error'),'error');return}if(resourcesError){show('Could not load practice assignments for '+student.name+': '+(resourcesError.message||'unknown Supabase error'),'error');return}const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));const assignedResources=resources||[];assignmentKeys.forEach(key=>$(key).checked=enabled.has(key));$('diagnostic').checked=assignedResources.some(item=>item.url==='diagnostic.html?mode=mock');$('mixed-review').checked=assignedResources.some(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));$('nur321-ob-exam1').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=jack-nur312-exam1'||/^NUR 312 Exam 1 Practice\b/i.test(item.title||''));$('jack-nur312-exam2').checked=assignedResources.some(item=>item.url==='jack-nur312-exam2.html');$('jack-nur312-exam2-resources').checked=jackExam2ResourceUrls.every(url=>assignedResources.some(item=>item.url===url));$('jack-ob-study-guide').checked=assignedResources.some(item=>item.url==='jack-ob-study-guide.html');$('jack-ob-study-questions').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=jack-ob-study-guide');$('jack-nur416-exam2-guide').checked=assignedResources.some(item=>item.url==='nur416-exam2-study-guide.html');$('jack-nur416-exam2-questions').checked=assignedResources.some(item=>item.url==='supplemental-practice.html?set=nur416-exam2');$('mixed-options').classList.toggle('hidden',!$('mixed-review').checked);const mixedAssignment=assignedResources.find(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));if(mixedAssignment){const count=new URL(mixedAssignment.url,window.location.href).searchParams.get('mixed');if(['10','20','30','40'].includes(count))$('mixed-count').value=count}}
+    async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));        const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('jack-nur312-exam2-resources')?.checked||$('jack-nur312-exam2')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;if(!requested.length&&!hasExtra)throw new Error('Choose at least one assignment before saving.');show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');if(requested.length){const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw new Error('Student module access save failed: '+error.message);const {error:catalogError}=await db.from('modules').upsert(requested.map(item=>coreModules[item.module_key]),{onConflict:'module_key'});if(catalogError)throw new Error('Assignments saved, but module catalog update failed: '+catalogError.message)}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
 if($('mixed-review').checked){
   const count=Number($('mixed-count').value)||20;
   const url='supplemental-practice.html?mixed='+count;
@@ -179,12 +188,30 @@ if($('jack-nur312-exam2').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · NUR 312 Exam 2 Practice (92 questions)',
+      title:'Jack · NUR 312 Exam 2 Practice (116 questions)',
       resource_type:'practice_set',
       url,
-      note:'Complete this 92-question Exam 2 practice test before your next coaching session.'
+      note:'Complete this 116-question Exam 2 practice test before your next coaching session.'
     });
     if(error)throw new Error('NUR 312 Exam 2 assignment failed: '+error.message);
+  }
+}
+if($('jack-nur312-exam2-resources').checked){
+  const resourceNames=['Pneumo vs tension pneumo.png','Flail chest.png','Pneumo:hemo:effusion.png','PEs.png','Chest Tubes.png','Vent settings.png'];
+  for(let index=0;index<jackExam2ResourceUrls.length;index++){
+    const url=jackExam2ResourceUrls[index];
+    const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url',url).limit(1);
+    if(findError)throw new Error('NUR 312 Exam 2 resource lookup failed: '+findError.message);
+    if(!existing?.length){
+      const {error}=await db.from('student_resources').insert({
+        student_id:student.id,
+        title:'Jack — NUR 312 Exam 2 · '+resourceNames[index],
+        resource_type:'document',
+        url,
+        note:'Exam 2 respiratory/cardiac study graphic.'
+      });
+      if(error)throw new Error('NUR 312 Exam 2 resource assignment failed: '+error.message);
+    }
   }
 }
 if($('jack-ob-study-guide').checked){
@@ -252,7 +279,8 @@ const items=selectedKeys.map(key=>coreModules[key].name);
 if($('diagnostic').checked)items.push('full mock CAT diagnostic');
 if($('mixed-review').checked)items.push('mixed NCLEX review');
 if($('nur321-ob-exam1').checked)items.push('Jack · NUR 312 Exam 1 Practice (100 questions)');
-if($('jack-nur312-exam2').checked)items.push('Jack · NUR 312 Exam 2 Practice (92 questions)');
+if($('jack-nur312-exam2').checked)items.push('Jack · NUR 312 Exam 2 Practice (116 questions)');
+if($('jack-nur312-exam2-resources').checked)items.push('Jack — NUR 312 Exam 2 graphics');
 if($('jack-ob-study-guide').checked)items.push('Jack · NUR 321 Exam 2 Study Guide');
 if($('jack-ob-study-questions').checked)items.push('Jack · NUR 321 Exam 2 Practice (40 questions)');
 if($('jack-nur416-exam2-guide').checked)items.push('Jack · NUR 416 Exam 2 Study Guide');

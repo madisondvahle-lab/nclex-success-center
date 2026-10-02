@@ -1,7 +1,9 @@
-[
+// Jack NUR 312 Exam 2 Success Center Question Bank
+// Generated from the uploaded Exam 2 blueprint and lecture decks.
+// `a` is zero-based and refers to the ORIGINAL option order shown in each object.
+
+const jackNUR312Exam2Questions = [
   {
-    "id": "jack-nur312-exam2-001",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Cardiac Injury",
     "q": "A patient with chest pressure has new ST-segment depression without ST elevation. Which interpretation best connects the ECG finding with the underlying perfusion problem?",
     "o": [
@@ -11,13 +13,9 @@
       "Reduced coronary blood flow causing myocardial ischemia"
     ],
     "a": 3,
-    "r": "The lecture distinguishes ischemia from injury: decreased blood flow and hypoxia typically produce ST depression, whereas myocardial injury produces ST elevation. The deciding cue is the direction of the ST change.",
-    "difficulty": 2,
-    "topic": "Cardiac Injury"
+    "r": "The lecture distinguishes ischemia from injury: decreased blood flow and hypoxia typically produce ST depression, whereas myocardial injury produces ST elevation. The deciding cue is the direction of the ST change."
   },
   {
-    "id": "jack-nur312-exam2-002",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Cardiac Injury",
     "q": "A patient two days after an MI develops a large pathologic Q wave in leads that previously showed ST elevation. Which explanation best accounts for this change?",
     "o": [
@@ -27,13 +25,9 @@
       "The AV node is delaying conduction into the ventricles"
     ],
     "a": 1,
-    "r": "The ECG lecture links a large Q wave with a zone of infarction. ST elevation represents injury; development of a pathologic Q wave indicates established myocardial necrosis/infarction.",
-    "difficulty": 2,
-    "topic": "Cardiac Injury"
+    "r": "The ECG lecture links a large Q wave with a zone of infarction. ST elevation represents injury; development of a pathologic Q wave indicates established myocardial necrosis/infarction."
   },
   {
-    "id": "jack-nur312-exam2-003",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Cardiac Injury",
     "q": "The nurse reviews an ECG with ST elevation and is told the patient also has recent viral illness and positional chest pain relieved by leaning forward. Which conclusion is safest?",
     "o": [
@@ -43,13 +37,9 @@
       "Interpret the ST elevation as a normal finding because the patient is young"
     ],
     "a": 0,
-    "r": "The ECG deck lists pericarditis among non-MI causes of ST elevation. The inflammatory-cardiac lecture adds positional pain relieved by leaning forward. ST elevation must therefore be interpreted with the clinical presentation rather than treated as diagnostic by itself.",
-    "difficulty": 2,
-    "topic": "Cardiac Injury"
+    "r": "The ECG deck lists pericarditis among non-MI causes of ST elevation. The inflammatory-cardiac lecture adds positional pain relieved by leaning forward. ST elevation must therefore be interpreted with the clinical presentation rather than treated as diagnostic by itself."
   },
   {
-    "id": "jack-nur312-exam2-004",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "A patient reports exertional syncope and weak pulses. Auscultation reveals a harsh mid-systolic ejection murmur at the 2nd intercostal space radiating to the neck. Which disorder best explains the combined findings?",
     "o": [
@@ -59,13 +49,9 @@
       "Mitral regurgitation"
     ],
     "a": 2,
-    "r": "The murmur location/timing plus the symptom pattern identifies aortic stenosis. The lecture emphasizes using both auscultation and clinical presentation rather than a single symptom.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "The murmur location/timing plus the symptom pattern identifies aortic stenosis. The lecture emphasizes using both auscultation and clinical presentation rather than a single symptom."
   },
   {
-    "id": "jack-nur312-exam2-005",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "A patient reports dyspnea, cough, fatigue, and edema. Auscultation reveals a low-pitched rumbling diastolic murmur after S2 with an opening snap at the apex. Which disorder best explains the combined findings?",
     "o": [
@@ -75,13 +61,9 @@
       "Mitral Stenosis"
     ],
     "a": 3,
-    "r": "The murmur location/timing plus the symptom pattern identifies mitral stenosis. The lecture emphasizes using both auscultation and clinical presentation rather than a single symptom.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "The murmur location/timing plus the symptom pattern identifies mitral stenosis. The lecture emphasizes using both auscultation and clinical presentation rather than a single symptom."
   },
   {
-    "id": "jack-nur312-exam2-006",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "A patient with known aortic stenosis becomes dizzy and hypotensive while walking in the hall. Which finding from the history most strongly supports that the valve disease is limiting forward cardiac output?",
     "o": [
@@ -91,13 +73,9 @@
       "The murmur becomes softer when the patient lies down"
     ],
     "a": 1,
-    "r": "Aortic stenosis creates left-ventricular outflow obstruction. Exertional syncope, hypotension, and weak pulses are lecture-listed findings that reflect limited forward flow.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "Aortic stenosis creates left-ventricular outflow obstruction. Exertional syncope, hypotension, and weak pulses are lecture-listed findings that reflect limited forward flow."
   },
   {
-    "id": "jack-nur312-exam2-007",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "The nurse is comparing two patients with murmurs. Which finding points toward mitral stenosis rather than aortic stenosis?",
     "o": [
@@ -107,13 +85,9 @@
       "A low-pitched diastolic rumble at the apex after an opening snap"
     ],
     "a": 3,
-    "r": "Mitral stenosis is described as a low-pitched, rumbling diastolic murmur after S2 with an opening snap, best heard at the apex.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "Mitral stenosis is described as a low-pitched, rumbling diastolic murmur after S2 with an opening snap, best heard at the apex."
   },
   {
-    "id": "jack-nur312-exam2-008",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valve Replacement",
     "q": "A patient with a prosthetic valve is preparing for discharge. Which statement requires further teaching?",
     "o": [
@@ -123,13 +97,9 @@
       "I will balance daily activity with planned rest periods"
     ],
     "a": 1,
-    "r": "The surgical-procedures lecture specifically instructs valve patients to avoid OTC products containing ephedrine or epinephrine because of dysrhythmia risk. Dental prophylaxis/history disclosure and monitoring for CHF or petechiae are emphasized.",
-    "difficulty": 2,
-    "topic": "Valve Replacement"
+    "r": "The surgical-procedures lecture specifically instructs valve patients to avoid OTC products containing ephedrine or epinephrine because of dysrhythmia risk. Dental prophylaxis/history disclosure and monitoring for CHF or petechiae are emphasized."
   },
   {
-    "id": "jack-nur312-exam2-009",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valve Replacement",
     "q": "A patient returns from valve replacement surgery. Which new finding should the nurse treat as the highest-priority postoperative complication?",
     "o": [
@@ -139,13 +109,9 @@
       "New dyspnea with evidence of decreased cardiac output"
     ],
     "a": 3,
-    "r": "Post-valve complications include bleeding, thromboembolism, infection, heart failure, dysrhythmia, hemolysis, and mechanical obstruction. New dyspnea with decreased cardiac output suggests a potentially serious hemodynamic complication.",
-    "difficulty": 2,
-    "topic": "Valve Replacement"
+    "r": "Post-valve complications include bleeding, thromboembolism, infection, heart failure, dysrhythmia, hemolysis, and mechanical obstruction. New dyspnea with decreased cardiac output suggests a potentially serious hemodynamic complication."
   },
   {
-    "id": "jack-nur312-exam2-010",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valve Replacement",
     "q": "A patient with a mechanical valve asks why anticoagulation monitoring remains important after surgery. Which response best reflects the course material?",
     "o": [
@@ -155,13 +121,9 @@
       "Anticoagulation is used mainly to prevent surgical-site infection"
     ],
     "a": 1,
-    "r": "The valve lecture identifies mechanical valves/valve replacement as indications for anticoagulants and emphasizes monitoring PT/INR/PTT. Thromboembolism is also a listed postoperative complication.",
-    "difficulty": 2,
-    "topic": "Valve Replacement"
+    "r": "The valve lecture identifies mechanical valves/valve replacement as indications for anticoagulants and emphasizes monitoring PT/INR/PTT. Thromboembolism is also a listed postoperative complication."
   },
   {
-    "id": "jack-nur312-exam2-011",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valve Replacement",
     "q": "A patient with severe valve disease is scheduled for a procedure that separates fused valve leaflets using a catheter-mounted balloon in the cath lab. Which procedure should the nurse expect?",
     "o": [
@@ -171,13 +133,9 @@
       "Percutaneous balloon commissurotomy"
     ],
     "a": 3,
-    "r": "The surgical lecture describes percutaneous balloon commissurotomy as a closed valvuloplasty approach performed in the cath lab to separate fused leaflets.",
-    "difficulty": 2,
-    "topic": "Valve Replacement"
+    "r": "The surgical lecture describes percutaneous balloon commissurotomy as a closed valvuloplasty approach performed in the cath lab to separate fused leaflets."
   },
   {
-    "id": "jack-nur312-exam2-012",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valve Replacement",
     "q": "After percutaneous balloon valvuloplasty, which assessment change is most important to report promptly based on the procedure-specific complications?",
     "o": [
@@ -187,13 +145,9 @@
       "New ventricular dysrhythmia"
     ],
     "a": 3,
-    "r": "The lecture lists ventricular dysrhythmias, emboli, ventricular perforation, aortic regurgitation, and valve rupture as complications of valvuloplasty. A new ventricular dysrhythmia therefore requires prompt evaluation.",
-    "difficulty": 2,
-    "topic": "Valve Replacement"
+    "r": "The lecture lists ventricular dysrhythmias, emboli, ventricular perforation, aortic regurgitation, and valve rupture as complications of valvuloplasty. A new ventricular dysrhythmia therefore requires prompt evaluation."
   },
   {
-    "id": "jack-nur312-exam2-013",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "A patient with aortic stenosis asks why an echocardiogram is being ordered when the murmur is already audible. Which explanation is best?",
     "o": [
@@ -203,13 +157,9 @@
       "It identifies valve structure/function and can assess chamber size, hypertrophy, ejection fraction, and flow"
     ],
     "a": 3,
-    "r": "The heart-murmur lecture identifies echocardiography as the diagnostic study for valve disease and notes its ability to evaluate chamber size, hypertrophy, ejection fraction, and regurgitant flow.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "The heart-murmur lecture identifies echocardiography as the diagnostic study for valve disease and notes its ability to evaluate chamber size, hypertrophy, ejection fraction, and regurgitant flow."
   },
   {
-    "id": "jack-nur312-exam2-014",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Valvular Disease",
     "q": "Which patient presentation should make the nurse most suspicious that a systolic murmur is caused by aortic stenosis rather than mitral valve prolapse?",
     "o": [
@@ -219,13 +169,9 @@
       "Older patient with exertional dyspnea, syncope, weak pulses, and a neck-radiating murmur"
     ],
     "a": 3,
-    "r": "The combination of exertional dyspnea/syncope, weak pulses, hypotension, and a harsh systolic murmur radiating to the neck matches aortic stenosis. The other options describe mitral valve prolapse features.",
-    "difficulty": 2,
-    "topic": "Valvular Disease"
+    "r": "The combination of exertional dyspnea/syncope, weak pulses, hypotension, and a harsh systolic murmur radiating to the neck matches aortic stenosis. The other options describe mitral valve prolapse features."
   },
   {
-    "id": "jack-nur312-exam2-015",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient has a holosystolic murmur heard best at the apex and radiating to the axilla. Which additional finding would most strengthen the nurse’s suspicion of mitral regurgitation?",
     "o": [
@@ -235,13 +181,9 @@
       "S3 gallop with dyspnea and fatigue"
     ],
     "a": 3,
-    "r": "Mitral regurgitation is described as a holosystolic apical murmur radiating to the axilla and may be associated with an S3, dyspnea, fatigue, cough, and CHF.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "Mitral regurgitation is described as a holosystolic apical murmur radiating to the axilla and may be associated with an S3, dyspnea, fatigue, cough, and CHF."
   },
   {
-    "id": "jack-nur312-exam2-016",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient develops a new holosystolic apical murmur after an MI. Which mechanism from the lecture best explains this finding?",
     "o": [
@@ -251,13 +193,9 @@
       "Papillary muscle dysfunction causing mitral regurgitation"
     ],
     "a": 3,
-    "r": "Papillary muscle dysfunction related to MI is a listed cause of mitral regurgitation.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "Papillary muscle dysfunction related to MI is a listed cause of mitral regurgitation."
   },
   {
-    "id": "jack-nur312-exam2-017",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient with mitral regurgitation reports increasing orthopnea and fatigue. Which change best explains these symptoms?",
     "o": [
@@ -267,13 +205,9 @@
       "The aortic valve remains closed during systole"
     ],
     "a": 2,
-    "r": "Regurgitation is backward flow through an incompetent valve. The lecture notes that valve dysfunction reduces pumping efficiency/stroke volume and MR may progress to CHF.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "Regurgitation is backward flow through an incompetent valve. The lecture notes that valve dysfunction reduces pumping efficiency/stroke volume and MR may progress to CHF."
   },
   {
-    "id": "jack-nur312-exam2-018",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "Which medication plan is most consistent with the lecture for symptomatic mitral regurgitation?",
     "o": [
@@ -283,13 +217,9 @@
       "Beta blocker, ACE inhibitor, and diuretic"
     ],
     "a": 3,
-    "r": "The murmur lecture lists beta blockers, ACE inhibitors, and diuretics for mitral regurgitation.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "The murmur lecture lists beta blockers, ACE inhibitors, and diuretics for mitral regurgitation."
   },
   {
-    "id": "jack-nur312-exam2-019",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "The nurse hears a loud murmur throughout systole at the apex. Which radiation pattern should be assessed to help distinguish mitral regurgitation?",
     "o": [
@@ -299,13 +229,9 @@
       "Toward the epigastrium"
     ],
     "a": 1,
-    "r": "Mitral regurgitation is best heard at the apex and radiates into the axilla.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "Mitral regurgitation is best heard at the apex and radiates into the axilla."
   },
   {
-    "id": "jack-nur312-exam2-020",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient with chronic mitral regurgitation develops an irregularly irregular rhythm. Which complication becomes especially important to evaluate?",
     "o": [
@@ -315,13 +241,9 @@
       "Tension pneumothorax from left atrial enlargement"
     ],
     "a": 2,
-    "r": "Valve disease can coexist with atrial fibrillation. The dysrhythmia lecture emphasizes decreased cardiac output and atrial thrombus/stroke risk with A-fib.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "Valve disease can coexist with atrial fibrillation. The dysrhythmia lecture emphasizes decreased cardiac output and atrial thrombus/stroke risk with A-fib."
   },
   {
-    "id": "jack-nur312-exam2-021",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "Which finding would make the nurse reconsider a working diagnosis of mitral regurgitation?",
     "o": [
@@ -331,13 +253,9 @@
       "A holosystolic apical murmur"
     ],
     "a": 2,
-    "r": "An opening snap with a low-pitched diastolic rumble is characteristic of mitral stenosis, not mitral regurgitation.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "An opening snap with a low-pitched diastolic rumble is characteristic of mitral stenosis, not mitral regurgitation."
   },
   {
-    "id": "jack-nur312-exam2-022",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient with mitral regurgitation receives a loop diuretic. Which laboratory trend deserves particular attention according to the lecture?",
     "o": [
@@ -347,13 +265,9 @@
       "Decreasing potassium"
     ],
     "a": 3,
-    "r": "The medication slide specifically notes that loop and thiazide diuretics can decrease potassium.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "The medication slide specifically notes that loop and thiazide diuretics can decrease potassium."
   },
   {
-    "id": "jack-nur312-exam2-023",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient with mitral regurgitation is prescribed digoxin for worsening cardiac function. Which nursing action is most appropriate before administration?",
     "o": [
@@ -363,13 +277,9 @@
       "Have the patient perform Valsalva"
     ],
     "a": 1,
-    "r": "The valve medication slide instructs the nurse to monitor the apical pulse for one minute before digoxin administration.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "The valve medication slide instructs the nurse to monitor the apical pulse for one minute before digoxin administration."
   },
   {
-    "id": "jack-nur312-exam2-024",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Mitral Regurgitation",
     "q": "A patient taking digoxin for valve-related heart failure reports poor appetite, confusion, and visual changes. What is the nurse’s best interpretation?",
     "o": [
@@ -379,13 +289,9 @@
       "They are specific for aortic stenosis"
     ],
     "a": 2,
-    "r": "The lecture lists fatigue, muscle weakness, confusion, visual changes, and loss of appetite as digoxin toxicity findings.",
-    "difficulty": 2,
-    "topic": "Mitral Regurgitation"
+    "r": "The lecture lists fatigue, muscle weakness, confusion, visual changes, and loss of appetite as digoxin toxicity findings."
   },
   {
-    "id": "jack-nur312-exam2-025",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Myocarditis",
     "q": "A patient recovering from a viral illness develops tachycardia, chest pain, cardiomegaly, and new dysrhythmias. Which disorder best integrates these findings?",
     "o": [
@@ -395,13 +301,9 @@
       "Mitral stenosis"
     ],
     "a": 2,
-    "r": "Myocarditis is inflammation of the myocardium and the lecture lists tachycardia, chest pain, cardiomegaly, murmur/friction findings, and dysrhythmias.",
-    "difficulty": 2,
-    "topic": "Myocarditis"
+    "r": "Myocarditis is inflammation of the myocardium and the lecture lists tachycardia, chest pain, cardiomegaly, murmur/friction findings, and dysrhythmias."
   },
   {
-    "id": "jack-nur312-exam2-026",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Myocarditis",
     "q": "A patient with suspected myocarditis has elevated troponin, CRP, and ESR plus new T-wave inversion. Which interpretation is best?",
     "o": [
@@ -411,13 +313,9 @@
       "The pattern supports myocardial injury occurring with an inflammatory process"
     ],
     "a": 3,
-    "r": "Myocarditis may produce elevated troponin/CK from myocardial injury and elevated CRP/ESR from inflammation; ECG abnormalities can include ST changes, T-wave inversion, tachycardia, arrhythmias, or heart block.",
-    "difficulty": 2,
-    "topic": "Myocarditis"
+    "r": "Myocarditis may produce elevated troponin/CK from myocardial injury and elevated CRP/ESR from inflammation; ECG abnormalities can include ST changes, T-wave inversion, tachycardia, arrhythmias, or heart block."
   },
   {
-    "id": "jack-nur312-exam2-027",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Myocarditis",
     "q": "Which change in a patient with myocarditis should the nurse treat as the clearest evidence of deterioration?",
     "o": [
@@ -427,13 +325,9 @@
       "CRP that remains mildly elevated"
     ],
     "a": 1,
-    "r": "Myocarditis can disrupt myocardial function and conduction. A dysrhythmia accompanied by hypotension indicates compromised cardiac output and is more urgent than expected fatigue or an isolated inflammatory marker.",
-    "difficulty": 2,
-    "topic": "Myocarditis"
+    "r": "Myocarditis can disrupt myocardial function and conduction. A dysrhythmia accompanied by hypotension indicates compromised cardiac output and is more urgent than expected fatigue or an isolated inflammatory marker."
   },
   {
-    "id": "jack-nur312-exam2-028",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Myocarditis",
     "q": "The nurse is planning care for myocarditis. Which assessment cluster deserves the closest surveillance for a major complication?",
     "o": [
@@ -443,13 +337,9 @@
       "Visual acuity and pupillary response only"
     ],
     "a": 2,
-    "r": "The lecture emphasizes dysrhythmias and possible heart failure with myocarditis. Monitoring rhythm and perfusion/respiratory status best detects deterioration.",
-    "difficulty": 2,
-    "topic": "Myocarditis"
+    "r": "The lecture emphasizes dysrhythmias and possible heart failure with myocarditis. Monitoring rhythm and perfusion/respiratory status best detects deterioration."
   },
   {
-    "id": "jack-nur312-exam2-029",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Myocarditis",
     "q": "A patient with inflammatory cardiac disease asks why influenza and pneumonia vaccination were discussed. Which response best matches the lecture?",
     "o": [
@@ -459,13 +349,9 @@
       "Vaccines eliminate the need for ECG monitoring"
     ],
     "a": 1,
-    "r": "The inflammatory-cardiac lecture notes influenza and pneumonia vaccination as preventive measures that can help reduce myocarditis in older patients.",
-    "difficulty": 2,
-    "topic": "Myocarditis"
+    "r": "The inflammatory-cardiac lecture notes influenza and pneumonia vaccination as preventive measures that can help reduce myocarditis in older patients."
   },
   {
-    "id": "jack-nur312-exam2-030",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Endocarditis",
     "q": "A patient with a prosthetic valve develops fever, a new murmur, petechiae, and splinter hemorrhages after dental work. Which diagnostic action is most important before targeted antibiotic therapy?",
     "o": [
@@ -475,13 +361,9 @@
       "Measure only a single troponin level"
     ],
     "a": 0,
-    "r": "The presentation is classic for infective endocarditis. The lecture emphasizes at least three blood-culture sets to identify the causative organism, followed by organism-directed IV antibiotics.",
-    "difficulty": 2,
-    "topic": "Endocarditis"
+    "r": "The presentation is classic for infective endocarditis. The lecture emphasizes at least three blood-culture sets to identify the causative organism, followed by organism-directed IV antibiotics."
   },
   {
-    "id": "jack-nur312-exam2-031",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Endocarditis",
     "q": "A patient with suspected infective endocarditis has an inconclusive transthoracic echocardiogram and a prosthetic valve. Which test is most appropriate next according to the lecture?",
     "o": [
@@ -491,13 +373,9 @@
       "Radionuclide exercise imaging"
     ],
     "a": 1,
-    "r": "TEE is more sensitive than TTE for vegetations and is especially useful with prosthetic valves or complex anatomy when TTE is inconclusive.",
-    "difficulty": 2,
-    "topic": "Endocarditis"
+    "r": "TEE is more sensitive than TTE for vegetations and is especially useful with prosthetic valves or complex anatomy when TTE is inconclusive."
   },
   {
-    "id": "jack-nur312-exam2-032",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Endocarditis",
     "q": "Which discharge statement by a patient treated for infective endocarditis shows the best understanding of prevention?",
     "o": [
@@ -507,13 +385,9 @@
       "Good oral hygiene no longer matters after valve treatment"
     ],
     "a": 1,
-    "r": "The lecture stresses good oral hygiene, completing antibiotics, and notifying all providers including dentists of an endocarditis history; high-risk patients may require prophylaxis before certain invasive procedures.",
-    "difficulty": 2,
-    "topic": "Endocarditis"
+    "r": "The lecture stresses good oral hygiene, completing antibiotics, and notifying all providers including dentists of an endocarditis history; high-risk patients may require prophylaxis before certain invasive procedures."
   },
   {
-    "id": "jack-nur312-exam2-033",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Ventricular Septal Defect",
     "q": "An adult with a ventricular septal defect has a holosystolic murmur at the lower left sternal border. Which hemodynamic description best matches the lecture?",
     "o": [
@@ -523,13 +397,9 @@
       "Oxygen-rich blood moves from the left side toward the right side through the defect"
     ],
     "a": 3,
-    "r": "The VSD slide describes a left-to-right shunt and a holosystolic murmur best heard at the lower left sternal/tricuspid area.",
-    "difficulty": 2,
-    "topic": "Ventricular Septal Defect"
+    "r": "The VSD slide describes a left-to-right shunt and a holosystolic murmur best heard at the lower left sternal/tricuspid area."
   },
   {
-    "id": "jack-nur312-exam2-034",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Ventricular Septal Defect",
     "q": "A patient with a known VSD develops increasing dyspnea, tachycardia, edema, and pulmonary hypertension. Which interpretation is best?",
     "o": [
@@ -539,13 +409,9 @@
       "The findings are specific for isolated sinus bradycardia"
     ],
     "a": 0,
-    "r": "The lecture notes that VSD symptoms vary with defect size and may include fatigue, tachycardia, dyspnea, edema, and pulmonary hypertension.",
-    "difficulty": 2,
-    "topic": "Ventricular Septal Defect"
+    "r": "The lecture notes that VSD symptoms vary with defect size and may include fatigue, tachycardia, dyspnea, edema, and pulmonary hypertension."
   },
   {
-    "id": "jack-nur312-exam2-035",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Ventricular Septal Defect",
     "q": "Which treatment plan is most consistent with the lecture for a symptomatic VSD?",
     "o": [
@@ -555,13 +421,9 @@
       "Adenosine as definitive closure therapy"
     ],
     "a": 2,
-    "r": "The VSD slide lists beta blockers, digoxin, Lasix, and surgical repair as treatment options.",
-    "difficulty": 2,
-    "topic": "Ventricular Septal Defect"
+    "r": "The VSD slide lists beta blockers, digoxin, Lasix, and surgical repair as treatment options."
   },
   {
-    "id": "jack-nur312-exam2-036",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericarditis",
     "q": "A patient has sharp chest pain that worsens with inspiration and coughing but improves when sitting forward. A friction rub is heard at the lower left sternal border. Which diagnosis best fits?",
     "o": [
@@ -571,13 +433,9 @@
       "Mitral regurgitation"
     ],
     "a": 2,
-    "r": "The combination of pleuritic/positional pain, relief leaning forward, and a pericardial friction rub is classic for pericarditis in the lecture.",
-    "difficulty": 2,
-    "topic": "Pericarditis"
+    "r": "The combination of pleuritic/positional pain, relief leaning forward, and a pericardial friction rub is classic for pericarditis in the lecture."
   },
   {
-    "id": "jack-nur312-exam2-037",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericarditis",
     "q": "A patient with chest pain has diffuse ST elevation in multiple leads and PR depression after a recent respiratory infection. Which interpretation best fits the course material?",
     "o": [
@@ -587,13 +445,9 @@
       "Pericarditis"
     ],
     "a": 3,
-    "r": "Diffuse ST elevation with PR depression is a classic ECG pattern described for pericarditis, especially with a recent infection and characteristic pain.",
-    "difficulty": 2,
-    "topic": "Pericarditis"
+    "r": "Diffuse ST elevation with PR depression is a classic ECG pattern described for pericarditis, especially with a recent infection and characteristic pain."
   },
   {
-    "id": "jack-nur312-exam2-038",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericarditis",
     "q": "A patient with pericarditis is prescribed ibuprofen. Which history should make the nurse question this medication most directly?",
     "o": [
@@ -603,13 +457,9 @@
       "Peptic ulcer disease"
     ],
     "a": 3,
-    "r": "The inflammatory-cardiac medication slide specifically says not to give ibuprofen to patients with peptic ulcer disease because of GI risk.",
-    "difficulty": 2,
-    "topic": "Pericarditis"
+    "r": "The inflammatory-cardiac medication slide specifically says not to give ibuprofen to patients with peptic ulcer disease because of GI risk."
   },
   {
-    "id": "jack-nur312-exam2-039",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericarditis",
     "q": "Which change in a patient with pericarditis requires the most immediate reassessment for a known complication?",
     "o": [
@@ -619,13 +469,9 @@
       "Pain that improves while leaning forward"
     ],
     "a": 0,
-    "r": "Pericarditis can progress to pericardial effusion and cardiac tamponade. New hypotension and worsening dyspnea suggest hemodynamic compromise and require urgent reassessment.",
-    "difficulty": 2,
-    "topic": "Pericarditis"
+    "r": "Pericarditis can progress to pericardial effusion and cardiac tamponade. New hypotension and worsening dyspnea suggest hemodynamic compromise and require urgent reassessment."
   },
   {
-    "id": "jack-nur312-exam2-040",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericarditis",
     "q": "A patient with pericarditis has mildly elevated troponin. Which interpretation is most appropriate?",
     "o": [
@@ -635,13 +481,9 @@
       "Any troponin elevation rules out pericarditis"
     ],
     "a": 2,
-    "r": "The lecture notes troponin may be mildly elevated in pericarditis associated with myocardial injury, generally not to the same degree as MI. Clinical context and ECG pattern remain important.",
-    "difficulty": 2,
-    "topic": "Pericarditis"
+    "r": "The lecture notes troponin may be mildly elevated in pericarditis associated with myocardial injury, generally not to the same degree as MI. Clinical context and ECG pattern remain important."
   },
   {
-    "id": "jack-nur312-exam2-041",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericardial Effusion",
     "q": "A patient with pericarditis develops persistent hiccups and increasing cough. Which complication should the nurse consider based on the lecture?",
     "o": [
@@ -651,13 +493,9 @@
       "Spontaneous resolution of inflammation"
     ],
     "a": 0,
-    "r": "A large pericardial effusion can compress nearby structures; the lecture links lung compression with cough and phrenic-nerve compression with hiccups.",
-    "difficulty": 2,
-    "topic": "Pericardial Effusion"
+    "r": "A large pericardial effusion can compress nearby structures; the lecture links lung compression with cough and phrenic-nerve compression with hiccups."
   },
   {
-    "id": "jack-nur312-exam2-042",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericardial Effusion",
     "q": "A patient with known pericardial effusion becomes hypotensive and increasingly short of breath. What is the nurse’s priority interpretation?",
     "o": [
@@ -667,13 +505,9 @@
       "The findings indicate improved ventricular compliance"
     ],
     "a": 1,
-    "r": "Cardiac tamponade occurs when pericardial fluid places enough pressure on the heart to impair function. Hypotension and worsening dyspnea are concerning for hemodynamic compromise.",
-    "difficulty": 2,
-    "topic": "Pericardial Effusion"
+    "r": "Cardiac tamponade occurs when pericardial fluid places enough pressure on the heart to impair function. Hypotension and worsening dyspnea are concerning for hemodynamic compromise."
   },
   {
-    "id": "jack-nur312-exam2-043",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pericardial Effusion",
     "q": "Which diagnostic study is most useful for evaluating a patient with pericarditis for fluid accumulation around the heart and signs of tamponade?",
     "o": [
@@ -683,13 +517,9 @@
       "Pulmonary function test"
     ],
     "a": 0,
-    "r": "The pericarditis lecture identifies echocardiography as a key study for detecting pericardial effusion and signs of cardiac tamponade.",
-    "difficulty": 2,
-    "topic": "Pericardial Effusion"
+    "r": "The pericarditis lecture identifies echocardiography as a key study for detecting pericardial effusion and signs of cardiac tamponade."
   },
   {
-    "id": "jack-nur312-exam2-044",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A telemetry strip is irregularly irregular with no discernible P waves and narrow QRS complexes. The ventricular rate is 146/min. Which rhythm is most likely?",
     "o": [
@@ -699,13 +529,9 @@
       "Atrial flutter with fixed conduction"
     ],
     "a": 1,
-    "r": "A-fib is irregularly irregular with absent P waves; a rapid ventricular rate supports RVR.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "A-fib is irregularly irregular with absent P waves; a rapid ventricular rate supports RVR."
   },
   {
-    "id": "jack-nur312-exam2-045",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with atrial fibrillation asks why an anticoagulant is prescribed even though the main symptom is palpitations. Which explanation is best?",
     "o": [
@@ -715,13 +541,9 @@
       "Anticoagulants slow AV-node conduction and directly control the ventricular rate"
     ],
     "a": 1,
-    "r": "The lecture emphasizes atrial blood stasis, thrombus formation, embolization, and stroke risk in A-fib.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture emphasizes atrial blood stasis, thrombus formation, embolization, and stroke risk in A-fib."
   },
   {
-    "id": "jack-nur312-exam2-046",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with A-fib suddenly develops facial droop and unilateral weakness. Which connection should the nurse make first?",
     "o": [
@@ -731,13 +553,9 @@
       "Atrial thrombus may have embolized to the brain"
     ],
     "a": 3,
-    "r": "Stroke is a major complication of A-fib because atrial stasis can form thrombi that embolize.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "Stroke is a major complication of A-fib because atrial stasis can form thrombi that embolize."
   },
   {
-    "id": "jack-nur312-exam2-047",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Which strip description most strongly favors atrial flutter over atrial fibrillation?",
     "o": [
@@ -747,13 +565,9 @@
       "Sawtooth atrial activity with a rapid regular atrial impulse"
     ],
     "a": 3,
-    "r": "Atrial flutter is characterized by flutter/sawtooth waves from a rapid regular atrial impulse.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "Atrial flutter is characterized by flutter/sawtooth waves from a rapid regular atrial impulse."
   },
   {
-    "id": "jack-nur312-exam2-048",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with A-fib has BP 78/44, chest discomfort, and new confusion despite medication. Which intervention is most consistent with the lecture?",
     "o": [
@@ -763,13 +577,9 @@
       "Defibrillation without synchronization while the patient has a pulse"
     ],
     "a": 1,
-    "r": "The cardioversion slide identifies acute mental-status change, chest discomfort, and hypotension as hemodynamic instability warranting synchronized cardioversion when medications are not effective.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The cardioversion slide identifies acute mental-status change, chest discomfort, and hypotension as hemodynamic instability warranting synchronized cardioversion when medications are not effective."
   },
   {
-    "id": "jack-nur312-exam2-049",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Why is synchronized cardioversion timed to the QRS complex?",
     "o": [
@@ -779,13 +589,9 @@
       "To increase atrial thrombus formation before conversion"
     ],
     "a": 1,
-    "r": "The lecture states synchronization to the QRS prevents the R-on-T phenomenon.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture states synchronization to the QRS prevents the R-on-T phenomenon."
   },
   {
-    "id": "jack-nur312-exam2-050",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A stable patient with long-standing A-fib is scheduled for elective cardioversion. Which history would most directly affect preparation?",
     "o": [
@@ -795,13 +601,9 @@
       "The patient has not been anticoagulated and has not had a TEE"
     ],
     "a": 3,
-    "r": "The lecture states patients need anticoagulation for 4–6 weeks before cardioversion or a TEE beforehand to evaluate for thrombus.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture states patients need anticoagulation for 4–6 weeks before cardioversion or a TEE beforehand to evaluate for thrombus."
   },
   {
-    "id": "jack-nur312-exam2-051",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "After a TEE performed before cardioversion, which assessment is most important before allowing oral intake?",
     "o": [
@@ -811,13 +613,9 @@
       "Presence of an S3 gallop"
     ],
     "a": 1,
-    "r": "The cardioversion slide specifically notes that swallowing reflex must be monitored after TEE.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The cardioversion slide specifically notes that swallowing reflex must be monitored after TEE."
   },
   {
-    "id": "jack-nur312-exam2-052",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient taking digoxin for atrial fibrillation is scheduled for cardioversion. Which order should the nurse anticipate from the lecture?",
     "o": [
@@ -827,13 +625,9 @@
       "Give an antacid with digoxin immediately before sedation"
     ],
     "a": 2,
-    "r": "The lecture instructs that digoxin is held 48 hours before cardioversion.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture instructs that digoxin is held 48 hours before cardioversion."
   },
   {
-    "id": "jack-nur312-exam2-053",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Which medication classes are presented in the lecture as options for rate/rhythm management of atrial fibrillation?",
     "o": [
@@ -843,13 +637,9 @@
       "Digitalis, amiodarone, calcium channel blockers, and beta blockers"
     ],
     "a": 3,
-    "r": "The A-fib treatment table lists digitalis, amiodarone, calcium channel blockers, beta blockers, cardioversion, surgical intervention, and anticoagulants.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The A-fib treatment table lists digitalis, amiodarone, calcium channel blockers, beta blockers, cardioversion, surgical intervention, and anticoagulants."
   },
   {
-    "id": "jack-nur312-exam2-054",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with A-fib becomes dizzy when standing. Which nursing intervention from the lecture is especially relevant while the rhythm is being managed?",
     "o": [
@@ -859,13 +649,9 @@
       "Restrict all oral fluids"
     ],
     "a": 0,
-    "r": "The A-fib nursing-intervention table specifically lists fall prevention, reflecting possible reduced cardiac output and medication effects.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The A-fib nursing-intervention table specifically lists fall prevention, reflecting possible reduced cardiac output and medication effects."
   },
   {
-    "id": "jack-nur312-exam2-055",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Which laboratory monitoring is most relevant for a patient with A-fib receiving anticoagulation according to the lecture?",
     "o": [
@@ -875,13 +661,9 @@
       "Serum amylase before each dose"
     ],
     "a": 1,
-    "r": "The lecture specifically lists coagulation labs PT/INR and PTT for A-fib/anticoagulant monitoring.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture specifically lists coagulation labs PT/INR and PTT for A-fib/anticoagulant monitoring."
   },
   {
-    "id": "jack-nur312-exam2-056",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient has atrial activity at approximately 300/min with sawtooth waves and a ventricular rate of 100/min. Which rhythm best fits?",
     "o": [
@@ -891,13 +673,9 @@
       "Sinus tachycardia"
     ],
     "a": 2,
-    "r": "Atrial flutter atrial rates are listed around 251–350/min with flutter/sawtooth waves; the ventricular rate varies based on conduction.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "Atrial flutter atrial rates are listed around 251–350/min with flutter/sawtooth waves; the ventricular rate varies based on conduction."
   },
   {
-    "id": "jack-nur312-exam2-057",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with atrial flutter is tolerating the rhythm but has a rapid ventricular response. Which treatment set is most consistent with the lecture?",
     "o": [
@@ -907,13 +685,9 @@
       "Immediate defibrillation in every patient regardless of pulse or stability"
     ],
     "a": 0,
-    "r": "The atrial-flutter table lists digitalis, amiodarone, calcium channel blockers, beta blockers, and cardioversion.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The atrial-flutter table lists digitalis, amiodarone, calcium channel blockers, beta blockers, and cardioversion."
   },
   {
-    "id": "jack-nur312-exam2-058",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Which finding best distinguishes A-fib from sinus tachycardia when both have ventricular rates above 120/min?",
     "o": [
@@ -923,13 +697,9 @@
       "Sinus tachycardia has no P waves"
     ],
     "a": 1,
-    "r": "Sinus tachycardia remains regular with upright P waves and normal PR/QRS intervals; A-fib lacks P waves and is irregularly irregular.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "Sinus tachycardia remains regular with upright P waves and normal PR/QRS intervals; A-fib lacks P waves and is irregularly irregular."
   },
   {
-    "id": "jack-nur312-exam2-059",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with A-fib has a ventricular rate of 68/min and no symptoms. Which principle should guide the nurse’s interpretation?",
     "o": [
@@ -939,13 +709,9 @@
       "A-fib is harmless unless the rate exceeds 150/min"
     ],
     "a": 2,
-    "r": "A-fib causes ineffective atrial contraction and stasis independent of whether the ventricular response is currently rapid.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "A-fib causes ineffective atrial contraction and stasis independent of whether the ventricular response is currently rapid."
   },
   {
-    "id": "jack-nur312-exam2-060",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with a history of hypertension, heart failure, and hyperthyroidism develops a new irregularly irregular rhythm. Which diagnosis should the nurse anticipate?",
     "o": [
@@ -955,13 +721,9 @@
       "Atrial fibrillation"
     ],
     "a": 3,
-    "r": "The lecture lists age, HTN, diabetes, HF, hyperthyroidism, cardiac surgery, inflammatory cardiac disease, and MI as A-fib causes/risk factors.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture lists age, HTN, diabetes, HF, hyperthyroidism, cardiac surgery, inflammatory cardiac disease, and MI as A-fib causes/risk factors."
   },
   {
-    "id": "jack-nur312-exam2-061",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient asks why the heart can pump less effectively during rapid A-fib. Which explanation is best?",
     "o": [
@@ -971,13 +733,9 @@
       "The ventricles stop depolarizing completely during A-fib"
     ],
     "a": 1,
-    "r": "The lecture explains that loss of atrial kick and rapid ventricular response can decrease cardiac output.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The lecture explains that loss of atrial kick and rapid ventricular response can decrease cardiac output."
   },
   {
-    "id": "jack-nur312-exam2-062",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "A patient with refractory atrial fibrillation is scheduled for a Maze procedure. Which explanation best describes its purpose?",
     "o": [
@@ -987,13 +745,9 @@
       "Creating atrial scar pathways to interrupt reentry conduction"
     ],
     "a": 3,
-    "r": "The surgical lecture describes Maze as creating atrial incisions/scar tissue that prevents reentry conduction in refractory A-fib.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "The surgical lecture describes Maze as creating atrial incisions/scar tissue that prevents reentry conduction in refractory A-fib."
   },
   {
-    "id": "jack-nur312-exam2-063",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Atrial Fibrillation/Flutter",
     "q": "Which assessment finding after cardioversion would require the most immediate follow-up?",
     "o": [
@@ -1003,13 +757,9 @@
       "Anxiety about future rhythm recurrence"
     ],
     "a": 1,
-    "r": "Hypotension and altered mental status indicate compromised perfusion and possible deterioration. The other issues matter, but acute hemodynamic instability takes priority.",
-    "difficulty": 2,
-    "topic": "Atrial Fibrillation/Flutter"
+    "r": "Hypotension and altered mental status indicate compromised perfusion and possible deterioration. The other issues matter, but acute hemodynamic instability takes priority."
   },
   {
-    "id": "jack-nur312-exam2-064",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient has a regular narrow-complex rhythm at 168/min; P waves are difficult to see. BP is 118/72 and the patient reports palpitations but is alert. Which rhythm best fits?",
     "o": [
@@ -1019,13 +769,9 @@
       "Atrial fibrillation"
     ],
     "a": 2,
-    "r": "SVT is regular, usually ≥120–130/min, with narrow QRS complexes and P waves that may be difficult to see.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "SVT is regular, usually ≥120–130/min, with narrow QRS complexes and P waves that may be difficult to see."
   },
   {
-    "id": "jack-nur312-exam2-065",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient in SVT becomes hypotensive and confused with chest discomfort. Which treatment becomes most appropriate according to the lecture?",
     "o": [
@@ -1035,13 +781,9 @@
       "Observation only because SVT is always tolerated"
     ],
     "a": 2,
-    "r": "Hemodynamic instability with a tachydysrhythmia is an indication for synchronized cardioversion in the lecture.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Hemodynamic instability with a tachydysrhythmia is an indication for synchronized cardioversion in the lecture."
   },
   {
-    "id": "jack-nur312-exam2-066",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A stable patient with SVT is receiving medication therapy. Which drug is specifically listed for SVT in the lecture?",
     "o": [
@@ -1051,13 +793,9 @@
       "Adenosine"
     ],
     "a": 3,
-    "r": "Adenosine is specifically listed among SVT treatments.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Adenosine is specifically listed among SVT treatments."
   },
   {
-    "id": "jack-nur312-exam2-067",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient has a regular rhythm at 116/min with upright P waves before every QRS, PR 0.16 sec, QRS 0.08 sec, and fever. Which rhythm is most likely?",
     "o": [
@@ -1067,13 +805,9 @@
       "SVT"
     ],
     "a": 2,
-    "r": "Sinus tachycardia preserves normal sinus P waves, PR interval, and narrow QRS while the rate is elevated. Fever is a listed cause.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Sinus tachycardia preserves normal sinus P waves, PR interval, and narrow QRS while the rate is elevated. Fever is a listed cause."
   },
   {
-    "id": "jack-nur312-exam2-068",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient with sinus tachycardia from fever is stable. Which intervention best follows the lecture’s treatment principle?",
     "o": [
@@ -1083,13 +817,9 @@
       "Prepare for permanent pacemaker placement"
     ],
     "a": 1,
-    "r": "Sinus tachycardia treatment focuses on the cause; oxygen and beta blockers may be used depending on the situation.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Sinus tachycardia treatment focuses on the cause; oxygen and beta blockers may be used depending on the situation."
   },
   {
-    "id": "jack-nur312-exam2-069",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient has sinus bradycardia at 42/min, BP 78/40, dizziness, and cool skin. Which medication should the nurse anticipate first from the lecture?",
     "o": [
@@ -1099,13 +829,9 @@
       "Atropine"
     ],
     "a": 3,
-    "r": "Symptomatic sinus bradycardia is treated with atropine; dopamine/epinephrine infusion or pacing may follow if unresponsive.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Symptomatic sinus bradycardia is treated with atropine; dopamine/epinephrine infusion or pacing may follow if unresponsive."
   },
   {
-    "id": "jack-nur312-exam2-070",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient remains hypotensive and symptomatic after atropine for severe sinus bradycardia. Which next therapy is consistent with the lecture?",
     "o": [
@@ -1115,13 +841,9 @@
       "Synchronized cardioversion for every bradycardic rhythm"
     ],
     "a": 1,
-    "r": "The lecture lists dopamine or epinephrine infusion if atropine is ineffective and pacemaker therapy for symptomatic bradycardia.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "The lecture lists dopamine or epinephrine infusion if atropine is ineffective and pacemaker therapy for symptomatic bradycardia."
   },
   {
-    "id": "jack-nur312-exam2-071",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "Which patient with a heart rate below 60/min most clearly requires treatment rather than observation?",
     "o": [
@@ -1131,13 +853,9 @@
       "The patient whose pulse is 58/min with normal perfusion"
     ],
     "a": 0,
-    "r": "The dysrhythmia lecture repeatedly emphasizes treating bradycardia when symptomatic or associated with decreased cardiac output.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "The dysrhythmia lecture repeatedly emphasizes treating bradycardia when symptomatic or associated with decreased cardiac output."
   },
   {
-    "id": "jack-nur312-exam2-072",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient with PE develops a regular sinus rhythm at 118/min. Which explanation best links the rhythm to the underlying condition?",
     "o": [
@@ -1147,13 +865,9 @@
       "PE always causes complete heart block"
     ],
     "a": 1,
-    "r": "The lecture lists PE and hypoxia among causes of sinus tachycardia. Normal sinus conduction features distinguish it from SVT or A-fib.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "The lecture lists PE and hypoxia among causes of sinus tachycardia. Normal sinus conduction features distinguish it from SVT or A-fib."
   },
   {
-    "id": "jack-nur312-exam2-073",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "Which ECG feature is most useful for separating sinus tachycardia from SVT when the rate is fast?",
     "o": [
@@ -1163,13 +877,9 @@
       "Clearly visible upright sinus P waves before each QRS with a normal PR interval"
     ],
     "a": 3,
-    "r": "Sinus tachycardia retains normal sinus P waves and PR conduction; SVT may have P waves that are difficult to identify.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "Sinus tachycardia retains normal sinus P waves and PR conduction; SVT may have P waves that are difficult to identify."
   },
   {
-    "id": "jack-nur312-exam2-074",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient with sinus bradycardia after an MI becomes increasingly lethargic. Which pathophysiologic concern should drive the nurse’s priority?",
     "o": [
@@ -1179,13 +889,9 @@
       "The slow rate may be reducing cardiac output and cerebral perfusion"
     ],
     "a": 3,
-    "r": "The lecture identifies decreased cardiac output as the major adverse effect of symptomatic sinus bradycardia.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "The lecture identifies decreased cardiac output as the major adverse effect of symptomatic sinus bradycardia."
   },
   {
-    "id": "jack-nur312-exam2-075",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "SVT/Sinus Rhythms",
     "q": "A patient with SVT asks why oxygen may be given even though the problem is electrical. Which explanation is best?",
     "o": [
@@ -1195,13 +901,9 @@
       "Oxygen replaces the need for rhythm assessment"
     ],
     "a": 2,
-    "r": "The SVT treatment list includes oxygen along with rhythm-directed medications and cardioversion. Supporting oxygenation is important when rapid rates compromise output.",
-    "difficulty": 2,
-    "topic": "SVT/Sinus Rhythms"
+    "r": "The SVT treatment list includes oxygen along with rhythm-directed medications and cardioversion. Supporting oxygenation is important when rapid rates compromise output."
   },
   {
-    "id": "jack-nur312-exam2-076",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "ECG Fundamentals",
     "q": "An ECG shows a normal P wave before each QRS. Which electrical event does the P wave represent?",
     "o": [
@@ -1211,13 +913,9 @@
       "Ventricular depolarization"
     ],
     "a": 0,
-    "r": "The lecture identifies the P wave with atrial depolarization/contraction.",
-    "difficulty": 2,
-    "topic": "ECG Fundamentals"
+    "r": "The lecture identifies the P wave with atrial depolarization/contraction."
   },
   {
-    "id": "jack-nur312-exam2-077",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "ECG Fundamentals",
     "q": "Which event is represented by the QRS complex?",
     "o": [
@@ -1227,13 +925,9 @@
       "Atrial depolarization only"
     ],
     "a": 1,
-    "r": "The QRS represents ventricular depolarization; atrial repolarization occurs during this complex and is not separately visible.",
-    "difficulty": 2,
-    "topic": "ECG Fundamentals"
+    "r": "The QRS represents ventricular depolarization; atrial repolarization occurs during this complex and is not separately visible."
   },
   {
-    "id": "jack-nur312-exam2-078",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "ECG Fundamentals",
     "q": "A nurse measures a QRS duration greater than 0.12 second with a bizarre morphology. Which origin should be considered most strongly?",
     "o": [
@@ -1243,13 +937,9 @@
       "Isolated atrial depolarization"
     ],
     "a": 2,
-    "r": "The ventricular-rhythm lecture describes ventricular-origin complexes as wide and bizarre, typically >0.12 second.",
-    "difficulty": 2,
-    "topic": "ECG Fundamentals"
+    "r": "The ventricular-rhythm lecture describes ventricular-origin complexes as wide and bizarre, typically >0.12 second."
   },
   {
-    "id": "jack-nur312-exam2-079",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Chest Tubes",
     "q": "A patient with a chest tube suddenly becomes dyspneic. Which nursing action is most appropriate first?",
     "o": [
@@ -1259,13 +949,9 @@
       "Clamp the tube routinely and leave it clamped"
     ],
     "a": 0,
-    "r": "The chest-tube lecture emphasizes monitoring patient status, placement, system function, drainage, vital signs, SaO2, and lung sounds. Assessment of both patient and system is the first step.",
-    "difficulty": 2,
-    "topic": "Chest Tubes"
+    "r": "The chest-tube lecture emphasizes monitoring patient status, placement, system function, drainage, vital signs, SaO2, and lung sounds. Assessment of both patient and system is the first step."
   },
   {
-    "id": "jack-nur312-exam2-080",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Chest Tubes",
     "q": "Which statement best describes the purpose of a chest tube for pneumothorax or hemothorax?",
     "o": [
@@ -1275,13 +961,9 @@
       "Prevent atrial dysrhythmias by pacing the chest wall"
     ],
     "a": 2,
-    "r": "The lecture states chest tubes drain fluid, blood, or air, re-establish negative pressure, facilitate lung expansion, and restore normal intrapleural pressure.",
-    "difficulty": 2,
-    "topic": "Chest Tubes"
+    "r": "The lecture states chest tubes drain fluid, blood, or air, re-establish negative pressure, facilitate lung expansion, and restore normal intrapleural pressure."
   },
   {
-    "id": "jack-nur312-exam2-081",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Chest Tubes",
     "q": "During a chest-tube dressing change, which technique best protects against accidental dislodgement and infection?",
     "o": [
@@ -1291,13 +973,9 @@
       "Pull on the tubing to verify that the sutures are tight"
     ],
     "a": 1,
-    "r": "The lecture directs stabilization during dressing removal, hand hygiene, sterile gloves, cleaning from insertion site outward, and application of an airtight sterile dressing as ordered.",
-    "difficulty": 2,
-    "topic": "Chest Tubes"
+    "r": "The lecture directs stabilization during dressing removal, hand hygiene, sterile gloves, cleaning from insertion site outward, and application of an airtight sterile dressing as ordered."
   },
   {
-    "id": "jack-nur312-exam2-082",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Chest Tubes",
     "q": "Which patient teaching best supports lung re-expansion while a chest tube is in place?",
     "o": [
@@ -1307,13 +985,9 @@
       "Suppress coughing with sedatives whenever possible"
     ],
     "a": 0,
-    "r": "The chest-tube teaching slide specifically encourages coughing, deep breathing, and incentive spirometry to promote lung expansion.",
-    "difficulty": 2,
-    "topic": "Chest Tubes"
+    "r": "The chest-tube teaching slide specifically encourages coughing, deep breathing, and incentive spirometry to promote lung expansion."
   },
   {
-    "id": "jack-nur312-exam2-083",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Chest Tubes",
     "q": "A chest-tube patient has increasing bloody drainage, falling blood pressure, and tachycardia. Which interpretation should guide the nurse?",
     "o": [
@@ -1323,13 +997,9 @@
       "Possible ongoing blood loss with decreased cardiac output requires prompt escalation"
     ],
     "a": 3,
-    "r": "The lecture links intrathoracic blood loss/increased pressure with hypotension and decreased cardiac output and instructs nurses to monitor chest-tube drainage and hemodynamics.",
-    "difficulty": 2,
-    "topic": "Chest Tubes"
+    "r": "The lecture links intrathoracic blood loss/increased pressure with hypotension and decreased cardiac output and instructs nurses to monitor chest-tube drainage and hemodynamics."
   },
   {
-    "id": "jack-nur312-exam2-084",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "After blunt chest trauma, a patient has severe dyspnea, absent right breath sounds, hypotension, tachycardia, hypoxia, and tracheal deviation. Which condition is most likely?",
     "o": [
@@ -1339,13 +1009,9 @@
       "Simple hemothorax without pressure effects"
     ],
     "a": 0,
-    "r": "Tension pneumothorax traps pleural air under pressure and the lecture highlights tachycardia, tachypnea, hypotension, hypoxia, and tracheal deviation.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "Tension pneumothorax traps pleural air under pressure and the lecture highlights tachycardia, tachypnea, hypotension, hypoxia, and tracheal deviation."
   },
   {
-    "id": "jack-nur312-exam2-085",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "Which intervention is most urgent for a deteriorating tension pneumothorax?",
     "o": [
@@ -1355,13 +1021,9 @@
       "Wait for spontaneous reabsorption while the patient remains hypotensive"
     ],
     "a": 1,
-    "r": "The lecture identifies needle decompression as the emergency intervention for tension pneumothorax.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "The lecture identifies needle decompression as the emergency intervention for tension pneumothorax."
   },
   {
-    "id": "jack-nur312-exam2-086",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A trauma patient has absent breath sounds on the affected side. Which percussion finding favors hemothorax rather than pneumothorax?",
     "o": [
@@ -1371,13 +1033,9 @@
       "Hyperresonance"
     ],
     "a": 2,
-    "r": "The comparison slide lists dullness to percussion with hemothorax and hyperresonance with pneumothorax.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "The comparison slide lists dullness to percussion with hemothorax and hyperresonance with pneumothorax."
   },
   {
-    "id": "jack-nur312-exam2-087",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with suspected pneumothorax has unilateral absent breath sounds, unequal expansion, hypoxia, and hyperresonance. Which mechanism best explains the findings?",
     "o": [
@@ -1387,13 +1045,9 @@
       "The pericardial layers are rubbing together"
     ],
     "a": 1,
-    "r": "Pneumothorax is air in the pleural space causing lung collapse and loss of normal intrapleural pressure.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "Pneumothorax is air in the pleural space causing lung collapse and loss of normal intrapleural pressure."
   },
   {
-    "id": "jack-nur312-exam2-088",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with flail chest has a segment that moves inward during inspiration and outward during expiration. Why is this finding dangerous?",
     "o": [
@@ -1403,13 +1057,9 @@
       "Paradoxical movement impairs effective ventilation and oxygenation"
     ],
     "a": 3,
-    "r": "Flail chest creates an unstable segment with paradoxical movement that impairs ventilation and oxygenation.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "Flail chest creates an unstable segment with paradoxical movement that impairs ventilation and oxygenation."
   },
   {
-    "id": "jack-nur312-exam2-089",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with flail chest is taking very shallow breaths because of severe pain. Which intervention is most important to improve ventilation while avoiding further respiratory compromise?",
     "o": [
@@ -1419,13 +1069,9 @@
       "Withhold all analgesia because pain improves ventilation"
     ],
     "a": 2,
-    "r": "The lecture emphasizes that pain control is critical for effective breathing, while opioids/sedatives require monitoring for respiratory depression and hypotension.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "The lecture emphasizes that pain control is critical for effective breathing, while opioids/sedatives require monitoring for respiratory depression and hypotension."
   },
   {
-    "id": "jack-nur312-exam2-090",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with flail chest remains hypoxic despite oxygen and is becoming fatigued. Which escalation is most consistent with the lecture?",
     "o": [
@@ -1435,13 +1081,9 @@
       "Administer adenosine"
     ],
     "a": 1,
-    "r": "Mechanical ventilation is indicated for severe respiratory distress, refractory hypoxia, shock, pulmonary contusion/pneumothorax, or respiratory fatigue.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "Mechanical ventilation is indicated for severe respiratory distress, refractory hypoxia, shock, pulmonary contusion/pneumothorax, or respiratory fatigue."
   },
   {
-    "id": "jack-nur312-exam2-091",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with a small spontaneous pneumothorax from a ruptured bleb is stable. Which management may be appropriate according to the lecture?",
     "o": [
@@ -1451,13 +1093,9 @@
       "Observation with supplemental oxygen while monitoring for resolution"
     ],
     "a": 3,
-    "r": "The lecture notes small pneumothoraces may resolve on their own and supplemental oxygen can help reabsorb pleural air.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "The lecture notes small pneumothoraces may resolve on their own and supplemental oxygen can help reabsorb pleural air."
   },
   {
-    "id": "jack-nur312-exam2-092",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "Which finding in a patient with hemothorax most directly signals worsening circulatory compromise?",
     "o": [
@@ -1467,13 +1105,9 @@
       "Sawtooth atrial waves"
     ],
     "a": 1,
-    "r": "Hemothorax can cause blood loss and decreased cardiac output; hypotension with tachycardia indicates worsening hemodynamic compromise.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "Hemothorax can cause blood loss and decreased cardiac output; hypotension with tachycardia indicates worsening hemodynamic compromise."
   },
   {
-    "id": "jack-nur312-exam2-093",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Pneumothorax/Hemothorax/Flail Chest",
     "q": "A patient with flail chest is stable enough for pulmonary hygiene. Which intervention best reduces risk for atelectasis and pneumonia?",
     "o": [
@@ -1483,13 +1117,9 @@
       "Incentive spirometry, deep breathing, repositioning, and early mobility as tolerated"
     ],
     "a": 3,
-    "r": "The flail-chest lecture emphasizes incentive spirometry, pulmonary hygiene, repositioning, and early mobility to prevent atelectasis and pneumonia.",
-    "difficulty": 2,
-    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+    "r": "The flail-chest lecture emphasizes incentive spirometry, pulmonary hygiene, repositioning, and early mobility to prevent atelectasis and pneumonia."
   },
   {
-    "id": "jack-nur312-exam2-094",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "An immobile postoperative patient develops unilateral calf swelling and tenderness. Which complication should the nurse suspect first?",
     "o": [
@@ -1499,13 +1129,9 @@
       "Tension pneumothorax"
     ],
     "a": 2,
-    "r": "The blueprint specifically tests DVT/PE. Immobility plus new unilateral leg swelling/tenderness is a classic DVT pattern and warrants prompt evaluation because of embolization risk.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The blueprint specifically tests DVT/PE. Immobility plus new unilateral leg swelling/tenderness is a classic DVT pattern and warrants prompt evaluation because of embolization risk."
   },
   {
-    "id": "jack-nur312-exam2-095",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with suspected DVT suddenly develops dyspnea, pleuritic chest pain, tachycardia, and hypoxemia. Which complication is most concerning?",
     "o": [
@@ -1515,13 +1141,9 @@
       "Mitral stenosis"
     ],
     "a": 0,
-    "r": "A thrombus can embolize to the pulmonary circulation, causing abrupt ventilation-perfusion impairment, dyspnea, tachycardia, chest pain, and hypoxemia.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "A thrombus can embolize to the pulmonary circulation, causing abrupt ventilation-perfusion impairment, dyspnea, tachycardia, chest pain, and hypoxemia."
   },
   {
-    "id": "jack-nur312-exam2-096",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with acute PE is hypoxemic. Which mechanism best explains the oxygenation problem?",
     "o": [
@@ -1531,13 +1153,9 @@
       "Pleural air always collapses both lungs"
     ],
     "a": 2,
-    "r": "The respiratory-failure lecture specifically identifies pulmonary embolism as a cause of oxygenation failure from lack of perfusion to pulmonary capillary beds.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The respiratory-failure lecture specifically identifies pulmonary embolism as a cause of oxygenation failure from lack of perfusion to pulmonary capillary beds."
   },
   {
-    "id": "jack-nur312-exam2-097",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "Which patient is at greatest risk for venous thromboembolism?",
     "o": [
@@ -1547,13 +1165,9 @@
       "A patient with prolonged immobility after major surgery"
     ],
     "a": 3,
-    "r": "Prolonged immobility and major surgery promote venous stasis and are major VTE risks.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Prolonged immobility and major surgery promote venous stasis and are major VTE risks."
   },
   {
-    "id": "jack-nur312-exam2-098",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient receiving heparin for acute PE develops active bleeding. Which nursing priority is most appropriate?",
     "o": [
@@ -1563,13 +1177,9 @@
       "Give the next dose early to prevent another embolus"
     ],
     "a": 1,
-    "r": "Active bleeding is a major anticoagulation safety concern. Immediate assessment and escalation take priority over continued dosing.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Active bleeding is a major anticoagulation safety concern. Immediate assessment and escalation take priority over continued dosing."
   },
   {
-    "id": "jack-nur312-exam2-099",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient on anticoagulation for PE asks why frequent laboratory monitoring may be needed. Which response is best?",
     "o": [
@@ -1579,13 +1189,9 @@
       "The labs measure atrial electrical activity"
     ],
     "a": 2,
-    "r": "Anticoagulants reduce thrombus propagation/recurrence but increase bleeding risk; monitoring is used as appropriate to the specific drug and clinical situation.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Anticoagulants reduce thrombus propagation/recurrence but increase bleeding risk; monitoring is used as appropriate to the specific drug and clinical situation."
   },
   {
-    "id": "jack-nur312-exam2-100",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "Which nursing intervention in an immobilized respiratory patient is specifically supported in the respiratory-failure lecture to reduce DVT risk?",
     "o": [
@@ -1595,13 +1201,9 @@
       "Use prescribed heparin/enoxaparin and sequential compression devices"
     ],
     "a": 3,
-    "r": "The respiratory-failure lecture lists heparin, enoxaparin, and SCDs for DVT prevention in high-risk patients.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The respiratory-failure lecture lists heparin, enoxaparin, and SCDs for DVT prevention in high-risk patients."
   },
   {
-    "id": "jack-nur312-exam2-101",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with suspected PE has increasing oxygen needs and worsening ABGs. Which nursing priority best reflects the blueprint’s ABC/perfusion emphasis?",
     "o": [
@@ -1611,13 +1213,9 @@
       "Focus first on discharge teaching"
     ],
     "a": 0,
-    "r": "PE can acutely impair pulmonary perfusion and oxygenation. Worsening oxygen requirements and ABGs indicate deterioration and take priority.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "PE can acutely impair pulmonary perfusion and oxygenation. Worsening oxygen requirements and ABGs indicate deterioration and take priority."
   },
   {
-    "id": "jack-nur312-exam2-102",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with confirmed DVT asks why massaging the painful calf is discouraged. Which explanation is best?",
     "o": [
@@ -1627,13 +1225,9 @@
       "Massage produces pleural air"
     ],
     "a": 0,
-    "r": "The central safety concern with DVT is embolization to the pulmonary circulation; unnecessary manipulation of the affected extremity is avoided.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The central safety concern with DVT is embolization to the pulmonary circulation; unnecessary manipulation of the affected extremity is avoided."
   },
   {
-    "id": "jack-nur312-exam2-103",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "Which change most strongly suggests that a DVT has progressed to a life-threatening complication?",
     "o": [
@@ -1643,13 +1237,9 @@
       "Increased appetite"
     ],
     "a": 0,
-    "r": "Sudden respiratory symptoms and hypoxemia suggest pulmonary embolization and require immediate action.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Sudden respiratory symptoms and hypoxemia suggest pulmonary embolization and require immediate action."
   },
   {
-    "id": "jack-nur312-exam2-104",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with PE becomes hypotensive and confused. Which interpretation should guide priority care?",
     "o": [
@@ -1659,13 +1249,9 @@
       "The symptoms are expected from prophylactic SCD use"
     ],
     "a": 1,
-    "r": "Hypotension and altered mental status indicate systemic perfusion compromise and severe deterioration.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Hypotension and altered mental status indicate systemic perfusion compromise and severe deterioration."
   },
   {
-    "id": "jack-nur312-exam2-105",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A nurse is deciding whether a patient with acute PE is improving. Which trend is most reassuring?",
     "o": [
@@ -1675,13 +1261,9 @@
       "Decreasing oxygen requirement with improving saturation and hemodynamic stability"
     ],
     "a": 3,
-    "r": "Improving oxygenation and stable perfusion indicate recovery; escalating oxygen need, hypotension, tachycardia, and confusion indicate deterioration.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "Improving oxygenation and stable perfusion indicate recovery; escalating oxygen need, hypotension, tachycardia, and confusion indicate deterioration."
   },
   {
-    "id": "jack-nur312-exam2-106",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient hospitalized with severe respiratory illness is receiving enoxaparin despite having no current DVT. What is the best explanation?",
     "o": [
@@ -1691,13 +1273,9 @@
       "Enoxaparin treats viral pneumonia directly"
     ],
     "a": 0,
-    "r": "The respiratory-failure lecture includes enoxaparin/heparin as DVT prevention during severe respiratory illness and immobility.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The respiratory-failure lecture includes enoxaparin/heparin as DVT prevention during severe respiratory illness and immobility."
   },
   {
-    "id": "jack-nur312-exam2-107",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "DVT/Pulmonary Embolism",
     "q": "A patient with suspected PE has hypoxemia but no primary alveolar disease on initial assessment. Which type of respiratory failure mechanism from the lecture is most relevant?",
     "o": [
@@ -1707,13 +1285,9 @@
       "Hypoxemic oxygenation failure from impaired pulmonary perfusion"
     ],
     "a": 3,
-    "r": "The ARF lecture identifies pulmonary embolism as an oxygenation-failure mechanism because perfusion to pulmonary capillary beds is reduced.",
-    "difficulty": 2,
-    "topic": "DVT/Pulmonary Embolism"
+    "r": "The ARF lecture identifies pulmonary embolism as an oxygenation-failure mechanism because perfusion to pulmonary capillary beds is reduced."
   },
   {
-    "id": "jack-nur312-exam2-108",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Gas Exchange/Respiratory Failure",
     "q": "A patient with sepsis develops severe hypoxemia and bilateral pulmonary edema without evidence of fluid overload or impaired cardiac function 36 hours later. Which process best fits?",
     "o": [
@@ -1723,13 +1297,9 @@
       "ARDS from inflammatory alveolar-capillary membrane injury"
     ],
     "a": 3,
-    "r": "ARDS is described as severe inflammatory lung injury with noncardiogenic pulmonary edema, often developing 24–48 hours after triggers such as sepsis or trauma.",
-    "difficulty": 2,
-    "topic": "Gas Exchange/Respiratory Failure"
+    "r": "ARDS is described as severe inflammatory lung injury with noncardiogenic pulmonary edema, often developing 24–48 hours after triggers such as sepsis or trauma."
   },
   {
-    "id": "jack-nur312-exam2-109",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Gas Exchange/Respiratory Failure",
     "q": "A patient with respiratory failure has PaCO2 58 mmHg with pH 7.29. Which failure mechanism is most consistent with these values?",
     "o": [
@@ -1739,13 +1309,9 @@
       "Hypercapnic ventilation failure"
     ],
     "a": 3,
-    "r": "The lecture defines hypercapnic/type II failure as failure of ventilation; PCO2 >50 with acidemia is a critical pattern.",
-    "difficulty": 2,
-    "topic": "Gas Exchange/Respiratory Failure"
+    "r": "The lecture defines hypercapnic/type II failure as failure of ventilation; PCO2 >50 with acidemia is a critical pattern."
   },
   {
-    "id": "jack-nur312-exam2-110",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Gas Exchange/Respiratory Failure",
     "q": "A mechanically ventilated patient with severe oxygenation failure is placed prone. What is the primary nursing goal of this intervention according to the lecture?",
     "o": [
@@ -1755,13 +1321,9 @@
       "Increase pleural blood accumulation"
     ],
     "a": 1,
-    "r": "The respiratory-failure nursing-care slide includes prone positioning to facilitate ventilation and perfusion.",
-    "difficulty": 2,
-    "topic": "Gas Exchange/Respiratory Failure"
+    "r": "The respiratory-failure nursing-care slide includes prone positioning to facilitate ventilation and perfusion."
   },
   {
-    "id": "jack-nur312-exam2-111",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Gas Exchange/Respiratory Failure",
     "q": "A patient’s oxygen requirement is rising and ABGs are worsening despite treatment. Which interpretation is most appropriate?",
     "o": [
@@ -1771,13 +1333,9 @@
       "The trend is expected evidence of recovery"
     ],
     "a": 0,
-    "r": "The respiratory lecture uses increasing FiO2 requirements and worsening ABGs as warning signs of progression/deterioration.",
-    "difficulty": 2,
-    "topic": "Gas Exchange/Respiratory Failure"
+    "r": "The respiratory lecture uses increasing FiO2 requirements and worsening ABGs as warning signs of progression/deterioration."
   },
   {
-    "id": "jack-nur312-exam2-112",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Integrated Cardiac",
     "q": "A patient with pericarditis now has hypotension and dyspnea, while another patient with stable A-fib has a controlled rate and no symptoms. Which patient should the nurse assess first?",
     "o": [
@@ -1787,13 +1345,9 @@
       "Both can safely wait until routine rounds"
     ],
     "a": 2,
-    "r": "New hypotension/dyspnea in pericarditis raises concern for effusion/tamponade and acute perfusion compromise. Stable controlled A-fib remains important but is not the immediate priority.",
-    "difficulty": 2,
-    "topic": "Integrated Cardiac"
+    "r": "New hypotension/dyspnea in pericarditis raises concern for effusion/tamponade and acute perfusion compromise. Stable controlled A-fib remains important but is not the immediate priority."
   },
   {
-    "id": "jack-nur312-exam2-113",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Integrated Cardiac",
     "q": "A patient with a prosthetic valve, fever, splinter hemorrhages, and a new murmur develops sudden neurologic deficits. Which complication best connects the findings?",
     "o": [
@@ -1803,13 +1357,9 @@
       "Mitral valve prolapse from Valsalva"
     ],
     "a": 1,
-    "r": "The infection pattern supports infective endocarditis, which can produce embolic phenomena. Sudden neurologic deficits suggest an embolic event.",
-    "difficulty": 2,
-    "topic": "Integrated Cardiac"
+    "r": "The infection pattern supports infective endocarditis, which can produce embolic phenomena. Sudden neurologic deficits suggest an embolic event."
   },
   {
-    "id": "jack-nur312-exam2-114",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Integrated Respiratory",
     "q": "A chest-trauma patient has absent breath sounds and hypotension. Which additional finding would shift the nurse most strongly toward tension pneumothorax rather than hemothorax?",
     "o": [
@@ -1819,13 +1369,9 @@
       "Dullness to percussion with bloody drainage"
     ],
     "a": 0,
-    "r": "Tension pneumothorax is associated with trapped pleural air, hyperresonance, severe hemodynamic compromise, and possible tracheal deviation. Hemothorax produces dullness from blood.",
-    "difficulty": 2,
-    "topic": "Integrated Respiratory"
+    "r": "Tension pneumothorax is associated with trapped pleural air, hyperresonance, severe hemodynamic compromise, and possible tracheal deviation. Hemothorax produces dullness from blood."
   },
   {
-    "id": "jack-nur312-exam2-115",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Integrated Rhythm",
     "q": "A patient has a regular narrow-complex tachycardia at 170/min. Minutes later BP falls to 76/40 and the patient becomes confused. What changed the treatment pathway?",
     "o": [
@@ -1835,13 +1381,9 @@
       "Development of hemodynamic instability, making synchronized cardioversion appropriate"
     ],
     "a": 3,
-    "r": "The decisive change is instability: hypotension and altered mental status. The cardioversion lecture uses these findings to identify patients needing synchronized cardioversion when medication is insufficient.",
-    "difficulty": 2,
-    "topic": "Integrated Rhythm"
+    "r": "The decisive change is instability: hypotension and altered mental status. The cardioversion lecture uses these findings to identify patients needing synchronized cardioversion when medication is insufficient."
   },
   {
-    "id": "jack-nur312-exam2-116",
-    "source": "jack-nur312-exam2-upload-v1",
     "type": "Integrated Valve/Rhythm",
     "q": "A patient with mitral valve disease develops A-fib. Which combined risk deserves the greatest attention?",
     "o": [
@@ -1851,8 +1393,8 @@
       "Loss of all ventricular depolarization"
     ],
     "a": 0,
-    "r": "Valve disease can reduce pump efficiency, while A-fib adds loss of atrial kick and thrombus/stroke risk from atrial stasis.",
-    "difficulty": 2,
-    "topic": "Integrated Valve/Rhythm"
+    "r": "Valve disease can reduce pump efficiency, while A-fib adds loss of atrial kick and thrombus/stroke risk from atrial stasis."
   }
-]
+];
+
+export default jackNUR312Exam2Questions;
