@@ -52,11 +52,15 @@
     .task.nursing-task{background:#145a4c}
     .resources{grid-column:1/-1}
     .resource-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .resource{min-height:138px;padding:19px;background:var(--soft)}
+    .resource{min-height:138px;padding:19px;background:var(--soft);display:flex;flex-direction:column}
     .resource-type{display:block;margin-bottom:14px;color:var(--rose);font-size:.66rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .resource-thumb{display:block;width:100%;height:112px;object-fit:contain;background:#fff;border:1px solid var(--line);margin:-2px 0 16px}
+    .resource-button{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;padding:10px 15px;border:2px solid var(--teal);border-radius:999px;color:var(--teal);background:transparent;font-size:.78rem;font-weight:900;line-height:1.1;text-decoration:none}
+    .resource-button:hover{color:#fff;background:var(--teal)}
+    .resource-button.disabled{border-color:var(--muted);color:var(--muted);cursor:not-allowed}
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
-    .resource a{display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
+    .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
     .modules{grid-column:1/-1}
     .module-group+.module-group{margin-top:25px;padding-top:23px;border-top:1px solid var(--line)}
     .module-group-label{margin:0 0 11px;color:var(--rose);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
@@ -786,10 +790,11 @@
             <div class="resource-group-heading"><h3>${group.label}</h3><span>${group.items.length} item${group.items.length===1?'':'s'}</span></div>
             <div class="resource-list">${group.items.map(item =>
               `<article class="resource">
+                ${/\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(item.url || '') ? `<img class="resource-thumb" src="${text(item.url)}" alt="${text(item.title || 'Study resource')}" loading="lazy">` : ''}
                 <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
                 <h3>${text(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>
                 ${item.note ? `<p>${text(item.note)}</p>` : ''}
-                ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+                ${item.url  ? `<a class="resource-button" href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : '<span class="resource-button disabled" aria-disabled="true">Resource unavailable</span>'}
               </article>`
             ).join('')}</div>
           </section>
