@@ -4,7 +4,7 @@
 -- It intentionally fails until the tutor replaces the NULL below with Jack's
 -- student UUID. It does not change RLS, storage policies, or NCLEX records.
 --
--- The six graphics are committed under:
+-- The nine graphics are committed under:
 --   assets/jack-nur312-exam2/
 -- They are referenced as portal-relative URLs so the existing
 -- student_resources/student-dashboard workflow can render them.
@@ -33,7 +33,10 @@ BEGIN
     ('Pneumo:hemo:effusion.png', 'assets/jack-nur312-exam2/Pneumo%3Ahemo%3Aeffusion.png'),
     ('PEs.png', 'assets/jack-nur312-exam2/PEs.png'),
     ('Chest Tubes.png', 'assets/jack-nur312-exam2/Chest%20Tubes.png'),
-    ('Vent settings.png', 'assets/jack-nur312-exam2/Vent%20settings.png')
+    ('Vent settings.png', 'assets/jack-nur312-exam2/Vent%20settings.png'),
+    ('Bipap vs CPAP.png', 'assets/jack-nur312-exam2/Bipap%20vs%20CPAP.png'),
+    ('Oxygen delivery.png', 'assets/jack-nur312-exam2/Oxygen%20delivery.png'),
+    ('Whiteboard.png', 'assets/jack-nur312-exam2/Whiteboard.png')
   ) AS item(filename, url)
   WHERE NOT EXISTS (
     SELECT 1

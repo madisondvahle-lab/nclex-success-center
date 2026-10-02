@@ -128,7 +128,7 @@
     .practice-item{margin-bottom:12px;padding:18px;background:var(--teal-light);border:1px solid var(--teal-sage)}
     .practice-item-title{font-size:.95rem;font-weight:700;display:block;margin-bottom:5px}
     .practice-item-note{font-size:.8rem;color:var(--muted);display:block;margin-bottom:12px;line-height:1.45}
-    .practice-item-open{font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor}
+    .practice-item-open{display:inline-block;margin-top:8px;padding:8px 11px;border:1px solid currentColor;border-radius:999px;font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none}
     .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
     .class-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px}
     .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem Inter,sans-serif;cursor:pointer}
@@ -337,7 +337,7 @@
         </article>
 
         <!-- 2 · Study resources (full width) — non-practice content only -->
-        <article class="card resources nursing-support class-dependent-panel hidden">
+        <article class="card resources nursing-support">
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
             <span class="label teal">Assigned</span>
@@ -735,8 +735,10 @@
           return 'Other practice';
         };
         const practiceTitle = ps =>
-          ps.url === 'jack-nur312-exam2.html'
-            ? 'Jack · NUR 312 Exam 2 Practice (116 questions)'
+          ps.url === 'supplemental-practice.html?set=jack-nur312-exam1'
+            ? 'NUR 312 Exam 1 practice - 40 questions'
+            : ps.url === 'jack-nur312-exam2.html'
+            ? 'NUR 312 Exam 2 practice - 116 questions'
             : /jack-ob-study-guide|OB Study Guide/i.test(`${ps.title || ''} ${ps.url || ''}`)
             ? 'NUR 321 OB · Exam 2 Practice (40 questions)'
             : ps.title;
