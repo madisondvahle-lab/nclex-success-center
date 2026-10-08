@@ -30,7 +30,7 @@ The function verifies the signed-in caller itself and then checks the `app_admin
 1. Save a consult intake.
 2. Choose **Add as student** and set a temporary 4-digit profile PIN.
 3. Choose **Create login access**.
-4. Set an 8+ character temporary password.
-5. Send the student the portal link, their email, and temporary password.
+4. When prompted, create an 8+ character temporary portal password. Do not use the four-digit profile PIN.
+5. Send the student the portal link, their email, and temporary portal password.
 
 No UUID copying or SQL is required for routine onboarding.

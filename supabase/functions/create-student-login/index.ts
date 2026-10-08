@@ -1,27 +1,34 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://madisondvahle-lab.github.io",
+const allowedOrigins = new Set([
+  "https://portal.studywithmadison.com",
+  "https://madisondvahle-lab.github.io",
+]);
+
+const corsHeaders = (request: Request) => ({
+  "Access-Control-Allow-Origin": allowedOrigins.has(request.headers.get("Origin") ?? "")
+    ? request.headers.get("Origin")!
+    : "https://portal.studywithmadison.com",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json",
-};
+});
 
-const json = (body: Record<string, unknown>, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: corsHeaders });
+const json = (request: Request, body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: corsHeaders(request) });
 
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders(request) });
   }
 
   if (request.method !== "POST") {
-    return json({ error: "Method not allowed." }, 405);
+    return json(request, { error: "Method not allowed." }, 405);
   }
 
   const authorization = request.headers.get("Authorization");
   if (!authorization?.startsWith("Bearer ")) {
-    return json({ error: "Sign in as an admin to create login access." }, 401);
+    return json(request, { error: "Sign in as an admin to create login access." }, 401);
   }
 
   const projectUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -29,7 +36,7 @@ Deno.serve(async (request) => {
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
   if (!projectUrl || !publishableKey || !serviceRoleKey) {
-    return json({ error: "Server configuration is incomplete." }, 500);
+    return json(request, { error: "Server configuration is incomplete." }, 500);
   }
 
   const caller = createClient(projectUrl, publishableKey, {
@@ -38,7 +45,7 @@ Deno.serve(async (request) => {
   const { data: userData, error: userError } = await caller.auth.getUser();
 
   if (userError || !userData.user) {
-    return json({ error: "Your admin session has expired. Please sign in again." }, 401);
+    return json(request, { error: "Your admin session has expired. Please sign in again." }, 401);
   }
 
   const admin = createClient(projectUrl, serviceRoleKey);
@@ -49,25 +56,25 @@ Deno.serve(async (request) => {
     .maybeSingle();
 
   if (adminError || !adminRecord) {
-    return json({ error: "Only Madison's admin account can create student logins." }, 403);
+    return json(request, { error: "Only Madison's admin account can create student logins." }, 403);
   }
 
   let payload: { student_id?: string; password?: string };
   try {
     payload = await request.json();
   } catch {
-    return json({ error: "Please provide the student and a temporary password." }, 400);
+    return json(request, { error: "Please provide the student and a temporary password." }, 400);
   }
 
   const studentId = String(payload.student_id ?? "").trim();
   const password = String(payload.password ?? "");
 
   if (!studentId) {
-    return json({ error: "Choose a student first." }, 400);
+    return json(request, { error: "Choose a student first." }, 400);
   }
 
   if (password.length < 8) {
-    return json({ error: "Use a temporary password with at least 8 characters." }, 400);
+    return json(request, { error: "Use a temporary password with at least 8 characters." }, 400);
   }
 
   const { data: student, error: studentError } = await admin
@@ -77,11 +84,11 @@ Deno.serve(async (request) => {
     .maybeSingle();
 
   if (studentError || !student) {
-    return json({ error: "That student profile could not be found." }, 404);
+    return json(request, { error: "That student profile could not be found." }, 404);
   }
 
   if (student.auth_user_id) {
-    return json({ error: "This student already has portal access." }, 409);
+    return json(request, { error: "This student already has portal access." }, 409);
   }
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
@@ -92,7 +99,7 @@ Deno.serve(async (request) => {
   });
 
   if (createError || !created.user) {
-    return json({ error: createError?.message ?? "The login account could not be created." }, 400);
+    return json(request, { error: createError?.message ?? "The login account could not be created." }, 400);
   }
 
   const { error: linkError } = await admin
@@ -102,10 +109,10 @@ Deno.serve(async (request) => {
 
   if (linkError) {
     await admin.auth.admin.deleteUser(created.user.id);
-    return json({ error: "The account was not linked, so no login was created. Please try again." }, 500);
+    return json(request, { error: "The account was not linked, so no login was created. Please try again." }, 500);
   }
 
-  return json({
+  return json(request, {
     ok: true,
     message: "Login access is ready.",
     email: student.email,

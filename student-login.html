@@ -73,7 +73,7 @@
           <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
         </label>
         <label id="password-label"><span id="password-label-text">Password</span>
-          <span class="password-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="6"><button class="toggle" id="toggle-password" type="button" aria-label="Show password">Show</button></span>
+          <span class="password-wrap"><input id="password" type="password" autocomplete="current-password" placeholder="Enter your temporary portal password" required minlength="8"><button class="toggle" id="toggle-password" type="button" aria-label="Show password">Show</button></span>
         </label>
         <button class="submit" id="submit" type="submit">Sign in</button>
         <p class="status" id="status" aria-live="polite"></p>
@@ -100,6 +100,14 @@
     function setStatus(message, type = '') {
       status.textContent = message;
       status.className = `status ${type}`.trim();
+    }
+
+    function withTimeout(promise, milliseconds, message) {
+      let timeoutId;
+      const timeout = new Promise((resolve, reject) => {
+        timeoutId = window.setTimeout(() => reject(new Error(message)), milliseconds);
+      });
+      return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timeoutId));
     }
 
     async function openStudentHub(user) {
@@ -234,15 +242,27 @@
       if (!email) { setStatus('Enter your email address first, then choose Forgot password.', 'error'); emailInput.focus(); return; }
       forgotPassword.disabled = true;
       forgotPassword.textContent = 'Sending reset link…';
-      const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}?reset=1` });
-      if (error) {
-        setStatus('Unable to send a reset link right now. Please try again or email Madison for help.', 'error');
+      try {
+        const { error } = await withTimeout(
+          db.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}?reset=1` }),
+          15000,
+          'The password-reset request timed out.'
+        );
+        if (error) throw error;
+        setStatus('A password-reset link is on its way. Check your email, including spam or promotions.', 'info');
+        forgotPassword.textContent = 'Reset link sent';
+      } catch (error) {
+        console.error('Password reset request failed:', error);
+        const timedOut = error?.message === 'The password-reset request timed out.';
+        setStatus(
+          timedOut
+            ? 'The reset request timed out before Supabase responded. Check your connection and try again. If it keeps happening, email Madison for help.'
+            : `Unable to send a reset link: ${error?.message || 'Please try again or email Madison for help.'}`,
+          'error'
+        );
         forgotPassword.disabled = false;
         forgotPassword.textContent = 'Forgot password?';
-        return;
       }
-      setStatus('A password-reset link is on its way. Check your email, including spam or promotions.', 'info');
-      forgotPassword.textContent = 'Reset link sent';
     });
 
     (async () => {
