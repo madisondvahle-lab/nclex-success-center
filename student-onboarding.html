@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
   <title>New student / consult · Study With Madison RN</title>
   <style>
     :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--green:#167052}
@@ -19,7 +20,7 @@
 <body>
   <div class="loading" id="loading">Opening the onboarding workspace…</div>
   <main class="shell hidden" id="app">
-    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a href="madison-admin.html">Back to coach home</a></header>
+    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html" aria-current="page">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button></nav></header>
     <section class="hero"><p class="eyebrow">New student / consult</p><h1>Start with the whole story.</h1><p>Capture a prospective student during the consultation, save them as a lead, and keep the structured history ready if they become an active student.</p></section>
     <p class="notice hidden" id="notice" role="status"></p>
     <form id="onboarding-form">
@@ -87,6 +88,7 @@
       status.textContent='Consult saved to Leads & intake.';$('notice').textContent='The consult is saved as a prospective student. Use Leads & intake to convert it later without re-entering the intake.';$('notice').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
     }
     $('onboarding-form').addEventListener('submit',event=>{event.preventDefault();save()});
+    $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
     async function init(){const {data:{session}}=await db.auth.getSession();if(!session){location.replace('student-login.html');return}const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();if(!admin){await db.auth.signOut();location.replace('student-login.html');return}$('loading').classList.add('hidden');$('app').classList.remove('hidden');addAttempt()}
     init();
   </script>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Tutoring room · Study With Madison, RN</title>
+  <link rel="stylesheet" href="admin-nav.css">
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(1180px,calc(100% - 36px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}
+    .hero{padding:38px 0 22px}.eyebrow{margin:0 0 10px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.3rem,5vw,4rem);line-height:1}h2{margin:0;font-size:1.3rem}.intro{max-width:650px;color:var(--muted);line-height:1.6}
+    .controls{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin:18px 0}.controls label{display:grid;gap:6px;color:var(--muted);font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.controls select{min-width:280px;padding:11px 12px;border:1px solid var(--line);background:#fff;color:var(--ink);font:600 .9rem Inter,sans-serif}.room-note{color:var(--muted);font-size:.8rem}.room{height:min(720px,calc(100vh - 230px));min-height:480px;background:#102b43;border:1px solid var(--line);box-shadow:0 14px 34px #17344f1a}.status{padding:20px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}.hidden{display:none!important}
+    @media(max-width:760px){.shell{width:min(100% - 28px,1180px)}.top{align-items:flex-start;flex-direction:column}.room{height:calc(100vh - 290px);min-height:420px}.controls select{min-width:0;width:100%}}
+  </style>
+  <script src="https://8x8.vc/vpaas-magic-cookie-c902e2304c5c4b739c3a1cb31b4425e2/external_api.js" async></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="top admin-header">
+      <span class="brand">Study With Madison <small>RN</small></span>
+      <nav class="admin-nav" id="admin-nav" aria-label="Admin navigation">
+        <a class="admin-home" href="madison-admin.html">Admin home</a>
+        <a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+      </nav>
+    </header>
+    <section class="hero"><p class="eyebrow">Private tutoring</p><h1>Tutoring room.</h1><p class="intro">Join a private video session from the Success Center. The room is scoped to the selected student so you can return to the same session link during tutoring.</p></section>
+    <section class="controls hidden" id="controls"><label for="student">Student<select id="student"></select></label><span class="room-note">Only authenticated portal users can open this page.</span></section>
+    <p class="status" id="status">Preparing your private room…</p>
+    <div class="room hidden" id="jaas-container" title="Private Jitsi tutoring room"></div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const APP_ID='vpaas-magic-cookie-c902e2304c5c4b739c3a1cb31b4425e2';
+    const $=id=>document.getElementById(id);
+    const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    let currentUser,students=[],isAdmin=false;
+    function waitForJitsi(){
+      return new Promise(resolve=>{
+        if(typeof JitsiMeetExternalAPI==='function'){resolve(true);return}
+        const started=Date.now(), timer=setInterval(()=>{
+          if(typeof JitsiMeetExternalAPI==='function'||Date.now()-started>10000){clearInterval(timer);resolve(typeof JitsiMeetExternalAPI==='function')}
+        },100);
+      });
+    }
+    async function openRoom(student){
+      const roomName=`${APP_ID}/success-center-${student.id}`;
+      $('status').textContent=`Room ready for ${student.name||student.email||'your tutoring session'}.`;
+      $('status').classList.add('hidden');$('jaas-container').classList.remove('hidden');
+      if(!await waitForJitsi()){ $('status').textContent='The video room could not load. Refresh and try again.';$('status').classList.remove('hidden');$('jaas-container').classList.add('hidden');return; }
+      $('jaas-container').replaceChildren();
+      new JitsiMeetExternalAPI('8x8.vc',{roomName,parentNode:$('jaas-container'),width:'100%',height:'100%',configOverwrite:{prejoinConfig:{enabled:true}}});
+    }
+    async function init(){
+      const {data:{session}}=await db.auth.getSession();if(!session){location.replace('student-login.html');return}currentUser=session.user;
+      const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;
+      if(isAdmin){
+        const result=await db.from('students').select('id,name,email').is('archived_at',null).eq('portal_stage','active').order('name');
+        students=result.data||[];if(result.error||!students.length){$('status').textContent='No active students are available for a tutoring room.';return}
+        $('controls').classList.remove('hidden');$('student').innerHTML=students.map(student=>`<option value="${esc(student.id)}">${esc(student.name||student.email||'Student')}</option>`).join('');
+        const requested=new URLSearchParams(location.search).get('student');const selected=students.find(student=>student.id===requested)||students[0];$('student').value=selected.id;$('student').addEventListener('change',()=>{const next=students.find(student=>student.id===$('student').value);history.replaceState(null,'',`?student=${encodeURIComponent(next.id)}`);openRoom(next)});openRoom(selected);
+      }else{
+        const result=await db.from('students').select('id,name,email').eq('auth_user_id',session.user.id).maybeSingle();
+        if(result.error||!result.data){$('status').textContent='Your student profile could not be loaded. Please contact Madison.';return}openRoom(result.data);
+      }
+    }
+    $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+    init();
+  </script>
+</body>
+</html>
