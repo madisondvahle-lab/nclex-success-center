@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
+  <title>Consultations · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8}*{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(1100px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
+    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}
+    h1{font:400 clamp(2rem,5vw,3rem) Georgia,serif;margin:34px 0 8px}h2{font:400 1.5rem Georgia,serif;margin:0 0 12px}h3{margin:0 0 10px;font-size:1rem}
+    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
+    .panel,.row{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}
+    .row{display:grid;grid-template-columns:2fr 1.4fr auto;gap:16px;align-items:center}
+    .meta{color:var(--muted);font-size:.88rem;line-height:1.5}.label{display:inline-block;background:var(--soft);padding:3px 8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .label.cancelled,.label.rescheduled{background:#f3dcdc}.label.in_progress{background:#dcebf3}.label.completed{background:#dff0e3}
+    button,.button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
+    button.secondary,.button.secondary{background:transparent;color:var(--ink)}
+    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
+    input,select,textarea{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
+    textarea{min-height:90px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px}
+    .check{display:flex;gap:10px;align-items:center;font-weight:600;padding:8px 0}.check input{width:auto;margin:0}
+    .bar{position:sticky;top:0;z-index:3;background:var(--cream);border-bottom:1px solid var(--line);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .timer{font:700 1.4rem Georgia,serif;font-variant-numeric:tabular-nums}.timer.over{color:#a23}
+    .save{font-size:.82rem;color:var(--muted)}.save.err{color:#a23;font-weight:800}
+    .answers{background:var(--soft);padding:10px 14px;font-size:.88rem;margin-bottom:14px}.empty{color:var(--muted)}
+    @media(max-width:700px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Opening your private consultations…</div>
+  <main class="shell hidden" id="app">
+    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation">
+      <a class="admin-home" href="madison-admin.html">Admin home</a>
+      <a href="madison-leads.html">Leads &amp; intake</a><a href="madison-consultations.html" aria-current="page">Consultations</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+    </nav></header>
+
+    <section id="list-view">
+      <h1>Free 15-minute consultations.</h1>
+      <p class="meta">Bookings arrive from Calendly automatically and are linked to the matching profile by email.</p>
+      <p class="meta" id="list-status" role="status"></p>
+      <div id="list"></div>
+    </section>
+
+    <section id="detail-view" class="hidden"></section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmt=v=>v?new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'Time not set';
+    const CHECKLIST=[['approach','Explained individualized tutoring approach'],['content_vs_testing','Discussed content vs. test-taking challenges'],['session_structure','Explained tutoring session structure'],['packages','Discussed available tutoring packages'],['strategy_session','Explained NCLEX Strategy Session'],['questions','Answered questions']];
+    const RECS=['Private Tutoring','NCLEX Strategy Session','Independent Preparation','Follow-Up Needed','Not a Good Fit'];
+    let consults=[],current=null,saveTimer=null,timerHandle=null,dirty=false,saving=false;
+
+    async function init(){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){location.replace('student-login.html');return}
+      const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      document.getElementById('loading').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
+      document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+      await loadList();
+    }
+
+    async function loadList(){
+      const {data,error}=await db.from('consultations').select('*').order('scheduled_start',{ascending:false});
+      const status=document.getElementById('list-status');
+      if(error){status.textContent='Consultations could not load. Run supabase-calendly-consultations-migration.sql first. '+error.message;return}
+      consults=data||[];
+      const names=await profileNames(consults);
+      const list=document.getElementById('list');
+      list.innerHTML=consults.length?consults.map(c=>{
+        const p=names.get(c.id)||{};
+        const canStart=c.status==='scheduled';
+        return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br>${p.kind==='student'?'Existing student profile':'Prospective student profile'}</div></div>
+        <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
+        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join(''):'<p class="empty">No consultations yet. Once the Calendly webhook is connected, new free-consultation bookings appear here.</p>';
+      list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
+      list.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openConsult(b.dataset.open)));
+    }
+
+    async function profileNames(items){
+      const map=new Map();
+      items.forEach(c=>map.set(c.id,{kind:c.student_id?'student':'prospect'}));return map;
+    }
+
+    async function prefill(c){
+      const t={};
+      if(c.student_id){
+        const {data:s}=await db.from('students').select('nclex_target_date,exam_date').eq('id',c.student_id).maybeSingle();
+        if(s)t.target_date=s.nclex_target_date||s.exam_date||'';
+      }
+      const intakeQuery=c.consult_intake_id?db.from('consult_intakes').select('*').eq('id',c.consult_intake_id).maybeSingle():db.from('consult_intakes').select('*').eq('student_id',c.student_id).order('created_at').limit(1).maybeSingle();
+      const {data:i}=await intakeQuery;
+      if(i){
+        if(i.nclex_exam)t.exam=i.nclex_exam;
+        if(i.prior_attempts!=null){t.attempts=String(i.prior_attempts);t.attempt_type=i.prior_attempts>0?'Retake':''}
+        if(i.nclex_target_date&&!t.target_date)t.target_date=i.nclex_target_date;
+        if(i.study_resources)t.resources=i.study_resources;
+        if(i.challenge_areas)t.struggles=i.challenge_areas;
+      }
+      return t;
+    }
+
+    async function startConsult(id){
+      const c=consults.find(x=>x.id===id);if(!c)return;
+      const known=await prefill(c);
+      const template={snapshot:{exam:'',attempt_type:'',attempts:'',target_date:'',resources:'',struggles:'',prior_tutoring:'',...known},checklist:{},recommendations:[],package:'',notes:'',concerns:''};
+      // Only transitions scheduled -> in_progress so a second tab cannot overwrite a started consultation.
+      const {data,error}=await db.from('consultations').update({status:'in_progress',started_at:new Date().toISOString(),template}).eq('id',id).eq('status','scheduled').select().maybeSingle();
+      if(error){document.getElementById('list-status').textContent='Could not start: '+error.message;return}
+      if(!data){await loadList();return openConsult(id)}
+      await loadList();openConsult(id);
+    }
+
+    async function openConsult(id){
+      const {data,error}=await db.from('consultations').select('*').eq('id',id).single();
+      if(error){document.getElementById('list-status').textContent=error.message;return}
+      current=data;current.template=current.template||{};
+      const {data:events}=await db.from('consultation_events').select('*').eq('consultation_id',id).order('created_at');
+      renderDetail(events||[]);
+    }
+
+    function renderDetail(events){
+      const c=current,t=c.template,s=t.snapshot||{},readOnly=c.status==='cancelled'||c.status==='rescheduled'||c.status==='scheduled';
+      const answers=(c.calendly_answers||[]).filter(a=>a.answer).map(a=>`<strong>${esc(a.question)}</strong>: ${esc(a.answer)}`).join('<br>');
+      const f=(key,label,type)=>`<label>${label}${type==='area'?`<textarea data-snap="${key}" ${readOnly?'disabled':''}>${esc(s[key])}</textarea>`:type==='date'?`<input type="date" data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`:`<input data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`}</label>`;
+      const sel=(key,label,opts)=>`<label>${label}<select data-snap="${key}" ${readOnly?'disabled':''}><option value="">Not specified</option>${opts.map(o=>`<option ${s[key]===o?'selected':''}>${o}</option>`).join('')}</select></label>`;
+      const view=document.getElementById('detail-view');
+      view.innerHTML=`<p style="margin-top:24px"><button class="secondary" id="back">← All consultations</button></p>
+      <div class="bar"><div><strong>${esc(c.invitee_name)}</strong> <span class="meta">· ${esc(c.invitee_email)} · ${esc(fmt(c.scheduled_start))}</span> <span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span></div>
+        <div><label class="check" style="display:inline-flex;padding:0"><input type="checkbox" id="timer-toggle">15-minute timer</label> <span class="timer hidden" id="timer">15:00</span> <span class="save" id="save-state" role="status"></span></div></div>
+      ${readOnly?'<p class="meta">'+(c.status==='scheduled'?'Start the consultation from the list to edit the template.':'This booking was '+esc(c.status)+'. History is kept below.')+'</p>':''}
+      ${answers?`<div class="answers"><p class="eyebrow">Calendly booking answers</p>${answers}</div>`:''}
+      <section class="panel"><p class="eyebrow">Section 1 · 0–5 min</p><h2>Student snapshot</h2><div class="grid">
+        ${sel('exam','NCLEX-RN or NCLEX-PN',['NCLEX-RN','NCLEX-PN'])}${sel('attempt_type','First attempt or retake',['First attempt','Retake'])}
+        ${f('attempts','Number of attempts')}${f('target_date','Target exam date','date')}</div>
+        ${f('resources','Current study resources','area')}${f('struggles','Biggest reported struggles','area')}${f('prior_tutoring','Previous tutoring experience','area')}</section>
+      <section class="panel"><p class="eyebrow">Section 2 · 5–10 min</p><h2>My tutoring approach</h2>
+        ${CHECKLIST.map(([k,l])=>`<label class="check"><input type="checkbox" data-check="${k}" ${(t.checklist||{})[k]?'checked':''} ${readOnly?'disabled':''}>${l}</label>`).join('')}</section>
+      <section class="panel"><p class="eyebrow">Section 3 · 10–15 min</p><h2>Recommendation</h2>
+        ${RECS.map(r=>`<label class="check"><input type="checkbox" data-rec="${esc(r)}" ${(t.recommendations||[]).includes(r)?'checked':''} ${readOnly?'disabled':''}>${r}</label>`).join('')}
+        <label>Recommended package<input data-top="package" value="${esc(t.package)}" ${readOnly?'disabled':''}></label>
+        <label>Consultation notes<textarea data-top="notes" ${readOnly?'disabled':''}>${esc(t.notes)}</textarea></label>
+        <label>Student questions or concerns<textarea data-top="concerns" ${readOnly?'disabled':''}>${esc(t.concerns)}</textarea></label>
+        <label>Follow-up date<input type="date" id="follow-up" value="${esc(c.follow_up_date)}" ${readOnly?'disabled':''}></label></section>
+      <section class="panel"><h2>Follow-up email</h2><p><button id="draft" type="button" ${c.status==='scheduled'?'disabled':''}>Generate draft</button></p>
+        <textarea id="draft-text" class="hidden" style="min-height:240px"></textarea>
+        <p class="hidden" id="draft-actions"><button class="secondary" id="copy-draft" type="button">Copy</button> <a class="button secondary" id="mail-draft" href="#">Open in email app</a></p></section>
+      ${c.status==='in_progress'?'<p><button id="complete" type="button">Mark consultation complete</button></p>':''}
+      <section class="panel"><h3>Booking history</h3>${events.map(e=>`<p class="meta">${esc(fmt(e.created_at))} · ${esc(e.event_type.replaceAll('_',' '))}${e.details&&e.details.start?' · '+esc(fmt(e.details.start)):''}${e.details&&e.details.reason?' · '+esc(e.details.reason):''}</p>`).join('')||'<p class="meta">No events.</p>'}</section>`;
+      document.getElementById('list-view').classList.add('hidden');view.classList.remove('hidden');
+      document.getElementById('back').addEventListener('click',closeDetail);
+      view.querySelectorAll('[data-snap],[data-top],[data-check],[data-rec],#follow-up').forEach(el=>{el.addEventListener('input',queueSave);el.addEventListener('change',queueSave)});
+      document.getElementById('timer-toggle').addEventListener('change',toggleTimer);
+      document.getElementById('draft').addEventListener('click',makeDraft);
+      const done=document.getElementById('complete');if(done)done.addEventListener('click',completeConsult);
+    }
+
+    function collect(){
+      const v=document.getElementById('detail-view'),t={snapshot:{},checklist:{},recommendations:[]};
+      v.querySelectorAll('[data-snap]').forEach(e=>t.snapshot[e.dataset.snap]=e.value);
+      v.querySelectorAll('[data-check]').forEach(e=>t.checklist[e.dataset.check]=e.checked);
+      v.querySelectorAll('[data-rec]').forEach(e=>{if(e.checked)t.recommendations.push(e.dataset.rec)});
+      v.querySelectorAll('[data-top]').forEach(e=>t[e.dataset.top]=e.value);
+      return t;
+    }
+
+    function queueSave(){
+      if(!current||!['in_progress','completed'].includes(current.status))return;
+      dirty=true;setSaveState('Unsaved changes…');clearTimeout(saveTimer);saveTimer=setTimeout(save,1000);
+    }
+    function setSaveState(text,err){const el=document.getElementById('save-state');if(el){el.textContent=text;el.classList.toggle('err',!!err)}}
+    async function save(){
+      if(saving){saveTimer=setTimeout(save,500);return}
+      if(!dirty||!current)return;saving=true;dirty=false;
+      const template=collect(),follow=document.getElementById('follow-up').value||null;
+      const {error}=await db.from('consultations').update({template,follow_up_date:follow}).eq('id',current.id);
+      saving=false;
+      if(error){dirty=true;setSaveState('Not saved — '+error.message+' (will retry)',true);saveTimer=setTimeout(save,4000);return}
+      current.template=template;current.follow_up_date=follow;
+      if(!dirty)setSaveState('Saved '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'}));
+    }
+    async function completeConsult(){
+      dirty=true;await save();if(dirty)return;
+      const {error}=await db.from('consultations').update({status:'completed',completed_at:new Date().toISOString()}).eq('id',current.id).eq('status','in_progress');
+      if(error){setSaveState('Could not complete: '+error.message,true);return}
+      await loadList();openConsult(current.id);
+    }
+    async function closeDetail(){
+      clearTimeout(saveTimer);await save();clearInterval(timerHandle);timerHandle=null;current=null;
+      document.getElementById('detail-view').classList.add('hidden');document.getElementById('list-view').classList.remove('hidden');loadList();
+    }
+
+    function toggleTimer(e){
+      const el=document.getElementById('timer');clearInterval(timerHandle);
+      if(!e.target.checked){el.classList.add('hidden');return}
+      el.classList.remove('hidden');
+      const origin=current.started_at?new Date(current.started_at).getTime():Date.now();
+      const tick=()=>{const left=Math.round((origin+15*60000-Date.now())/1000),abs=Math.abs(left);
+        el.textContent=(left<0?'+':'')+String(Math.floor(abs/60)).padStart(2,'0')+':'+String(abs%60).padStart(2,'0');el.classList.toggle('over',left<0)};
+      tick();timerHandle=setInterval(tick,1000);
+    }
+
+    function makeDraft(){
+      const t=collect(),c=current,first=(c.invitee_name||'there').split(' ')[0];
+      const recs=t.recommendations.length?t.recommendations.join(', '):'';
+      const lines=[`Hi ${first},`,'',`Thank you for taking the time to talk with me${c.scheduled_start?' on '+new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric'}).format(new Date(c.scheduled_start)):''}. I enjoyed learning about your NCLEX preparation.`];
+      if(t.snapshot.struggles)lines.push('',`You shared that your biggest challenges are: ${t.snapshot.struggles}`);
+      if(recs)lines.push('',`Based on our conversation, my recommendation is: ${recs}.`);
+      if(t.package)lines.push(`Recommended package: ${t.package}.`);
+      if(t.concerns)lines.push('',`You also mentioned: ${t.concerns} I'm happy to talk through any of this further.`);
+      const fu=document.getElementById('follow-up').value;
+      if(fu)lines.push('',`I'll follow up with you on ${new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric',year:'numeric'}).format(new Date(fu+'T12:00:00'))}.`);
+      lines.push('','Please reply with any questions.','','Madison','Study With Madison, RN');
+      const text=lines.join('\n'),area=document.getElementById('draft-text');
+      area.value=text;area.classList.remove('hidden');document.getElementById('draft-actions').classList.remove('hidden');
+      document.getElementById('mail-draft').href='mailto:'+encodeURIComponent(c.invitee_email)+'?subject='+encodeURIComponent('Following up on our NCLEX consultation')+'&body='+encodeURIComponent(text);
+      document.getElementById('copy-draft').onclick=async()=>{await navigator.clipboard.writeText(area.value);document.getElementById('copy-draft').textContent='Copied'};
+    }
+
+    window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+    init();
+  </script>
+</body>
+</html>
