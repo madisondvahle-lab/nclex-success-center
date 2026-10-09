@@ -41,8 +41,8 @@
     </nav></header>
 
     <section id="list-view">
-      <h1>Free 15-minute consultations.</h1>
-      <p class="meta">Bookings arrive from Calendly automatically and are linked to the matching profile by email.</p>
+      <h1>Consultations.</h1>
+      <p class="meta">Free consultations and paid NCLEX Strategy Sessions arrive from Calendly automatically and are linked to the matching profile by email.</p>
       <p class="meta" id="list-status" role="status"></p>
       <div id="list"></div>
     </section>
@@ -56,6 +56,9 @@
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const fmt=v=>v?new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v)):'Time not set';
     const CHECKLIST=[['approach','Explained individualized tutoring approach'],['content_vs_testing','Discussed content vs. test-taking challenges'],['session_structure','Explained tutoring session structure'],['packages','Discussed available tutoring packages'],['strategy_session','Explained NCLEX Strategy Session'],['questions','Answered questions']];
+    const STRAT_CHECKLIST=[['reports','Reviewed available performance reports'],['question_analysis','Completed guided question analysis'],['patterns','Identified potential performance patterns'],['recommendations','Gave individualized recommendations'],['no_commitment','Explained no tutoring commitment is required'],['credit','Explained the package credit and seven-day window'],['questions','Answered questions']];
+    const isStrat=c=>c&&c.consult_type==='strategy_session';
+    const TYPE_LABEL={free_consultation:'Free 15-min consult',strategy_session:'Strategy Session (45 min)'};
     const RECS=['Private Tutoring','NCLEX Strategy Session','Independent Preparation','Follow-Up Needed','Not a Good Fit'];
     let consults=[],current=null,saveTimer=null,timerHandle=null,dirty=false,saving=false;
 
@@ -79,7 +82,7 @@
       list.innerHTML=consults.length?consults.map(c=>{
         const p=names.get(c.id)||{};
         const canStart=c.status==='scheduled';
-        return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br>${p.kind==='student'?'Existing student profile':'Prospective student profile'}</div></div>
+        return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}</div></div>
         <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
         <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join(''):'<p class="empty">No consultations yet. Once the Calendly webhook is connected, new free-consultation bookings appear here.</p>';
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
@@ -112,7 +115,7 @@
     async function startConsult(id){
       const c=consults.find(x=>x.id===id);if(!c)return;
       const known=await prefill(c);
-      const template={snapshot:{exam:'',attempt_type:'',attempts:'',target_date:'',resources:'',struggles:'',prior_tutoring:'',...known},checklist:{},recommendations:[],package:'',notes:'',concerns:''};
+      const template={snapshot:{exam:'',attempt_type:'',attempts:'',target_date:'',resources:'',struggles:'',prior_tutoring:'',reports_available:'',patterns:'',...known},checklist:{},recommendations:[],package:'',notes:'',concerns:''};
       // Only transitions scheduled -> in_progress so a second tab cannot overwrite a started consultation.
       const {data,error}=await db.from('consultations').update({status:'in_progress',started_at:new Date().toISOString(),template}).eq('id',id).eq('status','scheduled').select().maybeSingle();
       if(error){document.getElementById('list-status').textContent='Could not start: '+error.message;return}
@@ -129,28 +132,28 @@
     }
 
     function renderDetail(events){
-      const c=current,t=c.template,s=t.snapshot||{},readOnly=c.status==='cancelled'||c.status==='rescheduled'||c.status==='scheduled';
+      const c=current,t=c.template,s=t.snapshot||{},strat=isStrat(c),items=strat?STRAT_CHECKLIST:CHECKLIST,readOnly=c.status==='cancelled'||c.status==='rescheduled'||c.status==='scheduled';
       const answers=(c.calendly_answers||[]).filter(a=>a.answer).map(a=>`<strong>${esc(a.question)}</strong>: ${esc(a.answer)}`).join('<br>');
       const f=(key,label,type)=>`<label>${label}${type==='area'?`<textarea data-snap="${key}" ${readOnly?'disabled':''}>${esc(s[key])}</textarea>`:type==='date'?`<input type="date" data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`:`<input data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`}</label>`;
       const sel=(key,label,opts)=>`<label>${label}<select data-snap="${key}" ${readOnly?'disabled':''}><option value="">Not specified</option>${opts.map(o=>`<option ${s[key]===o?'selected':''}>${o}</option>`).join('')}</select></label>`;
       const view=document.getElementById('detail-view');
       view.innerHTML=`<p style="margin-top:24px"><button class="secondary" id="back">← All consultations</button></p>
       <div class="bar"><div><strong>${esc(c.invitee_name)}</strong> <span class="meta">· ${esc(c.invitee_email)} · ${esc(fmt(c.scheduled_start))}</span> <span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span></div>
-        <div><label class="check" style="display:inline-flex;padding:0"><input type="checkbox" id="timer-toggle">15-minute timer</label> <span class="timer hidden" id="timer">15:00</span> <span class="save" id="save-state" role="status"></span></div></div>
+        <div><label class="check" style="display:inline-flex;padding:0"><input type="checkbox" id="timer-toggle">${strat?'45':'15'}-minute timer</label> <span class="timer hidden" id="timer">--:--</span> <span class="save" id="save-state" role="status"></span></div></div>
       ${readOnly?'<p class="meta">'+(c.status==='scheduled'?'Start the consultation from the list to edit the template.':'This booking was '+esc(c.status)+'. History is kept below.')+'</p>':''}
       ${answers?`<div class="answers"><p class="eyebrow">Calendly booking answers</p>${answers}</div>`:''}
-      <section class="panel"><p class="eyebrow">Section 1 · 0–5 min</p><h2>Student snapshot</h2><div class="grid">
+      <section class="panel"><p class="eyebrow">${strat?'Section 1 · Student snapshot':'Section 1 · 0–5 min'}</p><h2>${strat?'Student snapshot and reports':'Student snapshot'}</h2><div class="grid">
         ${sel('exam','NCLEX-RN or NCLEX-PN',['NCLEX-RN','NCLEX-PN'])}${sel('attempt_type','First attempt or retake',['First attempt','Retake'])}
         ${f('attempts','Number of attempts')}${f('target_date','Target exam date','date')}</div>
-        ${f('resources','Current study resources','area')}${f('struggles','Biggest reported struggles','area')}${f('prior_tutoring','Previous tutoring experience','area')}</section>
-      <section class="panel"><p class="eyebrow">Section 2 · 5–10 min</p><h2>My tutoring approach</h2>
-        ${CHECKLIST.map(([k,l])=>`<label class="check"><input type="checkbox" data-check="${k}" ${(t.checklist||{})[k]?'checked':''} ${readOnly?'disabled':''}>${l}</label>`).join('')}</section>
-      <section class="panel"><p class="eyebrow">Section 3 · 10–15 min</p><h2>Recommendation</h2>
+        ${f('resources','Current study resources','area')}${f('struggles','Biggest reported struggles','area')}${f('prior_tutoring','Previous tutoring experience','area')}${strat?f('reports_available','Performance reports available (CPR, CAT, readiness, other)','area')+f('patterns','Performance patterns observed','area'):''}</section>
+      <section class="panel"><p class="eyebrow">${strat?'Section 2 · Session checklist':'Section 2 · 5–10 min'}</p><h2>${strat?'Strategy session':'My tutoring approach'}</h2>
+        ${items.map(([k,l])=>`<label class="check"><input type="checkbox" data-check="${k}" ${(t.checklist||{})[k]?'checked':''} ${readOnly?'disabled':''}>${l}</label>`).join('')}</section>
+      <section class="panel"><p class="eyebrow">${strat?'Section 3 · Recommendation':'Section 3 · 10–15 min'}</p><h2>Recommendation</h2>
         ${RECS.map(r=>`<label class="check"><input type="checkbox" data-rec="${esc(r)}" ${(t.recommendations||[]).includes(r)?'checked':''} ${readOnly?'disabled':''}>${r}</label>`).join('')}
         <label>Recommended package<input data-top="package" value="${esc(t.package)}" ${readOnly?'disabled':''}></label>
         <label>Consultation notes<textarea data-top="notes" ${readOnly?'disabled':''}>${esc(t.notes)}</textarea></label>
         <label>Student questions or concerns<textarea data-top="concerns" ${readOnly?'disabled':''}>${esc(t.concerns)}</textarea></label>
-        <label>Follow-up date<input type="date" id="follow-up" value="${esc(c.follow_up_date)}" ${readOnly?'disabled':''}></label></section>
+        <label>${strat?'Follow-up date (package credit window ends 7 days after the session)':'Follow-up date'}<input type="date" id="follow-up" value="${esc(c.follow_up_date)}" ${readOnly?'disabled':''}></label></section>
       <section class="panel"><h2>Follow-up email</h2><p><button id="draft" type="button" ${c.status==='scheduled'?'disabled':''}>Generate draft</button></p>
         <textarea id="draft-text" class="hidden" style="min-height:240px"></textarea>
         <p class="hidden" id="draft-actions"><button class="secondary" id="copy-draft" type="button">Copy</button> <a class="button secondary" id="mail-draft" href="#">Open in email app</a></p></section>
@@ -204,7 +207,7 @@
       if(!e.target.checked){el.classList.add('hidden');return}
       el.classList.remove('hidden');
       const origin=current.started_at?new Date(current.started_at).getTime():Date.now();
-      const tick=()=>{const left=Math.round((origin+15*60000-Date.now())/1000),abs=Math.abs(left);
+      const tick=()=>{const left=Math.round((origin+(isStrat(current)?45:15)*60000-Date.now())/1000),abs=Math.abs(left);
         el.textContent=(left<0?'+':'')+String(Math.floor(abs/60)).padStart(2,'0')+':'+String(abs%60).padStart(2,'0');el.classList.toggle('over',left<0)};
       tick();timerHandle=setInterval(tick,1000);
     }
@@ -217,6 +220,8 @@
       if(recs)lines.push('',`Based on our conversation, my recommendation is: ${recs}.`);
       if(t.package)lines.push(`Recommended package: ${t.package}.`);
       if(t.concerns)lines.push('',`You also mentioned: ${t.concerns} I'm happy to talk through any of this further.`);
+      if(isStrat(c)&&t.snapshot.patterns)lines.push('',`Patterns we noticed together: ${t.snapshot.patterns}`);
+      if(isStrat(c))lines.push('','As a reminder, your Strategy Session fee can be credited toward a tutoring package if you purchase within seven days.');
       const fu=document.getElementById('follow-up').value;
       if(fu)lines.push('',`I'll follow up with you on ${new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric',year:'numeric'}).format(new Date(fu+'T12:00:00'))}.`);
       lines.push('','Please reply with any questions.','','Madison','Study With Madison, RN');

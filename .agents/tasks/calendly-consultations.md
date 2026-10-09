@@ -19,3 +19,9 @@ Never commit these values.
 ## Not done / notes
 - Existing `students`/`consult_intakes` statuses are never changed; completed consultations live in `consultations` linked by `student_id`/`consult_intake_id`. Not yet surfaced inside other profile pages.
 - Not tested against live Supabase/Calendly.
+
+## Update: paid NCLEX Strategy Session ($40, 45 min)
+- `supabase-strategy-session-migration.sql` adds `consultations.consult_type` ('free_consultation' | 'strategy_session') and replaces `process_calendly_event` (now takes `p_consult_type`). Applied to production.
+- Webhook routes by event type URI: `CALENDLY_CONSULT_EVENT_TYPE_URI` (free) and `CALENDLY_STRATEGY_EVENT_TYPE_URI` (strategy). Both secrets set.
+- Strategy template (reports reviewed, patterns, checklist, recommendation, package credit within 7 days) is a first draft based on the public page bullets; adjust as Madison prefers.
+- Public site price/length updated in study-with-madison-site PR 19 ($40, 45 min).
