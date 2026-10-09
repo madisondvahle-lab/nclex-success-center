@@ -2,8 +2,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Receives Calendly webhooks. Authenticity comes from Calendly's HMAC signature,
 // so this function is deployed with --no-verify-jwt. Secrets live only in
-// Supabase function secrets: CALENDLY_WEBHOOK_SIGNING_KEY (required) and
-// CALENDLY_CONSULT_EVENT_TYPE_URI (optional; restricts to the free consultation).
+// Supabase function secrets: CALENDLY_WEBHOOK_SIGNING_KEY (required),
+// CALENDLY_CONSULT_EVENT_TYPE_URI (free consultation) and
+// CALENDLY_STRATEGY_EVENT_TYPE_URI (paid NCLEX Strategy Session).
 
 const encoder = new TextEncoder();
 const TOLERANCE_SECONDS = 180;
@@ -71,11 +72,16 @@ Deno.serve(async (request) => {
   }
 
   const scheduled = payload.scheduled_event ?? {};
-  const requiredType = Deno.env.get("CALENDLY_CONSULT_EVENT_TYPE_URI") ?? "";
-  const isConsult = requiredType
-    ? scheduled.event_type === requiredType
-    : /free.*consult|consult.*free|15.*consult/i.test(String(scheduled.name ?? ""));
-  if (!isConsult) return respond({ ok: true, action: "ignored_event_type" });
+  const freeType = Deno.env.get("CALENDLY_CONSULT_EVENT_TYPE_URI") ?? "";
+  const strategyType = Deno.env.get("CALENDLY_STRATEGY_EVENT_TYPE_URI") ?? "";
+  const eventType = String(scheduled.event_type ?? "");
+  let consultType = "";
+  if (freeType && eventType === freeType) consultType = "free_consultation";
+  else if (strategyType && eventType === strategyType) consultType = "strategy_session";
+  else if (!freeType && /free.*consult|consult.*free|15.*consult/i.test(String(scheduled.name ?? ""))) {
+    consultType = "free_consultation";
+  }
+  if (!consultType) return respond({ ok: true, action: "ignored_event_type" });
 
   const deliveryKey = `${type}:${payload.uri}:${scheduled.start_time ?? ""}:${payload.updated_at ?? payload.created_at ?? ""}`;
   const admin = createClient(projectUrl, serviceRoleKey);
@@ -83,6 +89,7 @@ Deno.serve(async (request) => {
     p_event: type,
     p_payload: payload,
     p_delivery_key: deliveryKey,
+    p_consult_type: consultType,
   });
 
   if (error) {
