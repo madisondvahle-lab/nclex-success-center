@@ -153,6 +153,7 @@
       this.time = this.items.map(() => 0);
       this.changes = this.items.map(() => 0);
       this.fb = this.items.map(() => '');
+      this.checked = this.items.map(() => false);
       this.tab = {}; this.notes = ''; this.elapsed = 0; this.fs = 1;
       this.remaining = opts.seconds || null; this.done = false;
       this.build(); this.show(0);
@@ -167,7 +168,7 @@
         <div class="ex-toolbar"><div class="ex-tools">
           <button class="ex-tb" data-a="notes">${ICON.notes}<span><span class="u">N</span>otes</span></button>
           <button class="ex-tb" data-a="calc">${ICON.calc}<span>Calc<span class="u">u</span>lator</span></button>
-          <button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button></div>
+          ${this.o.noFeedback ? '' : `<button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button>`}</div>
           <div class="ex-tools"><button class="ex-tb" data-a="expand" title="Full screen" aria-label="Full screen">${ICON.expand}</button>
           <button class="ex-tb" data-a="help" title="Help" aria-label="Help">${ICON.help}</button>
           <button class="ex-tb" data-a="gear" title="Text size" aria-label="Text size">${ICON.gear}</button>
@@ -210,12 +211,21 @@
       this.root.querySelector('.ex-qid').textContent = 'QId: ' + it.qid;
       this.root.querySelector('.ex-qn').textContent = `${i + 1} of ${this.items.length}`;
       this.root.querySelector('[data-a=prev]').disabled = i === 0;
-      this.root.querySelector('[data-a=next]').innerHTML = i === this.items.length - 1 ? 'Finish ▶' : 'Next ▶';
+      const nx = this.root.querySelector('[data-a=next]'), last = i === this.items.length - 1;
+      nx.innerHTML = this.o.instant && !this.checked[i] ? 'Check answer ▶' : last ? 'Finish ▶' : 'Next ▶';
       this.paintClock();
       this.renderMark(); this.main.className = 'ex-main' + (it.case ? ' split' : '');
       const body = it.case ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
       this.main.innerHTML = body; this.main.scrollTop = 0;
+      this.main.classList.toggle('locked', !!this.checked[i]);
+      if (this.checked[i]) this.main.querySelector('.ex-pane:last-child').insertAdjacentHTML('beforeend', this.feedbackHtml(it, i));
       this.main.querySelectorAll('.ex-pane').forEach(p => p.scrollTop = 0);
+    }
+
+    // Practice mode: shows correctness and the rationale once the learner checks an answer.
+    feedbackHtml(it, i) {
+      const r = score(it, this.ans[i]);
+      return `<div class="ex-feedback ${r.full ? 'ok' : 'no'}" role="status"><p class="ex-fbh">${r.full ? 'Correct' : r.score > 0 ? 'Partially correct' : 'Incorrect'}</p>${reviewHtml(it, this.ans[i])}${it.rationale ? `<p class="ex-rat"><b>Rationale.</b> ${it.rationaleHtml ? it.rationale : esc(it.rationale)}</p>` : ''}</div>`;
     }
 
     renderMark() {
@@ -308,7 +318,13 @@
       const b = e.target.closest('[data-a]'); if (!b) return;
       ({
         prev: () => this.i > 0 && this.show(this.i - 1),
-        next: () => this.i < this.items.length - 1 ? this.show(this.i + 1) : this.confirmFinish(),
+        next: () => {
+          if (this.o.instant && !this.checked[this.i]) {
+            if (!isAnswered(this.it, this.ans[this.i])) { this.modal('Select an answer', '<p>Choose an answer before checking it.</p>', [['OK']]); return; }
+            this.checked[this.i] = true; this.show(this.i); this.main.querySelectorAll('.ex-pane').forEach(p => { p.scrollTop = p.scrollHeight; }); return;
+          }
+          this.i < this.items.length - 1 ? this.show(this.i + 1) : this.confirmFinish();
+        },
         nav: () => this.navigator(), mark: () => { this.marked[this.i] = !this.marked[this.i]; this.renderMark(); },
         notes: () => this.notesModal(), calc: () => this.calcModal(), fb: () => this.feedbackModal(),
         help: () => this.helpModal(),

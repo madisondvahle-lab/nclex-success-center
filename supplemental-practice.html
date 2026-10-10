@@ -21,7 +21,10 @@
     <section class="grid" id="sets" aria-label="Supplemental practice sets"></section>
     <section class="quiz hidden" id="quiz" aria-live="polite"></section>
   </main>
+  <link rel="stylesheet" href="exam-ui.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="exam-ui.js"></script>
+  <script src="exam-adapters.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -1496,7 +1499,19 @@
 
     let activeSet=null,index=0,answers=[],revealed=false,student=null;
     function renderLibrary(){const target=$('sets');target.innerHTML=sets.map(set=>`<article class="card"><p class="meta">${set.tag}</p><h2>${set.title}</h2><p>${set.description}</p><p class="meta">${set.questions.length} questions · original practice</p><button class="start" data-set="${set.id}">Start →</button></article>`).join('');document.querySelectorAll('[data-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.set)))}
-    function startSet(id,count){const set=sets.find(set=>set.id===id);if(!set)return;if(set.id==='jack-nur312-exam1'&&!count){$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');$('quiz').innerHTML=`<section class="card"><p class="eyebrow">NUR 312 Exam 1 Practice</p><h2>How many questions would you like to do?</h2><p>There are ${set.questions.length} questions available. Choose a shorter practice session or complete the full set.</p><div class="actions">${[10,20,40,60,set.questions.length].map(amount=>`<button class="primary question-count" data-count="${amount}" type="button">${amount===set.questions.length?'All '+amount:amount+' questions'}</button>`).join('')}</div></section>`;document.querySelectorAll('.question-count').forEach(button=>button.addEventListener('click',()=>startSet(id,Number(button.dataset.count))));return}const questions=count&&count<set.questions.length?[...set.questions].sort(()=>Math.random()-.5).slice(0,count):set.questions;activeSet={...set,questions};index=0;answers=[];revealed=false;$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');renderQuestion()}
+    function startSet(id,count){const set=sets.find(set=>set.id===id);if(!set)return;if(set.id==='jack-nur312-exam1'&&!count){$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');$('quiz').innerHTML=`<section class="card"><p class="eyebrow">NUR 312 Exam 1 Practice</p><h2>How many questions would you like to do?</h2><p>There are ${set.questions.length} questions available. Choose a shorter practice session or complete the full set.</p><div class="actions">${[10,20,40,60,set.questions.length].map(amount=>`<button class="primary question-count" data-count="${amount}" type="button">${amount===set.questions.length?'All '+amount:amount+' questions'}</button>`).join('')}</div></section>`;document.querySelectorAll('.question-count').forEach(button=>button.addEventListener('click',()=>startSet(id,Number(button.dataset.count))));return}const questions=count&&count<set.questions.length?[...set.questions].sort(()=>Math.random()-.5).slice(0,count):set.questions;activeSet={...set,questions};index=0;answers=[];revealed=false;$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');beginPractice()}
+    // Runs the active set in the NCLEX-style exam interface; falls back to the classic view if it did not load.
+    function beginPractice(){
+      if(!window.ExamUI||!window.ExamAdapters){renderQuestion();return}
+      const source=activeSet.questions;
+      if(!source.some(q=>q.type!=='intro')){renderQuestion();return}
+      const items=ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
+      const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
+      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:true,noFeedback:true,
+        onFinish:res=>{host.remove();answers=ExamAdapters.toPracticeAnswers(source,res);$('quiz').classList.remove('hidden');showResults()},
+        onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
+    }
     function answersMatch(question,selected){return Array.isArray(question.answer)?Array.isArray(selected)&&question.answer.length===selected.length&&question.answer.every(answer=>selected.includes(answer)):selected===question.answer}
     function renderQuestion(){const q=activeSet.questions[index];if(q.type==='intro'){$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Scenario ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><div class="intro-card"><p class="intro-label">Clinical Scenario</p><h2>${q.stem}</h2><p class="intro-note">${q.note||'Read this scenario carefully before answering the questions that follow.'}</p></div><div class="actions"><button class="start" id="next">Begin questions →</button></div>`;revealed=true;setTimeout(()=>{const btn=$('next');if(btn)btn.addEventListener('click',()=>{index++;revealed=false;renderQuestion();});},0);return;}const isSATA=Array.isArray(q.answer);const selected=answers[index];const isCorrect=answersMatch(q,selected);$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Question ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><h2>${q.stem}</h2>${isSATA?'<p class="sata-hint">Select all that apply</p>':''}<div class="options">${q.options.map((option,optionIndex)=>{const isChecked=isSATA?(Array.isArray(selected)&&selected.includes(optionIndex)):(selected===optionIndex);return`<label class="option${revealed?(isSATA?(q.answer.includes(optionIndex)?' correct-opt':(Array.isArray(selected)&&selected.includes(optionIndex)?' wrong-opt':'')):(optionIndex===q.answer?' correct-opt':selected===optionIndex?' wrong-opt':'')):''}"><input type="${isSATA?'checkbox':'radio'}" name="answer" value="${optionIndex}" ${isChecked?'checked':''} ${revealed?'disabled':''}><span>${option}</span></label>`;}).join('')}</div>${revealed?`<div class="feedback ${isCorrect?'correct':'incorrect'}"><strong>${isCorrect?'Correct ✓':'Review this one'}</strong>${isSATA?'<em>Select all that apply — all correct choices must be selected.</em>':''}${q.rationale}</div>`:''}<div class="actions"><button class="secondary" id="leave" type="button">Back to sets</button>${index>0?'<button class="secondary" id="previous" type="button">← Previous question</button>':''}<button class="primary" id="next" type="button" ${selected===undefined?'disabled':''}>${revealed?(index===activeSet.questions.length-1?'See results':'Next question'):'Check answer'}</button></div>`;document.querySelectorAll('input[name="answer"]').forEach(input=>input.addEventListener('change',event=>{answers[index]=isSATA?Array.from(document.querySelectorAll('input[name="answer"]:checked')).map(item=>Number(item.value)):Number(event.target.value);$('next').disabled=false}));$('leave').addEventListener('click',showLibrary);const previous=$('previous');if(previous)previous.addEventListener('click',()=>{index--;revealed=false;renderQuestion()});$('next').addEventListener('click',()=>{if(!revealed){revealed=true;renderQuestion();return}if(index===activeSet.questions.length-1){showResults();return}index++;revealed=false;renderQuestion()})}
     function categoryForQuestion(id){
@@ -1670,7 +1685,7 @@
       index=0;
       answers=[];
       revealed=false;
-      renderQuestion();
+      beginPractice();
     }
 
     async function buildCourseExamPractice(courseKey,examKey){
@@ -1718,7 +1733,7 @@
       index=0;
       answers=[];
       revealed=false;
-      renderQuestion();
+      beginPractice();
     }
 
     async function init(){const immediateSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===immediateSet)){startSet(immediateSet);return}const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const params=new URLSearchParams(window.location.search);
