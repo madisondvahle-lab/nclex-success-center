@@ -1509,6 +1509,7 @@
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
       new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:true,noFeedback:true,
+        onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,note:f.note||null});return !r.error}:null,
         onFinish:res=>{host.remove();answers=ExamAdapters.toPracticeAnswers(source,res);$('quiz').classList.remove('hidden');showResults()},
         onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
     }
@@ -1602,7 +1603,7 @@
 
       const [{data:bank,error:bankError},{data:history,error:historyError}] = await Promise.all([
         db.from('questions')
-          .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty')
+          .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no')
           .eq('active',true)
           .limit(1000),
         db.from('student_supplemental_practice_results')
@@ -1629,6 +1630,7 @@
 
       const normalized=(bank||[]).map(q=>({
         id:String(q.id),
+        qno:q.question_no||null,dbId:q.id,
         stem:q.stem,
         options:[q.option_a,q.option_b,q.option_c,q.option_d],
         answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
@@ -1700,7 +1702,7 @@
       $('quiz').innerHTML='<p class="status">Building your exam practice…</p>';
 
       const {data:bank,error}=await db.from('questions')
-        .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,topic,subtopic,difficulty,cognitive_level')
+        .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,topic,subtopic,difficulty,cognitive_level,question_no')
         .eq('active',true)
         .eq('course_key',courseKey)
         .eq('exam_key',examKey)
@@ -1708,6 +1710,7 @@
 
       const questions=(bank||[]).map(q=>({
         id:String(q.id),
+        qno:q.question_no||null,dbId:q.id,
         stem:q.stem,
         options:[q.option_a,q.option_b,q.option_c,q.option_d],
         answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
