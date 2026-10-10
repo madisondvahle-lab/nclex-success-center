@@ -80,6 +80,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="consult-diagnostic-bank.js"></script>
+  <script src="category-names.js"></script>
   <script src="exam-ui.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
@@ -141,7 +142,7 @@
       lastResult=r;
       const rows=r.items.map((it,i)=>({it,i,a:r.ans[i],...ExamUI.score(it,r.ans[i]),answered:ExamUI.isAnswered(it,r.ans[i])}));
       const total=rows.reduce((s,x)=>s+x.score,0),full=rows.filter(x=>x.full).length,overall=pct(total,rows.length);
-      const byCat=group(rows,x=>x.it.category),byTopic=group(rows,x=>x.it.topic),byPat=group(rows,x=>x.it.pattern);
+      const byCat=group(rows,x=>NCLEXCats.canon(x.it.category)),byTopic=group(rows,x=>x.it.topic),byPat=group(rows,x=>x.it.pattern);
       const byType=group(rows,x=>x.it.case?'Case study (NGN) items':TYPE_LABEL[x.it.type]);
       const byDiff=group(rows,x=>({1:'Foundational',2:'Intermediate',3:'Higher-level judgment'}[x.it.difficulty||2])).sort((a,b)=>a.label.localeCompare(b.label));
       const changes=r.changes.reduce((a,b)=>a+b,0),unanswered=rows.filter(x=>!x.answered).length,marked=r.marked.filter(Boolean).length;
