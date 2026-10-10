@@ -288,6 +288,10 @@
           <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
           <div id="cat-results-body"></div>
         </article>
+        <article class="card" id="cat-trend-card" style="display:none;grid-column:1/-1">
+          <div class="card-head"><div><p class="eyebrow">Weekly CAT trend</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
+          <div id="cat-trend-body"></div>
+        </article>
         <article class="card">
           <div class="card-head"><div><p class="eyebrow">Adaptive practice</p><h2>Personalized question bank</h2></div><span class="label">CAT</span></div>
           <p>Your CAT uses Madison's assessment-history guidance while keeping essential RN safety coverage in every session.</p>
@@ -648,7 +652,64 @@
         } catch(e) {}
       }
 
+      renderCatTrend(student);
       document.getElementById('portal-nclex').classList.remove('hidden');
+    }
+
+    // Weekly CAT trend from the assessments Madison enters each week.
+    async function renderCatTrend(student) {
+      const {data, error} = await db.from('external_assessments')
+        .select('platform,assessment_name,taken_at,created_at,overall_score,category_scores')
+        .eq('student_id', student.id);
+      if (error || !data || !data.length) return;
+      const when = r => (r.taken_at || String(r.created_at).slice(0, 10));
+      const byPlatform = new Map();
+      data.forEach(r => { const k = r.platform || 'Assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
+      const platforms = [...byPlatform.entries()].sort((a, b) => b[1].length - a[1].length).map(([k]) => k);
+      const card = document.getElementById('cat-trend-card'), body = document.getElementById('cat-trend-body');
+      const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+      const arrow = d => d > 0.5 ? `<span style="color:var(--teal);font-weight:700">▲ ${Math.round(d)}</span>` : d < -0.5 ? `<span style="color:#9c3535;font-weight:700">▼ ${Math.abs(Math.round(d))}</span>` : '<span style="color:#888">— 0</span>';
+      const draw = platform => {
+        const rows = byPlatform.get(platform).slice().sort((a, b) => when(a).localeCompare(when(b)));
+        const scored = rows.filter(r => r.overall_score !== null && r.overall_score !== '' && Number.isFinite(Number(r.overall_score)));
+        const latest = rows[rows.length - 1], prev = rows.length > 1 ? rows[rows.length - 2] : null;
+        let chart = '';
+        if (scored.length >= 2) {
+          const W = 640, H = 190, L = 34, R = 14, T = 14, B = 28;
+          const vals = scored.map(r => Number(r.overall_score));
+          const lo = Math.max(0, Math.floor((Math.min(...vals) - 8) / 10) * 10), hi = Math.min(100, Math.ceil((Math.max(...vals) + 8) / 10) * 10);
+          const x = i => L + (scored.length === 1 ? 0 : i * (W - L - R) / (scored.length - 1));
+          const y = v => T + (hi - v) / (hi - lo || 1) * (H - T - B);
+          const pts = scored.map((r, i) => `${x(i).toFixed(1)},${y(Number(r.overall_score)).toFixed(1)}`).join(' ');
+          const grid = [lo, (lo + hi) / 2, hi].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#888">${Math.round(v)}%</text>`).join('');
+          const dots = scored.map((r, i) => `<circle cx="${x(i)}" cy="${y(Number(r.overall_score))}" r="4" fill="var(--teal)"/><text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#888">${fmt(when(r))}</text><text x="${x(i)}" y="${y(Number(r.overall_score)) - 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#17344f">${Math.round(Number(r.overall_score))}</text>`).join('');
+          chart = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Overall score by week" style="width:100%;height:auto;max-height:230px">${grid}<polyline points="${pts}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>${dots}</svg>`;
+        }
+        const first = scored[0], last = scored[scored.length - 1];
+        const headline = scored.length >= 2
+          ? `<p style="margin:0 0 10px"><strong style="font-size:1.4rem;font-family:Georgia,serif">${Math.round(Number(last.overall_score))}%</strong> latest overall · ${arrow(Number(last.overall_score) - Number(scored[scored.length - 2].overall_score))} since last check-in · ${arrow(Number(last.overall_score) - Number(first.overall_score))} since ${fmt(when(first))}</p>`
+          : `<p style="margin:0 0 10px"><strong style="font-size:1.4rem;font-family:Georgia,serif">${scored.length ? Math.round(Number(last.overall_score)) + '%' : '—'}</strong> latest overall · Your trend line appears after your second weekly check-in.</p>`;
+        const cats = Object.entries(latest.category_scores || {}).map(([name, v]) => {
+          const cur = Number(v), before = prev && prev.category_scores && prev.category_scores[name] != null ? Number(prev.category_scores[name]) : null;
+          return {name, cur, delta: before !== null && Number.isFinite(before) ? cur - before : null};
+        }).filter(c => Number.isFinite(c.cur)).sort((a, b) => a.cur - b.cur);
+        const table = cats.length ? `<h3 style="margin:16px 0 6px;font-size:.95rem">Categories · ${fmt(when(latest))}${prev ? ' vs ' + fmt(when(prev)) : ''}</h3>` + cats.map(c => {
+          const col = c.cur < 55 ? '#9c3535' : c.cur < 70 ? '#b07830' : 'var(--teal)';
+          return `<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta !== null ? ' · ' + arrow(c.delta) : ''}</span></div><div style="height:6px;border-radius:3px;background:#e5e7eb;margin-top:4px"><div style="height:6px;border-radius:3px;width:${Math.min(100, c.cur)}%;background:${col}"></div></div></div>`;
+        }).join('') : '';
+        const hist = rows.length > 1 ? `<p style="font-size:.78rem;color:#888;margin-top:12px">${rows.length} check-ins: ${rows.map(r => fmt(when(r)) + (r.overall_score != null ? ' (' + Math.round(Number(r.overall_score)) + '%)' : '')).join(' · ')}</p>` : '';
+        return headline + chart + table + hist;
+      };
+      const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map((pl, i) => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${i === 0}">${text(pl)}</button>`).join('')}</div>` : '';
+      body.innerHTML = chips + '<div id="cat-trend-view"></div>';
+      const view = document.getElementById('cat-trend-view');
+      view.innerHTML = draw(platforms[0]);
+      document.getElementById('cat-trend-label').textContent = platforms[0];
+      body.querySelectorAll('[data-trend-platform]').forEach(b => b.addEventListener('click', () => {
+        body.querySelectorAll('[data-trend-platform]').forEach(x => x.setAttribute('aria-selected', x === b));
+        view.innerHTML = draw(b.dataset.trendPlatform); document.getElementById('cat-trend-label').textContent = b.dataset.trendPlatform;
+      }));
+      card.style.display = '';
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
