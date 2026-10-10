@@ -1509,7 +1509,7 @@
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
       new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:true,noFeedback:true,
-        onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,note:f.note||null});return !r.error}:null,
+        onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,kind:f.kind||'report',note:f.note||null});return !r.error}:null,
         onFinish:res=>{host.remove();answers=ExamAdapters.toPracticeAnswers(source,res);$('quiz').classList.remove('hidden');showResults()},
         onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
     }
