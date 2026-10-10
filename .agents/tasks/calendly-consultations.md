@@ -25,3 +25,10 @@ Never commit these values.
 - Webhook routes by event type URI: `CALENDLY_CONSULT_EVENT_TYPE_URI` (free) and `CALENDLY_STRATEGY_EVENT_TYPE_URI` (strategy). Both secrets set.
 - Strategy template (reports reviewed, patterns, checklist, recommendation, package credit within 7 days) is a first draft based on the public page bullets; adjust as Madison prefers.
 - Public site price/length updated in study-with-madison-site PR 19 ($40, 45 min).
+
+## Automatic Strategy Session follow-ups (added)
+- Migration `supabase-strategy-followup-migration.sql` (applied): `followup_settings` (mode off/preview/live, preview email, private package links), credit columns on `consultations`, and service-role-only `claim_followup` / `release_followup` (atomic claim prevents double sends).
+- `supabase-strategy-followup-cron.sql` (applied): pg_cron every 15 min calls the `send-strategy-followups` Edge Function with `x-cron-secret` read from Vault (`followup_cron_secret`, matches the `CRON_SECRET` function secret).
+- Function sends via Resend from support@studywithmadison.com: one follow-up ~10 min after the session ends (only sessions ending within 3 days and after the mode was enabled), one reminder after 5 days, credits expire after 7 days. Preview mode sends only to the preview email. Live mode requires at least one package link.
+- Requires function secret `RESEND_API_KEY` (not yet set at time of writing). Without it the function skips sending.
+- Admin UI is the "Automatic follow-ups" panel on `madison-consultations.html` (includes "Send me a test email"). Purchase detection is manual ("Mark package purchased").
