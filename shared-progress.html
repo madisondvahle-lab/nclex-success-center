@@ -131,6 +131,19 @@
     <section class="card hidden" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="open-tutoring-room" href="tutoring-room.html"><strong>Open tutoring room</strong><span>Start a private Jitsi session with this student.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
       <article class="card full hidden" id="overview-card"><div class="card-head"><div><p class="eyebrow">Client overview</p><h2>Where the evidence agrees</h2></div><span class="label" id="overview-label">NCLEX prep</span></div><div id="overview-body"><p class="muted">Loading…</p></div></article>
+      <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT &amp; readiness exams</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
+        <details id="cat-entry" style="margin-top:16px"><summary style="cursor:pointer;font-weight:800">Enter exam results</summary>
+          <form id="cat-form" style="margin-top:12px"><div class="form-grid">
+            <label>Save to<select id="cat-target"><option value="">New entry</option></select></label>
+            <label>Platform<select id="cat-platform"><option>Archer</option><option>UWorld</option><option>Kaplan</option><option>ATI</option><option>Bootcamp</option><option>NCSBN</option><option>Other</option></select></label>
+            <label>Name<input id="cat-name" maxlength="120" placeholder="e.g. CAT #2"></label>
+            <label>Date completed<input id="cat-date" type="date"></label>
+            <label>Overall score %<input id="cat-overall" type="number" min="0" max="100" step="0.1"></label>
+            <label class="wide">Paste category lines (optional)<textarea id="cat-paste" rows="4" placeholder="Management of Care 62%&#10;Pharmacological and Parenteral Therapies 48%"></textarea></label>
+          </div>
+          <button class="button secondary" type="button" id="cat-parse">Fill categories from paste</button>
+          <div class="form-grid" id="cat-fields" style="margin-top:12px"></div>
+          <button class="button" type="submit" id="cat-save">Save results</button> <span class="muted" id="cat-msg" role="status"></span></form></details></article>
       <article class="card full hidden" id="client-needs-card"><div class="card-head"><div><p class="eyebrow">UWorld Client Needs</p><h2>Your study-category snapshot</h2></div><span class="label">Shared view</span></div><p class="client-needs-copy" id="client-needs-source"></p><div class="client-needs-grid" id="client-needs"></div><p class="client-needs-copy" style="margin:16px 0 0"></p></article>
       <article class="card full hidden" id="system-needs-card"><div class="card-head"><div><p class="eyebrow">UWorld System Needs</p><h2>Your content-system priorities</h2></div><span class="label">Shared view</span></div><p class="client-needs-copy" id="system-needs-source"></p><div class="system-needs-grid" id="system-needs"></div><p class="client-needs-copy" style="margin:16px 0 0"></p></article>
       <article class="card full hidden" id="practice-plan-card"><div class="card-head"><div><p class="eyebrow">Practice priorities</p><h2>Patterns we&apos;re seeing</h2></div><span class="label">Shared view</span></div><div class="practice-grid" id="practice-suggestions"></div></article>
@@ -594,6 +607,70 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       $('overview-body').innerHTML=stats+'<div class="ov-scroll"><table class="ov-table"><thead><tr><th>Category</th><th>Latest CPR</th><th>Consult diagnostic</th><th>Outside report'+(outsideSrc?' ('+esc(outsideSrc)+')':'')+'</th><th>Practice</th><th>Read</th></tr></thead><tbody>'+rows.map(r=>r.html).join('')+'</tbody></table></div>'
         +'<p class="muted" style="margin-top:12px">'+(focus.length?'<b>Start with:</b> '+focus.slice(0,3).map(r=>esc(r.name)).join(', ')+'. ':'')+'“Confirmed focus” means at least two sources are weak (CPR near/below, diagnostic under 70%, outside report or practice (3+ questions) under 65%). Enter CPRs on the <a href="madison-cpr.html">CPR tracker</a>.</p>';
     }
+
+    const catKindOk=u=>u.assessment_type!=='cpr_report'&&isProgressAssessment(u);
+    const catShort=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    function renderCatCard(uploads,cats){
+      const card=$('cat-card');
+      if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
+      card.classList.remove('hidden');
+      const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
+      const exams=uploads.filter(catKindOk).map(u=>{const m=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!=='')m[i]=Number(c.score)});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
+      const scored=exams.filter(e=>e.o!=null),withCats=exams.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
+      const label=e=>(e.u.platform||'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
+      let html='';
+      if(scored.length){
+        const W=640,H=200,L=36,R=16,T=16,B=34,vals=scored.map(e=>e.o);
+        const lo=Math.max(0,Math.floor((Math.min(...vals)-8)/10)*10),hi=Math.min(100,Math.ceil((Math.max(...vals)+8)/10)*10);
+        const x=i=>L+(scored.length===1?(W-L-R)/2:i*(W-L-R)/(scored.length-1)),y=v=>T+(hi-v)/((hi-lo)||1)*(H-T-B);
+        const grid=[lo,(lo+hi)/2,hi].map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#d8e1db"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="#567087">'+Math.round(v)+'%</text>').join('');
+        const line=scored.length>1?'<polyline fill="none" stroke="#0067a8" stroke-width="2.5" points="'+scored.map((e,i)=>x(i).toFixed(1)+','+y(e.o).toFixed(1)).join(' ')+'"/>':'';
+        const dots=scored.map((e,i)=>'<circle cx="'+x(i)+'" cy="'+y(e.o)+'" r="5" fill="#0067a8"/><text x="'+x(i)+'" y="'+(y(e.o)-10)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#0b2a43">'+Math.round(e.o)+'%</text><text x="'+x(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#567087">'+catShort(e.d)+'</text>').join('');
+        const last=scored[scored.length-1],prev=scored[scored.length-2];
+        const ch=prev?Math.round(last.o-prev.o):null;
+        html+='<p style="margin:0 0 8px"><b style="font-size:1.5rem;font-family:Georgia,serif">'+Math.round(last.o)+'%</b> latest ('+esc(label(last))+')'+(ch==null?'':' · <span style="color:'+(ch>=0?'#2f7d4f':'#b4443c')+';font-weight:800">'+(ch>0?'▲ +':ch<0?'▼ ':'● ')+ch+' pts</span> since previous')+'</p><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Overall exam score over time" style="width:100%;height:auto;max-height:230px">'+grid+line+dots+'</svg>';
+      }else html+='<p class="muted">No overall scores yet. Use “Enter exam results” below to add one.</p>';
+      if(withCats.length){
+        const head='<tr><th>Category</th>'+withCats.map(e=>'<th>'+esc(catShort(e.d))+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(e.u.platform||'')+'</span></th>').join('')+'<th>Change</th></tr>';
+        const body=NCLEXCats.NAMES.map((n,i)=>{
+          const vals=withCats.map(e=>e.m[i]),seen=vals.filter(v=>v!=null);
+          const d=seen.length>1?Math.round(seen[seen.length-1]-seen[seen.length-2]):null;
+          return '<tr><td>'+esc(n)+'</td>'+vals.map(v=>'<td>'+ovPct(v)+'</td>').join('')+'<td>'+(d==null?'—':'<b style="color:'+(d>=0?'#2f7d4f':'#b4443c')+'">'+(d>0?'▲ +':d<0?'▼ ':'● ')+d+'</b>')+'</td></tr>';
+        }).join('');
+        html+='<h3 style="margin:18px 0 6px;font-size:1rem">Categories by exam</h3><div class="ov-scroll"><table class="ov-table"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
+        const lastE=withCats[withCats.length-1],weak=NCLEXCats.NAMES.map((n,i)=>[n,lastE.m[i]]).filter(x=>x[1]!=null).sort((a,b)=>a[1]-b[1]).slice(0,3);
+        if(weak.length)html+='<p class="muted" style="margin-top:10px"><b>Lowest on latest exam:</b> '+weak.map(w=>esc(w[0])+' ('+Math.round(w[1])+'%)').join(', ')+'</p>';
+      }
+      if(empty.length)html+='<p class="muted" style="margin-top:10px"><b>Uploaded with no scores yet:</b> '+empty.map(e=>esc(label(e))+' ('+esc(catShort(e.d))+')').join('; ')+'. Choose it under “Save to” below to add its scores to the chart.</p>';
+      $('cat-body').innerHTML=html;
+      $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
+      $('cat-entry').open=!exams.length||!!empty.length;
+    }
+    $('cat-fields').innerHTML=NCLEXCats.NAMES.map((n,i)=>'<label>'+esc(n)+' %<input type="number" min="0" max="100" step="0.1" data-cat="'+i+'"></label>').join('');
+    $('cat-parse').onclick=()=>{
+      const rows=parseImportedScores($('cat-paste').value);let n=0;
+      rows.forEach(r=>{const i=NCLEXCats.index(r.category);if(i>=0){document.querySelector('[data-cat="'+i+'"]').value=r.score;n++}});
+      $('cat-msg').textContent=n?n+' categor'+(n===1?'y':'ies')+' filled. Check them, then save.':'No Client Needs categories recognized in that text.'
+    };
+    $('cat-form').addEventListener('submit',async ev=>{
+      ev.preventDefault();const msg=$('cat-msg');msg.textContent='Saving…';
+      const scores={};document.querySelectorAll('[data-cat]').forEach(inp=>{if(inp.value!=='')scores[NCLEXCats.NAMES[+inp.dataset.cat]]=Number(inp.value)});
+      const ov=$('cat-overall').value,overall=ov===''?null:Number(ov),date=$('cat-date').value||null,target=$('cat-target').value;
+      if(overall==null&&!Object.keys(scores).length){msg.textContent='Enter an overall score or at least one category.';return}
+      let err;
+      if(target){
+        const patch={};if(overall!=null)patch.overall_score=overall;if(date)patch.taken_on=date;
+        if(Object.keys(patch).length)err=(await db.from('student_assessment_uploads').update(patch).eq('id',target)).error;
+        if(!err&&Object.keys(scores).length){
+          err=(await db.from('student_assessment_categories').delete().eq('assessment_id',target)).error;
+          if(!err)err=(await db.from('student_assessment_categories').insert(Object.entries(scores).map(([category,score])=>({assessment_id:target,category,score})))).error;
+        }
+      }else{
+        err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,entered_by:session.user.id})).error;
+      }
+      if(err){msg.textContent='Could not save: '+err.message;return}
+      $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
+    });
     async function loadStudent(target){
       student=target;
       $('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';
@@ -628,6 +705,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
+      renderCatCard(currentUploads,allCategories);
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }
