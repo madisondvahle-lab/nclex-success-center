@@ -119,6 +119,10 @@
       'The nurse receives report on four clients. Which client should the nurse assess <b>first</b>?',
       ['A client 1 day after a total knee arthroplasty with incisional pain rated 6/10', 'A client with type 2 diabetes with a morning blood glucose of 210 mg/dL (11.7 mmol/L)', 'A client 2 hours after a femoral-access cardiac catheterization with a new cool, pale foot and a weak pedal pulse', 'A client with pneumonia and a temperature of 100.6 F (38.1 C)'], 2,
       'A new cool, pale foot with a weak pulse after arterial access suggests an arterial occlusion or bleeding that threatens the limb. The other findings are expected or less urgent.'),
+    q('cd025', 'mcq', C.mgmt, 'Priority Setting', 'priority', 2,
+      'The nurse in the emergency department is caring for assigned clients. The nurse should <b>first</b> assess the client who is',
+      ['14 years old and has scrotal pain and swelling with elevation of the right testis', '16 years old and has sickle cell disease with generalized body pain', '34 years old and has right-sided flank pain radiating to the groin', '46 years old and has diverticulitis with cramping pain in the left lower abdomen'], 0,
+      'Sudden scrotal pain and swelling with an elevated testis suggests testicular torsion, a surgical emergency. The testis can lose blood supply within hours, so this client is assessed first. The other clients need care but are not at immediate risk of losing an organ.'),
 
     {
       kind: 'case', id: 'cdcase1', category: C.physio, topic: 'Cardiac', difficulty: 3,
