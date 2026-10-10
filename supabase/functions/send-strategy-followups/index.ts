@@ -38,26 +38,20 @@ function fmtDate(iso: string, tz?: string | null) {
   catch { return new Intl.DateTimeFormat("en-US", opts).format(new Date(iso)); }
 }
 
-function buildEmail(kind: "followup" | "reminder", name: string, deadline: string, s: Settings, linksReady: boolean) {
+function buildEmail(kind: "followup" | "reminder", name: string, deadline: string, s: Settings) {
   const first = (name || "there").split(" ")[0];
-  const links = (s.package_links || []).filter((l) => l.label && l.url);
   const amount = `$${s.credit_amount}`;
   const intro = kind === "followup"
     ? `Thank you for your NCLEX Strategy Session. I enjoyed working through your question patterns with you.`
     : `Just a quick reminder about the ${amount} credit from your NCLEX Strategy Session.`;
-  const body = `If you decide to continue with tutoring, your ${amount} session fee is already applied to the private links below. No refund or coupon needed. These links are good through ${deadline}.`;
-  const closing = `There is no pressure to commit. If you have questions, just reply to this email.`;
-  const text = [
-    `Hi ${first},`, "", intro, "", body, "",
-    ...(links.length ? links.map((l) => `${l.label}: ${l.url}`) : ["[Package links are not set up yet]"]),
-    "", "Please don't share these links. They are for your credit only.", "", closing, "", "Madison", "Study With Madison, RN",
-  ].join("\n");
+  const body = `If you decide to continue with tutoring, purchase any tutoring package by ${deadline} and I will refund your ${amount} Strategy Session fee to your original payment method.`;
+  const how = `After you purchase, just reply to this email and I'll take care of the refund.`;
+  const closing = `There is no pressure to commit. If you have questions, reply any time.`;
+  const text = [`Hi ${first},`, "", intro, "", body, how, "", closing, "", "Madison", "Study With Madison, RN"].join("\n");
   const html = `<div style="font-family:Arial,sans-serif;line-height:1.55;color:#1f2933;max-width:560px">
-<p>Hi ${esc(first)},</p><p>${esc(intro)}</p><p>${esc(body)}</p>
-<ul>${links.length ? links.map((l) => `<li><a href="${esc(l.url)}">${esc(l.label)}</a></li>`).join("") : "<li>[Package links are not set up yet]</li>"}</ul>
-<p style="color:#52606d;font-size:14px">Please don't share these links. They are for your credit only.</p>
+<p>Hi ${esc(first)},</p><p>${esc(intro)}</p><p>${esc(body)} ${esc(how)}</p>
 <p>${esc(closing)}</p><p>Madison<br>Study With Madison, RN</p></div>`;
-  return { subject: kind === "followup" ? `Your ${amount} package credit from your Strategy Session` : `Reminder: your ${amount} package credit ends ${deadline}`, text, html, linksReady: links.length > 0 };
+  return { subject: kind === "followup" ? `Your ${amount} package credit from your Strategy Session` : `Reminder: your ${amount} package credit ends ${deadline}`, text, html };
 }
 
 async function sendEmail(apiKey: string, to: string, subject: string, text: string, html: string) {
@@ -94,7 +88,7 @@ Deno.serve(async (req) => {
     if (!apiKey) return json({ error: "RESEND_API_KEY is not set yet" }, 400);
     const to = s.preview_email || user.email;
     if (!to) return json({ error: "No preview email set" }, 400);
-    const mail = buildEmail("followup", "Sample Student", fmtDate(new Date(Date.now() + s.credit_days * MS_DAY).toISOString()), s, true);
+    const mail = buildEmail("followup", "Sample Student", fmtDate(new Date(Date.now() + s.credit_days * MS_DAY).toISOString()), s);
     try { await sendEmail(apiKey, to, "[TEST] " + mail.subject, mail.text, mail.html); }
     catch (e) { return json({ error: String(e) }, 502); }
     return json({ ok: true, sent_to: to });
@@ -125,8 +119,7 @@ Deno.serve(async (req) => {
   for (const c of due || []) {
     const end = c.scheduled_end || c.scheduled_start;
     const deadline = fmtDate(new Date(new Date(end).getTime() + s.credit_days * MS_DAY).toISOString(), c.invitee_timezone);
-    const mail = buildEmail("followup", c.invitee_name, deadline, s, true);
-    if (live && !mail.linksReady) { results.failed++; continue; }
+    const mail = buildEmail("followup", c.invitee_name, deadline, s);
     const to = live ? c.invitee_email : s.preview_email;
     if (!to) continue;
     try {
@@ -156,8 +149,7 @@ Deno.serve(async (req) => {
   for (const c of reminders || []) {
     const end = c.scheduled_end || c.scheduled_start;
     const deadline = fmtDate(new Date(new Date(end).getTime() + s.credit_days * MS_DAY).toISOString(), c.invitee_timezone);
-    const mail = buildEmail("reminder", c.invitee_name, deadline, s, true);
-    if (live && !mail.linksReady) { results.failed++; continue; }
+    const mail = buildEmail("reminder", c.invitee_name, deadline, s);
     const to = live ? c.invitee_email : s.preview_email;
     if (!to) continue;
     try {

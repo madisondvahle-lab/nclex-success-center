@@ -32,3 +32,5 @@ Never commit these values.
 - Function sends via Resend from support@studywithmadison.com: one follow-up ~10 min after the session ends (only sessions ending within 3 days and after the mode was enabled), one reminder after 5 days, credits expire after 7 days. Preview mode sends only to the preview email. Live mode requires at least one package link.
 - Requires function secret `RESEND_API_KEY` (not yet set at time of writing). Without it the function skips sending.
 - Admin UI is the "Automatic follow-ups" panel on `madison-consultations.html` (includes "Send me a test email"). Purchase detection is manual ("Mark package purchased").
+
+- **Update:** credit is now handled by refund (Calendly cannot apply coupons to packages or duplicate packages easily). Emails state the $40 refund after a package purchase within 7 days; student replies and Madison refunds in Stripe. Private package links are no longer used. Public site note: study-with-madison-site PR 20.
