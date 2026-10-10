@@ -668,13 +668,27 @@
       const right = week.reduce((a, r) => a + (Number(r.score) || 0), 0);
       const next = (resources || []).filter(r => r.due_on && r.due_on >= new Date().toISOString().slice(0, 10)).sort((a, b) => a.due_on.localeCompare(b.due_on))[0];
       let html = '';
-      if (weak.length) html += `<div class="task"><strong>Focus on these three areas</strong><span>${weak.map(w => `${text(w[0])} (${Math.round(w[1])}%)`).join(' · ')}</span></div>`;
-      if (done) html += `<div class="task"><strong>${done} practice questions this week</strong><span>${Math.round(right / done * 100)}% correct</span></div>`;
+      const GOAL = 50;
+      const btn = 'display:inline-block;margin-top:8px;padding:6px 12px;background:#f3bfc7;color:#3a2330;font-weight:800;font-size:.74rem;text-decoration:none;border-radius:4px';
+      weak.forEach(w => {
+        const pct = Math.round(w[1]);
+        html += `<div class="task"><strong>${text(w[0])} · ${pct}%</strong><span>${pct < 65 ? 'Below the 65% target. Do 10–15 questions in this area this week.' : 'Close to target. Keep it sharp with a short set.'}</span><a href="supplemental-practice.html" style="${btn}">Practice this area →</a></div>`;
+      });
+      const pctDone = Math.min(100, Math.round(done / GOAL * 100));
+      html += `<div class="task"><strong>Weekly goal: ${Math.min(done, GOAL)} of ${GOAL} practice questions</strong><span>${done ? Math.round(right / done * 100) + '% correct so far this week.' : 'Nothing logged yet. Start with a short set today.'}</span><div style="height:6px;background:#35516a;border-radius:3px;margin-top:8px"><div style="height:6px;width:${pctDone}%;background:#f3bfc7;border-radius:3px"></div></div>${done >= GOAL ? '' : `<a href="supplemental-practice.html" style="${btn}">Open practice questions →</a>`}</div>`;
+      const roadmap = document.getElementById('roadmap-nclex');
+      if (roadmap && /being prepared/.test(roadmap.textContent)) {
+        const steps = [];
+        if (weak.length) steps.push(['Close your biggest gaps', `Work on ${weak.map(w => w[0]).join(', ')} first. These were your lowest categories on your latest exam.`]);
+        steps.push(['Practice a little every day', `Aim for ${GOAL} questions a week, and read every rationale, including for the ones you got right.`]);
+        steps.push(['Retake a full CAT', 'After a week or two of focused practice, take another CAT so we can see which categories moved.']);
+        if (student.nclex_target_date) steps.push(['Hold your test date', `Your target date is ${new Date(student.nclex_target_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}. Madison will fine-tune this plan with you.`]);
+        roadmap.innerHTML = steps.map((st, i) => `<li><span>${i + 1}</span><div><strong>${text(st[0])}</strong><p>${text(st[1])}</p></div></li>`).join('');
+      }
       if (next) html += `<div class="task"><strong>Next due: ${text(next.title || 'Assigned item')}</strong><span>${new Date(next.due_on + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span></div>`;
-      if (!html) return;
       host.insertAdjacentHTML('beforeend', html);
       const intro = document.getElementById('weekly-intro-nclex');
-      if (intro && /will appear here/.test(intro.textContent)) intro.textContent = 'A quick snapshot of what to work on right now.';
+      if (intro && /will appear here/.test(intro.textContent)) intro.textContent = 'Do these this week. Madison will adjust them as your scores move.';
     }
 
     // Weekly CAT trend from the assessments Madison enters each week.
