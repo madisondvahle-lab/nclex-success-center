@@ -548,7 +548,8 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         const id='history:'+row.id,file=(row.assessment_report_files||[])[0],name=row.assessment_name||'';
         const kind=/cpr/i.test(name+' '+row.platform)?'cpr_report':/\bcat\b|computer adaptive/i.test(name+' '+row.platform)?'cat':'other';
         uploads.push({id,fromHistory:true,platform:row.platform||'Assessment',assessment_type:kind,taken_on:row.taken_at,created_at:row.created_at,overall_score:row.overall_score,report_label:name||null,report_filename:(file&&file.original_filename)||name||'Entered manually',report_path:file?file.storage_path:'',uploaded_by:session.user.id});
-        Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:NCLEXCats.canon(cat,cat.replace(/ & /g,' and ')),score:score}));
+        const cnt={};Object.entries(row.category_counts||{}).forEach(([k,v])=>cnt[NCLEXCats.canon(k,k)]=Number(v));
+        Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:NCLEXCats.canon(cat,cat.replace(/ & /g,' and ')),score:score,n:cnt[NCLEXCats.canon(cat,cat)]}));
       });
       return{uploads,categories};
     }
@@ -618,7 +619,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
       card.classList.remove('hidden');
       const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
-      const exams=uploads.filter(catKindOk).map(u=>{const m=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!=='')m[i]=Number(c.score)});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
+      const exams=uploads.filter(catKindOk).map(u=>{const m=[],nn=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!==''){m[i]=Number(c.score);if(c.n!=null&&Number.isFinite(c.n))nn[i]=c.n}});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,nn,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
       const plats=[...new Set(exams.map(e=>e.u.platform||'Exam'))];
       if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?(exams[exams.length-1].u.platform||'Exam'):'all';
       const shown=window.__catPlat==='all'?exams:exams.filter(e=>(e.u.platform||'Exam')===window.__catPlat);
@@ -642,10 +643,10 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         const body=NCLEXCats.NAMES.map((n,i)=>{
           const vals=withCats.map(e=>e.m[i]),seen=vals.filter(v=>v!=null);
           const d=seen.length>1?Math.round(seen[seen.length-1]-seen[seen.length-2]):null;
-          return '<tr><td>'+esc(n)+'</td>'+vals.map(v=>'<td>'+ovPct(v)+'</td>').join('')+'<td>'+(d==null?'—':'<b style="color:'+(d>=0?'#2f7d4f':'#b4443c')+'">'+(d>0?'▲ +':d<0?'▼ ':'● ')+d+'</b>')+'</td></tr>';
+          return '<tr><td>'+esc(n)+'</td>'+withCats.map((e,k)=>{const v=vals[k],n=e.nn[i];return '<td>'+ovPct(v)+(n!=null?'<br><span style="font-size:.7rem;color:'+(n<5?'#b4443c':'#567087')+'">'+n+' q'+(n<5?' · low sample':'')+'</span>':'')+'</td>'}).join('')+'<td>'+(d==null?'—':'<b style="color:'+(d>=0?'#2f7d4f':'#b4443c')+'">'+(d>0?'▲ +':d<0?'▼ ':'● ')+d+'</b>')+'</td></tr>';
         }).join('');
         html+='<h3 style="margin:18px 0 6px;font-size:1rem">Categories by exam</h3><div class="ov-scroll"><table class="ov-table"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
-        const lastE=withCats[withCats.length-1],weak=NCLEXCats.NAMES.map((n,i)=>[n,lastE.m[i]]).filter(x=>x[1]!=null).sort((a,b)=>a[1]-b[1]).slice(0,3);
+        const lastE=withCats[withCats.length-1],weak=NCLEXCats.NAMES.map((n,i)=>[n,lastE.m[i],lastE.nn[i]]).filter(x=>x[1]!=null&&!(x[2]!=null&&x[2]<5)).sort((a,b)=>a[1]-b[1]).slice(0,3);
         if(weak.length)html+='<p class="muted" style="margin-top:10px"><b>Lowest on latest exam:</b> '+weak.map(w=>esc(w[0])+' ('+Math.round(w[1])+'%)').join(', ')+'</p>';
       }
       if(empty.length)html+='<p class="muted" style="margin-top:10px"><b>Uploaded with no scores yet:</b> '+empty.map(e=>esc(label(e))+' ('+esc(catShort(e.d))+')').join('; ')+'. Choose it under “Save to” below to add its scores to the chart.</p>';
@@ -657,7 +658,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
       $('cat-entry').open=!exams.length||!!empty.length;
     }
-    $('cat-fields').innerHTML=NCLEXCats.NAMES.map((n,i)=>'<label>'+esc(n)+' %<input type="number" min="0" max="100" step="0.1" data-cat="'+i+'"></label>').join('');
+    $('cat-fields').innerHTML=NCLEXCats.NAMES.map((n,i)=>'<label>'+esc(n)+' %<span style="display:flex;gap:6px"><input type="number" min="0" max="100" step="0.1" data-cat="'+i+'" placeholder="%"><input type="number" min="0" step="1" data-n="'+i+'" placeholder="# questions" title="Questions in this category (optional)"></span></label>').join('');
     $('cat-parse').onclick=()=>{
       const rows=parseImportedScores($('cat-paste').value);let n=0;
       rows.forEach(r=>{const i=NCLEXCats.index(r.category);if(i>=0){document.querySelector('[data-cat="'+i+'"]').value=r.score;n++}});
@@ -666,6 +667,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     $('cat-form').addEventListener('submit',async ev=>{
       ev.preventDefault();const msg=$('cat-msg');msg.textContent='Saving…';
       const scores={};document.querySelectorAll('[data-cat]').forEach(inp=>{if(inp.value!=='')scores[NCLEXCats.NAMES[+inp.dataset.cat]]=Number(inp.value)});
+      const cnts={};document.querySelectorAll('[data-n]').forEach(inp=>{const nm=NCLEXCats.NAMES[+inp.dataset.n];if(inp.value!==''&&scores[nm]!=null)cnts[nm]=Number(inp.value)});
       const ov=$('cat-overall').value,overall=ov===''?null:Number(ov),date=$('cat-date').value||null,target=$('cat-target').value;
       if(overall==null&&!Object.keys(scores).length){msg.textContent='Enter an overall score or at least one category.';return}
       let err;
@@ -677,7 +679,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
           if(!err)err=(await db.from('student_assessment_categories').insert(Object.entries(scores).map(([category,score])=>({assessment_id:target,category,score})))).error;
         }
       }else{
-        err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,entered_by:session.user.id})).error;
+        err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,...(Object.keys(cnts).length?{category_counts:cnts}:{}),entered_by:session.user.id})).error;
       }
       if(err){msg.textContent='Could not save: '+err.message;return}
       $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
