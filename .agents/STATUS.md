@@ -176,3 +176,7 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 - Admin workspace reads `total_count` as the per-category question count; counts under 5 are flagged low sample.
 - Practice buttons on the student home use `supplemental-practice.html?mixed=10&cat=<name>`.
 - Jitsi tutoring room removed (Zoom is used).
+
+## Phase 10 – Report readers and graphics library
+- `assessment-import.js`: Archer report parser (overall Classic/NGN only; no category %), `parseCPR` (strict: only fills when all 8 categories are confidently read), used by `madison-cpr.html` "Read it for me".
+- Graphics library: `supabase-graphics-library.sql` (run it), `madison-graphics.html` (admin), `graphic.html` (viewer), searchable card on the student dashboard.

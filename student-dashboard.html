@@ -292,6 +292,11 @@
           <div class="card-head"><div><p class="eyebrow">Weekly CAT trend</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
           <div id="cat-trend-body"></div>
         </article>
+        <article class="card" id="gfx-card" style="grid-column:1/-1;display:none">
+          <div class="card-head"><div><p class="eyebrow">Study graphics</p><h2>Graphics library</h2></div></div>
+          <input id="gfx-q" type="search" placeholder="Search graphics (e.g. kidney, COPD)" aria-label="Search graphics" style="width:100%;padding:10px;border:1px solid #cfd8dc;border-radius:8px;margin-bottom:10px">
+          <div id="gfx-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+        </article>
         <article class="card" id="log-cat-card" style="grid-column:1/-1">
           <div class="card-head"><div><p class="eyebrow">Track your progress</p><h2>Log a CAT or readiness exam</h2></div><span class="label teal">Updates your trend</span></div>
           <p style="margin:0 0 12px;color:var(--muted);font-size:.86rem">Upload your report (PDF or screenshot). We'll read the scores for you. Check them, then save.</p>
@@ -666,12 +671,35 @@
       }
 
       initLogCat(student);
+      initGraphics();
       renderCatTrend(student);
       renderThisWeek(student, resources);
       document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
     // Student logs a CAT: read the report, confirm the numbers, save into the trend data.
+    async function initGraphics() {
+      const $ = id => document.getElementById(id);
+      const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      try {
+        const { data } = await db.from('graphics').select('id,title,body_system,nclex_category,tags,image_path').order('title');
+        const all = data || [];
+        if (!all.length) return;
+        const card = $('gfx-card'), grid = $('gfx-grid');
+        card.style.display = '';
+        const urls = {};
+        const { data: signed } = await db.storage.from('graphics-library').createSignedUrls(all.map(g => g.image_path), 3600);
+        (signed || []).forEach((s, i) => { urls[all[i].id] = s.signedUrl; });
+        const draw = () => {
+          const q = $('gfx-q').value.trim().toLowerCase();
+          const list = all.filter(g => !q || [g.title, g.body_system, g.nclex_category, (g.tags || []).join(' ')].join(' ').toLowerCase().includes(q));
+          grid.innerHTML = list.map(g => '<a href="graphic.html?id=' + encodeURIComponent(g.id) + '" style="text-decoration:none;color:inherit;border:1px solid #e0e6e9;border-radius:8px;overflow:hidden"><img alt="" loading="lazy" src="' + (urls[g.id] || '') + '" style="width:100%;height:110px;object-fit:cover;display:block"><div style="padding:6px 8px;font-weight:700;font-size:.85rem">' + esc(g.title) + '</div></a>').join('') || '<p>No graphics match.</p>';
+        };
+        $('gfx-q').oninput = draw;
+        draw();
+      } catch (e) { /* library not set up yet */ }
+    }
+
     function initLogCat(student) {
       const $ = id => document.getElementById(id), form = $('lc-form');
       if (!form || form.dataset.ready) return;
@@ -689,11 +717,12 @@
           if (r.platform) $('lc-platform').value = r.platform;
           if (r.label) $('lc-label').value = r.label;
           if (r.overall != null) $('lc-overall').value = r.overall;
+          if (r.date && !$('lc-date').value) $('lc-date').value = r.date;
           NCLEXCats.NAMES.forEach((n, i) => {
             if (r.cats[n] != null) form.querySelector(`[data-c="${i}"]`).value = r.cats[n];
             if (r.counts[n] != null) form.querySelector(`[data-n="${i}"]`).value = r.counts[n];
           });
-          st.textContent = found ? `Found ${found} of 8 categories. Please check every number against your report, add the date, then save.` : "We couldn't read the scores automatically. Please type them in below.";
+          st.textContent = found ? `Found ${found} of 8 categories. Please check every number against your report, add the date, then save.` : (r.note || (r.overall != null ? 'Found your overall score. Add category scores below if you have them.' : "We couldn't read the scores automatically. Please type them in below."));
         } catch (err) {
           st.textContent = "We couldn't read this file automatically. Please type the scores in below.";
         }

@@ -6,6 +6,17 @@
   function parseText(raw){
     var t=clean(raw),out={platform:'',label:'',overall:null,cats:{},counts:{}};
     if(!t)return out;
+    var ar=t.match(/Archer Review Test Report/i)&&t.match(/Average Peer Score:\s*(\d+)%\s*Your Score:\s*(\d+)%/i);
+    if(ar){
+      var ng=t.match(/NGN\s+Average Peer Score:\s*(\d+)\s*Your Score:\s*(\d+)/i),res=t.match(/Your Result\s*:\s*(\w+)/i),id=t.match(/Test Id\s*:\s*(\d+)/i),dt=t.match(/Completed on\s*:\s*(\d{4}-\d{2}-\d{2})/i);
+      var classic=Number(ar[2]),nn=ng?Number(ng[2]):null;
+      var cq=(t.split(/NGN Questions/i)[0].match(/\s\d+\s+\d{4,5}\s+[A-Z]/g)||[]).length,nq=(t.split(/NGN Questions/i)[1]||'').match(/\s\d+\s+\d{5}\s/g);nq=nq?nq.length:0;
+      out.platform='archer';out.date=dt?dt[1]:'';out.result=res?res[1]:'';
+      out.overall=nn!=null&&cq&&nq?Math.round((classic*cq+nn*nq)/(cq+nq)):classic;
+      out.label='CAT'+(id?' ('+id[1]+')':'')+' · Classic '+classic+'%'+(nn!=null?' / NGN '+nn+'%':'')+(res?' · '+res[1]:'');
+      out.note='Archer reports do not include category percentages. Add them below if you have them.';
+      return out;
+    }
     var tid=t.match(/TestId\s*:\s*(\d+)/i);
     var pts=t.match(/Points Scored\s+(\d+)\s*\/\s*(\d+)/i);
     if(/Level of Preparedness|TestId|Points Scored/i.test(t)){out.platform='uworld'}
@@ -35,5 +46,21 @@
     var text=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)?await pdfText(file):await imageText(file);
     return parseText(text);
   }
-  window.AssessmentImport={parseText:parseText,readFile:readFile};
+  var CPR_ANCH=[/management of care/,/infection prevention|safety and/,/health promotion/,/psychosocial|integrity:/,/basic care|comfort:/,/pharmacolog|parenteral therap/,/reduction of risk|risk potential/,/physiolog/];
+  var LV={ABOVE:'above_passing',NEAR:'near_passing',BELOW:'below_passing'};
+  // NCSBN Candidate Performance Report: returns one rating per test-plan category, or none when it cannot be sure.
+  function parseCPR(raw){
+    var t=clean(raw),res={date:'',ratings:{},sure:false};
+    var d=t.match(/(\d{2})\/(\d{2})\/(\d{2,4})/);if(d)res.date=(d[3].length===2?'20'+d[3]:d[3])+'-'+d[1]+'-'+d[2];
+    var cj=t.search(/clinical judgment/i),body=cj>0?t.slice(0,cj):t;
+    var lv=(body.match(/\b(ABOVE|NEAR|BELOW)\b(?=\s+THE\b|\s+PASSING)/g)||[]).map(function(x){return LV[x.split(/\s/)[0]]});
+    var lower=body.toLowerCase(),pos=CPR_ANCH.map(function(r){var m=lower.search(r);return m});
+    if(lv.length===8&&pos.every(function(p){return p>=0})){C.NAMES.forEach(function(n,i){res.ratings[n]=lv[i]});res.sure=true}
+    return res;
+  }
+  async function readCPR(file){
+    var text=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)?await pdfText(file):await imageText(file);
+    return parseCPR(text);
+  }
+  window.AssessmentImport={parseText:parseText,readFile:readFile,parseCPR:parseCPR,readCPR:readCPR};
 })();
