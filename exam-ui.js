@@ -30,10 +30,26 @@
     });
   }
 
+  // Chooses entries for a requested item count, spread evenly across topics.
+  // The case study is kept whole and only used when the count has room for it.
+  function pickEntries(bank, count) {
+    const total = bank.reduce((n, e) => n + (e.kind === 'case' ? e.items.length : 1), 0);
+    if (!count || count >= total) return bank;
+    const cases = bank.filter(e => e.kind === 'case');
+    const useCase = cases.length && count >= 20 ? cases[0] : null;
+    const need = count - (useCase ? useCase.items.length : 0);
+    const buckets = {};
+    shuffle(bank.filter(e => e.kind !== 'case')).forEach(e => { (buckets[e.topic] = buckets[e.topic] || []).push(e); });
+    const lists = shuffle(Object.keys(buckets)).map(k => buckets[k]), chosen = [];
+    while (chosen.length < need && lists.some(l => l.length)) lists.forEach(l => { if (l.length && chosen.length < need) chosen.push(l.shift()); });
+    return bank.filter(e => chosen.includes(e) || e === useCase);
+  }
+
   // Flattens the bank into a linear list of renderable items.
   function prepare(bank, opts) {
     const o = Object.assign({ shuffleOptions: true }, opts);
     const out = [];
+    bank = pickEntries(bank, o.count);
     bank.forEach(entry => {
       if (entry.kind === 'case') {
         const total = entry.items.length;

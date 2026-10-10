@@ -200,6 +200,7 @@
         <textarea id="draft-text" class="hidden" style="min-height:240px"></textarea>
         <p class="hidden" id="draft-actions"><button class="secondary" id="copy-draft" type="button">Copy</button> <a class="button secondary" id="mail-draft" href="#">Open in email app</a></p></section>
       ${c.status==='in_progress'?'<p><button id="complete" type="button">Mark consultation complete</button></p>':''}
+      <p><a class="button secondary" href="madison-diagnostic.html?consultation=${encodeURIComponent(c.id)}">Run diagnostic for this consult</a></p>
       <section class="panel"><h3>Booking history</h3>${events.map(e=>`<p class="meta">${esc(fmt(e.created_at))} · ${esc(e.event_type.replaceAll('_',' '))}${e.details&&e.details.start?' · '+esc(fmt(e.details.start)):''}${e.details&&e.details.reason?' · '+esc(e.details.reason):''}</p>`).join('')||'<p class="meta">No events.</p>'}</section>`;
       document.getElementById('list-view').classList.add('hidden');view.classList.remove('hidden');
       document.getElementById('back').addEventListener('click',closeDetail);

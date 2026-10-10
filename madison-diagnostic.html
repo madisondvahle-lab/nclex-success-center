@@ -50,12 +50,16 @@
     <section id="start-view">
       <p class="eyebrow">Consultation tool</p>
       <h1>Consult diagnostic.</h1>
-      <p class="meta">A 30-item, exam-style snapshot to run with a new prospective student while you share your screen on Zoom. It mixes single-answer, select-all-that-apply, dosage-calculation, and a six-item case study, then shows where the gaps look like <b>content</b> and where they look like <b>how the question is asked</b>.</p>
+      <p class="meta">Up to 30 items, exam-style snapshot to run with a new prospective student while you share your screen on Zoom. It mixes single-answer, select-all-that-apply, dosage-calculation, and a six-item case study, then shows where the gaps look like <b>content</b> and where they look like <b>how the question is asked</b>.</p>
       <div class="panel">
         <div class="grid">
           <label>Student first name or initials (optional, shown on this screen only)<input type="text" id="who" maxlength="40" autocomplete="off"></label>
+          <label>Number of questions<select id="count"><option value="10">10 (quick check)</option><option value="15">15</option><option value="20">20 (includes case study)</option><option value="25">25</option><option value="30" selected>30 (full)</option></select></label>
+          <label>Link to consultation (saves to their profile)<select id="consult"><option value="">Don't save (practice run)</option></select></label>
           <label>Time limit<select id="limit"><option value="2700" selected>45 minutes</option><option value="1800">30 minutes</option><option value="3600">60 minutes</option><option value="0">Untimed (count up)</option></select></label>
         </div>
+        <p class="meta" id="count-note">Questions are spread evenly across content areas. The 6-item case study is included at 20 or more.</p>
+        <p class="meta" id="prior"></p>
         <label class="check"><input type="checkbox" id="shuffle" checked> Shuffle answer order for each run</label>
         <p><button id="start" type="button">Start diagnostic</button></p>
       </div>
@@ -65,7 +69,7 @@
           <li>Share this browser window, then press Start. The exam fills the screen like the real testing interface.</li>
           <li>Have the student tell you their answer, or hand over remote control. Tell them to <b>right-click an option to cross it out</b>, just like the exam.</li>
           <li>Use <b>Feedback</b> in the toolbar to jot a note about how they reasoned on any item; it appears in the results.</li>
-          <li>Nothing is saved to the database. Results exist only on this page until you close or reload it. Copy the summary into the consultation notes if you want to keep it.</li>
+          <li>Choose a consultation to save results privately to that student's record (admin-only). With none selected, results stay on this page only.</li>
         </ul>
       </div>
     </section>
@@ -81,7 +85,7 @@
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const esc=ExamUI.esc;
     const TYPE_LABEL={mcq:'Single answer',sata:'Select all that apply',fill:'Dosage calculation',matrix:'Case study: matrix',cloze:'Case study: drop-down',highlight:'Case study: highlight'};
-    let lastResult=null,lastWho='';
+    let lastResult=null,lastWho='',consults=[],selConsult=null,saveCtx=null;
 
     async function init(){
       const {data:{session}}=await db.auth.getSession();
@@ -91,12 +95,32 @@
       document.getElementById('loading').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
       document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
       document.getElementById('start').addEventListener('click',startExam);
+      await loadConsults();
+    }
+
+    async function loadConsults(){
+      const sel=document.getElementById('consult');
+      const {data}=await db.from('consultations').select('id,invitee_name,scheduled_start,status,student_id,consult_intake_id').in('status',['scheduled','in_progress','completed']).order('scheduled_start',{ascending:false}).limit(60);
+      consults=data||[];
+      consults.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=(c.invitee_name||'Student')+(c.scheduled_start?' · '+new Date(c.scheduled_start).toLocaleDateString():'');sel.appendChild(o)});
+      const want=new URLSearchParams(location.search).get('consultation');
+      if(want&&consults.some(c=>c.id===want)){sel.value=want}
+      sel.addEventListener('change',onConsultChange);onConsultChange();
+    }
+    async function onConsultChange(){
+      const id=document.getElementById('consult').value,c=consults.find(x=>x.id===id),p=document.getElementById('prior');
+      selConsult=c||null;p.textContent='';
+      if(!c)return;
+      const who=document.getElementById('who');if(!who.value)who.value=(c.invitee_name||'').split(' ')[0];
+      const {data,error}=await db.from('consult_diagnostic_results').select('created_at,item_count,score_percent').eq('consultation_id',c.id).order('created_at',{ascending:false});
+      if(error)p.textContent='Saving is not set up yet: run supabase-consult-diagnostic-migration.sql in Supabase first.';
+      else if(data.length)p.textContent='Saved earlier for this consult: '+data.map(d=>new Date(d.created_at).toLocaleDateString()+' · '+d.item_count+' items · '+Math.round(d.score_percent)+'%').join('; ')+'.';
     }
 
     function startExam(){
       lastWho=document.getElementById('who').value.trim();
       const seconds=+document.getElementById('limit').value||null;
-      const items=ExamUI.prepare(window.CONSULT_DIAGNOSTIC_BANK,{shuffleOptions:document.getElementById('shuffle').checked});
+      const items=ExamUI.prepare(window.CONSULT_DIAGNOSTIC_BANK,{shuffleOptions:document.getElementById('shuffle').checked,count:+document.getElementById('count').value});
       document.getElementById('app').classList.add('hidden');
       new ExamUI.Exam(document.getElementById('exam-root'),{title:'NCLEX-RN CONSULT DIAGNOSTIC'+(lastWho?' - '+lastWho:''),items,seconds,
         onFinish:showResults,onExit:()=>document.getElementById('app').classList.remove('hidden')});
@@ -129,7 +153,7 @@
         <h1>${lastWho?esc(lastWho)+': ':''}${overall}% overall.</h1>
         <p class="meta">Educational snapshot from ${rows.length} practice items. It is not an NCLEX score, a pass prediction, or a measure of readiness on its own. Use it to guide the conversation.${r.timedOut?' <b>The time limit ran out.</b>':''}</p>
         <div class="stats"><div class="stat"><b class="${tone(overall)}">${overall}%</b><span>Weighted score</span></div><div class="stat"><b>${full}/${rows.length}</b><span>Fully correct items</span></div><div class="stat"><b>${fmtT(r.elapsed)}</b><span>Total time (${avg}s per item)</span></div><div class="stat"><b>${changes}</b><span>Answer changes</span></div><div class="stat"><b>${marked}</b><span>Marked for review</span></div></div>
-        <p class="noprint"><button id="copy" type="button">Copy summary</button> <button class="secondary" id="print" type="button">Print / save as PDF</button> <button class="secondary" id="again" type="button">New consult</button> <span class="meta" id="copy-state" role="status"></span></p>
+        <p class="noprint"><button id="copy" type="button">Copy summary</button> <button class="secondary" id="print" type="button">Print / save as PDF</button> <button class="secondary" id="again" type="button">New consult</button> ${selConsult?'<button id="save" type="button">Save to student profile</button>':''} <span class="meta" id="copy-state" role="status"></span></p>
         <div class="panel"><h2>Discussion points</h2><ul class="focus">${focus.map(f=>`<li>${f}</li>`).join('')}</ul></div>
         <div class="panel"><h2>Where the points came from</h2>
           ${table('Content area',byTopic)}${table('Client-needs category',byCat)}${table('How the question is asked',byPat)}${table('Item format',byType)}${table('Difficulty',byDiff)}</div>
@@ -140,8 +164,23 @@
       document.getElementById('start-view').classList.add('hidden');document.getElementById('result-view').classList.remove('hidden');
       window.scrollTo(0,0);
       document.getElementById('print').onclick=()=>window.print();
+      saveCtx={overall,full,rows,r,byTopic,byPat,byType,byCat,byDiff,focus,avg,changes};
+      const sv=document.getElementById('save');if(sv)sv.onclick=saveResult;
       document.getElementById('again').onclick=()=>{if(confirm('Clear these results and start a new consult?'))location.reload()};
       document.getElementById('copy').onclick=()=>copySummary({overall,full,rows,r,byTopic,byPat,byType,focus,avg,changes});
+    }
+
+    async function saveResult(){
+      const st=document.getElementById('copy-state'),b=document.getElementById('save'),c=selConsult,x=saveCtx;
+      b.disabled=true;st.textContent='Saving…';
+      const g=a=>a.map(k=>({label:k.label,n:k.n,points:+k.pts.toFixed(2)}));
+      const {data:{session}}=await db.auth.getSession();
+      const rec={consultation_id:c.id,student_id:c.student_id||null,consult_intake_id:c.consult_intake_id||null,item_count:x.rows.length,score_percent:x.overall,fully_correct:x.full,elapsed_seconds:x.r.elapsed,timed_out:!!x.r.timedOut,
+        summary:{topics:g(x.byTopic),categories:g(x.byCat),patterns:g(x.byPat),formats:g(x.byType),difficulty:g(x.byDiff),answer_changes:x.changes,avg_seconds:x.avg,discussion:x.focus.map(f=>f.replace(/<[^>]+>/g,''))},
+        item_results:x.rows.map(y=>({id:y.it.qid,score:+y.score.toFixed(2),full:y.full,seconds:x.r.time[y.i],changes:x.r.changes[y.i],marked:!!x.r.marked[y.i]})),
+        tutor_notes:Object.values(x.r.fb||{}).filter(Boolean).join('\n')||null,created_by:session&&session.user.id};
+      const {error}=await db.from('consult_diagnostic_results').insert(rec);
+      if(error){b.disabled=false;st.textContent='Could not save: '+error.message}else{st.textContent='Saved to '+(c.invitee_name||'student')+"'s consultation record.";}
     }
 
     function reviewItem(r){
