@@ -508,8 +508,11 @@ document.querySelectorAll('[data-path]').forEach(button=>button.addEventListener
     // Assessments saved from the Assessments history page (external_assessments), shaped like workspace uploads.
     const catAlias={'Safety & Infection Prevention':'Safety and Infection Prevention and Control'};
     async function loadHistoryAssessments(studentId){
-      const {data,error}=await db.from('external_assessments').select('id,platform,assessment_name,taken_at,overall_score,readiness_level,category_scores,created_at,assessment_report_files(storage_path,original_filename)').eq('student_id',studentId);
-      if(error)return{uploads:[],categories:[]};
+      const {data,error}=await db.from('external_assessments').select('*').eq('student_id',studentId);
+      if(error){$('intro').textContent='Assessments entered on the Assessments page could not be loaded: '+(error.message||'unknown error');return{uploads:[],categories:[]}}
+      const filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename').eq('student_id',studentId);
+      const filesBy=new Map;(filesResult.data||[]).forEach(f=>{if(!filesBy.has(f.assessment_id))filesBy.set(f.assessment_id,f)});
+      (data||[]).forEach(row=>{row.assessment_report_files=filesBy.has(row.id)?[filesBy.get(row.id)]:[]});
       const uploads=[],categories=[];
       (data||[]).forEach(row=>{
         const id='history:'+row.id,file=(row.assessment_report_files||[])[0],name=row.assessment_name||'';
