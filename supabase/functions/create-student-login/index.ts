@@ -59,7 +59,7 @@ Deno.serve(async (request) => {
     return json(request, { error: "Only Madison's admin account can create student logins." }, 403);
   }
 
-  let payload: { student_id?: string; password?: string };
+  let payload: { student_id?: string; password?: string; send_email?: boolean };
   try {
     payload = await request.json();
   } catch {
@@ -112,9 +112,35 @@ Deno.serve(async (request) => {
     return json(request, { error: "The account was not linked, so no login was created. Please try again." }, 500);
   }
 
+  let emailed = false;
+  const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
+  if (payload.send_email && resendKey) {
+    const first = String(student.name ?? "").split(" ")[0] || "there";
+    const text = `Hi ${first},\n\nYour NCLEX Success Center access is ready.\n\nSign in: https://portal.studywithmadison.com/student-login.html\nEmail: ${student.email}\nTemporary password: ${password}\n\nAfter you sign in, please use "Forgot password" on the login page to choose your own password.\n\nReply here if you have any trouble.\n\nMadison`;
+    const html = text.split("\n").map((l) => `<p style="margin:0 0 10px">${l.replace(/&/g, "&amp;").replace(/</g, "&lt;") || "&nbsp;"}</p>`).join("");
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: "Study With Madison RN <support@studywithmadison.com>",
+          to: [student.email],
+          reply_to: "support@studywithmadison.com",
+          subject: "Your NCLEX Success Center login",
+          text,
+          html,
+        }),
+      });
+      emailed = res.ok;
+    } catch {
+      emailed = false;
+    }
+  }
+
   return json(request, {
     ok: true,
     message: "Login access is ready.",
     email: student.email,
+    emailed,
   });
 });

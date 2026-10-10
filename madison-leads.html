@@ -78,13 +78,14 @@
       if(!item?.student_id)return;
       const email=item.email?.trim().toLowerCase()||'';
       if(!email||!window.confirm('Confirm this exact student email before creating access:\n\n'+email))return;
-      const tempCredential=window.prompt('Create a temporary portal password for '+(item.full_name||'this student')+'. Use at least 8 characters; do not use the profile PIN.');
+      const phoneDigits=(item.phone||'').replace(/\D/g,'');const suggested=phoneDigits.length>=4?'Swm-'+phoneDigits.slice(-4):'';const tempCredential=window.prompt('Temporary portal password for '+(item.full_name||'this student')+(suggested?' (suggested: Swm- plus the last 4 of their phone). Edit if you like.':'. Use at least 8 characters; do not use the profile PIN.'),suggested);
       if(tempCredential===null)return;
       if(tempCredential.length<8){document.getElementById('consult-status').textContent='Use a temporary portal password with at least 8 characters.';return}
       document.getElementById('consult-status').textContent='Creating secure portal access…';
-      const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password:tempCredential}});
+      const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password:tempCredential,send_email:true}});
       if(error||!data?.ok){ document.getElementById('consult-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.'; return; }
       showInviteDetails(data.email||email,tempCredential);
+      if(data.emailed)document.getElementById('consult-status').firstElementChild.textContent='Login created and emailed to '+(data.email||email)+'. (Details below as a backup.)';
       init();
     }
     async function switchToAssessmentOnly(id){
