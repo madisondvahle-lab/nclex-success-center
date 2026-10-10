@@ -103,8 +103,12 @@
       const ids=nclexStudents.map(student=>student.id);
       const uploadsResult=await db.from('student_assessment_uploads').select('student_id,assessment_type,taken_on,created_at,overall_score,platform,report_label').in('student_id',ids).eq('assessment_type','cat').order('created_at',{ascending:false});
       if(uploadsResult.error){target.innerHTML='<p class="empty">Weekly CAT status is unavailable until the shared progress migration is run.</p>';return}
+      // Reports saved from the Assessments history page live in a separate table; count them too.
+      const historyResult=await db.from('external_assessments').select('student_id,platform,assessment_name,taken_at,created_at,overall_score').in('student_id',ids);
+      const fromHistory=(historyResult.error?[]:historyResult.data||[]).map(row=>({student_id:row.student_id,taken_on:row.taken_at,created_at:row.created_at,overall_score:row.overall_score,platform:row.platform,report_label:row.assessment_name}));
+      const stamp=row=>new Date(row.taken_on?row.taken_on+'T23:59:59':row.created_at).getTime()||0;
       const now=Date.now(),weekAgo=now-7*24*60*60*1000,latest=new Map;
-      (uploadsResult.data||[]).forEach(upload=>{if(!latest.has(upload.student_id))latest.set(upload.student_id,upload)});
+      [...(uploadsResult.data||[]),...fromHistory].sort((x,y)=>stamp(y)-stamp(x)).forEach(upload=>{if(!latest.has(upload.student_id))latest.set(upload.student_id,upload)});
       target.innerHTML=nclexStudents.map(student=>{
         const upload=latest.get(student.id);
         const completed=upload?.taken_on?new Date(upload.taken_on+'T23:59:59'):upload?.created_at?new Date(upload.created_at):null;
