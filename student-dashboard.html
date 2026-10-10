@@ -292,6 +292,22 @@
           <div class="card-head"><div><p class="eyebrow">Weekly CAT trend</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
           <div id="cat-trend-body"></div>
         </article>
+        <article class="card" id="log-cat-card" style="grid-column:1/-1">
+          <div class="card-head"><div><p class="eyebrow">Track your progress</p><h2>Log a CAT or readiness exam</h2></div><span class="label teal">Updates your trend</span></div>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:.86rem">Upload your report (PDF or screenshot). We'll read the scores for you. Check them, then save.</p>
+          <div class="upload-zone" id="lc-zone" onclick="document.getElementById('lc-file').click()"><strong>Click to choose your report</strong><p>UWorld, Archer, Kaplan and similar. PDF, PNG or JPG.</p><input type="file" id="lc-file" accept="application/pdf,image/png,image/jpeg,image/webp"></div>
+          <p id="lc-status" style="font-size:.84rem;color:var(--muted);margin:10px 0 0"></p>
+          <form id="lc-form" class="hidden" style="margin-top:14px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+              <label style="font-size:.74rem;font-weight:800">Platform<select id="lc-platform" style="width:100%;padding:8px"><option value="uworld">UWorld</option><option value="archer">Archer</option><option value="kaplan">Kaplan</option><option value="bootcamp">Bootcamp</option><option value="other">Other</option></select></label>
+              <label style="font-size:.74rem;font-weight:800">Name<input id="lc-label" style="width:100%;padding:8px" placeholder="CAT (Test 15) · 136/215"></label>
+              <label style="font-size:.74rem;font-weight:800">Date taken<input id="lc-date" type="date" required style="width:100%;padding:8px"></label>
+              <label style="font-size:.74rem;font-weight:800">Overall %<input id="lc-overall" type="number" min="0" max="100" step="0.1" required style="width:100%;padding:8px"></label>
+            </div>
+            <div id="lc-cats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin-top:12px"></div>
+            <button class="upload-action-btn" type="submit" id="lc-save" style="margin-top:14px">Save to my trend</button>
+          </form>
+        </article>
         <article class="card resources">
           <div class="card-head"><div><p class="eyebrow">Selected for you</p><h2>Study resources</h2></div><span class="label">Assigned</span></div>
           <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
@@ -394,6 +410,8 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
+  <script src="assessment-import.js"></script>
   <script>
     const db = supabase.createClient(
       'https://pmjwwktwlsqpetwfvolb.supabase.co',
@@ -647,9 +665,70 @@
         } catch(e) {}
       }
 
+      initLogCat(student);
       renderCatTrend(student);
       renderThisWeek(student, resources);
       document.getElementById('portal-nclex').classList.remove('hidden');
+    }
+
+    // Student logs a CAT: read the report, confirm the numbers, save into the trend data.
+    function initLogCat(student) {
+      const $ = id => document.getElementById(id), form = $('lc-form');
+      if (!form || form.dataset.ready) return;
+      form.dataset.ready = '1';
+      let file = null;
+      $('lc-cats').innerHTML = NCLEXCats.NAMES.map((n, i) => `<label style="font-size:.74rem;font-weight:800">${n}<span style="display:flex;gap:6px;margin-top:3px"><input type="number" min="0" max="100" step="0.1" data-c="${i}" placeholder="%" style="width:50%;padding:8px"><input type="number" min="0" step="1" data-n="${i}" placeholder="# questions" style="width:50%;padding:8px"></span></label>`).join('');
+      $('lc-file').addEventListener('change', async e => {
+        file = e.target.files[0];
+        if (!file) return;
+        const st = $('lc-status');
+        st.textContent = 'Reading your report…';
+        form.classList.remove('hidden');
+        try {
+          const r = await AssessmentImport.readFile(file), found = Object.keys(r.cats).length;
+          if (r.platform) $('lc-platform').value = r.platform;
+          if (r.label) $('lc-label').value = r.label;
+          if (r.overall != null) $('lc-overall').value = r.overall;
+          NCLEXCats.NAMES.forEach((n, i) => {
+            if (r.cats[n] != null) form.querySelector(`[data-c="${i}"]`).value = r.cats[n];
+            if (r.counts[n] != null) form.querySelector(`[data-n="${i}"]`).value = r.counts[n];
+          });
+          st.textContent = found ? `Found ${found} of 8 categories. Please check every number against your report, add the date, then save.` : "We couldn't read the scores automatically. Please type them in below.";
+        } catch (err) {
+          st.textContent = "We couldn't read this file automatically. Please type the scores in below.";
+        }
+      });
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const st = $('lc-status'), btn = $('lc-save');
+        const cats = NCLEXCats.NAMES.map((n, i) => ({name: n, v: form.querySelector(`[data-c="${i}"]`).value, n: form.querySelector(`[data-n="${i}"]`).value})).filter(c => c.v !== '');
+        const overall = Number($('lc-overall').value), label = $('lc-label').value.trim() || 'CAT';
+        const dupe = await db.from('student_assessment_uploads').select('id').eq('student_id', student.id).eq('report_label', label).eq('taken_on', $('lc-date').value).limit(1);
+        if (dupe.data && dupe.data.length && !confirm('You already logged an exam with this name and date. Save it again?')) return;
+        btn.disabled = true; st.textContent = 'Saving…';
+        try {
+          const { data: { user } } = await db.auth.getUser();
+          const safe = (file ? file.name : 'entry').replace(/[^\w.-]/g, '_');
+          const path = `${student.id}/${Date.now()}-${safe}`;
+          if (file) { const up = await db.storage.from('assessment-reports').upload(path, file); if (up.error) throw up.error; }
+          const ins = await db.from('student_assessment_uploads').insert({
+            student_id: student.id, platform: $('lc-platform').value, assessment_type: 'cat', taken_on: $('lc-date').value,
+            overall_score: overall, report_path: path, report_filename: file ? file.name : 'Entered manually',
+            report_mime_type: file ? (file.type || 'application/octet-stream') : 'text/plain', uploaded_by: user.id, report_label: label
+          }).select('id').single();
+          if (ins.error) throw ins.error;
+          if (cats.length) {
+            const cr = await db.from('student_assessment_categories').insert(cats.map(c => ({assessment_id: ins.data.id, category: c.name, score: Number(c.v), total_count: Number(c.n) > 0 ? Number(c.n) : null})));
+            if (cr.error) throw cr.error;
+          }
+          st.textContent = 'Saved. Your trend has been updated.';
+          form.reset(); form.classList.add('hidden'); file = null; $('lc-file').value = '';
+          renderCatTrend(student);
+        } catch (err) {
+          st.textContent = 'Could not save: ' + (err.message || 'please try again') + '. Please tell Madison.';
+        }
+        btn.disabled = false;
+      });
     }
 
     // Fills "This week" with the weakest categories and the week's practice, using only data the student can read.

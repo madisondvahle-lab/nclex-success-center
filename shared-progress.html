@@ -703,7 +703,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const inhouseAttempts=inhouse.data||[];
       const ext=await loadHistoryAssessments(student.id);
       currentUploads=[...(uploads.data||[]),...ext.uploads].sort((a,b)=>String(b.taken_on||b.created_at||'').localeCompare(String(a.taken_on||a.created_at||'')));
-      const allCategories=[...(categories.data||[]),...ext.categories];
+      const allCategories=[...(categories.data||[]).map(c=>({...c,n:c.total_count!=null?Number(c.total_count):undefined})),...ext.categories];
       const practiceRows=practiceResults.data||[];
       renderSummary(focus.data||[],currentUploads,buildPortalScores(inhouseAttempts,practiceRows));
       renderTrend(currentUploads);

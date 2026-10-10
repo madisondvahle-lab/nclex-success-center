@@ -169,3 +169,10 @@ Future modules M8+ remain unassigned until explicitly defined.
 ## Question bank management and flags
 The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case), `question_no` (Q-0001 numbering) and a `question_flags` table (student reports and 'discuss' flags). `question-bank-review.html` manages the bank (bulk actions, edit, flagged inboxes). Details and the SQL files to run are in `.agents/tasks/consult-diagnostic.md`. Deployment is unchanged: GitHub Pages from `main`.
 - Ideas not yet built: weekly per-client report with chart, admin "Needs attention" list, shared category names across CPR/practice/diagnostic, link CPR tracker to client records, hide/redirect `diagnostic.html?mode=mock`.
+
+## Student CAT logging (Phase 9)
+- `student-dashboard.html` "Log a CAT or readiness exam" card: PDF (pdf.js) or image (Tesseract.js) is read in the browser by `assessment-import.js` (UWorld table parser, generic "Category NN%" fallback), shown on a confirm form, then saved to `student_assessment_uploads` + `student_assessment_categories` (question counts in `total_count`).
+- Requires `supabase-student-score-entry.sql` (student INSERT policy on categories). Report files go to the private `assessment-reports` bucket.
+- Admin workspace reads `total_count` as the per-category question count; counts under 5 are flagged low sample.
+- Practice buttons on the student home use `supplemental-practice.html?mixed=10&cat=<name>`.
+- Jitsi tutoring room removed (Zoom is used).
