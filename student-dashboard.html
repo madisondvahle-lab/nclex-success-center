@@ -679,10 +679,23 @@
 
     // Weekly CAT trend from the assessments Madison enters each week.
     async function renderCatTrend(student) {
-      const {data, error} = await db.from('external_assessments')
-        .select('platform,assessment_name,taken_at,created_at,overall_score,category_scores')
-        .eq('student_id', student.id);
-      if (error || !data || !data.length) return;
+      const [ext, upl] = await Promise.all([
+        db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores').eq('student_id', student.id),
+        db.from('student_assessment_uploads').select('id,platform,assessment_type,report_label,taken_on,created_at,overall_score').eq('student_id', student.id)
+      ]);
+      const error = ext.error;
+      const data = (ext.data || []).slice();
+      // Reports Madison uploaded and scored also count toward the trend.
+      const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || '') && u.overall_score !== null && u.overall_score !== '');
+      if (ups.length) {
+        const cr = await db.from('student_assessment_categories').select('assessment_id,category,score').in('assessment_id', ups.map(u => u.id));
+        const by = new Map();
+        (cr.data || []).forEach(c => { if (!by.has(c.assessment_id)) by.set(c.assessment_id, {}); by.get(c.assessment_id)[c.category] = Number(c.score); });
+        const cap = v => String(v || 'Assessment').replace(/^./, c => c.toUpperCase());
+        ups.forEach(u => data.push({platform: cap(u.platform), assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
+      }
+      if (error && !data.length) return;
+      if (!data.length) return;
       const when = r => (r.taken_at || String(r.created_at).slice(0, 10));
       const byPlatform = new Map();
       data.forEach(r => { const k = r.platform || 'Assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
