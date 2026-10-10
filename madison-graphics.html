@@ -112,7 +112,7 @@
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const SYSTEMS=['Cardiovascular','Respiratory','Renal / Urinary','GI / Hepatic','Endocrine','Neurological','Musculoskeletal / Mobility','Maternal / OB','Pediatrics','Mental Health','Pharmacology','Fluids, Electrolytes & Acid-Base','Hematology / Oncology','Immunity / Infection','Fundamentals / Safety','Priority & Delegation','Other'];
+    const SYSTEMS=['Cardiovascular','Respiratory','Renal / Urinary','GI / Hepatic','Endocrine','Neurological','Musculoskeletal / Mobility','Maternal / OB','Pediatrics','Mental Health','Pharmacology','Fluids, Electrolytes & Acid-Base','Hematology / Oncology','Immunity / Infection','Fundamentals / Safety','Priority & Delegation','Leadership & Management','Legal & Ethics','Nursing Fundamentals (class)','Med-Surg (class)','Other'];
     let sel=new Set(),shown=[],items=[],urls={},students=[],assignId=null,editId=null,session=null;
     const opts=(list,first)=>(first?`<option value="">${first}</option>`:'')+list.map(o=>`<option>${esc(o)}</option>`).join('');
     const link=id=>new URL('graphic.html?id='+id,location.href).href;

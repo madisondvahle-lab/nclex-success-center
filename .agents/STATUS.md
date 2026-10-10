@@ -180,3 +180,4 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 ## Phase 10 – Report readers and graphics library
 - `assessment-import.js`: Archer report parser (overall Classic/NGN only; no category %), `parseCPR` (strict: only fills when all 8 categories are confidently read), used by `madison-cpr.html` "Read it for me".
 - Graphics library: `supabase-graphics-library.sql` (run it), `madison-graphics.html` (admin), `graphic.html` (viewer), searchable card on the student dashboard.
+- Graphics library is shared: nursing-student hub also has the searchable card (`gfxn`) with a topic filter; one `graphics` table serves NCLEX and nursing students.

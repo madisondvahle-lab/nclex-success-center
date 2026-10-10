@@ -294,8 +294,8 @@
         </article>
         <article class="card" id="gfx-card" style="grid-column:1/-1;display:none">
           <div class="card-head"><div><p class="eyebrow">Study graphics</p><h2>Graphics library</h2></div></div>
-          <input id="gfx-q" type="search" placeholder="Search graphics (e.g. kidney, COPD)" aria-label="Search graphics" style="width:100%;padding:10px;border:1px solid #cfd8dc;border-radius:8px;margin-bottom:10px">
-          <div id="gfx-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px"><input id="gfx-q" type="search" placeholder="Search graphics (e.g. leadership, delegation, torts)" aria-label="Search graphics" style="flex:1;min-width:200px;padding:10px;border:1px solid #cfd8dc;border-radius:8px"><select id="gfx-sys" aria-label="Filter by topic" style="padding:10px;border:1px solid #cfd8dc;border-radius:8px"><option value="">All topics</option></select></div>
+          <div id="gfx-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
         </article>
         <article class="card" id="log-cat-card" style="grid-column:1/-1">
           <div class="card-head"><div><p class="eyebrow">Track your progress</p><h2>Log a CAT or readiness exam</h2></div><span class="label teal">Updates your trend</span></div>
@@ -369,6 +369,12 @@
           </div>
           <p class="card-desc">Study guides, infographics, and reference materials Madison has chosen to support your current unit. These are different from your practice quizzes above.</p>
           <div class="resource-list" id="resources-nursing"><p class="empty">No study resources assigned yet. Madison will add materials for your current unit here.</p></div>
+        </article>
+
+        <article class="card nursing-support" id="gfxn-card" style="grid-column:1/-1;display:none">
+          <div class="card-head"><div><p class="eyebrow" style="color:var(--teal)">Study graphics</p><h2>Graphics library</h2></div></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px"><input id="gfxn-q" type="search" placeholder="Search graphics (e.g. leadership, delegation, torts)" aria-label="Search graphics" style="flex:1;min-width:200px;padding:10px;border:1px solid #cfd8dc;border-radius:8px"><select id="gfxn-sys" aria-label="Filter by topic" style="padding:10px;border:1px solid #cfd8dc;border-radius:8px"><option value="">All topics</option></select></div>
+          <div id="gfxn-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
         </article>
 
         <!-- 3 · Student uploads (full width) -->
@@ -678,24 +684,30 @@
     }
 
     // Student logs a CAT: read the report, confirm the numbers, save into the trend data.
-    async function initGraphics() {
+    async function initGraphics(pre) {
+      pre = pre || 'gfx';
       const $ = id => document.getElementById(id);
       const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       try {
+        const card = $(pre + '-card');
+        if (!card || card.dataset.ready) return;
         const { data } = await db.from('graphics').select('id,title,body_system,nclex_category,tags,image_path').order('title');
         const all = data || [];
         if (!all.length) return;
-        const card = $('gfx-card'), grid = $('gfx-grid');
+        card.dataset.ready = '1';
+        const grid = $(pre + '-grid'), sysSel = $(pre + '-sys');
         card.style.display = '';
+        sysSel.innerHTML = '<option value="">All topics</option>' + [...new Set(all.map(g => g.body_system).filter(Boolean))].sort().map(x => '<option>' + esc(x) + '</option>').join('');
         const urls = {};
         const { data: signed } = await db.storage.from('graphics-library').createSignedUrls(all.map(g => g.image_path), 3600);
         (signed || []).forEach((s, i) => { urls[all[i].id] = s.signedUrl; });
         const draw = () => {
-          const q = $('gfx-q').value.trim().toLowerCase();
-          const list = all.filter(g => !q || [g.title, g.body_system, g.nclex_category, (g.tags || []).join(' ')].join(' ').toLowerCase().includes(q));
-          grid.innerHTML = list.map(g => '<a href="graphic.html?id=' + encodeURIComponent(g.id) + '" style="text-decoration:none;color:inherit;border:1px solid #e0e6e9;border-radius:8px;overflow:hidden"><img alt="" loading="lazy" src="' + (urls[g.id] || '') + '" style="width:100%;height:110px;object-fit:cover;display:block"><div style="padding:6px 8px;font-weight:700;font-size:.85rem">' + esc(g.title) + '</div></a>').join('') || '<p>No graphics match.</p>';
+          const q = $(pre + '-q').value.trim().toLowerCase(), sys = sysSel.value;
+          const list = all.filter(g => (!sys || g.body_system === sys) && (!q || [g.title, g.body_system, g.nclex_category, (g.tags || []).join(' ')].join(' ').toLowerCase().includes(q)));
+          grid.innerHTML = list.map(g => '<a href="graphic.html?id=' + encodeURIComponent(g.id) + '" style="text-decoration:none;color:inherit;border:1px solid #e0e6e9;border-radius:8px;overflow:hidden;background:#fff"><img alt="" loading="lazy" src="' + (urls[g.id] || '') + '" style="width:100%;height:130px;object-fit:contain;background:#f6f8f9;display:block"><div style="padding:6px 8px;font-weight:700;font-size:.85rem">' + esc(g.title) + '</div></a>').join('') || '<p>No graphics match.</p>';
         };
-        $('gfx-q').oninput = draw;
+        $(pre + '-q').oninput = draw;
+        sysSel.onchange = draw;
         draw();
       } catch (e) { /* library not set up yet */ }
     }
@@ -926,6 +938,7 @@
       render();
     }
     function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules) {
+      initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
       const activateClass = classCode => {
