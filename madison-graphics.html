@@ -68,6 +68,17 @@
         <label class="grow">Search<input type="search" id="q" placeholder="Search title, topic, tag, description…"></label>
         <label>Body system<select id="f-system"><option value="">All systems</option></select></label>
         <label>NCLEX category<select id="f-cat"><option value="">All categories</option></select></label>
+        <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="f-untagged"> Needs tags</label>
+      </div>
+      <div class="filters" id="bulk" style="display:none;background:#eef7f6;padding:10px;border-radius:10px;margin:8px 0">
+        <strong id="b-count" style="align-self:center"></strong>
+        <label>Set body system<select id="b-system"></select></label>
+        <label>Set NCLEX category<select id="b-cat"></select></label>
+        <label>Add tags<input type="text" id="b-tags" placeholder="comma separated"></label>
+        <button type="button" class="btn" id="b-apply">Apply to selected</button>
+        <button type="button" class="btn alt" id="b-all">Select all shown</button>
+        <button type="button" class="btn alt" id="b-clear">Clear</button>
+        <button type="button" class="btn alt" id="b-del" style="color:#9c3535">Delete selected</button>
       </div>
       <p class="status" id="count"></p>
       <div class="grid" id="grid"></div>
@@ -102,7 +113,7 @@
     const $=id=>document.getElementById(id);
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const SYSTEMS=['Cardiovascular','Respiratory','Renal / Urinary','GI / Hepatic','Endocrine','Neurological','Musculoskeletal / Mobility','Maternal / OB','Pediatrics','Mental Health','Pharmacology','Fluids, Electrolytes & Acid-Base','Hematology / Oncology','Immunity / Infection','Fundamentals / Safety','Priority & Delegation','Other'];
-    let items=[],urls={},students=[],assignId=null,editId=null,session=null;
+    let sel=new Set(),shown=[],items=[],urls={},students=[],assignId=null,editId=null,session=null;
     const opts=(list,first)=>(first?`<option value="">${first}</option>`:'')+list.map(o=>`<option>${esc(o)}</option>`).join('');
     const link=id=>new URL('graphic.html?id='+id,location.href).href;
     const tagList=s=>String(s||'').split(',').map(t=>t.trim()).filter(Boolean);
@@ -112,7 +123,11 @@
       const cats=NCLEXCats.NAMES;
       ['up-cat','e-cat'].forEach(i=>$(i).innerHTML=opts(cats,'None'));
       $('f-cat').innerHTML=opts(cats,'All categories');
-      ['q','f-system','f-cat'].forEach(i=>$(i).addEventListener('input',render));
+      ['q','f-system','f-cat','f-untagged'].forEach(i=>$(i).addEventListener('input',render));
+      $('b-system').innerHTML=opts(SYSTEMS,'(leave as is)');$('b-cat').innerHTML=opts(NCLEXCats.NAMES,'(leave as is)');
+      $('b-clear').onclick=()=>{sel.clear();render()};
+      $('b-all').onclick=()=>{shown.forEach(g=>sel.add(g.id));render()};
+      $('b-apply').onclick=bulkApply;$('b-del').onclick=bulkDelete;
       $('drop').addEventListener('click',()=>$('files').click());
       $('drop').addEventListener('dragover',e=>e.preventDefault());
       $('drop').addEventListener('drop',e=>{e.preventDefault();upload([...e.dataTransfer.files])});
@@ -147,13 +162,39 @@
     }
     function render(){
       const q=$('q').value.trim().toLowerCase(),sys=$('f-system').value,cat=$('f-cat').value;
-      const list=items.filter(g=>(!sys||g.body_system===sys)&&(!cat||g.nclex_category===cat)&&(!q||[g.title,g.description,g.body_system,g.nclex_category,(g.tags||[]).join(' ')].join(' ').toLowerCase().includes(q)));
+      const list=items.filter(g=>(!sys||g.body_system===sys)&&(!$('f-untagged').checked||!(g.tags||[]).length||!g.body_system||!g.nclex_category)&&(!cat||g.nclex_category===cat)&&(!q||[g.title,g.description,g.body_system,g.nclex_category,(g.tags||[]).join(' ')].join(' ').toLowerCase().includes(q)));
+      shown=list;
       $('count').textContent=`${list.length} of ${items.length} graphic${items.length===1?'':'s'}`;
-      $('grid').innerHTML=list.length?list.map(g=>`<article class="card"><div class="thumb" style="background-image:url('${esc(urls[g.image_path]||'')}')"></div><div class="body">
+      $('grid').innerHTML=list.length?list.map(g=>`<article class="card"><label style="display:flex;gap:6px;padding:6px 10px;font-size:.8rem;font-weight:700"><input type="checkbox" data-sel="${g.id}" ${sel.has(g.id)?'checked':''}> Select</label><div class="thumb" style="background-image:url('${esc(urls[g.image_path]||'')}')"></div><div class="body">
         <span class="meta">${esc([g.body_system,g.nclex_category].filter(Boolean).join(' · ')||'Untagged')}</span><h3>${esc(g.title)}</h3>
         ${g.description?`<p style="margin:0;font-size:.8rem;color:var(--muted)">${esc(g.description)}</p>`:''}
         <div class="tags">${(g.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div>
         <div class="actions"><button class="btn" data-a="copy" data-id="${g.id}">Copy link</button><button class="btn alt" data-a="assign" data-id="${g.id}">Assign</button><button class="btn alt" data-a="edit" data-id="${g.id}">Edit</button><a class="btn alt" href="graphic.html?id=${g.id}" target="_blank" rel="noopener">View</a></div></div></article>`).join(''):'<p class="empty">No graphics match. Upload some above or clear the filters.</p>';
+      updateBulk();
+    }
+    $('grid')?.addEventListener('change',e=>{
+      const c=e.target.closest('input[data-sel]');if(!c)return;
+      c.checked?sel.add(c.dataset.sel):sel.delete(c.dataset.sel);updateBulk();
+    });
+    function updateBulk(){sel=new Set([...sel].filter(id=>items.some(g=>g.id===id)));$('bulk').style.display=sel.size?'flex':'none';$('b-count').textContent=sel.size+' selected'}
+    async function bulkApply(){
+      const sys=$('b-system').value,cat=$('b-cat').value,add=tagList($('b-tags').value);
+      if(!sys&&!cat&&!add.length){alert('Choose a system, a category or tags to apply.');return}
+      let fail=0;
+      for(const id of sel){
+        const g=items.find(x=>x.id===id);if(!g)continue;
+        const patch={};if(sys)patch.body_system=sys;if(cat)patch.nclex_category=cat;
+        if(add.length)patch.tags=[...new Set([...(g.tags||[]),...add])];
+        const {error}=await db.from('graphics').update(patch).eq('id',id);if(error)fail++;
+      }
+      if(fail)alert(fail+' could not be updated.');
+      $('b-system').value='';$('b-cat').value='';$('b-tags').value='';await load();
+    }
+    async function bulkDelete(){
+      if(!sel.size||!confirm(`Delete ${sel.size} graphic(s)? Links already shared will stop working.`))return;
+      for(const id of [...sel]){const g=items.find(x=>x.id===id);if(!g)continue;
+        await db.from('graphics').delete().eq('id',id);await db.storage.from('graphics-library').remove([g.image_path])}
+      sel.clear();await load();
     }
     $('grid')?.addEventListener('click',async e=>{
       const b=e.target.closest('button[data-a]');if(!b)return;const g=items.find(x=>x.id===b.dataset.id);if(!g)return;
