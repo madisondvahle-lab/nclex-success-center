@@ -106,8 +106,9 @@
     async function sendTest(){
       const state=document.getElementById('auto-state');state.classList.remove('err');state.textContent='Sending…';
       const {data:{session}}=await db.auth.getSession();
-      const r=await fetch('https://pmjwwktwlsqpetwfvolb.supabase.co/functions/v1/send-strategy-followups',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});
-      const j=await r.json().catch(()=>({}));
+      let r,j;
+      try{r=await fetch('https://pmjwwktwlsqpetwfvolb.supabase.co/functions/v1/send-strategy-followups',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});j=await r.json().catch(()=>({}))}
+      catch(e){state.classList.add('err');state.textContent='Could not reach the email function.';return}
       state.classList.toggle('err',!r.ok);state.textContent=r.ok?'Test sent to '+j.sent_to:(j.error||'Could not send');
     }
     async function setCredit(status){
