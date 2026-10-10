@@ -672,7 +672,7 @@
       const btn = 'display:inline-block;margin-top:8px;padding:6px 12px;background:#f3bfc7;color:#3a2330;font-weight:800;font-size:.74rem;text-decoration:none;border-radius:4px';
       weak.forEach(w => {
         const pct = Math.round(w[1]);
-        html += `<div class="task"><strong>${text(w[0])} · ${pct}%</strong><span>${pct < 65 ? 'Below the 65% target. Do 10–15 questions in this area this week.' : 'Close to target. Keep it sharp with a short set.'}</span><a href="supplemental-practice.html" style="${btn}">Practice this area →</a></div>`;
+        html += `<div class="task"><strong>${text(w[0])} · ${pct}%</strong><span>${pct < 65 ? 'Below the 65% target. Do 10–15 questions in this area this week.' : 'Close to target. Keep it sharp with a short set.'}</span><a href="supplemental-practice.html?mixed=10&cat=${encodeURIComponent(w[0])}" style="${btn}">Practice this area →</a></div>`;
       });
       const pctDone = Math.min(100, Math.round(done / GOAL * 100));
       html += `<div class="task"><strong>Weekly goal: ${Math.min(done, GOAL)} of ${GOAL} practice questions</strong><span>${done ? Math.round(right / done * 100) + '% correct so far this week.' : 'Nothing logged yet. Start with a short set today.'}</span><div style="height:6px;background:#35516a;border-radius:3px;margin-top:8px"><div style="height:6px;width:${pctDone}%;background:#f3bfc7;border-radius:3px"></div></div>${done >= GOAL ? '' : `<a href="supplemental-practice.html" style="${btn}">Open practice questions →</a>`}</div>`;
