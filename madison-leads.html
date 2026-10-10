@@ -85,7 +85,7 @@
       const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password:tempCredential,send_email:true}});
       if(error||!data?.ok){ document.getElementById('consult-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.'; return; }
       showInviteDetails(data.email||email,tempCredential);
-      if(data.emailed)document.getElementById('consult-status').textContent='Login created and emailed to '+(data.email||email)+'.';
+      if(data.emailed)document.getElementById('consult-status').firstElementChild.textContent='Login created and emailed to '+(data.email||email)+'. (Details below as a backup.)';
       init();
     }
     async function switchToAssessmentOnly(id){
