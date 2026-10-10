@@ -65,7 +65,7 @@
             <label>How the exam ended<select id="f-end"><option value="">Not specified</option><option value="computer_shut_off">Computer shut off normally</option><option value="maximum_items">Maximum items reached</option><option value="ran_out_of_time">Ran out of time</option><option value="does_not_remember">Does not remember</option></select></label>
             <label>Testing time (minutes)<input id="f-min" type="number" min="1"></label>
           </div>
-          <h3>Test-plan categories</h3><div class="grid" id="f-doms"></div>
+          <h3>Test-plan categories</h3><p class="meta" style="margin:0 0 8px">Have the report as a PDF or a flat, well-lit screenshot? <label style="display:inline;font-weight:800;text-decoration:underline;cursor:pointer">Read it for me<input type="file" id="f-read" accept="application/pdf,image/png,image/jpeg" style="display:none"></label> <span id="f-read-msg"></span></p><div class="grid" id="f-doms"></div>
           <label>Notes<textarea id="f-notes" maxlength="2000"></textarea></label>
           <button type="submit" id="save">Save CPR</button> <button class="secondary" type="button" id="cancel">Cancel</button>
         </form>
@@ -74,6 +74,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  <script src="category-names.js"></script>
+  <script src="assessment-import.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -93,6 +94,17 @@
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
       $('sign-out').onclick=async()=>{await db.auth.signOut();location.replace('student-login.html')};
       $('f-doms').innerHTML=DOMAINS.map((d,i)=>'<label>'+esc(d)+'<select data-d="'+i+'"><option value="not_reported">Not reported</option><option value="above_passing">Above passing standard</option><option value="near_passing">Near passing standard</option><option value="below_passing">Below passing standard</option></select></label>').join('');
+      $('f-read').onchange=async e=>{
+        const f=e.target.files[0],msg=$('f-read-msg');if(!f)return;msg.textContent='Reading…';
+        try{
+          const r=await AssessmentImport.readCPR(f);
+          if(!r.sure){msg.textContent='Could not read all 8 categories with confidence. Try a PDF or a straight-on screenshot, or choose them by hand.';return}
+          if(r.date&&!$('f-date').value)$('f-date').value=r.date;
+          document.querySelectorAll('[data-d]').forEach(sel=>{sel.value=r.ratings[DOMAINS[+sel.dataset.d]]||'not_reported'});
+          msg.textContent='Filled in. Check each category against the report, then save.';
+        }catch(err){msg.textContent='Could not read this file. Please choose them by hand.'}
+        e.target.value='';
+      };
       $('person').onchange=()=>loadAttempts();
       $('new-person').onclick=()=>$('person-form').classList.toggle('hidden');$('pcancel').onclick=()=>$('person-form').classList.add('hidden');
       $('person-form').onsubmit=addPerson;$('add').onclick=()=>openForm(null);$('cancel').onclick=()=>$('form-panel').classList.add('hidden');$('form').onsubmit=saveAttempt;

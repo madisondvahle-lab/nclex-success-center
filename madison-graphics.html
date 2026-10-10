@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
+  <title>Graphics library · NCLEX Success Center</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,"Segoe UI",sans-serif}
+    .shell{width:min(1160px,calc(100% - 36px));margin:auto;padding-bottom:70px}.hidden{display:none!important}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}
+    .eyebrow{margin:0 0 10px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+    h1,h2{font-family:Georgia,serif;letter-spacing:-.045em;margin:0}h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.05}h2{font-size:1.3rem}
+    .hero{padding:40px 0 20px}.hero p:not(.eyebrow){color:var(--muted);max-width:640px;line-height:1.6;margin:12px 0 0}
+    .panel{background:var(--paper);border:1px solid var(--line);padding:18px;margin-bottom:16px}
+    .drop{border:2px dashed #cfd9d3;padding:22px;text-align:center;cursor:pointer;background:#fff;font-size:.88rem;color:var(--muted)}
+    .drop strong{display:block;color:var(--ink);margin-bottom:4px}.drop input{display:none}
+    .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+    label{font-size:.72rem;font-weight:800;display:block}input[type=text],input[type=search],select,textarea{width:100%;padding:9px;border:1px solid var(--line);background:#fff;font:inherit;font-size:.85rem;margin-top:4px}
+    button.btn,a.btn{display:inline-block;background:var(--ink);color:#fff;border:0;padding:10px 14px;font:800 .74rem Inter,sans-serif;cursor:pointer;text-decoration:none}.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .status{font-size:.84rem;color:var(--muted);margin:10px 0 0;min-height:1.2em}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.filters label{flex:1;min-width:170px}.filters label.grow{flex:2;min-width:240px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-top:14px}
+    .card{background:var(--paper);border:1px solid var(--line);display:flex;flex-direction:column}
+    .thumb{aspect-ratio:4/3;background:#eef2ef center top/cover no-repeat;border-bottom:1px solid var(--line)}
+    .card .body{padding:12px;display:grid;gap:8px;flex:1}.card h3{margin:0;font:700 1rem Georgia,serif;letter-spacing:-.03em}
+    .meta{font-size:.7rem;color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .tags span{display:inline-block;margin:0 4px 4px 0;padding:3px 8px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.64rem;font-weight:800}
+    .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}.actions .btn{padding:7px 10px;font-size:.68rem}
+    dialog{border:1px solid var(--line);padding:20px;width:min(520px,94vw);background:var(--paper)}dialog::backdrop{background:rgba(16,35,61,.45)}
+    .empty{color:var(--muted);padding:28px 0}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Opening your graphics library…</div>
+  <main class="shell hidden" id="app">
+    <header class="top admin-header">
+      <span class="brand">Study With Madison <small>RN</small></span>
+      <nav class="admin-nav" aria-label="Admin navigation">
+        <a class="admin-home" href="madison-admin.html">Admin home</a>
+        <a href="shared-progress.html">Progress</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="madison-graphics.html" aria-current="page">Graphics</a>
+      </nav>
+    </header>
+    <section class="hero">
+      <p class="eyebrow">Teaching library</p>
+      <h1>Graphics library</h1>
+      <p>Upload your study graphics once, tag them, then search, copy a link to share in a session, or assign one straight to a student's dashboard.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Add graphics</h2>
+      <div class="drop" id="drop"><strong>Click or drop images here</strong>PNG, JPG or WebP, up to 15 MB each. You can choose many at once.<input type="file" id="files" accept="image/png,image/jpeg,image/webp" multiple></div>
+      <div class="row">
+        <label>Body system (applied to this upload)<select id="up-system"></select></label>
+        <label>NCLEX category (applied to this upload)<select id="up-cat"><option value="">None</option></select></label>
+        <label>Tags (comma separated)<input type="text" id="up-tags" placeholder="e.g. mnemonic, priority"></label>
+      </div>
+      <p class="status" id="up-status">Titles come from the file name. You can edit titles and details after uploading.</p>
+    </section>
+
+    <section class="panel">
+      <div class="filters">
+        <label class="grow">Search<input type="search" id="q" placeholder="Search title, topic, tag, description…"></label>
+        <label>Body system<select id="f-system"><option value="">All systems</option></select></label>
+        <label>NCLEX category<select id="f-cat"><option value="">All categories</option></select></label>
+      </div>
+      <p class="status" id="count"></p>
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+
+  <dialog id="edit"><form id="edit-form" method="dialog">
+    <h2>Edit graphic</h2>
+    <label>Title<input type="text" id="e-title" required></label>
+    <label>Description<textarea id="e-desc" rows="3"></textarea></label>
+    <div class="row">
+      <label>Body system<select id="e-system"></select></label>
+      <label>NCLEX category<select id="e-cat"><option value="">None</option></select></label>
+    </div>
+    <label style="margin-top:10px">Tags (comma separated)<input type="text" id="e-tags"></label>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:space-between"><button type="button" class="btn alt" id="e-delete" style="color:#9c3535">Delete</button><span><button type="button" class="btn alt" id="e-cancel">Cancel</button> <button type="submit" class="btn">Save</button></span></div>
+  </form></dialog>
+
+  <dialog id="assign"><form method="dialog">
+    <h2>Assign to student</h2>
+    <p id="a-title" style="color:var(--muted);font-size:.86rem"></p>
+    <label>Student<select id="a-student"></select></label>
+    <label style="margin-top:10px">Note for the student (optional)<input type="text" id="a-note" placeholder="Review this before our next session"></label>
+    <p class="status" id="a-status"></p>
+    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end"><button type="button" class="btn alt" id="a-cancel">Close</button> <button type="button" class="btn" id="a-go">Assign</button></div>
+  </form></dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const $=id=>document.getElementById(id);
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const SYSTEMS=['Cardiovascular','Respiratory','Renal / Urinary','GI / Hepatic','Endocrine','Neurological','Musculoskeletal / Mobility','Maternal / OB','Pediatrics','Mental Health','Pharmacology','Fluids, Electrolytes & Acid-Base','Hematology / Oncology','Immunity / Infection','Fundamentals / Safety','Priority & Delegation','Other'];
+    let items=[],urls={},students=[],assignId=null,editId=null,session=null;
+    const opts=(list,first)=>(first?`<option value="">${first}</option>`:'')+list.map(o=>`<option>${esc(o)}</option>`).join('');
+    const link=id=>new URL('graphic.html?id='+id,location.href).href;
+    const tagList=s=>String(s||'').split(',').map(t=>t.trim()).filter(Boolean);
+    function setup(){
+      $('up-system').innerHTML=opts(SYSTEMS,'None');$('e-system').innerHTML=opts(SYSTEMS,'None');
+      $('f-system').innerHTML=opts(SYSTEMS,'All systems');
+      const cats=NCLEXCats.NAMES;
+      ['up-cat','e-cat'].forEach(i=>$(i).innerHTML=opts(cats,'None'));
+      $('f-cat').innerHTML=opts(cats,'All categories');
+      ['q','f-system','f-cat'].forEach(i=>$(i).addEventListener('input',render));
+      $('drop').addEventListener('click',()=>$('files').click());
+      $('drop').addEventListener('dragover',e=>e.preventDefault());
+      $('drop').addEventListener('drop',e=>{e.preventDefault();upload([...e.dataTransfer.files])});
+      $('files').addEventListener('change',e=>{upload([...e.target.files]);e.target.value=''});
+      $('e-cancel').onclick=()=>$('edit').close();$('a-cancel').onclick=()=>$('assign').close();
+      $('edit-form').addEventListener('submit',saveEdit);$('e-delete').onclick=del;$('a-go').onclick=assign;
+    }
+    const prettyTitle=n=>n.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim();
+    async function upload(files){
+      files=files.filter(f=>/^image\/(png|jpeg|webp)$/.test(f.type));
+      if(!files.length){$('up-status').textContent='Choose PNG, JPG or WebP images.';return}
+      let ok=0,fail=0;
+      for(const [i,f] of files.entries()){
+        $('up-status').textContent=`Uploading ${i+1} of ${files.length}…`;
+        const ext=(f.name.split('.').pop()||'png').toLowerCase();
+        const path=`${crypto.randomUUID()}.${ext}`;
+        const up=await db.storage.from('graphics-library').upload(path,f,{contentType:f.type});
+        if(up.error){fail++;continue}
+        const ins=await db.from('graphics').insert({title:prettyTitle(f.name)||'Untitled graphic',body_system:$('up-system').value||null,nclex_category:$('up-cat').value||null,tags:tagList($('up-tags').value),image_path:path});
+        if(ins.error){fail++;await db.storage.from('graphics-library').remove([path])}else ok++;
+      }
+      $('up-status').textContent=`Added ${ok} graphic${ok===1?'':'s'}${fail?`, ${fail} failed (check the SQL setup has been run)`:''}.`;
+      await load();
+    }
+    async function load(){
+      const {data,error}=await db.from('graphics').select('*').order('created_at',{ascending:false});
+      if(error){$('count').textContent='Could not load. Run supabase-graphics-library.sql in Supabase first.';return}
+      items=data||[];
+      const paths=items.map(g=>g.image_path).filter(p=>!urls[p]);
+      if(paths.length){const {data:s}=await db.storage.from('graphics-library').createSignedUrls(paths,3600);(s||[]).forEach(x=>{if(x.signedUrl)urls[x.path]=x.signedUrl})}
+      render();
+    }
+    function render(){
+      const q=$('q').value.trim().toLowerCase(),sys=$('f-system').value,cat=$('f-cat').value;
+      const list=items.filter(g=>(!sys||g.body_system===sys)&&(!cat||g.nclex_category===cat)&&(!q||[g.title,g.description,g.body_system,g.nclex_category,(g.tags||[]).join(' ')].join(' ').toLowerCase().includes(q)));
+      $('count').textContent=`${list.length} of ${items.length} graphic${items.length===1?'':'s'}`;
+      $('grid').innerHTML=list.length?list.map(g=>`<article class="card"><div class="thumb" style="background-image:url('${esc(urls[g.image_path]||'')}')"></div><div class="body">
+        <span class="meta">${esc([g.body_system,g.nclex_category].filter(Boolean).join(' · ')||'Untagged')}</span><h3>${esc(g.title)}</h3>
+        ${g.description?`<p style="margin:0;font-size:.8rem;color:var(--muted)">${esc(g.description)}</p>`:''}
+        <div class="tags">${(g.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div>
+        <div class="actions"><button class="btn" data-a="copy" data-id="${g.id}">Copy link</button><button class="btn alt" data-a="assign" data-id="${g.id}">Assign</button><button class="btn alt" data-a="edit" data-id="${g.id}">Edit</button><a class="btn alt" href="graphic.html?id=${g.id}" target="_blank" rel="noopener">View</a></div></div></article>`).join(''):'<p class="empty">No graphics match. Upload some above or clear the filters.</p>';
+    }
+    $('grid')?.addEventListener('click',async e=>{
+      const b=e.target.closest('button[data-a]');if(!b)return;const g=items.find(x=>x.id===b.dataset.id);if(!g)return;
+      if(b.dataset.a==='copy'){try{await navigator.clipboard.writeText(link(g.id));b.textContent='Copied ✓'}catch{prompt('Copy this link:',link(g.id))}setTimeout(()=>b.textContent='Copy link',1500)}
+      if(b.dataset.a==='edit'){editId=g.id;$('e-title').value=g.title;$('e-desc').value=g.description||'';$('e-system').value=g.body_system||'';$('e-cat').value=g.nclex_category||'';$('e-tags').value=(g.tags||[]).join(', ');$('edit').showModal()}
+      if(b.dataset.a==='assign')openAssign(g);
+    });
+    async function saveEdit(e){
+      e.preventDefault();
+      const {error}=await db.from('graphics').update({title:$('e-title').value.trim(),description:$('e-desc').value.trim()||null,body_system:$('e-system').value||null,nclex_category:$('e-cat').value||null,tags:tagList($('e-tags').value)}).eq('id',editId);
+      $('edit').close();if(error)alert('Could not save: '+error.message);await load();
+    }
+    async function del(){
+      const g=items.find(x=>x.id===editId);if(!g||!confirm(`Delete "${g.title}"? Links already shared will stop working.`))return;
+      await db.from('graphics').delete().eq('id',editId);await db.storage.from('graphics-library').remove([g.image_path]);
+      $('edit').close();await load();
+    }
+    async function openAssign(g){
+      assignId=g.id;$('a-title').textContent=g.title;$('a-status').textContent='';$('a-note').value='';
+      if(!students.length){const {data}=await db.from('students').select('id,name,student_type').is('archived_at',null).order('name');students=data||[]}
+      $('a-student').innerHTML=students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+      $('assign').showModal();
+    }
+    async function assign(){
+      const g=items.find(x=>x.id===assignId),sid=$('a-student').value;if(!g||!sid)return;
+      const dupe=await db.from('student_resources').select('id').eq('student_id',sid).eq('url','graphic.html?id='+g.id).limit(1);
+      if(dupe.data&&dupe.data.length){$('a-status').textContent='Already assigned to this student.';return}
+      const {error}=await db.from('student_resources').insert({student_id:sid,title:g.title,resource_type:'link',url:'graphic.html?id='+g.id,note:$('a-note').value.trim()||g.description||null});
+      $('a-status').textContent=error?'Could not assign: '+error.message:'Assigned. It now shows under their Study resources.';
+    }
+    (async()=>{
+      const {data:{session:s}}=await db.auth.getSession();session=s;
+      if(!s){location.replace('student-login.html');return}
+      const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',s.user.id).maybeSingle();
+      if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      setup();await load();$('loading').classList.add('hidden');$('app').classList.remove('hidden');
+    })();
+  </script>
+</body>
+</html>
