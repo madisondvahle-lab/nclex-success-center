@@ -1593,7 +1593,7 @@
       return 'Adult Health';
     }
 
-    async function buildMixedReview(count){
+    async function buildMixedReview(count,focusCat){
       if(!student){
         alert('Sign in through the Success Center before starting Mixed Review.');
         return;
@@ -1654,6 +1654,7 @@
 
       const chosen=[];
       const chosenIds=new Set();
+      const focus=focusCat&&window.NCLEXCats?NCLEXCats.canon(focusCat,''):'';
 
       function addFrom(pool,amount){
         shuffled(pool).forEach(q=>{
@@ -1664,25 +1665,34 @@
         });
       }
 
-      Object.entries(weights).forEach(([category,weight])=>{
+      if(focus){
+        const pool=normalized.filter(q=>q.category===focus);
+        if(!pool.length){
+          $('quiz').innerHTML='<p class="status">There are no questions tagged '+focus+' yet. Try a mixed review instead.</p>';
+          return;
+        }
+        addFrom(pool.filter(q=>!seen.has(q.id)),count);
+        addFrom(pool.filter(q=>missed.has(q.id)),count-chosen.length);
+        addFrom(pool,count-chosen.length);
+      }else Object.entries(weights).forEach(([category,weight])=>{
         const amount=Math.max(1,Math.round(count*weight));
         const pool=normalized.filter(q=>q.category===category && !seen.has(q.id));
         addFrom(pool,amount);
       });
 
-      if(chosen.length<count)
+      if(!focus&&chosen.length<count)
         addFrom(normalized.filter(q=>!seen.has(q.id)),count-chosen.length);
 
-      if(chosen.length<count)
+      if(!focus&&chosen.length<count)
         addFrom(normalized.filter(q=>missed.has(q.id)),count-chosen.length);
 
-      if(chosen.length<count)
+      if(!focus&&chosen.length<count)
         addFrom(normalized,count-chosen.length);
 
       activeSet={
         id:'mixed-review-'+Date.now(),
-        title:'Mixed NCLEX Review',
-        tag:'Assigned mixed review',
+        title:focus?focus+' Practice':'Mixed NCLEX Review',
+        tag:focus?'Focused on your weak area':'Assigned mixed review',
         description:'Mixed NCLEX-style review across priority, systems, medications, OB, pediatrics, mental health, and safety.',
         questions:shuffled(chosen).slice(0,count)
       };
@@ -1754,7 +1764,7 @@
       }else if(courseKey&&examKey){
         await buildCourseExamPractice(courseKey,examKey);
       }else if([10,20,30,40].includes(mixedCount)){
-        await buildMixedReview(mixedCount);
+        await buildMixedReview(mixedCount,params.get('cat'));
       }else if(sets.some(set=>set.id===assignedSet)){
         startSet(assignedSet);
       }else{
