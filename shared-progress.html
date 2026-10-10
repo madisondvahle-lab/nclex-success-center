@@ -582,6 +582,9 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const byUpload=new Map;cats.forEach(c=>byUpload.set(c.assessment_id,[...(byUpload.get(c.assessment_id)||[]),c]));
       const outside=[];let outsideSrc='';
       uploads.forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outside[i]==null&&c.score!=null){outside[i]=Number(c.score);if(!outsideSrc)outsideSrc=(u.report_label||u.platform||'Report')}}));
+      const outPrev=[];const lastU=uploads.find(u=>(byUpload.get(u.id)||[]).length);
+      if(lastU)uploads.filter(u=>u!==lastU&&u.platform===lastU.platform&&(byUpload.get(u.id)||[]).length&&assessmentDate(u)<=assessmentDate(lastU)).forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outPrev[i]==null&&c.score!=null&&c.score!=='')outPrev[i]=Number(c.score)}));
+      const dlt=i=>outside[i]!=null&&outPrev[i]!=null&&Math.abs(outside[i]-outPrev[i])>=1?' <b style="color:'+(outside[i]>outPrev[i]?'#2f7d4f':'#b4443c')+'" title="vs previous '+esc(lastU.platform||'')+' report">'+(outside[i]>outPrev[i]?'▲ +':'▼ ')+Math.round(outside[i]-outPrev[i])+'</b>':'';
       const prac=[];
       const pr=(await db.from('student_supplemental_practice_results').select('category_scores').eq('student_id',st.id)).data||[];
       const pt=[];pr.forEach(r=>Object.entries(r.category_scores||{}).forEach(([k,v])=>{const i=ovIdx(k);if(i<0||!v||!v.total)return;pt[i]=pt[i]||{c:0,t:0};pt[i].c+=v.correct||0;pt[i].t+=v.total}));
@@ -616,9 +619,13 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       card.classList.remove('hidden');
       const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
       const exams=uploads.filter(catKindOk).map(u=>{const m=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!=='')m[i]=Number(c.score)});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
-      const scored=exams.filter(e=>e.o!=null),withCats=exams.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
+      const plats=[...new Set(exams.map(e=>e.u.platform||'Exam'))];
+      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?(exams[exams.length-1].u.platform||'Exam'):'all';
+      const shown=window.__catPlat==='all'?exams:exams.filter(e=>(e.u.platform||'Exam')===window.__catPlat);
+      const scored=shown.filter(e=>e.o!=null),withCats=shown.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
       const label=e=>(e.u.platform||'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
       let html='';
+      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(pl))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
       if(scored.length){
         const W=640,H=200,L=36,R=16,T=16,B=34,vals=scored.map(e=>e.o);
         const lo=Math.max(0,Math.floor((Math.min(...vals)-8)/10)*10),hi=Math.min(100,Math.ceil((Math.max(...vals)+8)/10)*10);
@@ -646,6 +653,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       if(fs.length)html+='<h3 style="margin:18px 0 6px;font-size:1rem">Scores entered as focus areas</h3><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Area</th><th>Previous</th><th>Current</th></tr></thead><tbody>'+fs.map(f=>'<tr><td>'+esc(f.focus_area)+'</td><td>'+(f.previous_score==null||f.previous_score===''?'—':esc(f.previous_score)+'%')+'</td><td>'+esc(f.current_score)+'%</td></tr>').join('')+'</tbody></table></div><p class="muted">These were typed into the Priorities form, so they are not part of the exam chart. Re-enter them under “Enter exam results” to chart them.</p>';
       html+='<p class="muted" style="margin-top:12px;font-size:.78rem">On file for this client: '+uploads.length+' assessment record'+(uploads.length===1?'':'s')+' ('+exams.length+' shown here, '+scored.length+' with an overall score, '+withCats.length+' with category scores), '+(focus||[]).length+' priorit'+((focus||[]).length===1?'y':'ies')+'.</p>';
       $('cat-body').innerHTML=html;
+      document.querySelectorAll('[data-catplat]').forEach(b=>b.onclick=()=>{window.__catPlat=b.dataset.catplat;renderCatCard(uploads,cats,focus)});
       $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
       $('cat-entry').open=!exams.length||!!empty.length;
     }
