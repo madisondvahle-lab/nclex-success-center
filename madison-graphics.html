@@ -60,7 +60,7 @@
         <label>NCLEX category (applied to this upload)<select id="up-cat"><option value="">None</option></select></label>
         <label>Tags (comma separated)<input type="text" id="up-tags" placeholder="e.g. mnemonic, priority"></label>
       </div>
-      <p class="status" id="up-status">Titles come from the file name. You can edit titles and details after uploading.</p>
+      <p class="status" id="up-status">Titles come from the file name. If you leave system/category blank, known topics (heart failure, chest tubes, torts, etc.) are tagged automatically. You can edit afterward.</p>
     </section>
 
     <section class="panel">
@@ -135,6 +135,21 @@
       $('e-cancel').onclick=()=>$('edit').close();$('a-cancel').onclick=()=>$('assign').close();
       $('edit-form').addEventListener('submit',saveEdit);$('e-delete').onclick=del;$('a-go').onclick=assign;
     }
+    const AUTO=[
+      [/leadership/i,'Leadership & Management','Management of Care',['leadership','autocratic','democratic','laissez-faire']],
+      [/delegation|roles/i,'Priority & Delegation','Management of Care',['delegation','UAP','LPN','RN','scope of practice']],
+      [/tort/i,'Legal & Ethics','Management of Care',['torts','assault','battery','negligence','slander','libel']],
+      [/heart failure/i,'Cardiovascular','Physiological Adaptation',['heart failure','left-sided','right-sided','edema']],
+      [/pediatric vital/i,'Pediatrics','Health Promotion and Maintenance',['vital signs','growth and development','normal ranges']],
+      [/surgical/i,'Fundamentals / Safety','Reduction of Risk Potential',['surgery','perioperative','procedures']],
+      [/tension pneumo/i,'Respiratory','Physiological Adaptation',['pneumothorax','tension pneumothorax','chest trauma','emergency']],
+      [/hemothorax|effusion/i,'Respiratory','Physiological Adaptation',['pneumothorax','hemothorax','pleural effusion','chest tube']],
+      [/flail/i,'Respiratory','Physiological Adaptation',['flail chest','chest trauma','paradoxical movement']],
+      [/embolism|\bPE\b/i,'Respiratory','Physiological Adaptation',['pulmonary embolism','PE','DVT','anticoagulation']],
+      [/chest tube/i,'Respiratory','Physiological Adaptation',['chest tube','water seal','suction','drainage system']],
+      [/ventilator|vent /i,'Respiratory','Physiological Adaptation',['ventilator','PEEP','tidal volume','FiO2','mechanical ventilation']]
+    ];
+    const autoFor=t=>AUTO.find(r=>r[0].test(t));
     const prettyTitle=n=>n.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim();
     async function upload(files){
       files=files.filter(f=>/^image\/(png|jpeg|webp)$/.test(f.type));
@@ -146,7 +161,8 @@
         const path=`${crypto.randomUUID()}.${ext}`;
         const up=await db.storage.from('graphics-library').upload(path,f,{contentType:f.type});
         if(up.error){fail++;continue}
-        const ins=await db.from('graphics').insert({title:prettyTitle(f.name)||'Untitled graphic',body_system:$('up-system').value||null,nclex_category:$('up-cat').value||null,tags:tagList($('up-tags').value),image_path:path});
+        const title=prettyTitle(f.name)||'Untitled graphic',au=autoFor(title);
+        const ins=await db.from('graphics').insert({title,body_system:$('up-system').value||(au&&au[1])||null,nclex_category:$('up-cat').value||(au&&au[2])||null,tags:[...new Set([...tagList($('up-tags').value),...(au?au[3]:[])])],image_path:path});
         if(ins.error){fail++;await db.storage.from('graphics-library').remove([path])}else ok++;
       }
       $('up-status').textContent=`Added ${ok} graphic${ok===1?'':'s'}${fail?`, ${fail} failed (check the SQL setup has been run)`:''}.`;
