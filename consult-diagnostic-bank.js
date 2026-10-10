@@ -123,6 +123,10 @@
       'The nurse in the emergency department is caring for assigned clients. The nurse should <b>first</b> assess the client who is',
       ['14 years old and has scrotal pain and swelling with elevation of the right testis', '16 years old and has sickle cell disease with generalized body pain', '34 years old and has right-sided flank pain radiating to the groin', '46 years old and has diverticulitis with cramping pain in the left lower abdomen'], 0,
       'Sudden scrotal pain and swelling with an elevated testis suggests testicular torsion, a surgical emergency. The testis can lose blood supply within hours, so this client is assessed first. The other clients need care but are not at immediate risk of losing an organ.'),
+    q('cd026', 'mcq', C.physio, 'Respiratory', 'action', 2,
+      'The nurse enters the room of a client who had a tracheostomy created 2 months ago. The nurse notes that the client is in respiratory distress and the tracheostomy tube is lying on the bed next to the client. Which of the following actions should the nurse take?',
+      ['Administer supplemental oxygen via simple face mask.', 'Insert a new tracheostomy tube using the bedside obturator.', 'Insert a sterile catheter into the stoma and suction the airway.', 'Place dry, sterile gauze over the stoma and secure it with tape.'], 1,
+      'A mature tracheostomy (about 2 months) has an established tract, so the nurse can reinsert a new tube with the obturator to restore the airway right away. Oxygen by face mask or gauze over the stoma does not secure the airway, and suctioning without a tube in place does not relieve the obstruction.'),
 
     {
       kind: 'case', id: 'cdcase1', category: C.physio, topic: 'Cardiac', difficulty: 3,
