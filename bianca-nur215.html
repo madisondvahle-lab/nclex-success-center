@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="exam-ui.css">
+  <title>NUR 215 Practice · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--good:#2f7d4f;--mid:#b7791f;--low:#b4443c}*{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(960px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
+    .top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
+    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}.top a{color:var(--ink);font-weight:700;font-size:.85rem}
+    h1{font:400 clamp(2rem,5vw,2.8rem) Georgia,serif;margin:30px 0 8px}h3{margin:20px 0 8px}
+    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
+    .panel{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}.meta{color:var(--muted);font-size:.88rem;line-height:1.5}
+    button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:11px 16px;cursor:pointer}
+    button.secondary{background:transparent;color:var(--ink)}
+    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px}
+    .stat b{display:block;font:400 2.6rem Georgia,serif}
+    table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .good{color:var(--good)}.mid{color:var(--mid)}.low{color:var(--low)}
+    details{border:1px solid var(--line);background:#fff;margin:8px 0}summary{cursor:pointer;padding:12px 14px;font-weight:600}.in{padding:0 16px 16px;line-height:1.55;font-size:.92rem}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="exam-ui.js"></script>
+</head>
+<body>
+<div class="shell">
+  <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a href="student-dashboard.html" id="back">My dashboard</a></header>
+  <main id="app">
+    <p class="eyebrow">NUR 215 · Foundations of Professional Practice</p>
+    <h1>NUR 215 Practice Questions</h1>
+    <p class="meta" id="blurb">Loading questions…</p>
+    <section class="panel hidden" id="setup">
+      <div class="grid">
+        <label>Topic<select id="cat"></select></label>
+        <label>Difficulty<select id="diff"><option value="">All levels</option><option value="foundational">Foundational</option><option value="moderate">Moderate</option><option value="challenging">Challenging</option></select></label>
+        <label>Number of questions<select id="count"></select></label>
+        <label>Mode<select id="mode"><option value="tutor">Tutor: see the rationale after each question</option><option value="exam">Exam: review everything at the end</option></select></label>
+      </div>
+      <p class="meta" id="avail"></p>
+      <button id="start">Start practice</button>
+      <p class="meta">Practice results only. They are not a prediction of how you will do on your exam. Select-all-that-apply questions earn a point only when every correct choice, and no others, is selected.</p>
+    </section>
+    <section id="results" class="hidden"></section>
+  </main>
+  <div id="exam-root"></div>
+</div>
+<script>
+(function(){
+  const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+  const $=id=>document.getElementById(id), esc=ExamUI.esc;
+  let bank=null,student=null,lastRun=null;
+
+  function toItem(q){
+    const ids=q.options.map(o=>o.id);
+    const opts=q.options.map(o=>'<li><b>'+esc(o.text)+'</b><br>'+esc(q.option_rationales[o.id]||'')+'</li>').join('');
+    return {id:q.id,type:q.type==='sata'?'sata':'mcq',stem:esc(q.stem),
+      options:q.options.map(o=>o.text),
+      correct:q.correct_answers.map(a=>ids.indexOf(a)),
+      topic:q.category,category:q.category,difficulty:q.difficulty,concept:q.concept,
+      rationaleHtml:true,
+      rationale:esc(q.correct_rationale)+'<ul style="margin:10px 0 0;padding-left:18px">'+opts+'</ul><p><b>Exam strategy:</b> '+esc(q.exam_strategy)+'</p>'};
+  }
+  const filtered=()=>{const c=$('cat').value,d=$('diff').value;return bank.questions.filter(q=>(!c||q.category===c)&&(!d||q.difficulty===d))};
+  function refresh(){
+    const n=filtered().length;$('avail').textContent=n+' question'+(n===1?'':'s')+' match.';
+    const opts=[10,20,30,50,100].filter(x=>x<n);opts.push(n);
+    const keep=$('count').value;$('count').innerHTML=opts.map(x=>'<option value="'+x+'">'+(x===n?'All '+n:x)+'</option>').join('');
+    if(opts.map(String).includes(keep))$('count').value=keep;
+    $('start').disabled=!n;
+  }
+  function start(){
+    const pool=filtered().sort(()=>Math.random()-.5).slice(0,+$('count').value);
+    const items=pool.map(toItem);const tutor=$('mode').value==='tutor';
+    $('app').classList.add('hidden');
+    new ExamUI.Exam($('exam-root'),{title:'NUR 215 PRACTICE',items,instant:tutor,
+      onFinish:r=>finish(r,tutor),onExit:()=>$('app').classList.remove('hidden')});
+  }
+  const pct=(a,b)=>b?Math.round(a/b*100):0,tone=p=>p>=80?'good':p>=60?'mid':'low';
+  async function finish(r,tutor){
+    const rows=r.items.map((it,i)=>({it,a:r.ans[i],...ExamUI.score(it,r.ans[i]),answered:ExamUI.isAnswered(it,r.ans[i])}));
+    const right=rows.filter(x=>x.full).length,p=pct(right,rows.length),cats={};
+    rows.forEach(x=>{const c=cats[x.it.category]||(cats[x.it.category]={n:0,ok:0});c.n++;if(x.full)c.ok++});
+    const missed=rows.filter(x=>!x.full);
+    $('app').classList.remove('hidden');$('setup').classList.add('hidden');$('results').classList.remove('hidden');
+    $('results').innerHTML='<section class="panel stat"><p class="eyebrow">Practice complete</p><b class="'+tone(p)+'">'+p+'%</b><span class="meta">'+right+' of '+rows.length+' fully correct</span></section>'
+      +'<section class="panel"><h3 style="margin-top:0">By topic</h3><table><thead><tr><th>Topic</th><th>Score</th></tr></thead><tbody>'
+      +Object.keys(cats).sort((a,b)=>cats[a].ok/cats[a].n-cats[b].ok/cats[b].n).map(k=>{const q=pct(cats[k].ok,cats[k].n);return '<tr><td>'+esc(k)+'</td><td class="'+tone(q)+'"><b>'+q+'%</b> <span class="meta">('+cats[k].ok+'/'+cats[k].n+')</span></td></tr>'}).join('')
+      +'</tbody></table></section><section class="panel"><h3 style="margin-top:0">'+(missed.length?'Review what you missed ('+missed.length+')':'No missed questions')+'</h3>'
+      +missed.map(x=>'<details><summary>'+x.it.stem+'</summary><div class="in">'+ExamUI.reviewHtml(x.it,x.a)+'<p>'+x.it.rationale+'</p></div></details>').join('')
+      +'</section><p><button id="again">Practice again</button> <span class="meta" id="saved"></span></p>';
+    $('again').onclick=()=>{$('results').classList.add('hidden');$('setup').classList.remove('hidden');window.scrollTo(0,0)};
+    $('saved').textContent=await save(rows,right);
+  }
+  async function save(rows,right){
+    if(!student)return 'Sign in through the Success Center to save results to your dashboard.';
+    const details=rows.map(x=>({question_id:x.it.id,category:x.it.category,correct:!!x.full}));
+    const cs={};details.forEach(d=>{const c=cs[d.category]||(cs[d.category]={correct:0,total:0});c.total++;if(d.correct)c.correct++});
+    const res=await db.from('student_supplemental_practice_results').insert({student_id:student.id,practice_key:'bianca-nur215-100',practice_title:'NUR 215 Practice Questions',score:right,total_questions:rows.length,completed_at:new Date().toISOString(),answer_details:details,category_scores:cs,missed_question_ids:details.filter(d=>!d.correct).map(d=>d.question_id)});
+    return res.error?'Your score is shown here, but it was not saved.':'Saved to your dashboard.';
+  }
+  async function init(){
+    try{
+      const {data}=await db.auth.getSession();
+      if(data.session){
+        const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;
+        const adm=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();
+        if(adm.data)$('back').href='madison-admin.html';
+      }
+      const res=await fetch('bianca-nur215-bank.json',{cache:'no-cache'});bank=await res.json();
+    }catch(e){$('blurb').textContent='Could not load the questions. Please refresh.';return}
+    const cats=[...new Set(bank.questions.map(q=>q.category))];
+    $('cat').innerHTML='<option value="">All topics</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');
+    $('blurb').textContent=bank.questions.length+' original practice questions with a rationale for every answer choice.';
+    $('setup').classList.remove('hidden');refresh();
+    $('cat').onchange=$('diff').onchange=refresh;$('start').onclick=start;
+  }
+  init();
+})();
+</script>
+</body>
+</html>
