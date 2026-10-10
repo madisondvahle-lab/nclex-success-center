@@ -184,7 +184,7 @@
         <div class="ex-toolbar"><div class="ex-tools">
           <button class="ex-tb" data-a="notes">${ICON.notes}<span><span class="u">N</span>otes</span></button>
           <button class="ex-tb" data-a="calc">${ICON.calc}<span>Calc<span class="u">u</span>lator</span></button>
-          ${this.o.noFeedback ? '' : `<button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button>`}</div>
+          ${this.o.noFeedback ? '' : `<button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button>`}${this.o.onFlag ? `<button class="ex-tb" data-a="flag">${ICON.feedback}<span>Report <span class="u">q</span>uestion</span></button>` : ''}</div>
           <div class="ex-tools"><button class="ex-tb" data-a="expand" title="Full screen" aria-label="Full screen">${ICON.expand}</button>
           <button class="ex-tb" data-a="help" title="Help" aria-label="Help">${ICON.help}</button>
           <button class="ex-tb" data-a="gear" title="Text size" aria-label="Text size">${ICON.gear}</button>
@@ -378,7 +378,7 @@
           this.i < this.items.length - 1 ? this.show(this.i + 1) : this.confirmFinish();
         },
         nav: () => this.navigator(), mark: () => { this.marked[this.i] = !this.marked[this.i]; this.renderMark(); },
-        notes: () => this.notesModal(), calc: () => this.calcModal(), fb: () => this.feedbackModal(),
+        notes: () => this.notesModal(), calc: () => this.calcModal(), fb: () => this.feedbackModal(), flag: () => this.flagModal(),
         help: () => this.helpModal(),
         gear: () => { this.fs = (this.fs + 1) % 3; this.app.dataset.fs = this.fs; },
         expand: () => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => { }); },
@@ -392,7 +392,7 @@
       const acts = bg.querySelector('.acts');
       (buttons || [['Close']]).forEach((b, idx, arr) => {
         const btn = document.createElement('button'); btn.className = 'btn' + (arr.length > 1 && idx === 0 ? ' sec' : ''); btn.textContent = b[0];
-        btn.onclick = () => { bg.remove(); b[1] && b[1](); }; acts.appendChild(btn);
+        btn.onclick = () => { const r = b[1] && b[1](); if (r !== 'keep') bg.remove(); }; acts.appendChild(btn);
       });
       bg.addEventListener('mousedown', e => { if (e.target === bg) bg.remove(); });
       document.body.appendChild(bg); (bg.querySelector('textarea') || acts.lastChild).focus();
@@ -408,6 +408,20 @@
     notesModal() {
       const bg = this.modal('Notes', `<textarea aria-label="Scratch notes">${esc(this.notes)}</textarea>`, [['Save', () => { }]]);
       bg.querySelector('textarea').addEventListener('input', e => { this.notes = e.target.value; });
+    }
+
+    flagModal() {
+      const it = this.items[this.i], no = it.qno ? 'Q-' + String(it.qno).padStart(4, '0') : '';
+      const bg = this.modal('Report this question', `<p>${no ? 'Question <b>' + no + '</b>. ' : ''}Tell your tutor what seems wrong or confusing.</p><select aria-label="Reason" class="ex-flag-reason"><option>Confusing wording</option><option>I think the answer is wrong</option><option>Rationale is unclear</option><option>Typo or error</option><option>Other</option></select><textarea aria-label="Details" placeholder="Optional details"></textarea><p class="ex-flag-msg" role="status"></p>`,
+        [['Cancel'], ['Send report', () => {
+          const msg = bg.querySelector('.ex-flag-msg'), btn = bg.querySelector('.ex-flag-send');
+          btn.disabled = true; msg.textContent = 'Sending…';
+          Promise.resolve(this.o.onFlag(it, { reason: bg.querySelector('select').value, note: bg.querySelector('textarea').value.trim() }))
+            .then(ok => { if (ok === false) { msg.textContent = 'Could not send. Please try again.'; btn.disabled = false; } else { msg.textContent = 'Thank you — your tutor will review it.'; btn.textContent = 'Sent'; } })
+            .catch(() => { msg.textContent = 'Could not send. Please try again.'; btn.disabled = false; });
+          return 'keep';
+        }]]);
+      const sb = [...bg.querySelectorAll('button')].pop(); if (sb) sb.classList.add('ex-flag-send');
     }
 
     feedbackModal() {
