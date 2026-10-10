@@ -39,3 +39,6 @@ Migrations the tutor has run (all in repo root): `supabase-question-item-types.s
 ## Next
 - Wire ExamUI to master-bank `item_data` for student practice; restyle module quizzes (module7-ekg-quiz.html first), module guides, diagnostic.html.
 - Show consult diagnostic results on the student workspace; add Flag button to consult/quiz pages.
+
+## Update (PRs #113-#119)
+See `.agents/STATUS.md` Phase 6 for CPR tracker, client overview, This week card, Bianca NUR 215 page and modal fix.
