@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
+  <title>NCLEX CPR tracker · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--good:#2f7d4f;--mid:#b7791f;--low:#b4443c}*{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(1100px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
+    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}
+    h1{font:400 clamp(2rem,5vw,3rem) Georgia,serif;margin:34px 0 8px}h2{font:400 1.5rem Georgia,serif;margin:0 0 12px}h3{margin:18px 0 8px;font-size:1rem}
+    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
+    .panel{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}.meta{color:var(--muted);font-size:.88rem;line-height:1.5}
+    button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer}
+    button.secondary{background:transparent;color:var(--ink)}button.danger{background:transparent;color:var(--low);border-color:var(--low)}
+    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
+    input,select,textarea{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
+    textarea{min-height:70px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row label{flex:1;min-width:220px;margin:0}
+    .chip{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:4px 8px;border:1px solid;white-space:nowrap}
+    .c-above{color:var(--good);border-color:var(--good);background:#e6f3ea}.c-near{color:var(--mid);border-color:var(--mid);background:#fbf1de}
+    .c-below{color:var(--low);border-color:var(--low);background:#f8e4e1}.c-none{color:var(--muted);border-color:var(--line);background:#f4f4f2}
+    table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+    th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.scroll{overflow-x:auto}
+    .att{border:1px solid var(--line);background:#fff;padding:16px;margin:10px 0}.att header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+    .att h3{margin:0}.doms{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:6px 18px;margin-top:12px}
+    .doms div{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px dotted var(--line);padding:4px 0;font-size:.88rem}
+    .up{color:var(--good)}.dn{color:var(--low)}.status{font-size:.85rem;color:var(--muted)}.status.err{color:var(--low);font-weight:800}
+    .focus li{margin:4px 0}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Opening your private CPR tracker…</div>
+  <main class="shell hidden" id="app">
+    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation">
+      <a class="admin-home" href="madison-admin.html">Admin home</a>
+      <a href="madison-leads.html">Leads &amp; intake</a><a href="madison-consultations.html">Consultations</a><a href="madison-diagnostic.html">Consult diagnostic</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html" aria-current="page">CPR tracker</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+    </nav></header>
+    <p class="eyebrow" style="margin-top:34px">Private admin view</p>
+    <h1 style="margin-top:6px">NCLEX CPR tracker.</h1>
+    <p class="meta">Enter each Candidate Performance Report: test date, number of items, and where every test-plan category landed (above, near, or below the passing standard). Works for clients and prospects.</p>
+    <section class="panel">
+      <div class="row">
+        <label>Client or prospect<select id="person"></select></label>
+        <button class="secondary" id="new-person" type="button">+ Add person</button>
+      </div>
+      <form id="person-form" class="hidden" style="margin-top:14px"><div class="grid"><label>Full name<input id="pn" required maxlength="120"></label><label>Email (optional)<input id="pe" type="email"></label></div><button type="submit">Add person</button> <button class="secondary" type="button" id="pcancel">Cancel</button></form>
+      <p class="status" id="status" role="status"></p>
+    </section>
+    <div id="detail" class="hidden">
+      <section class="panel" id="trend-panel"></section>
+      <section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Attempts</h2><button id="add" type="button">+ Add CPR</button></div><div id="attempts"></div></section>
+      <section class="panel hidden" id="form-panel"><h2 id="form-title">Add a CPR</h2>
+        <form id="form">
+          <div class="grid">
+            <label>Test date<input id="f-date" type="date" required></label>
+            <label>NCLEX items received<input id="f-count" type="number" min="1" max="265" placeholder="e.g. 85, 112, 150"></label>
+            <label>Result<select id="f-result"><option value="">Not specified</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="unknown">Unknown</option></select></label>
+            <label>How the exam ended<select id="f-end"><option value="">Not specified</option><option value="computer_shut_off">Computer shut off normally</option><option value="maximum_items">Maximum items reached</option><option value="ran_out_of_time">Ran out of time</option><option value="does_not_remember">Does not remember</option></select></label>
+            <label>Testing time (minutes)<input id="f-min" type="number" min="1"></label>
+          </div>
+          <h3>Test-plan categories</h3><div class="grid" id="f-doms"></div>
+          <label>Notes<textarea id="f-notes" maxlength="2000"></textarea></label>
+          <button type="submit" id="save">Save CPR</button> <button class="secondary" type="button" id="cancel">Cancel</button>
+        </form>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const DOMAINS=['Management of Care','Safety and Infection Control','Health Promotion and Maintenance','Psychosocial Integrity','Basic Care and Comfort','Pharmacological and Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
+    const RATE={above_passing:['Above','c-above',2],near_passing:['Near','c-near',1],below_passing:['Below','c-below',0],not_reported:['—','c-none',null]};
+    const END={computer_shut_off:'Shut off normally',maximum_items:'Maximum items',ran_out_of_time:'Ran out of time',does_not_remember:'Does not remember'};
+    const fmtD=v=>v?new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date not set';
+    const chip=r=>{const x=RATE[r]||RATE.not_reported;return '<span class="chip '+x[1]+'">'+x[0]+'</span>'};
+    let people=[],attempts=[],editing=null;
+    const say=(t,err)=>{$('status').textContent=t||'';$('status').className='status'+(err?' err':'')};
+
+    async function init(){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){location.replace('student-login.html');return}
+      const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+      $('sign-out').onclick=async()=>{await db.auth.signOut();location.replace('student-login.html')};
+      $('f-doms').innerHTML=DOMAINS.map((d,i)=>'<label>'+esc(d)+'<select data-d="'+i+'"><option value="not_reported">Not reported</option><option value="above_passing">Above passing standard</option><option value="near_passing">Near passing standard</option><option value="below_passing">Below passing standard</option></select></label>').join('');
+      $('person').onchange=()=>loadAttempts();
+      $('new-person').onclick=()=>$('person-form').classList.toggle('hidden');$('pcancel').onclick=()=>$('person-form').classList.add('hidden');
+      $('person-form').onsubmit=addPerson;$('add').onclick=()=>openForm(null);$('cancel').onclick=()=>$('form-panel').classList.add('hidden');$('form').onsubmit=saveAttempt;
+      await loadPeople(new URLSearchParams(location.search).get('person'));
+    }
+    async function loadPeople(select){
+      const r=await db.from('consult_intakes').select('id,full_name,email,status,student_id').order('full_name');
+      if(r.error){say('Could not load people. Run the onboarding migration first. '+r.error.message,true);return}
+      people=r.data||[];
+      $('person').innerHTML='<option value="">Choose a person…</option>'+people.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+(p.email?' · '+esc(p.email):'')+(p.student_id?' (client)':'')+'</option>').join('');
+      if(select&&people.some(p=>p.id===select))$('person').value=select;
+      await loadAttempts();
+    }
+    async function addPerson(e){
+      e.preventDefault();say('Adding…');
+      const r=await db.from('consult_intakes').insert({full_name:$('pn').value.trim(),email:$('pe').value.trim()||null,status:'new_lead'}).select('id').single();
+      if(r.error){say('Could not add person: '+r.error.message,true);return}
+      $('person-form').reset();$('person-form').classList.add('hidden');say('');await loadPeople(r.data.id);
+    }
+    async function loadAttempts(){
+      const id=$('person').value;$('form-panel').classList.add('hidden');
+      if(!id){$('detail').classList.add('hidden');return}
+      const r=await db.from('nclex_attempts').select('*,nclex_cpr_results(domain,rating)').eq('consult_intake_id',id).order('test_date',{ascending:true,nullsFirst:false}).order('attempt_number');
+      if(r.error){say('Could not load CPRs: '+r.error.message,true);return}
+      say('');attempts=r.data||[];$('detail').classList.remove('hidden');render();
+    }
+    const ratings=a=>{const m={};(a.nclex_cpr_results||[]).forEach(x=>m[x.domain]=x.rating);return m};
+    function render(){
+      if(!attempts.length){$('trend-panel').innerHTML='<h2>Trend</h2><p class="meta">No CPRs entered yet.</p>';$('attempts').innerHTML='';return}
+      const R=attempts.map(ratings),last=R[R.length-1];
+      const head='<tr><th>Category</th>'+attempts.map((a,i)=>'<th>#'+(i+1)+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(fmtD(a.test_date))+(a.question_count?' · '+a.question_count+' items':'')+'</span></th>').join('')+'</tr>';
+      const body=DOMAINS.map(d=>'<tr><td>'+esc(d)+'</td>'+R.map((m,i)=>{
+        let arrow='';if(i){const a=(RATE[R[i-1][d]]||[])[2],b=(RATE[m[d]]||[])[2];if(a!=null&&b!=null&&a!==b)arrow=b>a?' <span class="up" title="Improved">▲</span>':' <span class="dn" title="Declined">▼</span>'}
+        return '<td>'+chip(m[d])+arrow+'</td>'}).join('')+'</tr>').join('');
+      const below=DOMAINS.filter(d=>last[d]==='below_passing'),near=DOMAINS.filter(d=>last[d]==='near_passing');
+      $('trend-panel').innerHTML='<h2>Trend across attempts</h2><div class="scroll"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
+        +'<h3>Focus from the latest CPR</h3>'+(below.length||near.length?'<ul class="focus">'+below.map(d=>'<li>'+chip('below_passing')+' '+esc(d)+'</li>').join('')+near.map(d=>'<li>'+chip('near_passing')+' '+esc(d)+'</li>').join('')+'</ul>':'<p class="meta">No categories below or near the passing standard on the latest CPR.</p>');
+      $('attempts').innerHTML=attempts.slice().reverse().map(a=>{const m=ratings(a),n=attempts.indexOf(a)+1;
+        return '<article class="att"><header><h3>Attempt '+n+' · '+esc(fmtD(a.test_date))+'</h3><div>'
+        +(a.result?'<span class="chip '+(a.result==='pass'?'c-above':a.result==='fail'?'c-below':'c-none')+'">'+esc(a.result)+'</span> ':'')
+        +'<button class="secondary" data-edit="'+a.id+'" type="button">Edit</button> <button class="danger" data-del="'+a.id+'" type="button">Delete</button></div></header>'
+        +'<p class="meta">'+[a.question_count?'<b>'+a.question_count+'</b> items':'Items not recorded',a.end_reason?END[a.end_reason]:'',a.testing_minutes?a.testing_minutes+' min':''].filter(Boolean).join(' · ')+'</p>'
+        +'<div class="doms">'+DOMAINS.map(d=>'<div><span>'+esc(d)+'</span>'+chip(m[d])+'</div>').join('')+'</div>'
+        +(a.notes?'<p class="meta"><b>Notes:</b> '+esc(a.notes)+'</p>':'')+'</article>'}).join('');
+      document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openForm(b.dataset.edit));
+      document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delAttempt(b.dataset.del));
+    }
+    function openForm(id){
+      editing=id;const a=attempts.find(x=>x.id===id),m=a?ratings(a):{};
+      $('form-title').textContent=a?'Edit CPR':'Add a CPR';
+      $('f-date').value=a?.test_date||'';$('f-count').value=a?.question_count||'';$('f-result').value=a?.result||'';$('f-end').value=a?.end_reason||'';$('f-min').value=a?.testing_minutes||'';$('f-notes').value=a?.notes||'';
+      document.querySelectorAll('[data-d]').forEach(s=>s.value=m[DOMAINS[+s.dataset.d]]||'not_reported');
+      $('form-panel').classList.remove('hidden');$('form-panel').scrollIntoView({behavior:'smooth'});
+    }
+    async function saveAttempt(e){
+      e.preventDefault();$('save').disabled=true;say('Saving…');
+      const row={test_date:$('f-date').value||null,question_count:$('f-count').value?+$('f-count').value:null,result:$('f-result').value||null,end_reason:$('f-end').value||null,testing_minutes:$('f-min').value?+$('f-min').value:null,notes:$('f-notes').value.trim()||null,cpr_available:true,updated_at:new Date().toISOString()};
+      let id=editing,err;
+      if(id){err=(await db.from('nclex_attempts').update(row).eq('id',id)).error}
+      else{const next=attempts.reduce((n,a)=>Math.max(n,a.attempt_number),0)+1;const r=await db.from('nclex_attempts').insert({...row,consult_intake_id:$('person').value,attempt_number:next}).select('id').single();err=r.error;id=r.data?.id}
+      if(!err){const rows=[...document.querySelectorAll('[data-d]')].map(s=>({attempt_id:id,domain:DOMAINS[+s.dataset.d],rating:s.value}));err=(await db.from('nclex_cpr_results').upsert(rows,{onConflict:'attempt_id,domain'})).error}
+      $('save').disabled=false;
+      if(err){say('Could not save: '+err.message,true);return}
+      say('Saved.');$('form-panel').classList.add('hidden');await loadAttempts();say('Saved.');
+    }
+    async function delAttempt(id){
+      if(!confirm('Delete this CPR attempt? This cannot be undone.'))return;
+      const r=await db.from('nclex_attempts').delete().eq('id',id);
+      if(r.error){say('Could not delete: '+r.error.message,true);return}
+      await loadAttempts();
+    }
+    init();
+  </script>
+</body>
+</html>
