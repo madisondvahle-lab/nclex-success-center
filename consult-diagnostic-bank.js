@@ -155,6 +155,58 @@
       'An 86-year-old client with diabetes and gastroparesis has had repeated hospitalizations for aspiration pneumonia following a stroke and is now hospitalized with altered level of consciousness. Which nursing action is <b>most appropriate</b> to decrease the client\'s risk for developing aspiration pneumonia?',
       ['Assessing the client\'s breath sounds every 2 hours', 'Placing the client in the side-lying position in bed', 'Titrating the client\'s oxygen to maintain saturation of 93% or greater', 'Turning and repositioning the client every 2 hours'], 1,
       'A client with a decreased level of consciousness cannot protect the airway. Side-lying lets secretions and gastric contents drain from the mouth instead of being aspirated. Assessing, oxygen titration, and routine turning do not prevent aspiration.'),
+    q('cd034', 'sata', C.physio, 'Cardiovascular', 'recognize', 2,
+      'The nurse is screening a female client for metabolic syndrome. The client\'s results include LDL 110 mg/dL, blood pressure 148/90 mm Hg, triglycerides 180 mg/dL, waist circumference 38 inches (96.5 cm), and fasting blood glucose 88 mg/dL. Which of the following findings would be consistent with metabolic syndrome? <b>Select all that apply.</b>',
+      ['LDL level of 110 mg/dL', 'Blood pressure 148/90 mm Hg', 'Triglyceride level of 180 mg/dL', 'Waist circumference of 38 inches (96.5 cm)', 'Fasting blood glucose level of 88 mg/dL'], [1, 2, 3],
+      'Metabolic syndrome is diagnosed with three or more of these: waist circumference over 35 inches in women, blood pressure of 130/85 or higher, triglycerides of 150 or higher, low HDL, and fasting glucose of 100 or higher. LDL is not one of the criteria, and a glucose of 88 is normal.'),
+    q('cd035', 'sata', C.health, 'Post-operative Care', 'teaching', 2,
+      'The nurse is providing discharge teaching for a client who had coronary artery bypass grafting surgery using the great saphenous vein. Which of the following information should the nurse include? <b>Select all that apply.</b>',
+      ['"Wash your incisions in the shower and gently pat dry."', '"Increase your dietary intake of protein to promote healing."', '"Avoid elevating your affected leg while in a seated position."', '"Cleanse your incisions with hydrogen peroxide once weekly."', '"Report redness, swelling, or increased drainage from your incisions."'], [0, 1, 4],
+      'Gentle washing, extra protein for wound healing, and reporting signs of infection are appropriate. The client should elevate the leg when seated to reduce swelling at the vein harvest site, and hydrogen peroxide damages healing tissue.'),
+    q('cd036', 'sata', C.mgmt, 'Safety', 'recognize', 2,
+      'Which would be the appropriate client criteria for activating a rapid response team at the hospital? <b>Select all that apply.</b>',
+      ['Glasgow coma scale (GCS) score of 9 throughout the shift', 'Heart rate remaining at 58 beats/min for more than 1 hour', 'Postoperative pain rated at 10', 'Respiratory rate maintaining an increase to 30 breaths/min', 'Sustained change in level of consciousness for 10 minutes'], [3, 4],
+      'Rapid response teams are called for acute deterioration, such as a sustained respiratory rate of 30 or a sudden change in level of consciousness. A stable low GCS that has not changed, a heart rate of 58, and pain alone do not show acute deterioration.'),
+    q('cd039', 'mcq', C.health, 'Women\'s Health', 'teaching', 2,
+      'A client suffering from bladder prolapse and subsequent stress urinary incontinence has discussed treatment options with the health care provider (HCP). The nurse evaluates that the client understands support pessary use when the client makes which statement?',
+      ['"After the pessary is surgically placed, I\'ll experience bladder discomfort for several weeks."', '"I can remain sexually active while my pessary is in place."', '"I need to schedule weekly appointments to have the pessary removed and replaced."', '"I should report any vaginal discharge to my HCP immediately."'], 1,
+      'A pessary is a removable support device placed in the vagina, not surgically, and many clients can remain sexually active with it. It is cleaned and replaced about every few months, not weekly, and mild discharge is common, so it does not need immediate reporting unless it is foul smelling or bloody.'),
+    q('cd040', 'mcq', C.risk, 'Musculoskeletal', 'priority', 2,
+      'The nurse is caring for a client who sustained a fracture of the femur 24 hours ago. Which of the following actions would be a <b>priority</b> for the nurse to take to reduce the client\'s risk for fat emboli?',
+      ['Minimize movement of the affected extremity.', 'Apply a sequential compression device bilaterally.', 'Encourage frequent use of an incentive spirometer.', 'Administer IV morphine at regularly scheduled intervals.'], 0,
+      'Fat droplets released from the marrow of a long-bone fracture can travel to the lungs. Immobilizing the fracture and limiting movement of the extremity reduces this risk. Compression devices prevent clots, and the other actions do not stop fat release.'),
+    q('cd041', 'sata', C.physio, 'Oncology', 'recognize', 2,
+      'The nurse is caring for an adult client at the clinic who asks the nurse to look at a "black skin lesion." What assessment findings would be a classic indication of a potential malignant skin neoplasm? <b>Select all that apply.</b>',
+      ['Blanches with manual pressure', 'Half of the lesion is raised and half is flat', 'History of purulent drainage', 'Lesion is the size of a nickel', 'Various color shades are present'], [1, 3, 4],
+      'Melanoma warning signs follow ABCDE: asymmetry, irregular border, varied color, diameter larger than 6 mm (about a pencil eraser; a nickel is larger), and evolving. Blanching and purulent drainage point to benign or infectious causes.'),
+    {
+      type: 'bowtie', id: 'cd037', category: C.physio, topic: 'Pediatrics', pattern: P.priority, difficulty: 3,
+      stem: 'The nurse is caring for a 5-week-old infant.',
+      tabs: [{ id: 'notes', label: 'Nurses\' Notes', html: '<p><b>Emergency Department</b></p><p>The parents report increasingly frequent, forceful vomiting after every feed over the last 4 days. The emesis appears to be undigested milk. The infant appears hungry again after each episode of vomiting. The infant is exclusively breastfed; the last bowel movement was yesterday; it was soft in consistency and yellow.</p><p>The anterior fontanel is mildly sunken, and mucous membranes are dry. There is prominent peristalsis in the epigastric region with a palpable olive-shaped mass.</p>' }],
+      prompt: 'The nurse is reviewing the client\'s assessment data to prepare the client\'s plan of care. <br><br><span class="ex-chev">»</span>Complete the diagram by selecting from the choices below to specify what condition the client is most likely experiencing, 2 actions the nurse should take to address that condition, and 2 parameters the nurse should monitor to assess the client\'s progress.',
+      bowtie: {
+        actionsTitle: 'Actions to Take', conditionsTitle: 'Potential Conditions', complicationsTitle: 'Parameters to Monitor',
+        actions: ['Initiate contact precautions', 'Prepare the client for an air enema', 'Prepare the infant for bowel resection surgery', 'Administer IV fluids', 'Prepare the infant for pyloromyotomy'],
+        conditions: ['Rotavirus', 'Hirschsprung disease', 'Hypertrophic pyloric stenosis', 'Intussusception'],
+        complications: ['Stool sample results', 'Postprandial vomiting', 'Passage of formed stool prior to the procedure', 'Abdominal girth', 'Serum electrolytes']
+      },
+      correct: { actions: [3, 4], condition: 2, complications: [1, 4] },
+      rationale: 'Projectile non-bilious vomiting in a hungry infant with an olive-shaped epigastric mass is hypertrophic pyloric stenosis. The infant is dehydrated and loses gastric acid, so IV fluids and correction of electrolytes come first, followed by preparation for surgical pyloromyotomy. The nurse monitors postprandial vomiting and serum electrolytes. Air enema and bowel resection apply to intussusception, and contact precautions apply to rotavirus.'
+    },
+    {
+      type: 'bowtie', id: 'cd038', category: C.physio, topic: 'Musculoskeletal', pattern: P.priority, difficulty: 3,
+      stem: 'The nurse is caring for a 13-year-old client in the emergency department.',
+      tabs: [{ id: 'notes', label: 'Nurses\' Notes', html: '<p><b>Emergency Department</b></p><p>The client\'s parents report that the client has had fever and worsening right leg pain for the past 7 days. There is no significant medical history or recent trauma. The client swims twice a week.</p><p>There is tenderness, erythema, and warmth over the proximal area of the tibia.</p>' }],
+      prompt: 'The nurse is reviewing the client\'s assessment data to prepare the client\'s plan of care. <br><br><span class="ex-chev">»</span>Complete the diagram by selecting from the choices below to specify what condition the client is most likely experiencing, 2 actions the nurse should take to address that condition, and 2 complications the nurse should monitor for.',
+      bowtie: {
+        actionsTitle: 'Action to Take', conditionsTitle: 'Condition Most Likely Experiencing', complicationsTitle: 'Complication',
+        actions: ['Administer an antibiotic', 'Administer hydroxyurea', 'Obtain a blood culture', 'Prepare the client for casting'],
+        conditions: ['Osteomyelitis', 'Sickle cell disease', 'Bone fracture'],
+        complications: ['Sepsis', 'Bone necrosis', 'Flexion contractures', 'Compartment syndrome']
+      },
+      correct: { actions: [0, 2], condition: 0, complications: [0, 1] },
+      rationale: 'Fever with bone pain, tenderness, erythema, and warmth over the tibia without trauma points to osteomyelitis, a bone infection. The nurse obtains blood cultures before starting antibiotics. Untreated infection can spread to the blood (sepsis) or destroy bone tissue (bone necrosis). Hydroxyurea treats sickle cell disease, and casting and compartment syndrome relate to fractures.'
+    },
 
     {
       kind: 'case', id: 'cdcase1', category: C.physio, topic: 'Cardiac', difficulty: 3,

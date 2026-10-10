@@ -111,3 +111,17 @@
 .ex-feedback.no{border-color:#b4443c;background:#fbeeed}
 .ex-feedback .ex-fbh{margin:0 0 6px;font-weight:700}
 .ex-feedback .ex-rat{margin:10px 0 0;line-height:1.5}
+
+.bt-diagram{display:grid;grid-template-columns:1fr 1fr 1fr;gap:34px;align-items:center;max-width:760px;margin:6px 0 4px;position:relative}
+.bt-col{display:flex;flex-direction:column;gap:22px}
+.bt-slot{font:inherit;font-size:.88em;min-height:58px;padding:8px 10px;border:2px dashed #9aa7b5;border-radius:6px;background:#f4f6f8;color:#333;cursor:pointer;text-align:left}
+.bt-slot.on{border:2px solid #2e7d32;background:#eef2f6}
+.bt-ph{color:#6b7785}
+.bt-banks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:760px;margin-top:8px}
+.bt-bank{border:1px solid #b5c4b5;border-radius:6px;padding:10px}
+.bt-bank h4{margin:0 0 8px;font-size:.88em;text-align:center}
+.bt-choice{display:block;width:100%;font:inherit;font-size:.85em;text-align:left;padding:9px 10px;margin-bottom:8px;border:1px solid #c5ccd3;border-radius:6px;background:#eef2f6;cursor:pointer}
+.bt-choice.used{opacity:.4;cursor:default}
+.bt-slot:focus-visible,.bt-choice:focus-visible{outline:3px solid #9cc9f5;outline-offset:2px}
+.ex-main.locked .bt-diagram,.ex-main.locked .bt-banks{pointer-events:none}
+@media(max-width:700px){.bt-diagram,.bt-banks{grid-template-columns:1fr}}
