@@ -53,6 +53,7 @@
       <p class="status" id="status" role="status"></p>
     </section>
     <div id="detail" class="hidden">
+      <p class="meta" id="link-box"></p>
       <section class="panel" id="trend-panel"></section>
       <section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Attempts</h2><button id="add" type="button">+ Add CPR</button></div><div id="attempts"></div></section>
       <section class="panel hidden" id="form-panel"><h2 id="form-title">Add a CPR</h2>
@@ -72,15 +73,16 @@
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <script src="category-names.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const DOMAINS=['Management of Care','Safety and Infection Control','Health Promotion and Maintenance','Psychosocial Integrity','Basic Care and Comfort','Pharmacological and Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
+    const DOMAINS=NCLEXCats.NAMES;
     const RATE={above_passing:['Above','c-above',2],near_passing:['Near','c-near',1],below_passing:['Below','c-below',0],not_reported:['—','c-none',null]};
     const END={computer_shut_off:'Shut off normally',maximum_items:'Maximum items',ran_out_of_time:'Ran out of time',does_not_remember:'Does not remember'};
     const fmtD=v=>v?new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Date not set';
     const chip=r=>{const x=RATE[r]||RATE.not_reported;return '<span class="chip '+x[1]+'">'+x[0]+'</span>'};
-    let people=[],attempts=[],editing=null;
+    let people=[],clients=[],attempts=[],editing=null;
     const say=(t,err)=>{$('status').textContent=t||'';$('status').className='status'+(err?' err':'')};
 
     async function init(){
@@ -99,10 +101,42 @@
     async function loadPeople(select){
       const r=await db.from('consult_intakes').select('id,full_name,email,status,student_id,student_type').order('full_name');
       if(r.error){say('Could not load people. Run the onboarding migration first. '+r.error.message,true);return}
-      people=(r.data||[]).filter(p=>!p.student_type||/^NCLEX/i.test(p.student_type));
-      $('person').innerHTML='<option value="">Choose a person…</option>'+people.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+(p.email?' · '+esc(p.email):'')+(p.student_id?' (client)':'')+'</option>').join('');
+      const st=await db.from('students').select('id,name,email,student_type').order('name');
+      clients=(st.data||[]).filter(c=>!c.student_type||/nclex/i.test(c.student_type));
+      let rows=r.data||[];
+      for(const p of rows){
+        if(p.student_id)continue;
+        const m=p.email&&clients.find(c=>c.email&&c.email.toLowerCase()===p.email.toLowerCase());
+        if(m){const u=await db.from('consult_intakes').update({student_id:m.id}).eq('id',p.id);if(!u.error)p.student_id=m.id}
+      }
+      people=rows.filter(p=>!p.student_type||/^NCLEX/i.test(p.student_type));
+      const linked=new Set(people.map(p=>p.student_id).filter(Boolean));
+      const orphans=clients.filter(c=>!linked.has(c.id));
+      $('person').innerHTML='<option value="">Choose a person…</option>'+people.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+(p.email?' · '+esc(p.email):'')+(p.student_id?' (client)':'')+'</option>').join('')
+        +(orphans.length?'<optgroup label="Clients without a CPR record yet">'+orphans.map(c=>'<option value="c:'+c.id+'">'+esc(c.name)+(c.email?' · '+esc(c.email):'')+' (client)</option>').join('')+'</optgroup>':'');
       if(select&&people.some(p=>p.id===select))$('person').value=select;
       await loadAttempts();
+    }
+    async function loadAttempts(){
+      let id=$('person').value;$('form-panel').classList.add('hidden');
+      if(id.startsWith('c:')){
+        const c=clients.find(x=>x.id===id.slice(2));say('Setting up '+esc(c.name)+'…');
+        const ins=await db.from('consult_intakes').insert({full_name:c.name,email:c.email||null,status:'active_student',student_type:'NCLEX-RN',student_id:c.id}).select('id').single();
+        if(ins.error){say('Could not link client: '+ins.error.message,true);return}
+        await loadPeople(ins.data.id);return;
+      }
+      if(!id){$('detail').classList.add('hidden');return}
+      const r=await db.from('nclex_attempts').select('*,nclex_cpr_results(domain,rating)').eq('consult_intake_id',id).order('test_date',{ascending:true,nullsFirst:false}).order('attempt_number');
+      if(r.error){say('Could not load CPRs: '+r.error.message,true);return}
+      say('');attempts=r.data||[];$('detail').classList.remove('hidden');renderLink(id);render();
+    }
+    function renderLink(id){
+      const p=people.find(x=>x.id===id),box=$('link-box');if(!p){box.innerHTML='';return}
+      const c=p.student_id&&clients.find(x=>x.id===p.student_id);
+      if(c){box.innerHTML='Linked to client record: <a href="shared-progress.html?student='+encodeURIComponent(c.id)+'">'+esc(c.name)+' — open workspace</a>. These CPRs appear in their Client overview.';return}
+      const opts=clients.map(x=>'<option value="'+x.id+'">'+esc(x.name)+(x.email?' · '+esc(x.email):'')+'</option>').join('');
+      box.innerHTML='Not linked to a client record yet (prospect). <select id="link-sel"><option value="">Link to client…</option>'+opts+'</select> <button class="secondary" type="button" id="link-btn">Link</button>';
+      $('link-btn').onclick=async()=>{const v=$('link-sel').value;if(!v)return;const u=await db.from('consult_intakes').update({student_id:v}).eq('id',id);if(u.error){say('Could not link: '+u.error.message,true);return}await loadPeople(id)};
     }
     async function addPerson(e){
       e.preventDefault();say('Adding…');
@@ -110,14 +144,7 @@
       if(r.error){say('Could not add person: '+r.error.message,true);return}
       $('person-form').reset();$('person-form').classList.add('hidden');say('');await loadPeople(r.data.id);
     }
-    async function loadAttempts(){
-      const id=$('person').value;$('form-panel').classList.add('hidden');
-      if(!id){$('detail').classList.add('hidden');return}
-      const r=await db.from('nclex_attempts').select('*,nclex_cpr_results(domain,rating)').eq('consult_intake_id',id).order('test_date',{ascending:true,nullsFirst:false}).order('attempt_number');
-      if(r.error){say('Could not load CPRs: '+r.error.message,true);return}
-      say('');attempts=r.data||[];$('detail').classList.remove('hidden');render();
-    }
-    const ratings=a=>{const m={};(a.nclex_cpr_results||[]).forEach(x=>m[x.domain]=x.rating);return m};
+    const ratings=a=>{const m={};(a.nclex_cpr_results||[]).forEach(x=>m[NCLEXCats.canon(x.domain)]=x.rating);return m};
     function render(){
       if(!attempts.length){$('trend-panel').innerHTML='<h2>Trend</h2><p class="meta">No CPRs entered yet.</p>';$('attempts').innerHTML='';return}
       const R=attempts.map(ratings),last=R[R.length-1];

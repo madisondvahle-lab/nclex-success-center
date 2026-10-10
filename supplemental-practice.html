@@ -23,6 +23,7 @@
   </main>
   <link rel="stylesheet" href="exam-ui.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
   <script src="exam-ui.js"></script>
   <script src="exam-adapters.js"></script>
   <script>
@@ -1567,6 +1568,8 @@
     }
 
     function mixedCategory(q){
+      const cn=window.NCLEXCats&&NCLEXCats.canon(q.nclex_category,'');
+      if(cn&&NCLEXCats.index(cn)>=0)return cn;
       const text=[q.nclex_category,q.nclex_sub,q.topic,q.module_key,q.stem].filter(Boolean).join(' ').toLowerCase();
 
       if(/priority|delegat|management of care|safety|acute|unstable|first|immediate|clinical judgment/.test(text))

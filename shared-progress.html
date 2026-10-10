@@ -142,6 +142,7 @@
     </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -396,7 +397,7 @@
       return fromAttempts.concat(fromPractice);
     }
 
-    const clientNeedOrder=['Management of Care','Safety and Infection Prevention and Control','Health Promotion and Maintenance','Psychosocial Integrity','Basic Care and Comfort','Pharmacological and Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
+    const clientNeedOrder=NCLEXCats.NAMES;
     function renderClientNeeds(categories){const grouped=new Map;categories.forEach(item=>grouped.set(item.assessment_id,[...(grouped.get(item.assessment_id)||[]),item]));const candidates=currentUploads.map(upload=>({upload,categories:grouped.get(upload.id)||[]})).filter(item=>item.categories.filter(category=>clientNeedOrder.includes(category.category)).length>=4);const selected=candidates.find(item=>/client needs/i.test(item.upload.report_label||item.upload.report_filename||''))||candidates[0];const card=$('client-needs-card');if(!selected){card.classList.add('hidden');return}const scoreByName=new Map(selected.categories.map(item=>[item.category,item.score]));const title=selected.upload.report_label||selected.upload.report_filename||'Latest Client Needs report';$('client-needs-source').textContent=title+'';$('client-needs').innerHTML=clientNeedOrder.map(name=>{const score=scoreByName.get(name);return `<article class="client-need"><h3>${esc(name)}</h3><strong>${score==null?'—':esc(score)+'%'}</strong><span>QBank</span></article>`}).join('');card.classList.remove('hidden');card.style.display='none'}
     function renderSystemNeeds(categories){const grouped=new Map;categories.forEach(item=>grouped.set(item.assessment_id,[...(grouped.get(item.assessment_id)||[]),item]));const selected=currentUploads.map(upload=>({upload,categories:grouped.get(upload.id)||[]})).find(item=>/system needs/i.test(item.upload.report_label||item.upload.report_filename||''));const card=$('system-needs-card');if(!selected||!selected.categories.length){card.classList.add('hidden');return}const title=selected.upload.report_label||selected.upload.report_filename||'Latest System Needs report';$('system-needs-source').textContent=title+' · Highest-priority systems from your cumulative QBank data';$('system-needs').innerHTML=selected.categories.slice().sort((a,b)=>Number(a.score)-Number(b.score)).map(item=>`<article class="system-need"><h3>${esc(item.category)}</h3><strong>${item.score==null?'—':esc(item.score)+'%'}</strong><span>QBank</span></article>`).join('');card.classList.remove('hidden');card.style.display='none'}
     function renderPracticeSuggestions(categories){const visibleIds=new Set(currentUploads.map(item=>item.id));const grouped=new Map;categories.filter(item=>visibleIds.has(item.assessment_id)&&item.score!=null&&Number.isFinite(Number(item.score))).forEach(item=>{const name=String(item.category||'').replace(/^latest\s+/i,'').trim();if(!name)return;const current=grouped.get(name)||{total:0,count:0};current.total+=Number(item.score);current.count++;grouped.set(name,current)});const ranked=[...grouped.entries()].map(([name,data])=>({name,average:Math.round(data.total/data.count),count:data.count})).sort((a,b)=>a.average-b.average||b.count-a.count).slice(0,3);const card=$('practice-plan-card');if(!ranked.length){card.classList.add('hidden');return}$('practice-suggestions').innerHTML=ranked.map(item=>{const practice='Complete 10–15 reader-supported questions on '+item.name+'. Use key cue → highest-risk problem → first action. Review every missed or guessed item.';const button=isAdmin?'<button class="assign-button" type="button" data-assign-focus="'+esc(item.name)+'" data-assign-score="'+esc(item.average)+'" data-assign-next="'+esc(practice)+'">Use as a shared assignment →</button>':'';return '<article class="practice-card"><h3>'+esc(item.name)+'</h3><strong>'+esc(item.average)+'%</strong><p class="practice-meta">Average across '+esc(item.count)+' imported category score'+(item.count===1?'':'s')+'</p><p>'+esc(practice)+'</p>'+button+'</article>'}).join('');document.querySelectorAll('[data-assign-focus]').forEach(button=>button.addEventListener('click',()=>{$('focus-name').value=button.dataset.assignFocus;$('focus-priority').value='high';$('focus-current').value=button.dataset.assignScore;$('focus-trend').value='needs_attention';$('focus-next').value=button.dataset.assignNext;$('coach-review').scrollIntoView({behavior:'smooth',block:'start'});$('focus-name').focus()}));card.classList.remove('hidden')}
@@ -522,7 +523,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       loadStudent(student);
     }
     // Assessments saved from the Assessments history page (external_assessments), shaped like workspace uploads.
-    const catAlias={'Safety & Infection Prevention':'Safety and Infection Prevention and Control'};
+    const catAlias={};
     async function loadHistoryAssessments(studentId){
       const {data,error}=await db.from('external_assessments').select('*').eq('student_id',studentId);
       if(error){$('intro').textContent='Assessments entered on the Assessments page could not be loaded: '+(error.message||'unknown error');return{uploads:[],categories:[]}}
@@ -534,7 +535,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         const id='history:'+row.id,file=(row.assessment_report_files||[])[0],name=row.assessment_name||'';
         const kind=/cpr/i.test(name+' '+row.platform)?'cpr_report':/\bcat\b|computer adaptive/i.test(name+' '+row.platform)?'cat':'other';
         uploads.push({id,fromHistory:true,platform:row.platform||'Assessment',assessment_type:kind,taken_on:row.taken_at,created_at:row.created_at,overall_score:row.overall_score,report_label:name||null,report_filename:(file&&file.original_filename)||name||'Entered manually',report_path:file?file.storage_path:'',uploaded_by:session.user.id});
-        Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:catAlias[cat]||cat.replace(/ & /g,' and '),score:score}));
+        Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:NCLEXCats.canon(cat,cat.replace(/ & /g,' and ')),score:score}));
       });
       return{uploads,categories};
     }
@@ -548,8 +549,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       document.querySelectorAll('[data-discussed]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const u=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.discussed);if(u.error){alert(u.error.message);b.disabled=false;return}loadDiscussFlags(studentId)}));
     }
 
-    const OV_KEYS=[[/manage/i,0],[/safety/i,1],[/health/i,2],[/psych/i,3],[/basic care/i,4],[/pharm/i,5],[/risk/i,6],[/physio/i,7]];
-    const ovIdx=name=>{const m=OV_KEYS.find(k=>k[0].test(String(name||'')));return m?m[1]:-1};
+    const ovIdx=name=>NCLEXCats.index(name);
     const ovPct=(p)=>p==null?'<span class="ov-chip ov-n">—</span>':'<span class="ov-chip '+(p>=80?'ov-g':p>=65?'ov-a':'ov-r')+'">'+Math.round(p)+'%</span>';
     const ovCpr={above_passing:['Above','ov-g'],near_passing:['Near','ov-a'],below_passing:['Below','ov-r']};
     async function renderClientOverview(st,uploads,cats){
@@ -569,16 +569,21 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const byUpload=new Map;cats.forEach(c=>byUpload.set(c.assessment_id,[...(byUpload.get(c.assessment_id)||[]),c]));
       const outside=[];let outsideSrc='';
       uploads.forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outside[i]==null&&c.score!=null){outside[i]=Number(c.score);if(!outsideSrc)outsideSrc=(u.report_label||u.platform||'Report')}}));
+      const prac=[];
+      const pr=(await db.from('student_supplemental_practice_results').select('category_scores').eq('student_id',st.id)).data||[];
+      const pt=[];pr.forEach(r=>Object.entries(r.category_scores||{}).forEach(([k,v])=>{const i=ovIdx(k);if(i<0||!v||!v.total)return;pt[i]=pt[i]||{c:0,t:0};pt[i].c+=v.correct||0;pt[i].t+=v.total}));
+      pt.forEach((v,i)=>{if(v&&v.t>=3)prac[i]=v.c/v.t*100});
       const rank={above_passing:2,near_passing:1,below_passing:0};
       const rows=clientNeedOrder.map((name,i)=>{
         let weak=0,signals=0;
         if(cNow[i]&&cNow[i]!=='not_reported'){signals++;if(cNow[i]!=='above_passing')weak++}
         if(diagCats[i]!=null){signals++;if(diagCats[i]<70)weak++}
         if(outside[i]!=null){signals++;if(outside[i]<65)weak++}
+        if(prac[i]!=null){signals++;if(prac[i]<65)weak++}
         const verdict=!signals?['No data','ov-n']:weak>=2?['Confirmed focus','ov-r']:weak===1?(signals>1?['Mixed — discuss','ov-a']:['Possible focus','ov-a']):['Looks solid','ov-g'];
         let arrow='';if(cPrev[i]&&cNow[i]&&rank[cPrev[i]]!=null&&rank[cNow[i]]!=null&&rank[cPrev[i]]!==rank[cNow[i]])arrow=rank[cNow[i]]>rank[cPrev[i]]?' <span style="color:#2f7d4f" title="Improved since previous CPR">▲</span>':' <span style="color:#b4443c" title="Declined since previous CPR">▼</span>';
         const c=ovCpr[cNow[i]];
-        return {name,weak,verdict,html:'<tr><td>'+esc(name)+'</td><td>'+(c?'<span class="ov-chip '+c[1]+'">'+c[0]+'</span>'+arrow:'<span class="ov-chip ov-n">—</span>')+'</td><td>'+ovPct(diagCats[i])+'</td><td>'+ovPct(outside[i])+'</td><td><span class="ov-chip '+verdict[1]+'">'+verdict[0]+'</span></td></tr>'};
+        return {name,weak,verdict,html:'<tr><td>'+esc(name)+'</td><td>'+(c?'<span class="ov-chip '+c[1]+'">'+c[0]+'</span>'+arrow:'<span class="ov-chip ov-n">—</span>')+'</td><td>'+ovPct(diagCats[i])+'</td><td>'+ovPct(outside[i])+'</td><td>'+ovPct(prac[i])+'</td><td><span class="ov-chip '+verdict[1]+'">'+verdict[0]+'</span></td></tr>'};
       });
       const latestCat=uploads.find(u=>u.overall_score!=null);
       const stats='<div class="ov-stats"><div><b>'+esc(st.nclex_target_date?new Date(st.nclex_target_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—')+'</b><span>Target NCLEX date</span></div>'
@@ -586,8 +591,8 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         +'<div><b>'+(latestCat?Math.round(latestCat.overall_score)+'%':'—')+'</b><span>Latest outside score</span></div>'
         +'<div><b>'+(diag[0]?Math.round(diag[0].score_percent)+'%':'—')+'</b><span>Consult diagnostic</span></div></div>';
       const focus=rows.filter(r=>r.weak>=1).sort((a,b)=>b.weak-a.weak);
-      $('overview-body').innerHTML=stats+'<div class="ov-scroll"><table class="ov-table"><thead><tr><th>Category</th><th>Latest CPR</th><th>Consult diagnostic</th><th>Outside report'+(outsideSrc?' ('+esc(outsideSrc)+')':'')+'</th><th>Read</th></tr></thead><tbody>'+rows.map(r=>r.html).join('')+'</tbody></table></div>'
-        +'<p class="muted" style="margin-top:12px">'+(focus.length?'<b>Start with:</b> '+focus.slice(0,3).map(r=>esc(r.name)).join(', ')+'. ':'')+'“Confirmed focus” means at least two sources are weak (CPR near/below, diagnostic or outside report under the thresholds 70% / 65%). Enter CPRs on the <a href="madison-cpr.html">CPR tracker</a>.</p>';
+      $('overview-body').innerHTML=stats+'<div class="ov-scroll"><table class="ov-table"><thead><tr><th>Category</th><th>Latest CPR</th><th>Consult diagnostic</th><th>Outside report'+(outsideSrc?' ('+esc(outsideSrc)+')':'')+'</th><th>Practice</th><th>Read</th></tr></thead><tbody>'+rows.map(r=>r.html).join('')+'</tbody></table></div>'
+        +'<p class="muted" style="margin-top:12px">'+(focus.length?'<b>Start with:</b> '+focus.slice(0,3).map(r=>esc(r.name)).join(', ')+'. ':'')+'“Confirmed focus” means at least two sources are weak (CPR near/below, diagnostic under 70%, outside report or practice (3+ questions) under 65%). Enter CPRs on the <a href="madison-cpr.html">CPR tracker</a>.</p>';
     }
     async function loadStudent(target){
       student=target;
