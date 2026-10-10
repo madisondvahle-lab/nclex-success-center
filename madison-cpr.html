@@ -43,7 +43,7 @@
     </nav></header>
     <p class="eyebrow" style="margin-top:34px">Private admin view</p>
     <h1 style="margin-top:6px">NCLEX CPR tracker.</h1>
-    <p class="meta">Enter each Candidate Performance Report: test date, number of items, and where every test-plan category landed (above, near, or below the passing standard). Works for clients and prospects.</p>
+    <p class="meta">Enter each Candidate Performance Report: test date, number of items, and where every test-plan category landed (above, near, or below the passing standard). For NCLEX prep clients and prospects only; nursing-school students are not listed.</p>
     <section class="panel">
       <div class="row">
         <label>Client or prospect<select id="person"></select></label>
@@ -97,16 +97,16 @@
       await loadPeople(new URLSearchParams(location.search).get('person'));
     }
     async function loadPeople(select){
-      const r=await db.from('consult_intakes').select('id,full_name,email,status,student_id').order('full_name');
+      const r=await db.from('consult_intakes').select('id,full_name,email,status,student_id,student_type').order('full_name');
       if(r.error){say('Could not load people. Run the onboarding migration first. '+r.error.message,true);return}
-      people=r.data||[];
+      people=(r.data||[]).filter(p=>!p.student_type||/^NCLEX/i.test(p.student_type));
       $('person').innerHTML='<option value="">Choose a person…</option>'+people.map(p=>'<option value="'+p.id+'">'+esc(p.full_name)+(p.email?' · '+esc(p.email):'')+(p.student_id?' (client)':'')+'</option>').join('');
       if(select&&people.some(p=>p.id===select))$('person').value=select;
       await loadAttempts();
     }
     async function addPerson(e){
       e.preventDefault();say('Adding…');
-      const r=await db.from('consult_intakes').insert({full_name:$('pn').value.trim(),email:$('pe').value.trim()||null,status:'new_lead'}).select('id').single();
+      const r=await db.from('consult_intakes').insert({full_name:$('pn').value.trim(),email:$('pe').value.trim()||null,status:'new_lead',student_type:'NCLEX-RN'}).select('id').single();
       if(r.error){say('Could not add person: '+r.error.message,true);return}
       $('person-form').reset();$('person-form').classList.add('hidden');say('');await loadPeople(r.data.id);
     }
