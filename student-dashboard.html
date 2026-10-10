@@ -648,7 +648,33 @@
       }
 
       renderCatTrend(student);
+      renderThisWeek(student, resources);
       document.getElementById('portal-nclex').classList.remove('hidden');
+    }
+
+    // Fills "This week" with the weakest categories and the week's practice, using only data the student can read.
+    async function renderThisWeek(student, resources) {
+      const host = document.getElementById('daily-priorities-nclex');
+      if (!host) return;
+      const [ea, pr] = await Promise.all([
+        db.from('external_assessments').select('taken_at,created_at,category_scores').eq('student_id', student.id),
+        db.from('student_supplemental_practice_results').select('score,total_questions,completed_at').eq('student_id', student.id).gte('completed_at', new Date(Date.now() - 7 * 86400000).toISOString())
+      ]);
+      const rows = (ea.data || []).slice().sort((a, b) => String(a.taken_at || a.created_at).localeCompare(String(b.taken_at || b.created_at)));
+      const latest = rows[rows.length - 1];
+      const weak = latest ? Object.entries(latest.category_scores || {}).map(([n, v]) => [n, Number(v)]).filter(x => Number.isFinite(x[1])).sort((a, b) => a[1] - b[1]).slice(0, 3) : [];
+      const week = pr.error ? [] : (pr.data || []);
+      const done = week.reduce((a, r) => a + (Number(r.total_questions) || 0), 0);
+      const right = week.reduce((a, r) => a + (Number(r.score) || 0), 0);
+      const next = (resources || []).filter(r => r.due_on && r.due_on >= new Date().toISOString().slice(0, 10)).sort((a, b) => a.due_on.localeCompare(b.due_on))[0];
+      let html = '';
+      if (weak.length) html += `<div class="task"><strong>Focus on these three areas</strong><span>${weak.map(w => `${text(w[0])} (${Math.round(w[1])}%)`).join(' · ')}</span></div>`;
+      if (done) html += `<div class="task"><strong>${done} practice questions this week</strong><span>${Math.round(right / done * 100)}% correct</span></div>`;
+      if (next) html += `<div class="task"><strong>Next due: ${text(next.title || 'Assigned item')}</strong><span>${new Date(next.due_on + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span></div>`;
+      if (!html) return;
+      host.insertAdjacentHTML('beforeend', html);
+      const intro = document.getElementById('weekly-intro-nclex');
+      if (intro && /will appear here/.test(intro.textContent)) intro.textContent = 'A quick snapshot of what to work on right now.';
     }
 
     // Weekly CAT trend from the assessments Madison enters each week.
