@@ -610,7 +610,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
 
     const catKindOk=u=>u.assessment_type!=='cpr_report'&&isProgressAssessment(u);
     const catShort=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    function renderCatCard(uploads,cats){
+    function renderCatCard(uploads,cats,focus){
       const card=$('cat-card');
       if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
       card.classList.remove('hidden');
@@ -642,6 +642,9 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         if(weak.length)html+='<p class="muted" style="margin-top:10px"><b>Lowest on latest exam:</b> '+weak.map(w=>esc(w[0])+' ('+Math.round(w[1])+'%)').join(', ')+'</p>';
       }
       if(empty.length)html+='<p class="muted" style="margin-top:10px"><b>Uploaded with no scores yet:</b> '+empty.map(e=>esc(label(e))+' ('+esc(catShort(e.d))+')').join('; ')+'. Choose it under “Save to” below to add its scores to the chart.</p>';
+      const fs=(focus||[]).filter(f=>f.current_score!==null&&f.current_score!==undefined&&f.current_score!=='');
+      if(fs.length)html+='<h3 style="margin:18px 0 6px;font-size:1rem">Scores entered as focus areas</h3><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Area</th><th>Previous</th><th>Current</th></tr></thead><tbody>'+fs.map(f=>'<tr><td>'+esc(f.focus_area)+'</td><td>'+(f.previous_score==null||f.previous_score===''?'—':esc(f.previous_score)+'%')+'</td><td>'+esc(f.current_score)+'%</td></tr>').join('')+'</tbody></table></div><p class="muted">These were typed into the Priorities form, so they are not part of the exam chart. Re-enter them under “Enter exam results” to chart them.</p>';
+      html+='<p class="muted" style="margin-top:12px;font-size:.78rem">On file for this client: '+uploads.length+' assessment record'+(uploads.length===1?'':'s')+' ('+exams.length+' shown here, '+scored.length+' with an overall score, '+withCats.length+' with category scores), '+(focus||[]).length+' priorit'+((focus||[]).length===1?'y':'ies')+'.</p>';
       $('cat-body').innerHTML=html;
       $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
       $('cat-entry').open=!exams.length||!!empty.length;
@@ -705,7 +708,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
-      renderCatCard(currentUploads,allCategories);
+      renderCatCard(currentUploads,allCategories,focus.data||[]);
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }
