@@ -46,10 +46,9 @@
       <p class="meta" id="list-status" role="status"></p>
       <div id="list"></div>
       <section class="panel" id="auto-panel" style="margin-top:24px"><h2>Automatic Strategy Session follow-ups</h2>
-        <p class="meta">After each Strategy Session ends, the student gets a thank-you email with your private discounted package links, and one reminder before the credit window closes.</p>
+        <p class="meta">After each Strategy Session ends, the student gets a thank-you email explaining the $40 refund if they buy a package within seven days, plus one reminder before the window closes. You issue the refund in Stripe when they reply.</p>
         <label>Mode<select id="auto-mode"><option value="off">Off</option><option value="preview">Preview: send only to me</option><option value="live">Live: send to students</option></select></label>
         <label>Preview email (where previews and tests go)<input id="auto-preview" type="email"></label>
-        <label>Private package links, one per line as: Label | https://link<textarea id="auto-links" placeholder="14-Session Package (Strategy Credit) | https://calendly.com/..."></textarea></label>
         <p><button id="auto-save" type="button">Save settings</button> <button id="auto-test" class="secondary" type="button">Send me a test email</button> <span class="save" id="auto-state" role="status"></span></p>
       </section>
     </section>
@@ -84,20 +83,16 @@
 
     const CREDIT_LABEL={none:'No credit sent',link_sent:'Credit link sent',reminded:'Reminder sent',purchased:'Package purchased',expired:'Credit window closed'};
     let settings=null;
-    const parseLinks=t=>t.split('\n').map(l=>l.split('|').map(x=>x.trim())).filter(a=>a[0]&&a[1]).map(([label,url])=>({label,url}));
     async function loadSettings(){
       const {data}=await db.from('followup_settings').select('*').eq('id',1).maybeSingle();
       if(!data){document.getElementById('auto-state').textContent='Run supabase-strategy-followup-migration.sql first.';return}
       settings=data;
       document.getElementById('auto-mode').value=data.send_mode;
       document.getElementById('auto-preview').value=data.preview_email||'';
-      document.getElementById('auto-links').value=(data.package_links||[]).map(l=>l.label+' | '+l.url).join('\n');
     }
     async function saveSettings(){
-      const state=document.getElementById('auto-state'),mode=document.getElementById('auto-mode').value,links=parseLinks(document.getElementById('auto-links').value);
-      if(links.some(l=>!/^https:\/\//.test(l.url))){state.textContent='Each link must start with https://';state.classList.add('err');return}
-      if(mode==='live'&&!links.length){state.textContent='Add at least one package link before going live.';state.classList.add('err');return}
-      const patch={send_mode:mode,preview_email:document.getElementById('auto-preview').value.trim()||null,package_links:links,updated_at:new Date().toISOString()};
+      const state=document.getElementById('auto-state'),mode=document.getElementById('auto-mode').value;
+      const patch={send_mode:mode,preview_email:document.getElementById('auto-preview').value.trim()||null,updated_at:new Date().toISOString()};
       if(settings&&settings.send_mode==='off'&&mode!=='off')patch.active_since=new Date().toISOString();
       const {error}=await db.from('followup_settings').update(patch).eq('id',1);
       state.classList.toggle('err',!!error);state.textContent=error?error.message:'Saved';
