@@ -72,7 +72,7 @@
 .ex-fb:last-child{border-right:0}
 .ex-fb:hover,.ex-fb:focus-visible{background:rgba(255,255,255,.18);outline:none}
 .ex-fb[disabled]{opacity:.45;cursor:default;background:none}
-.ex-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80;display:grid;place-items:center;padding:20px;font-family:Arial,Helvetica,sans-serif}
+.ex-modal-bg{--ex-dark:#0067a8;--ex-line:#c9ced3;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80;display:grid;place-items:center;padding:20px;font-family:Arial,Helvetica,sans-serif}
 .ex-modal{background:#fff;color:#111;width:min(520px,100%);max-height:90vh;overflow:auto;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .ex-modal.wide{width:min(760px,100%)}
 .ex-modal h2{margin:0;padding:12px 18px;background:var(--ex-dark);color:#fff;font-size:1rem;font-weight:700}
