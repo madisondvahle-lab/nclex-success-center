@@ -184,7 +184,7 @@
         <div class="ex-toolbar"><div class="ex-tools">
           <button class="ex-tb" data-a="notes">${ICON.notes}<span><span class="u">N</span>otes</span></button>
           <button class="ex-tb" data-a="calc">${ICON.calc}<span>Calc<span class="u">u</span>lator</span></button>
-          ${this.o.noFeedback ? '' : `<button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button>`}${this.o.onFlag ? `<button class="ex-tb" data-a="flag">${ICON.feedback}<span>Report <span class="u">q</span>uestion</span></button>` : ''}</div>
+          ${this.o.noFeedback ? '' : `<button class="ex-tb" data-a="fb">${ICON.feedback}<span><span class="u">F</span>eedback</span></button>`}${this.o.onFlag ? `<button class="ex-tb" data-a="flag">${ICON.feedback}<span>Flag <span class="u">q</span>uestion</span></button>` : ''}</div>
           <div class="ex-tools"><button class="ex-tb" data-a="expand" title="Full screen" aria-label="Full screen">${ICON.expand}</button>
           <button class="ex-tb" data-a="help" title="Help" aria-label="Help">${ICON.help}</button>
           <button class="ex-tb" data-a="gear" title="Text size" aria-label="Text size">${ICON.gear}</button>
@@ -412,15 +412,17 @@
 
     flagModal() {
       const it = this.items[this.i], no = it.qno ? 'Q-' + String(it.qno).padStart(4, '0') : '';
-      const bg = this.modal('Report this question', `<p>${no ? 'Question <b>' + no + '</b>. ' : ''}Tell your tutor what seems wrong or confusing.</p><select aria-label="Reason" class="ex-flag-reason"><option>Confusing wording</option><option>I think the answer is wrong</option><option>Rationale is unclear</option><option>Typo or error</option><option>Other</option></select><textarea aria-label="Details" placeholder="Optional details"></textarea><p class="ex-flag-msg" role="status"></p>`,
-        [['Cancel'], ['Send report', () => {
+      const bg = this.modal('Flag this question', `<p>${no ? 'Question <b>' + no + '</b>. ' : ''}Flag this question for your tutor.</p><select aria-label="Flag type" class="ex-flag-kind"><option value="discuss">I want to discuss this question</option><option value="report">Something is wrong with this question</option></select><select aria-label="Reason" class="ex-flag-reason" hidden><option>Confusing wording</option><option>I think the answer is wrong</option><option>Rationale is unclear</option><option>Typo or error</option><option>Other</option></select><textarea aria-label="Details" placeholder="Optional details"></textarea><p class="ex-flag-msg" role="status"></p>`,
+        [['Cancel'], ['Send', () => {
           const msg = bg.querySelector('.ex-flag-msg'), btn = bg.querySelector('.ex-flag-send');
           btn.disabled = true; msg.textContent = 'Sending…';
-          Promise.resolve(this.o.onFlag(it, { reason: bg.querySelector('select').value, note: bg.querySelector('textarea').value.trim() }))
+          const kind = bg.querySelector('.ex-flag-kind').value;
+          Promise.resolve(this.o.onFlag(it, { kind, reason: kind === 'discuss' ? 'Want to discuss' : bg.querySelector('.ex-flag-reason').value, note: bg.querySelector('textarea').value.trim() }))
             .then(ok => { if (ok === false) { msg.textContent = 'Could not send. Please try again.'; btn.disabled = false; } else { msg.textContent = 'Thank you — your tutor will review it.'; btn.textContent = 'Sent'; } })
             .catch(() => { msg.textContent = 'Could not send. Please try again.'; btn.disabled = false; });
           return 'keep';
         }]]);
+      bg.querySelector('.ex-flag-kind').addEventListener('change', e => { bg.querySelector('.ex-flag-reason').hidden = e.target.value !== 'report'; });
       const sb = [...bg.querySelectorAll('button')].pop(); if (sb) sb.classList.add('ex-flag-send');
     }
 
