@@ -45,6 +45,13 @@
       <p class="meta">Free consultations and paid NCLEX Strategy Sessions arrive from Calendly automatically and are linked to the matching profile by email.</p>
       <p class="meta" id="list-status" role="status"></p>
       <div id="list"></div>
+      <section class="panel" id="auto-panel" style="margin-top:24px"><h2>Automatic Strategy Session follow-ups</h2>
+        <p class="meta">After each Strategy Session ends, the student gets a thank-you email with your private discounted package links, and one reminder before the credit window closes.</p>
+        <label>Mode<select id="auto-mode"><option value="off">Off</option><option value="preview">Preview: send only to me</option><option value="live">Live: send to students</option></select></label>
+        <label>Preview email (where previews and tests go)<input id="auto-preview" type="email"></label>
+        <label>Private package links, one per line as: Label | https://link<textarea id="auto-links" placeholder="14-Session Package (Strategy Credit) | https://calendly.com/..."></textarea></label>
+        <p><button id="auto-save" type="button">Save settings</button> <button id="auto-test" class="secondary" type="button">Send me a test email</button> <span class="save" id="auto-state" role="status"></span></p>
+      </section>
     </section>
 
     <section id="detail-view" class="hidden"></section>
@@ -69,7 +76,44 @@
       if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
       document.getElementById('loading').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
       document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+      document.getElementById('auto-save').addEventListener('click',saveSettings);
+      document.getElementById('auto-test').addEventListener('click',sendTest);
+      await loadSettings();
       await loadList();
+    }
+
+    const CREDIT_LABEL={none:'No credit sent',link_sent:'Credit link sent',reminded:'Reminder sent',purchased:'Package purchased',expired:'Credit window closed'};
+    let settings=null;
+    const parseLinks=t=>t.split('\n').map(l=>l.split('|').map(x=>x.trim())).filter(a=>a[0]&&a[1]).map(([label,url])=>({label,url}));
+    async function loadSettings(){
+      const {data}=await db.from('followup_settings').select('*').eq('id',1).maybeSingle();
+      if(!data){document.getElementById('auto-state').textContent='Run supabase-strategy-followup-migration.sql first.';return}
+      settings=data;
+      document.getElementById('auto-mode').value=data.send_mode;
+      document.getElementById('auto-preview').value=data.preview_email||'';
+      document.getElementById('auto-links').value=(data.package_links||[]).map(l=>l.label+' | '+l.url).join('\n');
+    }
+    async function saveSettings(){
+      const state=document.getElementById('auto-state'),mode=document.getElementById('auto-mode').value,links=parseLinks(document.getElementById('auto-links').value);
+      if(links.some(l=>!/^https:\/\//.test(l.url))){state.textContent='Each link must start with https://';state.classList.add('err');return}
+      if(mode==='live'&&!links.length){state.textContent='Add at least one package link before going live.';state.classList.add('err');return}
+      const patch={send_mode:mode,preview_email:document.getElementById('auto-preview').value.trim()||null,package_links:links,updated_at:new Date().toISOString()};
+      if(settings&&settings.send_mode==='off'&&mode!=='off')patch.active_since=new Date().toISOString();
+      const {error}=await db.from('followup_settings').update(patch).eq('id',1);
+      state.classList.toggle('err',!!error);state.textContent=error?error.message:'Saved';
+      if(!error)await loadSettings();
+    }
+    async function sendTest(){
+      const state=document.getElementById('auto-state');state.classList.remove('err');state.textContent='Sending…';
+      const {data:{session}}=await db.auth.getSession();
+      const r=await fetch('https://pmjwwktwlsqpetwfvolb.supabase.co/functions/v1/send-strategy-followups',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});
+      const j=await r.json().catch(()=>({}));
+      state.classList.toggle('err',!r.ok);state.textContent=r.ok?'Test sent to '+j.sent_to:(j.error||'Could not send');
+    }
+    async function setCredit(status){
+      const {error}=await db.from('consultations').update({credit_status:status}).eq('id',current.id);
+      if(error){setSaveState(error.message,true);return}
+      current.credit_status=status;document.getElementById('credit-state').textContent=CREDIT_LABEL[status];
     }
 
     async function loadList(){
@@ -82,7 +126,7 @@
       list.innerHTML=consults.length?consults.map(c=>{
         const p=names.get(c.id)||{};
         const canStart=c.status==='scheduled';
-        return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}</div></div>
+        return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}${isStrat(c)&&c.credit_status!=='none'?'<br>Credit: '+esc(CREDIT_LABEL[c.credit_status]):''}</div></div>
         <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
         <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join(''):'<p class="empty">No consultations yet. Once the Calendly webhook is connected, new free-consultation bookings appear here.</p>';
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
@@ -154,6 +198,8 @@
         <label>Consultation notes<textarea data-top="notes" ${readOnly?'disabled':''}>${esc(t.notes)}</textarea></label>
         <label>Student questions or concerns<textarea data-top="concerns" ${readOnly?'disabled':''}>${esc(t.concerns)}</textarea></label>
         <label>${strat?'Follow-up date (package credit window ends 7 days after the session)':'Follow-up date'}<input type="date" id="follow-up" value="${esc(c.follow_up_date)}" ${readOnly?'disabled':''}></label></section>
+      ${strat?`<section class="panel"><h2>Package credit</h2><p class="meta">Status: <strong id="credit-state">${esc(CREDIT_LABEL[c.credit_status]||'')}</strong>${c.credit_expires_at?' · window closes '+esc(fmt(c.credit_expires_at)):''}</p>
+        <p><button class="secondary" id="credit-purchased" type="button">Mark package purchased</button> <button class="secondary" id="credit-skip" type="button">${c.followup_skip?'Resume automatic emails':'Stop automatic emails for this student'}</button></p></section>`:''}
       <section class="panel"><h2>Follow-up email</h2><p><button id="draft" type="button" ${c.status==='scheduled'?'disabled':''}>Generate draft</button></p>
         <textarea id="draft-text" class="hidden" style="min-height:240px"></textarea>
         <p class="hidden" id="draft-actions"><button class="secondary" id="copy-draft" type="button">Copy</button> <a class="button secondary" id="mail-draft" href="#">Open in email app</a></p></section>
@@ -164,6 +210,8 @@
       view.querySelectorAll('[data-snap],[data-top],[data-check],[data-rec],#follow-up').forEach(el=>{el.addEventListener('input',queueSave);el.addEventListener('change',queueSave)});
       document.getElementById('timer-toggle').addEventListener('change',toggleTimer);
       document.getElementById('draft').addEventListener('click',makeDraft);
+      const cp=document.getElementById('credit-purchased');if(cp){cp.addEventListener('click',()=>setCredit('purchased'));
+        document.getElementById('credit-skip').addEventListener('click',async e=>{const v=!current.followup_skip;const {error}=await db.from('consultations').update({followup_skip:v}).eq('id',current.id);if(!error){current.followup_skip=v;e.target.textContent=v?'Resume automatic emails':'Stop automatic emails for this student'}})}
       const done=document.getElementById('complete');if(done)done.addEventListener('click',completeConsult);
     }
 
