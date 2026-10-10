@@ -14,3 +14,10 @@ Facts:
 - Arial in exam-ui.css is intentional to match the testing interface.
 - Follow-up: restyle the rest of the platform (diagnostic.html and module quizzes) onto exam-ui.css/js incrementally. Not done.
 - Clinical content should get tutor review before real consults.
+
+## Phase 2: student practice in the exam look
+- `supplemental-practice.html` now runs every set (assigned sets, Mixed Review from the `questions` table, course exam practice) in `ExamUI` via `beginPractice()`; the classic renderer remains as fallback.
+- `exam-ui.js` gained `instant: true` (Check answer -> correctness + rationale, answer locks) and `noFeedback: true` (hides the tutor Feedback tool for students).
+- `exam-adapters.js` maps practice-set questions to ExamUI entries (intro + following questions become a case study). Wording, answers and IDs are untouched. Result saving (`saveResult`) is unchanged.
+- Pre-existing quirk left alone: scenario 'intro' rows count in the total, which lowers the displayed % on the case-study set.
+- Next: module quizzes (module7-ekg-quiz.html first), then module guides, then diagnostic.html. Consult items are not in the `questions` table (it only supports 4-option single-answer); SATA/NGN storage needs a schema decision.

@@ -105,3 +105,9 @@
 .ex-rv li{display:flex;gap:10px;padding:6px 8px;border-radius:3px;line-height:1.4}
 .ex-rv li .m{flex:none;width:1.4em;font-weight:700}
 .ex-rv li.good{background:#e6f4ea}.ex-rv li.bad{background:#fbe5e5}.ex-rv li.miss{background:#fff4d6}
+
+.ex-main.locked .ex-opts,.ex-main.locked .ex-fill,.ex-main.locked .ex-matrix,.ex-main.locked .ex-cloze,.ex-main.locked .ex-hl{pointer-events:none}
+.ex-feedback{margin:22px 0 8px 38px;padding:12px 16px;border-left:5px solid #2f7d4f;background:#eef7f1;font-size:.85em}
+.ex-feedback.no{border-color:#b4443c;background:#fbeeed}
+.ex-feedback .ex-fbh{margin:0 0 6px;font-weight:700}
+.ex-feedback .ex-rat{margin:10px 0 0;line-height:1.5}
