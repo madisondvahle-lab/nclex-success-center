@@ -141,6 +141,17 @@
       [/tort/i,'Legal & Ethics','Management of Care',['torts','assault','battery','negligence','slander','libel']],
       [/renal|kidney/i,'Renal / Urinary','Physiological Adaptation',['comparison','acute kidney injury','chronic kidney disease','AKI','CKD','creatinine','renal perfusion']],
       [/priority|HCP/i,'Priority & Delegation','Management of Care',['priority','HCP notification','ABC','CAB','critical lab values','escalation']],
+      [/cirrhosis|portal hypertension/i,'GI / Hepatic','Physiological Adaptation',['cirrhosis','portal hypertension','liver disease','ascites','varices','hepatic encephalopathy']],
+      [/COPD.*heart failure|heart failure.*COPD/i,'Respiratory','Physiological Adaptation',['COPD','heart failure','comparison','dyspnea','fluid overload','pulmonary congestion']],
+      [/graves.*cush|cush.*graves/i,'Endocrine','Physiological Adaptation',['Graves disease','Cushing syndrome','comparison','hyperthyroidism','cortisol']],
+      [/CPAP.*BiPAP|BiPAP.*CPAP/i,'Respiratory','Physiological Adaptation',['CPAP','BiPAP','comparison','oxygenation','ventilation','positive airway pressure']],
+      [/endocrine disorders/i,'Endocrine','Physiological Adaptation',['endocrine','thyroid','adrenal','pituitary','SIADH','diabetes insipidus']],
+      [/mobility devices.*photo|mobility.*realistic/i,'Musculoskeletal / Mobility','Basic Care and Comfort',['mobility','gait','walker','cane','crutches','assistive devices']],
+      [/mobility devices|mobility.*gait/i,'Musculoskeletal / Mobility','Basic Care and Comfort',['mobility','gait','walker','cane','crutches','stairs','assistive devices']],
+      [/multiple sclerosis.*myasthenia|MS.*MG/i,'Neurological','Physiological Adaptation',['multiple sclerosis','myasthenia gravis','comparison','demyelination','neuromuscular junction','weakness']],
+      [/OB.*maternal.*fetal.*medications|maternal.*fetal.*medications/i,'Maternal / OB','Pharmacological and Parenteral Therapies',['maternal medications','fetal medications','oxytocin','magnesium sulfate','terbutaline','misoprostol','betamethasone','RhoGAM']],
+      [/oxygen delivery/i,'Respiratory','Physiological Adaptation',['oxygen delivery','comparison','nasal cannula','simple mask','Venturi mask','nonrebreather','FiO2']],
+      [/blood pressure medications/i,'Cardiovascular','Pharmacological and Parenteral Therapies',['blood pressure medications','antihypertensives','ACE inhibitors','ARBs','beta blockers','diuretics']],
       [/heart failure/i,'Cardiovascular','Physiological Adaptation',['heart failure','left-sided','right-sided','edema']],
       [/pediatric vital/i,'Pediatrics','Health Promotion and Maintenance',['vital signs','growth and development','normal ranges']],
       [/surgical/i,'Fundamentals / Safety','Reduction of Risk Potential',['surgery','perioperative','procedures']],
@@ -164,7 +175,8 @@
         const up=await db.storage.from('graphics-library').upload(path,f,{contentType:f.type});
         if(up.error){fail++;continue}
         const title=prettyTitle(f.name)||'Untitled graphic',au=autoFor(title);
-        const ins=await db.from('graphics').insert({title,body_system:$('up-system').value||(au&&au[1])||null,nclex_category:$('up-cat').value||(au&&au[2])||null,tags:[...new Set([...tagList($('up-tags').value),...(au?au[3]:[])])],image_path:path});
+        const comparison=/\b(?:vs\.?|versus)\b/i.test(title)?['comparison']:[];
+        const ins=await db.from('graphics').insert({title,body_system:$('up-system').value||(au&&au[1])||null,nclex_category:$('up-cat').value||(au&&au[2])||null,tags:[...new Set([...tagList($('up-tags').value),...(au?au[3]:[]),...comparison])],image_path:path});
         if(ins.error){fail++;await db.storage.from('graphics-library').remove([path])}else ok++;
       }
       $('up-status').textContent=`Added ${ok} graphic${ok===1?'':'s'}${fail?`, ${fail} failed (check the SQL setup has been run)`:''}.`;
