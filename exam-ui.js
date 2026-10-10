@@ -1,5 +1,5 @@
 /* Shared NCLEX-style exam engine (vanilla JS). Pair with exam-ui.css.
-   Item types: mcq, sata, fill, matrix, cloze, highlight.
+   Item types: mcq, sata, fill, matrix, cloze, highlight, bowtie.
    Bank entries are either a standalone item or { kind:'case', ... items:[...] }. */
 (function () {
   'use strict';
@@ -69,6 +69,7 @@
     if (it.type === 'mcq') return null;
     if (it.type === 'fill') return '';
     if (it.type === 'cloze') return it.dropdowns.map(() => null);
+    if (it.type === 'bowtie') return [null, null, null, null, null];
     return [];
   }
 
@@ -91,6 +92,12 @@
       }
       case 'matrix': return setScore(a, it.correct);
       case 'highlight': return setScore(a, it.segments.filter(s => s.correct).map(s => s.id));
+      case 'bowtie': {
+        // a = [action, action, condition, complication, complication]; the two actions and the two complications may be placed in either slot.
+        const c = it.correct, uniq = x => [...new Set(x.filter(v => v !== null))];
+        const n = uniq([a[0], a[1]]).filter(v => c.actions.includes(v)).length + (a[2] === c.condition ? 1 : 0) + uniq([a[3], a[4]]).filter(v => c.complications.includes(v)).length;
+        return { score: n / 5, full: n === 5 };
+      }
       case 'cloze': {
         const n = it.dropdowns.filter((d, i) => a[i] === d.correct).length;
         return { score: n / it.dropdowns.length, full: n === it.dropdowns.length };
@@ -103,6 +110,7 @@
     if (it.type === 'mcq') return a !== null;
     if (it.type === 'fill') return String(a).trim() !== '';
     if (it.type === 'cloze') return a.every(x => x !== null);
+    if (it.type === 'bowtie') return a.some(x => x !== null);
     return a.length > 0;
   }
 
@@ -120,6 +128,14 @@
       }).join('') + '</ul>';
     }
     if (it.type === 'fill') return `<ul class="ex-rv">${li(score(it, a).full ? 'good' : 'bad', score(it, a).full ? '✓' : '✗', 'Entered: ' + esc(a || '(blank)'))}${li('', '', 'Correct: ' + esc(it.correct) + ' ' + esc(it.unit || ''))}</ul>`;
+    if (it.type === 'bowtie') {
+      const c = it.correct, b = it.bowtie, nm = (col, i) => i === null ? '(none)' : esc(b[col][i]);
+      const part = (col, label, picked, right) => picked.map(v => v === null ? li('bad', '✗', label + ': (none)') : right.includes(v) ? li('good', '✓', label + ': ' + esc(b[col][v])) : li('bad', '✗', label + ': ' + esc(b[col][v]) + ' <em>(not correct)</em>')).join('');
+      const missed = (col, label, picked, right) => right.filter(v => !picked.includes(v)).map(v => li('miss', '○', label + ': ' + esc(b[col][v]) + ' <em>(correct answer)</em>')).join('');
+      return '<ul class="ex-rv">' + part('actions', 'Action', [a[0], a[1]], c.actions) + missed('actions', 'Action', [a[0], a[1]], c.actions) +
+        part('conditions', 'Condition', [a[2]], [c.condition]) + missed('conditions', 'Condition', [a[2]], [c.condition]) +
+        part('complications', 'Complication', [a[3], a[4]], c.complications) + missed('complications', 'Complication', [a[3], a[4]], c.complications) + '</ul>';
+    }
     if (it.type === 'cloze') return '<ul class="ex-rv">' + it.dropdowns.map((d, i) => {
       const ok = a[i] === d.correct;
       return li(ok ? 'good' : 'bad', ok ? '✓' : '✗', `Selected: ${esc(a[i] === null ? '(none)' : d.options[a[i]])}${ok ? '' : ' — Correct: ' + esc(d.options[d.correct])}`);
@@ -215,7 +231,8 @@
       nx.innerHTML = this.o.instant && !this.checked[i] ? 'Check answer ▶' : last ? 'Finish ▶' : 'Next ▶';
       this.paintClock();
       this.renderMark(); this.main.className = 'ex-main' + (it.case ? ' split' : '');
-      const body = it.case ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
+      if (it.type === 'bowtie') this.btab = this.btab || {};
+      const body = it.type === 'bowtie' ? this.bowtieLeft(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : it.case ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
       this.main.innerHTML = body; this.main.scrollTop = 0;
       this.main.classList.toggle('locked', !!this.checked[i]);
       if (this.checked[i]) this.main.querySelector('.ex-pane:last-child').insertAdjacentHTML('beforeend', this.feedbackHtml(it, i));
@@ -246,6 +263,28 @@
         <div class="ex-tabpanel" role="tabpanel">${tabs.find(t => t.id === active).html}</div></section>`;
     }
 
+    bowtieLeft(it) {
+      const tabs = it.tabs || [{ id: 't', label: 'Notes', html: '' }];
+      let active = this.btab[it.qid]; if (!tabs.some(t => t.id === active)) active = tabs[0].id; this.btab[it.qid] = active;
+      return `<section class="ex-pane ex-left"><p class="ex-scenario">${it.stem}</p>
+        <div class="ex-tabs" role="tablist">${tabs.map(t => `<button class="ex-tab" role="tab" data-btab="${t.id}" aria-selected="${t.id === active}">${esc(t.label)}</button>`).join('')}</div>
+        <div class="ex-tabpanel" role="tabpanel">${tabs.find(t => t.id === active).html}</div></section>`;
+    }
+
+    bowtieUi(it, a) {
+      const b = it.bowtie, slot = (idx, col, label) => {
+        const v = a[idx];
+        return `<button type="button" class="bt-slot${v === null ? '' : ' on'}" data-slot="${idx}" aria-label="${esc(label)}${v === null ? ': empty' : ': ' + esc(b[col][v]) + ', tap to remove'}">${v === null ? `<span class="bt-ph">${esc(label)}</span>` : esc(b[col][v])}</button>`;
+      };
+      const bank = (col, title, idxs) => `<div class="bt-bank"><h4>${esc(title)}</h4>${b[col].map((t, i) => `<button type="button" class="bt-choice${idxs.includes(i) ? ' used' : ''}" data-choice="${col}:${i}"${idxs.includes(i) ? ' aria-disabled="true"' : ''}>${esc(t)}</button>`).join('')}</div>`;
+      return `<p class="ex-prompt first">${it.prompt}</p>
+        <div class="bt-diagram"><div class="bt-col">${slot(0, 'actions', 'Action to take')}${slot(1, 'actions', 'Action to take')}</div>
+        <div class="bt-col mid">${slot(2, 'conditions', 'Condition most likely experiencing')}</div>
+        <div class="bt-col">${slot(3, 'complications', 'Complication to monitor for')}${slot(4, 'complications', 'Complication to monitor for')}</div></div>
+        <p class="ex-hint">Tap a choice to place it in the next open box. Tap a filled box to return it.</p>
+        <div class="bt-banks">${bank('actions', b.actionsTitle || 'Action to Take', [a[0], a[1]])}${bank('conditions', b.conditionsTitle || 'Condition Most Likely Experiencing', [a[2]])}${bank('complications', b.complicationsTitle || 'Complication', [a[3], a[4]])}</div>`;
+    }
+
     optRow(kind, i, text, checked, struck) {
       return `<label class="ex-opt${struck ? ' struck' : ''}" data-i="${i}"><input type="${kind === 'r' ? 'radio' : 'checkbox'}" name="opt" value="${i}"${checked ? ' checked' : ''}><span class="ex-ctl ${kind}"></span><span class="ex-num">${i + 1}.</span><span class="ex-txt">${esc(text)}</span></label>`;
     }
@@ -254,6 +293,7 @@
       const a = this.ans[this.i], ng = !!it.case;
       const lead = ng ? `${it.intro ? `<p class="ex-prompt first">${it.intro}</p>` : ''}<p class="ex-prompt${it.intro ? '' : ' first'}"><span class="ex-chev">»</span>${it.prompt}</p>` : `<p class="ex-stem">${it.stem}</p>`;
       const hint = '<p class="ex-hint">Tip: right-click (or press and hold) an answer to cross it out.</p>';
+      if (it.type === 'bowtie') return this.bowtieUi(it, a);
       if (it.type === 'mcq') return lead + '<div class="ex-opts" role="radiogroup">' + it.options.map((t, i) => this.optRow('r', i, t, a === i, this.struck[this.i].has(i))).join('') + '</div>' + hint;
       if (it.type === 'sata') return lead + '<div class="ex-opts">' + it.options.map((t, i) => this.optRow('c', i, t, a.includes(i), this.struck[this.i].has(i))).join('') + '</div>' + hint;
       if (it.type === 'fill') return lead + `<div class="ex-fill"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer" value="${esc(a)}"><span>${esc(it.unit || '')}</span></div><p class="ex-hint">Use the Calculator in the toolbar. Round only at the end if the question asks you to.</p>`;
@@ -309,6 +349,18 @@
     onClick(e) {
       const tab = e.target.closest('[data-tab]');
       if (tab) { this.tab[this.it.case.id] = tab.dataset.tab; this.show(this.i); return; }
+      const bt = e.target.closest('[data-btab]');
+      if (bt) { this.btab[this.it.qid] = bt.dataset.btab; this.show(this.i); return; }
+      const slotEl = e.target.closest('[data-slot]'), chEl = e.target.closest('[data-choice]');
+      if (slotEl || chEl) {
+        const a = this.ans[this.i], cols = { actions: [0, 1], conditions: [2], complications: [3, 4] };
+        if (slotEl) { const k = +slotEl.dataset.slot; if (a[k] !== null) { a[k] = null; this.changes[this.i]++; this.show(this.i); } return; }
+        const [col, idx] = chEl.dataset.choice.split(':'), n = +idx;
+        if (cols[col].some(k => a[k] === n)) return;
+        const free = cols[col].find(k => a[k] === null);
+        if (free === undefined) return;
+        a[free] = n; this.show(this.i); return;
+      }
       const hl = e.target.closest('[data-h]');
       if (hl) {
         const id = hl.dataset.h, set = new Set(this.ans[this.i]);

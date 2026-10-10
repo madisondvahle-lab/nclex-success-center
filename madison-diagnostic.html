@@ -84,7 +84,7 @@
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const esc=ExamUI.esc;
-    const TYPE_LABEL={mcq:'Single answer',sata:'Select all that apply',fill:'Dosage calculation',matrix:'Case study: matrix',cloze:'Case study: drop-down',highlight:'Case study: highlight'};
+    const TYPE_LABEL={mcq:'Single answer',sata:'Select all that apply',fill:'Dosage calculation',matrix:'Case study: matrix',cloze:'Case study: drop-down',highlight:'Case study: highlight',bowtie:'Bowtie'};
     let lastResult=null,lastWho='',consults=[],selConsult=null,saveCtx=null;
 
     async function init(){
