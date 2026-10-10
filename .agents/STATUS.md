@@ -168,3 +168,4 @@ Future modules M8+ remain unassigned until explicitly defined.
 
 ## Question bank management and flags
 The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case), `question_no` (Q-0001 numbering) and a `question_flags` table (student reports and 'discuss' flags). `question-bank-review.html` manages the bank (bulk actions, edit, flagged inboxes). Details and the SQL files to run are in `.agents/tasks/consult-diagnostic.md`. Deployment is unchanged: GitHub Pages from `main`.
+- Ideas not yet built: weekly per-client report with chart, admin "Needs attention" list, shared category names across CPR/practice/diagnostic, link CPR tracker to client records, hide/redirect `diagnostic.html?mode=mock`.
