@@ -78,7 +78,7 @@
       if(!item?.student_id)return;
       const email=item.email?.trim().toLowerCase()||'';
       if(!email||!window.confirm('Confirm this exact student email before creating access:\n\n'+email))return;
-      const tempCredential=window.prompt('Create a temporary portal password for '+(item.full_name||'this student')+'. Use at least 8 characters; do not use the profile PIN.');
+      const phoneDigits=(item.phone||'').replace(/\D/g,'');const suggested=phoneDigits.length>=4?'Swm-'+phoneDigits.slice(-4):'';const tempCredential=window.prompt('Temporary portal password for '+(item.full_name||'this student')+(suggested?' (suggested: Swm- plus the last 4 of their phone). Edit if you like.':'. Use at least 8 characters; do not use the profile PIN.'),suggested);
       if(tempCredential===null)return;
       if(tempCredential.length<8){document.getElementById('consult-status').textContent='Use a temporary portal password with at least 8 characters.';return}
       document.getElementById('consult-status').textContent='Creating secure portal access…';
