@@ -709,11 +709,9 @@
 
     // ── Nursing portal ────────────────────────────────────────────────
     function renderClassSchedule(student, schedules, isPreview, onSelect) {
-      const classes = [
-        { code: 'NUR 312', name: 'NUR 312' },
-        { code: 'NUR 321', name: 'NUR 321' },
-        { code: 'NUR 416', name: 'NUR 416' }
-      ];
+      const classCodesByEmail = { 'bianca.edwards86@gmail.com': ['NUR 215', 'NUR 235'] };
+      const classes = (classCodesByEmail[String(student.email || '').toLowerCase()] || ['NUR 312', 'NUR 321', 'NUR 416'])
+        .map(code => ({ code, name: code }));
       const byClass = new Map((schedules || []).map(item => [item.class_code, item]));
       const tabs = document.getElementById('class-tabs');
       const panel = document.getElementById('class-schedule-panel');
@@ -793,6 +791,8 @@
           if (/NUR 321|OB.*Exam 1|Exam 1.*OB|case.?stud/i.test(source)) return 'NUR 321 · Exam 1';
           if (/NUR 416|nur416/i.test(source)) return 'NUR 416';
           if (/NUR 312|jack-nur312/i.test(source)) return 'NUR 312';
+          if (/NUR 215|nur215/i.test(source)) return 'NUR 215';
+          if (/NUR 235|nur235/i.test(source)) return 'NUR 235';
           return 'Other practice';
         };
         const practiceTitle = ps =>
@@ -807,7 +807,9 @@
           {label:'NUR 321 · Exam 1', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 1')},
           {label:'NUR 321 · Exam 2', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 321 · Exam 2')},
           {label:'NUR 312', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 312')},
-          {label:'NUR 416', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 416')}
+          {label:'NUR 416', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 416')},
+          {label:'NUR 215', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 215')},
+          {label:'NUR 235', sets:practiceSets.filter(ps => practiceLabel(ps) === 'NUR 235')}
         ];
         const groupedSets = new Set(practiceGroups.flatMap(group => group.sets));
         const otherSets = practiceSets.filter(ps => !groupedSets.has(ps));
@@ -837,7 +839,9 @@
         const resourceGroups = [
           {label:'NUR 312', items:studyRes.filter(item => /NUR 312|jack-nur312/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
           {label:'NUR 321', items:studyRes.filter(item => /NUR 321|OB|jack-ob/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
-          {label:'NUR 416', items:studyRes.filter(item => /NUR 416|nur416/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))}
+          {label:'NUR 416', items:studyRes.filter(item => /NUR 416|nur416/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
+          {label:'NUR 215', items:studyRes.filter(item => /NUR 215|nur215/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))},
+          {label:'NUR 235', items:studyRes.filter(item => /NUR 235|nur235/i.test(`${item.title||''} ${item.url||''} ${item.note||''}`))}
         ];
         const groupedResources = new Set(resourceGroups.flatMap(group => group.items));
         const otherResources = studyRes.filter(item => !groupedResources.has(item));
@@ -901,12 +905,12 @@
       let student, error, isPreview = false;
       if (admin && previewStudent) {
         const r = await db.from('students')
-          .select('id,name,nclex_target_date,exam_date,portal_stage,student_type,course_name')
+          .select('id,name,email,nclex_target_date,exam_date,portal_stage,student_type,course_name')
           .eq('id', previewStudent).maybeSingle();
         student = r.data; error = r.error; isPreview = !!student;
       } else {
         const r = await db.from('students')
-          .select('id,name,nclex_target_date,exam_date,portal_stage,student_type,course_name')
+          .select('id,name,email,nclex_target_date,exam_date,portal_stage,student_type,course_name')
           .eq('auth_user_id', session.user.id).maybeSingle();
         student = r.data; error = r.error;
       }
