@@ -679,6 +679,8 @@
 
     // Student logs a CAT: read the report, confirm the numbers, save into the trend data.
     async function initGraphics() {
+      const $ = id => document.getElementById(id);
+      const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       try {
         const { data } = await db.from('graphics').select('id,title,body_system,nclex_category,tags,image_path').order('title');
         const all = data || [];
