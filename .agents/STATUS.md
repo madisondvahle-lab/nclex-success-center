@@ -162,3 +162,6 @@ Immediate work should use the current M1-M7 curriculum as authoritative.
 M7 is EKG / Rhythm Recognition.
 
 Future modules M8+ remain unassigned until explicitly defined.
+
+## Consult diagnostic
+`madison-diagnostic.html` (tutor-only) added with shared `exam-ui.*` engine; see `.agents/tasks/consult-diagnostic.md`.

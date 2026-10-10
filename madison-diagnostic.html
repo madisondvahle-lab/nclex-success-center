@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="exam-ui.css">
+  <title>Consult Diagnostic · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--good:#2f7d4f;--mid:#b7791f;--low:#b4443c}*{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .shell{width:min(1100px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
+    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
+    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}
+    h1{font:400 clamp(2rem,5vw,3rem) Georgia,serif;margin:34px 0 8px}h2{font:400 1.5rem Georgia,serif;margin:0 0 12px}h3{margin:18px 0 8px;font-size:1rem}
+    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
+    .panel{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}
+    .meta{color:var(--muted);font-size:.88rem;line-height:1.5}
+    button,.button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
+    button.secondary{background:transparent;color:var(--ink)}
+    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
+    input[type=text],select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px}
+    .check{display:flex;gap:10px;align-items:center;font-weight:600}.check input{width:auto;margin:0}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+    .stat{background:#fff;border:1px solid var(--line);padding:14px}.stat b{display:block;font:400 2rem Georgia,serif}.stat span{color:var(--muted);font-size:.8rem}
+    table.res{width:100%;border-collapse:collapse;font-size:.9rem}table.res th,table.res td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+    table.res th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .bar{height:10px;background:#e8edf0;min-width:120px;position:relative}.bar i{position:absolute;inset:0 auto 0 0;display:block}
+    .good{color:var(--good)}.mid{color:var(--mid)}.low{color:var(--low)}
+    .bar i.good{background:var(--good)}.bar i.mid{background:var(--mid)}.bar i.low{background:var(--low)}
+    .tag{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--soft);padding:2px 7px;margin-right:4px}
+    details.item{border:1px solid var(--line);background:#fff;margin:8px 0}details.item summary{cursor:pointer;padding:12px 14px;font-weight:600;display:flex;gap:10px;align-items:flex-start}
+    details.item .in{padding:0 16px 16px;line-height:1.55;font-size:.92rem}
+    .rat{background:var(--soft);padding:10px 12px;margin-top:10px;font-size:.88rem}
+    ul.focus li{margin:6px 0;line-height:1.5}
+    @media print{.admin-header,.noprint{display:none!important}body{background:#fff}details.item{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Opening your private tools…</div>
+  <main class="shell hidden" id="app">
+    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation">
+      <a class="admin-home" href="madison-admin.html">Admin home</a>
+      <a href="madison-leads.html">Leads &amp; intake</a><a href="madison-consultations.html">Consultations</a><a href="madison-diagnostic.html" aria-current="page">Consult diagnostic</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+    </nav></header>
+
+    <section id="start-view">
+      <p class="eyebrow">Consultation tool</p>
+      <h1>Consult diagnostic.</h1>
+      <p class="meta">A 30-item, exam-style snapshot to run with a new prospective student while you share your screen on Zoom. It mixes single-answer, select-all-that-apply, dosage-calculation, and a six-item case study, then shows where the gaps look like <b>content</b> and where they look like <b>how the question is asked</b>.</p>
+      <div class="panel">
+        <div class="grid">
+          <label>Student first name or initials (optional, shown on this screen only)<input type="text" id="who" maxlength="40" autocomplete="off"></label>
+          <label>Time limit<select id="limit"><option value="2700" selected>45 minutes</option><option value="1800">30 minutes</option><option value="3600">60 minutes</option><option value="0">Untimed (count up)</option></select></label>
+        </div>
+        <label class="check"><input type="checkbox" id="shuffle" checked> Shuffle answer order for each run</label>
+        <p><button id="start" type="button">Start diagnostic</button></p>
+      </div>
+      <div class="panel">
+        <h2>Running it on Zoom</h2>
+        <ul class="meta">
+          <li>Share this browser window, then press Start. The exam fills the screen like the real testing interface.</li>
+          <li>Have the student tell you their answer, or hand over remote control. Tell them to <b>right-click an option to cross it out</b>, just like the exam.</li>
+          <li>Use <b>Feedback</b> in the toolbar to jot a note about how they reasoned on any item; it appears in the results.</li>
+          <li>Nothing is saved to the database. Results exist only on this page until you close or reload it. Copy the summary into the consultation notes if you want to keep it.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="result-view" class="hidden"></section>
+  </main>
+  <div id="exam-root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="consult-diagnostic-bank.js"></script>
+  <script src="exam-ui.js"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const esc=ExamUI.esc;
+    const TYPE_LABEL={mcq:'Single answer',sata:'Select all that apply',fill:'Dosage calculation',matrix:'Case study: matrix',cloze:'Case study: drop-down',highlight:'Case study: highlight'};
+    let lastResult=null,lastWho='';
+
+    async function init(){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){location.replace('student-login.html');return}
+      const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      document.getElementById('loading').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
+      document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+      document.getElementById('start').addEventListener('click',startExam);
+    }
+
+    function startExam(){
+      lastWho=document.getElementById('who').value.trim();
+      const seconds=+document.getElementById('limit').value||null;
+      const items=ExamUI.prepare(window.CONSULT_DIAGNOSTIC_BANK,{shuffleOptions:document.getElementById('shuffle').checked});
+      document.getElementById('app').classList.add('hidden');
+      new ExamUI.Exam(document.getElementById('exam-root'),{title:'NCLEX-RN CONSULT DIAGNOSTIC'+(lastWho?' - '+lastWho:''),items,seconds,
+        onFinish:showResults,onExit:()=>document.getElementById('app').classList.remove('hidden')});
+    }
+
+    const pct=(a,b)=>b?Math.round(a/b*100):0;
+    const tone=p=>p>=80?'good':p>=60?'mid':'low';
+    const fmtT=s=>Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s';
+
+    function group(rows,key){
+      const m=new Map();
+      rows.forEach(r=>{const k=key(r);if(!m.has(k))m.set(k,{label:k,n:0,pts:0});const g=m.get(k);g.n++;g.pts+=r.score});
+      return [...m.values()].sort((a,b)=>a.pts/a.n-b.pts/b.n);
+    }
+    const table=(title,gs)=>`<h3>${esc(title)}</h3><table class="res"><thead><tr><th>Area</th><th>Score</th><th></th></tr></thead><tbody>${gs.map(g=>{const p=pct(g.pts,g.n);return `<tr><td>${esc(g.label)}</td><td class="${tone(p)}"><b>${p}%</b> <span class="meta">(${+g.pts.toFixed(1)}/${g.n})</span></td><td><div class="bar"><i class="${tone(p)}" style="width:${p}%"></i></div></td></tr>`}).join('')}</tbody></table>`;
+
+    function showResults(r){
+      lastResult=r;
+      const rows=r.items.map((it,i)=>({it,i,a:r.ans[i],...ExamUI.score(it,r.ans[i]),answered:ExamUI.isAnswered(it,r.ans[i])}));
+      const total=rows.reduce((s,x)=>s+x.score,0),full=rows.filter(x=>x.full).length,overall=pct(total,rows.length);
+      const byCat=group(rows,x=>x.it.category),byTopic=group(rows,x=>x.it.topic),byPat=group(rows,x=>x.it.pattern);
+      const byType=group(rows,x=>x.it.case?'Case study (NGN) items':TYPE_LABEL[x.it.type]);
+      const byDiff=group(rows,x=>({1:'Foundational',2:'Intermediate',3:'Higher-level judgment'}[x.it.difficulty||2])).sort((a,b)=>a.label.localeCompare(b.label));
+      const changes=r.changes.reduce((a,b)=>a+b,0),unanswered=rows.filter(x=>!x.answered).length,marked=r.marked.filter(Boolean).length;
+      const avg=Math.round(r.elapsed/rows.length);
+      const focus=buildFocus({overall,byTopic,byPat,byType,rows,changes,avg,unanswered});
+      const missed=rows.filter(x=>!x.full);
+      document.getElementById('result-view').innerHTML=`
+        <p class="eyebrow noprint">Consult diagnostic results</p>
+        <h1>${lastWho?esc(lastWho)+': ':''}${overall}% overall.</h1>
+        <p class="meta">Educational snapshot from ${rows.length} practice items. It is not an NCLEX score, a pass prediction, or a measure of readiness on its own. Use it to guide the conversation.${r.timedOut?' <b>The time limit ran out.</b>':''}</p>
+        <div class="stats"><div class="stat"><b class="${tone(overall)}">${overall}%</b><span>Weighted score</span></div><div class="stat"><b>${full}/${rows.length}</b><span>Fully correct items</span></div><div class="stat"><b>${fmtT(r.elapsed)}</b><span>Total time (${avg}s per item)</span></div><div class="stat"><b>${changes}</b><span>Answer changes</span></div><div class="stat"><b>${marked}</b><span>Marked for review</span></div></div>
+        <p class="noprint"><button id="copy" type="button">Copy summary</button> <button class="secondary" id="print" type="button">Print / save as PDF</button> <button class="secondary" id="again" type="button">New consult</button> <span class="meta" id="copy-state" role="status"></span></p>
+        <div class="panel"><h2>Discussion points</h2><ul class="focus">${focus.map(f=>`<li>${f}</li>`).join('')}</ul></div>
+        <div class="panel"><h2>Where the points came from</h2>
+          ${table('Content area',byTopic)}${table('Client-needs category',byCat)}${table('How the question is asked',byPat)}${table('Item format',byType)}${table('Difficulty',byDiff)}</div>
+        <div class="panel"><h2>Item review</h2><p class="meta">${missed.length} item${missed.length===1?'':'s'} not fully correct are listed first.</p>
+          ${[...missed,...rows.filter(x=>x.full)].map(reviewItem(r)).join('')}</div>
+        ${r.notes?`<div class="panel"><h2>Student scratch notes</h2><p class="meta" style="white-space:pre-wrap">${esc(r.notes)}</p></div>`:''}`;
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('start-view').classList.add('hidden');document.getElementById('result-view').classList.remove('hidden');
+      window.scrollTo(0,0);
+      document.getElementById('print').onclick=()=>window.print();
+      document.getElementById('again').onclick=()=>{if(confirm('Clear these results and start a new consult?'))location.reload()};
+      document.getElementById('copy').onclick=()=>copySummary({overall,full,rows,r,byTopic,byPat,byType,focus,avg,changes});
+    }
+
+    function reviewItem(r){
+      return x=>{
+        const it=x.it,ss=x.full?'<span class="good">✓</span>':x.score>0?'<span class="mid">◐</span>':'<span class="low">✗</span>';
+        const ctx=it.case?`<p class="meta"><b>${esc(it.case.title)}</b>, item ${it.caseIndex+1} of ${it.case.total}</p>`:'';
+        const q=it.case?`${it.intro?it.intro+'<br>':''}${it.prompt}`:it.stem;
+        const plain=q.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+        return `<details class="item"><summary>${ss}<span>${esc(plain.length>130?plain.slice(0,127)+'…':plain)}<br><span class="tag">${esc(it.topic)}</span><span class="tag">${esc(it.pattern)}</span><span class="tag">${esc(TYPE_LABEL[it.type])}</span><span class="meta"> ${r.time[x.i]}s${r.changes[x.i]?' · changed '+r.changes[x.i]+'×':''}${r.marked[x.i]?' · marked':''}</span></span></summary>
+          <div class="in">${ctx}<p>${q}</p>${ExamUI.reviewHtml(it,x.a)}<div class="rat"><b>Rationale.</b> ${esc(it.rationale)}</div>${r.fb[x.i]?`<div class="rat"><b>Your note.</b> ${esc(r.fb[x.i])}</div>`:''}</div></details>`;
+      };
+    }
+
+    // Prompts for the tutor, not conclusions: small samples can't prove a cause.
+    function buildFocus({overall,byTopic,byPat,byType,rows,changes,avg,unanswered}){
+      const out=[],pctOf=g=>g.pts/g.n,usable=(a)=>a.filter(g=>g.n>=2);
+      const topics=usable(byTopic);
+      const weak=topics.filter(g=>pctOf(g)<.6).slice(0,3);
+      if(weak.length)out.push(`<b>Content areas to explore first:</b> ${weak.map(g=>esc(g.label)+' ('+pct(g.pts,g.n)+'%)').join(', ')}. Ask the student how these felt in school and what they have already reviewed.`);
+      else if(overall>=80)out.push('Strong overall. Spend the time on <b>test-day stamina, NGN case studies, and any single weak spot below</b> rather than broad content review.');
+      else out.push('No content area dipped clearly below 60% with 2 or more items. Look at the question-style table below for the pattern.');
+      const pats=usable(byPat),contentAvg=overall/100;
+      const weakPat=pats.filter(g=>pctOf(g)<=contentAvg-.15&&pctOf(g)<.75);
+      if(weakPat.length)out.push(`<b>Question-style gap:</b> ${weakPat.map(g=>esc(g.label)+' ('+pct(g.pts,g.n)+'%)').join(', ')} scored well below their overall average. If the content in those items was familiar, this points to how they read and prioritize questions rather than a content gap.`);
+      const sata=byType.find(g=>g.label==='Select all that apply'),mcq=byType.find(g=>g.label==='Single answer');
+      if(sata&&mcq&&pctOf(sata)<=pctOf(mcq)-.2)out.push(`<b>Select-all-that-apply is lagging</b> (${pct(sata.pts,sata.n)}% vs ${pct(mcq.pts,mcq.n)}% on single-answer items). Ask whether they judge each option on its own or hunt for a "best" pair.`);
+      const ngn=byType.find(g=>g.label.startsWith('Case study'));
+      if(ngn&&pctOf(ngn)<.6)out.push(`<b>Case study items scored ${pct(ngn.pts,ngn.n)}%.</b> Check whether they struggled to use the chart tabs, or to recognize the cue versus choose the action.`);
+      const calc=rows.find(x=>x.it.type==='fill');
+      if(calc&&!calc.full)out.push('The <b>dosage calculation</b> was missed. Ask how they set up the problem and whether they used the on-screen calculator.');
+      if(changes>=8)out.push(`They changed answers ${changes} times. Ask what prompts a change, and whether the first instinct was usually better or worse.`);
+      if(avg>110)out.push(`Average pace was ${avg}s per item, slower than a typical 1-minute-per-item rhythm. Pacing may need work.`);
+      else if(avg<35&&overall<70)out.push(`Average pace was only ${avg}s per item with a score under 70%. Ask whether they are rushing or guessing.`);
+      if(unanswered)out.push(`${unanswered} item${unanswered>1?'s were':' was'} left unanswered.`);
+      return out;
+    }
+
+    function copySummary({overall,full,rows,r,byTopic,byPat,byType,focus,avg,changes}){
+      const line=g=>`- ${g.label}: ${pct(g.pts,g.n)}% (${+g.pts.toFixed(1)}/${g.n})`;
+      const strip=s=>s.replace(/<[^>]+>/g,'');
+      const text=[`Consult diagnostic${lastWho?' - '+lastWho:''}`,`Overall ${overall}%, ${full}/${rows.length} fully correct, ${fmtT(r.elapsed)} total (${avg}s/item), ${changes} answer changes.`,'','Content areas:',...byTopic.map(line),'','Question style:',...byPat.map(line),'','Item format:',...byType.map(line),'','Discussion points:',...focus.map(f=>'- '+strip(f)),'','Educational snapshot only; not an NCLEX score or pass prediction.'].join('\n');
+      const st=document.getElementById('copy-state');
+      (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(()=>{st.textContent='Copied.'},()=>{st.textContent='Copy was blocked by the browser.'});
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* Shared NCLEX-style exam interface for the Success Center.
+   Used by exam-ui.js. Scope: everything lives under .ex-app / .ex-modal so it
+   can be dropped into any page without restyling the page itself. */
+.ex-app{--ex-dark:#0067a8;--ex-bar:#7daee8;--ex-line:#c9ced3;--ex-ink:#111;--ex-blue:#2196f3;--ex-th:#e6f2fc;--ex-stripe:#f1f1f1;--ex-fs:20px;
+  position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;background:#fff;color:var(--ex-ink);
+  font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;font-size:var(--ex-fs)}
+.ex-app *{box-sizing:border-box}
+.ex-app[data-fs="0"]{--ex-fs:17px}.ex-app[data-fs="2"]{--ex-fs:23px}
+.ex-header{background:var(--ex-dark);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:10px 18px;font-size:.8em;border-bottom:2px solid #5a9fd0}
+.ex-header .ex-title{font-weight:700;letter-spacing:.01em}
+.ex-header .ex-meta{text-align:right;line-height:1.5}
+.ex-header .ex-meta b{font-weight:400;font-variant-numeric:tabular-nums;margin-left:6px}
+.ex-toolbar{background:var(--ex-bar);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 14px;min-height:46px;border-bottom:2px solid var(--ex-dark);font-size:.9em}
+.ex-toolbar .ex-tools{display:flex;gap:6px;align-items:center}
+.ex-tb{background:none;border:0;color:#fff;font:inherit;display:inline-flex;align-items:center;gap:7px;padding:8px 10px;cursor:pointer;border-radius:3px}
+.ex-tb:hover,.ex-tb:focus-visible{background:rgba(255,255,255,.2);outline:none}
+.ex-tb span.u{text-decoration:underline;text-underline-offset:3px}
+.ex-tb svg{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ex-tb.on{background:rgba(255,255,255,.28)}
+.ex-main{flex:1;min-height:0;display:flex}
+.ex-pane{overflow:auto;padding:26px 34px;flex:1;min-width:0}
+.ex-main.split .ex-pane{flex:1 1 50%}
+.ex-main.split .ex-left{border-right:1px solid var(--ex-line)}
+.ex-stem{line-height:2.1;margin:30px 0 22px;max-width:1100px}
+.ex-stem b,.ex-prompt b{font-weight:700}
+.ex-opts{margin:0 0 0 38px;padding:0;list-style:none;max-width:1100px}
+.ex-opt{display:flex;align-items:center;gap:16px;padding:9px 0;cursor:pointer;line-height:1.45;user-select:none;-webkit-user-select:none}
+.ex-opt input{position:absolute;opacity:0;pointer-events:none}
+.ex-ctl{flex:none;width:1.7em;height:1.7em;border:2px solid #444;background:#fff;display:inline-grid;place-items:center}
+.ex-opt .ex-ctl.r{border-radius:50%}
+.ex-opt .ex-ctl.c{border-radius:4px;border-color:#666;border-width:1.5px}
+.ex-opt input:checked+.ex-ctl.r::after{content:"";width:.95em;height:.95em;border-radius:50%;background:var(--ex-blue)}
+.ex-opt input:checked+.ex-ctl.c{background:#fff}
+.ex-opt input:checked+.ex-ctl.c::after{content:"";width:1.05em;height:1.05em;border-radius:2px;background:var(--ex-blue)}
+.ex-opt input:focus-visible+.ex-ctl{outline:3px solid #9cc9f5;outline-offset:2px}
+.ex-num{flex:none;width:1.8em}
+.ex-opt.struck .ex-txt{text-decoration:line-through;text-decoration-thickness:2px}
+.ex-hint{font-size:.62em;color:#5a6670;margin:18px 0 0 38px}
+.ex-banner{background:#dedede;padding:14px 18px;margin:0 0 22px;font-size:.9em}
+.ex-item-no{font-weight:700;font-size:.9em;margin:0 0 14px}
+.ex-scenario{font-size:.9em;margin:0 0 20px}
+.ex-tabs{display:flex;gap:14px;margin:0 0 -1px;position:relative;z-index:1;flex-wrap:wrap}
+.ex-tab{font:inherit;font-size:.85em;font-weight:700;background:#fff;border:1px solid #777;border-bottom:0;border-radius:8px 8px 0 0;padding:14px 20px;cursor:pointer;color:#111}
+.ex-tab[aria-selected=false]{background:#fff;border-color:#9a9a9a;margin-bottom:0;box-shadow:inset 0 -1px 0 #777}
+.ex-tab[aria-selected=true]{box-shadow:none;border-color:#777;padding-bottom:15px}
+.ex-tabpanel{border:1px solid #777;padding:22px;font-size:.82em;line-height:1.6;background:#fff}
+.ex-table{width:100%;border-collapse:collapse}
+.ex-table th,.ex-table td{padding:12px 14px;text-align:left;vertical-align:middle;border:1px solid #e1e1e1}
+.ex-table thead th{background:var(--ex-th);font-weight:700}
+.ex-table tbody tr:nth-child(odd) td,.ex-table tbody tr:nth-child(odd) th{background:var(--ex-stripe)}
+.ex-table tbody th{font-weight:700;width:26%}
+.ex-table td.c,.ex-table th.c{text-align:center}
+.ex-prompt{line-height:1.6;margin:0 0 18px;font-size:.9em}
+.ex-prompt.first{margin-top:0}
+.ex-chev{color:#1e88e5;font-weight:700;margin-right:12px}
+.ex-right .ex-opts{margin-left:6px}
+.ex-matrix{max-width:760px;margin:6px 0 12px}
+.ex-matrix th,.ex-matrix td{font-size:.9em}
+.ex-matrix .ex-opt{justify-content:center;padding:2px 0}
+.ex-note{font-size:.85em;margin-top:14px}
+.ex-cloze{line-height:2.8;font-size:.9em;margin:6px 0 0 4px}
+.ex-cloze select{font:inherit;font-size:.92em;padding:6px 8px;border:1px solid #333;border-radius:2px;background:#fff;margin:0 4px;max-width:100%}
+.ex-hl{line-height:1.9;font-size:.9em;border:1px solid #777;padding:22px;margin-top:6px;background:#fff}
+.ex-hl .seg{cursor:pointer;border-radius:2px;padding:1px 0}
+.ex-hl .seg:hover{background:#fff7a8}
+.ex-hl .seg.on{background:#ffff00}
+.ex-fill{display:flex;align-items:center;gap:10px;margin:20px 0 0 38px}
+.ex-fill input{font:inherit;width:9em;padding:10px 12px;border:1px solid #333;border-radius:3px}
+.ex-footer{background:var(--ex-dark);color:#fff;display:flex;align-items:stretch;justify-content:space-between;border-top:2px solid #5a9fd0;font-size:.8em}
+.ex-footer .grp{display:flex}
+.ex-fb{background:none;border:0;border-right:1px solid rgba(255,255,255,.35);color:#fff;font:inherit;padding:14px 26px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.ex-fb:last-child{border-right:0}
+.ex-fb:hover,.ex-fb:focus-visible{background:rgba(255,255,255,.18);outline:none}
+.ex-fb[disabled]{opacity:.45;cursor:default;background:none}
+.ex-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:80;display:grid;place-items:center;padding:20px;font-family:Arial,Helvetica,sans-serif}
+.ex-modal{background:#fff;color:#111;width:min(520px,100%);max-height:90vh;overflow:auto;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.ex-modal.wide{width:min(760px,100%)}
+.ex-modal h2{margin:0;padding:12px 18px;background:var(--ex-dark);color:#fff;font-size:1rem;font-weight:700}
+.ex-modal .body{padding:18px;font-size:.95rem;line-height:1.55}
+.ex-modal .acts{display:flex;justify-content:flex-end;gap:10px;padding:0 18px 18px}
+.ex-modal button.btn{font:inherit;font-weight:700;border:1px solid var(--ex-dark);background:var(--ex-dark);color:#fff;padding:9px 18px;border-radius:3px;cursor:pointer}
+.ex-modal button.btn.sec{background:#fff;color:var(--ex-dark)}
+.ex-modal textarea{width:100%;min-height:180px;font:inherit;padding:10px;border:1px solid #888;border-radius:3px;resize:vertical}
+.ex-calc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ex-calc .disp{grid-column:1/-1;border:1px solid #888;padding:12px;text-align:right;font-size:1.5rem;min-height:3rem;font-variant-numeric:tabular-nums;overflow:hidden}
+.ex-calc button{font:inherit;font-size:1.15rem;padding:12px;border:1px solid #9aa;background:#f1f4f8;border-radius:3px;cursor:pointer}
+.ex-calc button.op{background:#dbe8f6}.ex-calc button.eq{background:var(--ex-dark);color:#fff;border-color:var(--ex-dark)}
+.ex-nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.ex-nav button{font:inherit;font-weight:700;padding:10px 0;border:1px solid #888;background:#fff;border-radius:3px;cursor:pointer;position:relative}
+.ex-nav button.done{background:#dcecfb;border-color:#5c9bd1}
+.ex-nav button.cur{outline:3px solid var(--ex-dark)}
+.ex-nav button.mk::after{content:"⚑";position:absolute;top:1px;right:4px;font-size:.7rem;color:#c0392b}
+.ex-legend{font-size:.82rem;color:#444;margin-top:12px}
+@media (max-width:900px){
+  .ex-main.split{flex-direction:column;overflow:auto}
+  .ex-main.split .ex-pane{overflow:visible;flex:none}
+  .ex-main.split .ex-left{border-right:0;border-bottom:1px solid var(--ex-line)}
+  .ex-pane{padding:18px}
+  .ex-header{flex-direction:column;align-items:flex-start;gap:4px}
+}
+@media print{.ex-app{display:none}}
+
+/* Review markers (results screens) */
+.ex-rv{list-style:none;margin:8px 0;padding:0}
+.ex-rv li{display:flex;gap:10px;padding:6px 8px;border-radius:3px;line-height:1.4}
+.ex-rv li .m{flex:none;width:1.4em;font-weight:700}
+.ex-rv li.good{background:#e6f4ea}.ex-rv li.bad{background:#fbe5e5}.ex-rv li.miss{background:#fff4d6}
