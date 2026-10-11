@@ -45,7 +45,16 @@
     .summary-card span{font-size:.7rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
     .category-list{display:grid;gap:7px}
     .category-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.82rem}
-    .entries{display:grid;gap:10px}
+    .period-controls{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    .period-toggle{display:flex;gap:6px;flex-wrap:wrap}
+    .period-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .month-filter{width:min(210px,100%)}
+    .month-filter[hidden]{display:none}
+    .entries{display:grid;gap:18px}
+    .month-group{display:grid;gap:9px}
+    .month-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:0 0 7px;border-bottom:1px solid var(--line)}
+    .month-heading h3{margin:0;font-size:1.08rem}
+    .month-heading span{color:var(--muted);font-size:.78rem;font-weight:800}
     .entry{background:#fff;border:1px solid var(--line);padding:14px}
     .entry-head{display:flex;justify-content:space-between;align-items:start;gap:12px}
     .entry h3{margin:0;font-size:1.05rem}
@@ -111,7 +120,14 @@
       </section>
       <section>
         <article class="panel">
-          <div class="entry-head"><h2>Expense summary</h2><label for="month">Month <input id="month" type="month"></label></div>
+          <div class="period-controls">
+            <div class="period-toggle" role="group" aria-label="Expense date range">
+              <button class="secondary" id="all-period" type="button" aria-pressed="true">All expenses</button>
+              <button class="secondary" id="month-period" type="button" aria-pressed="false">Choose month</button>
+            </div>
+            <label class="month-filter" id="month-filter" for="month" hidden>Month <input id="month" type="month"></label>
+          </div>
+          <h2 id="summary-title">Expense summary · all time</h2>
           <div class="summary">
             <div class="summary-card"><span>Total expenses</span><strong id="total">$0.00</strong></div>
             <div class="summary-card"><span>Expense count</span><strong id="count">0</strong></div>
@@ -133,11 +149,12 @@
     const MAX_RECEIPT_SIZE=10*1024*1024;
     const ALLOWED_RECEIPT_TYPES=['application/pdf','image/jpeg','image/png','image/webp'];
     const currency=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
-    let currentUser=null,editing=null,entries=[];
+    let currentUser=null,editing=null,entries=[],periodMode='all';
     const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const localDate=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
     const showStatus=(message,type='')=>{$('form-status').textContent=message;$('form-status').className='status '+type};
     const formatDate=value=>new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(`${value}T12:00:00`));
+    const formatMonth=value=>new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric'}).format(new Date(`${value}-01T12:00:00`));
     function monthRange(value){
       const [year,month]=value.split('-').map(Number);
       const lastDay=new Date(Date.UTC(year,month,0)).getUTCDate();
@@ -145,22 +162,35 @@
     }
     async function loadExpenses(){
       const month=$('month').value;
-      if(!month)return;
-      const [from,to]=monthRange(month);
       $('entries').innerHTML='<p class="empty">Loading expenses…</p>';
-      const {data,error}=await db.from('finance_expenses').select('*').gte('occurred_on',from).lte('occurred_on',to).order('occurred_on',{ascending:false}).order('created_at',{ascending:false});
-      if(error){$('entries').innerHTML='<p class="empty">Expenses could not be loaded: '+esc(error.message)+'</p>';return}
-      entries=data||[];
+      const rows=[];
+      const pageSize=500;
+      let offset=0;
+      while(true){
+        let query=db.from('finance_expenses').select('*').order('occurred_on',{ascending:false}).order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+pageSize-1);
+        if(periodMode==='month'){
+          if(!month){$('entries').innerHTML='<p class="empty">Choose a month to review its expenses.</p>';return}
+          const [from,to]=monthRange(month);
+          query=query.gte('occurred_on',from).lte('occurred_on',to);
+        }
+        const {data,error}=await query;
+        if(error){$('entries').innerHTML='<p class="empty">Expenses could not be loaded: '+esc(error.message)+'</p>';return}
+        rows.push(...(data||[]));
+        if(!data||data.length<pageSize)break;
+        offset+=pageSize;
+      }
+      entries=rows;
       await renderExpenses();
     }
     async function renderExpenses(){
       const total=entries.reduce((sum,row)=>sum+Number(row.amount),0);
       $('total').textContent=currency.format(total);
       $('count').textContent=String(entries.length);
+      $('summary-title').textContent=periodMode==='all'?'Expense summary · all time':'Expense summary · '+formatMonth($('month').value);
       const categories=new Map;
       entries.forEach(row=>categories.set(row.category,(categories.get(row.category)||0)+Number(row.amount)));
-      $('category-summary').innerHTML=categories.size?[...categories].sort((a,b)=>b[1]-a[1]).map(([name,amount])=>`<div class="category-row"><span>${esc(name)}</span><strong>${currency.format(amount)}</strong></div>`).join(''):'<p class="empty">No expenses for this month.</p>';
-      if(!entries.length){$('entries').innerHTML='<p class="empty">No expenses recorded for this month.</p>';return}
+      $('category-summary').innerHTML=categories.size?[...categories].sort((a,b)=>b[1]-a[1]).map(([name,amount])=>`<div class="category-row"><span>${esc(name)}</span><strong>${currency.format(amount)}</strong></div>`).join(''):'<p class="empty">No expenses in this date range.</p>';
+      if(!entries.length){$('entries').innerHTML='<p class="empty">No expenses recorded in this date range.</p>';return}
       const paths=entries.filter(row=>row.receipt_path).map(row=>row.receipt_path);
       const signedByPath=new Map;
       if(paths.length){
@@ -168,10 +198,27 @@
         if(error)showStatus('Some receipt links could not be prepared: '+error.message,'error');
         (data||[]).forEach(item=>{if(item.signedUrl)signedByPath.set(item.path,item.signedUrl)});
       }
-      $('entries').innerHTML=entries.map(row=>{
+      const groups=new Map;
+      entries.forEach(row=>{
+        const month=row.occurred_on.slice(0,7);
+        if(!groups.has(month))groups.set(month,[]);
+        groups.get(month).push(row);
+      });
+      $('entries').innerHTML=[...groups].map(([month,rows])=>{
+        const monthTotal=rows.reduce((sum,row)=>sum+Number(row.amount),0);
+        const monthRows=rows.map(row=>{
         const receipt=signedByPath.get(row.receipt_path);
         return `<article class="entry"><div class="entry-head"><div><h3>${esc(row.merchant)}</h3><p>${esc(formatDate(row.occurred_on))} · ${esc(row.category)}</p></div><span class="amount">${currency.format(Number(row.amount))}</span></div>${row.description?`<p>${esc(row.description)}</p>`:''}<div class="entry-actions">${receipt?`<a class="button secondary" href="${esc(receipt)}" target="_blank" rel="noopener noreferrer">${esc(row.receipt_filename||'Open receipt')}</a>`:''}<button class="secondary" type="button" data-edit="${esc(row.id)}">Edit</button><button class="danger" type="button" data-delete="${esc(row.id)}">Delete</button></div></article>`;
+        }).join('');
+        return `<section class="month-group" aria-label="${esc(formatMonth(month))} expenses"><div class="month-heading"><h3>${esc(formatMonth(month))}</h3><span>${rows.length} ${rows.length===1?'expense':'expenses'} · ${currency.format(monthTotal)}</span></div>${monthRows}</section>`;
       }).join('');
+    }
+    function setPeriod(mode){
+      periodMode=mode;
+      $('all-period').setAttribute('aria-pressed',String(mode==='all'));
+      $('month-period').setAttribute('aria-pressed',String(mode==='month'));
+      $('month-filter').hidden=mode!=='month';
+      loadExpenses();
     }
     function resetForm(){
       editing=null;
@@ -272,6 +319,8 @@
       $('month').value=now.slice(0,7);
       $('occurred-on').value=now;
       $('expense-form').addEventListener('submit',saveExpense);
+      $('all-period').addEventListener('click',()=>setPeriod('all'));
+      $('month-period').addEventListener('click',()=>setPeriod('month'));
       $('month').addEventListener('change',loadExpenses);
       $('cancel-edit').addEventListener('click',resetForm);
       $('entries').addEventListener('click',event=>{
