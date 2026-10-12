@@ -60,14 +60,14 @@
           <label class="choice">
             <input id="nur321-ob-exam1" type="checkbox">
             <span>
-              <strong>Jack · NUR 312 Exam 1 Practice</strong>
+              <strong>NUR 312 Exam 1 Practice</strong>
               <span>100 questions covering aneurysm, head injury, brain tumors, seizures, spinal cord injuries, shock, and burns.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-nur312-exam2" type="checkbox">
             <span>
-              <strong>Jack · NUR 312 Exam 2 Practice</strong>
+              <strong>NUR 312 Exam 2 Practice</strong>
               <span>116 questions covering cardiac and respiratory assessment, dysrhythmias, procedures, devices, medications, and calculations.</span>
             </span>
           </label>
@@ -75,35 +75,35 @@
           <label class="choice">
             <input id="jack-nur312-exam2-resources" type="checkbox">
             <span>
-              <strong>Jack — NUR 312 Exam 2</strong>
+              <strong>NUR 312 Exam 2 Study Graphics</strong>
               <span>Nine private study graphics covering pneumothorax, flail chest, pulmonary emboli, chest tubes, ventilator settings, noninvasive ventilation, oxygen delivery, and the course overview.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-ob-study-guide" type="checkbox">
             <span>
-              <strong>Jack · NUR 321 Exam 2 Study Guide</strong>
+              <strong>NUR 321 Exam 2 Study Guide</strong>
               <span>View the browser version or download the original DOCX for NUR 321 OB Exam 2 preparation.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-ob-study-questions" type="checkbox">
             <span>
-              <strong>Jack · NUR 321 Exam 2 Practice</strong>
+              <strong>NUR 321 Exam 2 Practice</strong>
               <span>40 focused questions based on the uploaded OB study guide.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-nur416-exam2-guide" type="checkbox">
             <span>
-              <strong>Jack · NUR 416 Exam 2 Study Guide</strong>
+              <strong>NUR 416 Exam 2 Study Guide</strong>
               <span>View the browser version or download the original DOCX for NUR 416 Exam 2 preparation.</span>
             </span>
           </label>
           <label class="choice">
             <input id="jack-nur416-exam2-questions" type="checkbox">
             <span>
-              <strong>Jack · NUR 416 Exam 2 Practice</strong>
+              <strong>NUR 416 Exam 2 Practice</strong>
               <span>65 focused questions based on the NUR 416 Exam 2 Study Guide.</span>
             </span>
           </label>
@@ -191,7 +191,7 @@ if($('nur321-ob-exam1').checked){
     .eq('url',url)
     .limit(1);
 
-  if(findError)throw new Error('Jack practice lookup failed: '+findError.message);
+  if(findError)throw new Error('NUR 312 practice lookup failed: '+findError.message);
 
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
@@ -201,7 +201,7 @@ if($('nur321-ob-exam1').checked){
       url,
       note:'Complete these 100 Exam 1 practice questions before your next coaching session.'
     });
-    if(error)throw new Error('Jack practice assignment failed: '+error.message);
+    if(error)throw new Error('NUR 312 practice assignment failed: '+error.message);
   }
 }
 if($('jack-nur312-exam2').checked){
@@ -211,7 +211,7 @@ if($('jack-nur312-exam2').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · NUR 312 Exam 2 Practice (116 questions)',
+      title:'NUR 312 Exam 2 Practice (116 questions)',
       resource_type:'practice_set',
       url,
       note:'Complete this 116-question Exam 2 practice test before your next coaching session.'
@@ -228,7 +228,7 @@ if($('jack-nur312-exam2-resources').checked){
     if(!existing?.length){
       const {error}=await db.from('student_resources').insert({
         student_id:student.id,
-        title:'Jack — NUR 312 Exam 2 · '+resourceNames[index],
+        title:'NUR 312 Exam 2 · '+resourceNames[index],
         resource_type:'document',
         url,
         note:'Exam 2 respiratory/cardiac study graphic.'
@@ -244,7 +244,7 @@ if($('jack-ob-study-guide').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · NUR 321 Exam 2 Study Guide',
+      title:'NUR 321 Exam 2 Study Guide',
       resource_type:'study_guide',
       url,
       note:'View the study guide online or download the original DOCX.'
@@ -259,10 +259,10 @@ if($('jack-ob-study-questions').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · NUR 321 Exam 2 Practice (40 questions)',
+      title:'NUR 321 Exam 2 Practice (40 questions)',
       resource_type:'practice_set',
       url,
-      note:'40 practice questions based on the Jack OB Study Guide.'
+      note:'40 practice questions based on the NUR 321 OB Exam 2 Study Guide.'
     });
     if(error)throw new Error('OB practice assignment failed: '+error.message);
   }
@@ -274,7 +274,7 @@ if($('jack-nur416-exam2-guide').checked){
   if(!existing?.length){
     const {error}=await db.from('student_resources').insert({
       student_id:student.id,
-      title:'Jack · NUR 416 Exam 2 Study Guide',
+      title:'NUR 416 Exam 2 Study Guide',
       resource_type:'study_guide',
       url,
       note:'View the study guide online or download the original DOCX.'
@@ -288,7 +288,7 @@ if($('jack-nur416-exam2-guide').checked){
     if(!existing?.length){
       const {error}=await db.from('student_resources').insert({
         student_id:student.id,
-        title:'Jack · NUR 416 Exam 2 Practice (65 questions)',
+        title:'NUR 416 Exam 2 Practice (65 questions)',
         resource_type:'practice_set',
         url,
         note:'65 practice questions based on the NUR 416 Exam 2 Study Guide.'
@@ -302,13 +302,13 @@ const items=selectedKeys.map(key=>coreModules[key].name);
 if($('diagnostic').checked)items.push('full mock CAT diagnostic');
 if($('mixed-review').checked)items.push('mixed NCLEX review');
 if($('nur215-foundations').checked)items.push('NUR 215 Foundations Practice (60 questions)');
-if($('nur321-ob-exam1').checked)items.push('Jack · NUR 312 Exam 1 Practice (100 questions)');
-if($('jack-nur312-exam2').checked)items.push('Jack · NUR 312 Exam 2 Practice (116 questions)');
-if($('jack-nur312-exam2-resources').checked)items.push('Jack — NUR 312 Exam 2 graphics');
-if($('jack-ob-study-guide').checked)items.push('Jack · NUR 321 Exam 2 Study Guide');
-if($('jack-ob-study-questions').checked)items.push('Jack · NUR 321 Exam 2 Practice (40 questions)');
-if($('jack-nur416-exam2-guide').checked)items.push('Jack · NUR 416 Exam 2 Study Guide');
-if($('jack-nur416-exam2-questions').checked)items.push('Jack · NUR 416 Exam 2 Practice (65 questions)');
+if($('nur321-ob-exam1').checked)items.push('NUR 312 Exam 1 Practice (100 questions)');
+if($('jack-nur312-exam2').checked)items.push('NUR 312 Exam 2 Practice (116 questions)');
+if($('jack-nur312-exam2-resources').checked)items.push('NUR 312 Exam 2 study graphics');
+if($('jack-ob-study-guide').checked)items.push('NUR 321 Exam 2 Study Guide');
+if($('jack-ob-study-questions').checked)items.push('NUR 321 Exam 2 Practice (40 questions)');
+if($('jack-nur416-exam2-guide').checked)items.push('NUR 416 Exam 2 Study Guide');
+if($('jack-nur416-exam2-questions').checked)items.push('NUR 416 Exam 2 Practice (65 questions)');
 show('Assigned '+items.join(', ')+' to '+student.name+'.','success')}catch(error){show(error.message||'Could not save these assignments. Please try again.','error')}finally{button.disabled=false;button.textContent='Save assignments'}}
     $('save').addEventListener('click',() => { save().catch(error => show('Assignment save failed: '+(error.message||'unknown error'),'error')); });
     window.addEventListener('error', event => show('Assignment page error: '+(event.error?.message||event.message||'unknown error'),'error'));

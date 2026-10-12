@@ -605,11 +605,17 @@
       document.getElementById(containerId).innerHTML = filtered.map(item =>
         `<article class="resource">
           <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
-          <h3>${text(item.title)}</h3>
-          ${item.note ? `<p>${text(item.note)}</p>` : ''}
+          <h3>${studentResourceText(item.title)}</h3>
+          ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
           ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
         </article>`
       ).join('');
+    }
+
+    function studentResourceText(value) {
+      return text(String(value ?? '')
+        .replace(/^\s*Jack\s*[·—–-]\s*/i, '')
+        .replace(/\bJack(?:'s)?\s+(?=OB Study Guide\b)/gi, ''));
     }
 
     function renderModulesInto(containerId, catalog, access) {
@@ -994,8 +1000,8 @@
             <div class="practice-list">${group.sets.map(ps => `
               <div class="practice-item">
                 <span class="practice-item-meta">Practice set</span>
-                <span class="practice-item-title">${text(practiceTitle(ps))}</span>
-                ${ps.note ? `<span class="practice-item-note">${text(ps.note)}</span>` : ''}
+                <span class="practice-item-title">${studentResourceText(practiceTitle(ps))}</span>
+                ${ps.note ? `<span class="practice-item-note">${studentResourceText(ps.note)}</span>` : ''}
                 ${ps.url  ? `<a class="practice-item-open" href="${text(ps.url)}" target="_blank" rel="noopener">Open practice quiz →</a>` : ''}
               </div>`
             ).join('')}</div>
@@ -1027,7 +1033,7 @@
               const imageResource=/\.(?:png|jpe?g|webp|gif)(?:[?#]|$)/i.test(item.url || '');
               const number=String(index+1).padStart(2,'0');
               return `<article class="resource">
-                ${imageResource ? `<img class="resource-thumb" src="${text(item.url)}" alt="Study graphic ${number}" loading="lazy"><span class="resource-number" aria-label="Study graphic ${number}">${number}</span>` : `<span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span><h3>${text(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>${item.note ? `<p>${text(item.note)}</p>` : ''}`}
+                ${imageResource ? `<img class="resource-thumb" src="${text(item.url)}" alt="Study graphic ${number}" loading="lazy"><span class="resource-number" aria-label="Study graphic ${number}">${number}</span>` : `<span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span><h3>${studentResourceText(item.url === 'jack-ob-study-guide.html' ? 'NUR 321 OB · Exam 2 Study Guide' : item.title)}</h3>${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}`}
                 ${item.url  ? `<a class="resource-button" href="${text(item.url)}" target="_blank" rel="noopener">${imageResource ? 'Open graphic →' : 'Open resource →'}</a>` : '<span class="resource-button disabled" aria-disabled="true">Resource unavailable</span>'}
               </article>`;
             }).join('')}</div>
@@ -1090,8 +1096,6 @@
       }
 
       if (error || !student) { await db.auth.signOut(); location.replace('student-login.html'); return; }
-      if (student.portal_stage === 'assessment' && !isPreview) { location.replace('assessment-dashboard.html'); return; }
-
       _student = student;
 
       if (isPreview) {
