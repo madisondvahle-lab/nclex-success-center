@@ -7,13 +7,13 @@
     "option_c": "Administer prescribed oral analgesic",
     "option_d": "Place the patient flat for comfort",
     "correct_answer": "a",
-    "rationale": "A addresses impending airway compromise; B delays treatment of possible obstruction; C does not correct stridor; D may worsen breathing.",
+    "rationale": "Correct answer (A): Activate emergency response and prepare to support the airway. Clinical reasoning:  addresses impending airway compromise;  delays treatment of possible obstruction;  does not correct stridor;  may worsen breathing.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-002",
@@ -23,13 +23,13 @@
     "option_c": "Assess the tubing and drainage system for an air leak",
     "option_d": "Strip the tubing to clear trapped air",
     "correct_answer": "c",
-    "rationale": "A can cause tension pneumothorax; B impairs drainage; C checks for a system leak and patient status; D can generate dangerous negative pressure.",
+    "rationale": "Correct answer (C): Assess the tubing and drainage system for an air leak. Clinical reasoning:  can cause tension pneumothorax;  impairs drainage; C checks for a system leak and patient status;  can generate dangerous negative pressure.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-003",
@@ -39,13 +39,13 @@
     "option_c": "Patient asks for a blanket",
     "option_d": "Urine output decreases to 12 mL in the past hour",
     "correct_answer": "d",
-    "rationale": "A may reflect antipyretic response; B may be improvement; C is nonspecific.; D suggests impaired renal perfusion and requires urgent reassessment",
+    "rationale": "Correct answer (D): Urine output decreases to 12 mL in the past hour. Clinical reasoning:  may reflect antipyretic response;  may be improvement;  is nonspecific.; D suggests impaired renal perfusion and requires urgent reassessment",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-004",
@@ -55,13 +55,13 @@
     "option_c": "Place an oral diet order with thickened liquids",
     "option_d": "Assist the client to walk",
     "correct_answer": "b",
-    "rationale": "A risks aspiration; B addresses threatened airway and prompts urgent evaluation; C requires formal swallow assessment; D is not the immediate concern.",
+    "rationale": "Correct answer (B): Keep the client NPO and assess airway and oxygenation. Clinical reasoning:  risks aspiration;  addresses threatened airway and prompts urgent evaluation;  requires formal swallow assessment;  is not the immediate concern.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-005",
@@ -71,13 +71,13 @@
     "option_c": "Flush remaining donor blood through the IV",
     "option_d": "Discard the blood bag immediately before notifying anyone",
     "correct_answer": "a",
-    "rationale": "A stops suspected acute reaction while maintaining access; B continues exposure; C increases exposure; D disrupts reaction investigation and omits stabilization.",
+    "rationale": "Correct answer (A): Stop transfusion and maintain IV access with normal saline using new tubing. Clinical reasoning: A stops suspected acute reaction while maintaining access;  continues exposure;  increases exposure; D disrupts reaction investigation and omits stabilization.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-006",
@@ -87,13 +87,13 @@
     "option_c": "Start prescribed large-bore IV access and isotonic fluid resuscitation",
     "option_d": "Provide a regular diet",
     "correct_answer": "c",
-    "rationale": "A delays shock treatment; B is unrelated; C supports circulation while urgent hemorrhage management proceeds; D is unsafe during active instability.",
+    "rationale": "Correct answer (C): Start prescribed large-bore IV access and isotonic fluid resuscitation. Clinical reasoning:  delays shock treatment;  is unrelated;  supports circulation while urgent hemorrhage management proceeds;  is unsafe during active instability.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-007",
@@ -103,13 +103,13 @@
     "option_c": "Only recheck oxygen saturation after 30 minutes",
     "option_d": "Support ventilation and activate urgent clinical assistance",
     "correct_answer": "d",
-    "rationale": "A ignores hypoventilation; B worsens depression; C delays action and SpO2 may lag hypoventilation.; D targets immediate ventilation and emergency evaluation",
+    "rationale": "Correct answer (D): Support ventilation and activate urgent clinical assistance. Clinical reasoning:  ignores hypoventilation;  worsens depression;  delays action and SpO2 may lag hypoventilation.;  targets immediate ventilation and emergency evaluation",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-008",
@@ -119,13 +119,13 @@
     "option_c": "Encourage oral hydration before assessment",
     "option_d": "Give a sedative to decrease agitation",
     "correct_answer": "b",
-    "rationale": "A delays rescue; B addresses hypoxemia and deterioration; C risks aspiration; D can worsen respiratory status.",
+    "rationale": "Correct answer (B): Immediately assess airway and breathing, escalate respiratory support, and call for help. Clinical reasoning:  delays rescue;  addresses hypoxemia and deterioration;  risks aspiration;  can worsen respiratory status.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-009",
@@ -135,13 +135,13 @@
     "option_c": "Acute excess aldosterone secretion",
     "option_d": "Severe pain-related catecholamine release",
     "correct_answer": "a",
-    "rationale": "A describes neurogenic shock; B would not explain vasodilation; C causes sodium retention; D typically increases HR and vascular tone.",
+    "rationale": "Correct answer (A): Loss of sympathetic vascular tone and unopposed vagal effects. Clinical reasoning: A describes neurogenic shock;  would not explain vasodilation; C causes sodium retention; D typically increases HR and vascular tone.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-010",
@@ -151,13 +151,13 @@
     "option_c": "Stop or reduce ultrafiltration per protocol and assess the patient",
     "option_d": "Administer scheduled antihypertensive medication",
     "correct_answer": "c",
-    "rationale": "A worsens volume loss; B increases fall risk; C addresses likely dialysis-associated hypotension while reassessing; D may worsen hypotension.",
+    "rationale": "Correct answer (C): Stop or reduce ultrafiltration per protocol and assess the patient. Clinical reasoning:  worsens volume loss;  increases fall risk;  addresses likely dialysis-associated hypotension while reassessing;  may worsen hypotension.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-011",
@@ -167,13 +167,13 @@
     "option_c": "Administer a routine laxative",
     "option_d": "Assess fluid/electrolyte losses and urgently report possible dehydration",
     "correct_answer": "d",
-    "rationale": "A is not urgent; B can worsen deficit; C increases losses.; D addresses high-output dehydration and instability",
+    "rationale": "Correct answer (D): Assess fluid/electrolyte losses and urgently report possible dehydration. Clinical reasoning:  is not urgent;  can worsen deficit;  increases losses.;  addresses high-output dehydration and instability",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-012",
@@ -183,13 +183,13 @@
     "option_c": "Encourage deep breathing only and reassess in an hour",
     "option_d": "Massage the calf to assess tenderness",
     "correct_answer": "b",
-    "rationale": "A increases exertion in instability; B treats possible life-threatening pulmonary embolism; C delays escalation; D risks dislodging thrombus and adds no diagnostic value.",
+    "rationale": "Correct answer (B): Activate rapid response and support airway, oxygenation, and circulation. Clinical reasoning:  increases exertion in instability;  treats possible life-threatening pulmonary embolism;  delays escalation;  risks dislodging thrombus and adds no diagnostic value.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-013",
@@ -199,13 +199,13 @@
     "option_c": "Wait for the next meal",
     "option_d": "Give glucagon even though the patient can swallow",
     "correct_answer": "a",
-    "rationale": "A promptly treats conscious hypoglycemia; B worsens it; C delays treatment; D may be reserved for situations where oral treatment is unsafe or unsuccessful.",
+    "rationale": "Correct answer (A): Give rapid-acting oral carbohydrate per protocol and recheck glucose. Clinical reasoning: promptly treats conscious hypoglycemia;  worsens it;  delays treatment;  may be reserved for situations where oral treatment is unsafe or unsuccessful.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-014",
@@ -215,13 +215,13 @@
     "option_c": "Promptly notify the clinician and prepare potassium replacement and insulin adjustment per protocol",
     "option_d": "Encourage exercise",
     "correct_answer": "c",
-    "rationale": "A drives potassium lower; B lowers potassium further; C addresses dangerous hypokalemia and dysrhythmia; D is unsafe.",
+    "rationale": "Correct answer (C): Promptly notify the clinician and prepare potassium replacement and insulin adjustment per protocol. Clinical reasoning: A drives potassium lower; B lowers potassium further;  addresses dangerous hypokalemia and dysrhythmia;  is unsafe.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-015",
@@ -231,13 +231,13 @@
     "option_c": "Oral phosphate binder",
     "option_d": "IV calcium gluconate",
     "correct_answer": "d",
-    "rationale": "A Oral iron does not stabilize cardiac conduction during hyperkalemia; B Erythropoietin treats selected anemia but is not emergency hyperkalemia therapy; C A phosphate binder does not immediately stabilize myocardium; D IV calcium stabilizes cardiac membranes during hyperkalemia with ECG changes but does not lower potassium.",
+    "rationale": "Correct answer (D): IV calcium gluconate. Clinical reasoning: A Oral iron does not stabilize cardiac conduction during hyperkalemia; B Erythropoietin treats selected anemia but is not emergency hyperkalemia therapy; C A phosphate binder does not immediately stabilize myocardium; D IV calcium stabilizes cardiac membranes during hyperkalemia with ECG changes but does not lower potassium.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-016",
@@ -247,13 +247,13 @@
     "option_c": "Encourage vigorous ambulation",
     "option_d": "Apply heat and reassess next shift",
     "correct_answer": "b",
-    "rationale": "A may be inappropriate with deterioration; B addresses possible shock or complication; C risks injury; D delays evaluation.",
+    "rationale": "Correct answer (B): Initiate urgent assessment and notify the rapid response/clinical team. Clinical reasoning:  may be inappropriate with deterioration;  addresses possible shock or complication;  risks injury;  delays evaluation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-017",
@@ -263,13 +263,13 @@
     "option_c": "Normal sleepiness after coughing",
     "option_d": "A sign the patient is ready for discharge",
     "correct_answer": "a",
-    "rationale": "A A quiet or silent chest accompanied by drowsiness indicates dangerously reduced airflow and possible respiratory failure; B Less audible wheezing is not evidence of improvement when respiratory effort and consciousness worsen; C Drowsiness with severe asthma is not an expected consequence of coughing; D These changes require emergency intervention, not discharge.",
+    "rationale": "Correct answer (A): Potential impending respiratory failure from severely reduced airflow. Clinical reasoning: A A quiet or silent chest accompanied by drowsiness indicates dangerously reduced airflow and possible respiratory failure; B Less audible wheezing is not evidence of improvement when respiratory effort and consciousness worsen; C Drowsiness with severe asthma is not an expected consequence of coughing; D These changes require emergency intervention, not discharge.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-018",
@@ -279,13 +279,13 @@
     "option_c": "Urgently assess perfusion and escalate possible low-output shock",
     "option_d": "Delay assessment until the next scheduled weight",
     "correct_answer": "c",
-    "rationale": "A may worsen hypotension; B is unsafe without volume assessment; C addresses possible cardiogenic shock; D delays rescue.",
+    "rationale": "Correct answer (C): Urgently assess perfusion and escalate possible low-output shock. Clinical reasoning:  may worsen hypotension;  is unsafe without volume assessment;  addresses possible cardiogenic shock;  delays rescue.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-019",
@@ -295,13 +295,13 @@
     "option_c": "Urinary retention only",
     "option_d": "Retroperitoneal hemorrhage",
     "correct_answer": "d",
-    "rationale": "A Mild muscle soreness does not explain acute hypotension after femoral access; B Local bruising may occur but does not explain back pain plus hemodynamic deterioration; C Urinary retention alone is unlikely to cause hypotension with new back pain; D Retroperitoneal hemorrhage may cause occult bleeding, back or flank pain, and shock despite an intact groin dressing.",
+    "rationale": "Correct answer (D): Retroperitoneal hemorrhage. Clinical reasoning: A Mild muscle soreness does not explain acute hypotension after femoral access; B Local bruising may occur but does not explain back pain plus hemodynamic deterioration; C Urinary retention alone is unlikely to cause hypotension with new back pain; D Retroperitoneal hemorrhage may cause occult bleeding, back or flank pain, and shock despite an intact groin dressing.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-020",
@@ -311,13 +311,13 @@
     "option_c": "Encourage a large meal",
     "option_d": "Disconnect nasogastric decompression permanently",
     "correct_answer": "b",
-    "rationale": "A Laxatives can worsen a suspected obstructive or perforated abdomen; B Abrupt rigidity, fever and hypotension suggest peritonitis or perforation requiring urgent surgical assessment and shock management; C Oral intake is unsafe in this deteriorating patient; D Discontinuing decompression without evaluation may worsen distention and is not the priority.",
+    "rationale": "Correct answer (B): Notify the surgical team urgently and assess for perforation and shock. Clinical reasoning: A Laxatives can worsen a suspected obstructive or perforated abdomen; B Abrupt rigidity, fever and hypotension suggest peritonitis or perforation requiring urgent surgical assessment and shock management; C Oral intake is unsafe in this deteriorating patient; D Discontinuing decompression without evaluation may worsen distention and is not the priority.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-021",
@@ -327,13 +327,13 @@
     "option_c": "Ask the stable client to assess the new admission",
     "option_d": "Wait to assess until staffing improves",
     "correct_answer": "a",
-    "rationale": "A reserves unstable/new assessment for RN and delegates within scope; B requires nursing assessment; C is inappropriate; D delays stroke evaluation.",
+    "rationale": "Correct answer (A): Assign the new neurologic assessment to the RN and delegate permitted routine support tasks. Clinical reasoning: A reserves unstable/new assessment for RN and delegates within scope;  requires nursing assessment;  is inappropriate;  delays stroke evaluation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-022",
@@ -343,13 +343,13 @@
     "option_c": "Report immediately if systolic BP is below 90 mm Hg or if the patient appears newly confused",
     "option_d": "Document that the RN performed the measurements",
     "correct_answer": "c",
-    "rationale": "A hides abnormal results; B exceeds assistive scope; C gives clear reporting parameters; D misattributes care.",
+    "rationale": "Correct answer (C): Report immediately if systolic BP is below 90 mm Hg or if the patient appears newly confused. Clinical reasoning:  hides abnormal results;  exceeds assistive scope;  gives clear reporting parameters; D misattributes care.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-023",
@@ -359,13 +359,13 @@
     "option_c": "Tell the client to double the next dose",
     "option_d": "Assess which inhaler, dose, frequency, technique, and symptoms before providing individualized teaching",
     "correct_answer": "d",
-    "rationale": "A ignores possible adverse effect; B is beyond assistive scope; C can worsen adverse effects.; D gathers data for safe teaching and provider follow-up",
+    "rationale": "Correct answer (D): Assess which inhaler, dose, frequency, technique, and symptoms before providing individualized teaching. Clinical reasoning:  ignores possible adverse effect;  is beyond assistive scope;  can worsen adverse effects.; gathers data for safe teaching and provider follow-up",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-024",
@@ -375,13 +375,13 @@
     "option_c": "Document symptoms for the next shift",
     "option_d": "Offer oral fluids and continue antibiotics",
     "correct_answer": "b",
-    "rationale": "A Continuing a suspected causative infusion increases exposure during anaphylaxis; B Stop the infusion, assess airway and circulation, summon emergency help and prepare ordered intramuscular epinephrine promptly; C Delayed documentation does not address immediate respiratory compromise; D Oral fluids and continued antibiotic exposure are unsafe during suspected anaphylaxis.",
+    "rationale": "Correct answer (B): Immediately assess the patient, stop suspected medication exposure, summon emergency help, and prepare prescribed epinephrine. Clinical reasoning: A Continuing a suspected causative infusion increases exposure during anaphylaxis; B Stop the infusion, assess airway and circulation, summon emergency help and prepare ordered intramuscular epinephrine promptly; C Delayed documentation does not address immediate respiratory compromise; D Oral fluids and continued antibiotic exposure are unsafe during suspected anaphylaxis.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   },
   {
     "draft_id": "NEW-20261012-025",
@@ -391,12 +391,12 @@
     "option_c": "Restrain all extremities firmly",
     "option_d": "Attempt to give oral medication during the seizure",
     "correct_answer": "a",
-    "rationale": "A emphasizes safety and timing; B risks oral injury; C can injure the patient; D risks aspiration.",
+    "rationale": "Correct answer (A): Protect the patient from injury, note the time, and summon assistance. Clinical reasoning: A emphasizes safety and timing;  risks oral injury;  can injure the patient;  risks aspiration.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_unapproved"
+    "editorial_status": "draft_requires_rationale_option_mapping_review"
   }
 ]
