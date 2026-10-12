@@ -10,6 +10,8 @@ ALTER TABLE public.students
 
 DROP POLICY IF EXISTS "allow_anon_update_students" ON public.students;
 DROP POLICY IF EXISTS "admins only update students" ON public.students;
+-- Restrictive policies are ANDed with permissive policies, so the existing
+-- admin policy remains required and no broader student policy can grant UPDATE.
 CREATE POLICY "admins only update students"
   ON public.students
   AS RESTRICTIVE
@@ -28,7 +30,7 @@ CREATE OR REPLACE FUNCTION public.update_my_student_profile(
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 BEGIN
   IF auth.uid() IS NULL THEN
@@ -39,11 +41,11 @@ BEGIN
     RAISE EXCEPTION 'At least one profile field must be provided.';
   END IF;
 
-  UPDATE public.students
+  UPDATE public.students AS student_profile
   SET
-    course_name = COALESCE(p_course_name, course_name),
-    exam_date = COALESCE(p_exam_date, exam_date)
-  WHERE auth_user_id = auth.uid();
+    course_name = COALESCE(p_course_name, student_profile.course_name),
+    exam_date = COALESCE(p_exam_date, student_profile.exam_date)
+  WHERE student_profile.auth_user_id = auth.uid();
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'No student profile is linked to this account.';
