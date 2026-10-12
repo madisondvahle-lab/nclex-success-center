@@ -234,7 +234,7 @@
         return matchesLink({link:text})||matchesToken(text);
       });
       const matchingPractice=(practice||[]).filter(item=>{
-        const text=(String(item.set_title||'')+' '+String(item.title||'')+' '+String(item.set_key||'')+' '+String(item.set_id||'')).toLowerCase();
+        const text=(String(item.practice_title||'')+' '+String(item.practice_key||'')).toLowerCase();
         return matchesToken(text);
       });
       const events=[];
