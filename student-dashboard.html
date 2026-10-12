@@ -247,6 +247,7 @@
           <input type="file" id="ob-file-input" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="handleObFile(this)">
           <div class="upload-file-name" id="ob-file-name"></div>
         </div>
+        <p id="ob-save-status" role="status" aria-live="polite"></p>
         <div class="modal-actions">
           <button class="btn-primary" id="ob-finish">Save &amp; open my hub</button>
           <button class="btn-skip" id="ob-skip-upload">Skip for now</button>
@@ -460,14 +461,23 @@
       const examDate   = document.getElementById('ob-exam-date').value;
       const topics     = document.getElementById('ob-topics').value.trim();
 
-      // Build update payload
-      const update = {};
-      if (courseName) update.course_name = courseName;
-      if (examDate)   update.exam_date   = examDate;
+      const status = document.getElementById('ob-save-status');
+      status.textContent = '';
 
-      // Save to students table
-      if (Object.keys(update).length) {
-        await db.from('students').update(update).eq('id', _student.id);
+      if (courseName || examDate) {
+        try {
+          const { error } = await db.rpc('update_my_student_profile', {
+            p_course_name: courseName || null,
+            p_exam_date: examDate || null,
+          });
+          if (error) throw error;
+        } catch (error) {
+          console.error('Unable to save student onboarding profile.', error);
+          status.textContent = 'Unable to save your course details. Please try again or contact Madison.';
+          btn.disabled = false;
+          btn.textContent = 'Save & open my hub';
+          return;
+        }
       }
 
       // Save exam topics as a resource note
