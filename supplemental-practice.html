@@ -1608,6 +1608,9 @@
         db.from('questions')
           .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no')
           .eq('active',true)
+          // Comprehensive NCLEX review must not expose private course/exam question pools.
+          .is('course_key',null)
+          .is('exam_key',null)
           .limit(1000),
         db.from('student_supplemental_practice_results')
           .select('answer_details,missed_question_ids')
@@ -1706,6 +1709,20 @@
     async function buildCourseExamPractice(courseKey,examKey){
       if(!student){
         alert('Sign in through the Success Center before starting exam practice.');
+        return;
+      }
+      // Client-side access check for an explicit course enrollment or assigned exam resource.
+      // Database RLS is still required to protect question data from direct API access.
+      const examUrl='supplemental-practice.html?course='+encodeURIComponent(courseKey)+'&exam='+encodeURIComponent(examKey);
+      const [{data:enrollments,error:enrollmentError},{data:assignments,error:assignmentError}]=await Promise.all([
+        db.from('student_courses').select('id').eq('student_id',student.id).eq('course_key',courseKey).eq('active',true).limit(1),
+        db.from('student_resources').select('id').eq('student_id',student.id).eq('url',examUrl).limit(1)
+      ]);
+      if(enrollmentError||assignmentError||(!enrollments?.length&&!assignments?.length)){
+        $('library').classList.add('hidden');
+        $('sets').classList.add('hidden');
+        $('quiz').classList.remove('hidden');
+        $('quiz').innerHTML='<p class="status">This course exam is not assigned to your account. Please contact your tutor.</p>';
         return;
       }
 
