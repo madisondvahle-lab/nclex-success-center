@@ -182,7 +182,7 @@
     "option_c": "Flush the central line rapidly with saline to clear the suspected air",
     "option_d": "Give an IV fluid bolus through the affected open lumen before securing its connection",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Imaging may assist subsequent evaluation, but it must not delay stopping further air entry and resuscitation. B: Sudden cardiopulmonary collapse during line manipulation suggests venous air embolism. Immediately occlude or clamp the source, summon emergency assistance, provide high-concentration oxygen, and position per protocol when appropriate. C: Flushing can introduce additional air and must not substitute for securing the system. D: An unsecured affected lumen must be closed first; pushing fluid through it risks worsening air entry and delays emergency support.",
+    "rationale": "Correct answer: B. A: Imaging must not delay preventing additional air entry. B: Stop air entry, activate emergency response, administer high-flow oxygen and position according to protocol. C: Do not flush air through the catheter. D: Do not infuse through an unsecured open lumen.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
