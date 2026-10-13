@@ -47,11 +47,11 @@
     "draft_id": "NEW-20261012-028",
     "stem": "A patient with adrenal insufficiency who missed steroid doses is vomiting, confused, and hypotensive. Which order is most time sensitive?",
     "option_a": "IV hydrocortisone with isotonic fluid resuscitation",
-    "option_b": "Oral calcium supplement",
-    "option_c": "Outpatient cortisol testing next week",
-    "option_d": "Fluid restriction",
+    "option_b": "Draw cortisol and wait for its result before giving hydrocortisone",
+    "option_c": "Start isotonic saline but defer hydrocortisone until endocrine consultation",
+    "option_d": "Give oral hydrocortisone despite ongoing vomiting and hypotension",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Suspected adrenal crisis requires prompt parenteral glucocorticoid and isotonic fluids; treatment should not await laboratory confirmation. B: Calcium does not address acute cortisol deficiency or shock. C: Outpatient testing delays emergency management. D: Fluid restriction may aggravate adrenal-crisis hypovolemia.",
+    "rationale": "Correct answer: A. A: Prompt IV hydrocortisone and isotonic fluids treat adrenal crisis. B: Diagnostic confirmation must not delay treatment. C: Fluids are necessary but insufficient without glucocorticoids. D: Oral therapy is unreliable in vomiting and shock.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -59,11 +59,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Suspected adrenal crisis requires prompt parenteral glucocorticoid and isotonic fluids; treatment should not await laboratory confirmation.",
-      "b": "Calcium does not address acute cortisol deficiency or shock.",
-      "c": "Outpatient testing delays emergency management.",
-      "d": "Fluid restriction may aggravate adrenal-crisis hypovolemia."
-    }
+      "a": "Adrenal crisis requires immediate parenteral hydrocortisone and isotonic fluid resuscitation.",
+      "b": "A cortisol sample may be obtained without delay, but waiting for laboratory confirmation is unsafe.",
+      "c": "Fluids alone do not correct cortisol deficiency; specialist consultation must not delay steroids.",
+      "d": "Ongoing vomiting and hypotension make oral therapy unreliable; parenteral hydrocortisone is required."
+    },
+    "reference_urls": [
+      "https://www.endocrinology.org/clinical-practice/clinical-guidance/adrenal-crisis/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-029",
