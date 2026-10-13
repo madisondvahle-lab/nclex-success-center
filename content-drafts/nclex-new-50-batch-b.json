@@ -422,13 +422,13 @@
   },
   {
     "draft_id": "NEW-20261012-045",
-    "stem": "A client on continuous cardiac monitoring has polymorphic ventricular tachycardia with prolonged QT and a pulse. Which electrolyte-related therapy may be anticipated?",
+    "stem": "A monitored patient has recurrent, brief self-terminating episodes of polymorphic ventricular tachycardia. Between episodes, the QTc is 560 ms and the patient is alert with BP 124/76 mm Hg. Which prescribed medication may help prevent recurrence while the team corrects reversible causes?",
     "option_a": "IV potassium-wasting diuretic alone",
-    "option_b": "IV magnesium sulfate as ordered while treating the unstable rhythm",
+    "option_b": "IV magnesium sulfate",
     "option_c": "Oral antacid",
     "option_d": "Sodium restriction",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Potassium-wasting treatment may worsen hypokalemia and QT prolongation. B: IV magnesium is a key therapy for torsades de pointes while rhythm stability and ACLS requirements are addressed. C: An antacid does not treat polymorphic ventricular tachycardia. D: Sodium restriction is unrelated to the immediate rhythm emergency.",
+    "rationale": "Correct answer: B. A: A potassium-wasting diuretic can worsen electrolyte abnormalities and QT prolongation. B: IV magnesium may suppress recurrent torsades associated with prolonged QT; sustained polymorphic VT requires immediate unsynchronized defibrillation, not delayed shock for medication. C: An oral antacid does not treat torsades. D: Sodium restriction does not acutely prevent torsades.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -437,10 +437,13 @@
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
       "a": "Potassium-wasting treatment may worsen hypokalemia and QT prolongation.",
-      "b": "IV magnesium is a key therapy for torsades de pointes while rhythm stability and ACLS requirements are addressed.",
+      "b": "Magnesium may help suppress recurrent torsades de pointes associated with QT prolongation. If polymorphic VT becomes sustained, immediate unsynchronized defibrillation takes priority.",
       "c": "An antacid does not treat polymorphic ventricular tachycardia.",
       "d": "Sodium restriction is unrelated to the immediate rhythm emergency."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-046",
