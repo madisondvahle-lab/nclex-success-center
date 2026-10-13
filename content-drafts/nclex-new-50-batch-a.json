@@ -3,11 +3,11 @@
     "draft_id": "NEW-20261012-001",
     "stem": "A patient 2 hours after thyroidectomy develops inspiratory stridor and increasing restlessness. SpO2 falls from 97% to 91%. What should the nurse do first?",
     "option_a": "Activate emergency response and prepare to support the airway",
-    "option_b": "Encourage coughing and deep breathing",
-    "option_c": "Administer prescribed oral analgesic",
-    "option_d": "Place the patient flat for comfort",
+    "option_b": "Position the patient upright, apply supplemental oxygen, and reassess stridor before summoning emergency help",
+    "option_c": "Ask the patient to cough while inspecting the neck incision for swelling",
+    "option_d": "Administer the prescribed postoperative analgesic and repeat the oxygen saturation in 10 minutes",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Stridor after thyroid surgery suggests impending upper-airway obstruction; activate emergency help and prepare airway support. B: Coughing exercises do not treat acute stridor and delay intervention. C: Oral analgesia does not correct obstruction and may delay rescue. D: Lying flat may aggravate respiratory distress.",
+    "rationale": "Correct answer: A. A: Stridor after thyroid surgery suggests impending upper-airway obstruction; activate emergency help and prepare airway support. B: Upright positioning and oxygen may help temporarily, but delaying activation of emergency airway assistance is unsafe with stridor. C: Checking for a neck hematoma is relevant, but should not delay emergency activation and airway support. D: Analgesia does not treat airway obstruction and delays rescue.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -16,10 +16,13 @@
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
       "a": "Stridor after thyroid surgery suggests impending upper-airway obstruction; activate emergency help and prepare airway support.",
-      "b": "Coughing exercises do not treat acute stridor and delay intervention.",
-      "c": "Oral analgesia does not correct obstruction and may delay rescue.",
-      "d": "Lying flat may aggravate respiratory distress."
-    }
+      "b": "Upright positioning and oxygen may help temporarily, but delaying activation of emergency airway assistance is unsafe with stridor.",
+      "c": "Checking for a neck hematoma is relevant, but should not delay emergency activation and airway support.",
+      "d": "Analgesia does not treat airway obstruction and delays rescue."
+    },
+    "reference_urls": [
+      "https://www.medlineplus.gov/ency/article/002933.htm"
+    ]
   },
   {
     "draft_id": "NEW-20261012-002",
@@ -66,7 +69,10 @@
       "b": "A declining heart rate may represent improvement but requires context.",
       "c": "Requesting a blanket is nonspecific.",
       "d": "Very low urine output can signal impaired renal perfusion in shock and warrants urgent reassessment."
-    }
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
   },
   {
     "draft_id": "NEW-20261012-004",
@@ -88,7 +94,10 @@
       "b": "A wet voice and poor secretion control threaten airway protection; maintain NPO and assess/escalate.",
       "c": "Thickened liquids require a swallowing evaluation and are not an immediate rescue measure.",
       "d": "Walking is not the priority when airway protection is compromised."
-    }
+    },
+    "reference_urls": [
+      "https://www.ahajournals.org/doi/10.1161/STR.0000000000000513"
+    ]
   },
   {
     "draft_id": "NEW-20261012-005",
@@ -110,7 +119,10 @@
       "b": "Slowing rather than stopping continues exposure to potentially incompatible blood.",
       "c": "Flushing donor blood through the line worsens exposure.",
       "d": "The bag/tubing may be needed for investigation; stabilize and notify the team first."
-    }
+    },
+    "reference_urls": [
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/management-of-suspected-reactions"
+    ]
   },
   {
     "draft_id": "NEW-20261012-006",
@@ -132,7 +144,10 @@
       "b": "A stool softener does not address shock from hemorrhage.",
       "c": "Rapid IV access and ordered resuscitation address circulatory compromise while definitive bleeding management proceeds.",
       "d": "Oral intake is inappropriate during unstable GI bleeding."
-    }
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/en-ca/professional/gastrointestinal-disorders/gastrointestinal-bleeding/overview-of-gastrointestinal-bleeding"
+    ]
   },
   {
     "draft_id": "NEW-20261012-007",
@@ -154,7 +169,10 @@
       "b": "Additional opioid can worsen respiratory depression.",
       "c": "Delaying assessment is unsafe; oxygen saturation may not reliably detect early hypoventilation.",
       "d": "Support breathing and urgently summon help; assess for opioid reversal per protocol."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-008",
@@ -201,7 +219,10 @@
       "b": "Increased vascular resistance would not explain the warm hypotensive presentation.",
       "c": "Aldosterone excess is not the mechanism of acute hypotension with bradycardia.",
       "d": "Pain-related sympathetic activation usually raises heart rate rather than producing bradycardia."
-    }
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK459361/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-010",
@@ -223,7 +244,10 @@
       "b": "Standing creates fall risk during hypotension.",
       "c": "Reducing/stopping ultrafiltration per dialysis protocol and reassessing addresses likely intradialytic hypotension.",
       "d": "An antihypertensive can further reduce blood pressure."
-    }
+    },
+    "reference_urls": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC6798406/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-011",
@@ -245,7 +269,10 @@
       "b": "Total fluid restriction can worsen dehydration from high ileostomy output.",
       "c": "Laxatives may worsen losses.",
       "d": "Tachycardia, hypotension and watery output warrant urgent fluid/electrolyte assessment and escalation."
-    }
+    },
+    "reference_urls": [
+      "https://www.ostomy.org/wp-content/uploads/2023/09/CE_Nursing_Care_for_Patients_After_Ostomy_Surgery.pdf"
+    ]
   },
   {
     "draft_id": "NEW-20261012-012",
@@ -267,7 +294,10 @@
       "b": "Suspected massive PE or other acute cardiopulmonary emergency requires immediate stabilization and team activation.",
       "c": "Imaging can follow or occur during stabilization; waiting risks deterioration.",
       "d": "Analgesia alone does not address hypoxemia, hypotension, or an obstructive cause."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-013",
@@ -289,7 +319,10 @@
       "b": "Rapid-acting insulin would worsen hypoglycemia.",
       "c": "Waiting for a meal delays treatment.",
       "d": "Glucagon is an alternative when oral carbohydrate is unsafe or cannot be given, not first-line here."
-    }
+    },
+    "reference_urls": [
+      "https://diabetes.org/living-with-diabetes/hypoglycemia-low-blood-glucose"
+    ]
   },
   {
     "draft_id": "NEW-20261012-014",
@@ -336,7 +369,10 @@
       "b": "Albuterol shifts potassium intracellularly but is not the first membrane-stabilizing drug for widened QRS.",
       "c": "Bicarbonate can be considered in selected acidotic cases but is not the initial membrane-stabilizing intervention.",
       "d": "IV calcium gluconate stabilizes the myocardium during hyperkalemia with QRS widening; further therapies are needed to shift and eliminate potassium."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-016",
@@ -383,7 +419,10 @@
       "b": "Quieter wheezing is not improvement when consciousness and respiratory effort deteriorate.",
       "c": "Drowsiness is a warning sign rather than expected post-cough fatigue.",
       "d": "This presentation requires emergency evaluation, not discharge."
-    }
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK430901/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-018",
@@ -405,7 +444,10 @@
       "b": "Unassessed fluids can worsen pulmonary congestion in a patient with heart failure.",
       "c": "Hypotension, oliguria, confusion, and cool skin indicate hypoperfusion needing urgent clinical evaluation.",
       "d": "Daily weight informs long-term management but cannot delay intervention for acute shock."
-    }
+    },
+    "reference_urls": [
+      "https://professional.heart.org/-/media/832EA0F4E73948848612F228F7FA2D35.pdf"
+    ]
   },
   {
     "draft_id": "NEW-20261012-019",
@@ -427,7 +469,10 @@
       "b": "Superficial bruising cannot adequately explain new hypotension and back pain.",
       "c": "Contrast-related kidney injury does not typically produce immediate back pain and hemorrhagic shock.",
       "d": "Retroperitoneal bleeding may present with flank or back pain and hypotension despite an unremarkable access-site dressing."
-    }
+    },
+    "reference_urls": [
+      "https://pubmed.ncbi.nlm.nih.gov/7990185/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-020",
@@ -474,7 +519,10 @@
       "b": "A new unstable neurologic assessment and nursing judgment are RN responsibilities; the LPN can assist with tasks within state scope.",
       "c": "Assistive personnel may obtain and report basic observations but cannot perform a comprehensive neurologic assessment.",
       "d": "Delaying assessment of a possible stroke loses time-sensitive treatment opportunities."
-    }
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
   },
   {
     "draft_id": "NEW-20261012-022",
@@ -496,7 +544,10 @@
       "b": "Assistive personnel do not independently change prescribed medications.",
       "c": "Explicit reporting thresholds allow the RN to respond promptly to abnormal findings.",
       "d": "Documentation must accurately reflect who performed the task."
-    }
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
   },
   {
     "draft_id": "NEW-20261012-023",
@@ -518,7 +569,10 @@
       "b": "An assistant cannot independently provide RN-level medication counseling.",
       "c": "Doubling a dose risks toxicity.",
       "d": "Assess the drug, technique, timing, and symptoms before individualized education and clinician follow-up."
-    }
+    },
+    "reference_urls": [
+      "https://www.nhs.uk/medicines/salbutamol-inhaler/side-effects-of-salbutamol-inhalers/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-024",
@@ -540,7 +594,10 @@
       "b": "Stop exposure, assess airway/breathing, summon emergency support, and prepare prompt IM epinephrine according to emergency protocol.",
       "c": "Documentation for later does not address current airway compromise.",
       "d": "Oral fluids do not treat anaphylaxis and may be unsafe."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-025",
@@ -562,6 +619,9 @@
       "b": "Objects in the mouth can damage teeth or soft tissues.",
       "c": "Holding limbs forcibly can cause injury.",
       "d": "Oral medication during an active seizure creates aspiration risk."
-    }
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/epilepsy/first-aid-for-seizures/index.html"
+    ]
   }
 ]
