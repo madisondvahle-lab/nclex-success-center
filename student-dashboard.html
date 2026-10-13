@@ -513,6 +513,28 @@
     const asArray = v => Array.isArray(v) ? v : [];
     const text    = v => String(v ?? '').replace(/[&<>"']/g, c =>
       ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function studentMaterialPath(value, studentId) {
+      if (!value) return null;
+      let path = value;
+      if (/^https?:\/\//i.test(value)) {
+        try {
+          const parsed = new URL(value);
+          const match = parsed.pathname.match(/\/storage\/v1\/object\/(?:public|sign)\/(?:student-materials|student-uploads)\/(.+)$/);
+          path = match ? decodeURIComponent(match[1]) : null;
+        } catch {
+          return null;
+        }
+      }
+      if (!path || path.split('/')[0] !== String(studentId) || path.split('/').length < 2 || path.split('/').some(part => !part || part === '.' || part === '..')) return null;
+      return path;
+    }
+    async function studentMaterialUrl(value, studentId) {
+      const path = studentMaterialPath(value, studentId);
+      if (!path) throw new Error('The file does not have a valid private storage path.');
+      const { data, error } = await db.storage.from('student-materials').createSignedUrl(path, 300);
+      if (error || !data?.signedUrl) throw new Error(error?.message || 'Could not create a secure download link.');
+      return data.signedUrl;
+    }
 
     // ── Onboarding state ─────────────────────────────────────────────
     let _student = null;
@@ -562,25 +584,35 @@
 
       // Upload file to Supabase storage
       if (!skipUpload && _obFile) {
+        const path = `${_student.id}/${Date.now()}-${_obFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        let uploaded = false;
         try {
-          const ext  = _obFile.name.split('.').pop();
-          const path = `${_student.id}/${Date.now()}.${ext}`;
-          const { data: upData, error: upErr } = await db.storage
+          const { error: upErr } = await db.storage
             .from('student-materials')
             .upload(path, _obFile);
-          if (!upErr && upData) {
-            const { data: { publicUrl } } = db.storage
-              .from('student-materials')
-              .getPublicUrl(path);
-            await db.from('student_resources').insert({
-              student_id:    _student.id,
-              title:         _obFile.name,
-              note:          'Uploaded by student during setup',
-              resource_type: 'student_upload',
-              url:           publicUrl,
-            });
+          if (upErr) throw upErr;
+          uploaded = true;
+          const { error: resourceError } = await db.from('student_resources').insert({
+            student_id:    _student.id,
+            title:         _obFile.name,
+            note:          'Uploaded by student during setup',
+            resource_type: 'student_upload',
+            url:           path,
+          });
+          if (resourceError) throw resourceError;
+        } catch(error) {
+          let message=error.message||'Storage request failed.';
+          if(uploaded){
+            try{
+              const {error:cleanupError}=await db.storage.from('student-materials').remove([path]);
+              if(cleanupError)message+=' Cleanup also failed: '+cleanupError.message;
+            }catch(cleanupError){
+              message+=' Cleanup also failed: '+(cleanupError.message||'storage request failed');
+            }
           }
-        } catch(e) { /* non-fatal */ }
+          console.error('Student onboarding material upload failed:', error);
+          alert('Your onboarding details were saved, but the file was not uploaded. '+message+' You can upload it from your dashboard.');
+        }
       }
 
       // Mark onboarding seen
@@ -614,50 +646,98 @@
       const statusEl = document.getElementById('dashboard-upload-status');
       statusEl.textContent = 'Uploading…';
       statusEl.style.display = 'block';
+      const path = `${_student.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      let uploaded = false;
       try {
-        const ext  = file.name.split('.').pop();
-        const path = `${_student.id}/${Date.now()}.${ext}`;
-        const { data: upData, error: upErr } = await db.storage
+        const { error: upErr } = await db.storage
           .from('student-materials')
           .upload(path, file);
         if (upErr) throw upErr;
-        const { data: { publicUrl } } = db.storage.from('student-uploads').getPublicUrl(path);
-        await db.from('student_resources').insert({
+        uploaded = true;
+        const { error: resourceError } = await db.from('student_resources').insert({
           student_id:    _student.id,
           title:         file.name,
           note:          'Uploaded by student',
           resource_type: 'student_upload',
-          url:           publicUrl,
+          url:           path,
         });
-        statusEl.textContent = '✓ Uploaded! Madison will see this before your next session.';
-        loadStudentUploads(_student.id);
+        if (resourceError) throw resourceError;
+        statusEl.textContent = 'Uploaded. Madison will see this before your next session.';
+        await loadStudentUploads(_student.id);
       } catch(e) {
-        statusEl.textContent = 'Upload failed — please try again.';
+        let message=e.message||'please try again.';
+        if(uploaded){
+          try{
+            const {error:cleanupError}=await db.storage.from('student-materials').remove([path]);
+            if(cleanupError)message+=' The uploaded file could not be cleaned up: '+cleanupError.message;
+          }catch(cleanupError){
+            message+=' The uploaded file could not be cleaned up: '+(cleanupError.message||'storage request failed');
+          }
+        }
+        statusEl.textContent = 'Upload failed: '+message;
         statusEl.style.color = '#9c3535';
       }
       input.value = '';
     }
 
     async function loadStudentUploads(studentId) {
-      const { data } = await db.from('student_resources')
-        .select('*')
-        .eq('student_id', studentId)
-        .eq('resource_type', 'student_upload')
-        .order('created_at', { ascending: false });
       const list = document.getElementById('student-uploads-list');
+      let data,error;
+      try {
+        ({ data, error } = await db.from('student_resources')
+          .select('*')
+          .eq('student_id', studentId)
+          .eq('resource_type', 'student_upload')
+          .order('created_at', { ascending: false }));
+      } catch(loadError) {
+        list.textContent = 'Could not load your uploaded materials: ' + (loadError.message || 'network error');
+        return;
+      }
+      if (error) {
+        list.textContent = 'Could not load your uploaded materials: ' + error.message;
+        return;
+      }
       if (!data || !data.length) {
         list.innerHTML = '<p class="empty">No files uploaded yet. Use the area below to share your course materials with Madison.</p>';
         return;
       }
-      list.innerHTML = data.map(f => `
-        <div class="upload-item">
-          <div class="upload-item-icon">📄</div>
-          <div class="upload-item-body">
-            <div class="upload-item-name">${text(f.title)}</div>
-            ${f.note ? `<div class="upload-item-meta">${text(f.note)}</div>` : ''}
-          </div>
-          ${f.url ? `<a href="${text(f.url)}" target="_blank" rel="noopener" style="font-size:.78rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor;flex-shrink:0">View →</a>` : ''}
-        </div>`).join('');
+      const entries=await Promise.all(data.map(async file=>{
+        const row=document.createElement('div');
+        row.className='upload-item';
+        const icon=document.createElement('div');
+        icon.className='upload-item-icon';
+        icon.textContent='📄';
+        const body=document.createElement('div');
+        body.className='upload-item-body';
+        const name=document.createElement('div');
+        name.className='upload-item-name';
+        name.textContent=file.title||'Uploaded course material';
+        body.append(name);
+        if(file.note){
+          const meta=document.createElement('div');
+          meta.className='upload-item-meta';
+          meta.textContent=file.note;
+          body.append(meta);
+        }
+        row.append(icon,body);
+        if(file.url){
+          const link=document.createElement('a');
+          link.textContent='View →';
+          link.target='_blank';
+          link.rel='noopener';
+          link.style.cssText='font-size:.78rem;font-weight:900;color:var(--teal);text-decoration:none;border-bottom:1px solid currentColor;flex-shrink:0';
+          try{
+            link.href=await studentMaterialUrl(file.url, studentId);
+          }catch(linkError){
+            link.textContent='Secure link unavailable';
+            link.setAttribute('aria-disabled','true');
+            console.error('Could not open student material:',linkError);
+          }
+          row.append(link);
+        }
+        return row;
+      }));
+      list.replaceChildren(...entries);
     }
 
     // ── Shared helpers ───────────────────────────────────────────────
