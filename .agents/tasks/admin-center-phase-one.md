@@ -28,7 +28,7 @@ Continue the admin-center redesign with a consolidated dashboard, student direct
 ## Current state / context
 - `madison-admin.html` now contains the Phase 1 dashboard and data wiring. Activity-source failures remain visible and are not treated as “no activity”; a roster query failure is not overwritten by later dashboard renders.
 - `madison-consultations.html?consultation=<id>` opens the selected booking in the existing consultation editor.
-- `madison-leads.html?new=consult` opens the existing Quick consult intake panel after admin initialization.
+- The Admin home Prospects section contains readiness leads, consult-intake follow-up, diagnostic-access actions, and duplicate-profile merging. The legacy `madison-leads.html` route redirects to that section; its former `?new=consult` route opens the existing student-onboarding intake.
 - `shared-progress.html` shows the selected student’s program, lifecycle status, and relevant NCLEX target or course-assignment context. Its navigation points to the existing overview, performance, practice activity, assignment, report, and note sections.
 - No Supabase schema or clinical/QBank content was changed.
 - The worktree also contains earlier student study-flow changes in `PRODUCT.md` and `supplemental-practice.html`; preserve them.
