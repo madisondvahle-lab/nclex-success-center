@@ -410,12 +410,12 @@
   {
     "draft_id": "NEW-20261012-019",
     "stem": "After a femoral cardiac catheterization, a patient reports back pain and becomes hypotensive despite an intact groin dressing. What is the priority concern?",
-    "option_a": "Expected muscle soreness",
-    "option_b": "Minor localized bruising",
-    "option_c": "Urinary retention only",
+    "option_a": "Acute vasovagal hypotension from the procedure",
+    "option_b": "A small superficial groin hematoma without ongoing bleeding",
+    "option_c": "Contrast-associated acute kidney injury",
     "option_d": "Retroperitoneal hemorrhage",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Ordinary soreness cannot adequately explain abrupt hypotension after femoral access. B: Minor groin bruising does not explain shock and back pain. C: Isolated urinary retention would not usually explain this hemodynamic deterioration. D: Retroperitoneal hemorrhage may cause occult bleeding, back pain and hypotension despite an intact access-site dressing.",
+    "rationale": "Correct answer: D. A: Vasovagal episodes may cause hypotension but persistent back pain after femoral access raises concern for occult bleeding. B: Superficial bruising cannot adequately explain new hypotension and back pain. C: Contrast-related kidney injury does not typically produce immediate back pain and hemorrhagic shock. D: Retroperitoneal bleeding may present with flank or back pain and hypotension despite an unremarkable access-site dressing.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -423,10 +423,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Ordinary soreness cannot adequately explain abrupt hypotension after femoral access.",
-      "b": "Minor groin bruising does not explain shock and back pain.",
-      "c": "Isolated urinary retention would not usually explain this hemodynamic deterioration.",
-      "d": "Retroperitoneal hemorrhage may cause occult bleeding, back pain and hypotension despite an intact access-site dressing."
+      "a": "Vasovagal episodes may cause hypotension but persistent back pain after femoral access raises concern for occult bleeding.",
+      "b": "Superficial bruising cannot adequately explain new hypotension and back pain.",
+      "c": "Contrast-related kidney injury does not typically produce immediate back pain and hemorrhagic shock.",
+      "d": "Retroperitoneal bleeding may present with flank or back pain and hypotension despite an unremarkable access-site dressing."
     }
   },
   {
