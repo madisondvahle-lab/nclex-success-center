@@ -16,8 +16,15 @@
     <p class="notice">“Import as draft” stores a copy privately in the master bank but does not make it available to students. Use this for items you want to edit or quality-check before publishing.</p>
     <section class="mg hidden" id="discuss-sec"><p class="eyebrow">For your next session</p><h2>Questions to discuss <span id="discuss-n"></span></h2><p class="intro">Questions students flagged because they want to talk them through with you.</p><div id="discuss-list"></div></section>
     <section class="mg hidden" id="flags-sec"><p class="eyebrow">Student reports</p><h2>Flagged questions <span id="flag-n"></span></h2><p class="intro">Questions students reported while practicing. Open one in the editor, fix it, then mark the report resolved.</p><div id="flag-list"></div></section>
-    <section class="mg"><p class="eyebrow">Manage</p><h2>Live question bank</h2><p class="intro">Every question in the master bank. Select any group, then publish it, make it inactive (hidden from students, nothing lost), or delete it permanently.</p><div class="toolbar"><input id="m-search" type="search" placeholder="Search by Q-number, stem, topic"><select id="m-filter"><option value="active">Published to students</option><option value="inactive">Inactive / drafts</option><option value="all">All questions</option></select></div><div class="bulk" style="border-bottom:0"><button class="button secondary" id="import-diag">Add consult diagnostic questions to this bank (inactive)</button><span class="count" id="import-note"></span></div><div class="bulk"><label><input type="checkbox" id="m-all"> Select all shown</label><span class="count" id="m-count"></span><button class="button" data-mbulk="publish">Publish</button><button class="button secondary" data-mbulk="inactive">Make inactive</button><button class="button danger" data-mbulk="delete">Delete forever</button></div><div id="m-list"></div></section>
+    <section class="mg"><p class="eyebrow">Manage</p><h2>Live question bank</h2><p class="intro">Every question in the master bank. Select any group, then publish it, make it inactive (hidden from students, nothing lost), or delete it permanently.</p><div class="toolbar"><input id="m-search" type="search" placeholder="Search by Q-number, stem, topic"><select id="m-filter"><option value="active">Published to students</option><option value="inactive">Inactive / drafts</option><option value="all">All questions</option></select></div><div class="bulk" style="border-bottom:0"><button class="button secondary" id="import-diag">Add consult diagnostic questions to this bank (inactive)</button><span class="count" id="import-note"></span></div><div class="bulk"><label><input type="checkbox" id="m-all"> Select all shown</label><span class="count" id="m-count"></span><button class="button" data-mbulk="publish">Publish</button><button class="button secondary" data-mbulk="inactive">Make inactive</button><button class="button danger" data-mbulk="delete">Delete forever</button></div><div id="m-list"></div><button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button></section>
     <section class="quality"><p class="eyebrow">New content</p><h2>Quality draft batch</h2><p class="intro">These are newly written, source-reviewed questions. They remain private until you press Publish for an individual item.</p><div class="quality-grid" id="quality-drafts"><p class="empty">No quality drafts have been added yet.</p></div></section>
+    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–50 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
+      <div class="toolbar"><input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch"><button class="button secondary" id="bulk-preview">Validate and preview</button><button class="button" id="bulk-save" disabled>Save reviewed items as inactive drafts</button></div>
+      <label for="bulk-json"><strong>Or paste a JSON batch</strong></label><textarea id="bulk-json" rows="8" style="display:block;width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);font: .82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
+      <p class="count" id="bulk-status" role="status" aria-live="polite">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
+      <div class="quality-grid" id="bulk-preview-list"></div>
+    </section>
+    <section class="mg" id="clinical-revisions"><p class="eyebrow">Clinical remediation</p><h2>Correction drafts</h2><p class="intro">Edits to existing bank questions are staged here instead of changing the live question. Approval and application are separate actions; application updates the original question in place, preserving its ID, assignment links, and student attempt history.</p><p class="count" id="revision-status" role="status" aria-live="polite">Loading correction drafts…</p><div class="quality-grid" id="revision-list"></div></section>
     <div class="toolbar"><input id="search" type="search" placeholder="Search stem, concept, or module"><select id="filter"><option value="pending">Ready to review</option><option value="possible">Possible duplicates</option><option value="all">All source items</option><option value="ignored">Ignored</option><option value="draft">Imported drafts</option></select></div>
     <div class="bulk"><label><input type="checkbox" id="l-all"> Select all shown (older source items)</label><span class="count" id="l-count"></span><button class="button" data-lbulk="draft">Import selected as drafts</button><button class="button danger" data-lbulk="ignore">Ignore selected</button></div>
     <section class="candidate-list" id="candidates"></section>
@@ -28,7 +35,7 @@
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let session,legacy=[],live=[],reviews=new Map(),legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[];
+    let session,legacy=[],live=[],reviews=new Map(),legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[],stagedBatch=[],revisionDrafts=[],bulkImportReady=false,revisionWorkflowReady=false,pendingBulkTracking=null,mVisible=100;
     const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
     const words=value=>new Set(normalize(value).split(' ').filter(word=>word.length>3));
     const similarity=(a,b)=>{const aw=words(a),bw=words(b);let both=0;aw.forEach(word=>{if(bw.has(word))both++});return both/Math.max(1,new Set([...aw,...bw]).size)};
@@ -36,6 +43,112 @@
     function exactMatch(item){const stem=normalize(item.stem);return live.find(question=>normalize(question.stem)===stem)}
     function possibleMatch(item){let best=null,bestScore=0;live.forEach(question=>{const score=similarity(item.stem,question.stem);if(score>bestScore){best=question;bestScore=score}});return bestScore>=.55?{question:best,score:bestScore}:null}
     function stateFor(item){return reviews.get(item.id)?.status||'pending'}
+    const BULK_TYPES=new Set(['mcq','sata','bowtie','matrix','cloze','highlight','case','fill']);
+    function validateBatchItems(items){
+      if(!Array.isArray(items))throw new Error('The JSON file must contain an "items" array.');
+      const ids=new Set(),previous=[];
+      return items.map((item,index)=>{
+        const errors=[],number=index+1;
+        if(!item||typeof item!=='object'||Array.isArray(item))return{item:{},errors:[`Item ${number} must be an object.`],match:null,reviewed:false};
+        const id=String(item.id||'').trim(),stem=String(item.stem||'').trim(),type=String(item.item_type||'').toLowerCase();
+        if(!/^[A-Za-z0-9._-]{1,100}$/.test(id))errors.push('Add a unique id using letters, numbers, dots, underscores, or hyphens (max 100 characters).');
+        else if(ids.has(id))errors.push('This id is duplicated within the batch.');
+        else ids.add(id);
+        if(typeof item.stem!=='string'||!stem)errors.push('Question stem is required as text.');
+        if(!BULK_TYPES.has(type))errors.push('item_type must be mcq, sata, bowtie, matrix, cloze, highlight, case, or fill.');
+        if(!['easy','medium','hard'].includes(item.difficulty))errors.push('difficulty must be easy, medium, or hard.');
+        if(typeof item.nclex_category!=='string'||!item.nclex_category.trim())errors.push('nclex_category is required as text.');
+        if(typeof item.topic!=='string'||!item.topic.trim())errors.push('topic is required as text.');
+        if(typeof item.clinical_judgment_skill!=='string'||!item.clinical_judgment_skill.trim())errors.push('clinical_judgment_skill is required as text.');
+        if(typeof item.rationale!=='string'||!item.rationale.trim())errors.push('A full rationale is required as text.');
+        if(item.module_key!=null&&typeof item.module_key!=='string')errors.push('module_key must be text or null.');
+        if(item.nclex_sub!=null&&typeof item.nclex_sub!=='string')errors.push('nclex_sub must be text or null.');
+        const optionRationales=item.option_rationales;
+        if(!optionRationales||typeof optionRationales!=='object'||Array.isArray(optionRationales)||!Object.keys(optionRationales).length||Object.values(optionRationales).some(value=>typeof value!=='string'||!value.trim()))errors.push('option_rationales must map option identifiers to non-empty explanations.');
+        if(type==='mcq'){
+          if(!Array.isArray(item.options)||item.options.length!==4||item.options.some(option=>typeof option!=='string'||!option.trim()))errors.push('MCQ items need exactly four non-empty options.');
+          if(!['a','b','c','d'].includes(String(item.correct_answer||'').toLowerCase()))errors.push('MCQ correct_answer must be a, b, c, or d.');
+          if(optionRationales&&['a','b','c','d'].some(key=>typeof optionRationales[key]!=='string'||!optionRationales[key].trim()))errors.push('MCQ option_rationales must explain options a, b, c, and d.');
+        }else if(!item.item_data||typeof item.item_data!=='object'||Array.isArray(item.item_data)||!Object.keys(item.item_data).length)errors.push('NGN items need a non-empty item_data object containing their complete interaction and scoring structure.');
+        if(!Array.isArray(item.references)||!item.references.length||item.references.some(ref=>!ref||typeof ref.title!=='string'||!ref.title.trim()||typeof ref.url!=='string'||!/^https?:\/\//i.test(ref.url)))errors.push('Add at least one reference with a title and http(s) URL.');
+        const entry={item,errors,match:stem?bulkMatch(item,previous):null,reviewed:false};
+        previous.push(entry);
+        return entry;
+      });
+    }
+    function bulkMatch(item,previous){
+      const stem=normalize(item.stem);
+      const exactLive=live.find(question=>normalize(question.stem)===stem);
+      if(exactLive)return{question:exactLive,score:1,exact:true};
+      const exactBatch=previous.find(entry=>normalize(entry.item.stem)===stem);
+      if(exactBatch)return{batchId:exactBatch.item.id,score:1,exact:true};
+      let best=null,bestScore=0;
+      live.forEach(question=>{const score=similarity(item.stem,question.stem);if(score>bestScore){best={question};bestScore=score}});
+      previous.forEach(entry=>{const score=similarity(item.stem,entry.item.stem);if(score>bestScore){best={batchId:entry.item.id};bestScore=score}});
+      return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
+    }
+    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function renderBulkPreview(){
+      const list=$('bulk-preview-list'),save=$('bulk-save');
+      if(!stagedBatch.length){list.innerHTML='';save.disabled=true;return}
+      const valid=stagedBatch.filter(entry=>!entry.errors.length).length,duplicates=stagedBatch.filter(entry=>entry.match).length;
+      $('bulk-status').textContent=`${stagedBatch.length} items · ${valid} structurally valid · ${duplicates} possible/exact overlap${duplicates===1?'':'s'}. ${!bulkImportReady?'Run supabase-question-bulk-import.sql before importing.':stagedCanSave()?'All items reviewed; ready to save as inactive drafts.':'Resolve every validation issue and review each item before saving.'}`;
+      list.innerHTML=stagedBatch.map((entry,index)=>{
+        const item=entry.item||{},match=entry.match;
+        const matchText=match?(match.batchId?`Possible batch duplicate of ${esc(match.batchId)} (${Math.round(match.score*100)}% wording overlap).`:`${match.exact?'Exact':'Possible'} match in bank${match.question?.question_no?' Q-'+String(match.question.question_no).padStart(4,'0'):''}: ${esc(match.question?.stem||'')}`):'No likely stem match found.';
+        const type=String(item.item_type||'').toLowerCase();
+        const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
+        const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
+        const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)}</a></li>`).join(''):'';
+        return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I reviewed the match and confirmed this is a distinct item.':'I reviewed this item and its answer/rationales.'}</span></label></article>`;
+      }).join('');
+      document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
+      save.disabled=!stagedCanSave();
+    }
+    async function previewBulk(){
+      if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking with the retry button before loading another batch.';return}
+      const raw=$('bulk-json').value.trim();
+      if(!raw){$('bulk-status').textContent='Choose a JSON file or paste a batch first.';return}
+      try{
+        const parsed=JSON.parse(raw),items=Array.isArray(parsed)?parsed:parsed&&typeof parsed==='object'?parsed.items:null;
+        if(!Array.isArray(items)||items.length<25||items.length>50)throw new Error(`A batch must contain 25–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
+        stagedBatch=validateBatchItems(items);
+        $('bulk-status').textContent=`Validated ${items.length} items. Review each item and every flagged overlap below.`;
+        renderBulkPreview();
+      }catch(error){stagedBatch=[];renderBulkPreview();$('bulk-status').textContent=error.message||'Could not read this JSON batch.'}
+    }
+    async function saveBulkDrafts(){
+      if(!pendingBulkTracking&&!stagedCanSave())return;
+      const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
+      try{
+        if(!pendingBulkTracking){
+          const batchId=crypto.randomUUID(),rows=stagedBatch.map(({item})=>{
+            const type=String(item.item_type).toLowerCase(),row={
+              stem:item.stem.trim(),rationale:item.rationale.trim(),module_key:item.module_key||null,
+              nclex_category:item.nclex_category.trim(),nclex_sub:item.nclex_sub||null,topic:item.topic.trim(),
+              difficulty:item.difficulty,is_ngn:type!=='mcq',active:false,
+              source_key:`qbank-bulk-${batchId}-${item.id}`,item_type:type,
+              item_data:type==='mcq'?(item.item_data||null):item.item_data,
+              clinical_judgment_skill:item.clinical_judgment_skill.trim(),
+              option_rationales:item.option_rationales,reference_list:item.references
+            };
+            if(type==='mcq'){row.option_a=item.options[0].trim();row.option_b=item.options[1].trim();row.option_c=item.options[2].trim();row.option_d=item.options[3].trim();row.correct_answer=String(item.correct_answer).toLowerCase()}
+            return row;
+          });
+          const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
+          if(inserted.error)throw inserted.error;
+          const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
+          pendingBulkTracking={questions:inserted.data,records};
+            live.unshift(...inserted.data);$('m-filter').value='inactive';mVisible=100;mSel.clear();renderManage();
+        }
+        const {questions,records}=pendingBulkTracking,tracked=await db.from('question_import_reviews').upsert(records);
+        if(tracked.error)throw tracked.error;
+        records.forEach(record=>reviews.set(record.source_key,record));pendingBulkTracking=null;
+        $('bulk-status').textContent=`Saved ${questions.length} inactive drafts. Review each draft in the bank, choose Approve, then Publish in the separate step.`;
+        stagedBatch=[];$('bulk-json').value='';$('bulk-file').value='';renderBulkPreview();
+      }catch(error){$('bulk-status').textContent=`Import did not finish: ${error.message||error}. If drafts were inserted, retry tracking; the current page will not insert them a second time.`}
+      finally{save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
+    }
     function renderQualityDrafts(){const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);$('quality-drafts').innerHTML=drafts.length?drafts.map(question=>`<article class="candidate"><div class="meta"><span class="tag good">Private draft</span><span class="tag">${esc(question.nclex_category||'NCLEX')}</span><span class="tag">${esc(question.topic||'Topic')}</span><span class="tag">${esc(question.difficulty||'medium')}</span></div><h2>${esc(question.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(question.rationale||'')}</p><div class="buttons"><button class="button" data-publish="${esc(question.id)}">Publish to students</button></div></article>`).join(''):'<p class="empty">No quality drafts have been added yet.</p>';document.querySelectorAll('[data-publish]').forEach(button=>button.addEventListener('click',()=>publishQualityDraft(button.dataset.publish)))}
     async function publishQualityDraft(id){const question=live.find(item=>item.id===id);if(!question||!confirm('Publish this question to students now?'))return;const result=await db.from('questions').update({active:true}).eq('id',id);if(result.error){alert(result.error.message);return}await saveReview(question.source_key,'published',id);question.active=true;render();renderManage()}
     function render(){const query=normalize($('search').value),filter=$('filter').value;const exact=legacy.filter(exactMatch);const reviewable=legacy.filter(item=>!exactMatch(item));$('source-count').textContent=legacy.length;$('live-count').textContent=live.filter(question=>question.active).length;$('exact-count').textContent=exact.length;$('remaining-count').textContent=reviewable.filter(item=>stateFor(item)==='pending').length;let items=legacy.filter(item=>{const state=stateFor(item),match=exactMatch(item),possible=possibleMatch(item);const text=normalize([item.stem,item.concept,item.module].join(' '));if(query&&!text.includes(query))return false;if(filter==='pending')return !match&&state==='pending';if(filter==='possible')return !match&&state==='pending'&&possible;if(filter==='ignored'||filter==='draft')return state===filter;return true});$('candidates').innerHTML=items.length?(legacyShown=items,items.slice(0,200)).map(item=>{const exact=exactMatch(item),possible=!exact&&possibleMatch(item),status=stateFor(item),importable=item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1;const button=exact?'<button class="button secondary" disabled>Already in live bank</button>':status==='ignored'?'<button class="button secondary" disabled>Marked ignored</button>':status==='draft'?'<button class="button secondary" disabled>Imported as draft</button>':importable?`<button class="button" data-action="draft" data-id="${esc(item.id)}">Import as draft</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}">Ignore</button>`:`<button class="button secondary" disabled>Needs NGN/manual conversion</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}">Ignore</button>`;return `<article class="candidate ${exact?'duplicate':''}"><div class="meta">${exact||status!=='pending'?'':`<input type="checkbox" class="pick" data-lpick="${esc(item.id)}" ${legSel.has(item.id)?'checked':''}>`}<span class="tag">${esc(item.module||'General')}</span><span class="tag">${esc(item.concept||'Uncategorized')}</span><span class="tag">${esc(item.type||'MCQ')}</span><span class="tag">${esc(difficulty(item.diff))}</span>${exact?'<span class="tag warn">Exact duplicate</span>':''}${status!=='pending'?`<span class="tag good">${esc(status)}</span>`:''}</div><h2>${esc(item.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'No rationale included.')}</p>${exact?`<p class="match"><strong>Existing live match:</strong> ${esc(exact.stem)}</p>`:possible?`<p class="match"><strong>Possible overlap (${Math.round(possible.score*100)}% wording similarity):</strong> ${esc(possible.question.stem)}</p>`:''}<div class="buttons">${button}</div></article>`}).join(''):'<p class="empty">Nothing matches this view yet.</p>';document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>handleAction(button.dataset.action,button.dataset.id)));document.querySelectorAll('[data-lpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?legSel.add(b.dataset.lpick):legSel.delete(b.dataset.lpick);legCount()}));legCount()}
@@ -46,19 +159,269 @@
     function canPick(item){return !exactMatch(item)&&stateFor(item)==='pending'}
     async function legBulk(action){const items=legacy.filter(i=>legSel.has(i.id)&&canPick(i));if(!items.length){alert('Select at least one item first.');return}if(!confirm((action==='ignore'?'Ignore ':'Import as private drafts: ')+items.length+' items?'))return;let done=0,skipped=0,fail=null;for(const item of items){try{if(action==='draft'&&!(item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1)){skipped++;continue}await doAction(action,item);legSel.delete(item.id);done++}catch(e){fail=e;break}}render();renderManage();alert(done+' done'+(skipped?', '+skipped+' skipped (need manual conversion)':'')+(fail?'. Stopped: '+(fail.message||fail):'.'))}
     function openEdit(id){const q=live.find(x=>x.id===id);if(!q)return;const type=q.item_type||'mcq',data=q.item_data||null;const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';let opts='';if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}else if(type==='sata'&&data&&data.options){opts=`<label>Answer options (tick every correct one)</label>${data.options.map((o,i)=>`<div class="opt"><input type="checkbox" class="e-sata" data-i="${i}" ${(data.correct||[]).includes(i)?'checked':''} aria-label="Correct option ${i+1}"><input type="text" class="e-sopt" value="${esc(o)}" required></div>`).join('')}`}else{opts=`<p class="notice" style="margin-top:14px">This is a ${esc(TYPE_NAME[type]||type)} item. Its layout and answer key are managed as a unit, so you can edit the wording and tags here but not the structure.</p>`}$('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;$('ed').classList.remove('hidden');$('e-cancel').onclick=()=>$('ed').classList.add('hidden');$('ed-form').onsubmit=async ev=>{ev.preventDefault();const row={stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim()||null,topic:$('e-topic').value.trim()||null,nclex_category:$('e-cat').value.trim()||null,difficulty:$('e-dif').value};if(type==='mcq'){L.forEach(l=>row['option_'+l]=$('e-'+l).value.trim());row.correct_answer=document.querySelector('[name=e-ans]:checked').value}let nd=data?JSON.parse(JSON.stringify(data)):null;if(type==='sata'&&nd){const boxes=[...document.querySelectorAll('.e-sata')];if(!boxes.some(b=>b.checked)){alert('Tick at least one correct option.');return}nd.options=[...document.querySelectorAll('.e-sopt')].map(i=>i.value.trim());nd.correct=boxes.map((b,i)=>b.checked?i:-1).filter(i=>i>=0)}if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;row.item_data=nd}const r=await db.from('questions').update(row).eq('id',id);if(r.error){alert(r.error.message);return}Object.assign(q,row);$('ed').classList.add('hidden');render();renderManage()}}
+    function needsRevisionApproval(question){
+      const newDraft=question.source_key?.startsWith('qbank-bulk-')||question.source_key?.startsWith('quality-');
+      return!!question.active||(!newDraft&&question.question_no!=null);
+    }
+    function openManagedEdit(id){
+      const question=live.find(item=>item.id===id);if(!question)return;
+      if(needsRevisionApproval(question))openCorrectionEditor(question);
+      else{
+        openEdit(id);
+        if(question.source_key?.startsWith('qbank-bulk-')&&reviews.get(question.source_key)?.status==='approved'){
+          const save=$('ed-form').onsubmit;
+          $('ed-form').onsubmit=async event=>{try{await saveReview(question.source_key,'draft',question.id)}catch(error){alert(`Could not reset approval: ${error.message||error}`);return}await save(event)};
+        }
+      }
+    }
+    function openCorrectionEditor(question){
+      if(!revisionWorkflowReady){alert('Run supabase-question-bulk-import.sql before proposing corrections. The live question has not been changed.');return}
+      openEdit(question.id);
+      const form=$('ed-form'),type=question.item_type||'mcq',intro=form.querySelector('.intro');
+      intro.textContent='This is an existing question. Your changes will be stored as a correction draft and will not affect students until a separate approval and application.';
+      form.querySelector('button[type="submit"]').textContent='Save correction draft';
+      const fields=document.createElement('div');
+      fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required></textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(question.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(question.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(question.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(question.item_data||{},null,2))}</textarea>`}`;
+      form.querySelector('.buttons').before(fields);
+      form.onsubmit=async event=>{
+        event.preventDefault();
+        const summary=$('e-summary').value.trim();
+        if(!summary){alert('Add the clinical/audit reason for this proposed correction.');return}
+        if(!$('e-rat').value.trim()){alert('A correction must include its full rationale.');return}
+        let optionRationales,references,itemData=question.item_data?JSON.parse(JSON.stringify(question.item_data)):null;
+        try{
+          optionRationales=JSON.parse($('e-option-rationales').value);
+          references=JSON.parse($('e-reference-list').value);
+          if(!optionRationales||typeof optionRationales!=='object'||Array.isArray(optionRationales))throw new Error('Option rationales must be a JSON object.');
+          if(!Array.isArray(references)||references.some(ref=>!ref||typeof ref.title!=='string'||!ref.title.trim()||typeof ref.url!=='string'||!/^https?:\/\//i.test(ref.url)))throw new Error('References must be a JSON array of objects with a title and http(s) URL.');
+          if(type!=='mcq'){
+            itemData=JSON.parse($('e-item-data').value);
+            if(!itemData||typeof itemData!=='object'||Array.isArray(itemData)||!Object.keys(itemData).length)throw new Error('NGN interaction data must be a non-empty JSON object.');
+          }
+        }catch(error){alert(error.message||'Check the metadata JSON.');return}
+        const proposed={
+          stem:$('e-stem').value.trim(),option_a:question.option_a??null,option_b:question.option_b??null,
+          option_c:question.option_c??null,option_d:question.option_d??null,
+          correct_answer:question.correct_answer??null,rationale:$('e-rat').value.trim(),
+          module_key:question.module_key??null,nclex_category:$('e-cat').value.trim()||null,
+          nclex_sub:question.nclex_sub??null,topic:$('e-topic').value.trim()||null,
+          difficulty:$('e-dif').value,is_ngn:question.is_ngn??type!=='mcq',item_type:type,
+          item_data:itemData,clinical_judgment_skill:$('e-cj').value.trim()||null,
+          option_rationales:optionRationales,reference_list:references
+        };
+        if(type==='mcq'){
+          ['a','b','c','d'].forEach(letter=>{proposed[`option_${letter}`]=$(`e-${letter}`).value.trim()});
+          const correct=form.querySelector('[name="e-ans"]:checked');
+          if(!correct){alert('Select the correct answer.');return}
+          proposed.correct_answer=correct.value;
+        }else if(type==='sata'&&itemData?.options){
+          const checks=[...form.querySelectorAll('.e-sata')],answers=[...form.querySelectorAll('.e-sopt')];
+          if(!checks.some(check=>check.checked)){alert('Select at least one correct option.');return}
+          itemData.options=answers.map(input=>input.value.trim());
+          itemData.correct=checks.map((check,index)=>check.checked?index:-1).filter(index=>index>=0);
+        }
+        if(itemData){itemData.stem=proposed.stem;itemData.rationale=proposed.rationale;if(type==='case')itemData.title=proposed.stem}
+        const base={
+          stem:question.stem,option_a:question.option_a??null,option_b:question.option_b??null,
+          option_c:question.option_c??null,option_d:question.option_d??null,
+          correct_answer:question.correct_answer??null,rationale:question.rationale??null,
+          module_key:question.module_key??null,nclex_category:question.nclex_category??null,
+          nclex_sub:question.nclex_sub??null,topic:question.topic??null,
+          difficulty:question.difficulty??null,is_ngn:question.is_ngn??type!=='mcq',
+          item_type:type,item_data:question.item_data??null,
+          clinical_judgment_skill:question.clinical_judgment_skill??null,
+          option_rationales:question.option_rationales||{},reference_list:question.reference_list||[]
+        };
+        const result=await db.from('question_revision_drafts').insert({question_id:question.id,base_content:base,proposed_content:proposed,change_summary:summary,proposed_by:session.user.id,status:'pending_review'}).select('*').single();
+        if(result.error){alert(`Correction draft was not saved: ${result.error.message}. The original question remains unchanged.`);return}
+        revisionDrafts.unshift(result.data);$('ed').classList.add('hidden');renderRevisionDrafts();
+      };
+    }
     function loadDiagBank(){return new Promise((res,rej)=>{if(window.CONSULT_DIAGNOSTIC_BANK)return res(window.CONSULT_DIAGNOSTIC_BANK);const sc=document.createElement('script');sc.src='consult-diagnostic-bank.js';sc.onload=()=>res(window.CONSULT_DIAGNOSTIC_BANK);sc.onerror=()=>rej(new Error('Could not load the diagnostic bank.'));document.head.appendChild(sc)})}
-    async function importDiag(){const btn=$('import-diag');btn.disabled=true;try{const bank=await loadDiagBank();const have=new Set(live.map(q=>q.source_key).filter(Boolean));const diffN=d=>d===1?'easy':d===3?'hard':'medium';const rows=[];bank.forEach(e=>{const key='consult-'+e.id;if(have.has(key))return;if(e.kind==='case'){rows.push({stem:e.title+' — '+e.scenario,rationale:null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:true,active:false,source_key:key,item_type:'case',item_data:e})}else{const o=e.options||[],mc=e.type==='mcq'&&o.length===4;const row={stem:e.stem.replace(/<[^>]+>/g,''),rationale:e.rationale||null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:e.type!=='mcq'&&e.type!=='sata',active:false,source_key:key,item_type:e.type,item_data:e};if(mc){row.option_a=o[0];row.option_b=o[1];row.option_c=o[2];row.option_d=o[3];row.correct_answer='abcd'[e.correct[0]]}rows.push(row)}});if(!rows.length){$('import-note').textContent='Everything is already in the bank.';return}if(!confirm('Add '+rows.length+' diagnostic questions to the master bank as inactive drafts?'))return;const r=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no');if(r.error)throw r.error;live.push(...r.data);$('import-note').textContent=rows.length+' added (inactive).';$('m-filter').value='inactive';mSel.clear();renderManage()}catch(e){alert((e.message||e)+' If this mentions item_type or item_data, run supabase-question-item-types.sql first.')}finally{btn.disabled=false}}
+    async function importDiag(){const btn=$('import-diag');btn.disabled=true;try{const bank=await loadDiagBank();const have=new Set(live.map(q=>q.source_key).filter(Boolean));const diffN=d=>d===1?'easy':d===3?'hard':'medium';const rows=[];bank.forEach(e=>{const key='consult-'+e.id;if(have.has(key))return;if(e.kind==='case'){rows.push({stem:e.title+' — '+e.scenario,rationale:null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:true,active:false,source_key:key,item_type:'case',item_data:e})}else{const o=e.options||[],mc=e.type==='mcq'&&o.length===4;const row={stem:e.stem.replace(/<[^>]+>/g,''),rationale:e.rationale||null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:e.type!=='mcq'&&e.type!=='sata',active:false,source_key:key,item_type:e.type,item_data:e};if(mc){row.option_a=o[0];row.option_b=o[1];row.option_c=o[2];row.option_d=o[3];row.correct_answer='abcd'[e.correct[0]]}rows.push(row)}});if(!rows.length){$('import-note').textContent='Everything is already in the bank.';return}if(!confirm('Add '+rows.length+' diagnostic questions to the master bank as inactive drafts?'))return;const r=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no');if(r.error)throw r.error;live.unshift(...r.data);$('import-note').textContent=rows.length+' added (inactive).';$('m-filter').value='inactive';mVisible=100;mSel.clear();renderManage()}catch(e){alert((e.message||e)+' If this mentions item_type or item_data, run supabase-question-item-types.sql first.')}finally{btn.disabled=false}}
     const TYPE_NAME={sata:'Select all',bowtie:'Bowtie',matrix:'Matrix',cloze:'Drop-down',highlight:'Highlight',case:'Case study',fill:'Fill in'};
     let flags=[],names=new Map();
     function renderDiscuss(){const open=flags.filter(f=>f.status==='open'&&f.kind==='discuss');$('discuss-sec').classList.toggle('hidden',!open.length);$('discuss-n').textContent=open.length?'('+open.length+')':'';$('discuss-list').innerHTML=open.map(f=>{const q=live.find(x=>x.id===f.question_id);const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--ink);color:#fff">${no}</span>`:''}<span class="tag good">${esc(names.get(f.student_id)||'Student')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0"><button class="button secondary" data-dres="${esc(f.id)}">Discussed</button></div></div>`}).join('');document.querySelectorAll('[data-dres]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.dres);if(r.error){alert(r.error.message);b.disabled=false;return}flags.find(x=>x.id===b.dataset.dres).status='resolved';renderDiscuss()}))}
-    function renderFlags(){renderDiscuss();const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss');$('flags-sec').classList.toggle('hidden',!open.length);$('flag-n').textContent=open.length?'('+open.length+')':'';$('flag-list').innerHTML=open.map(f=>{const q=live.find(x=>x.id===f.question_id);const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--ink);color:#fff">${no}</span>`:''}<span class="tag warn">${esc(f.reason||'Reported')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0">${q?`<button class="button" data-fedit="${esc(q.id)}">Open &amp; edit</button>`:''}<button class="button secondary" data-fres="${esc(f.id)}">Mark resolved</button></div></div>`}).join('');document.querySelectorAll('[data-fedit]').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.fedit)));document.querySelectorAll('[data-fres]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.fres);if(r.error){alert(r.error.message);b.disabled=false;return}const f=flags.find(x=>x.id===b.dataset.fres);f.status='resolved';renderFlags()}))}
+    function renderFlags(){renderDiscuss();const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss');$('flags-sec').classList.toggle('hidden',!open.length);$('flag-n').textContent=open.length?'('+open.length+')':'';$('flag-list').innerHTML=open.map(f=>{const q=live.find(x=>x.id===f.question_id);const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--ink);color:#fff">${no}</span>`:''}<span class="tag warn">${esc(f.reason||'Reported')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0">${q?`<button class="button" data-fedit="${esc(q.id)}">Open &amp; review</button>`:''}<button class="button secondary" data-fres="${esc(f.id)}">Mark resolved</button></div></div>`}).join('');document.querySelectorAll('[data-fedit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.fedit)));document.querySelectorAll('[data-fres]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.fres);if(r.error){alert(r.error.message);b.disabled=false;return}const f=flags.find(x=>x.id===b.dataset.fres);f.status='resolved';renderFlags()}))}
     const qlabel=q=>q.question_no?'Q-'+String(q.question_no).padStart(4,'0'):'';
     const topicOf=q=>[q.topic,q.nclex_category].filter(Boolean).join(' · ');
     function mFiltered(){const query=normalize($('m-search').value),f=$('m-filter').value;return live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q'))))}
     function mCount(){$('m-count').textContent=mSel.size+' selected';const all=mShown.map(q=>q.id);$('m-all').checked=all.length>0&&all.every(id=>mSel.has(id))}
-    function renderManage(){mShown=mFiltered();[...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});$('m-list').innerHTML=mShown.length?mShown.map(q=>`<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--ink);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div></div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}">Edit</button><button class="button secondary" data-mone="${esc(q.id)}">${q.active?'Make inactive':'Publish'}</button></div></div>`).join(''):'<p class="empty">No questions match this view.</p>';document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));document.querySelectorAll('[data-medit]').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.medit)));mCount();renderQualityDrafts()}
-    async function mApply(action,ids,skipConfirm){if(!ids.length){alert('Select at least one question first.');return}const words={publish:'Publish to students',inactive:'Make inactive (hidden from students)',delete:'PERMANENTLY DELETE'}[action];if(!skipConfirm&&!confirm(words+': '+ids.length+' question'+(ids.length===1?'':'s')+'?'))return;if(action==='delete'&&!confirm('This cannot be undone. Delete '+ids.length+' question(s) forever?'))return;try{for(let i=0;i<ids.length;i+=100){const chunk=ids.slice(i,i+100);const r=action==='delete'?await db.from('questions').delete().in('id',chunk):await db.from('questions').update({active:action==='publish'}).in('id',chunk);if(r.error)throw r.error}}catch(e){alert((e.message||e)+(action==='delete'?' If students already have answers saved for these questions, use Make inactive instead.':''));return}if(action==='delete'){live=live.filter(q=>!ids.includes(q.id));ids.forEach(id=>mSel.delete(id))}else{live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'})}render();renderManage()}
-    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();if(!admin.data){location.replace('student-dashboard.html');return}const frame=$('legacy-source');if(!frame.contentWindow.NCLEX_LEGACY_QUESTIONS)await new Promise((resolve,reject)=>{frame.addEventListener('load',resolve,{once:true});setTimeout(()=>reject(new Error('The legacy question source did not load.')),8000)});legacy=frame.contentWindow.NCLEX_LEGACY_QUESTIONS||[];const [questionData,reviewData]=await Promise.all([db.from('questions').select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no').limit(1000).then(r=>r.error?db.from('questions').select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,question_no').limit(1000):r),db.from('question_import_reviews').select('*').limit(1000)]);if(questionData.error||reviewData.error){$('loading').textContent='Run supabase-question-bank-review.sql, then refresh this page.';return}live=questionData.data||[];(reviewData.data||[]).forEach(row=>reviews.set(row.source_key,row));$('search').addEventListener('input',render);$('filter').addEventListener('change',()=>{legSel.clear();render()});$('import-diag').addEventListener('click',importDiag);$('m-search').addEventListener('input',renderManage);$('m-filter').addEventListener('change',()=>{mSel.clear();renderManage()});$('m-all').addEventListener('change',e=>{mShown.forEach(q=>e.target.checked?mSel.add(q.id):mSel.delete(q.id));renderManage()});$('l-all').addEventListener('change',e=>{legacyShown.filter(canPick).forEach(i=>e.target.checked?legSel.add(i.id):legSel.delete(i.id));render()});document.querySelectorAll('[data-mbulk]').forEach(b=>b.addEventListener('click',()=>mApply(b.dataset.mbulk,[...mSel])));document.querySelectorAll('[data-lbulk]').forEach(b=>b.addEventListener('click',()=>legBulk(b.dataset.lbulk)));render();renderManage();db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags()});renderFlags()}});$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
+    function renderBulkDetails(question){
+      if(!question.source_key?.startsWith('qbank-bulk-'))return'';
+      const rationales=question.option_rationales||{},refs=Array.isArray(question.reference_list)?question.reference_list:[];
+      const choices=question.item_type==='mcq'?['a','b','c','d'].map((key,index)=>`<li><strong>${'ABCD'[index]}${question.correct_answer===key?' · Key':''}:</strong> ${esc(question['option_'+key]||'')}<br><span>${esc(rationales[key]||'No option rationale')}</span></li>`).join(''):'';
+      const data=question.item_type==='mcq'?'':`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(question.item_data||{},null,2))}</pre></details>`;
+      const references=refs.map(ref=>`<li><a href="${esc(ref.url||'')}" target="_blank" rel="noopener noreferrer">${esc(ref.title||ref.url||'Reference')}</a></li>`).join('');
+      return `<details style="margin-top:8px"><summary>Review question, rationales, and references</summary>${choices?`<ol>${choices}</ol>`:data}<p class="rationale"><strong>Rationale:</strong> ${esc(question.rationale||'')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(question.clinical_judgment_skill||'Not provided')} · <strong>References:</strong></p><ul>${references}</ul></details>`;
+    }
+    function renderRevisionVersion(title,content){
+      const choices=['a','b','c','d'].filter(key=>content[`option_${key}`]).map((key,index)=>`<li><strong>${'ABCD'[index]}${content.correct_answer===key?' · Key':''}:</strong> ${esc(content[`option_${key}`])}<br><span>${esc(content.option_rationales?.[key]||'')}</span></li>`).join('');
+      const refs=Array.isArray(content.reference_list)?content.reference_list.map(ref=>{const url=typeof ref.url==='string'&&/^https?:\/\//i.test(ref.url)?ref.url:'';return`<li>${esc(ref.title||url||'Reference')} ${url?`— <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">source</a>`:''}</li>`}).join(''):'';
+      return `<div><h3>${title}</h3><p><strong>${esc(content.stem||'')}</strong></p>${choices?`<ol>${choices}</ol>`:''}${content.item_data?`<details><summary>NGN data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(content.item_data,null,2))}</pre></details>`:''}<p class="rationale"><strong>Rationale:</strong> ${esc(content.rationale||'')}</p><p class="rationale">${esc(content.nclex_category||'')} · ${esc(content.topic||'')} · ${esc(content.difficulty||'')} · ${esc(content.clinical_judgment_skill||'')}</p><ul>${refs}</ul></div>`;
+    }
+    function renderRevisionDrafts(){
+      const open=revisionDrafts.filter(revision=>['pending_review','approved'].includes(revision.status));
+      $('revision-status').textContent=revisionWorkflowReady?`${open.length} correction${open.length===1?'':'s'} awaiting review or application. Existing bank content is unchanged until an approved draft is applied.`:'Run supabase-question-bulk-import.sql to enable safe clinical correction drafts.';
+      $('revision-list').innerHTML=open.length?open.map(revision=>{
+        const question=live.find(item=>item.id===revision.question_id),status=revision.status;
+        const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}">Reject approved correction</button>`;
+        return `<article class="candidate"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span><span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${action}</div></article>`;
+      }).join(''):'<p class="empty">No correction drafts are awaiting review. Existing question edits will appear here as proposals.</p>';
+      document.querySelectorAll('[data-revision-action]').forEach(button=>button.addEventListener('click',()=>handleRevisionAction(button.dataset.revisionAction,button.dataset.revisionId)));
+    }
+    async function handleRevisionAction(action,id){
+      const revision=revisionDrafts.find(item=>item.id===id);if(!revision)return;
+      const prompts={approve:'Approve this proposed correction? The current student-facing question will not change yet.',reject:'Reject this correction draft? The current question will remain unchanged.',apply:'Apply this approved correction to the existing question? Its question ID, assignments, and student attempt history will be preserved.'};
+      if(!confirm(prompts[action]))return;
+      const procedures={approve:'approve_question_revision',reject:'reject_question_revision',apply:'apply_question_revision'};
+      const result=await db.rpc(procedures[action],{p_revision_id:id});
+      if(result.error){alert(`Could not ${action} correction: ${result.error.message}`);return}
+      if(action==='apply'){
+        const question=live.find(item=>item.id===revision.question_id);
+        if(question)Object.assign(question,revision.proposed_content);
+        revision.status='applied';
+      }else{
+        revision.status=action==='approve'?'approved':'rejected';revision.reviewed_by=session.user.id;revision.reviewed_at=new Date().toISOString();
+      }
+      renderRevisionDrafts();renderManage();
+    }
+    function renderManage(){
+      const filtered=mFiltered();mShown=filtered.slice(0,mVisible);[...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
+      $('m-list').innerHTML=mShown.length?mShown.map(q=>{
+        const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null;
+        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}">${status==='approved'?'Publish':status==='published'?'Republish':'Approve'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}">${q.active?'Make inactive':'Publish'}</button>`;
+        const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'): 'Draft — review required';
+        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--ink);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}">Edit</button>${action}</div></div>`;
+      }).join(''):'<p class="empty">No questions match this view.</p>';
+      document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
+      document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));
+      document.querySelectorAll('[data-bulk-stage]').forEach(b=>b.addEventListener('click',()=>stageBulkQuestion(b.dataset.bulkStage)));
+      document.querySelectorAll('[data-medit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.medit)));
+      $('m-more').hidden=mShown.length>=filtered.length;
+      $('m-more').textContent=`Load 100 more (${filtered.length-mShown.length} remaining)`;
+      mCount();renderQualityDrafts();
+    }
+    async function stageBulkQuestion(id){
+      const question=live.find(item=>item.id===id);
+      if(!question||!question.source_key?.startsWith('qbank-bulk-'))return;
+      let status=reviews.get(question.source_key)?.status||'draft';
+      try{
+        if(status==='published'){
+          if(!confirm('Republish this previously approved question to students?'))return;
+          const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false);
+          if(updated.error)throw updated.error;
+          question.active=true;render();renderManage();return;
+        }
+        if(status!=='approved'){
+          if(!confirm('Approve this reviewed draft for publication? It will remain inactive until you publish it in a separate step.'))return;
+          await saveReview(question.source_key,'approved',question.id);
+          renderManage();return;
+        }
+        if(!confirm('Publish this approved question to students now?'))return;
+        const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false);
+        if(updated.error)throw updated.error;
+        question.active=true;
+        await saveReview(question.source_key,'published',question.id);
+        render();renderManage();
+      }catch(error){alert(`Could not ${status==='approved'?'publish':'approve'} this question: ${error.message||error}`)}
+    }
+    async function mApply(action,ids,skipConfirm){
+      if(!ids.length){alert('Select at least one question first.');return}
+      const selected=live.filter(question=>ids.includes(question.id));
+      if(action==='publish'&&selected.some(question=>question.source_key?.startsWith('qbank-bulk-')&&!['approved','published'].includes(reviews.get(question.source_key)?.status))){alert('Approve every bulk-import draft before publishing it.');return}
+      const words={publish:'Publish to students',inactive:'Make inactive (hidden from students)',delete:'PERMANENTLY DELETE'}[action];
+      if(!skipConfirm&&!confirm(words+': '+ids.length+' question'+(ids.length===1?'':'s')+'?'))return;
+      if(action==='delete'&&!confirm('This cannot be undone. Delete '+ids.length+' question(s) forever?'))return;
+      try{
+        for(let i=0;i<ids.length;i+=100){
+          const chunk=ids.slice(i,i+100),r=action==='delete'?await db.from('questions').delete().in('id',chunk):await db.from('questions').update({active:action==='publish'}).in('id',chunk);
+          if(r.error)throw r.error;
+        }
+        if(action==='publish'){
+          const records=selected.filter(question=>question.source_key?.startsWith('qbank-bulk-')).map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'published',reviewed_by:session.user.id,reviewed_at:new Date().toISOString(),imported_question_id:question.id,updated_at:new Date().toISOString()}));
+          if(records.length){const tracked=await db.from('question_import_reviews').upsert(records);if(tracked.error)throw tracked.error;records.forEach(record=>reviews.set(record.source_key,record))}
+        }
+      }catch(e){alert((e.message||e)+(action==='delete'?' If students already have answers saved for these questions, use Make inactive instead.':''));return}
+      if(action==='delete'){live=live.filter(q=>!ids.includes(q.id));ids.forEach(id=>mSel.delete(id))}
+      else{live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'})}
+      render();renderManage();
+    }
+    const QUESTION_COLUMNS='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
+    const QUESTION_COLUMNS_WITHOUT_BULK='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
+    const QUESTION_COLUMNS_LEGACY='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
+    async function loadAllQuestions(){
+      const rows=[],pageSize=500;let columns=QUESTION_COLUMNS,metadata=true;
+      for(let start=0;;start+=pageSize){
+        let result=await db.from('questions').select(columns).order('created_at').order('id').range(start,start+pageSize-1);
+        if(result.error&&start===0){
+          result=await db.from('questions').select(QUESTION_COLUMNS_WITHOUT_BULK).order('created_at').order('id').range(start,start+pageSize-1);
+          if(!result.error){columns=QUESTION_COLUMNS_WITHOUT_BULK;metadata=false}
+        }
+        if(result.error&&start===0){result=await db.from('questions').select(QUESTION_COLUMNS_LEGACY).order('created_at').order('id').range(start,start+pageSize-1);if(!result.error){columns=QUESTION_COLUMNS_LEGACY;metadata=false}}
+        if(result.error)throw result.error;
+        rows.push(...(result.data||[]));
+        if((result.data||[]).length<pageSize)break;
+      }
+      return{rows,metadata};
+    }
+    async function loadAllReviews(){
+      const rows=[],pageSize=500;
+      for(let start=0;;start+=pageSize){
+        const result=await db.from('question_import_reviews').select('*').order('created_at').order('source_key').range(start,start+pageSize-1);
+        if(result.error)throw result.error;
+        rows.push(...(result.data||[]));
+        if((result.data||[]).length<pageSize)break;
+      }
+      return rows;
+    }
+    async function loadAllRevisionDrafts(){
+      const rows=[],pageSize=250;
+      for(let start=0;;start+=pageSize){
+        const result=await db.from('question_revision_drafts').select('*').order('proposed_at',{ascending:false}).range(start,start+pageSize-1);
+        if(result.error)throw result.error;
+        rows.push(...(result.data||[]));
+        if((result.data||[]).length<pageSize)break;
+      }
+      return rows;
+    }
+    async function init(){
+      const {data}=await db.auth.getSession();session=data.session;
+      if(!session){location.replace('student-login.html');return}
+      const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(!admin.data){location.replace('student-dashboard.html');return}
+      const frame=$('legacy-source');
+      if(!frame.contentWindow.NCLEX_LEGACY_QUESTIONS)await new Promise((resolve,reject)=>{frame.addEventListener('load',resolve,{once:true});setTimeout(()=>reject(new Error('The legacy question source did not load.')),8000)});
+      legacy=frame.contentWindow.NCLEX_LEGACY_QUESTIONS||[];
+      try{
+        const [questionData,reviewData]=await Promise.all([loadAllQuestions(),loadAllReviews()]);
+        live=questionData.rows;bulkImportReady=questionData.metadata;
+        reviewData.forEach(row=>reviews.set(row.source_key,row));
+      }catch(error){$('loading').textContent=`Could not load the complete question bank: ${error.message||error}`;return}
+      try{revisionDrafts=await loadAllRevisionDrafts();revisionWorkflowReady=true}
+      catch(error){revisionWorkflowReady=false;$('revision-status').textContent=`Correction workflow unavailable: ${error.message||error}. Run supabase-question-bulk-import.sql.`}
+      $('search').addEventListener('input',render);$('filter').addEventListener('change',()=>{legSel.clear();render()});
+      $('import-diag').addEventListener('click',importDiag);$('m-search').addEventListener('input',()=>{mVisible=100;renderManage()});
+      $('m-filter').addEventListener('change',()=>{mVisible=100;mSel.clear();renderManage()});
+      $('m-more').addEventListener('click',()=>{mVisible+=100;renderManage()});
+      $('m-all').addEventListener('change',e=>{mShown.forEach(q=>e.target.checked?mSel.add(q.id):mSel.delete(q.id));renderManage()});
+      $('l-all').addEventListener('change',e=>{legacyShown.filter(canPick).forEach(i=>e.target.checked?legSel.add(i.id):legSel.delete(i.id));render()});
+      document.querySelectorAll('[data-mbulk]').forEach(b=>b.addEventListener('click',()=>mApply(b.dataset.mbulk,[...mSel])));
+      document.querySelectorAll('[data-lbulk]').forEach(b=>b.addEventListener('click',()=>legBulk(b.dataset.lbulk)));
+      $('bulk-preview').addEventListener('click',previewBulk);$('bulk-save').addEventListener('click',saveBulkDrafts);
+      $('bulk-file').addEventListener('change',async event=>{
+        if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before loading another batch.';event.target.value='';return}
+        const file=event.target.files?.[0];if(!file)return;
+        if(file.size>5*1024*1024){$('bulk-status').textContent='File is larger than 5 MB. Split it into smaller batches.';event.target.value='';return}
+        try{$('bulk-json').value=await file.text();stagedBatch=[];renderBulkPreview();$('bulk-status').textContent=`Loaded ${file.name}. Validate and preview it before saving.`}
+        catch(error){$('bulk-status').textContent=`Could not read ${file.name}: ${error.message||error}`}
+      });
+      $('bulk-json').addEventListener('input',()=>{if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before changing the batch.';return}stagedBatch=[];renderBulkPreview();$('bulk-status').textContent='Batch changed. Validate and preview it again.'});
+      render();renderManage();renderRevisionDrafts();
+      db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags()});renderFlags()}});
+      if(!bulkImportReady)$('bulk-status').textContent='Run supabase-question-bulk-import.sql before using bulk import.';
+      $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+    }
     $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
   </script>
 </body>
