@@ -20,7 +20,7 @@
     <section class="mg hidden" id="flags-sec"><p class="eyebrow">Student reports</p><h2>Flagged questions <span id="flag-n"></span></h2><p class="intro">Questions students reported while practicing. Open one in the editor, fix it, then mark the report resolved.</p><div id="flag-list"></div></section>
     <section class="mg"><p class="eyebrow">Manage</p><h2>Live question bank</h2><p class="intro">Every question in the master bank. Select any group, then publish it, make it inactive (hidden from students, nothing lost), or delete it permanently.</p><div class="toolbar"><input id="m-search" type="search" placeholder="Search by Q-number, stem, topic"><select id="m-filter"><option value="active">Published to students</option><option value="inactive">Inactive / drafts</option><option value="all">All questions</option></select></div><div class="bulk" style="border-bottom:0"><button class="button secondary" id="import-diag">Add consult diagnostic questions to this bank (inactive)</button><span class="count" id="import-note"></span></div><div class="bulk"><label><input type="checkbox" id="m-all"> Select all shown</label><span class="count" id="m-count"></span><button class="button" data-mbulk="publish">Publish</button><button class="button secondary" data-mbulk="inactive">Make inactive</button><button class="button danger" data-mbulk="delete">Delete forever</button></div><div id="m-list"></div><button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button></section>
     <section class="quality"><p class="eyebrow">New content</p><h2>Quality draft batch</h2><p class="intro">These are newly written, source-reviewed questions. They remain private until you press Publish for an individual item.</p><div class="quality-grid" id="quality-drafts"><p class="empty">No quality drafts have been added yet.</p></div></section>
-    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–50 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
+    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–100 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
       <div class="toolbar"><input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch"><button class="button secondary" id="bulk-preview">Validate and preview</button><button class="button" id="bulk-save" disabled>Save reviewed items as inactive drafts</button></div>
       <label for="bulk-json"><strong>Or paste a JSON batch</strong></label><textarea id="bulk-json" rows="8" style="display:block;width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);font: .82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
       <p class="count" id="bulk-status" role="status" aria-live="polite">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
@@ -100,6 +100,7 @@
         if(!/^[A-Za-z0-9._-]{1,100}$/.test(id))errors.push('Add a unique id using letters, numbers, dots, underscores, or hyphens (max 100 characters).');
         else if(ids.has(id))errors.push('This id is duplicated within the batch.');
         else ids.add(id);
+        if(id&&live.some(question=>question.source_key===`qbank-bulk-${id}`))errors.push('This item id was previously imported. Use a new unique id or edit the existing draft instead.');
         if(typeof item.stem!=='string'||!stem)errors.push('Question stem is required as text.');
         if(!BULK_TYPES.has(type))errors.push('item_type must be mcq, sata, bowtie, matrix, cloze, highlight, case, or fill.');
         if(!['easy','medium','hard'].includes(item.difficulty))errors.push('difficulty must be easy, medium, or hard.');
@@ -133,7 +134,7 @@
       previous.forEach(entry=>{const score=similarity(item.stem,entry.item.stem);if(score>bestScore){best={batchId:entry.item.id};bestScore=score}});
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
-    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=100&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
     function renderBulkPreview(){
       const list=$('bulk-preview-list'),save=$('bulk-save');
       if(!stagedBatch.length){list.innerHTML='';save.disabled=true;return}
@@ -157,7 +158,7 @@
       if(!raw){$('bulk-status').textContent='Choose a JSON file or paste a batch first.';return}
       try{
         const parsed=JSON.parse(raw),items=Array.isArray(parsed)?parsed:parsed&&typeof parsed==='object'?parsed.items:null;
-        if(!Array.isArray(items)||items.length<25||items.length>50)throw new Error(`A batch must contain 25–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
+        if(!Array.isArray(items)||items.length<25||items.length>100)throw new Error(`A batch must contain 25–100 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
         stagedBatch=validateBatchItems(items);
         $('bulk-status').textContent=`Validated ${items.length} items. Review each item and every flagged overlap below.`;
         renderBulkPreview();
@@ -168,12 +169,12 @@
       const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
       try{
         if(!pendingBulkTracking){
-          const batchId=crypto.randomUUID(),rows=stagedBatch.map(({item})=>{
+          const rows=stagedBatch.map(({item})=>{
             const type=String(item.item_type).toLowerCase(),row={
               stem:item.stem.trim(),rationale:item.rationale.trim(),module_key:item.module_key||null,
               nclex_category:item.nclex_category.trim(),nclex_sub:item.nclex_sub||null,topic:item.topic.trim(),
               difficulty:item.difficulty,is_ngn:type!=='mcq',active:false,
-              source_key:`qbank-bulk-${batchId}-${item.id}`,item_type:type,
+              source_key:`qbank-bulk-${item.id}`,item_type:type,
               item_data:type==='mcq'?(item.item_data||null):item.item_data,
               clinical_judgment_skill:item.clinical_judgment_skill.trim(),
               option_rationales:item.option_rationales,reference_list:item.references
@@ -181,6 +182,10 @@
             if(type==='mcq'){row.option_a=item.options[0].trim();row.option_b=item.options[1].trim();row.option_c=item.options[2].trim();row.option_d=item.options[3].trim();row.correct_answer=String(item.correct_answer).toLowerCase()}
             return row;
           });
+          const keys=rows.map(row=>row.source_key);
+          const existing=await db.from('questions').select('source_key').in('source_key',keys);
+          if(existing.error)throw existing.error;
+          if(existing.data?.length)throw new Error('Import blocked: '+existing.data.length+' item ID(s) are already in the question bank. Review existing drafts before retrying.');
           const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
           if(inserted.error)throw inserted.error;
           const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
