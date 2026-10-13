@@ -177,23 +177,97 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       .question-count-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
   </style>
+  <link rel="stylesheet" href="student-nav.css">
+  <link rel="stylesheet" href="exam-ui.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">Dashboard</a></header>
-    <section class="hero" id="library" aria-labelledby="page-title">
-      <h1 id="page-title">Your course work, organized by exam.</h1>
-      <p id="page-summary">Open a class to find the study materials and question sets assigned for its exams.</p>
-    </section>
-    <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
-    <section class="workspace hidden" id="sets" aria-label="Assigned classes and exam materials"></section>
-    <section class="quiz hidden" id="quiz" aria-live="polite"></section>
-  </main>
-  <link rel="stylesheet" href="exam-ui.css">
+  <a href="#main-content" class="portal-skip-link">Skip to main content</a>
+  <div class="portal-layout">
+    <!-- Mobile top bar -->
+    <header class="portal-mobile-bar" aria-label="Mobile navigation header">
+      <button class="portal-menu-toggle" id="portal-menu-toggle" type="button" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Open navigation menu">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        <span>Menu</span>
+      </button>
+      <span class="portal-mobile-brand">Study With Madison <small>RN</small></span>
+      <button class="portal-mobile-signout" id="portal-mobile-signout" type="button">Sign out</button>
+    </header>
+
+    <!-- Navigation Backdrop (Mobile) -->
+    <div class="portal-backdrop" id="portal-backdrop" aria-hidden="true"></div>
+
+    <!-- Navigation Sidebar -->
+    <aside class="portal-sidebar" id="portal-sidebar" aria-label="Student portal navigation">
+      <div class="portal-sidebar-header">
+        <a class="portal-sidebar-brand" href="student-dashboard.html">
+          <span class="portal-sidebar-title">Study With Madison <small>RN</small></span>
+          <span class="portal-sidebar-subtitle" id="portal-brand-subtitle">Student Portal</span>
+        </a>
+        <button class="portal-sidebar-close" id="portal-sidebar-close" type="button" aria-label="Close navigation menu">✕</button>
+      </div>
+
+      <nav class="portal-nav" aria-label="Primary navigation">
+        <!-- Overview group -->
+        <div class="portal-nav-group">
+          <span class="portal-nav-heading">Overview</span>
+          <a class="portal-nav-item" id="nav-item-dashboard" href="student-dashboard.html">
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Dashboard</span>
+          </a>
+          <a class="portal-nav-item" id="nav-item-lectures" href="student-dashboard.html#modules">
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span id="nav-label-lectures">Lectures &amp; Guides</span>
+          </a>
+        </div>
+
+        <!-- QBank group -->
+        <div class="portal-nav-group">
+          <span class="portal-nav-heading">QBank</span>
+          <a class="portal-nav-item active" id="nav-item-practice" href="supplemental-practice.html" aria-current="page">
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span id="nav-label-practice">Exam Prep</span>
+          </a>
+          <a class="portal-nav-item" id="nav-item-previous-tests" href="student-dashboard.html#previous-tests">
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Previous Tests</span>
+          </a>
+          <a class="portal-nav-item" id="nav-item-performance" href="student-dashboard.html#performance">
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Performance</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="portal-sidebar-footer">
+        <div class="portal-user-card">
+          <div class="portal-user-avatar" id="portal-user-avatar" aria-hidden="true">S</div>
+          <div class="portal-user-meta">
+            <span class="portal-user-name" id="portal-user-name">Student</span>
+            <span class="portal-user-role" id="portal-user-role">Student</span>
+          </div>
+        </div>
+        <div class="portal-sidebar-actions">
+          <button class="portal-signout-btn" id="portal-sidebar-signout" type="button">Sign out</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="portal-main shell" id="main-content">
+      <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">Dashboard</a></header>
+      <section class="hero" id="library" aria-labelledby="page-title">
+        <h1 id="page-title">Your course work, organized by exam.</h1>
+        <p id="page-summary">Open a class to find the study materials and question sets assigned for its exams.</p>
+      </section>
+      <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
+      <section class="workspace hidden" id="sets" aria-label="Assigned classes and exam materials"></section>
+      <section class="quiz hidden" id="quiz" aria-live="polite"></section>
+    </main>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="exam-ui.js"></script>
   <script src="exam-adapters.js"></script>
+  <script src="student-nav.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -2185,6 +2259,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           $('library-status').classList.remove('hidden');
           return;
         }
+        if(window.StudentNav){
+          StudentNav.init({ active: 'practice' });
+          StudentNav.updateStudent(student, admin);
+        }
         const [{data:resources,error:resourcesError},{data:access,error:accessError},{data:schedules,error:schedulesError}]=await Promise.all([
           db.from('student_resources').select('title,url,note,resource_type,due_on').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
           db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),
@@ -2219,6 +2297,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         $('library-status').classList.remove('hidden');
       }
     }
+    const handleSignOut = async () => {
+      await db.auth.signOut();
+      location.replace('student-login.html');
+    };
+    ['portal-sidebar-signout', 'portal-mobile-signout'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', handleSignOut);
+    });
     init();
   </script>
 </body>

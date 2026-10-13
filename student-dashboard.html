@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Private student dashboard · Study with Madison RN">
   <title>My Study Plan · NCLEX Success Center</title>
+  <link rel="stylesheet" href="student-nav.css">
   <style>
     :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}
     *{box-sizing:border-box}
@@ -255,7 +256,78 @@
     </div>
   </div>
 
-  <main class="shell hidden" id="app">
+  <a href="#main-content" class="portal-skip-link">Skip to main content</a>
+  <div class="portal-layout hidden" id="app">
+    <!-- Mobile top bar -->
+    <header class="portal-mobile-bar" aria-label="Mobile navigation header">
+    <button class="portal-menu-toggle" id="portal-menu-toggle" type="button" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Open navigation menu">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      <span>Menu</span>
+    </button>
+    <span class="portal-mobile-brand">Study With Madison <small>RN</small></span>
+    <button class="portal-mobile-signout" id="portal-mobile-signout" type="button">Sign out</button>
+    </header>
+
+    <!-- Navigation Backdrop (Mobile) -->
+    <div class="portal-backdrop" id="portal-backdrop" aria-hidden="true"></div>
+
+    <!-- Navigation Sidebar -->
+    <aside class="portal-sidebar" id="portal-sidebar" aria-label="Student portal navigation">
+    <div class="portal-sidebar-header">
+      <a class="portal-sidebar-brand" href="student-dashboard.html">
+        <span class="portal-sidebar-title">Study With Madison <small>RN</small></span>
+        <span class="portal-sidebar-subtitle" id="portal-brand-subtitle">Student Portal</span>
+      </a>
+      <button class="portal-sidebar-close" id="portal-sidebar-close" type="button" aria-label="Close navigation menu">✕</button>
+    </div>
+
+    <nav class="portal-nav" aria-label="Primary navigation">
+      <!-- Overview group -->
+      <div class="portal-nav-group">
+        <span class="portal-nav-heading">Overview</span>
+        <a class="portal-nav-item active" id="nav-item-dashboard" href="student-dashboard.html" aria-current="page">
+          <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="portal-nav-item" id="nav-item-lectures" href="#modules">
+          <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span id="nav-label-lectures">Lectures &amp; Guides</span>
+        </a>
+      </div>
+
+      <!-- QBank group -->
+      <div class="portal-nav-group">
+        <span class="portal-nav-heading">QBank</span>
+        <a class="portal-nav-item" id="nav-item-practice" href="supplemental-practice.html">
+          <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span id="nav-label-practice">Exam Prep</span>
+        </a>
+        <a class="portal-nav-item" id="nav-item-previous-tests" href="#previous-tests">
+          <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Previous Tests</span>
+        </a>
+        <a class="portal-nav-item" id="nav-item-performance" href="#performance">
+          <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Performance</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="portal-sidebar-footer">
+      <div class="portal-user-card">
+        <div class="portal-user-avatar" id="portal-user-avatar" aria-hidden="true">S</div>
+        <div class="portal-user-meta">
+          <span class="portal-user-name" id="portal-user-name">Student</span>
+          <span class="portal-user-role" id="portal-user-role">Student</span>
+        </div>
+      </div>
+      <div class="portal-sidebar-actions">
+        <button class="portal-signout-btn" id="portal-sidebar-signout" type="button">Sign out</button>
+      </div>
+    </div>
+    </aside>
+
+    <main class="portal-main shell" id="main-content">
     <header class="top">
       <span class="brand">Study With Madison <small>RN</small></span>
       <button class="sign-out" id="sign-out" type="button">Sign out</button>
@@ -284,10 +356,12 @@
           <p id="weekly-intro-nclex">Your current weekly priorities will appear here after Madison updates your plan.</p>
           <div class="task-list" id="daily-priorities-nclex"></div>
         </article>
+        <div id="performance-nclex" class="anchor-point"></div>
         <article class="card" id="cat-results-card" style="display:none">
           <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
           <div id="cat-results-body"></div>
         </article>
+        <div id="previous-tests-nclex" class="anchor-point"></div>
         <article class="card" id="cat-trend-card" style="display:none;grid-column:1/-1">
           <div class="card-head"><div><p class="eyebrow">Weekly CAT trend</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
           <div id="cat-trend-body"></div>
@@ -317,7 +391,8 @@
           <div class="card-head"><div><p class="eyebrow">Selected for you</p><h2>Study resources</h2></div><span class="label">Assigned</span></div>
           <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
         </article>
-        <article class="card modules">
+        <article class="card modules" id="modules-nclex-card">
+          <div id="modules-nclex" class="anchor-point"></div>
           <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
           <div class="module-library" id="modules-nclex"><p class="empty">Your assigned learning modules will appear here.</p></div>
         </article>
@@ -397,7 +472,9 @@
         </article>
 
         <!-- 4 · Recent quiz scores (full width) -->
-        <article class="card nursing-support class-dependent-panel hidden" style="grid-column:1/-1">
+        <article class="card nursing-support class-dependent-panel hidden" id="performance-nursing-card" style="grid-column:1/-1">
+          <div id="previous-tests-nursing" class="anchor-point"></div>
+          <div id="performance-nursing" class="anchor-point"></div>
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
             <span class="label teal">Performance</span>
@@ -407,7 +484,8 @@
         </article>
 
         <!-- 5 · Class modules / study guides (full width) -->
-        <article class="card modules nursing-support class-dependent-panel hidden">
+        <article class="card modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
+          <div id="modules-nursing" class="anchor-point"></div>
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
             <span class="label teal">Course access</span>
@@ -418,11 +496,13 @@
       </section>
     </div>
 
-  </main>
+    </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="assessment-import.js"></script>
+  <script src="student-nav.js"></script>
   <script>
     const db = supabase.createClient(
       'https://pmjwwktwlsqpetwfvolb.supabase.co',
@@ -1138,11 +1218,20 @@
       } else {
         renderNclex(student, plans.data || [], resources.data || [], catalog.data || [], access.data || []);
       }
+
+      if (window.StudentNav) {
+        StudentNav.init({ active: 'dashboard' });
+        StudentNav.updateStudent(student, isPreview);
+      }
     }
 
-    document.getElementById('sign-out').addEventListener('click', async () => {
+    const handleSignOut = async () => {
       await db.auth.signOut();
       location.replace('student-login.html');
+    };
+    ['sign-out', 'portal-sidebar-signout', 'portal-mobile-signout'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', handleSignOut);
     });
 
     init();
