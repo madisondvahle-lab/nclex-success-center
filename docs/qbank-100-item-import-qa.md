@@ -15,7 +15,9 @@ The admin import page now accepts **25–100 questions per JSON batch**, rather 
 - Test the importer with a 100-item JSON preview and save, including NGN items. Confirm all 100 records + import-review tracking rows persist. Test a simulated tracking failure and retry without reinserting.
 - Validate large preview performance and test with 25, 50, 100, 101 item inputs.
 - Verify UI displays 100 reviewed checkboxes and rejects 101 items.
-- Keep imports idempotent in future releases by assigning stable external draft IDs; current importer uses a random batch prefix and should not be rerun by re-uploading the same file.
+- New imports use stable `qbank-bulk-${item.id}` source keys, validated against loaded bank rows and checked again against Supabase just before insertion; re-uploading the same IDs is blocked instead of creating duplicates.
+- Existing historical imports with random batch-prefixed keys remain unchanged. Their earlier IDs may not be detectable by the new stable-key guard; stem-overlap review still helps flag them.
+- Concurrent imports from separate admin sessions still require a database unique constraint on `source_key` for race-safe idempotency. Verify the constraint before claiming full concurrency protection.
 
 ## Current limitation
 Increasing the numerical ceiling does not implement a psychometrically calibrated CAT, automatic source verification, or concept-family scheduling. Those are separate phases. A 100-item upload should be treated as a **staged editorial batch**, not automatically approved content.
