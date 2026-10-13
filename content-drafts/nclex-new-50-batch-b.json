@@ -243,13 +243,13 @@
   },
   {
     "draft_id": "NEW-20261012-037",
-    "stem": "A patient receiving parenteral nutrition through a central line reports sudden shortness of breath during a tubing change. What should the nurse do first?",
-    "option_a": "Disconnect all monitoring equipment",
-    "option_b": "Clamp the catheter promptly, assess the patient, and summon help for possible air embolism",
-    "option_c": "Ask the patient to walk",
-    "option_d": "Restart the infusion at a higher rate",
+    "stem": "A patient with a tunneled central venous catheter is due for IV antibiotic therapy. The nurse meets resistance when gently attempting to flush the lumen; there is no blood return. What is the safest initial action?",
+    "option_a": "Apply increased pressure to the syringe until the obstruction clears",
+    "option_b": "Stop using the lumen, assess for kinks or closed clamps, and follow the facility's occlusion protocol",
+    "option_c": "Infuse the antibiotic through the resistant lumen at a slower rate",
+    "option_d": "Withdraw the catheter several centimeters to restore flow",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Removing monitoring equipment does not address acute breathing compromise. B: Stop potential air entry by clamping the implicated central line when appropriate and summon emergency support. C: Walking is unsafe in acute dyspnea. D: Increasing infusion can worsen the emergency rather than address its cause.",
+    "rationale": "Correct answer: B. A: Forceful flushing can damage the catheter or dislodge a thrombus and should be avoided. B: Assess correctable mechanical causes without force and use the institutional protocol for an occluded central line before administering medication. C: A resistant lumen with absent blood return should not be used for infusion until patency and safe catheter position are established. D: Repositioning or withdrawing a tunneled central catheter is not an independent bedside maneuver for occlusion.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -257,10 +257,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Removing monitoring equipment does not address acute breathing compromise.",
-      "b": "Stop potential air entry by clamping the implicated central line when appropriate and summon emergency support.",
-      "c": "Walking is unsafe in acute dyspnea.",
-      "d": "Increasing infusion can worsen the emergency rather than address its cause."
+      "a": "Forceful flushing can damage the catheter or dislodge a thrombus and should be avoided.",
+      "b": "Assess correctable mechanical causes without force and use the institutional protocol for an occluded central line before administering medication.",
+      "c": "A resistant lumen with absent blood return should not be used for infusion until patency and safe catheter position are established.",
+      "d": "Repositioning or withdrawing a tunneled central catheter is not an independent bedside maneuver for occlusion."
     }
   },
   {
