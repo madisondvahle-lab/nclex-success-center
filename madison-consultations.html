@@ -79,6 +79,8 @@
       document.getElementById('auto-test').addEventListener('click',sendTest);
       await loadSettings();
       await loadList();
+      const requestedConsultation=new URLSearchParams(location.search).get('consultation');
+      if(requestedConsultation)await openConsult(requestedConsultation);
     }
 
     const CREDIT_LABEL={none:'No credit sent',link_sent:'Credit link sent',reminded:'Reminder sent',purchased:'Package purchased',expired:'Credit window closed'};
