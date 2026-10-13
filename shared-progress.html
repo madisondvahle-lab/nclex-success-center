@@ -280,7 +280,7 @@
       };
       const groupHtml=(title,rows)=>rows.length?'<p class="eyebrow coach-assign-group">'+esc(title)+'</p>'+rows.map(rowHtml).join(''):'';
       $('access-items').innerHTML=total
-        ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets &amp; diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
+        ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets & diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
         :'<span class="muted">Use Manage access & assignments to add work.</span>';
       $('manage-access').href='madison-assignments.html?student='+encodeURIComponent(student.id);
       $('preview-student').href='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);

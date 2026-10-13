@@ -1604,15 +1604,29 @@
       $('quiz').classList.remove('hidden');
       $('quiz').innerHTML='<p class="status">Building your mixed review…</p>';
 
-      const [{data:bank,error:bankError},{data:history,error:historyError}] = await Promise.all([
-        db.from('questions')
-          .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no')
-          .eq('active',true)
-          .limit(1000),
+      const loadBank=async()=>{
+        const rows=[],pageSize=500;
+        try{
+          for(let start=0;;start+=pageSize){
+            const page=await db.from('questions')
+              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no')
+              .eq('active',true)
+              .order('created_at')
+              .order('id')
+              .range(start,start+pageSize-1);
+            if(page.error)return{data:null,error:page.error};
+            rows.push(...(page.data||[]));
+            if((page.data||[]).length<pageSize)break;
+          }
+          return{data:rows,error:null};
+        }catch(error){return{data:null,error}}
+      };
+      const [{data:history,error:historyError},{data:bank,error:bankError}] = await Promise.all([
         db.from('student_supplemental_practice_results')
           .select('answer_details,missed_question_ids')
           .eq('student_id',student.id)
-          .order('completed_at',{ascending:false})
+          .order('completed_at',{ascending:false}),
+        loadBank()
       ]);
 
       if(bankError || historyError){
