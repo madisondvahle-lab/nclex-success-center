@@ -7,13 +7,19 @@
     "option_c": "Activate emergency evaluation for possible rising intracranial pressure",
     "option_d": "Perform routine discharge teaching",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Activate emergency evaluation for possible rising intracranial pressure. Clinical reasoning: delays response to neurologic deterioration; creates aspiration risk; addresses possible herniation; is inappropriate.",
+    "rationale": "Correct answer: C. A: A delayed environmental intervention fails to address acute neurologic deterioration. B: Oral intake risks aspiration in a patient with reduced consciousness. C: New unequal pupils and decreased arousal suggest a life-threatening intracranial process requiring immediate response. D: Routine discharge education is inappropriate during new neurologic instability.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "A delayed environmental intervention fails to address acute neurologic deterioration.",
+      "b": "Oral intake risks aspiration in a patient with reduced consciousness.",
+      "c": "New unequal pupils and decreased arousal suggest a life-threatening intracranial process requiring immediate response.",
+      "d": "Routine discharge education is inappropriate during new neurologic instability."
+    }
   },
   {
     "draft_id": "NEW-20261012-027",
@@ -23,13 +29,19 @@
     "option_c": "Wait for a repeat chemistry panel",
     "option_d": "Protect airway and safety, summon help, and prepare prescribed emergency sodium therapy",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Protect airway and safety, summon help, and prepare prescribed emergency sodium therapy. Clinical reasoning: worsens hyponatremia; unsafe during seizure and too slow; delays rescue; addresses seizure and life-threatening symptomatic hyponatremia.",
+    "rationale": "Correct answer: D. A: Free water may worsen symptomatic hyponatremia. B: Oral medication during convulsions creates aspiration risk and is inadequate emergency treatment. C: Waiting for later testing delays seizure management. D: Protect airway/safety, summon emergency help, and prepare monitored hypertonic saline when prescribed for severe symptomatic hyponatremia.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Free water may worsen symptomatic hyponatremia.",
+      "b": "Oral medication during convulsions creates aspiration risk and is inadequate emergency treatment.",
+      "c": "Waiting for later testing delays seizure management.",
+      "d": "Protect airway/safety, summon emergency help, and prepare monitored hypertonic saline when prescribed for severe symptomatic hyponatremia."
+    }
   },
   {
     "draft_id": "NEW-20261012-028",
@@ -39,13 +51,19 @@
     "option_c": "Outpatient cortisol testing next week",
     "option_d": "Fluid restriction",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): IV hydrocortisone with isotonic fluid resuscitation. Clinical reasoning: treats adrenal crisis without delaying for testing; irrelevant to shock; delays treatment; worsens volume deficit.",
+    "rationale": "Correct answer: A. A: Suspected adrenal crisis requires prompt parenteral glucocorticoid and isotonic fluids; treatment should not await laboratory confirmation. B: Calcium does not address acute cortisol deficiency or shock. C: Outpatient testing delays emergency management. D: Fluid restriction may aggravate adrenal-crisis hypovolemia.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Suspected adrenal crisis requires prompt parenteral glucocorticoid and isotonic fluids; treatment should not await laboratory confirmation.",
+      "b": "Calcium does not address acute cortisol deficiency or shock.",
+      "c": "Outpatient testing delays emergency management.",
+      "d": "Fluid restriction may aggravate adrenal-crisis hypovolemia."
+    }
   },
   {
     "draft_id": "NEW-20261012-029",
@@ -55,13 +73,19 @@
     "option_c": "Simple seasonal allergy",
     "option_d": "Isolated mild dehydration",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): Restrictive chest-wall eschar impairing expansion. Clinical reasoning: A/C/D do not explain mechanically restricted chest expansion; may require urgent surgical eschar release evaluation.",
+    "rationale": "Correct answer: B. A: Hypothyroidism does not cause abrupt mechanical limitation of chest expansion. B: Rigid circumferential chest eschar can restrict ventilation and requires urgent evaluation for escharotomy. C: Allergic rhinitis cannot explain ventilatory restriction from full-thickness burns. D: Mild dehydration does not explain the mechanical chest restriction.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Hypothyroidism does not cause abrupt mechanical limitation of chest expansion.",
+      "b": "Rigid circumferential chest eschar can restrict ventilation and requires urgent evaluation for escharotomy.",
+      "c": "Allergic rhinitis cannot explain ventilatory restriction from full-thickness burns.",
+      "d": "Mild dehydration does not explain the mechanical chest restriction."
+    }
   },
   {
     "draft_id": "NEW-20261012-030",
@@ -71,13 +95,19 @@
     "option_c": "Stop opioid delivery, support ventilation, summon help and prepare prescribed naloxone",
     "option_d": "Increase basal infusion",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Stop opioid delivery, support ventilation, summon help and prepare prescribed naloxone. Clinical reasoning: delays treatment; B/D worsen opioid toxicity; treats opioid-induced respiratory depression and prioritizes ventilation.",
+    "rationale": "Correct answer: C. A: Allowing continued opioid delivery risks respiratory arrest. B: Additional oral opioids can worsen ventilatory depression. C: Stop the opioid, support breathing, urgently summon help and prepare naloxone per protocol. D: Increasing opioid infusion can worsen severe respiratory depression.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Allowing continued opioid delivery risks respiratory arrest.",
+      "b": "Additional oral opioids can worsen ventilatory depression.",
+      "c": "Stop the opioid, support breathing, urgently summon help and prepare naloxone per protocol.",
+      "d": "Increasing opioid infusion can worsen severe respiratory depression."
+    }
   },
   {
     "draft_id": "NEW-20261012-031",
@@ -87,13 +117,19 @@
     "option_c": "Encourage walking to improve perfusion",
     "option_d": "Escalate immediately for suspected sepsis and begin ordered resuscitation measures",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Escalate immediately for suspected sepsis and begin ordered resuscitation measures. Clinical reasoning: A/B/C delay recognition; addresses systemic infection with organ hypoperfusion.",
+    "rationale": "Correct answer: D. A: Topical lotion alone is inadequate for systemic signs of infection. B: Routine follow-up is unsafe with hypotension and confusion. C: Walking does not address suspected septic shock. D: Hypotension and altered mentation with infection warrant immediate sepsis evaluation and ordered resuscitation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Topical lotion alone is inadequate for systemic signs of infection.",
+      "b": "Routine follow-up is unsafe with hypotension and confusion.",
+      "c": "Walking does not address suspected septic shock.",
+      "d": "Hypotension and altered mentation with infection warrant immediate sepsis evaluation and ordered resuscitation."
+    }
   },
   {
     "draft_id": "NEW-20261012-032",
@@ -103,13 +139,19 @@
     "option_c": "Encourage straining to relieve pressure",
     "option_d": "Delay assessment pending a routine clinic appointment",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): Activate emergency neurologic evaluation and monitor airway/neurologic status. Clinical reasoning: addresses suspected subarachnoid hemorrhage; B/C are inappropriate; delays time-sensitive care.",
+    "rationale": "Correct answer: A. A: Thunderclap headache and meningismus suggest possible subarachnoid hemorrhage requiring emergency assessment. B: A laxative does not address possible intracranial bleeding. C: Straining may increase intracranial pressure and is inappropriate. D: Waiting for clinic follow-up can delay time-sensitive neurologic care.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Thunderclap headache and meningismus suggest possible subarachnoid hemorrhage requiring emergency assessment.",
+      "b": "A laxative does not address possible intracranial bleeding.",
+      "c": "Straining may increase intracranial pressure and is inappropriate.",
+      "d": "Waiting for clinic follow-up can delay time-sensitive neurologic care."
+    }
   },
   {
     "draft_id": "NEW-20261012-033",
@@ -119,13 +161,19 @@
     "option_c": "Minor localized catheter irritation; apply heat",
     "option_d": "Give oral fluids then reassess",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): Possible venous air embolism; clamp the line, summon urgent help, and provide supportive care per protocol. Clinical reasoning: A/C/D fail to address an acute emergency; limits further air entry and escalates suspected embolism.",
+    "rationale": "Correct answer: B. A: Continuing catheter manipulation without evaluation may worsen air entry. B: Clamp the implicated line if appropriate, assess and summon urgent help for possible venous air embolism; follow institutional response protocol. C: Local heat does not address acute dyspnea and shock. D: Oral hydration is not emergency therapy for suspected air embolism.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Continuing catheter manipulation without evaluation may worsen air entry.",
+      "b": "Clamp the implicated line if appropriate, assess and summon urgent help for possible venous air embolism; follow institutional response protocol.",
+      "c": "Local heat does not address acute dyspnea and shock.",
+      "d": "Oral hydration is not emergency therapy for suspected air embolism."
+    }
   },
   {
     "draft_id": "NEW-20261012-034",
@@ -135,13 +183,19 @@
     "option_c": "Activate emergency response and prepare airway and circulatory support",
     "option_d": "Encourage independent ambulation",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Activate emergency response and prepare airway and circulatory support. Clinical reasoning: risks aspiration; is not time critical; addresses potential massive variceal hemorrhage and shock; is unsafe.",
+    "rationale": "Correct answer: C. A: Oral food is unsafe during active massive hematemesis and instability. B: A nonurgent girth measurement cannot address acute hemorrhagic shock. C: Urgent airway and circulatory support is needed for possible variceal hemorrhage. D: Ambulating a hypotensive actively bleeding patient increases fall risk.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Oral food is unsafe during active massive hematemesis and instability.",
+      "b": "A nonurgent girth measurement cannot address acute hemorrhagic shock.",
+      "c": "Urgent airway and circulatory support is needed for possible variceal hemorrhage.",
+      "d": "Ambulating a hypotensive actively bleeding patient increases fall risk."
+    }
   },
   {
     "draft_id": "NEW-20261012-035",
@@ -151,13 +205,19 @@
     "option_c": "Wait until tomorrow for a 12-lead ECG",
     "option_d": "Rapidly assess, obtain ECG and urgent assistance; question nitroglycerin in severe hypotension",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Rapidly assess, obtain ECG and urgent assistance; question nitroglycerin in severe hypotension. Clinical reasoning: may worsen hypotension; increases myocardial demand; delays ischemia assessment; evaluates an unstable suspected ACS patient without reflex nitrate use.",
+    "rationale": "Correct answer: D. A: Nitroglycerin can worsen severe hypotension and should not be given reflexively. B: Exertion increases myocardial oxygen demand in an unstable patient. C: Delaying ECG evaluation risks missing time-sensitive acute coronary syndrome. D: Obtain urgent assessment/ECG and emergency help; question nitrates with marked hypotension.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Nitroglycerin can worsen severe hypotension and should not be given reflexively.",
+      "b": "Exertion increases myocardial oxygen demand in an unstable patient.",
+      "c": "Delaying ECG evaluation risks missing time-sensitive acute coronary syndrome.",
+      "d": "Obtain urgent assessment/ECG and emergency help; question nitrates with marked hypotension."
+    }
   },
   {
     "draft_id": "NEW-20261012-036",
@@ -167,13 +227,19 @@
     "option_c": "Collect urine from the drainage bag after it has sat overnight",
     "option_d": "Administer an unprescribed antibiotic",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): Assess for sepsis and notify the clinician promptly. Clinical reasoning: recognizes possible catheter-associated infection with systemic deterioration; delays care; produces poor specimen; is outside nursing scope.",
+    "rationale": "Correct answer: A. A: Fever and confusion in a catheterized patient require evaluation for infection/sepsis and urgent clinician notification. B: Attributing fever to routine catheter use risks missing serious infection. C: Sampling stagnant drainage-bag urine risks contamination and misleading results. D: Giving an unprescribed antibiotic is outside independent nursing prescribing authority.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Fever and confusion in a catheterized patient require evaluation for infection/sepsis and urgent clinician notification.",
+      "b": "Attributing fever to routine catheter use risks missing serious infection.",
+      "c": "Sampling stagnant drainage-bag urine risks contamination and misleading results.",
+      "d": "Giving an unprescribed antibiotic is outside independent nursing prescribing authority."
+    }
   },
   {
     "draft_id": "NEW-20261012-037",
@@ -183,13 +249,19 @@
     "option_c": "Ask the patient to walk",
     "option_d": "Restart the infusion at a higher rate",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): Clamp the catheter promptly, assess the patient, and summon help for possible air embolism. Clinical reasoning: removes assessment capacity; limits potential air entry and addresses emergency; C/D are unsafe.",
+    "rationale": "Correct answer: B. A: Removing monitoring equipment does not address acute breathing compromise. B: Stop potential air entry by clamping the implicated central line when appropriate and summon emergency support. C: Walking is unsafe in acute dyspnea. D: Increasing infusion can worsen the emergency rather than address its cause.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Removing monitoring equipment does not address acute breathing compromise.",
+      "b": "Stop potential air entry by clamping the implicated central line when appropriate and summon emergency support.",
+      "c": "Walking is unsafe in acute dyspnea.",
+      "d": "Increasing infusion can worsen the emergency rather than address its cause."
+    }
   },
   {
     "draft_id": "NEW-20261012-038",
@@ -199,13 +271,19 @@
     "option_c": "Keep NPO, assess urgently, and report possible perforation",
     "option_d": "Apply a heating pad and discharge",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Keep NPO, assess urgently, and report possible perforation. Clinical reasoning: A and D risk worsening perforation; is inappropriate before emergency evaluation; recognizes possible peritonitis.",
+    "rationale": "Correct answer: C. A: Enemas are contraindicated when perforation or peritonitis is suspected. B: Oral feeding is inappropriate before evaluating possible acute abdomen. C: Keep NPO and escalate suspected perforation/peritonitis with urgent assessment. D: Heat and discharge delay evaluation and could worsen injury.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Enemas are contraindicated when perforation or peritonitis is suspected.",
+      "b": "Oral feeding is inappropriate before evaluating possible acute abdomen.",
+      "c": "Keep NPO and escalate suspected perforation/peritonitis with urgent assessment.",
+      "d": "Heat and discharge delay evaluation and could worsen injury."
+    }
   },
   {
     "draft_id": "NEW-20261012-039",
@@ -215,13 +293,19 @@
     "option_c": "Provide routine oral care",
     "option_d": "Stop further exposure, assess airway immediately, and activate emergency assistance",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Stop further exposure, assess airway immediately, and activate emergency assistance. Clinical reasoning: confuses angioedema with benign cough; increases exposure; delays treatment; addresses potentially fatal airway obstruction.",
+    "rationale": "Correct answer: D. A: ACE-inhibitor angioedema is not the benign cough adverse effect. B: Further dosing can worsen exposure to a drug causing airway swelling. C: Oral care does not address impending upper-airway obstruction. D: Stop the suspected medication and activate airway emergency support immediately.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "ACE-inhibitor angioedema is not the benign cough adverse effect.",
+      "b": "Further dosing can worsen exposure to a drug causing airway swelling.",
+      "c": "Oral care does not address impending upper-airway obstruction.",
+      "d": "Stop the suspected medication and activate airway emergency support immediately."
+    }
   },
   {
     "draft_id": "NEW-20261012-040",
@@ -231,13 +315,19 @@
     "option_c": "No action until cardiac enzymes return",
     "option_d": "Independent ambulation to determine exercise tolerance",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): Urgent synchronized cardioversion by the emergency team. Clinical reasoning: addresses hemodynamically unstable tachyarrhythmia; B/C/D delay emergency treatment.",
+    "rationale": "Correct answer: A. A: Hypotension, chest pain and altered mentation with rapid atrial fibrillation indicate hemodynamic instability; anticipate urgent synchronized cardioversion. B: Oral-only treatment with discharge is inappropriate during shock. C: Waiting for cardiac biomarkers delays treatment of an unstable rhythm. D: Exercise testing is unsafe in unstable tachyarrhythmia.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Hypotension, chest pain and altered mentation with rapid atrial fibrillation indicate hemodynamic instability; anticipate urgent synchronized cardioversion.",
+      "b": "Oral-only treatment with discharge is inappropriate during shock.",
+      "c": "Waiting for cardiac biomarkers delays treatment of an unstable rhythm.",
+      "d": "Exercise testing is unsafe in unstable tachyarrhythmia."
+    }
   },
   {
     "draft_id": "NEW-20261012-041",
@@ -247,13 +337,19 @@
     "option_c": "Encourage coughing",
     "option_d": "Administer oral antibiotics alone",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): Activate emergency response and prepare for immediate decompression. Clinical reasoning: delays emergency treatment; addresses obstructive shock; C/D cannot relieve accumulating intrathoracic pressure.",
+    "rationale": "Correct answer: B. A: Do not delay suspected tension pneumothorax decompression for routine imaging. B: Severe hypotension and unilateral absent breath sounds suggest obstructive shock requiring immediate emergency decompression support. C: Coughing cannot relieve tension physiology. D: Antibiotics do not decompress an acutely pressurized pleural space.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Do not delay suspected tension pneumothorax decompression for routine imaging.",
+      "b": "Severe hypotension and unilateral absent breath sounds suggest obstructive shock requiring immediate emergency decompression support.",
+      "c": "Coughing cannot relieve tension physiology.",
+      "d": "Antibiotics do not decompress an acutely pressurized pleural space."
+    }
   },
   {
     "draft_id": "NEW-20261012-042",
@@ -263,13 +359,19 @@
     "option_c": "Treat as possible febrile neutropenia, urgently notify the team, and prepare prescribed cultures and empiric antimicrobials",
     "option_d": "Give rectal suppositories for fever",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Treat as possible febrile neutropenia, urgently notify the team, and prepare prescribed cultures and empiric antimicrobials. Clinical reasoning: A/B/D increase infection/trauma risk or delay care; supports time-sensitive evaluation and treatment.",
+    "rationale": "Correct answer: C. A: Live vaccination does not treat febrile neutropenia. B: Crowded spaces increase pathogen exposure and delay urgent care. C: Fever with ANC below 500/mm³ warrants urgent cultures and prompt prescribed empiric antimicrobial treatment. D: Rectal procedures may traumatize mucosa in neutropenia/thrombocytopenia and do not address infection.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Live vaccination does not treat febrile neutropenia.",
+      "b": "Crowded spaces increase pathogen exposure and delay urgent care.",
+      "c": "Fever with ANC below 500/mm³ warrants urgent cultures and prompt prescribed empiric antimicrobial treatment.",
+      "d": "Rectal procedures may traumatize mucosa in neutropenia/thrombocytopenia and do not address infection."
+    }
   },
   {
     "draft_id": "NEW-20261012-043",
@@ -279,13 +381,19 @@
     "option_c": "Schedule routine follow-up next month",
     "option_d": "Urgently assess and report possible intracranial bleeding",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Urgently assess and report possible intracranial bleeding. Clinical reasoning: impairs platelet function; risks trauma; delays care; recognizes potential life-threatening hemorrhage.",
+    "rationale": "Correct answer: D. A: Aspirin impairs platelet function and may worsen bleeding. B: Contact sports increase traumatic bleeding risk in severe thrombocytopenia. C: Routine follow-up is too slow for possible intracranial hemorrhage. D: Severe headache and visual change with platelets 18,000/mm³ require urgent neurologic/bleeding evaluation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Aspirin impairs platelet function and may worsen bleeding.",
+      "b": "Contact sports increase traumatic bleeding risk in severe thrombocytopenia.",
+      "c": "Routine follow-up is too slow for possible intracranial hemorrhage.",
+      "d": "Severe headache and visual change with platelets 18,000/mm³ require urgent neurologic/bleeding evaluation."
+    }
   },
   {
     "draft_id": "NEW-20261012-044",
@@ -295,13 +403,19 @@
     "option_c": "Uncomplicated seasonal rhinitis",
     "option_d": "An expected benign baseline finding",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): Acute chest syndrome requiring urgent oxygenation assessment and treatment. Clinical reasoning: fits acute chest syndrome; fails to account for hypoxemia/infiltrate; C/D dismiss serious complications.",
+    "rationale": "Correct answer: A. A: New infiltrate, fever, chest pain and hypoxemia in sickle cell disease fit acute chest syndrome requiring urgent treatment. B: Uncomplicated vaso-occlusive pain does not explain a new infiltrate and hypoxemia. C: Rhinitis does not account for acute pulmonary infiltrate with hypoxemia. D: These findings are not benign expected baseline findings.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "New infiltrate, fever, chest pain and hypoxemia in sickle cell disease fit acute chest syndrome requiring urgent treatment.",
+      "b": "Uncomplicated vaso-occlusive pain does not explain a new infiltrate and hypoxemia.",
+      "c": "Rhinitis does not account for acute pulmonary infiltrate with hypoxemia.",
+      "d": "These findings are not benign expected baseline findings."
+    }
   },
   {
     "draft_id": "NEW-20261012-045",
@@ -311,13 +425,19 @@
     "option_c": "Oral antacid",
     "option_d": "Sodium restriction",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): IV magnesium sulfate as ordered while treating the unstable rhythm. Clinical reasoning: may worsen electrolyte instability; can treat torsades and does not replace ACLS interventions; C/D are irrelevant.",
+    "rationale": "Correct answer: B. A: Potassium-wasting treatment may worsen hypokalemia and QT prolongation. B: IV magnesium is a key therapy for torsades de pointes while rhythm stability and ACLS requirements are addressed. C: An antacid does not treat polymorphic ventricular tachycardia. D: Sodium restriction is unrelated to the immediate rhythm emergency.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Potassium-wasting treatment may worsen hypokalemia and QT prolongation.",
+      "b": "IV magnesium is a key therapy for torsades de pointes while rhythm stability and ACLS requirements are addressed.",
+      "c": "An antacid does not treat polymorphic ventricular tachycardia.",
+      "d": "Sodium restriction is unrelated to the immediate rhythm emergency."
+    }
   },
   {
     "draft_id": "NEW-20261012-046",
@@ -327,13 +447,19 @@
     "option_c": "RN assesses unstable admission; delegate routine dressing care based on scope and facility policy",
     "option_d": "Delay both patients' care",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): RN assesses unstable admission; delegate routine dressing care based on scope and facility policy. Clinical reasoning: A/B delegate RN-level assessment and care planning; matches complexity to licensure and local scope; delays necessary care.",
+    "rationale": "Correct answer: C. A: Initial assessment of an unstable patient cannot be assigned to assistive personnel. B: An LPN/LVN does not independently assume the RN's comprehensive initial assessment or plan of care for an unstable patient. C: An RN should assess instability; suitable predictable tasks may be assigned by local scope and competency. D: Delaying both assignments is unnecessary and potentially unsafe.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Initial assessment of an unstable patient cannot be assigned to assistive personnel.",
+      "b": "An LPN/LVN does not independently assume the RN's comprehensive initial assessment or plan of care for an unstable patient.",
+      "c": "An RN should assess instability; suitable predictable tasks may be assigned by local scope and competency.",
+      "d": "Delaying both assignments is unnecessary and potentially unsafe."
+    }
   },
   {
     "draft_id": "NEW-20261012-047",
@@ -343,13 +469,19 @@
     "option_c": "Document without seeing the patient",
     "option_d": "Immediately assess the patient and initiate respiratory escalation as indicated",
     "correct_answer": "d",
-    "rationale": "Correct answer (D): Immediately assess the patient and initiate respiratory escalation as indicated. Clinical reasoning: exceeds assistant scope; B/C delay response to hypoxemia; requires RN assessment and intervention.",
+    "rationale": "Correct answer: D. A: Assistive staff do not independently adjust prescribed medications. B: Delaying evaluation risks worsening severe hypoxemia. C: Documentation without assessment does not treat respiratory compromise. D: The RN must promptly assess oxygenation and initiate/escalate appropriate clinical care.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Assistive staff do not independently adjust prescribed medications.",
+      "b": "Delaying evaluation risks worsening severe hypoxemia.",
+      "c": "Documentation without assessment does not treat respiratory compromise.",
+      "d": "The RN must promptly assess oxygenation and initiate/escalate appropriate clinical care."
+    }
   },
   {
     "draft_id": "NEW-20261012-048",
@@ -359,13 +491,19 @@
     "option_c": "Delegate interpretation of renal laboratory trends",
     "option_d": "Let the assistant independently change IV fluids",
     "correct_answer": "a",
-    "rationale": "Correct answer (A): Review the documented output promptly and investigate a significant decrease. Clinical reasoning: fulfills supervision and assessment accountability; omits evaluation; C/D require clinical judgment beyond assistive scope.",
+    "rationale": "Correct answer: A. A: Reviewing intake/output trends and responding to concerning changes remains the RN's accountability after delegation. B: Unreviewed documentation may conceal worsening acute kidney injury. C: Interpreting renal laboratory results is nursing clinical judgment, not an assistive task. D: Assistive staff cannot independently change prescribed IV fluids.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Reviewing intake/output trends and responding to concerning changes remains the RN's accountability after delegation.",
+      "b": "Unreviewed documentation may conceal worsening acute kidney injury.",
+      "c": "Interpreting renal laboratory results is nursing clinical judgment, not an assistive task.",
+      "d": "Assistive staff cannot independently change prescribed IV fluids."
+    }
   },
   {
     "draft_id": "NEW-20261012-049",
@@ -375,13 +513,19 @@
     "option_c": "Wait for spontaneous improvement",
     "option_d": "Force an oral feeding to calm the patient",
     "correct_answer": "b",
-    "rationale": "Correct answer (B): Call for emergency airway assistance, support oxygenation and follow fresh-tracheostomy rescue protocol. Clinical reasoning: risks false passage in an immature tract; prioritizes expert airway rescue; C/D delay or worsen harm.",
+    "rationale": "Correct answer: B. A: Blind reinsertion of a fresh tracheostomy risks creating a false passage. B: Immediate expert airway help and oxygenation support are necessary; use the fresh-tracheostomy rescue algorithm. C: Waiting risks hypoxic injury. D: Feeding is unsafe in acute airway distress.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Blind reinsertion of a fresh tracheostomy risks creating a false passage.",
+      "b": "Immediate expert airway help and oxygenation support are necessary; use the fresh-tracheostomy rescue algorithm.",
+      "c": "Waiting risks hypoxic injury.",
+      "d": "Feeding is unsafe in acute airway distress."
+    }
   },
   {
     "draft_id": "NEW-20261012-050",
@@ -391,12 +535,18 @@
     "option_c": "Stop the transfusion, maintain IV access with new saline tubing, and summon urgent help",
     "option_d": "Wait for a rash to spread before acting",
     "correct_answer": "c",
-    "rationale": "Correct answer (C): Stop the transfusion, maintain IV access with new saline tubing, and summon urgent help. Clinical reasoning: increases exposure; delays anaphylaxis care; stops exposure and supports emergency management; delays treatment.",
+    "rationale": "Correct answer: C. A: Increasing the transfusion rate worsens exposure to a suspected severe reaction. B: Continuing a suspected transfusion reaction delays lifesaving intervention. C: Stop blood administration, maintain IV access with fresh saline tubing and summon emergency support for possible anaphylaxis. D: Waiting for progressive rash delays treatment of respiratory compromise.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
     "course_key": null,
     "exam_key": null,
-    "editorial_status": "draft_requires_rationale_option_mapping_review"
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Increasing the transfusion rate worsens exposure to a suspected severe reaction.",
+      "b": "Continuing a suspected transfusion reaction delays lifesaving intervention.",
+      "c": "Stop blood administration, maintain IV access with fresh saline tubing and summon emergency support for possible anaphylaxis.",
+      "d": "Waiting for progressive rash delays treatment of respiratory compromise."
+    }
   }
 ]
