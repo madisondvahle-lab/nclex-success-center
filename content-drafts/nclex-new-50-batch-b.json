@@ -67,13 +67,13 @@
   },
   {
     "draft_id": "NEW-20261012-029",
-    "stem": "A burn patient with circumferential full-thickness chest burns has increasing difficulty ventilating despite appropriate initial measures. Which complication should the nurse suspect?",
-    "option_a": "Hypothyroidism",
-    "option_b": "Restrictive chest-wall eschar impairing expansion",
-    "option_c": "Simple seasonal allergy",
-    "option_d": "Isolated mild dehydration",
+    "stem": "A burn patient with circumferential full-thickness chest burns develops increasing peak airway pressures and poor chest expansion despite a patent endotracheal tube. Which complication best explains these findings?",
+    "option_a": "Progressive ventilator-associated pneumonia",
+    "option_b": "Restrictive chest-wall eschar limiting thoracic expansion",
+    "option_c": "Bronchospasm caused by an inhaled medication",
+    "option_d": "Pulmonary edema from fluid resuscitation",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Hypothyroidism does not cause abrupt mechanical limitation of chest expansion. B: Rigid circumferential chest eschar can restrict ventilation and requires urgent evaluation for escharotomy. C: Allergic rhinitis cannot explain ventilatory restriction from full-thickness burns. D: Mild dehydration does not explain the mechanical chest restriction.",
+    "rationale": "Correct answer: B. A: Pneumonia can impair oxygenation but does not usually explain rigid mechanical chest restriction in this specific context. B: Circumferential inelastic eschar can restrict chest expansion and may require urgent burn-team assessment for escharotomy after other causes are excluded. C: Bronchospasm can increase airway pressures, but circumferential chest rigidity and poor expansion point to mechanical restriction. D: Pulmonary edema can impair gas exchange, but the restrictive chest wall findings specifically suggest tight eschar.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -81,11 +81,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Hypothyroidism does not cause abrupt mechanical limitation of chest expansion.",
-      "b": "Rigid circumferential chest eschar can restrict ventilation and requires urgent evaluation for escharotomy.",
-      "c": "Allergic rhinitis cannot explain ventilatory restriction from full-thickness burns.",
-      "d": "Mild dehydration does not explain the mechanical chest restriction."
-    }
+      "a": "Pneumonia can impair oxygenation but does not usually explain rigid mechanical chest restriction in this specific context.",
+      "b": "Circumferential inelastic eschar can restrict chest expansion and may require urgent burn-team assessment for escharotomy after other causes are excluded.",
+      "c": "Bronchospasm can increase airway pressures, but circumferential chest rigidity and poor expansion point to mechanical restriction.",
+      "d": "Pulmonary edema can impair gas exchange, but the restrictive chest wall findings specifically suggest tight eschar."
+    },
+    "reference_urls": [
+      "https://ameriburn.org/wp-content/uploads/2019/08/2018-abls-providermanual.pdf"
+    ]
   },
   {
     "draft_id": "NEW-20261012-030",
@@ -400,13 +403,13 @@
   },
   {
     "draft_id": "NEW-20261012-044",
-    "stem": "A client with sickle cell disease has fever, chest pain, hypoxemia, and a new pulmonary infiltrate. What complication is most concerning?",
-    "option_a": "Acute chest syndrome requiring urgent oxygenation assessment and treatment",
-    "option_b": "Routine vaso-occlusive pain without pulmonary involvement",
-    "option_c": "Uncomplicated seasonal rhinitis",
-    "option_d": "An expected benign baseline finding",
+    "stem": "A client with sickle cell disease develops fever, chest pain, hypoxemia, and a new pulmonary infiltrate. Which complication should the nurse recognize?",
+    "option_a": "Acute chest syndrome",
+    "option_b": "Uncomplicated vaso-occlusive pain crisis",
+    "option_c": "Pulmonary embolism without further evaluation",
+    "option_d": "Isolated bacterial bronchitis",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: New infiltrate, fever, chest pain and hypoxemia in sickle cell disease fit acute chest syndrome requiring urgent treatment. B: Uncomplicated vaso-occlusive pain does not explain a new infiltrate and hypoxemia. C: Rhinitis does not account for acute pulmonary infiltrate with hypoxemia. D: These findings are not benign expected baseline findings.",
+    "rationale": "Correct answer: A. A: The combination of a new infiltrate and acute respiratory symptoms in sickle cell disease meets the clinical picture of acute chest syndrome and needs urgent evaluation. B: Pain crisis may coexist, but it does not account for the new infiltrate and hypoxemia. C: Pulmonary embolism is a differential diagnosis, but the described syndrome fulfills criteria for acute chest syndrome; further evaluation may still be indicated. D: Bronchitis typically does not explain a new pulmonary infiltrate with hypoxemia in this high-risk patient.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -414,11 +417,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "New infiltrate, fever, chest pain and hypoxemia in sickle cell disease fit acute chest syndrome requiring urgent treatment.",
-      "b": "Uncomplicated vaso-occlusive pain does not explain a new infiltrate and hypoxemia.",
-      "c": "Rhinitis does not account for acute pulmonary infiltrate with hypoxemia.",
-      "d": "These findings are not benign expected baseline findings."
-    }
+      "a": "The combination of a new infiltrate and acute respiratory symptoms in sickle cell disease meets the clinical picture of acute chest syndrome and needs urgent evaluation.",
+      "b": "Pain crisis may coexist, but it does not account for the new infiltrate and hypoxemia.",
+      "c": "Pulmonary embolism is a differential diagnosis, but the described syndrome fulfills criteria for acute chest syndrome; further evaluation may still be indicated.",
+      "d": "Bronchitis typically does not explain a new pulmonary infiltrate with hypoxemia in this high-risk patient."
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/sickle-cell/complications/acute-chest-syndrome.html"
+    ]
   },
   {
     "draft_id": "NEW-20261012-045",
