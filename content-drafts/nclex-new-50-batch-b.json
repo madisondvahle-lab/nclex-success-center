@@ -548,12 +548,12 @@
   {
     "draft_id": "NEW-20261012-050",
     "stem": "A client receiving a blood transfusion develops itching, wheezing, and facial swelling. Which nursing action is priority?",
-    "option_a": "Increase the rate to complete the unit",
-    "option_b": "Give oral fluids and continue transfusion",
-    "option_c": "Stop the transfusion, maintain IV access with new saline tubing, and summon urgent help",
-    "option_d": "Wait for a rash to spread before acting",
+    "option_a": "Stop the transfusion and use an antihistamine alone before considering resumption",
+    "option_b": "Slow the transfusion while observing whether wheezing resolves",
+    "option_c": "Stop the transfusion, activate emergency assistance, maintain IV access without flushing donor blood, and prepare IM epinephrine per protocol",
+    "option_d": "Stop the transfusion but delay treatment until imaging excludes circulatory overload",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Increasing the transfusion rate worsens exposure to a suspected severe reaction. B: Continuing a suspected transfusion reaction delays lifesaving intervention. C: Stop blood administration, maintain IV access with fresh saline tubing and summon emergency support for possible anaphylaxis. D: Waiting for progressive rash delays treatment of respiratory compromise.",
+    "rationale": "Correct answer: C. A: Antihistamine-only treatment and possible restart are inappropriate when wheezing and facial swelling suggest anaphylaxis. B: Slowing the transfusion continues allergen exposure. C: Stop blood immediately, assess airway and circulation, call emergency help, preserve IV access without flushing donor blood, and prepare IM epinephrine. D: Imaging should not delay treatment of suspected anaphylaxis.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -561,10 +561,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Increasing the transfusion rate worsens exposure to a suspected severe reaction.",
-      "b": "Continuing a suspected transfusion reaction delays lifesaving intervention.",
-      "c": "Stop blood administration, maintain IV access with fresh saline tubing and summon emergency support for possible anaphylaxis.",
-      "d": "Waiting for progressive rash delays treatment of respiratory compromise."
-    }
+      "a": "Bronchospasm and facial swelling indicate a severe reaction; antihistamines alone do not treat anaphylaxis and restarting blood would be unsafe.",
+      "b": "Reducing the rate continues exposure to the triggering blood product while respiratory compromise is developing.",
+      "c": "Immediately stop the blood, assess and support the airway and circulation, summon emergency assistance, maintain IV access without flushing donor blood, and prepare intramuscular epinephrine per protocol.",
+      "d": "Other causes of acute dyspnea can be investigated, but imaging must not delay emergency anaphylaxis treatment."
+    },
+    "reference_urls": [
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/severe-allergic-reactions",
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/management-of-suspected-reactions"
+    ]
   }
 ]
