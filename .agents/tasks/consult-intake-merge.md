@@ -4,7 +4,7 @@
 Code is implemented; the database migration must be applied before the admin UI can merge profiles. Production records have not been changed.
 
 ## Admin workflow
-- On `madison-leads.html`, choose the profile to keep and the duplicate profile to merge into it.
+- In the Admin home Prospects section (`madison-admin.html#prospects`), choose the profile to keep and the duplicate profile to merge into it.
 - The confirmation dialog shows both names, emails, and profile IDs.
 - Kept profile values take precedence; blank fields are filled from the duplicate, and multi-value preference fields are combined.
 - The merge moves CPR attempts, consultation-prep resources, private report metadata, consult diagnostic results, and consultation bookings.
