@@ -41,14 +41,14 @@ Based on the reference nursing-school testing platform sidebar:
 | Feature in Reference | Current Status in Success Center | Decision & Recommendation |
 |---|---|---|
 | **Lectures** | Exists as **Study Guides & Modules** (`#modules-nursing`) and **Learning Library** (`#modules-nclex`). | **Wired directly.** Dynamic labeling adapts to student type. |
-| **QBank -> Create Test** | **GAP.** Practice sets are currently assigned by Madison by course exam (e.g. NUR 321 Exam 2) or mixed NCLEX review sets. An arbitrary multi-topic student custom test builder does not yet exist. | **Omitted from sidebar.** Implementing an arbitrary test builder requires backend queries, topic multi-select UI, and question selection rules without exposing unpublished items. |
+| **QBank -> Create Test** | NCLEX students can build a practice set from one or more active bank topics, or leave topics unselected for a mixed set. Students and tutors can choose 10, 20, 30, 40, 50, 60, 75, or 100 questions. Course-based nursing students continue to see only their assigned course materials and sets. | **Implemented in `supplemental-practice.html` and `madison-assignments.html`.** The builder reads active bank items only; no database migration was needed. |
 | **QBank -> Previous Tests** | Exists as **Recent quiz scores** (`student_supplemental_practice_results`) and **CAT / Readiness trend** (`student_assessment_uploads`). | **Wired directly.** Direct anchors to `#previous-tests`. |
 | **QBank -> Performance** | Exists as **Recent quiz scores** (Nursing) and **Category Breakdown & CAT trend** (NCLEX). | **Wired directly.** Direct anchors to `#performance`. |
 | **QBank -> Search** | **GAP.** Existing search pages (`question-bank-review.html`, `madison-questions.html`) are administrative tutor tools that expose answer keys, rationales, and full answer sets. | **Omitted from sidebar.** Exposing administrative search to students would compromise the question bank and NCLEX practice integrity. A student question search would require a separate RLS-protected endpoint stripping answer keys. |
 | **QBank -> Notes** | **GAP.** No student-facing saved notes or bookmarking system currently exists in the database schema or UI. | **Omitted from sidebar.** Requires schema additions (`student_question_notes` or `student_study_notes` table with student RLS) before exposing in navigation. |
 
 ## Current state / context
-- The branch is `madisondvahle-lab-student-qbank-sidebar`.
+- The original student navigation shell and QBank assignment presentation remain in place.
 - `student-nav.css` and `student-nav.js` are self-contained and reusable across future student pages.
 - Desktop breakpoint: fixed 256px sidebar at `min-width: 961px`.
 - Mobile breakpoint: hidden sidebar, visible `.portal-mobile-bar` at `<= 960px`, off-canvas drawer with backdrop, auto-closing on link selection or ESC press.
@@ -64,9 +64,6 @@ Based on the reference nursing-school testing platform sidebar:
 - None. No database schema changes, migrations, or third-party service updates needed.
 
 ## Handoff / remaining work
-- When student test generation ("Create Test") is prioritized:
-  1. Build a custom test configuration modal/page supporting topic multi-select, question count, and timer options.
-  2. Wire into a new QBank nav item `nav-item-create-test`.
 - When student question bookmarking/notes ("Notes") is prioritized:
   1. Create a Supabase table `student_question_notes` with `student_id` RLS.
   2. Add note-taking capability in `ExamUI`.
