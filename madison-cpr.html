@@ -4,74 +4,191 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <title>NCLEX CPR tracker · Study With Madison, RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--good:#2f7d4f;--mid:#b7791f;--low:#b4443c}*{box-sizing:border-box}
-    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .shell{width:min(1100px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
-    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
-    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}
-    h1{font:400 clamp(2rem,5vw,3rem) Georgia,serif;margin:34px 0 8px}h2{font:400 1.5rem Georgia,serif;margin:0 0 12px}h3{margin:18px 0 8px;font-size:1rem}
-    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
-    .panel{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}.meta{color:var(--muted);font-size:.88rem;line-height:1.5}
-    button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer}
-    button.secondary{background:transparent;color:var(--ink)}button.danger{background:transparent;color:var(--low);border-color:var(--low)}
-    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
-    input,select,textarea{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
-    textarea{min-height:70px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 16px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row label{flex:1;min-width:220px;margin:0}
+    /* CPR tracker specific styles */
+    .panel-body, #trend-panel{padding:20px 22px}
+    #trend-panel h2{margin:0 0 14px;font:700 1.25rem Georgia,serif;color:var(--admin-navy)}
+    #trend-panel h3{margin:18px 0 8px;font:700 1.05rem Georgia,serif;color:var(--admin-navy)}
+    .meta{color:var(--admin-muted);font-size:.85rem;line-height:1.5}
+    label{display:block;font-weight:700;font-size:.78rem;margin-bottom:12px;color:var(--admin-navy)}
+    input,select,textarea{width:100%;margin-top:5px;padding:10px 12px;border:1px solid var(--admin-line);background:#fff;font:inherit;color:var(--admin-navy);font-size:.88rem}
+    textarea{min-height:70px;resize:vertical}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+    .row label{flex:1;min-width:220px;margin:0}
     .chip{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:4px 8px;border:1px solid;white-space:nowrap}
-    .c-above{color:var(--good);border-color:var(--good);background:#e6f3ea}.c-near{color:var(--mid);border-color:var(--mid);background:#fbf1de}
-    .c-below{color:var(--low);border-color:var(--low);background:#f8e4e1}.c-none{color:var(--muted);border-color:var(--line);background:#f4f4f2}
-    table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-    th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.scroll{overflow-x:auto}
-    .att{border:1px solid var(--line);background:#fff;padding:16px;margin:10px 0}.att header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
-    .att h3{margin:0}.doms{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:6px 18px;margin-top:12px}
-    .doms div{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px dotted var(--line);padding:4px 0;font-size:.88rem}
-    .up{color:var(--good)}.dn{color:var(--low)}.status{font-size:.85rem;color:var(--muted)}.status.err{color:var(--low);font-weight:800}
+    .c-above{color:var(--admin-green);border-color:var(--admin-green);background:#e6f3ea}
+    .c-near{color:var(--admin-amber);border-color:var(--admin-amber);background:var(--admin-amber-bg)}
+    .c-below{color:#b4443c;border-color:#b4443c;background:#f8e4e1}
+    .c-none{color:var(--admin-muted);border-color:var(--admin-line);background:#f4f4f2}
+    table{width:100%;border-collapse:collapse;font-size:.88rem}
+    th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--admin-line);vertical-align:middle}
+    th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--admin-muted)}
+    .scroll{overflow-x:auto}
+    .att{border:1px solid var(--admin-line);background:#fff;padding:16px;margin:10px 0}
+    .att header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+    .att h3{margin:0;font:700 1.15rem Georgia,serif;color:var(--admin-navy)}
+    .doms{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:6px 18px;margin-top:12px}
+    .doms div{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px dotted var(--admin-line);padding:4px 0;font-size:.88rem}
+    .up{color:var(--admin-green);font-weight:700}
+    .dn{color:#b4443c;font-weight:700}
+    .status{font-size:.85rem;color:var(--admin-muted);margin-top:8px}
+    .status.err{color:#b4443c;font-weight:800}
     .focus li{margin:4px 0}
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening your private CPR tracker…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation">
-      <a class="admin-home" href="madison-admin.html">Admin home</a>
-      <a href="madison-leads.html">Leads &amp; intake</a><a href="madison-consultations.html">Consultations</a><a href="madison-diagnostic.html">Consult diagnostic</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html" aria-current="page">CPR tracker</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
-    </nav></header>
-    <p class="eyebrow" style="margin-top:34px">Private admin view</p>
-    <h1 style="margin-top:6px">NCLEX CPR tracker.</h1>
-    <p class="meta">Enter each Candidate Performance Report: test date, number of items, and where every test-plan category landed (above, near, or below the passing standard). For NCLEX prep clients and prospects only; nursing-school students are not listed.</p>
-    <section class="panel">
-      <div class="row">
-        <label>Client or prospect<select id="person"></select></label>
-        <button class="secondary" id="new-person" type="button">+ Add person</button>
+  <div class="admin-app hidden" id="app">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="madison-cpr.html" aria-current="page">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+          <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
       </div>
-      <form id="person-form" class="hidden" style="margin-top:14px"><div class="grid"><label>Full name<input id="pn" required maxlength="120"></label><label>Email (optional)<input id="pe" type="email"></label></div><button type="submit">Add person</button> <button class="secondary" type="button" id="pcancel">Cancel</button></form>
-      <p class="status" id="status" role="status"></p>
-    </section>
-    <div id="detail" class="hidden">
-      <p class="meta" id="link-box"></p>
-      <section class="panel" id="trend-panel"></section>
-      <section class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Attempts</h2><button id="add" type="button">+ Add CPR</button></div><div id="attempts"></div></section>
-      <section class="panel hidden" id="form-panel"><h2 id="form-title">Add a CPR</h2>
-        <form id="form">
-          <div class="grid">
-            <label>Test date<input id="f-date" type="date" required></label>
-            <label>NCLEX items received<input id="f-count" type="number" min="1" max="265" placeholder="e.g. 85, 112, 150"></label>
-            <label>Result<select id="f-result"><option value="">Not specified</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="unknown">Unknown</option></select></label>
-            <label>How the exam ended<select id="f-end"><option value="">Not specified</option><option value="computer_shut_off">Computer shut off normally</option><option value="maximum_items">Maximum items reached</option><option value="ran_out_of_time">Ran out of time</option><option value="does_not_remember">Does not remember</option></select></label>
-            <label>Testing time (minutes)<input id="f-min" type="number" min="1"></label>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Students &amp; Clinical · CPR tracker</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="madison-diagnostic.html">Consult diagnostic</a>
+          <a class="button secondary" href="shared-progress.html">Student workspace</a>
+          <a class="button secondary" href="student-onboarding.html">New student</a>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <header class="dashboard-heading">
+          <div>
+            <h1>NCLEX CPR tracker</h1>
+            <p>Enter each Candidate Performance Report: test date, number of items, and where every test-plan category landed (above, near, or below the passing standard). For NCLEX prep clients and prospects only.</p>
           </div>
-          <h3>Test-plan categories</h3><p class="meta" style="margin:0 0 8px">Have the report as a PDF or a flat, well-lit screenshot? <label style="display:inline;font-weight:800;text-decoration:underline;cursor:pointer">Read it for me<input type="file" id="f-read" accept="application/pdf,image/png,image/jpeg" style="display:none"></label> <span id="f-read-msg"></span></p><div class="grid" id="f-doms"></div>
-          <label>Notes<textarea id="f-notes" maxlength="2000"></textarea></label>
-          <button type="submit" id="save">Save CPR</button> <button class="secondary" type="button" id="cancel">Cancel</button>
-        </form>
-      </section>
+          <div class="quick-actions">
+            <a class="button secondary" href="assessment-history-admin.html">Outside assessments →</a>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="CPR tracker overview">
+          <article class="metric">
+            <strong>Candidate Reports</strong>
+            <span>Official NCLEX CPR</span>
+            <small>Above, Near, or Below Passing Standard</small>
+          </article>
+          <article class="metric">
+            <strong>Adaptive Weights</strong>
+            <span>Client Needs Blueprint</span>
+            <small>8 NCLEX test-plan categories</small>
+          </article>
+          <article class="metric">
+            <strong>Multi-Attempt Trend</strong>
+            <span>Shift Over Time</span>
+            <small>Track domain movements between tests</small>
+          </article>
+          <article class="metric">
+            <strong>Document OCR</strong>
+            <span>Auto-fill Reader</span>
+            <small>Reads PDF &amp; screenshot score reports</small>
+          </article>
+        </section>
+
+        <!-- Person selector panel -->
+        <section class="dashboard-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Client or prospect selection</h2>
+              <p>Choose an existing student or add a new consultation prospect to track</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <label>Client or prospect<select id="person"></select></label>
+              <button class="button secondary" id="new-person" type="button">+ Add person</button>
+            </div>
+            <form id="person-form" class="hidden" style="margin-top:14px">
+              <div class="grid">
+                <label>Full name<input id="pn" required maxlength="120"></label>
+                <label>Email (optional)<input id="pe" type="email"></label>
+              </div>
+              <p style="margin-top:10px">
+                <button class="button primary" type="submit">Add person</button>
+                <button class="button secondary" type="button" id="pcancel">Cancel</button>
+              </p>
+            </form>
+            <p class="status" id="status" role="status"></p>
+          </div>
+        </section>
+
+        <div id="detail" class="hidden">
+          <p class="meta" id="link-box" style="margin-bottom:14px"></p>
+          <section class="dashboard-panel" id="trend-panel"></section>
+          
+          <section class="dashboard-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Attempts</h2>
+                <p>Recorded NCLEX exam attempts and performance standards</p>
+              </div>
+              <button class="button primary" id="add" type="button">+ Add CPR</button>
+            </div>
+            <div class="panel-body">
+              <div id="attempts"></div>
+            </div>
+          </section>
+
+          <section class="dashboard-panel hidden" id="form-panel">
+            <div class="panel-heading">
+              <div>
+                <h2 id="form-title">Add a CPR</h2>
+                <p>Record exam date, item count, and category standards</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <form id="form">
+                <div class="grid">
+                  <label>Test date<input id="f-date" type="date" required></label>
+                  <label>NCLEX items received<input id="f-count" type="number" min="1" max="265" placeholder="e.g. 85, 112, 150"></label>
+                  <label>Result<select id="f-result"><option value="">Not specified</option><option value="pass">Pass</option><option value="fail">Fail</option><option value="unknown">Unknown</option></select></label>
+                  <label>How the exam ended<select id="f-end"><option value="">Not specified</option><option value="computer_shut_off">Computer shut off normally</option><option value="maximum_items">Maximum items reached</option><option value="ran_out_of_time">Ran out of time</option><option value="does_not_remember">Does not remember</option></select></label>
+                  <label>Testing time (minutes)<input id="f-min" type="number" min="1"></label>
+                </div>
+                <h3 style="margin:18px 0 6px;font:700 1.1rem Georgia,serif">Test-plan categories</h3>
+                <p class="meta" style="margin:0 0 12px">Have the report as a PDF or a flat, well-lit screenshot? <label style="display:inline;font-weight:800;text-decoration:underline;cursor:pointer">Read it for me<input type="file" id="f-read" accept="application/pdf,image/png,image/jpeg" style="display:none"></label> <span id="f-read-msg"></span></p>
+                <div class="grid" id="f-doms"></div>
+                <label style="margin-top:14px">Notes<textarea id="f-notes" maxlength="2000"></textarea></label>
+                <p style="margin-top:16px">
+                  <button class="button primary" type="submit" id="save">Save CPR</button>
+                  <button class="button secondary" type="button" id="cancel">Cancel</button>
+                </p>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  <script src="category-names.js"></script>
   <script src="assessment-import.js"></script>

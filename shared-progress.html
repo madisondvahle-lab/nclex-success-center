@@ -28,6 +28,16 @@
 .access-action strong{display:block;font-size:.82rem}
 .access-action span{display:block;margin-top:4px;color:inherit;opacity:.78;font-size:.72rem;line-height:1.4}
 @media(max-width:560px){.access-actions{grid-template-columns:1fr}}
+.workspace-jump{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
+.workspace-jump a{flex:0 0 auto;padding:8px 11px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:.76rem;font-weight:800;text-decoration:none}
+.workspace-jump a:hover,.workspace-jump a:focus-visible{background:var(--soft);outline:2px solid var(--ink);outline-offset:2px}
+.activity-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;padding:12px 14px;background:var(--soft)}
+.activity-row[hidden]{display:none}
+.activity-row h3{margin:0;font-size:.95rem;line-height:1.3}
+.activity-row p{margin:5px 0 0;color:var(--muted);font-size:.78rem;line-height:1.45}
+.activity-kind{align-self:start;padding:4px 7px;background:#fff;color:var(--muted);font-size:.65rem;font-weight:800;text-transform:uppercase}
+.activity-score{grid-column:2;grid-row:1 / span 2;align-self:center;font:400 1.05rem Georgia,serif;white-space:nowrap}
+.activity-more{justify-self:start;margin-top:8px}
 
 .snapshot-section{padding:14px 0;border-top:1px solid var(--line)}
 .snapshot-section:first-child{padding-top:0;border-top:0}
@@ -120,15 +130,153 @@
   .ov-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 16px}.ov-stats div{background:#fff;border:1px solid var(--line);padding:10px 12px}.ov-stats b{display:block;font:400 1.6rem Georgia,serif}.ov-stats span{color:var(--muted);font-size:.75rem}
 .ov-table{width:100%;border-collapse:collapse;font-size:.88rem}.ov-table th,.ov-table td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.ov-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.ov-scroll{overflow-x:auto}
 .ov-chip{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 7px;border:1px solid;white-space:nowrap}.ov-g{color:#2f7d4f;border-color:#2f7d4f;background:#e6f3ea}.ov-a{color:#b7791f;border-color:#b7791f;background:#fbf1de}.ov-r{color:#b4443c;border-color:#b4443c;background:#f8e4e1}.ov-n{color:#567087;border-color:#d8e1db;background:#f4f4f2}
+
+  .activity-review-wrap{grid-column:1/-1;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .activity-review-details{font-size:.82rem}
+  .activity-review-summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;color:var(--ink);user-select:none;padding:4px 0}
+  .activity-review-summary:hover{color:var(--accent)}
+  .activity-review-summary-text{display:flex;align-items:center;gap:6px}
+  .activity-review-chevron{font-size:.85rem;color:var(--muted);transition:transform .15s ease}
+  .activity-review-details[open] .activity-review-chevron{transform:rotate(90deg)}
+  .activity-review-body{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+  .review-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .review-filter-btn{background:#fff;border:1px solid var(--line);padding:4px 10px;font-size:.75rem;font-weight:600;border-radius:4px;cursor:pointer;color:var(--ink)}
+  .review-filter-btn:hover{border-color:var(--ink)}
+  .review-filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .review-items-list{display:flex;flex-direction:column;gap:10px}
+  .review-item{background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:.8rem}
+  .review-item.item-missed{border-color:#f2c7c3;background:#fffdfd}
+  .review-item.item-correct{border-color:#c0e0cc;background:#fdfffe}
+  .review-item-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+  .review-item-title{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .review-item-num{font-weight:800;color:var(--muted);font-size:.75rem}
+  .review-item-meta{color:var(--muted);font-size:.72rem}
+  .review-badge{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:3px}
+  .badge-missed{color:#b4443c;background:#f8e4e1;border:1px solid #f2c7c3}
+  .badge-correct{color:#2f7d4f;background:#e6f3ea;border:1px solid #c0e0cc}
+  .review-answers{display:flex;flex-direction:column;gap:4px;background:var(--soft);padding:8px 10px;border-radius:4px;margin:6px 0;font-size:.78rem}
+  .review-ans strong{font-weight:700}
+  .ans-selected{color:#8b221a}
+  .ans-correct{color:#23613b}
+  .ans-selected-correct{color:#23613b}
+  .review-stem{margin:8px 0 6px;font-size:.82rem;line-height:1.45;color:var(--ink)}
+  .review-options-list{display:flex;flex-direction:column;gap:4px;margin:6px 0 8px}
+  .review-option{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:4px;font-size:.78rem;background:#fafaf9;border:1px solid #edece8}
+  .review-option.opt-correct-choice{background:#edf7f0;border-color:#b9e2c4;color:#1e5333;font-weight:600}
+  .review-option.opt-wrong-choice{background:#fdf0ee;border-color:#f4c2be;color:#851d16}
+  .opt-letter{font-weight:700;min-width:18px}
+  .opt-text{flex:1}
+  .opt-tag{font-size:.68rem;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:6px;white-space:nowrap}
+  .opt-tag.correct{background:#2f7d4f;color:#fff}
+  .opt-tag.wrong{background:#b4443c;color:#fff}
+  .review-rationale{margin-top:8px;padding:8px 10px;background:#f5f7f9;border-left:3px solid #567087;border-radius:0 4px 4px 0;font-size:.78rem;line-height:1.45;color:#2c3e50}
+  .review-constraint-note{margin-top:6px;font-size:.72rem;font-style:italic}
+  :root{--admin-navy:#17344f;--admin-cream:#f5f3ed;--admin-paper:#fffefa;--admin-rose:#a94f67;--admin-muted:#536a7d;--admin-line:#cbd5d1;--admin-soft:#eeeae1}
+  body{background:var(--admin-cream);color:var(--admin-navy)}
+  .admin-app{min-height:100vh;display:grid;grid-template-columns:232px minmax(0,1fr)}
+  .admin-sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:24px;padding:22px 14px;background:var(--admin-navy);color:#fff}
+  .sidebar-brand{padding:0 10px 17px;border-bottom:1px solid #ffffff35;font:700 1rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}
+  .sidebar-brand small{font-size:.7em;opacity:.78}
+  .sidebar-caption{margin:0 10px 5px;color:#d0dce4;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .sidebar-nav{display:grid;gap:3px}
+  .sidebar-nav a,.sidebar-sign-out{display:flex;align-items:center;min-height:38px;padding:8px 10px;border:1px solid transparent;background:none;color:#eff4f7;text-align:left;text-decoration:none;font:700 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .sidebar-nav a:hover,.sidebar-nav a:focus-visible,.sidebar-nav a[aria-current="page"]{background:#ffffff16;border-color:#ffffff30;color:#fff;outline:none}
+  .sidebar-secondary{margin-top:auto}
+  .sidebar-sign-out{width:100%;cursor:pointer}
+  .admin-main{min-width:0}
+  .admin-topbar{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 28px;background:var(--admin-paper);border-bottom:1px solid var(--admin-line)}
+  .topbar-context{font-size:.78rem;font-weight:700;color:var(--admin-muted)}
+  .topbar-actions,.quick-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .topbar-actions a,.quick-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-navy);text-decoration:none;font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .topbar-actions a.primary,.quick-actions a.primary{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+  .topbar-actions a:hover,.quick-actions a:hover{border-color:var(--admin-navy)}
+  .dashboard{width:min(1440px,100%);margin:auto;padding:27px 28px 54px}
+  .dashboard-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}
+  .dashboard-heading h1{margin:0;font:700 2.15rem/1.1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.045em}
+  .dashboard-heading p{margin:7px 0 0;color:var(--admin-muted);font-size:.82rem;line-height:1.5}
+  .student-select{display:grid;gap:5px;min-width:min(290px,100%);color:var(--admin-muted);font-size:.66rem;font-weight:800}
+  .student-picker{width:100%;min-height:38px;margin:0;padding:0 10px;border-color:var(--admin-line);background:var(--admin-paper);font:700 .76rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .workspace-jump{position:sticky;top:62px;z-index:3;display:flex;gap:6px;overflow-x:auto;margin:0 -4px 16px;padding:8px 4px;border:0;background:var(--admin-cream)}
+  .workspace-jump a{flex:0 0 auto;padding:8px 10px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-muted);font-size:.69rem;font-weight:750;text-decoration:none}
+  .workspace-jump a:hover,.workspace-jump a:focus-visible{border-color:var(--admin-navy);color:var(--admin-navy);outline:2px solid var(--admin-navy);outline-offset:1px}
+  .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0 0 18px}
+  .stats .stat{min-height:84px;padding:13px 15px;border-color:var(--admin-line);background:var(--admin-paper)}
+  .stats .stat strong{font:700 1.35rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+  .stats .stat span{margin-top:6px;color:var(--admin-muted);font-size:.7rem;font-weight:700}
+  .card{border-color:var(--admin-line);background:var(--admin-paper);padding:18px}
+  .card.coach-only{border-top-width:1px;margin-top:0;padding-top:18px}
+  .card h2{font:700 1.05rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.025em}
+  .card-head{align-items:center;margin-bottom:14px}
+  .card-head .eyebrow{margin-bottom:5px;font-size:.59rem;letter-spacing:.12em}
+  .grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding-bottom:30px}
+  .access-overview{margin-bottom:14px}
+  .access-actions{margin-top:14px;padding-top:14px}
+  .access-action{font:inherit}
+  .access-action strong{font-size:.75rem}
+  .muted{color:var(--admin-muted)}
+  .button{min-height:38px;padding:0 13px;background:var(--admin-navy);font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .button:hover{background:#294d68}
+  .loading{background:var(--admin-cream);color:var(--admin-muted)}
+  .sidebar-sign-out:hover,.sidebar-sign-out:focus-visible{background:#ffffff16;border-color:#ffffff30;outline:none}
+  .client-need,.system-need,.focus,.focus-analysis,.insight,.coach-weak-row,.review-rationale,.practice-card{border:1px solid var(--admin-line);border-radius:0}
+  .focus.high{background:#fff3f1;border-color:#b04e61}
+  .focus.medium{background:#fff8e8;border-color:#b88b52}
+  .focus.maintenance{background:#f1f7f1;border-color:#5d826c}
+  .coach-weak-row.repeated{border-color:#b04e61}
+  @media(max-width:1080px){.admin-topbar,.dashboard{padding-left:20px;padding-right:20px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:820px){.admin-app{grid-template-columns:1fr}.admin-sidebar{position:static;height:auto;gap:12px;padding:13px 16px}.sidebar-brand{padding:0 3px 11px}.sidebar-nav{display:flex;overflow-x:auto;gap:4px}.sidebar-nav a,.sidebar-sign-out{flex:0 0 auto;min-height:34px;padding:7px 9px}.sidebar-caption,.sidebar-secondary{display:none}.sidebar-sign-out{width:auto}.admin-topbar{position:static}.workspace-jump{top:0}.grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}.dashboard{padding:21px 14px 36px}.dashboard-heading{align-items:flex-start;flex-direction:column}.dashboard-heading h1{font-size:1.75rem}.student-select{width:100%}.workspace-jump{position:static;gap:5px}.workspace-jump a{padding:8px;font-size:.66rem}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stats .stat{min-height:76px;padding:11px}.stats .stat strong{font-size:1.2rem}.grid{grid-template-columns:1fr}.card{padding:15px}.card-head{padding:0}.topbar-actions{justify-content:flex-start}.topbar-actions a{padding:0 9px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
-  <div class="loading" id="loading">Opening shared progress…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html" aria-current="page">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out">Sign out</button></nav></header>
-    <section class="hero"><p class="eyebrow" id="role-label">Shared coaching workspace</p><h1 id="title">Your assessment progress.</h1><p id="intro"></p><select class="student-picker" id="student-picker" aria-label="Choose a student"></select></section>
-    <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Target NCLEX date</span></article><article class="stat"><strong>—</strong><span>Average report score</span></article><article class="stat"><strong>—</strong><span>Uploaded reports</span></article><article class="stat"><strong>—</strong><span>Shared focus areas</span></article></section>
-    <section class="card hidden" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
+  <div class="loading" id="loading">Opening student workspace…</div>
+  <main class="admin-app hidden" id="app">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · ADMIN</small></div>
+      <div>
+        <p class="sidebar-caption">Workspace</p>
+        <nav class="sidebar-nav" aria-label="Primary admin navigation">
+          <a href="madison-admin.html">Dashboard</a>
+          <a href="madison-admin.html#directory">Students</a>
+          <a href="#profile-overview" aria-current="page">Student workspace</a>
+          <a href="madison-consultations.html">Consultations</a>
+          <a href="madison-assignments.html" id="nav-assignments">Assignments</a>
+          <a href="assessment-history-admin.html">Assessments</a>
+          <a href="question-bank-review.html">Question bank</a>
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance</a>
+        </nav>
+      </div>
+      <div class="sidebar-secondary">
+        <p class="sidebar-caption">More tools</p>
+        <nav class="sidebar-nav" aria-label="Additional admin tools">
+          <a href="madison-cpr.html">CPR tracker</a>
+          <a href="madison-diagnostic.html">Consult diagnostic</a>
+          <a href="student-onboarding.html">Student onboarding</a>
+        </nav>
+      </div>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <span class="topbar-context">Private tutoring workspace</span>
+        <nav class="topbar-actions" aria-label="Quick actions">
+          <a class="primary" href="madison-admin.html">Admin home</a>
+          <a href="student-onboarding.html">Add student</a>
+          <a href="student-onboarding.html">New intake</a>
+        </nav>
+      </header>
+      <div class="dashboard">
+        <section class="dashboard-heading" id="profile-overview">
+          <div><h1 id="title">Student workspace</h1><p id="intro"></p></div>
+          <label class="student-select">Selected student<select class="student-picker" id="student-picker" aria-label="Choose a student"></select></label>
+        </section>
+    <nav class="workspace-jump coach-only" id="workspace-jump" aria-label="Student workspace sections">
+      <a href="#profile-overview">Overview</a><a href="#summary">Performance</a><a href="#portal-activity-card">Practice activity</a><a href="#access-overview">Assignments</a><a href="#reports-card">Reports</a><a href="#coach-notes">Session notes</a>
+    </nav>
+    <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Latest score</span></article><article class="stat"><strong>—</strong><span>Previous score</span></article><article class="stat"><strong>—</strong><span>Change</span></article><article class="stat"><strong>—</strong><span>Best score</span></article><article class="stat"><strong>—</strong><span>Until NCLEX</span></article></section>
+    <section class="card hidden access-overview" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
       <article class="card full hidden" id="overview-card"><div class="card-head"><div><p class="eyebrow">Client overview</p><h2>Where the evidence agrees</h2></div><span class="label" id="overview-label">NCLEX prep</span></div><div id="overview-body"><p class="muted">Loading…</p></div></article>
       <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT &amp; readiness exams</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
@@ -148,14 +296,19 @@
       <article class="card full hidden" id="system-needs-card"><div class="card-head"><div><p class="eyebrow">UWorld System Needs</p><h2>Your content-system priorities</h2></div><span class="label">Shared view</span></div><p class="client-needs-copy" id="system-needs-source"></p><div class="system-needs-grid" id="system-needs"></div><p class="client-needs-copy" style="margin:16px 0 0"></p></article>
       <article class="card full hidden" id="practice-plan-card"><div class="card-head"><div><p class="eyebrow">Practice priorities</p><h2>Patterns we&apos;re seeing</h2></div><span class="label">Shared view</span></div><div class="practice-grid" id="practice-suggestions"></div></article>
       <article class="card full" hidden style="display:none"><div class="card-head"><div><p class="eyebrow">Individualized analysis</p><h2>Your priority map</h2></div><span class="label">Shared view</span></div><div class="focus-list" id="focus"><p class="empty">No priorities yet.</p></div></article>
-      <article class="card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
+      <article class="card" id="reports-card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
       <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. For a batch, group similar reports together and leave date and score blank unless they apply to every file.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cat">CAT</option><option value="readiness_exam">Readiness exam</option><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
       <article class="card full coach-only" id="discuss-card" style="display:none"><div class="card-head"><div><p class="eyebrow">Consult prep</p><h2>Questions to discuss <span id="discuss-n"></span></h2></div><span class="label">Tutor only</span></div><div class="upload-list" id="discuss-list"></div></article>
       <article class="card full coach-only" id="coach-notes"><div class="card-head"><div><p class="eyebrow">Coach notes</p><h2>Private session notes</h2></div><span class="label">Tutor only</span></div><form id="coach-note-form"><label>New note<textarea id="coach-note" required maxlength="4000" placeholder="Private note for your next session or follow-up."></textarea></label><button class="button" type="submit">Save private note</button><p class="muted" id="coach-note-message" role="status"></p></form><div class="upload-list" id="coach-notes-list" style="margin-top:20px"></div></article>
     </section>
+      </div>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="in-house-item-bank.js"></script>
+  <script src="diagnostic-question-expansion.js"></script>
+  <script src="consult-diagnostic-bank.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -234,7 +387,7 @@
         return matchesLink({link:text})||matchesToken(text);
       });
       const matchingPractice=(practice||[]).filter(item=>{
-        const text=(String(item.set_title||'')+' '+String(item.title||'')+' '+String(item.set_key||'')+' '+String(item.set_id||'')).toLowerCase();
+        const text=(String(item.practice_title||'')+' '+String(item.practice_key||'')).toLowerCase();
         return matchesToken(text);
       });
       const events=[];
@@ -280,7 +433,7 @@
       };
       const groupHtml=(title,rows)=>rows.length?'<p class="eyebrow coach-assign-group">'+esc(title)+'</p>'+rows.map(rowHtml).join(''):'';
       $('access-items').innerHTML=total
-        ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets &amp; diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
+        ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets & diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
         :'<span class="muted">Use Manage access & assignments to add work.</span>';
       $('manage-access').href='madison-assignments.html?student='+encodeURIComponent(student.id);
       $('preview-student').href='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
@@ -470,47 +623,551 @@
         </section>
       `;
     }
-    function renderSupplementalResults(results){
-      const existing=document.getElementById('supplemental-results-card');
+
+    const authoritativeBank=new Map(),dbQuestionsCache=new Map(),attemptResponsesCache=new Map(),practiceReviewCache=new Map();
+    let diagnosticParsedPromise=null;
+
+    function initStaticAuthoritativeBanks(){
+      if(authoritativeBank.size>0)return;
+      (window.IN_HOUSE_ITEM_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      (window.DIAGNOSTIC_EXPANSION||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      (window.CONSULT_DIAGNOSTIC_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+    }
+
+    async function ensureDiagnosticBanksLoaded(){
+      initStaticAuthoritativeBanks();
+      if(!diagnosticParsedPromise){
+        diagnosticParsedPromise=(async()=>{
+          try{
+            const res=await fetch('diagnostic.html');
+            if(!res.ok)return;
+            const html=await res.text();
+            const wStub={IN_HOUSE_ITEM_BANK:[],DIAGNOSTIC_EXPANSION:[]};
+            const matchQb=html.match(/const QUESTION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
+            if(matchQb){
+              const fn=new Function('window','return '+matchQb[1].replace(/;$/,''));
+              const qb=fn(wStub);
+              (qb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
+            }
+            const matchRem=html.match(/const REMEDIATION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
+            if(matchRem){
+              const fnRem=new Function('return '+matchRem[1].replace(/;$/,''));
+              const rb=fnRem();
+              (rb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
+            }
+          }catch(_){}
+        })();
+      }
+      await diagnosticParsedPromise;
+    }
+
+    function findAuthoritativeItem(itemId){
+      if(!itemId)return null;
+      initStaticAuthoritativeBanks();
+      if(authoritativeBank.has(itemId))return authoritativeBank.get(itemId);
+      if(dbQuestionsCache.has(itemId))return dbQuestionsCache.get(itemId);
+      if(itemId.includes(':')){
+        const [parentId,subId]=itemId.split(':');
+        const parent=authoritativeBank.get(parentId)||dbQuestionsCache.get(parentId);
+        if(parent&&Array.isArray(parent.questions)){
+          const sub=parent.questions.find(sq=>(sq.qid||sq.id)===subId);
+          if(sub){
+            return {
+              id:itemId,
+              stem:(parent.caseIntro?`[Case Intro: ${parent.caseIntro}]\n\n`:'')+sub.stem,
+              options:sub.options,
+              correct:sub.correct,
+              rationale:sub.rationale,
+              type:sub.type||parent.type,
+              blueprint:parent.blueprint,
+              category:parent.category,
+              difficulty:parent.difficulty
+            };
+          }
+        }
+      }
+      return null;
+    }
+
+    function getRationaleText(rat){
+      if(!rat)return null;
+      if(typeof rat==='string')return rat.trim()||null;
+      if(Array.isArray(rat))return rat.filter(Boolean).join('\n\n');
+      if(typeof rat==='object'){
+        if(typeof rat.correct==='string'&&rat.correct.trim())return rat.correct.trim();
+        if(rat.condition||rat.actions||rat.outcomes||rat.wrong){
+          const p=[];
+          if(rat.condition)p.push(`Condition: ${rat.condition}`);
+          if(rat.actions)p.push(`Actions: ${rat.actions}`);
+          if(rat.outcomes)p.push(`Parameters/Outcomes: ${rat.outcomes}`);
+          if(rat.wrong)p.push(`Incorrect choices: ${rat.wrong}`);
+          return p.join('\n\n');
+        }
+        if(rat.general){
+          const p=[rat.general];
+          if(rat.options&&typeof rat.options==='object'){
+            Object.entries(rat.options).forEach(([k,v])=>{if(v)p.push(`${k}: ${v}`)});
+          }
+          return p.join('\n\n');
+        }
+        if(rat.rationale&&typeof rat.rationale==='string')return rat.rationale.trim();
+        try{return JSON.stringify(rat,null,2)}catch(_){return String(rat)}
+      }
+      return String(rat);
+    }
+
+    function formatBowtiePart(indices,options,label){
+      const arr=indices==null?[]:Array.isArray(indices)?indices:[indices];
+      const items=arr.map(i=>{
+        const text=options?.[i];
+        return text?esc(text):`Option ${Number(i)+1}`;
+      });
+      return `<strong>${esc(label)}:</strong> ${items.join(', ')||'None selected'}`;
+    }
+
+    function formatAnswerDisplay(val,bankItem){
+      if(val===null||val===undefined)return '<span class="muted">— (Not recorded)</span>';
+      if(typeof val==='object'&&!Array.isArray(val)&&(val.left!==undefined||val.center!==undefined||val.right!==undefined)){
+        const p=[];
+        if(val.center!==undefined)p.push(formatBowtiePart(val.center,bankItem?.centerOptions,bankItem?.centerLabel||'Condition'));
+        if(val.left!==undefined)p.push(formatBowtiePart(val.left,bankItem?.leftOptions,bankItem?.leftLabel||'Actions'));
+        if(val.right!==undefined)p.push(formatBowtiePart(val.right,bankItem?.rightOptions,bankItem?.rightLabel||'Parameters'));
+        return p.join('<br>');
+      }
+      if(Array.isArray(val)){
+        if(!val.length)return '<span class="muted">None selected</span>';
+        return val.map(idx=>{
+          if(typeof idx==='number'){
+            const letter=String.fromCharCode(65+idx);
+            const optText=bankItem?.options?.[idx];
+            return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+          }
+          return esc(String(idx));
+        }).join('<br>');
+      }
+      if(typeof val==='number'){
+        const letter=String.fromCharCode(65+val);
+        const optText=bankItem?.options?.[val];
+        return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+      }
+      if(typeof val==='string'&&/^[a-d]$/i.test(val.trim())){
+        const letter=val.trim().toUpperCase();
+        const optIdx=letter.charCodeAt(0)-65;
+        const optText=bankItem?.options?.[optIdx]||bankItem?.['option_'+letter.toLowerCase()];
+        return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+      }
+      if(typeof val==='object'){
+        try{return esc(JSON.stringify(val))}catch(_){return esc(String(val))}
+      }
+      return esc(String(val));
+    }
+
+    function renderOptionsList(bankItem,selectedVal,correctVal){
+      if(!bankItem)return '';
+      if(bankItem.type==='bowtie')return renderBowtieOptionsList(bankItem,selectedVal,correctVal);
+      if(!Array.isArray(bankItem.options)||!bankItem.options.length)return '';
+
+      const toSet=v=>{
+        if(v===null||v===undefined)return new Set();
+        if(Array.isArray(v))return new Set(v.map(Number));
+        if(typeof v==='number')return new Set([v]);
+        if(typeof v==='string'&&/^[a-d]$/i.test(v.trim()))return new Set([v.trim().toLowerCase().charCodeAt(0)-97]);
+        return new Set();
+      };
+      const selectedIndices=toSet(selectedVal);
+      const correctIndices=toSet(correctVal);
+
+      return '<div class="review-options-list">'+bankItem.options.map((opt,idx)=>{
+        const letter=String.fromCharCode(65+idx);
+        const isSel=selectedIndices.has(idx);
+        const isCor=correctIndices.has(idx);
+        let marker='',cls='review-option';
+        if(isCor&&isSel){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Selected correct</span>';
+        }else if(isCor&&selectedIndices.size>0){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Correct (Student omitted)</span>';
+        }else if(isCor){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Correct</span>';
+        }else if(isSel){
+          cls+=' opt-wrong-choice';
+          marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>';
+        }
+        return `<div class="${cls}"><span class="opt-letter">${letter}.</span> <span class="opt-text">${esc(opt)}</span>${marker}</div>`;
+      }).join('')+'</div>';
+    }
+
+    function renderBowtieOptionsList(bankItem,selectedVal,correctVal){
+      const sel=selectedVal||{};
+      const cor=correctVal||{left:bankItem.correctLeft,center:bankItem.correctCenter,right:bankItem.correctRight};
+      const renderSec=(title,opts,sVal,cVal)=>{
+        if(!opts||!opts.length)return '';
+        const sSet=new Set((Array.isArray(sVal)?sVal:[sVal]).filter(x=>x!=null).map(Number));
+        const cSet=new Set((Array.isArray(cVal)?cVal:[cVal]).filter(x=>x!=null).map(Number));
+        const rows=opts.map((opt,idx)=>{
+          const isSel=sSet.has(idx),isCor=cSet.has(idx);
+          let marker='',cls='review-option';
+          if(isCor&&isSel){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Selected correct</span>'}
+          else if(isCor&&sSet.size>0){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Correct (Student omitted)</span>'}
+          else if(isCor){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Correct</span>'}
+          else if(isSel){cls+=' opt-wrong-choice';marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>'}
+          return `<div class="${cls}"><span class="opt-letter">•</span> <span class="opt-text">${esc(opt)}</span>${marker}</div>`;
+        }).join('');
+        return `<div style="margin-top:6px;"><strong>${esc(title)}</strong><div class="review-options-list">${rows}</div></div>`;
+      };
+      return `<div class="review-bowtie-wrap">
+        ${renderSec(bankItem.centerLabel||'Condition',bankItem.centerOptions,sel.center,cor.center)}
+        ${renderSec(bankItem.leftLabel||'Actions to Take',bankItem.leftOptions,sel.left,cor.left)}
+        ${renderSec(bankItem.rightLabel||'Parameters to Monitor',bankItem.rightOptions,sel.right,cor.right)}
+      </div>`;
+    }
+
+    window.retryAttemptReview=function(attemptId){
+      const container=document.getElementById('review-body-'+attemptId);
+      if(container)loadAndRenderAttemptReview(attemptId,container);
+    };
+
+    async function preloadDbQuestions(itemIds){
+      const missingUuids=itemIds.filter(id=>!findAuthoritativeItem(id)&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+      if(!missingUuids.length)return;
+      const {data:dbItems}=await db.from('questions').select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,question_no,topic,nclex_category').in('id',missingUuids);
+      (dbItems||[]).forEach(q=>{
+        dbQuestionsCache.set(q.id,{
+          id:q.id,
+          stem:q.stem,
+          options:[q.option_a,q.option_b,q.option_c,q.option_d].filter(Boolean),
+          correct:q.correct_answer?q.correct_answer.toLowerCase().charCodeAt(0)-97:null,
+          rationale:q.rationale,
+          topic:q.topic,
+          category:q.nclex_category
+        });
+      });
+    }
+
+    async function loadAndRenderAttemptReview(attemptId,container){
+      if(!attemptId||!container)return;
+      container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
+      const {data:responses,error}=await db
+        .from('in_house_assessment_item_responses')
+        .select('id,attempt_id,item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
+        .eq('attempt_id',attemptId)
+        .order('answered_at',{ascending:true});
+
+      if(error){
+        container.innerHTML=`<div style="color:#b4443c;padding:6px 0;">
+          <strong>Item responses could not be loaded:</strong> ${esc(error.message||String(error))}
+          <br><button class="button secondary" type="button" style="margin-top:8px;padding:6px 10px;font-size:.75rem;" onclick="retryAttemptReview('${esc(attemptId)}')">Retry loading</button>
+        </div>`;
+        return;
+      }
+      if(!responses||!responses.length){
+        container.innerHTML='<p class="muted" style="margin:4px 0;">No question-level response records were found for this attempt.</p>';
+        return;
+      }
+
+      await ensureDiagnosticBanksLoaded();
+      await preloadDbQuestions(responses.map(r=>r.item_id));
+
+      const missedCount=responses.filter(r=>!r.is_correct).length;
+      const initialFilter=missedCount>0?'missed':'all';
+      attemptResponsesCache.set(attemptId,{responses,filter:initialFilter});
+      renderAttemptReviewHtml(attemptId,container);
+    }
+
+    function renderAttemptReviewHtml(attemptId,container){
+      const cached=attemptResponsesCache.get(attemptId);
+      if(!cached)return;
+      const {responses,filter}=cached;
+      const missedCount=responses.filter(r=>!r.is_correct).length;
+      const totalCount=responses.length;
+      const shownResponses=filter==='missed'?responses.filter(r=>!r.is_correct):responses;
+
+      let itemsHtml='';
+      if(!shownResponses.length){
+        itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this attempt).</p>';
+      }else{
+        itemsHtml=shownResponses.map(r=>{
+          const bankItem=findAuthoritativeItem(r.item_id);
+          const isCorrect=Boolean(r.is_correct);
+          const qNum=responses.indexOf(r)+1;
+          const category=r.nclex_category||r.blueprint||bankItem?.category||bankItem?.blueprint||'';
+          const topic=r.topic||bankItem?.topic||'';
+          const diff=r.difficulty||bankItem?.difficulty||'';
+          const qType=r.question_type||bankItem?.type||'';
+          const stem=bankItem?.stem||null;
+          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const optionsHtml=bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
+
+          return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
+            <div class="review-item-header">
+              <div class="review-item-title">
+                <span class="review-item-num">Q${qNum}</span>
+                <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${isCorrect?'✓ Correct':'✗ Missed'}</span>
+                <strong>${esc(r.item_id)}</strong>
+                ${qType?`<span class="focus-pill">${esc(String(qType).toUpperCase())}</span>`:''}
+                ${diff?`<span class="focus-pill">Diff: ${esc(diff)}</span>`:''}
+              </div>
+              ${category?`<div class="review-item-meta">${esc(category)}${topic?` · ${esc(topic)}`:''}</div>`:''}
+            </div>
+            <div class="review-answers">
+              ${!isCorrect?`<div class="review-ans ans-selected"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)}</div>`:''}
+              <div class="review-ans ans-correct"><strong>Correct answer:</strong> ${formatAnswerDisplay(r.correct_answer,bankItem)}</div>
+              ${isCorrect&&r.selected_answer!==null&&r.selected_answer!==undefined?`<div class="review-ans ans-selected-correct"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)} (Correct)</div>`:''}
+            </div>
+            ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Stored response metadata shown above.</p>'}
+            ${optionsHtml}
+            ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Clinical rationale not indexed in connected bank. Stored response metadata shown above.</p>'}
+          </article>`;
+        }).join('');
+      }
+
+      container.innerHTML=`
+        <div class="review-toolbar">
+          <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-attempt-filter="missed" data-attempt-id="${esc(attemptId)}">Missed only (${missedCount})</button>
+          <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-attempt-filter="all" data-attempt-id="${esc(attemptId)}">All questions (${totalCount})</button>
+        </div>
+        <div class="review-items-list">${itemsHtml}</div>
+      `;
+
+      container.querySelectorAll('[data-attempt-filter]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          cached.filter=btn.dataset.attemptFilter;
+          renderAttemptReviewHtml(attemptId,container);
+        });
+      });
+    }
+
+    async function loadAndRenderPracticeReview(eventItem,container){
+      if(!eventItem||!container)return;
+      const details=Array.isArray(eventItem.answerDetails)?eventItem.answerDetails:[];
+      const missedIds=Array.isArray(eventItem.missed)?eventItem.missed:[];
+
+      await ensureDiagnosticBanksLoaded();
+      const allIds=details.length?details.map(d=>d.id):missedIds;
+      await preloadDbQuestions(allIds);
+
+      const missedCount=details.length?details.filter(d=>!d.is_correct).length:missedIds.length;
+      const initialFilter=missedCount>0?'missed':'all';
+      const practiceId=String(eventItem.id||'practice-'+(eventItem.date||Math.random()));
+      practiceReviewCache.set(practiceId,{eventItem,filter:initialFilter});
+      renderPracticeReviewHtml(practiceId,container);
+    }
+
+    function renderPracticeReviewHtml(practiceId,container){
+      const cached=practiceReviewCache.get(practiceId);
+      if(!cached)return;
+      const {eventItem,filter}=cached;
+      const details=Array.isArray(eventItem.answerDetails)?eventItem.answerDetails:[];
+      const missedIds=Array.isArray(eventItem.missed)?eventItem.missed:[];
+
+      if(details.length){
+        const missedCount=details.filter(d=>!d.is_correct).length;
+        const totalCount=details.length;
+        const shown=filter==='missed'?details.filter(d=>!d.is_correct):details;
+
+        let itemsHtml='';
+        if(!shown.length){
+          itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this practice set).</p>';
+        }else{
+          itemsHtml=shown.map(d=>{
+            const bankItem=findAuthoritativeItem(d.id);
+            const isCorrect=Boolean(d.is_correct);
+            const qNum=details.indexOf(d)+1;
+            const stem=bankItem?.stem||null;
+            const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+            const optionsHtml=bankItem?renderOptionsList(bankItem,d.selected,d.correct):'';
+
+            return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
+              <div class="review-item-header">
+                <div class="review-item-title">
+                  <span class="review-item-num">Q${qNum}</span>
+                  <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${isCorrect?'✓ Correct':'✗ Missed'}</span>
+                  <strong>${esc(d.id)}</strong>
+                  ${d.category?`<span class="focus-pill">${esc(d.category)}</span>`:''}
+                </div>
+              </div>
+              <div class="review-answers">
+                ${!isCorrect?`<div class="review-ans ans-selected"><strong>Student selected:</strong> ${formatAnswerDisplay(d.selected,bankItem)}</div>`:''}
+                <div class="review-ans ans-correct"><strong>Correct answer:</strong> ${formatAnswerDisplay(d.correct,bankItem)}</div>
+                ${isCorrect&&d.selected!==null&&d.selected!==undefined?`<div class="review-ans ans-selected-correct"><strong>Student selected:</strong> ${formatAnswerDisplay(d.selected,bankItem)} (Correct)</div>`:''}
+              </div>
+              ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Stored answer details shown above.</p>'}
+              ${optionsHtml}
+              ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Clinical rationale not indexed in connected bank. Stored answer details shown above.</p>'}
+            </article>`;
+          }).join('');
+        }
+
+        container.innerHTML=`
+          <div class="review-toolbar">
+            <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-practice-filter="missed" data-practice-id="${esc(practiceId)}">Missed only (${missedCount})</button>
+            <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-practice-filter="all" data-practice-id="${esc(practiceId)}">All questions (${totalCount})</button>
+          </div>
+          <div class="review-items-list">${itemsHtml}</div>
+        `;
+
+        container.querySelectorAll('[data-practice-filter]').forEach(btn=>{
+          btn.addEventListener('click',()=>{
+            cached.filter=btn.dataset.practiceFilter;
+            renderPracticeReviewHtml(practiceId,container);
+          });
+        });
+      }else if(missedIds.length){
+        const itemsHtml=missedIds.map((id,index)=>{
+          const bankItem=findAuthoritativeItem(id);
+          const stem=bankItem?.stem||null;
+          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const optionsHtml=bankItem?renderOptionsList(bankItem,null,bankItem.correct):'';
+
+          return `<article class="review-item item-missed">
+            <div class="review-item-header">
+              <div class="review-item-title">
+                <span class="review-item-num">#${index+1}</span>
+                <span class="review-badge badge-missed">✗ Missed</span>
+                <strong>${esc(id)}</strong>
+              </div>
+            </div>
+            ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Missed question ID recorded.</p>'}
+            ${optionsHtml}
+            ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Question-level answer choices were not captured in this practice record. Missed question ID recorded.</p>'}
+          </article>`;
+        }).join('');
+
+        container.innerHTML=`
+          <div class="review-toolbar">
+            <span class="muted" style="font-size:.78rem;font-weight:700;">Missed question IDs (${missedIds.length}):</span>
+          </div>
+          <div class="review-items-list">${itemsHtml}</div>
+        `;
+      }else{
+        container.innerHTML='<p class="muted" style="margin:4px 0;">No missed questions recorded for this practice set.</p>';
+      }
+    }
+
+    function renderPortalActivity(attempts,results,attemptError,practiceError){
+      const existing=document.getElementById('portal-activity-card');
       if(existing)existing.remove();
-      if(!results.length)return;
-
+      const events=[
+        ...(attempts||[]).map(item=>({
+          id:item.id,
+          kind:'NCLEX Success Center assessment',
+          title:item.assessment_title||item.assessment_key||'Assessment',
+          mode:item.mode,
+          date:item.completed_at||item.created_at,
+          correct:item.correct_questions,
+          total:item.total_questions,
+          completed:!!item.completed_at,
+          isAssessment:true,
+          raw:item
+        })),
+        ...(results||[]).map(item=>({
+          id:item.id,
+          kind:'Practice set',
+          title:item.practice_title||'Practice',
+          date:item.completed_at,
+          correct:item.score,
+          total:item.total_questions,
+          categories:item.category_scores,
+          missed:item.missed_question_ids,
+          answerDetails:item.answer_details,
+          isAssessment:false,
+          raw:item
+        }))
+      ].sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));
       const card=document.createElement('article');
-      card.id='supplemental-results-card';
+      card.id='portal-activity-card';
       card.className='card full';
-
-      const attempts=results.slice(0,6).map(item=>{
-        const percent=Math.round(Number(item.score)/Number(item.total_questions)*100);
-
-        const categories=Object.entries(item.category_scores||{}).map(([name,data])=>{
+      const activityRows=events.map((item,index)=>{
+        const total=Number(item.total),correct=Number(item.correct);
+        const hasScore=Number.isFinite(total)&&total>0&&Number.isFinite(correct);
+        const percent=hasScore?Math.round(correct/total*100):null;
+        const result=hasScore?`${correct}/${total} correct · ${percent}%`:'In progress';
+        const categories=Object.entries(item.categories||{}).map(([name,data])=>{
           const correct=Number(data?.correct??0);
           const total=Number(data?.total??0);
           if(!total)return '';
           return `<span class="focus-pill">${esc(name)} · ${correct}/${total}</span>`;
         }).filter(Boolean).join('');
-
-        const missed=Array.isArray(item.missed_question_ids)
-          ? item.missed_question_ids
-          : [];
-
-        const missedDetail=isAdmin&&missed.length
-          ? `<p class="muted"><strong>Missed:</strong> ${esc(missed.join(', '))}</p>`
+        const missed=Array.isArray(item.missed)?item.missed:[];
+        const missedDetail=isAdmin&&missed.length&&!item.isAssessment
+          ? `<br><strong>Missed questions:</strong> ${esc(missed.join(', '))}`
           : '';
+        const mode=item.mode?` · ${esc(item.mode)}`:'';
 
-        return `<article class="upload">
-          <h3>${esc(item.practice_title)}</h3>
-          <p><strong>${esc(item.score)}/${esc(item.total_questions)} · ${esc(percent)}%</strong></p>
-          ${categories?`<div class="focus-meta">${categories}</div>`:''}
-          ${missedDetail}
-          <p class="muted">Completed ${esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.completed_at)))}</p>
+        const canReview=isAdmin&&(item.isAssessment?Boolean(item.id):(missed.length>0||(Array.isArray(item.answerDetails)&&item.answerDetails.length>0)));
+        let reviewLabel='Review questions';
+        if(item.isAssessment){
+          const mCount=(Number.isFinite(total)&&Number.isFinite(correct)&&total>=correct)?(total-correct):null;
+          reviewLabel=mCount!=null?`Review questions (${mCount} missed)`:'Review questions';
+        }else if(Array.isArray(item.answerDetails)&&item.answerDetails.length){
+          const mCount=item.answerDetails.filter(d=>!d.is_correct).length;
+          reviewLabel=`Review questions (${mCount} missed)`;
+        }else if(missed.length){
+          reviewLabel=`Review missed questions (${missed.length})`;
+        }
+
+        const reviewHtml=canReview?`
+          <div class="activity-review-wrap">
+            <details class="activity-review-details" id="review-details-${esc(item.id)}" data-attempt-id="${item.isAssessment?esc(item.id):''}" data-practice-id="${!item.isAssessment?esc(item.id):''}">
+              <summary class="activity-review-summary">
+                <span class="activity-review-summary-text">${reviewLabel}</span>
+                <span class="activity-review-chevron" aria-hidden="true">▸</span>
+              </summary>
+              <div class="activity-review-body" id="review-body-${esc(item.id)}">
+                <p class="muted" style="margin:4px 0;">Loading…</p>
+              </div>
+            </details>
+          </div>
+        `:'';
+
+        return `<article class="activity-row"${index>=8?' hidden data-extra-activity="true"':''}>
+          <div><span class="activity-kind">${esc(item.kind)}${mode}</span><h3>${esc(item.title)}</h3>
+          <p>${esc(fmtDateTime(item.date)||'Date unavailable')}${categories?`<br>${categories}`:''}${missedDetail}</p></div>
+          <strong class="activity-score">${esc(result)}</strong>
+          ${reviewHtml}
         </article>`;
       }).join('');
-
-      card.innerHTML='<div class="card-head"><div><p class="eyebrow">Supplemental practice</p><h2>Recent practice</h2></div><span class="label">Shared view</span></div><div class="upload-list">'+attempts+'</div>';
-
+      const errors=[attemptError&&`Portal assessments could not be loaded: ${attemptError.message||attemptError}`,practiceError&&`Practice results could not be loaded: ${practiceError.message||practiceError}`].filter(Boolean);
+      card.innerHTML=`<div class="card-head"><div><p class="eyebrow">Student activity</p><h2>Portal assessments &amp; practice</h2></div><span class="label">${events.length} record${events.length===1?'':'s'}</span></div>
+        ${errors.length?`<p class="empty">${errors.map(esc).join(' ')}</p>`:''}
+        <div class="upload-list">${activityRows||(!errors.length?'<p class="empty">No portal assessments or practice activity yet.</p>':'')}</div>
+        ${events.length>8?`<button class="link activity-more" id="show-more-activity" type="button">Show all ${events.length} records</button>`:''}`;
       const grid=document.querySelector('.grid');
       const anchor=document.getElementById('coach-review')||grid.lastElementChild;
       grid.insertBefore(card,anchor);
+      document.getElementById('show-more-activity')?.addEventListener('click',event=>{
+        document.querySelectorAll('[data-extra-activity]').forEach(row=>row.hidden=false);
+        event.currentTarget.remove();
+      });
+
+      card.querySelectorAll('.activity-review-details[data-attempt-id]').forEach(details=>{
+        const attemptId=details.dataset.attemptId;
+        if(!attemptId)return;
+        details.addEventListener('toggle',()=>{
+          if(details.open&&!details.dataset.loaded){
+            details.dataset.loaded='true';
+            const body=document.getElementById('review-body-'+attemptId);
+            loadAndRenderAttemptReview(attemptId,body);
+          }
+        });
+      });
+
+      card.querySelectorAll('.activity-review-details[data-practice-id]').forEach(details=>{
+        const practiceId=details.dataset.practiceId;
+        if(!practiceId)return;
+        details.addEventListener('toggle',()=>{
+          if(details.open&&!details.dataset.loaded){
+            details.dataset.loaded='true';
+            const body=document.getElementById('review-body-'+practiceId);
+            const eventItem=events.find(e=>String(e.id)===String(practiceId));
+            if(eventItem&&body){
+              loadAndRenderPracticeReview(eventItem,body);
+            }
+          }
+        });
+      });
     }
     async function openReport(path){const {data,error}=await db.storage.from('assessment-reports').createSignedUrl(path,60);if(error)return alert('This report could not be opened right now.');window.open(data.signedUrl,'_blank','noopener')}
     function renderUploads(items,insights,categories){const map=new Map(insights.map(item=>[item.assessment_id,item]));const categoriesByAssessment=new Map;categories.forEach(item=>categoriesByAssessment.set(item.assessment_id,[...(categoriesByAssessment.get(item.assessment_id)||[]),item]));$('report-count').textContent=`${items.length} report${items.length===1?'':'s'}`;$('uploads').innerHTML=items.length?items.map((item,index)=>{const insight=map.get(item.id);const chips=(categoriesByAssessment.get(item.id)||[]).map(category=>`${esc(category.category)} ${category.score==null?'':`· ${esc(category.score)}%`}`).join(' · ');const uploadedBy=item.fromHistory?'Entered by you':item.uploaded_by===session.user.id?'Uploaded by you':isAdmin?'Uploaded by student':'Uploaded by Madison';const title=item.report_label||`${item.platform} · ${item.assessment_type.replace('_',' ')}${item.attempt_number?` · Attempt ${item.attempt_number}`:''}`;return `<article class="upload"${index>=3?' style="display:none" data-extra-report="true"':''}><h3>${esc(title)}</h3><p>${esc(item.report_filename)} · ${esc(date(item.taken_on))}${item.overall_score!=null?` · ${esc(item.overall_score)}%`:''}</p><p class="muted">${uploadedBy}</p>${chips?`<p class="muted"><strong>Category snapshot:</strong> ${chips}</p>`:''}${insight?.shared_summary?`<div class="insight">${esc(insight.shared_summary)}</div>`:''}${item.report_path?`<button class="link" type="button" data-path="${esc(item.report_path)}">Open private report →</button>`:''}${isAdmin?`<button class="link" type="button" data-delete-report="${esc(item.id)}" style="color:#9b2c2c;margin-left:14px">Delete this report</button>`:''}</article>`}).join(''):'<p class="empty">No reports yet.</p>';if(items.length>3){
@@ -686,8 +1343,21 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     });
     async function loadStudent(target){
       student=target;
+      const assignHref='madison-assignments.html?student='+encodeURIComponent(student.id);
+      const previewHref='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
+      const navAssignments=$('nav-assignments')||document.querySelector('.sidebar-nav a[href^="madison-assignments.html"]');
+      if(navAssignments)navAssignments.href=assignHref;
+      if($('manage-access'))$('manage-access').href=assignHref;
+      if($('preview-student'))$('preview-student').href=previewHref;
       $('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';
       $('intro').textContent=isAdmin?'':'';
+      if(isAdmin){
+        const status=student.status?student.status[0].toUpperCase()+student.status.slice(1):'Status unavailable';
+        const isNursing=student.student_type&&!/nclex/i.test(student.student_type);
+        const program=isNursing?'Nursing school':'NCLEX prep';
+        const context=student.nclex_target_date?'Target NCLEX date '+date(student.nclex_target_date):isNursing?'Class- and exam-specific assignments below':'No target NCLEX date recorded';
+        $('intro').textContent=`${program} · ${status} · ${context}`;
+      }
       const [focus,uploads,insights,categories,practiceResults,access,modules,resources,notes,inhouse]=await Promise.all([
         db.from('student_focus_areas').select('*').eq('student_id',student.id).order('updated_at',{ascending:false}),
         db.from('student_assessment_uploads').select('*').eq('student_id',student.id).order('taken_on',{ascending:false}),
@@ -714,7 +1384,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       $('practice-plan-card').style.display='none';
       renderFocus(focus.data||[]);
       renderUploads(currentUploads,insights.data||[],allCategories);
-      renderSupplementalResults(practiceRows);
+      renderPortalActivity(inhouseAttempts,practiceRows,inhouse.error,practiceResults.error);
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
@@ -722,7 +1392,51 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }
-    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;if(!isAdmin){location.replace('student-dashboard.html');return}$('role-label').textContent='Private coach view';if($('coach-review'))$('coach-review').style.display='block';$('coach-notes').style.display='block';$('upload-eyebrow').textContent='Add a student report';$('upload-title').textContent='Upload on a student’s behalf';$('upload-intro').textContent='Choose a student above, then upload a report you already received by email. It will appear in that student’s private timeline, marked as uploaded by you.';$('upload-button').textContent='Upload to student timeline';const {data:students}=await db.from('students').select('id,name,email,nclex_target_date,student_type').is('archived_at',null).order('name');const picker=$('student-picker');picker.style.display='block';picker.innerHTML=(students||[]).map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');const requested=new URLSearchParams(location.search).get('student');const selected=(students||[]).find(row=>row.id===requested)||(students||[])[0];if(!selected){$('loading').textContent='Add a student before opening a private progress view.';return}picker.value=selected.id;picker.addEventListener('change',()=>{const next=(students||[]).find(row=>row.id===picker.value);history.replaceState(null,'','?student='+encodeURIComponent(next.id));loadStudent(next)});await loadStudent(selected);$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
+    async function loadActiveStudents(){
+      let result=await db.from('students').select('id,name,email,nclex_target_date,student_type,status').is('archived_at',null).order('name');
+      if(result.error&&/status/i.test(result.error.message||'')){
+        result=await db.from('students').select('id,name,email,nclex_target_date,student_type').is('archived_at',null).order('name');
+      }
+      return result;
+    }
+    async function init(){
+      const {data}=await db.auth.getSession();
+      session=data.session;
+      if(!session){location.replace('student-login.html');return}
+      const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      isAdmin=!!admin.data;
+      if(!isAdmin){location.replace('student-dashboard.html');return}
+      $('intro').textContent='Assignments, progress, CAT and readiness scores, uploads, portal activity, and private coaching notes for one student.';
+      $('workspace-jump').style.display='flex';
+      if($('coach-review'))$('coach-review').style.display='block';
+      $('coach-notes').style.display='block';
+      $('upload-eyebrow').textContent='Add a student report';
+      $('upload-title').textContent='Upload a report';
+      $('upload-intro').textContent='Upload a report on this student’s behalf. It will appear in the assessment timeline here.';
+      $('upload-button').textContent='Upload to student timeline';
+      const studentResult=await loadActiveStudents();
+      if(studentResult.error){
+        $('loading').textContent='Student profiles could not be loaded. '+studentResult.error.message;
+        return;
+      }
+      const students=studentResult.data||[];
+      const picker=$('student-picker');
+      picker.style.display='block';
+      picker.innerHTML=students.map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');
+      const requested=new URLSearchParams(location.search).get('student');
+      const selected=students.find(row=>row.id===requested)||students[0];
+      if(!selected){$('loading').textContent='Add a student before opening a private progress view.';return}
+      picker.value=selected.id;
+      picker.addEventListener('change',()=>{
+        const next=students.find(row=>row.id===picker.value);
+        if(!next)return;
+        history.replaceState(null,'','?student='+encodeURIComponent(next.id));
+        loadStudent(next);
+      });
+      await loadStudent(selected);
+      $('loading').classList.add('hidden');
+      $('app').classList.remove('hidden');
+    }
     $('upload-form').addEventListener('submit',async event=>{event.preventDefault();const files=Array.from($('report-file').files||[]);const message=$('upload-message');if(!files.length)return;const oversized=files.find(file=>file.size>10485760);if(oversized){message.textContent='Please choose files under 10 MB each.';return}const values={platform:$('platform').value,assessment_type:$('assessment-type').value,report_label:$('report-label').value.trim()||null,attempt_number:$('attempt-number').value||null,taken_on:$('taken-on').value||null,overall_score:$('overall-score').value||null};let uploaded=0,failed=0;for(let index=0;index<files.length;index++){const file=files[index];message.textContent=(isAdmin?'Uploading to the student’s private timeline…':'Uploading your private reports…')+' ('+(index+1)+' of '+files.length+')';const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');const path=`${student.id}/${crypto.randomUUID()}-${safe}`;const upload=await db.storage.from('assessment-reports').upload(path,file,{contentType:file.type,upsert:false});if(upload.error){failed++;continue}const row={student_id:student.id,platform:values.platform,assessment_type:values.assessment_type,report_label:files.length===1?values.report_label:null,attempt_number:files.length===1?values.attempt_number:null,taken_on:values.taken_on,overall_score:values.overall_score,report_path:path,report_filename:file.name,report_mime_type:file.type,uploaded_by:session.user.id};const saved=await db.from('student_assessment_uploads').insert(row);if(saved.error){failed++;continue}uploaded++}message.textContent=uploaded?uploaded+' report'+(uploaded===1?'':'s')+' added to the private timeline.'+(failed?' '+failed+' could not be added.':''):'No reports could be added. Please try again.';$('upload-form').reset();if(uploaded)loadStudent(student)});
     $('focus-form')?.addEventListener('submit',async event=>{event.preventDefault();const message=$('focus-message');const row={student_id:student.id,focus_area:$('focus-name').value.trim(),priority:$('focus-priority').value,current_score:$('focus-current').value||null,previous_score:$('focus-previous').value||null,trend:$('focus-trend').value,next_step:$('focus-next').value.trim()||null,updated_by:session.user.id,updated_at:new Date().toISOString()};const saved=await db.from('student_focus_areas').upsert(row,{onConflict:'student_id,focus_area'});message.textContent=saved.error?'We could not save that focus area. Please try again.':'Shared focus area saved.';if(!saved.error){$('focus-form').reset();loadStudent(student)}});
         function parseImportedScores(raw){const scores=new Map;String(raw||'').split(/\r?\n/).forEach(source=>{const line=source.replace(/\u00a0/g,' ').trim();let match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d{1,3}(?:\.\d+)?)\s*%\s*$/);let score;if(match){score=Number(match[2])}else{match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d+)\s*\/\s*(\d+)\s*$/);if(match&&Number(match[3]))score=Math.round(Number(match[2])/Number(match[3])*100)}if(!match||!Number.isFinite(score)||score<0||score>100)return;const category=match[1].replace(/^[-•\s]+/,'').trim();if(category.length>2)scores.set(category,score)});return [...scores.entries()].map(([category,score])=>({category,score}))}

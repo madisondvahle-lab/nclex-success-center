@@ -22,53 +22,237 @@
     .label{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.62rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}.label.status-active{background:#e8f5ee;color:var(--green,#167052)}.label.status-paused{background:#fff3d6;color:#9a6700}.label.status-completed{background:#e6f0fb;color:#235f9f}.student-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.student-actions select{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 10px;font:700 .72rem Inter,sans-serif}.student-actions button{display:inline-block;background:transparent;color:var(--ink);border:1px solid var(--ink);padding:10px 12px;font:800 .72rem Inter,sans-serif;cursor:pointer}.student-actions button.archive{border-color:#8f3b3b;color:#8f3b3b}.student-actions button:disabled,.student-actions select:disabled{opacity:.55;cursor:wait}.empty{padding:30px;background:var(--paper);border:1px solid var(--line);color:var(--muted);font-size:.85rem}
     @media(max-width:850px){.tools{grid-template-columns:repeat(2,1fr)}.cat-row{grid-template-columns:1fr 1fr}.cat-row a{justify-self:start}}@media(max-width:620px){.shell{width:min(100% - 28px,1160px)}.top{align-items:flex-start;flex-direction:column}.top-actions{justify-content:flex-start}.tools,.student-list{grid-template-columns:1fr}.cat-row{grid-template-columns:1fr}.hero{padding-top:38px}.student-top{flex-direction:column}}
   </style>
+  <style>
+    :root{--admin-navy:#17344f;--admin-cream:#f5f3ed;--admin-paper:#fffefa;--admin-rose:#a94f67;--admin-muted:#536a7d;--admin-line:#cbd5d1;--admin-soft:#eeeae1;--admin-green:#27694a}
+    body{background:var(--admin-cream);color:var(--admin-navy)}
+    .admin-app{min-height:100vh;display:grid;grid-template-columns:232px minmax(0,1fr)}
+    .admin-sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:24px;padding:22px 14px;background:var(--admin-navy);color:#fff}
+    .sidebar-brand{padding:0 10px 17px;border-bottom:1px solid #ffffff35;font:700 1rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}
+    .sidebar-brand small{font-size:.7em;opacity:.78}
+    .sidebar-caption{margin:0 10px 5px;color:#d0dce4;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    .sidebar-nav{display:grid;gap:3px}
+    .sidebar-nav a,.sidebar-sign-out{display:flex;align-items:center;min-height:38px;padding:8px 10px;border:1px solid transparent;background:none;color:#eff4f7;text-align:left;text-decoration:none;font:700 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .sidebar-nav a:hover,.sidebar-nav a:focus-visible,.sidebar-nav a[aria-current="page"]{background:#ffffff16;border-color:#ffffff30;color:#fff;outline:none}
+    .sidebar-secondary{margin-top:auto}
+    .sidebar-sign-out{width:100%;cursor:pointer}
+    .admin-main{min-width:0}
+    .admin-topbar{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 28px;background:var(--admin-paper);border-bottom:1px solid var(--admin-line)}
+    .topbar-context{font-size:.78rem;font-weight:700;color:var(--admin-muted)}
+    .topbar-actions,.quick-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .topbar-actions a,.quick-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-navy);text-decoration:none;font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .topbar-actions a.primary,.quick-actions a.primary{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+    .topbar-actions a:hover,.quick-actions a:hover{border-color:var(--admin-navy)}
+    .dashboard{width:min(1440px,100%);margin:auto;padding:27px 28px 54px}
+    .dashboard-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .dashboard-heading h1{margin:0;font:700 clamp(1.7rem,3vw,2.35rem)/1.08 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.045em}
+    .dashboard-heading p{margin:7px 0 0;color:var(--admin-muted);font-size:.82rem}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0 22px}
+    .metric{display:block;min-height:90px;padding:14px 16px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-navy);text-decoration:none}
+    .metric:hover,.metric:focus-visible{border-color:var(--admin-navy);outline:2px solid var(--admin-navy);outline-offset:2px}
+    .metric strong{display:block;font:700 1.5rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+    .metric span{display:block;margin-top:5px;font-size:.74rem;font-weight:750}
+    .metric small{display:block;margin-top:4px;color:var(--admin-muted);font-size:.66rem;line-height:1.35}
+    .quick-actions{margin:0 0 23px}
+    .admin-workspace{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}
+    .directory,.dashboard-panel{min-width:0;border:1px solid var(--admin-line);background:var(--admin-paper)}
+    .panel-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;padding:17px 18px 13px;border-bottom:1px solid var(--admin-line)}
+    .panel-heading h2{margin:0;font:700 1.1rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.025em}
+    .panel-heading p{margin:4px 0 0;color:var(--admin-muted);font-size:.72rem}
+    .directory-tools{display:grid;gap:12px;padding:13px 18px;border-bottom:1px solid var(--admin-line)}
+    .directory-search{display:flex;align-items:center;gap:10px}
+    .directory-search label{flex:0 0 auto;font-size:.7rem;font-weight:800}
+    .directory-search input{width:min(390px,100%);height:36px;padding:0 11px;border:1px solid var(--admin-line);background:white;color:var(--admin-navy);font:400 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .filter-list{display:flex;gap:6px;overflow-x:auto}
+    .filter-list button{min-height:31px;padding:0 10px;border:1px solid var(--admin-line);background:transparent;color:var(--admin-muted);font:750 .67rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;white-space:nowrap}
+    .filter-list button[aria-pressed="true"]{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+    .table-scroll{overflow:auto}
+    .student-table{width:100%;border-collapse:collapse;text-align:left;font-size:.76rem}
+    .student-table th{padding:10px 12px;background:#f7f6f1;color:var(--admin-muted);font-size:.63rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+    .student-table td{padding:11px 12px;border-top:1px solid #e4e8e4;vertical-align:middle}
+    .student-row{cursor:pointer}
+    .student-row:hover{background:#f8f7f2}
+    .student-row:focus-visible{outline:2px solid var(--admin-rose);outline-offset:-2px}
+    .student-name{color:var(--admin-navy);font-weight:800;text-decoration:none}
+    .student-name:hover{text-decoration:underline}
+    .student-sub{display:block;margin-top:3px;color:var(--admin-muted);font-size:.67rem}
+    .status-pill{display:inline-block;padding:4px 7px;background:#e8f5ee;color:#225b41;font-size:.63rem;font-weight:800;text-transform:capitalize;white-space:nowrap}
+    .status-pill.paused{background:#fff3d6;color:#805600}
+    .status-pill.completed{background:#e6f0fb;color:#235f9f}
+    .status-pill.archived{background:#e9e9e5;color:#53606a}
+    .row-controls{display:flex;align-items:center;gap:5px;white-space:nowrap}
+    .row-controls select,.row-controls button{min-height:29px;padding:0 7px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:700 .64rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .row-controls button{cursor:pointer}
+    .row-controls button.archive{color:#8f3b3b}
+    .row-controls button:disabled,.row-controls select:disabled{opacity:.55;cursor:wait}
+    .table-empty{padding:22px 18px;color:var(--admin-muted);font-size:.8rem;line-height:1.5}
+    .dashboard-panel{margin-bottom:14px}
+    .panel-link{font-size:.69rem;font-weight:800;color:var(--admin-navy);text-decoration:none;white-space:nowrap}
+    .booking-list,.cat-list{display:grid}
+    .booking-row,.cat-row{display:grid;gap:7px;padding:12px 15px;border-bottom:1px solid #e4e8e4}
+    .booking-row:last-child,.cat-row:last-child{border-bottom:0}
+    .booking-name{font-size:.78rem;font-weight:800}
+    .booking-meta{color:var(--admin-muted);font-size:.68rem;line-height:1.45}
+    .booking-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .booking-intake{color:var(--admin-muted);font-size:.64rem}
+    .booking-row .link-button,.cat-row .link-button{padding:6px 8px;font-size:.63rem}
+    .cat-row{display:grid;gap:6px;padding:12px 15px;border-bottom:1px solid #e4e8e4}
+    .cat-row h3{margin:0;font:750 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .cat-meta{color:var(--admin-muted);font-size:.66rem;line-height:1.4}
+    .cat-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+    .cat-status{display:inline-flex;align-items:center;padding:3px 7px;font-size:.59rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+    .cat-status.current{background:#e8f5ee;color:#225b41}
+    .cat-status.due{background:#fff3d6;color:#805600}
+    .cat-status.missing{background:#f7e5e3;color:#913d4f}
+    .cat-note{margin:0;padding:10px 15px;border-top:1px solid var(--admin-line);color:var(--admin-muted);font-size:.63rem;line-height:1.45}
+    .prospect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
+    .prospect-panel{min-width:0}
+    .prospect-panel h3{padding:13px 0;margin:0;border-bottom:1px solid var(--admin-line);font:750 .82rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .prospect-list{display:grid}
+    .prospect-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 14px;border-bottom:1px solid #e4e8e4}
+    .prospect-row:last-child{border-bottom:0}
+    .prospect-name{font-size:.77rem;font-weight:800}
+    .prospect-meta,.prospect-actions{color:var(--admin-muted);font-size:.68rem;line-height:1.45}
+    .prospect-actions{display:grid;justify-items:start;gap:6px}
+    .prospect-actions a,.prospect-actions button{display:inline-flex;align-items:center;min-height:28px;padding:0 8px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:700 .64rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-decoration:none;cursor:pointer}
+    .prospect-actions button.primary{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+    .merge-button{display:inline-flex;align-items:center;min-height:30px;padding:0 9px;border:1px solid var(--admin-navy);background:var(--admin-navy);color:#fff;font:700 .66rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+    .prospect-actions button:disabled,.merge-button:disabled{opacity:.55;cursor:wait}
+    .prospect-actions select,.merge-grid select{max-width:100%;min-height:30px;padding:4px 7px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:600 .66rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .prospect-summary{margin:0;padding:11px 14px;border-bottom:1px solid var(--admin-line);color:var(--admin-muted);font-size:.67rem;line-height:1.45}
+    .prospect-status{padding:0 14px;color:var(--admin-muted);font-size:.7rem;line-height:1.45}
+    .merge-details{margin:0 14px 14px;border-top:1px solid var(--admin-line)}
+    .merge-details summary{padding:12px 0;color:var(--admin-navy);font-size:.73rem;font-weight:800;cursor:pointer}
+    .merge-content{padding:0 0 12px}
+    .merge-content p{color:var(--admin-muted);font-size:.68rem;line-height:1.5}
+    .merge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .merge-grid label{display:grid;gap:5px;color:var(--admin-muted);font-size:.64rem;font-weight:800}
+    .merge-warning{padding:10px;background:#fff5e8;color:#63471d}
+    #prospects{scroll-margin-top:80px}
+    .invite{margin:8px 14px 0;padding:10px;border:1px solid #b8d2c2;background:#edf6f2;color:#174c3a;font-size:.69rem;line-height:1.5}
+    .invite strong{display:block;margin-bottom:4px}
+    .invite code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.67rem}
+    .invite-copy{margin-top:7px;padding:6px 8px;border:1px solid #176048;background:#176048;color:#fff;font:700 .65rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+    .loading{z-index:10}
+    @media(max-width:1080px){.admin-workspace{grid-template-columns:minmax(0,1fr) 270px}.admin-topbar,.dashboard{padding-left:20px;padding-right:20px}.row-controls{flex-wrap:wrap}}
+    @media(max-width:820px){.admin-app{grid-template-columns:1fr}.admin-sidebar{position:static;height:auto;gap:12px;padding:13px 16px}.sidebar-brand{padding:0 3px 11px}.sidebar-nav{display:flex;overflow-x:auto;gap:4px}.sidebar-nav a,.sidebar-sign-out{flex:0 0 auto;min-height:34px;padding:7px 9px}.sidebar-caption,.sidebar-secondary{display:none}.admin-topbar{position:static}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-workspace{grid-template-columns:1fr}.side-widgets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.prospect-grid{grid-template-columns:1fr}}
+    @media(max-width:600px){.admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}.dashboard{padding:21px 14px 36px}.dashboard-heading{align-items:flex-start;flex-direction:column}.dashboard-heading h1{font-size:1.75rem}.metric-grid{gap:7px}.metric{min-height:80px;padding:11px}.metric strong{font-size:1.25rem}.quick-actions{gap:6px}.quick-actions a{padding:0 9px}.side-widgets{grid-template-columns:1fr}.directory-tools{padding:12px}.directory-search{align-items:flex-start;flex-direction:column}.directory-search input{width:100%}.student-table{min-width:780px}.panel-heading{padding:14px 12px}.merge-grid{grid-template-columns:1fr}.prospect-row{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening your private coach home…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header">
-      <span class="brand">Study With Madison <small>RN</small></span>
-      <nav class="admin-nav" aria-label="Admin navigation">
-        <a class="admin-home" href="madison-admin.html" aria-current="page">Admin home</a>
-        <a href="madison-leads.html">Leads &amp; intake</a>
-        <a href="madison-consultations.html">Consultations</a>
-        <a href="madison-diagnostic.html">Consult diagnostic</a>
-        <a href="student-onboarding.html">New student</a>
-        <a href="shared-progress.html">Progress</a>
-        <a href="madison-assignments.html">Assignments</a>
-        <a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="madison-graphics.html">Graphics</a>
-        <a href="question-bank-review.html">Question bank</a><a href="finance.html">Finance</a>
-        <button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
-      </nav>
-    </header>
-    <section class="hero">
-      <p class="eyebrow">Private coach home</p>
-      <h1>What would you like to work on?</h1>
-      <p>Start with a student, or jump directly to the part of the Success Center you need. Nursing-school students and NCLEX-prep students stay organized in the same secure workspace.</p>
-    </section>
-    <section class="section">
-      <div class="section-head"><div><p class="eyebrow">Work areas</p><h2>Choose a starting point</h2></div></div>
-      <div class="tools">
-        <article class="tool"><h3>Student progress</h3><p>Review CATs, assessment trends, focus areas, practice results, uploads, and private session notes.</p><a class="link-button" href="shared-progress.html">Open progress</a></article>
-        <article class="tool"><h3>Graphics library</h3><p>Upload, tag and link your study graphics for students.</p><a class="link-button" href="madison-graphics.html">Open library</a></article>
-        <article class="tool"><h3>Assignments</h3><p>Choose a student and manage modules, diagnostics, and supplemental practice.</p><a class="link-button" href="madison-assignments.html">Manage assignments</a></article>
-        <article class="tool"><h3>Leads &amp; intake</h3><p>Convert new clients, create portal access, and keep your student pipeline organized.</p><a class="link-button" href="madison-leads.html">Open leads</a></article>
-        <article class="tool"><h3>Business finance</h3><p>Record business expenses, attach private receipts, and review spending by month.</p><a class="link-button" href="finance.html">Open finance</a></article>
+  <main class="admin-app hidden" id="app">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · ADMIN</small></div>
+      <div>
+        <p class="sidebar-caption">Workspace</p>
+        <nav class="sidebar-nav" aria-label="Primary admin navigation">
+          <a href="madison-admin.html" aria-current="page">Dashboard</a>
+          <a href="#directory">Students</a>
+          <a href="madison-consultations.html">Consultations</a>
+          <a href="#prospects">Prospects</a>
+          <a href="madison-assignments.html">Assignments</a>
+          <a href="assessment-history-admin.html">Assessments</a>
+          <a href="question-bank-review.html">Question bank</a>
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance</a>
+        </nav>
       </div>
-    </section>
-    <section class="cat-checkin">
-      <div class="cat-checkin-head"><div><p class="eyebrow">Weekly rhythm</p><h2>CAT check-in</h2><p>Every active NCLEX student should have a CAT report from the last 7 days.</p></div><a class="link-button secondary" href="assessment-history-admin.html">Enter scores</a></div>
-      <div class="cat-list" id="cat-checkin"><p class="empty">Loading weekly CAT status…</p></div>
-      <p class="cat-note">Status is based on the report’s completed date when provided, otherwise its upload date. Nursing-school students and archived students are excluded.</p>
-    </section>
-    <section class="section">
-      <div class="section-head"><div><p class="eyebrow">Student roster</p><h2>Choose who you want to work with</h2><p id="roster-summary">Loading students…</p></div><div class="student-actions"><a class="link-button" href="student-onboarding.html">+ New student / consult</a><button class="button-secondary" id="toggle-archived" type="button">View archived students</button></div></div>
-      <div class="student-list" id="students"></div>
-    </section>
-    <section class="section hidden" id="archived-section">
-      <div class="section-head"><div><p class="eyebrow">Archived students</p><h2>Restore when needed</h2><p id="archived-summary">Loading archived students…</p></div></div>
-      <div class="student-list" id="archived-students"></div>
-    </section>
+      <div class="sidebar-secondary">
+        <p class="sidebar-caption">More tools</p>
+        <nav class="sidebar-nav" aria-label="Additional admin tools">
+          <a href="madison-cpr.html">CPR tracker</a>
+          <a href="madison-diagnostic.html">Consult diagnostic</a>
+          <a href="student-onboarding.html">New student &amp; intake</a>
+        </nav>
+      </div>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <span class="topbar-context">Private tutoring workspace</span>
+        <nav class="topbar-actions" aria-label="Quick actions">
+          <a class="primary" href="student-onboarding.html">New student &amp; intake</a>
+        </nav>
+      </header>
+      <div class="dashboard">
+        <section class="dashboard-heading">
+          <div><h1>Students and follow-ups</h1><p id="dashboard-date"></p></div>
+          <nav class="quick-actions" aria-label="Common tasks">
+            <a href="madison-assignments.html">Assign practice</a>
+            <a href="question-bank-review.html">Question bank</a>
+          </nav>
+        </section>
+        <section class="metric-grid" aria-label="Live overview">
+          <a class="metric" href="#directory"><strong id="metric-active">—</strong><span>Active students</span><small id="metric-active-note">Loading student records…</small></a>
+          <a class="metric" href="madison-consultations.html"><strong id="metric-consultations">—</strong><span>Upcoming consultations</span><small id="metric-consultations-note">Loading bookings…</small></a>
+          <a class="metric" href="question-bank-review.html"><strong id="metric-review">—</strong><span>Items needing review</span><small id="metric-review-note">Open question flags</small></a>
+          <a class="metric" href="madison-assignments.html"><strong id="metric-assignments">—</strong><span>Incomplete resources</span><small id="metric-assignments-note">Assigned resources not marked complete</small></a>
+        </section>
+        <div class="admin-workspace">
+          <section class="directory" id="directory" aria-labelledby="directory-title">
+            <div class="panel-heading"><div><h2 id="directory-title">Student directory</h2><p id="roster-summary">Loading student records…</p></div></div>
+            <div class="directory-tools">
+              <div class="directory-search"><label for="student-search">Search</label><input id="student-search" type="search" placeholder="Name or email"></div>
+              <div class="filter-list" role="group" aria-label="Filter students">
+                <button type="button" data-filter="all" aria-pressed="true">All students</button>
+                <button type="button" data-filter="nclex" aria-pressed="false">NCLEX prep</button>
+                <button type="button" data-filter="nursing" aria-pressed="false">Nursing school</button>
+                <button type="button" data-filter="consultations" aria-pressed="false">Consultations</button>
+                <button type="button" data-filter="archived" aria-pressed="false">Archived</button>
+              </div>
+              <p id="roster-notice" class="table-empty hidden" role="status"></p>
+            </div>
+            <div class="table-scroll">
+              <table class="student-table">
+                <thead><tr><th>Student</th><th>Program</th><th>Status</th><th>Recent activity</th><th>Action</th></tr></thead>
+                <tbody id="students"><tr><td class="table-empty" colspan="5">Loading student records…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+          <aside class="side-widgets">
+            <section class="dashboard-panel" aria-labelledby="upcoming-title">
+              <div class="panel-heading"><div><h2 id="upcoming-title">Upcoming consultations</h2><p>Bookings from Calendly</p></div><a class="panel-link" href="madison-consultations.html">View all</a></div>
+              <div class="booking-list" id="upcoming-consultations"><p class="table-empty">Loading bookings…</p></div>
+            </section>
+            <section class="dashboard-panel cat-checkin" aria-labelledby="cat-title">
+              <div class="panel-heading"><div><h2 id="cat-title">Weekly CAT check-in</h2><p>Active NCLEX students · last 7 days</p></div><a class="panel-link" href="assessment-history-admin.html">Enter scores</a></div>
+              <div class="cat-list" id="cat-checkin"><p class="table-empty">Loading CAT status…</p></div>
+              <p class="cat-note">Status uses the report’s completion date when available, otherwise its upload date.</p>
+            </section>
+          </aside>
+        </div>
+        <section class="dashboard-panel" id="prospects" aria-labelledby="prospects-title">
+          <div class="panel-heading"><div><h2 id="prospects-title">Prospects &amp; readiness leads</h2><p>Intake follow-up, diagnostic access, and readiness-check submissions</p></div><a class="panel-link" href="student-onboarding.html">New intake →</a></div>
+          <div class="prospect-grid">
+            <section class="prospect-panel" aria-labelledby="intakes-title">
+              <h3 id="intakes-title">Consult intakes</h3>
+              <p class="prospect-summary" id="intake-summary">Loading consult intakes…</p>
+              <p class="prospect-status" id="intake-action-status" role="status" aria-live="polite"></p>
+              <div class="prospect-list" id="consult-intakes"></div>
+              <details class="merge-details">
+                <summary>Merge duplicate intake profiles</summary>
+                <div class="merge-content">
+                  <p>Choose the profile to keep and the duplicate to merge into it. Non-empty details on the kept profile take precedence; linked history and bookings move to the kept profile. Separate student accounts cannot be merged here.</p>
+                  <div class="merge-grid">
+                    <label>Keep this profile<select id="merge-keep"><option value="">Choose profile to keep…</option></select></label>
+                    <label>Merge this duplicate<select id="merge-source"><option value="">Choose duplicate profile…</option></select></label>
+                  </div>
+                  <p class="merge-warning">This action cannot be undone from this page. Confirm both names and profile IDs before merging.</p>
+                  <button class="primary merge-button" id="merge-button" type="button" disabled>Merge profiles</button>
+                  <p class="prospect-status" id="merge-status" role="status" aria-live="polite"></p>
+                </div>
+              </details>
+            </section>
+            <section class="prospect-panel" aria-labelledby="leads-title">
+              <h3 id="leads-title">Readiness-check leads</h3>
+              <p class="prospect-summary" id="lead-summary">Loading readiness leads…</p>
+              <div class="prospect-list" id="readiness-leads"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -77,17 +261,288 @@
     const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const branch=student=>{const type=String(student.student_type||'').toLowerCase();return type.includes('nurs')||type.includes('school')?'Nursing school':'NCLEX prep'};
     const stage=student=>({assessment:'Assessment only',active:'Active student'}[student.portal_stage]||'Student');
-    const lifecycle=student=>({active:'Active',paused:'Paused',completed:'Completed'}[student.status]||'Active');
-    const statusClass=student=>'label status-'+(['active','paused','completed'].includes(student.status)?student.status:'active');
+    const lifecycle=student=>({active:'Active',paused:'Paused',completed:'Completed'}[student.status]||'Status unavailable');
+    const statusClass=student=>'status-pill '+(['active','paused','completed'].includes(student.status)?student.status:'');
     const archiveDate=student=>student.archived_at?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(student.archived_at)):'';
-    let showingArchived=false;
+    const consultationType=type=>({free_consultation:'Free consultation',strategy_session:'Strategy session'}[type]||'Consultation');
+    let currentStudents=[],archivedStudents=[],rosterAvailable=false,lifecycleAvailable=true,currentFilter='all',consultationStudentIds=new Set,activityByStudent=new Map,activitySourceAvailable=false,activitySourcesComplete=false,activityFailureCount=0;
+    let consultIntakes=[],studentAccessById=new Map,studentStageById=new Map,studentAccessAvailable=false;
     async function init(){
       const {data:{session}}=await db.auth.getSession();
       if(!session){location.replace('student-login.html');return}
       const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
       if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
-      await Promise.all([loadRoster(),loadCatCheckin()]);
+      $('dashboard-date').textContent=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());
+      $('student-search').addEventListener('input',renderDirectory);
+      document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
+        currentFilter=button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        renderDirectory();
+      }));
+      await loadRoster();
+      await Promise.all([loadCatCheckin(),loadDashboardData(),loadRecentActivity()]);
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+      loadProspectData().catch(error=>{
+        const message=error?.message||String(error);
+        $('lead-summary').textContent='Readiness leads could not load.';
+        $('intake-summary').textContent='Consult intakes could not load.';
+        $('intake-action-status').textContent='Could not load prospect data. '+message;
+      });
+    }
+    function metricValue(id,value,note){
+      $(id).textContent=value;
+      $(id+'-note').textContent=note;
+    }
+    function consultationDate(value,timezone){
+      if(!value)return 'Time not set';
+      try{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',...(timezone?{timeZone:timezone}:{})}).format(new Date(value))}
+      catch{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(value))}
+    }
+    async function loadDashboardData(){
+      const activeIds=lifecycleAvailable?currentStudents.filter(student=>student.status==='active').map(student=>student.id):[];
+      const now=new Date().toISOString();
+      const [consultCount,consultRows,reviewCount]=await Promise.all([
+        db.from('consultations').select('id',{count:'exact',head:true}).eq('status','scheduled').gte('scheduled_start',now),
+        db.from('consultations').select('id,invitee_name,invitee_email,invitee_timezone,scheduled_start,consult_type,student_id,consult_intake_id').eq('status','scheduled').gte('scheduled_start',now).order('scheduled_start',{ascending:true}).limit(1000),
+        db.from('question_flags').select('id',{count:'exact',head:true}).eq('status','open')
+      ]);
+      if(lifecycleAvailable){
+        metricValue('metric-active',String(activeIds.length),'Current active student profiles');
+      }else{
+        metricValue('metric-active','—','Lifecycle status unavailable');
+      }
+      if(consultCount.error){
+        metricValue('metric-consultations','—','Bookings unavailable · check Calendly setup');
+      }else{
+        metricValue('metric-consultations',String(consultCount.count||0),'Scheduled in the future');
+      }
+      if(reviewCount.error){
+        metricValue('metric-review','—','Question review queue unavailable');
+      }else{
+        metricValue('metric-review',String(reviewCount.count||0),'Open question flags');
+      }
+      if(!lifecycleAvailable){
+        metricValue('metric-assignments','—','Student lifecycle data unavailable');
+      }else if(!activeIds.length){
+        metricValue('metric-assignments','0','No active students');
+      }else{
+        const pending=await db.from('student_resources').select('id',{count:'exact',head:true}).in('student_id',activeIds).is('completed_at',null);
+        metricValue('metric-assignments',pending.error?'—':String(pending.count||0),pending.error?'Assignment status unavailable':'Incomplete assigned resources');
+      }
+      const list=$('upcoming-consultations');
+      if(consultRows.error){
+        list.innerHTML=`<p class="table-empty">Upcoming bookings could not load. Check the Calendly consultation setup. ${esc(consultRows.error.message)}</p>`;
+        consultationStudentIds=new Set;
+      }else{
+        const bookings=consultRows.data||[];
+        consultationStudentIds=new Set(bookings.map(booking=>booking.student_id).filter(Boolean));
+        const preview=bookings.slice(0,5);
+        list.innerHTML=preview.length?preview.map(booking=>`<article class="booking-row"><div class="booking-name">${esc(booking.invitee_name||booking.invitee_email||'Consultation')}</div><div class="booking-meta">${esc(consultationDate(booking.scheduled_start,booking.invitee_timezone))} · ${esc(consultationType(booking.consult_type))}</div><div class="booking-bottom"><span class="booking-intake">${booking.consult_intake_id?'Intake linked · completion not tracked':'No linked intake'}</span><a class="panel-link" href="madison-consultations.html?consultation=${encodeURIComponent(booking.id)}">Open →</a></div></article>`).join(''):'<p class="table-empty">No upcoming consultations are scheduled.</p>';
+      }
+      renderDirectory();
+    }
+    async function loadRecentActivity(){
+      const cutoff=new Date(Date.now()-30*24*60*60*1000).toISOString();
+      const results=await Promise.all([
+        db.from('student_supplemental_practice_results').select('student_id,practice_title,completed_at').gte('completed_at',cutoff).order('completed_at',{ascending:false}).limit(1000),
+        db.from('in_house_assessment_attempts').select('student_id,assessment_title,completed_at,created_at').gte('completed_at',cutoff).order('completed_at',{ascending:false}).limit(1000),
+        db.from('student_assessment_uploads').select('student_id,platform,report_label,created_at').gte('created_at',cutoff).order('created_at',{ascending:false}).limit(1000),
+        db.from('external_assessments').select('student_id,platform,assessment_name,created_at').gte('created_at',cutoff).order('created_at',{ascending:false}).limit(1000)
+      ]);
+      activitySourceAvailable=results.some(result=>!result.error);
+      activitySourcesComplete=results.every(result=>!result.error);
+      const sources=[
+        {result:results[0],date:'completed_at',title:row=>`Practice · ${row.practice_title||'Question set'}`},
+        {result:results[1],date:'completed_at',title:row=>`Assessment · ${row.assessment_title||'In-house assessment'}`},
+        {result:results[2],date:'created_at',title:row=>`Report · ${row.report_label||row.platform||'Uploaded'}`},
+        {result:results[3],date:'created_at',title:row=>`Assessment · ${row.assessment_name||row.platform||'External'}`}
+      ];
+      sources.forEach(source=>(source.result.data||[]).forEach(row=>{
+        const at=row[source.date];
+        if(!row.student_id||!at)return;
+        const prior=activityByStudent.get(row.student_id);
+        if(!prior||new Date(at)>new Date(prior.at))activityByStudent.set(row.student_id,{at,title:source.title(row)});
+      }));
+      activityFailureCount=results.filter(result=>result.error).length;
+      renderDirectory();
+    }
+    const readinessBandLabel=band=>({building_foundation:'Build foundation',developing:'Build consistency',on_track:'On track',strong:'Refine and strengthen'}[band]||'Readiness check');
+    const prospectDate=value=>value?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(value)):'Date unavailable';
+    async function loadProspectData(){
+      const [leadResult,intakeResult,studentsResult]=await Promise.all([
+        db.from('diagnostic_leads').select('id,full_name,email,readiness_band,overall_score,nclex_target_date,created_at').order('created_at',{ascending:false}),
+        db.from('consult_intakes').select('id,full_name,email,phone,nclex_exam,nclex_target_date,status,support_interest,student_id,created_at').order('created_at',{ascending:false}),
+        db.from('students').select('id,auth_user_id,portal_stage')
+      ]);
+      if(leadResult.error){
+        $('lead-summary').textContent='Readiness leads could not load. Refresh to try again.';
+        $('readiness-leads').innerHTML=`<p class="table-empty">${esc(leadResult.error.message)}</p>`;
+      }else{
+        renderReadinessLeads(leadResult.data||[]);
+      }
+      if(intakeResult.error){
+        $('intake-summary').textContent='Consult intakes could not load.';
+        $('consult-intakes').innerHTML=`<p class="table-empty">Check the consult-intake database setup. ${esc(intakeResult.error.message)}</p>`;
+        $('merge-keep').disabled=true;$('merge-source').disabled=true;$('merge-button').disabled=true;
+        $('intake-action-status').textContent='';
+        return;
+      }
+      if(studentsResult.error){
+        studentAccessAvailable=false;
+        studentAccessById=new Map();studentStageById=new Map();
+        $('intake-action-status').textContent='Client access status is unavailable. Refresh before changing access.';
+      }else{
+        studentAccessAvailable=true;
+        studentAccessById=new Map((studentsResult.data||[]).map(student=>[student.id,!!student.auth_user_id]));
+        studentStageById=new Map((studentsResult.data||[]).map(student=>[student.id,student.portal_stage||'active']));
+      }
+      consultIntakes=intakeResult.data||[];
+      renderConsultIntakes(consultIntakes);
+      renderMergeOptions(consultIntakes);
+    }
+    function renderReadinessLeads(leads){
+      const now=Date.now(),weekAgo=now-7*24*60*60*1000;
+      const recent=leads.filter(lead=>new Date(lead.created_at).getTime()>=weekAgo).length;
+      const priority=leads.filter(lead=>['building_foundation','developing'].includes(lead.readiness_band)).length;
+      $('lead-summary').textContent=`${leads.length} total · ${recent} new in 7 days · ${priority} priority follow-ups`;
+      $('readiness-leads').innerHTML=leads.length?leads.map(lead=>`<article class="prospect-row"><div><div class="prospect-name">${esc(lead.full_name)}</div><div class="prospect-meta"><a href="mailto:${esc(lead.email)}?subject=Your%20NCLEX%20readiness%20check">${esc(lead.email)}</a><br>${esc(readinessBandLabel(lead.readiness_band))} · ${esc(Math.round(Number(lead.overall_score)||0))}% · Submitted ${esc(prospectDate(lead.created_at))}${lead.nclex_target_date?'<br>Target NCLEX date: '+esc(prospectDate(lead.nclex_target_date)):''}</div></div></article>`).join(''):'<p class="table-empty">No readiness-check leads yet. New submissions will appear here after the visitor completes the security check and agrees to be contacted.</p>';
+    }
+    function renderMergeOptions(items){
+      const options=items.map(item=>{
+        const label=[item.full_name,item.email||'no email',item.student_id?'linked student':'prospect',new Date(item.created_at).toLocaleDateString(),item.id].join(' · ');
+        return `<option value="${esc(item.id)}">${esc(label)}</option>`;
+      }).join('');
+      $('merge-keep').innerHTML='<option value="">Choose profile to keep…</option>'+options;
+      $('merge-source').innerHTML='<option value="">Choose duplicate profile…</option>'+options;
+      $('merge-keep').disabled=!studentAccessAvailable;
+      $('merge-source').disabled=!studentAccessAvailable;
+      $('merge-keep').onchange=updateMergeButton;
+      $('merge-source').onchange=updateMergeButton;
+      $('merge-button').onclick=mergeProfiles;
+      updateMergeButton();
+    }
+    function updateMergeButton(){
+      const keepId=$('merge-keep').value,sourceId=$('merge-source').value;
+      $('merge-button').disabled=!studentAccessAvailable||!keepId||!sourceId||keepId===sourceId;
+    }
+    async function mergeProfiles(){
+      const keepId=$('merge-keep').value,sourceId=$('merge-source').value;
+      const keep=consultIntakes.find(item=>item.id===keepId),source=consultIntakes.find(item=>item.id===sourceId);
+      const status=$('merge-status');
+      if(!keep||!source||keepId===sourceId)return;
+      if(keep.student_id&&source.student_id&&keep.student_id!==source.student_id){
+        status.textContent='These profiles are linked to different student accounts and cannot be merged here.';
+        return;
+      }
+      const identity=item=>item.full_name+' ('+(item.email||'no email')+')\nProfile ID: '+item.id;
+      if(!window.confirm('Keep:\n'+identity(keep)+'\n\nMerge and remove:\n'+identity(source)+'\n\nMove their CPRs, resources, reports, diagnostics, and consultation bookings to the kept profile?'))return;
+      const button=$('merge-button');
+      button.disabled=true;status.textContent='Merging profiles…';
+      const {data,error}=await db.rpc('merge_consult_intakes',{p_keep_id:keepId,p_merge_id:sourceId});
+      if(error){
+        status.textContent='Could not merge profiles. '+error.message;
+        updateMergeButton();
+        return;
+      }
+      status.textContent=data?`Profiles merged. ${data.attempts_moved} CPR attempts, ${data.resources_moved_or_combined} resource records, ${data.files_moved} report records, ${data.diagnostics_moved} diagnostics, and ${data.consultations_moved} consultation bookings moved.`:'Profiles merged.';
+      await loadProspectData();
+    }
+    function renderConsultIntakes(items){
+      const recent=items.filter(item=>Date.now()-new Date(item.created_at).getTime()<=7*24*60*60*1000).length;
+      $('intake-summary').textContent=`${items.length} profiles · ${recent} added in the last 7 days`;
+      $('consult-intakes').innerHTML=items.length?items.map(item=>{
+        const accessReady=studentAccessAvailable&&item.student_id&&studentAccessById.get(item.student_id);
+        const stage=item.student_id?(studentStageById.get(item.student_id)||'active'):null;
+        let actions='';
+        if(!studentAccessAvailable)actions='<span>Access status unavailable</span>';
+        else if(!item.student_id)actions='<button class="primary" type="button" data-convert="'+esc(item.id)+'">Set up assessment</button><span>Creates a diagnostic-only profile.</span>';
+        else if(stage==='assessment'&&accessReady)actions='<span>Assessment ready</span><a href="assessment-dashboard.html">Open assessment view →</a><button type="button" data-promote="'+esc(item.id)+'">Convert to active student</button>';
+        else if(stage==='assessment')actions='<button class="primary" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><span>Creates a secure email-link sign-in.</span>';
+        else if(accessReady)actions='<span>Portal access ready</span><a href="shared-progress.html?student='+encodeURIComponent(item.student_id)+'">Open student workspace →</a><button type="button" data-switch-assessment="'+esc(item.id)+'">Switch to assessment-only</button>';
+        else actions='<button class="primary" type="button" data-create-diagnostic="'+esc(item.id)+'">Create diagnostic access</button><span>Moves this pre-purchase client to the assessment-only portal.</span>';
+        return `<article class="prospect-row"><div><div class="prospect-name">${esc(item.full_name)}</div><div class="prospect-meta"><a href="mailto:${esc(item.email||'')}">${esc(item.email||'No email on file')}</a>${item.phone?' · '+esc(item.phone):''}<br>${esc(item.nclex_exam||'Program not specified')}${item.nclex_target_date?' · Target '+esc(prospectDate(item.nclex_target_date)):''}<br>${esc((item.status||'new_lead').replaceAll('_',' '))} · Saved ${esc(prospectDate(item.created_at))}</div><label class="prospect-meta">Support type <select data-support="${esc(item.id)}">${['','One-time strategy session','Ongoing tutoring','Help deciding'].map(value=>`<option value="${esc(value)}"${(item.support_interest||'')===value?' selected':''}>${esc(value||'Not specified')}</option>`).join('')}</select></label></div><div class="prospect-actions">${actions}</div></article>`;
+      }).join(''):'<p class="table-empty">No consult intakes yet. Use New intake to capture a prospective student.</p>';
+      $('consult-intakes').querySelectorAll('[data-support]').forEach(select=>select.addEventListener('change',async()=>{
+        const {error}=await db.from('consult_intakes').update({support_interest:select.value||null}).eq('id',select.dataset.support);
+        if(error){$('intake-action-status').textContent='Could not save support type: '+error.message;return}
+        const item=items.find(row=>row.id===select.dataset.support);
+        if(item)item.support_interest=select.value||null;
+        $('intake-action-status').textContent='Support type saved.';
+      }));
+      $('consult-intakes').querySelectorAll('[data-convert]').forEach(button=>button.addEventListener('click',()=>convertToStudent(button.dataset.convert)));
+      $('consult-intakes').querySelectorAll('[data-create-login]').forEach(button=>button.addEventListener('click',()=>createStudentLogin(button.dataset.createLogin)));
+      $('consult-intakes').querySelectorAll('[data-create-diagnostic]').forEach(button=>button.addEventListener('click',()=>prepareDiagnosticAccess(button.dataset.createDiagnostic)));
+      $('consult-intakes').querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote)));
+      $('consult-intakes').querySelectorAll('[data-switch-assessment]').forEach(button=>button.addEventListener('click',()=>switchToAssessmentOnly(button.dataset.switchAssessment)));
+    }
+    async function convertToStudent(id){
+      const item=consultIntakes.find(row=>row.id===id);if(!item)return;
+      const pin=window.prompt('Create a temporary 4-digit profile PIN for '+item.full_name+'.');
+      if(pin===null)return;
+      if(!/^\d{4}$/.test(pin)){$('intake-action-status').textContent='Use exactly four digits for the profile PIN.';return}
+      let studentId;
+      if(item.email){
+        const existing=await db.from('students').select('id').eq('email',item.email).maybeSingle();
+        if(existing.error){$('intake-action-status').textContent='Could not check for an existing student profile. '+existing.error.message;return}
+        studentId=existing.data?.id;
+      }
+      if(!studentId){
+        const created=await db.from('students').insert({name:item.full_name,email:item.email,pin,portal_stage:'assessment'}).select('id').single();
+        if(created.error){$('intake-action-status').textContent='Student profile could not be created. '+created.error.message;return}
+        studentId=created.data.id;
+      }
+      const linked=await db.from('consult_intakes').update({student_id:studentId,status:'active_student',converted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
+      if(linked.error){$('intake-action-status').textContent='Student profile created, but this intake could not be linked. Please refresh.';return}
+      $('intake-action-status').textContent='Student profile created. Create secure access from the intake row when ready.';
+      await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
+    }
+    function showInviteDetails(email,password){
+      const status=$('intake-action-status');
+      status.textContent='Portal access is ready. Confirm the email before sending. Invite details are available below.';
+      const invite=document.createElement('div');invite.className='invite';
+      invite.innerHTML='<strong>Invite details</strong><div>Portal: <code>https://portal.studywithmadison.com/student-login.html</code></div><div>Email: <code>'+esc(email)+'</code></div><div>Temporary password: <code>'+esc(password)+'</code></div><button class="invite-copy" type="button" id="copy-invite">Copy invite details</button>';
+      status.appendChild(invite);
+      $('copy-invite').addEventListener('click',async()=>{
+        const button=$('copy-invite');
+        try{await navigator.clipboard.writeText('NCLEX Success Center portal\n\nPortal: https://portal.studywithmadison.com/student-login.html\nEmail: '+email+'\nTemporary password: '+password);button.textContent='Copied — send through a private channel'}
+        catch{button.textContent='Copy unavailable — select the details manually'}
+      });
+    }
+    async function createStudentLogin(id){
+      const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
+      const email=item.email?.trim().toLowerCase()||'';
+      if(!email||!window.confirm('Confirm this exact student email before creating access:\n\n'+email))return;
+      const phoneDigits=(item.phone||'').replace(/\D/g,''),suggested=phoneDigits.length>=4?'Swm-'+phoneDigits.slice(-4):'';
+      const tempCredential=window.prompt('Temporary portal password for '+(item.full_name||'this student')+(suggested?' (suggested: Swm- plus the last 4 of their phone). Edit if you like.':'. Use at least 8 characters; do not use the profile PIN.'),suggested);
+      if(tempCredential===null)return;
+      if(tempCredential.length<8){$('intake-action-status').textContent='Use a temporary portal password with at least 8 characters.';return}
+      $('intake-action-status').textContent='Creating secure portal access…';
+      const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password:tempCredential,send_email:true}});
+      if(error||!data?.ok){$('intake-action-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.';return}
+      showInviteDetails(data.email||email,tempCredential);
+      if(data.emailed)$('intake-action-status').firstChild.textContent='Login created and emailed to '+(data.email||email)+'. Invite details are available below. ';
+      await loadProspectData();
+    }
+    async function switchToAssessmentOnly(id){
+      const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
+      const {error}=await db.from('students').update({portal_stage:'assessment'}).eq('id',item.student_id);
+      if(error){$('intake-action-status').textContent='Could not change the portal stage. '+error.message;return}
+      $('intake-action-status').textContent=item.full_name+' now has diagnostic-only access.';
+      await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
+    }
+    async function prepareDiagnosticAccess(id){
+      const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
+      const {error}=await db.from('students').update({portal_stage:'assessment'}).eq('id',item.student_id);
+      if(error){$('intake-action-status').textContent='Could not prepare diagnostic access. '+error.message;return}
+      await loadProspectData();
+      await createStudentLogin(id);
+    }
+    async function promoteToActiveStudent(id){
+      const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
+      const {error}=await db.from('students').update({portal_stage:'active'}).eq('id',item.student_id);
+      if(error){$('intake-action-status').textContent='Could not activate the student portal. '+error.message;return}
+      $('intake-action-status').textContent=item.full_name+' is now an active student.';
+      await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
     }
     async function loadCatCheckin(){
       const target=$('cat-checkin');
@@ -118,48 +573,88 @@
         const statusClass=current?'current':upload?'due':'missing';
         const detail=upload?`${upload.platform||'CAT'}${upload.report_label?' · '+upload.report_label:''}${upload.overall_score!=null?' · '+upload.overall_score+'%':''}`:'No CAT report uploaded yet';
         const dateText=completed?completed.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Not submitted';
-        return `<article class="cat-row"><div><h3>${esc(student.name||student.email||'Student')}</h3><p class="cat-meta">${esc(student.email||'')}</p></div><div class="cat-meta">${esc(detail)}<br>${esc(dateText)}</div><span class="cat-status ${statusClass}">${status}</span><a class="link-button secondary" href="shared-progress.html?student=${encodeURIComponent(student.id)}">Open workspace</a></article>`;
+        return `<article class="cat-row"><div><h3>${esc(student.name||student.email||'Student')}</h3><p class="cat-meta">${esc(student.email||'')}</p></div><div class="cat-meta">${esc(detail)} · ${esc(dateText)}</div><div class="cat-bottom"><span class="cat-status ${statusClass}">${status}</span><a class="link-button secondary" href="shared-progress.html?student=${encodeURIComponent(student.id)}">Open student workspace</a></div></article>`;
       }).join('');
     }
     async function loadRoster(){
+      rosterAvailable=false;
+      lifecycleAvailable=true;
       let currentResult=await db.from('students').select('id,name,email,portal_stage,student_type,status,archived_at').is('archived_at',null).order('name');
       let archivedResult=await db.from('students').select('id,name,email,portal_stage,student_type,status,archived_at').not('archived_at','is',null).order('archived_at',{ascending:false});
       if(currentResult.error&&/status|archived_at/i.test(currentResult.error.message||'')){
+        lifecycleAvailable=false;
         currentResult=await db.from('students').select('id,name,email,portal_stage,student_type').order('name');
         archivedResult={data:[],error:null};
-        $('toggle-archived').disabled=true;
-        $('archived-summary').textContent='Run the student lifecycle migration to enable archived students.';
-        $('archived-students').innerHTML='<p class="empty">Archived student management is not available until the lifecycle migration is run.</p>';
       }
-      if(currentResult.error||archivedResult.error){$('roster-summary').textContent='Students could not be loaded. Please refresh and try again.';$('students').innerHTML='<p class="empty">We could not open the student roster right now.</p>';$('archived-summary').textContent='Archived students could not be loaded.';$('archived-students').innerHTML=''}
-      else{renderStudents(currentResult.data||[]);renderArchivedStudents(archivedResult.data||[])}
+      if(currentResult.error||archivedResult.error){
+        $('roster-summary').textContent='Student records could not be loaded.';
+        $('students').innerHTML='<tr><td class="table-empty" colspan="5">We could not load the student directory. Refresh the page to try again.</td></tr>';
+        return;
+      }
+      rosterAvailable=true;
+      renderStudents(currentResult.data||[]);
+      renderArchivedStudents(archivedResult.data||[]);
     }
     function renderStudents(students){
-      $('roster-summary').textContent=students.length+' current student'+(students.length===1?'':'s');
-      $('students').innerHTML=students.length?students.map(student=>studentCard(student,false)).join(''):'<p class="empty">Create a student through the leads and intake workflow first.</p>';
-      bindLifecycleControls($('students'));
+      currentStudents=students;
+      renderDirectory();
     }
     function renderArchivedStudents(students){
-      $('archived-summary').textContent=students.length+' archived student'+(students.length===1?'':'s');
-      $('archived-students').innerHTML=students.length?students.map(student=>studentCard(student,true)).join(''):'<p class="empty">No archived students.</p>';
-      bindLifecycleControls($('archived-students'));
+      archivedStudents=students;
+      renderDirectory();
     }
-    function studentCard(student,archived){
-      const archiveControl=archived
-        ?'<button type="button" data-restore="'+esc(student.id)+'">Restore student</button>'
-        :'<button class="archive" type="button" data-archive="'+esc(student.id)+'">Archive student</button>';
-      return '<article class="student"><div class="student-top"><div><h3>'+esc(student.name||'Unnamed student')+'</h3><p class="student-meta">'+esc(student.email||'No email on file')+'<br>'+esc(branch(student))+' · '+esc(stage(student))+(archived?'<br>Archived '+esc(archiveDate(student)):'')+'</p></div><span class="'+statusClass(student)+'">'+esc(lifecycle(student))+'</span></div><div class="student-actions"><a href="shared-progress.html?student='+encodeURIComponent(student.id)+'">Open workspace</a><a class="secondary" href="madison-assignments.html?student='+encodeURIComponent(student.id)+'">Manage assignments</a><select aria-label="Change status for '+esc(student.name||'student')+'" data-status="'+esc(student.id)+'">'+['active','paused','completed'].map(value=>'<option value="'+value+'"'+(student.status===value?' selected':'')+'>'+value.charAt(0).toUpperCase()+value.slice(1)+'</option>').join('')+'</select>'+archiveControl+'</div></article>';
+    function renderDirectory(){
+      if(!rosterAvailable)return;
+      const archived=currentFilter==='archived';
+      const search=$('student-search').value.trim().toLowerCase();
+      let rows=archived?archivedStudents:currentStudents;
+      if(currentFilter==='nclex')rows=rows.filter(student=>branch(student)==='NCLEX prep');
+      if(currentFilter==='nursing')rows=rows.filter(student=>branch(student)==='Nursing school');
+      if(currentFilter==='consultations')rows=rows.filter(student=>consultationStudentIds.has(student.id));
+      if(search)rows=rows.filter(student=>[student.name,student.email,branch(student)].some(value=>String(value||'').toLowerCase().includes(search)));
+      const label=currentFilter==='archived'?'archived student':currentFilter==='all'?'student':currentFilter==='consultations'?'student with an upcoming consultation':'student';
+      $('roster-summary').textContent=`${rows.length} ${label}${rows.length===1?'':'s'} shown · ${currentStudents.length} current · ${archivedStudents.length} archived`;
+      const notices=[];
+      if(!lifecycleAvailable)notices.push('Student status and archived records are unavailable until the student lifecycle migration is applied.');
+      if(activityFailureCount)notices.push(`Recent activity is partial because ${activityFailureCount} activity source${activityFailureCount===1?'':'s'} could not be loaded.`);
+      $('roster-notice').textContent=notices.join(' ');
+      $('roster-notice').classList.toggle('hidden',!notices.length);
+      $('students').innerHTML=rows.length?rows.map(student=>studentRow(student,archived)).join(''):`<tr><td class="table-empty" colspan="5">${search?'No students match this search.':currentFilter==='archived'?'No archived students.':'No students in this view yet.'}</td></tr>`;
+      bindLifecycleControls($('students'));
+    }
+    function activityLabel(studentId){
+      if(!activitySourceAvailable)return 'Activity unavailable';
+      const activity=activityByStudent.get(studentId);
+      if(!activitySourcesComplete&&!activity)return 'Activity data incomplete';
+      if(!activity)return 'No recorded activity in the last 30 days';
+      const date=new Date(activity.at);
+      const when=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric'}).format(date);
+      return `${activity.title} · ${when}`;
+    }
+    function studentRow(student,archived){
+      const id=esc(student.id),name=student.name||'Unnamed student';
+      const profile='shared-progress.html?student='+encodeURIComponent(student.id);
+      const status=archived?'Archived':lifecycle(student);
+      const statusTag=archived?'status-pill archived':statusClass(student);
+      const statusControl=archived
+        ?`<button type="button" data-restore="${id}" ${lifecycleAvailable?'':'disabled'}>Restore</button>`
+        :`<select aria-label="Change status for ${esc(name)}" data-status="${id}" ${lifecycleAvailable?'':'disabled'}>${['active','paused','completed'].map(value=>`<option value="${value}" ${student.status===value?'selected':''}>${value[0].toUpperCase()+value.slice(1)}</option>`).join('')}</select><button class="archive" type="button" data-archive="${id}" ${lifecycleAvailable?'':'disabled'}>Archive</button>`;
+      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${statusControl}</div></td></tr>`;
     }
     function bindLifecycleControls(root){
       root.querySelectorAll('[data-status]').forEach(select=>select.addEventListener('change',()=>changeStatus(select.dataset.status,select.value,select)));
       root.querySelectorAll('[data-archive]').forEach(button=>button.addEventListener('click',()=>archiveStudent(button.dataset.archive,button)));
       root.querySelectorAll('[data-restore]').forEach(button=>button.addEventListener('click',()=>restoreStudent(button.dataset.restore,button)));
+      root.querySelectorAll('[data-open-url]').forEach(row=>{
+        row.addEventListener('click',event=>{if(!event.target.closest('a,button,select,input'))location.href=row.dataset.openUrl});
+        row.addEventListener('keydown',event=>{if(event.target===row&&(event.key==='Enter'||event.key===' ')){event.preventDefault();location.href=row.dataset.openUrl}});
+      });
     }
     async function changeStatus(id,status,control){
       control.disabled=true;
       const {error}=await db.from('students').update({status}).eq('id',id);
       control.disabled=false;
-      if(error){alert('The student status could not be changed: '+error.message);await loadRoster()}
+      if(error){alert('The student status could not be changed: '+error.message);await loadRoster()}else{await loadRoster();await loadDashboardData()}
     }
     async function archiveStudent(id,button){
       if(!confirm('Archive this student? Their record and history will be preserved, but they will be removed from current operational lists.'))return;
@@ -167,20 +662,15 @@
       const {error}=await db.from('students').update({archived_at:new Date().toISOString()}).eq('id',id);
       button.disabled=false;
       if(error){alert('The student could not be archived: '+error.message);return}
-      await loadRoster();
+      await loadRoster();await loadDashboardData();
     }
     async function restoreStudent(id,button){
       button.disabled=true;
       const {error}=await db.from('students').update({archived_at:null}).eq('id',id);
       button.disabled=false;
       if(error){alert('The student could not be restored: '+error.message);return}
-      await loadRoster();
+      await loadRoster();await loadDashboardData();
     }
-    $('toggle-archived').addEventListener('click',()=>{
-      showingArchived=!showingArchived;
-      $('archived-section').classList.toggle('hidden',!showingArchived);
-      $('toggle-archived').textContent=showingArchived?'Hide archived students':'View archived students';
-    });
     $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
     init();
   </script>

@@ -4,179 +4,181 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <title>Business Finance · NCLEX Success Center</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .shell{width:min(1160px,calc(100% - 36px));margin:auto;padding-bottom:60px}
-    .hidden{display:none!important}
-    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
-    .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
-    .brand small{font:600 .62em Inter,sans-serif}
-    .hero{padding:48px 0 30px}
-    .eyebrow{margin:0 0 10px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
-    h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.04em}
-    h1{margin:0;font-size:clamp(2.5rem,6vw,4.5rem);line-height:1}
-    h2{margin:0 0 14px;font-size:1.45rem}
-    .hero p:not(.eyebrow),.hint{color:var(--muted);line-height:1.6}
-    .hero p:not(.eyebrow){max-width:700px;margin:14px 0 0}
-    .layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
-    .panel{background:var(--paper);border:1px solid var(--line);padding:20px}
-    .summary-card{padding:12px 0;border-bottom:1px solid var(--line)}
-    .panel{margin-bottom:16px}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
+    .panel{background:var(--admin-paper);border:1px solid var(--admin-line);padding:22px;margin-bottom:18px}
+    .panel h2{margin:0 0 14px;font:700 1.3rem Georgia,serif;color:var(--admin-navy)}
+    .summary-card{padding:12px 0;border-bottom:1px solid var(--admin-line)}
+    .summary-card strong{display:block;margin-top:8px;font:700 1.55rem Georgia,serif;color:var(--admin-navy)}
+    .summary-card span{font-size:.7rem;color:var(--admin-muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
     .expense-editor{padding:0}
     .expense-editor:not([open])>.editor-form{display:none}
-    .editor-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:19px 20px;cursor:pointer;list-style:none}
+    .editor-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:19px 22px;cursor:pointer;list-style:none}
     .editor-summary::-webkit-details-marker{display:none}
-    .editor-summary::after{content:"+";color:var(--ink);font-size:1.5rem;font-weight:500;line-height:1}
+    .editor-summary::after{content:"+";color:var(--admin-navy);font-size:1.5rem;font-weight:500;line-height:1}
     .expense-editor[open] .editor-summary::after{content:"−"}
-    .editor-summary h2{margin:0;font-size:1.2rem}
-    .editor-summary p{margin:5px 0 0;color:var(--muted);font-size:.8rem;line-height:1.5}
-    .editor-form{padding:0 20px 20px}
-    .page-status{min-height:1.25em;margin:0 0 12px;color:var(--muted);font-size:.82rem;line-height:1.5}
+    .editor-summary h2{margin:0;font-size:1.2rem;color:var(--admin-navy)}
+    .editor-summary p{margin:5px 0 0;color:var(--admin-muted);font-size:.8rem;line-height:1.5}
+    .editor-form{padding:0 22px 22px}
+    .page-status{min-height:1.25em;margin:0 0 14px;color:var(--admin-muted);font-size:.82rem;line-height:1.5}
     .page-status.error{color:#a32828}
     .page-status.success{color:#17663c}
-    .hint{font-size:.8rem;margin:0 0 15px}
-    label{display:block;margin:0 0 6px;font-size:.72rem;font-weight:850}
-    input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:.87rem}
+    .hint{font-size:.8rem;margin:0 0 15px;color:var(--admin-muted);line-height:1.5}
+    label{display:block;margin:0 0 6px;font-size:.72rem;font-weight:850;color:var(--admin-navy);text-transform:uppercase;letter-spacing:.06em}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:inherit;font-size:.87rem}
     textarea{min-height:76px;resize:vertical}
     .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .field{margin-bottom:12px}
-    button,.button{display:inline-block;padding:10px 13px;border:0;background:var(--ink);color:#fff;font:800 .75rem Inter,sans-serif;text-decoration:none;cursor:pointer}
-    button.secondary,.button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    button,.button{display:inline-block;padding:10px 14px;border:0;background:var(--admin-navy);color:#fff;font:800 .75rem Inter,sans-serif;text-decoration:none;cursor:pointer}
+    button.secondary,.button.secondary{background:#fff;color:var(--admin-navy);border:1px solid var(--admin-line)}
     button.danger{color:#9c3535;background:#fff;border:1px solid #d7b4b4}
     button:disabled{opacity:.55;cursor:wait}
-    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #bd6f7f;outline-offset:2px}
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--admin-rose);outline-offset:2px}
     button:not(.secondary):not(.danger):not(:disabled):hover,.button:not(.secondary):hover{background:#294d68}
-    button.secondary:not(:disabled):hover,.button.secondary:hover{background:var(--cream);border-color:var(--muted)}
+    button.secondary:not(:disabled):hover,.button.secondary:hover{background:var(--admin-cream);border-color:var(--admin-muted)}
     button.danger:not(:disabled):hover{background:#faf1f1}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .status{min-height:1.25em;margin:10px 0 0;color:var(--muted);font-size:.82rem;line-height:1.5}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .status{min-height:1.25em;margin:10px 0 0;color:var(--admin-muted);font-size:.82rem;line-height:1.5}
     .status.error{color:#a32828}
     .status.success{color:#17663c}
     .ocr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
-    .ocr-note{margin:0;color:var(--muted);font-size:.74rem;line-height:1.5}
-    .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
-    .summary-card strong{display:block;margin-top:8px;font:700 1.55rem Georgia,serif}
-    .summary-card span{font-size:.7rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+    .ocr-note{margin:0;color:var(--admin-muted);font-size:.74rem;line-height:1.5}
+    .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
     .category-list{display:grid;gap:7px}
-    .category-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.82rem}
+    .category-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--admin-line);font-size:.82rem;color:var(--admin-navy)}
     .panel-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}
     .panel-heading h2{margin:0}
-    .panel-heading p{margin:6px 0 0;color:var(--muted);font-size:.8rem}
-    .admin-nav a[aria-current="page"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-    .admin-nav a[aria-current="page"]:hover,.admin-nav a[aria-current="page"]:focus-visible{background:#294d68;border-color:#294d68}
+    .panel-heading p{margin:6px 0 0;color:var(--admin-muted);font-size:.8rem}
     .expense-filters{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(180px,1fr) auto;gap:10px;align-items:end;margin:0 0 18px}
     .expense-filters .field{margin:0}
     .expense-filters button{white-space:nowrap}
-    .export-status{min-height:1.25em;margin:10px 0 0;color:var(--muted);font-size:.8rem}
+    .export-status{min-height:1.25em;margin:10px 0 0;color:var(--admin-muted);font-size:.8rem}
     .period-controls{display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
     .period-toggle{display:flex;gap:6px;flex-wrap:wrap}
-    .period-toggle button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .period-toggle button[aria-pressed="true"]{background:var(--admin-navy);color:#fff;border-color:var(--admin-navy)}
     .month-filter{width:min(210px,100%)}
     .month-filter[hidden]{display:none}
-    .entries{display:grid;gap:18px}
+    .entries{display:grid;gap:16px}
     .month-group{display:grid;gap:9px}
-    .month-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:0 0 7px;border-bottom:1px solid var(--line)}
-    .month-heading h3{margin:0;font-size:1.08rem}
-    .month-heading span{color:var(--muted);font-size:.78rem;font-weight:800}
-    .entry{background:#fff;border:1px solid var(--line);padding:14px}
+    .month-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:0;padding:0 0 7px;border-bottom:1px solid var(--admin-line)}
+    .month-heading h3{margin:0;font:700 1.1rem Georgia,serif;color:var(--admin-navy)}
+    .month-heading span{color:var(--admin-muted);font-size:.78rem;font-weight:800}
+    .entry{background:#fff;border:1px solid var(--admin-line);padding:14px}
     .entry-head{display:flex;justify-content:space-between;align-items:start;gap:12px}
-    .entry h3{margin:0;font-size:1.05rem}
-    .amount{font-weight:900;white-space:nowrap}
-    .entry p{margin:7px 0;color:var(--muted);font-size:.8rem;line-height:1.5}
+    .entry h3{margin:0;font:700 1.05rem Georgia,serif;color:var(--admin-navy)}
+    .amount{font-weight:900;white-space:nowrap;color:var(--admin-navy)}
+    .entry p{margin:7px 0;color:var(--admin-muted);font-size:.8rem;line-height:1.5}
     .entry-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
     .entry-actions button,.entry-actions a{padding:7px 10px;font-size:.68rem}
-    .empty{padding:20px 0;color:var(--muted);font-size:.85rem}
-    .disclaimer{margin:14px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
+    .empty{padding:20px 0;color:var(--admin-muted);font-size:.85rem}
+    .disclaimer{margin:14px 0 0;color:var(--admin-muted);font-size:.72rem;line-height:1.5}
     @media(max-width:820px){.fields{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.shell{width:min(100% - 28px,1160px)}.top{align-items:flex-start;flex-direction:column}.fields{grid-template-columns:1fr}.entry-head{flex-direction:column}.summary{grid-template-columns:1fr 1fr}.expense-filters{grid-template-columns:1fr}.panel-heading{align-items:flex-start}.panel{padding:16px}.expense-editor{padding:0}.editor-summary{padding:16px}.editor-form{padding:0 16px 16px}}
+    @media(max-width:620px){.fields{grid-template-columns:1fr}.entry-head{flex-direction:column}.summary{grid-template-columns:1fr 1fr}.expense-filters{grid-template-columns:1fr}.panel-heading{align-items:flex-start}.panel{padding:16px}.expense-editor{padding:0}.editor-summary{padding:16px}.editor-form{padding:0 16px 16px}}
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Checking private finance access…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header">
-      <span class="brand">Study With Madison <small>RN</small></span>
-      <nav class="admin-nav" aria-label="Admin navigation">
-        <a href="madison-admin.html">Admin home</a>
-        <a href="madison-leads.html">Leads &amp; intake</a>
+  <div class="admin-app hidden" id="app">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · Admin</small></div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Pipeline</div>
+        <a href="madison-admin.html">Overview</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
         <a href="madison-consultations.html">Consultations</a>
-        <a href="shared-progress.html">Progress</a>
+        <a href="madison-diagnostic.html">Diagnostic launcher</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Students &amp; Clinical</div>
+        <a href="student-onboarding.html">New student onboarding</a>
+        <a href="shared-progress.html">Student progress</a>
         <a href="madison-assignments.html">Assignments</a>
-        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="assessment-history-admin.html">Assessment history</a>
         <a href="madison-cpr.html">CPR tracker</a>
-        <a href="madison-graphics.html">Graphics</a>
         <a href="question-bank-review.html">Question bank</a>
-        <a href="finance.html" aria-current="page">Finance</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Operations</div>
+        <a href="madison-graphics.html">Teaching graphics</a>
+        <a href="finance.html" class="active">Finance &amp; bookkeeping</a>
         <button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
-      </nav>
-    </header>
-    <section class="hero">
-      <h1>Business finance</h1>
-      <p>Track expenses, keep receipts together, and review spending by month.</p>
-    </section>
-    <p class="page-status" id="form-status" role="status" aria-live="polite"></p>
-    <div class="layout">
-      <details class="panel expense-editor" id="expense-editor">
-        <summary class="editor-summary">
-          <div><h2 id="form-title">Add an expense</h2><p>Enter a payment and optionally attach a receipt.</p></div>
-        </summary>
-        <form class="editor-form" id="expense-form">
-            <div class="fields">
-              <div class="field"><label for="occurred-on">Date</label><input id="occurred-on" type="date" required></div>
-              <div class="field"><label for="amount">Amount (USD)</label><input id="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required></div>
-              <div class="field"><label for="merchant">Vendor / merchant</label><input id="merchant" type="text" maxlength="160" required></div>
-              <div class="field"><label for="category">Category</label>
-                <select id="category" required>
-                  <option value="">Choose a category</option>
-                  <option>Advertising</option><option>Education &amp; training</option><option>Equipment</option>
-                  <option>Insurance</option><option>Meals</option><option>Office &amp; supplies</option>
-                  <option>Professional services</option><option>Software &amp; subscriptions</option>
-                  <option>Travel</option><option>Utilities</option><option>Other</option>
-                </select>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="admin-context">
+          <span class="eyebrow" style="margin:0">Admin Shell</span>
+          <h1>Business finance &amp; bookkeeping</h1>
+        </div>
+        <div class="admin-actions">
+          <button class="button secondary" type="button" onclick="const ed=document.getElementById('expense-editor');ed.open=true;ed.scrollIntoView({behavior:'smooth'})">+ Add new expense</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <p class="page-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="layout">
+          <details class="panel expense-editor" id="expense-editor">
+            <summary class="editor-summary">
+              <div><h2 id="form-title">Add an expense</h2><p>Enter a payment and optionally attach a receipt.</p></div>
+            </summary>
+            <form class="editor-form" id="expense-form">
+                <div class="fields">
+                  <div class="field"><label for="occurred-on">Date</label><input id="occurred-on" type="date" required></div>
+                  <div class="field"><label for="amount">Amount (USD)</label><input id="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required></div>
+                  <div class="field"><label for="merchant">Vendor / merchant</label><input id="merchant" type="text" maxlength="160" required></div>
+                  <div class="field"><label for="category">Category</label>
+                    <select id="category" required>
+                      <option value="">Choose a category</option>
+                      <option>Advertising</option><option>Education &amp; training</option><option>Equipment</option>
+                      <option>Insurance</option><option>Meals</option><option>Office &amp; supplies</option>
+                      <option>Professional services</option><option>Software &amp; subscriptions</option>
+                      <option>Travel</option><option>Utilities</option><option>Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field"><label for="description">Description / note <span style="font-weight:400">(optional)</span></label><textarea id="description" maxlength="2000"></textarea></div>
+                <div class="field"><label for="receipt">Receipt <span style="font-weight:400">(optional)</span></label><input id="receipt" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"><p class="hint">PDF, JPG, PNG, or WebP; up to 10 MB. Receipts are private to the designated finance administrator.</p><div class="ocr-actions"><button class="secondary" id="read-receipt" type="button" disabled>Read receipt to fill fields</button><p class="ocr-note">Runs in your browser. Check the suggested values before saving. PDFs: first five pages; scanned PDFs: first two.</p></div><p class="status" id="ocr-status" aria-live="polite"></p></div>
+                <div class="actions"><button id="save" type="submit">Save expense</button><button class="secondary hidden" id="cancel-edit" type="button">Cancel edit</button></div>
+            </form>
+          </details>
+          <section class="panel">
+              <div class="period-controls">
+                <div class="period-toggle" role="group" aria-label="Expense date range">
+                  <button class="secondary" id="all-period" type="button" aria-pressed="true">All expenses</button>
+                  <button class="secondary" id="month-period" type="button" aria-pressed="false">Choose month</button>
+                </div>
+                <label class="month-filter" id="month-filter" for="month" hidden>Month <input id="month" type="month"></label>
               </div>
-            </div>
-            <div class="field"><label for="description">Description / note <span style="font-weight:400">(optional)</span></label><textarea id="description" maxlength="2000"></textarea></div>
-            <div class="field"><label for="receipt">Receipt <span style="font-weight:400">(optional)</span></label><input id="receipt" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"><p class="hint">PDF, JPG, PNG, or WebP; up to 10 MB. Receipts are private to the designated finance administrator.</p><div class="ocr-actions"><button class="secondary" id="read-receipt" type="button" disabled>Read receipt to fill fields</button><p class="ocr-note">Runs in your browser. Check the suggested values before saving. PDFs: first five pages; scanned PDFs: first two.</p></div><p class="status" id="ocr-status" aria-live="polite"></p></div>
-            <div class="actions"><button id="save" type="submit">Save expense</button><button class="secondary hidden" id="cancel-edit" type="button">Cancel edit</button></div>
-        </form>
-      </details>
-      <section class="panel">
-          <div class="period-controls">
-            <div class="period-toggle" role="group" aria-label="Expense date range">
-              <button class="secondary" id="all-period" type="button" aria-pressed="true">All expenses</button>
-              <button class="secondary" id="month-period" type="button" aria-pressed="false">Choose month</button>
-            </div>
-            <label class="month-filter" id="month-filter" for="month" hidden>Month <input id="month" type="month"></label>
-          </div>
-          <h2 id="summary-title">Expense summary · all time</h2>
-          <div class="summary">
-            <div class="summary-card"><span id="total-label">Total expenses</span><strong id="total">$0.00</strong></div>
-            <div class="summary-card"><span id="count-label">Expense count</span><strong id="count">0</strong></div>
-          </div>
-          <h3>By category</h3>
-          <div class="category-list" id="category-summary"><p class="empty">No expenses for this month.</p></div>
-          <p class="disclaimer">Categories are organizational labels, not tax advice or a determination that an expense is deductible.</p>
-      </section>
-      <section class="panel">
-          <div class="panel-heading">
-            <div><h2>Expenses</h2><p id="expense-result-count" aria-live="polite">Loading expenses…</p></div>
-            <button class="secondary" id="export-csv" type="button" title="Exports expenses within the selected date range and active filters." disabled>Export CSV</button>
-          </div>
-          <div class="expense-filters" role="search">
-            <div class="field"><label for="expense-search">Search expenses</label><input id="expense-search" type="search" maxlength="120" placeholder="Vendor, category, or note"></div>
-            <div class="field"><label for="category-filter">Category</label><select id="category-filter"><option value="">All categories</option></select></div>
-            <button class="secondary" id="clear-filters" type="button" disabled>Clear filters</button>
-          </div>
-          <div class="entries" id="entries"><p class="empty">Loading expenses…</p></div>
-          <p class="export-status" id="export-status" aria-live="polite"></p>
-      </section>
+              <h2 id="summary-title">Expense summary · all time</h2>
+              <div class="summary">
+                <div class="summary-card"><span id="total-label">Total expenses</span><strong id="total">$0.00</strong></div>
+                <div class="summary-card"><span id="count-label">Expense count</span><strong id="count">0</strong></div>
+              </div>
+              <h3 style="font:700 1.1rem Georgia,serif;color:var(--admin-navy);margin:16px 0 10px">By category</h3>
+              <div class="category-list" id="category-summary"><p class="empty">No expenses for this month.</p></div>
+              <p class="disclaimer">Categories are organizational labels, not tax advice or a determination that an expense is deductible.</p>
+          </section>
+          <section class="panel">
+              <div class="panel-heading">
+                <div><h2>Expenses</h2><p id="expense-result-count" aria-live="polite">Loading expenses…</p></div>
+                <button class="secondary" id="export-csv" type="button" title="Exports expenses within the selected date range and active filters." disabled>Export CSV</button>
+              </div>
+              <div class="expense-filters" role="search">
+                <div class="field"><label for="expense-search">Search expenses</label><input id="expense-search" type="search" maxlength="120" placeholder="Vendor, category, or note"></div>
+                <div class="field"><label for="category-filter">Category</label><select id="category-filter"><option value="">All categories</option></select></div>
+                <button class="secondary" id="clear-filters" type="button" disabled>Clear filters</button>
+              </div>
+              <div class="entries" id="entries"><p class="empty">Loading expenses…</p></div>
+              <p class="export-status" id="export-status" aria-live="polite"></p>
+          </section>
+        </div>
+      </div>
     </div>
-  </main>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="finance-receipt-ocr.js"></script>
   <script>

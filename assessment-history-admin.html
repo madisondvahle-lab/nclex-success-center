@@ -4,41 +4,207 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <title>Assessment History · Study With Madison, RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--blue:#235f9f;--soft:#f5eee8}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1120px,calc(100% - 36px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid #e2e8e3}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.top a,.sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;text-decoration:none;border-bottom:1px solid currentColor;padding:0 0 3px}.hero{padding:44px 0 26px}.eyebrow{margin:0 0 12px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.25rem,5vw,4rem);line-height:1}h2{margin:0 0 14px;font-size:1.55rem}.hero p:not(.eyebrow){max-width:730px;color:var(--muted);line-height:1.65}.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:22px;padding-bottom:60px}.card{background:var(--paper);border:1px solid var(--line);padding:26px}.hint{margin:0 0 18px;color:var(--muted);font-size:.86rem;line-height:1.6}label{display:block;color:var(--muted);font-size:.72rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;margin:0 0 6px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cbd8d0;border-radius:8px;background:#fff;color:var(--ink);font:400 .92rem Inter,sans-serif}textarea{min-height:82px;resize:vertical}.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.score label{font-size:.66rem;letter-spacing:.04em;text-transform:none;line-height:1.3}.submit{margin-top:17px;width:100%;padding:13px;border:0;border-radius:8px;background:var(--ink);color:#fff;font:800 .9rem Inter,sans-serif;cursor:pointer}.submit:disabled{opacity:.55;cursor:wait}.status{min-height:21px;margin:12px 0 0;font-size:.84rem;color:var(--muted)}.status.error{color:#a32828}.status.success{color:#17663c}.history{display:grid;gap:10px}.entry{border:1px solid var(--line);padding:15px;background:#fff}.entry h3{margin:0 0 5px;font-size:1.05rem}.entry p{margin:4px 0;color:var(--muted);font-size:.8rem;line-height:1.5}.badge{display:inline-block;margin-top:6px;padding:4px 7px;border-radius:999px;background:#e6f0fb;color:var(--blue);font-size:.65rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.empty{margin:0;color:var(--muted);line-height:1.6}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}.hidden{display:none}@media(max-width:800px){.grid{grid-template-columns:1fr}.fields,.scores{grid-template-columns:1fr}.shell{width:min(100% - 28px,1120px)}.top{gap:16px}.hero{padding-top:34px}}
+    /* Assessment history specific styles */
+    .assessments-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;align-items:start}
+    .panel-body{padding:20px 22px}
+    .hint{margin:0 0 16px;color:var(--admin-muted);font-size:.82rem;line-height:1.55}
+    label{display:block;color:var(--admin-muted);font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:400 .9rem Inter,sans-serif}
+    textarea{min-height:82px;resize:vertical}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+    .score label{font-size:.66rem;letter-spacing:.04em;text-transform:none;line-height:1.3;font-weight:700}
+    .submit{margin-top:16px;width:100%;padding:12px;border:1px solid var(--admin-navy);background:var(--admin-navy);color:#fff;font:800 .85rem Inter,sans-serif;cursor:pointer}
+    .submit:disabled{opacity:.55;cursor:wait}
+    .status{min-height:21px;margin:12px 0 0;font-size:.84rem;color:var(--admin-muted)}
+    .status.error{color:#a32828;font-weight:700}
+    .status.success{color:#17663c;font-weight:700}
+    .history{display:grid;gap:10px}
+    .entry{border:1px solid var(--admin-line);padding:14px;background:#fff}
+    .entry h3{margin:0 0 5px;font:700 1.05rem Georgia,serif;color:var(--admin-navy)}
+    .entry p{margin:4px 0;color:var(--admin-muted);font-size:.8rem;line-height:1.5}
+    .entry button.top{border:0;background:none;color:var(--admin-navy);font:800 .75rem Inter,sans-serif;cursor:pointer;padding:0;text-decoration:underline}
+    .badge{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;background:#e6f0fb;color:#18538c;font-size:.64rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+    .empty{margin:0;color:var(--admin-muted);line-height:1.6;font-size:.84rem}
+    .file-note{margin:5px 0 0;font-size:.74rem;color:var(--admin-muted)}
+    .summary h3{margin:0 0 6px;font:700 1.15rem Georgia,serif;color:var(--admin-navy)}
+    .summary p{margin:5px 0;color:var(--admin-muted);font-size:.84rem;line-height:1.5}
+    @media(max-width:860px){
+      .assessments-layout{grid-template-columns:1fr}
+      .fields,.scores{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening assessment history…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html" aria-current="page">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button></nav></header>
-    <section class="hero"><p class="eyebrow">Private admin view</p><h1>Outside assessment history.</h1><p>Enter the category percentages from any CAT, readiness exam, or question bank. The adaptive engine gives lower-scoring Client Needs categories extra weight while preserving required core safety coverage and NCLEX blueprint ranges.</p></section>
-    <section class="grid">
-      <article class="card">
-        <h2>Add an assessment</h2>
-        <p class="hint">Use the report's Client Needs percentages when available. Leave any category blank if the platform does not report it.</p>
-        <form id="assessment-form">
-          <div class="fields">
-            <div><label for="student">Student</label><select id="student" required><option value="">Select a student</option></select></div>
-            <div><label for="platform">Platform</label><input id="platform" maxlength="120" placeholder="e.g. UWorld, ATI, Archer" required></div>
-            <div><label for="assessment-name">Assessment name</label><input id="assessment-name" maxlength="160" placeholder="e.g. CAT #2"></div>
-            <div><label for="taken-at">Date completed</label><input id="taken-at" type="date"></div>
-            <div><label for="overall-score">Overall score %</label><input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="Optional"></div>
-            <div><label for="readiness">Readiness label</label><input id="readiness" maxlength="80" placeholder="e.g. High chance of passing"></div>
+  <div class="admin-app hidden" id="app">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="assessment-history-admin.html" aria-current="page">Assessments</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+          <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Students &amp; Clinical · Outside assessments</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="shared-progress.html">Student workspace</a>
+          <a class="button secondary" href="madison-assignments.html">Assignments</a>
+          <a class="button secondary" href="student-onboarding.html">New student</a>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <header class="dashboard-heading">
+          <div>
+            <h1>Outside assessment history</h1>
+            <p>Enter category percentages from any CAT, readiness exam, or external question bank. The adaptive engine weights lower-scoring Client Needs categories while preserving required core safety coverage and NCLEX blueprint ranges.</p>
           </div>
-          <div class="scores" id="scores"></div>
-          <div><label for="notes">Private notes</label><textarea id="notes" maxlength="2000" placeholder="Optional context from the report or tutoring session"></textarea></div>
-          <div style="margin-top:13px"><label for="report-file">Attach source report <span style="font-weight:400;text-transform:none">(optional)</span></label><input id="report-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,application/pdf,image/png,image/jpeg,image/webp,text/csv"><p class="file-note">Private to admins. PDF, image, or CSV; up to 10 MB.</p></div>
-          <button class="submit" id="save" type="submit">Save assessment history</button>
-          <p class="status" id="status" aria-live="polite"></p>
-        </form>
-        <section class="import"><h2>Import many results</h2><p class="hint">Download the template, fill one row per assessment, then import it. Students are matched by email.</p><a href="assessment-import-template.csv" download>Download CSV template →</a><input id="csv-file" type="file" accept=".csv,text/csv" style="margin-top:13px"><button class="secondary" id="import-csv" type="button">Import CSV assessments</button><p class="status" id="import-status" aria-live="polite"></p></section>
-      </article>
-      <aside class="card"><section style="margin-bottom:28px"><h2>Your current students</h2><div class="history" id="roster"><p class="empty">Loading your student roster…</p></div></section><section style="margin-bottom:28px"><h2>Student trend summary</h2><div id="summary" class="summary"><p>Select a student above to see their compiled assessment trend.</p></div></section><section><h2>Recent entries</h2><div class="history" id="history"><p class="empty">Loading saved assessment history…</p></div></section></aside>
-    </section>
-  </main>
+          <div class="quick-actions">
+            <a class="button secondary" href="shared-progress.html">View student progress →</a>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="Assessment history overview">
+          <article class="metric">
+            <strong>Client Needs</strong>
+            <span>8 Test Plan Categories</span>
+            <small>UWorld, Archer, ATI, Kaplan mapping</small>
+          </article>
+          <article class="metric">
+            <strong>Weighted Adapting</strong>
+            <span>Personalized Practice</span>
+            <small>Prioritizes student weak categories</small>
+          </article>
+          <article class="metric">
+            <strong>Attached Reports</strong>
+            <span>Private Storage</span>
+            <small>PDF &amp; screenshot reports on file</small>
+          </article>
+          <article class="metric">
+            <strong>Batch Import</strong>
+            <span>CSV Uploads</span>
+            <small>Upload multi-student score logs</small>
+          </article>
+        </section>
+
+        <div class="assessments-layout">
+          <div>
+            <!-- Add assessment panel -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Add an assessment</h2>
+                  <p>Use the report's Client Needs percentages when available. Leave any category blank if the platform does not report it.</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <form id="assessment-form">
+                  <div class="fields">
+                    <div><label for="student">Student</label><select id="student" required><option value="">Select a student</option></select></div>
+                    <div><label for="platform">Platform</label><input id="platform" maxlength="120" placeholder="e.g. UWorld, ATI, Archer" required></div>
+                    <div><label for="assessment-name">Assessment name</label><input id="assessment-name" maxlength="160" placeholder="e.g. CAT #2"></div>
+                    <div><label for="taken-at">Date completed</label><input id="taken-at" type="date"></div>
+                    <div><label for="overall-score">Overall score %</label><input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="Optional"></div>
+                    <div><label for="readiness">Readiness label</label><input id="readiness" maxlength="80" placeholder="e.g. High chance of passing"></div>
+                  </div>
+                  <div class="scores" id="scores"></div>
+                  <div><label for="notes">Private notes</label><textarea id="notes" maxlength="2000" placeholder="Optional context from the report or tutoring session"></textarea></div>
+                  <div style="margin-top:14px"><label for="report-file">Attach source report <span style="font-weight:400;text-transform:none">(optional)</span></label><input id="report-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,application/pdf,image/png,image/jpeg,image/webp,text/csv"><p class="file-note">Private to admins. PDF, image, or CSV; up to 10 MB.</p></div>
+                  <button class="submit" id="save" type="submit">Save assessment history</button>
+                  <p class="status" id="status" aria-live="polite"></p>
+                </form>
+              </div>
+            </section>
+
+            <!-- Import CSV panel -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Import many results</h2>
+                  <p>Download the template, fill one row per assessment, then import it. Students are matched by email.</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <p style="margin:0 0 12px"><a class="button secondary" href="assessment-import-template.csv" download>Download CSV template →</a></p>
+                <input id="csv-file" type="file" accept=".csv,text/csv" style="margin-top:8px">
+                <p style="margin-top:14px">
+                  <button class="button primary" id="import-csv" type="button">Import CSV assessments</button>
+                </p>
+                <p class="status" id="import-status" aria-live="polite"></p>
+              </div>
+            </section>
+          </div>
+
+          <aside>
+            <!-- Current students -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Your current students</h2>
+                  <p>Click a student to view their history &amp; focus areas</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="history" id="roster"><p class="empty">Loading your student roster…</p></div>
+              </div>
+            </section>
+
+            <!-- Student trend summary -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Student trend summary</h2>
+                  <p>Aggregated scores and priority Client Needs categories</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div id="summary" class="summary"><p class="empty">Select a student above to see their compiled assessment trend.</p></div>
+              </div>
+            </section>
+
+            <!-- Recent entries -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Recent entries</h2>
+                  <p>Recorded outside exam results</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="history" id="history"><p class="empty">Loading saved assessment history…</p></div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');

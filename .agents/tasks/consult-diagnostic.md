@@ -31,9 +31,21 @@ Migrations the tutor has run (all in repo root): `supabase-question-item-types.s
 - Student practice (`supplemental-practice.html`) only reads single-answer rows, so SATA/bowtie/case rows in `questions` are ignored there until the exam player is wired to `item_data`.
 - Students flag questions from the ExamUI top bar ("Flag question", option `onFlag`; signed-in students only, currently only in supplemental-practice). Reports and discuss flags appear in separate inboxes on the Question bank page; discuss flags also show per student on `shared-progress.html` (admin only, card `#discuss-card`).
 
+## Controlled bulk question import (implementation branch)
+`question-bank-review.html` adds a JSON intake path for 25–50 items. It validates required NCLEX category, topic, clinical-judgment skill, difficulty, references, full rationale and option rationales; MCQs require four choices and one letter key, while NGN items require a non-empty `item_data` object. It compares stems with the complete bank and flags exact/near overlaps, then requires an item-by-item review before inserting anything. Inserts are inactive and append-only. Imported rows have a separate **Approve** step and a later **Publish** step; the bulk publish action also enforces approval.
+
+Before using it, run `supabase-question-bulk-import.sql` after the question-bank-review and item-type migrations. It adds `clinical_judgment_skill`, `option_rationales`, `reference_list`, supporting indexes, and the `approved` review status without changing existing question IDs/content/history. The admin page now pages through the bank and review records in 500-row batches rather than stopping at 1,000.
+
+Batch JSON is either an array or `{ "items": [...] }`. Each item uses `id`, `stem`, `item_type`, `difficulty`, `nclex_category`, `topic`, `clinical_judgment_skill`, `rationale`, `option_rationales`, and `references` (`[{ "title": "...", "url": "https://..." }]`). MCQ items also provide `options` (four strings) and `correct_answer` (`a`–`d`); NGN items provide their full structure in `item_data`. New imports only—do not use the intake path to overwrite audited questions or submit the unapproved replacement drafts from PR #143.
+
+Edits to existing numbered or active questions now create `question_revision_drafts`; they do not change the live row. Admins compare original/proposed content, approve or reject, and only then apply an approved revision. The apply RPC locks the existing question and rejects stale drafts if any tracked content changed after proposal. It updates the same UUID and leaves `question_no`, `module_key`, active state, assignments, and student responses intact. The revision table is append-only from the browser, and deletion of a question with revision history is restricted.
+
+The student Mixed Review query also pages active question records in batches of 500 so newly published MCQs remain discoverable beyond 1,000 rows. The existing practice renderer still filters to single-answer questions; NGN rendering/scoring remains a separate follow-up.
+
 ## Phase 5: assessments / workspace (context)
 - Two stores: `student_assessment_uploads` and `external_assessments` (Assessments page); the workspace merges both. Admin can delete a report from the workspace, and an entry from the Assessments page (roster cards are clickable).
 - Student dashboard has a weekly CAT trend card (`renderCatTrend`, reads `external_assessments`).
+- Admin home links to a single student workspace with assignments, progress, CAT/readiness data, reports, portal assessment attempts, supplemental practice, and private notes; the activity section combines in-house assessment attempts and supplemental practice results.
 - Shared-guidance/coach-review card and priority map were removed/hidden; private session notes kept.
 
 ## Next

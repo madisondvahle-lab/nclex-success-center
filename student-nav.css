@@ -1,0 +1,449 @@
+/* ==========================================================================
+   Student Navigation Shell · Study With Madison RN / NCLEX Success Center
+   Shared responsive sidebar navigation for student surfaces.
+   ========================================================================== */
+
+:root {
+  --portal-sidebar-w: 256px;
+  --portal-sidebar-bg: #11253e;
+  --portal-sidebar-card: #0d1e33;
+  --portal-sidebar-text: #f0f4f8;
+  --portal-sidebar-muted: #8fa6ba;
+  --portal-sidebar-border: rgba(255, 255, 255, 0.08);
+  --portal-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --portal-accent-teal: #38a394;
+  --portal-accent-teal-soft: rgba(56, 163, 148, 0.22);
+  --portal-accent-rose: #d67b8d;
+  --portal-accent-rose-soft: rgba(214, 123, 141, 0.22);
+}
+
+/* ── Accessible skip link ────────────────────────────────────────── */
+.portal-skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 16px;
+  z-index: 1000;
+  padding: 12px 18px;
+  background: #17344f;
+  color: #ffffff;
+  font: 700 0.85rem Inter, system-ui, sans-serif;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.portal-skip-link:focus,
+.portal-skip-link:focus-visible {
+  top: 14px;
+  outline: 3px solid #38a394;
+  outline-offset: 3px;
+}
+
+/* ── App layout shell ────────────────────────────────────────────── */
+.portal-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--cream, #fcf8f2);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+.portal-sidebar {
+  width: var(--portal-sidebar-w);
+  flex: 0 0 var(--portal-sidebar-w);
+  background: var(--portal-sidebar-bg);
+  color: var(--portal-sidebar-text);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-right: 1px solid var(--portal-sidebar-border);
+  z-index: 40;
+  box-sizing: border-box;
+}
+
+.portal-sidebar-header {
+  padding: 22px 18px 18px;
+  border-bottom: 1px solid var(--portal-sidebar-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.portal-sidebar-brand {
+  text-decoration: none;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.portal-sidebar-brand:focus-visible {
+  outline: 2px solid var(--portal-accent-teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.portal-sidebar-title {
+  font: 700 1.18rem Georgia, "Times New Roman", serif;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1.15;
+}
+.portal-sidebar-title small {
+  font: 700 0.64em Inter, system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  color: var(--portal-sidebar-muted);
+  margin-left: 2px;
+}
+
+.portal-sidebar-subtitle {
+  font: 800 0.67rem Inter, system-ui, sans-serif;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--portal-accent-teal);
+  transition: color 0.15s ease;
+}
+.portal-sidebar.portal-nclex-theme .portal-sidebar-subtitle {
+  color: var(--portal-accent-rose);
+}
+
+.portal-sidebar-close {
+  display: none; /* Desktop hidden; mobile only */
+  background: transparent;
+  border: 0;
+  color: var(--portal-sidebar-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.portal-sidebar-close:hover,
+.portal-sidebar-close:focus-visible {
+  color: #ffffff;
+  background: var(--portal-sidebar-hover);
+  outline: none;
+}
+
+/* ── Nav navigation items ────────────────────────────────────────── */
+.portal-nav {
+  flex: 1;
+  padding: 18px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.portal-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.portal-nav-heading {
+  font: 800 0.65rem Inter, system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--portal-sidebar-muted);
+  padding: 0 10px 5px;
+  margin: 0;
+}
+
+.portal-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 9px 12px;
+  color: #d1dde8;
+  text-decoration: none;
+  font: 600 0.88rem Inter, system-ui, -apple-system, sans-serif;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  transition: background-color 0.14s ease, color 0.14s ease, border-left-color 0.14s ease;
+  box-sizing: border-box;
+}
+
+.portal-nav-item:hover {
+  background: var(--portal-sidebar-hover);
+  color: #ffffff;
+}
+
+.portal-nav-item:focus-visible {
+  outline: 2px solid var(--portal-accent-teal);
+  outline-offset: 2px;
+  color: #ffffff;
+}
+
+.portal-sidebar.portal-nclex-theme .portal-nav-item:focus-visible {
+  outline-color: var(--portal-accent-rose);
+}
+
+.portal-nav-item.active,
+.portal-nav-item[aria-current="page"] {
+  background: var(--portal-accent-teal-soft);
+  color: #ffffff;
+  font-weight: 700;
+  border-left-color: var(--portal-accent-teal);
+}
+
+.portal-sidebar.portal-nclex-theme .portal-nav-item.active,
+.portal-sidebar.portal-nclex-theme .portal-nav-item[aria-current="page"] {
+  background: var(--portal-accent-rose-soft);
+  border-left-color: var(--portal-accent-rose);
+}
+
+.portal-nav-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.88;
+}
+
+/* ── Sidebar footer (student profile card & sign out) ─────────────── */
+.portal-sidebar-footer {
+  padding: 14px 12px 18px;
+  border-top: 1px solid var(--portal-sidebar-border);
+  background: var(--portal-sidebar-card);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.portal-user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.portal-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--portal-accent-teal);
+  color: #ffffff;
+  font: 800 0.86rem Inter, system-ui, sans-serif;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  text-transform: uppercase;
+  user-select: none;
+}
+.portal-sidebar.portal-nclex-theme .portal-user-avatar {
+  background: var(--portal-accent-rose);
+}
+
+.portal-user-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.portal-user-name {
+  display: block;
+  font: 700 0.86rem Inter, system-ui, sans-serif;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.portal-user-role {
+  display: block;
+  font: 600 0.72rem Inter, system-ui, sans-serif;
+  color: var(--portal-sidebar-muted);
+  margin-top: 1px;
+}
+
+.portal-sidebar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.portal-signout-btn {
+  background: transparent;
+  border: 0;
+  color: var(--portal-sidebar-muted);
+  font: 600 0.78rem Inter, system-ui, sans-serif;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  text-decoration: underline;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
+.portal-signout-btn:hover,
+.portal-signout-btn:focus-visible {
+  color: #ffffff;
+  background: var(--portal-sidebar-hover);
+  outline: none;
+}
+
+/* ── Main content wrapper ────────────────────────────────────────── */
+.portal-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-main.shell,
+.portal-main .shell {
+  width: min(1160px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+/* Breadcrumb bar inside portal main on desktop */
+.portal-main .top {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--line, #cbd5d1);
+}
+.portal-main .top .brand {
+  display: none; /* Already prominently shown in sidebar / mobile bar */
+}
+
+@media (max-width: 960px) {
+  .portal-main.shell,
+  .portal-main .shell {
+    width: min(100% - 28px, 860px);
+  }
+}
+
+/* ── Mobile top bar ──────────────────────────────────────────────── */
+.portal-mobile-bar {
+  display: none; /* Hidden on desktop */
+  min-height: 54px;
+  padding: 0 16px;
+  background: var(--portal-sidebar-bg);
+  color: #ffffff;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  border-bottom: 1px solid var(--portal-sidebar-border);
+  box-sizing: border-box;
+}
+
+.portal-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  padding: 6px 12px;
+  font: 700 0.8rem Inter, system-ui, sans-serif;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.portal-menu-toggle:hover,
+.portal-menu-toggle:focus-visible {
+  background: var(--portal-sidebar-hover);
+  outline: 2px solid var(--portal-accent-teal);
+  outline-offset: 2px;
+}
+.portal-menu-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.portal-mobile-brand {
+  font: 700 0.98rem Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+.portal-mobile-brand small {
+  font: 600 0.7em Inter, system-ui, sans-serif;
+  color: var(--portal-sidebar-muted);
+}
+
+.portal-mobile-signout {
+  border: 0;
+  background: transparent;
+  color: var(--portal-sidebar-muted);
+  font: 600 0.78rem Inter, system-ui, sans-serif;
+  cursor: pointer;
+  padding: 6px 8px;
+  text-decoration: underline;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+.portal-mobile-signout:hover,
+.portal-mobile-signout:focus-visible {
+  color: #ffffff;
+}
+
+/* ── Mobile drawer overlay backdrop ──────────────────────────────── */
+.portal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 36, 0.65);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 38;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+/* ── Responsive breakpoints ──────────────────────────────────────── */
+@media (max-width: 960px) {
+  .portal-mobile-bar {
+    display: flex;
+  }
+  .portal-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 270px;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .portal-sidebar.open {
+    transform: translateX(0);
+  }
+  .portal-sidebar-close {
+    display: block;
+  }
+  .portal-backdrop {
+    display: block;
+  }
+  .portal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-sidebar,
+  .portal-backdrop,
+  .portal-nav-item {
+    transition: none !important;
+  }
+}

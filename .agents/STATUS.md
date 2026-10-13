@@ -166,6 +166,9 @@ Future modules M8+ remain unassigned until explicitly defined.
 ## Consult diagnostic
 `madison-diagnostic.html` (tutor-only) added with shared `exam-ui.*` engine; see `.agents/tasks/consult-diagnostic.md`.
 
+## Consult profile merge
+The Admin home Prospects section includes the admin-only merge workflow for duplicate `consult_intakes` profiles. The atomic `merge_consult_intakes` RPC moves CPR attempts, uploaded-report metadata, consult-prep resources, diagnostics, and consultation links while preserving the duplicate profile/resource details in a restricted audit snapshot. It refuses profiles linked to different student accounts. Apply `supabase-consult-intake-merge-migration.sql` after its listed prerequisites before using the workflow; see `.agents/tasks/consult-intake-merge.md`. The legacy `madison-leads.html` route redirects to Admin home; student-account merging and multiple-CPR-file uploads are not part of this workflow.
+
 ## Question bank management and flags
 The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case), `question_no` (Q-0001 numbering) and a `question_flags` table (student reports and 'discuss' flags). `question-bank-review.html` manages the bank (bulk actions, edit, flagged inboxes). Details and the SQL files to run are in `.agents/tasks/consult-diagnostic.md`. Deployment is unchanged: GitHub Pages from `main`.
 - Ideas not yet built: weekly per-client report with chart, admin "Needs attention" list, shared category names across CPR/practice/diagnostic, link CPR tracker to client records, hide/redirect `diagnostic.html?mode=mock`.
