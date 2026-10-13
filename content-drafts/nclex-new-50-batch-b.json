@@ -269,12 +269,12 @@
   {
     "draft_id": "NEW-20261012-038",
     "stem": "A client with suspected appendicitis has new generalized abdominal rigidity and a sudden change in pain pattern. Which response is best?",
-    "option_a": "Give an enema to stimulate bowel movement",
-    "option_b": "Offer food for energy",
+    "option_a": "Initiate ordered IV isotonic fluids and reassess abdominal findings before contacting the surgeon",
+    "option_b": "Administer the prescribed antiemetic and reassess pain in 20 minutes",
     "option_c": "Keep NPO, assess urgently, and report possible perforation",
-    "option_d": "Apply a heating pad and discharge",
+    "option_d": "Obtain an ordered CT scan before escalating the new rigidity",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Enemas are contraindicated when perforation or peritonitis is suspected. B: Oral feeding is inappropriate before evaluating possible acute abdomen. C: Keep NPO and escalate suspected perforation/peritonitis with urgent assessment. D: Heat and discharge delay evaluation and could worsen injury.",
+    "rationale": "Correct answer: C. A: Fluids may support circulation, but new abdominal rigidity demands prompt escalation and surgical assessment rather than deferred notification. B: Symptom control does not address potential perforation or peritonitis. C: New rigidity with changing abdominal pain suggests peritoneal irritation and warrants urgent assessment and surgical consultation while maintaining NPO. D: Imaging may be warranted but should not delay reporting possible perforation or acute peritonitis.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -282,10 +282,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Enemas are contraindicated when perforation or peritonitis is suspected.",
-      "b": "Oral feeding is inappropriate before evaluating possible acute abdomen.",
-      "c": "Keep NPO and escalate suspected perforation/peritonitis with urgent assessment.",
-      "d": "Heat and discharge delay evaluation and could worsen injury."
+      "a": "Fluids may support circulation, but new abdominal rigidity demands prompt escalation and surgical assessment rather than deferred notification.",
+      "b": "Symptom control does not address potential perforation or peritonitis.",
+      "c": "New rigidity with changing abdominal pain suggests peritoneal irritation and warrants urgent assessment and surgical consultation while maintaining NPO.",
+      "d": "Imaging may be warranted but should not delay reporting possible perforation or acute peritonitis."
     }
   },
   {
@@ -314,11 +314,11 @@
     "draft_id": "NEW-20261012-040",
     "stem": "A client with new atrial fibrillation and HR 170/min has chest pain, BP 74/40 mm Hg, and altered mentation. What should the nurse anticipate?",
     "option_a": "Urgent synchronized cardioversion by the emergency team",
-    "option_b": "Routine oral rate-control medication with discharge",
-    "option_c": "No action until cardiac enzymes return",
-    "option_d": "Independent ambulation to determine exercise tolerance",
+    "option_b": "Start ordered IV rate-control therapy and reassess blood pressure before preparing for cardioversion",
+    "option_c": "Obtain a 12-lead ECG and troponin results before calling the emergency team",
+    "option_d": "Administer a fluid bolus and observe for spontaneous conversion before notifying the clinician",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Hypotension, chest pain and altered mentation with rapid atrial fibrillation indicate hemodynamic instability; anticipate urgent synchronized cardioversion. B: Oral-only treatment with discharge is inappropriate during shock. C: Waiting for cardiac biomarkers delays treatment of an unstable rhythm. D: Exercise testing is unsafe in unstable tachyarrhythmia.",
+    "rationale": "Correct answer: A. A: Rapid AF with severe hypotension, chest pain and altered mentation represents hemodynamic instability; immediate synchronized cardioversion is indicated. B: AV-nodal blocking agents can worsen severe hypotension and must not delay immediate electrical cardioversion in unstable AF. C: ECG acquisition is useful when it does not delay resuscitation; laboratory testing must not defer emergency intervention. D: Fluid management may be individualized, but observation and waiting for spontaneous rhythm conversion are unsafe during shock.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -326,21 +326,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Hypotension, chest pain and altered mentation with rapid atrial fibrillation indicate hemodynamic instability; anticipate urgent synchronized cardioversion.",
-      "b": "Oral-only treatment with discharge is inappropriate during shock.",
-      "c": "Waiting for cardiac biomarkers delays treatment of an unstable rhythm.",
-      "d": "Exercise testing is unsafe in unstable tachyarrhythmia."
+      "a": "Rapid AF with severe hypotension, chest pain and altered mentation represents hemodynamic instability; immediate synchronized cardioversion is indicated.",
+      "b": "AV-nodal blocking agents can worsen severe hypotension and must not delay immediate electrical cardioversion in unstable AF.",
+      "c": "ECG acquisition is useful when it does not delay resuscitation; laboratory testing must not defer emergency intervention.",
+      "d": "Fluid management may be individualized, but observation and waiting for spontaneous rhythm conversion are unsafe during shock."
     }
   },
   {
     "draft_id": "NEW-20261012-041",
     "stem": "A patient with a suspected tension pneumothorax has severe dyspnea, absent breath sounds on one side, distended neck veins, and BP 68/38 mm Hg. What is the priority?",
-    "option_a": "Obtain a routine outpatient chest x-ray",
+    "option_a": "Obtain a stat portable chest radiograph and wait for confirmation before decompression",
     "option_b": "Activate emergency response and prepare for immediate decompression",
-    "option_c": "Encourage coughing",
-    "option_d": "Administer oral antibiotics alone",
+    "option_c": "Increase supplemental oxygen and repeat auscultation before calling the response team",
+    "option_d": "Prepare for chest tube placement only after transport to radiology",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Do not delay suspected tension pneumothorax decompression for routine imaging. B: Severe hypotension and unilateral absent breath sounds suggest obstructive shock requiring immediate emergency decompression support. C: Coughing cannot relieve tension physiology. D: Antibiotics do not decompress an acutely pressurized pleural space.",
+    "rationale": "Correct answer: B. A: Tension pneumothorax with shock is a clinical emergency; diagnostic imaging must not delay decompression. B: Unilateral absent sounds with severe hypotension suggests tension physiology and obstructive shock requiring immediate emergency intervention. C: Oxygenation support is appropriate concurrently but is insufficient without urgent decompression. D: A chest drain may follow decompression, but transfer for imaging delays immediate treatment.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -348,21 +348,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Do not delay suspected tension pneumothorax decompression for routine imaging.",
-      "b": "Severe hypotension and unilateral absent breath sounds suggest obstructive shock requiring immediate emergency decompression support.",
-      "c": "Coughing cannot relieve tension physiology.",
-      "d": "Antibiotics do not decompress an acutely pressurized pleural space."
+      "a": "Tension pneumothorax with shock is a clinical emergency; diagnostic imaging must not delay decompression.",
+      "b": "Unilateral absent sounds with severe hypotension suggests tension physiology and obstructive shock requiring immediate emergency intervention.",
+      "c": "Oxygenation support is appropriate concurrently but is insufficient without urgent decompression.",
+      "d": "A chest drain may follow decompression, but transfer for imaging delays immediate treatment."
     }
   },
   {
     "draft_id": "NEW-20261012-042",
     "stem": "A client with chemotherapy-induced neutropenia has temperature 38.5°C and ANC 300/mm³. What should the nurse do?",
-    "option_a": "Administer a live vaccine",
-    "option_b": "Send the client to a crowded waiting room",
+    "option_a": "Collect blood cultures, then observe for response to an antipyretic before requesting antibiotics",
+    "option_b": "Administer a prescribed antipyretic and reassess the temperature after one hour before calling",
     "option_c": "Treat as possible febrile neutropenia, urgently notify the team, and prepare prescribed cultures and empiric antimicrobials",
-    "option_d": "Give rectal suppositories for fever",
+    "option_d": "Request a repeat ANC to confirm neutropenia before initiating the infection protocol",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Live vaccination does not treat febrile neutropenia. B: Crowded spaces increase pathogen exposure and delay urgent care. C: Fever with ANC below 500/mm³ warrants urgent cultures and prompt prescribed empiric antimicrobial treatment. D: Rectal procedures may traumatize mucosa in neutropenia/thrombocytopenia and do not address infection.",
+    "rationale": "Correct answer: C. A: Cultures are important but delaying empiric treatment for an antipyretic response is unsafe. B: Temperature reduction alone does not address possible life-threatening infection during severe neutropenia. C: ANC 300/mm³ and fever meet febrile-neutropenia criteria requiring urgent evaluation and prompt empiric antimicrobials. D: Repeat counts can clarify trends but must not delay management when severe neutropenia and fever are already documented.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -370,10 +370,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Live vaccination does not treat febrile neutropenia.",
-      "b": "Crowded spaces increase pathogen exposure and delay urgent care.",
-      "c": "Fever with ANC below 500/mm³ warrants urgent cultures and prompt prescribed empiric antimicrobial treatment.",
-      "d": "Rectal procedures may traumatize mucosa in neutropenia/thrombocytopenia and do not address infection."
+      "a": "Cultures are important but delaying empiric treatment for an antipyretic response is unsafe.",
+      "b": "Temperature reduction alone does not address possible life-threatening infection during severe neutropenia.",
+      "c": "ANC 300/mm³ and fever meet febrile-neutropenia criteria requiring urgent evaluation and prompt empiric antimicrobials.",
+      "d": "Repeat counts can clarify trends but must not delay management when severe neutropenia and fever are already documented."
     }
   },
   {
