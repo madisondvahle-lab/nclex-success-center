@@ -528,7 +528,10 @@
       "b": "Immediate expert airway help and oxygenation support are necessary; use the fresh-tracheostomy rescue algorithm.",
       "c": "Waiting risks hypoxic injury.",
       "d": "Feeding is unsafe in acute airway distress."
-    }
+    },
+    "reference_urls": [
+      "https://tracheostomy.org.uk/resources/papers/tracheostomy-adult-emergency-guidelines"
+    ]
   },
   {
     "draft_id": "NEW-20261012-050",
