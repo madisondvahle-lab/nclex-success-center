@@ -1,0 +1,677 @@
+[
+  {
+    "draft_id": "NEW-20261012-331",
+    "stem": "Four patients await morning assessment. Which patient should the RN see first?",
+    "option_a": "A client scheduled for discharge who needs a walker",
+    "option_b": "A client with newly slurred speech noted 10 minutes ago",
+    "option_c": "A client with stable chronic back pain requesting ice",
+    "option_d": "A client with a healed wound requesting dressing supplies",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "New focal neurologic change requires an immediate stroke response.",
+      "c": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "New focal neurologic change requires an immediate stroke response.",
+    "concept_family": "assignment",
+    "decision_skill": "prioritize",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level assignment",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.stroke.org/en/about-stroke/stroke-symptoms"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-332",
+    "stem": "Which assignment to trained assistive personnel is appropriate?",
+    "option_a": "Evaluate a newly red sacral area",
+    "option_b": "Teach a new colostomy patient pouch replacement",
+    "option_c": "Obtain and document routine vital signs on a stable client with reporting parameters",
+    "option_d": "Decide whether postoperative oxygen can be discontinued",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "Routine measurement on a stable patient can be delegated with clear reporting expectations.",
+      "d": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Routine measurement on a stable patient can be delegated with clear reporting expectations.",
+    "concept_family": "delegation",
+    "decision_skill": "delegate",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level delegation",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ncsbn.org/nursing-regulation/practice/delegation.page"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-333",
+    "stem": "A patient says, 'I signed the surgery form yesterday, but I changed my mind.' What is the nurse's best action?",
+    "option_a": "Explain that consent cannot be withdrawn",
+    "option_b": "Give the scheduled sedative and discuss the concern later",
+    "option_c": "Ask the patient's spouse to authorize surgery",
+    "option_d": "Pause preparations and notify the procedural team of the refusal",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "A capable patient may withdraw consent; preparation must stop pending clarification."
+    },
+    "rationale": "A capable patient may withdraw consent; preparation must stop pending clarification.",
+    "concept_family": "consent",
+    "decision_skill": "respond",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level consent",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ama-assn.org/delivering-care/ethics/informed-consent"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-334",
+    "stem": "A nurse discovers that a prescribed antihypertensive was given twice. The patient is currently alert. What should the RN do first?",
+    "option_a": "Assess blood pressure, pulse and symptoms, then promptly notify the team",
+    "option_b": "Alter the MAR to show one administration",
+    "option_c": "Wait for dizziness to develop before reassessing",
+    "option_d": "Ask the patient to avoid mentioning the event",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Immediate assessment for adverse effects and transparent escalation protect the patient.",
+      "b": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Immediate assessment for adverse effects and transparent escalation protect the patient.",
+    "concept_family": "medication_error",
+    "decision_skill": "respond",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level medication error",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://psnet.ahrq.gov/primer/medication-errors-and-adverse-drug-events"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-335",
+    "stem": "Which SBAR recommendation is most appropriate for a postoperative client with urine output of 10 mL/hr over two hours?",
+    "option_a": "'No issues; continue the same plan'",
+    "option_b": "'Please evaluate reduced urine output and advise on perfusion assessment and orders'",
+    "option_c": "'The client is probably anxious'",
+    "option_d": "'Change IV fluids to a faster rate without an order'",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "Persistent oliguria warrants evaluation; the RN communicates specific concerns and requests clinical review.",
+      "c": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Persistent oliguria warrants evaluation; the RN communicates specific concerns and requests clinical review.",
+    "concept_family": "handoff",
+    "decision_skill": "communicate",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level handoff",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ahrq.gov/teamstepps-program/curriculum/communication/tools/sbar.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-336",
+    "stem": "An alert client requests that their test results not be shared with an adult child who visits daily. What should the nurse do?",
+    "option_a": "Share results because the visitor is family",
+    "option_b": "Leave the results on the bedside table",
+    "option_c": "Respect the client's decision and clarify authorized disclosures",
+    "option_d": "Ask the child to retrieve records using the client's password",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "A capable patient's information preferences guide disclosure unless law provides an exception.",
+      "d": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "A capable patient's information preferences guide disclosure unless law provides an exception.",
+    "concept_family": "confidentiality",
+    "decision_skill": "apply",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level confidentiality",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.hhs.gov/hipaa/for-professionals/faq/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-337",
+    "stem": "A patient being discharged on insulin cannot demonstrate how to select the prescribed dose. What should the RN do?",
+    "option_a": "Document teaching as completed because written instructions were given",
+    "option_b": "Ask the family to learn independently at home",
+    "option_c": "Tell the client to estimate the dose from memory",
+    "option_d": "Delay completion of discharge teaching and arrange supervised practice or appropriate support",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "Failure to demonstrate high-risk medication technique requires remediation before independent use."
+    },
+    "rationale": "Failure to demonstrate high-risk medication technique requires remediation before independent use.",
+    "concept_family": "discharge",
+    "decision_skill": "evaluate",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level discharge",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ahrq.gov/health-literacy/improve/precautions/tool5.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-338",
+    "stem": "An aide reports a stable client's blood pressure is 88/52 mm Hg, down from 132/76. What is the RN's responsibility?",
+    "option_a": "Promptly assess the client, verify findings, and determine escalation",
+    "option_b": "Have the aide decide whether to hold blood-pressure medicine",
+    "option_c": "Ask the aide to independently start IV fluids",
+    "option_d": "Ignore because the aide obtained the reading",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "A newly abnormal finding requires licensed assessment and action; delegated measurements must be followed up.",
+      "b": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "A newly abnormal finding requires licensed assessment and action; delegated measurements must be followed up.",
+    "concept_family": "delegation",
+    "decision_skill": "supervise",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level delegation",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ncsbn.org/nursing-regulation/practice/delegation.page"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-339",
+    "stem": "A patient requiring oxygen at home reports frequent electrical outages. What should the nurse prioritize before discharge?",
+    "option_a": "Recommend that the patient stop oxygen during outages",
+    "option_b": "Work with the oxygen supplier and discharge team to verify a backup oxygen and power plan",
+    "option_c": "Advise using candles to improve room visibility",
+    "option_d": "Assume the concentrator will operate without electricity",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "Reliable backup equipment and emergency plans are essential to safe home oxygen use.",
+      "c": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Reliable backup equipment and emergency plans are essential to safe home oxygen use.",
+    "concept_family": "continuity",
+    "decision_skill": "coordinate",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level continuity",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.lung.org/lung-health-diseases/lung-procedures-and-tests/oxygen-therapy"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-340",
+    "stem": "A family member repeatedly answers for a patient who appears fearful. Which nursing action best supports autonomy?",
+    "option_a": "Confront the family member about abuse in front of the patient",
+    "option_b": "Ask the family to sign all forms",
+    "option_c": "Arrange a routine private portion of the interview to ask about preferences and safety",
+    "option_d": "Cancel care because the patient is quiet",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "Private assessment enables voluntary disclosure and protects patient choice.",
+      "d": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Private assessment enables voluntary disclosure and protects patient choice.",
+    "concept_family": "patient_advocacy",
+    "decision_skill": "respond",
+    "nclex_category": "management",
+    "topic": "2026 NCLEX Entry-Level patient advocacy",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/intimate-partner-violence/about/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-341",
+    "stem": "A patient with suspected measles is waiting in a crowded clinic. Which action takes priority?",
+    "option_a": "Offer a regular chair in the waiting area",
+    "option_b": "Apply Contact Precautions only",
+    "option_c": "Wait for a diagnostic result",
+    "option_d": "Mask the patient if tolerated and arrange immediate airborne isolation",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "Measles is highly airborne; suspected cases require immediate source control and airborne isolation."
+    },
+    "rationale": "Measles is highly airborne; suspected cases require immediate source control and airborne isolation.",
+    "concept_family": "isolation",
+    "decision_skill": "apply",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level isolation",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/infection-control/hcp/isolation-precautions/appendix-a-type-duration.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-342",
+    "stem": "After caring for a patient with C. difficile, a nurse notices visible stool on their hands. What is appropriate?",
+    "option_a": "Wash thoroughly with soap and water",
+    "option_b": "Apply sanitizer directly over the visible soil",
+    "option_c": "Put on clean gloves without cleaning hands",
+    "option_d": "Wipe hands on a paper towel only",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Soap and water are indicated when hands are visibly soiled.",
+      "b": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Soap and water are indicated when hands are visibly soiled.",
+    "concept_family": "c_difficile",
+    "decision_skill": "apply",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level c difficile",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/clean-hands/hcp/clinical-safety/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-343",
+    "stem": "While setting up a sterile catheterization tray, the nurse turns away and leaves the open field unattended. What should occur?",
+    "option_a": "Continue because the tray was initially sterile",
+    "option_b": "Replace the unattended field according to sterile-technique practice",
+    "option_c": "Spray the field with disinfectant",
+    "option_d": "Ask an assistant whether it looked contaminated",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "An unobserved sterile field cannot be assumed to remain sterile.",
+      "c": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "An unobserved sterile field cannot be assumed to remain sterile.",
+    "concept_family": "sterile_field",
+    "decision_skill": "recognize",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level sterile field",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/infection-control/hcp/cauti/prevention.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-344",
+    "stem": "A patient given lorazepam says they can walk to the restroom independently but is swaying while standing. What should the nurse do?",
+    "option_a": "Tell the patient to walk very quickly",
+    "option_b": "Raise the bed higher to assist standing",
+    "option_c": "Provide assisted toileting and institute fall precautions",
+    "option_d": "Give another dose so the patient sleeps",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "Sedation and impaired balance increase fall risk; supervised toileting is the safe option.",
+      "d": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Sedation and impaired balance increase fall risk; supervised toileting is the safe option.",
+    "concept_family": "fall_risk",
+    "decision_skill": "intervene",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level fall risk",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/steadi/"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-345",
+    "stem": "A patient discharged with home oxygen asks whether petroleum jelly is appropriate for dry lips. Which teaching is best?",
+    "option_a": "Use it only during the day",
+    "option_b": "Increase oxygen flow while applying it",
+    "option_c": "Use it next to a candle to soften it",
+    "option_d": "Choose an approved water-based moisturizer and keep oxygen away from flames",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "Water-based moisturizers and avoidance of ignition sources reduce oxygen-related hazards."
+    },
+    "rationale": "Water-based moisturizers and avoidance of ignition sources reduce oxygen-related hazards.",
+    "concept_family": "oxygen_fire",
+    "decision_skill": "teach",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level oxygen fire",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.lung.org/lung-health-diseases/lung-procedures-and-tests/oxygen-therapy"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-346",
+    "stem": "A nurse sustains a puncture from a used hollow-bore needle. What is the first appropriate response?",
+    "option_a": "Wash the site, report exposure immediately, and obtain occupational evaluation",
+    "option_b": "Squeeze the wound vigorously to expel blood",
+    "option_c": "Finish the shift before informing anyone",
+    "option_d": "Take leftover antibiotics without evaluation",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Immediate cleansing, reporting and evaluation enable time-sensitive postexposure management.",
+      "b": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Immediate cleansing, reporting and evaluation enable time-sensitive postexposure management.",
+    "concept_family": "needlestick",
+    "decision_skill": "respond",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level needlestick",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.cdc.gov/niosh/healthcare/bbp/"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-347",
+    "stem": "An older patient is pulling at a urinary catheter while confused. Which response should come before considering restraints?",
+    "option_a": "Apply wrist restraints to prevent movement",
+    "option_b": "Assess delirium, discomfort and toileting needs and increase observation as appropriate",
+    "option_c": "Sedate without assessment",
+    "option_d": "Ignore pulling unless the catheter is removed",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "Addressing reversible causes and using less-restrictive strategies is the first approach.",
+      "c": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Addressing reversible causes and using less-restrictive strategies is the first approach.",
+    "concept_family": "restraints",
+    "decision_skill": "evaluate",
+    "nclex_category": "safety",
+    "topic": "2026 NCLEX Entry-Level restraints",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ahrq.gov/patient-safety/settings/hospital/fall-prevention/toolkit/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-348",
+    "stem": "A client taking digoxin reports loss of appetite and yellow-green halos. The apical pulse is 49/min. Which action is indicated?",
+    "option_a": "Give the dose with food",
+    "option_b": "Encourage increased exercise",
+    "option_c": "Hold digoxin, assess the client and alert the prescriber about possible toxicity",
+    "option_d": "Offer antacid and reassess in a week",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "Visual changes and bradycardia with GI symptoms suggest possible digoxin toxicity requiring prompt evaluation.",
+      "d": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Visual changes and bradycardia with GI symptoms suggest possible digoxin toxicity requiring prompt evaluation.",
+    "concept_family": "digoxin",
+    "decision_skill": "recognize",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level digoxin",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a682301.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-349",
+    "stem": "A patient taking warfarin says, 'I removed all green vegetables from my diet.' Which teaching is correct?",
+    "option_a": "Continue avoiding every source of vitamin K",
+    "option_b": "Take an extra warfarin tablet after eating spinach",
+    "option_c": "Replace vegetables with grapefruit juice",
+    "option_d": "Maintain reasonably consistent vitamin K intake and keep INR monitoring appointments",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "Consistency of vitamin K intake is more useful than total avoidance during warfarin treatment."
+    },
+    "rationale": "Consistency of vitamin K intake is more useful than total avoidance during warfarin treatment.",
+    "concept_family": "anticoagulants",
+    "decision_skill": "teach",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level anticoagulants",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a682277.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-350",
+    "stem": "A client receives rapid-acting insulin, eats only a few bites of breakfast and reports sweating and tremor. What should the nurse do?",
+    "option_a": "Check glucose promptly and treat according to the hypoglycemia protocol",
+    "option_b": "Administer the next insulin dose early",
+    "option_c": "Encourage a brisk hallway walk",
+    "option_d": "Wait until lunch to repeat glucose",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Symptoms after inadequate intake require immediate glucose assessment and treatment.",
+      "b": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Symptoms after inadequate intake require immediate glucose assessment and treatment.",
+    "concept_family": "insulin",
+    "decision_skill": "evaluate",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level insulin",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://diabetes.org/living-with-diabetes/hypoglycemia-low-blood-glucose"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-351",
+    "stem": "A patient starting opioid pain medicine asks how to prevent a common bowel complication. Which response is best?",
+    "option_a": "Stop all fluids to prevent nausea",
+    "option_b": "Discuss a prescribed bowel regimen, appropriate hydration and movement as tolerated",
+    "option_c": "Take extra opioid doses before meals",
+    "option_d": "Avoid reporting constipation unless severe",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "Opioids slow gut motility; prevention often includes laxative therapy and appropriate hydration/mobility.",
+      "c": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Opioids slow gut motility; prevention often includes laxative therapy and appropriate hydration/mobility.",
+    "concept_family": "opioids",
+    "decision_skill": "teach",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level opioids",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a682132.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-352",
+    "stem": "The prescription is acetaminophen 650 mg orally. Tablets contain 325 mg each. How many tablets should the nurse administer?",
+    "option_a": "Half a tablet",
+    "option_b": "One tablet",
+    "option_c": "Two tablets",
+    "option_d": "Three tablets",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "650 mg divided by 325 mg per tablet equals two tablets.",
+      "d": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "650 mg divided by 325 mg per tablet equals two tablets.",
+    "concept_family": "med_admin",
+    "decision_skill": "calculate",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level med admin",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a681004.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-353",
+    "stem": "A patient newly taking lisinopril has facial swelling and a hoarse voice. Which action takes priority?",
+    "option_a": "Give the next dose with a snack",
+    "option_b": "Offer a throat lozenge",
+    "option_c": "Reassess during tomorrow's visit",
+    "option_d": "Stop exposure and obtain emergency evaluation of the airway",
+    "correct_answer": "d",
+    "option_rationales": {
+      "a": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "ACE-inhibitor angioedema may obstruct the airway and needs immediate treatment."
+    },
+    "rationale": "ACE-inhibitor angioedema may obstruct the airway and needs immediate treatment.",
+    "concept_family": "ace_inhibitor",
+    "decision_skill": "recognize",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level ace inhibitor",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a692051.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-354",
+    "stem": "A patient says an IV potassium infusion is burning; the insertion site is swollen. What should the nurse do first?",
+    "option_a": "Stop the infusion and assess for infiltration",
+    "option_b": "Increase the rate to complete the dose",
+    "option_c": "Flush rapidly with the potassium solution",
+    "option_d": "Massage the swollen area",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Potassium extravasation can cause tissue injury; the infusion must be stopped and site assessed.",
+      "b": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "c": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Potassium extravasation can cause tissue injury; the infusion must be stopped and site assessed.",
+    "concept_family": "potassium_iv",
+    "decision_skill": "intervene",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level potassium iv",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://www.ismp.org/resources"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-355",
+    "stem": "Which statement by a patient using an inhaled corticosteroid shows correct understanding?",
+    "option_a": "'I only need it when I have a severe attack.'",
+    "option_b": "'I will rinse my mouth and spit after each use.'",
+    "option_c": "'I should take extra doses whenever my mouth feels sore.'",
+    "option_d": "'I should avoid cleaning the inhaler.'",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "b": "Rinsing and spitting reduces oral corticosteroid residue and thrush risk.",
+      "c": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "d": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+    },
+    "rationale": "Rinsing and spitting reduces oral corticosteroid residue and thrush risk.",
+    "concept_family": "inhaled_steroids",
+    "decision_skill": "teach",
+    "nclex_category": "pharm",
+    "topic": "2026 NCLEX Entry-Level inhaled steroids",
+    "difficulty": "medium",
+    "item_type": "mcq",
+    "active": false,
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a601056.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  }
+]
