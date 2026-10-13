@@ -4,38 +4,114 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <title>New student / consult · Study With Madison RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--green:#167052}
-    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .shell{width:min(1060px,calc(100% - 36px));margin:auto}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}.hidden{display:none!important}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.top a{color:var(--ink);font:800 .75rem Inter,sans-serif;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px}
-    .hero{padding:46px 0 25px}.eyebrow{margin:0 0 12px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}h1{margin:0;font-size:clamp(2.5rem,6vw,4.4rem);line-height:1}h2{margin:0;font-size:1.7rem}h3{margin:0;font-size:1.2rem}.hero p:not(.eyebrow){max-width:700px;margin:17px 0 0;color:var(--muted);line-height:1.65}
-    .panel{margin:0 0 20px;padding:26px;background:var(--paper);border:1px solid var(--line)}.panel-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:20px}.panel-head p{margin:7px 0 0;color:var(--muted);font-size:.84rem;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.wide{grid-column:1/-1}label{display:grid;gap:6px;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);background:#fff;color:var(--ink);font:400 .9rem Inter,sans-serif}textarea{min-height:88px;resize:vertical}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:5px}.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:.78rem;font-weight:700;text-transform:none;letter-spacing:0}.chip input{width:auto;margin:0}.repeat{display:grid;gap:14px}.repeat-card{padding:18px;border:1px solid var(--line);background:#fff}.repeat-card+.repeat-card{margin-top:12px}.repeat-card .card-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}.repeat-card .card-head h3{font-size:1.1rem}.button{border:0;background:var(--ink);color:#fff;padding:11px 14px;font:800 .75rem Inter,sans-serif;cursor:pointer}.button.secondary{background:transparent;color:var(--ink);border:1px solid var(--ink)}.button.danger{background:transparent;color:#8f3b3b;border:1px solid #8f3b3b}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:4px 0 60px}.status{color:var(--muted);font-size:.84rem;line-height:1.5}.notice{margin:0 0 18px;padding:12px 14px;background:#e8f5ee;color:var(--green);font-size:.84rem}.small{font-size:.76rem;color:var(--muted);line-height:1.5}
-    @media(max-width:720px){.shell{width:min(100% - 28px,1060px)}.top{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.panel{padding:21px 17px}.hero{padding-top:38px}.panel-head{flex-direction:column}}
+    /* Student onboarding specific styles */
+    .panel{margin:0 0 20px;padding:26px;background:var(--admin-paper);border:1px solid var(--admin-line)}
+    .panel-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:20px}
+    .panel-head p{margin:7px 0 0;color:var(--admin-muted);font-size:.84rem;line-height:1.5}
+    .panel-head h2{margin:0;font:700 1.35rem Georgia,serif;color:var(--admin-navy)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .wide{grid-column:1/-1}
+    label{display:grid;gap:6px;color:var(--admin-muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:400 .9rem Inter,sans-serif}
+    textarea{min-height:88px;resize:vertical}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:5px}
+    .chip{display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font-size:.78rem;font-weight:700;text-transform:none;letter-spacing:0}
+    .chip input{width:auto;margin:0}
+    .repeat{display:grid;gap:14px}
+    .repeat-card{padding:18px;border:1px solid var(--admin-line);background:#fff}
+    .repeat-card+.repeat-card{margin-top:12px}
+    .repeat-card .card-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px}
+    .repeat-card .card-head h3{font:700 1.1rem Georgia,serif;color:var(--admin-navy);margin:0}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 0 60px}
+    .status{color:var(--admin-muted);font-size:.84rem;line-height:1.5}
+    .notice{margin:0 0 18px;padding:12px 14px;background:#e8f5ee;color:var(--admin-green);font-size:.84rem;border:1px solid #c0e0cc}
+    .small{font-size:.76rem;color:var(--admin-muted);line-height:1.5}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.panel{padding:21px 17px}.panel-head{flex-direction:column}}
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening the onboarding workspace…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html" aria-current="page">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button></nav></header>
-    <section class="hero"><p class="eyebrow">New student / consult</p><h1>Start with the whole story.</h1><p>Capture a prospective student during the consultation, save them as a lead, and keep the structured history ready if they become an active student.</p></section>
-    <p class="notice hidden" id="notice" role="status"></p>
-    <form id="onboarding-form">
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 1</p><h2>Student and consultation</h2><p>Only the name and consultation status are required. Add what you know while you talk.</p></div></div><div class="grid">
-        <label>First name<input id="first-name" required></label><label>Last name<input id="last-name" required></label><label>Email<input id="email" type="email"></label><label>Phone<input id="phone" type="tel"></label><label>Time zone<input id="time-zone" placeholder="Central, Eastern…"></label><label>Referral source<select id="referral"><option value="">Not specified</option><option>Wyzant</option><option>Website</option><option>Referral</option><option>Returning student</option><option>Other</option></select></label><label>Student type<select id="student-type"><option value="">Choose one</option><option>NCLEX-RN</option><option>NCLEX-PN</option><option>Nursing school</option><option>HESI A2</option><option>TEAS</option><option>Other</option></select></label><label>School / program<input id="program-name"></label><label>Graduation date<input id="graduation-date" type="date"></label><label>Consult date<input id="consult-date" type="date"></label><label>Status<select id="status"><option value="new_lead">New lead</option><option value="consult_scheduled">Consult scheduled</option><option value="consult_completed">Consult completed</option><option value="follow_up_needed">Follow-up needed</option><option value="active_student">Active student</option><option value="on_hold">On hold</option><option value="declined">Declined</option><option value="no_response">No response</option></select></label><label>Urgency<select id="urgency"><option value="">Not specified</option><option>Low</option><option>Medium</option><option>High</option></select></label>
-      </div></section>
-      <section class="panel hidden" id="nclex-panel"><div class="panel-head"><div><p class="eyebrow">Step 2</p><h2>NCLEX attempt history</h2><p>Record the actual number of items the real NCLEX delivered — not practice questions completed in a question bank.</p></div><button class="button secondary" type="button" id="add-attempt">+ Add NCLEX attempt</button></div><div class="grid"><label>Target / current NCLEX date<input id="target-date" type="date"></label><label>NCLEX type<select id="nclex-type"><option value="">Not specified</option><option>RN</option><option>PN</option></select></label></div><div class="repeat" id="attempts"></div></section>
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 3</p><h2>Previous preparation</h2><p>Keep question-bank usage separate from the number of actual NCLEX items.</p></div></div><div class="chips" id="resources"></div></section>
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 4</p><h2>Student-reported concerns</h2></div></div><div class="chips" id="concerns"></div><label style="margin-top:16px">Student's description of their main problem<textarea id="reported-problem"></textarea></label></section>
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 5</p><h2>Tutor assessment</h2><p>Keep private tutor observations separate from what the student reports.</p></div></div><div class="grid"><label class="wide">Tutor assessment / consult notes<textarea id="tutor-assessment"></textarea></label><label class="wide">Primary issues I identified<div class="chips" id="tutor-focus"></div></label><label class="wide">Strengths<textarea id="strengths"></textarea></label><label class="wide">Initial plan / recommendations<textarea id="initial-plan"></textarea></label></div></section>
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 6</p><h2>Learning and logistics</h2></div></div><div class="grid"><label>Preferred learning style<div class="chips" id="learning-styles"></div></label><label>Urgency<select id="logistics-urgency"><option value="">Not specified</option><option>Low</option><option>Medium</option><option>High</option></select></label><label>Hours available per week<input id="weekly-hours" type="number" min="0" step="0.5"></label><label>Desired tutoring frequency<input id="frequency" placeholder="Weekly, twice weekly…"></label><label class="wide">General availability<textarea id="availability"></textarea></label><label class="wide">Additional notes<textarea id="additional-notes"></textarea></label></div></section>
-      <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 7</p><h2>Supporting files</h2><p>Keep CPRs and reports attached to the same consult. Files remain private in the existing assessment-reports bucket.</p></div></div><div class="grid"><label>File category<select id="file-category"><option>Candidate Performance Report</option><option>CPR report</option><option>CAT result</option><option>Readiness assessment</option><option>Score report</option><option>ATI report</option><option>HESI report</option><option>Syllabus</option><option>Study guide</option><option>Previous exam</option><option>Screenshot</option><option>Other</option></select></label><label>Upload files<input id="files" type="file" multiple accept=".pdf,image/png,image/jpeg,image/webp"></label></div><p class="small">Upload after saving if the report is not available during the consultation.</p></section>
-      <div class="actions"><button class="button" type="submit">Save consult</button><a class="button secondary" href="madison-leads.html">Open leads &amp; intake</a><span class="status" id="save-status"></span></div>
-    </form>
-  </main>
+  <div class="admin-app hidden" id="app">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · Admin</small></div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Pipeline</div>
+        <a href="madison-admin.html">Overview</a>
+        <a href="madison-leads.html">Leads &amp; intake</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html">Diagnostic launcher</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Students &amp; Clinical</div>
+        <a href="student-onboarding.html" class="active">New student onboarding</a>
+        <a href="shared-progress.html">Student progress</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="assessment-history-admin.html">Assessment history</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-label">Operations</div>
+        <a href="madison-graphics.html">Teaching graphics</a>
+        <a href="finance.html">Finance &amp; bookkeeping</a>
+        <button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="admin-context">
+          <span class="eyebrow" style="margin:0">Admin Shell</span>
+          <h1>New student / consult onboarding</h1>
+        </div>
+        <div class="admin-actions">
+          <a class="button secondary" href="madison-leads.html" style="text-decoration:none;display:inline-flex;align-items:center">View leads &amp; intake</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <section class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-label">Workflow step</span>
+            <div class="metric-value">Step 1–7</div>
+            <span class="metric-subtext">Comprehensive intake wizard</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Profile status</span>
+            <div class="metric-value" style="font-size:1.4rem">New Consult</div>
+            <span class="metric-subtext">Direct save to consult_intakes</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">NCLEX CPR domain</span>
+            <div class="metric-value">8 areas</div>
+            <span class="metric-subtext">Detailed item counts &amp; shutoff</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Report storage</span>
+            <div class="metric-value" style="font-size:1.4rem">Private bucket</div>
+            <span class="metric-subtext">assessment-reports upload</span>
+          </div>
+        </section>
+
+        <p class="notice hidden" id="notice" role="status"></p>
+        <form id="onboarding-form">
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 1</p><h2>Student and consultation</h2><p>Only the name and consultation status are required. Add what you know while you talk.</p></div></div><div class="grid">
+            <label>First name<input id="first-name" required></label><label>Last name<input id="last-name" required></label><label>Email<input id="email" type="email"></label><label>Phone<input id="phone" type="tel"></label><label>Time zone<input id="time-zone" placeholder="Central, Eastern…"></label><label>Referral source<select id="referral"><option value="">Not specified</option><option>Wyzant</option><option>Website</option><option>Referral</option><option>Returning student</option><option>Other</option></select></label><label>Student type<select id="student-type"><option value="">Choose one</option><option>NCLEX-RN</option><option>NCLEX-PN</option><option>Nursing school</option><option>HESI A2</option><option>TEAS</option><option>Other</option></select></label><label>School / program<input id="program-name"></label><label>Graduation date<input id="graduation-date" type="date"></label><label>Consult date<input id="consult-date" type="date"></label><label>Status<select id="status"><option value="new_lead">New lead</option><option value="consult_scheduled">Consult scheduled</option><option value="consult_completed">Consult completed</option><option value="follow_up_needed">Follow-up needed</option><option value="active_student">Active student</option><option value="on_hold">On hold</option><option value="declined">Declined</option><option value="no_response">No response</option></select></label><label>Urgency<select id="urgency"><option value="">Not specified</option><option>Low</option><option>Medium</option><option>High</option></select></label>
+          </div></section>
+          <section class="panel hidden" id="nclex-panel"><div class="panel-head"><div><p class="eyebrow">Step 2</p><h2>NCLEX attempt history</h2><p>Record the actual number of items the real NCLEX delivered — not practice questions completed in a question bank.</p></div><button class="button secondary" type="button" id="add-attempt">+ Add NCLEX attempt</button></div><div class="grid"><label>Target / current NCLEX date<input id="target-date" type="date"></label><label>NCLEX type<select id="nclex-type"><option value="">Not specified</option><option>RN</option><option>PN</option></select></label></div><div class="repeat" id="attempts"></div></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 3</p><h2>Previous preparation</h2><p>Keep question-bank usage separate from the number of actual NCLEX items.</p></div></div><div class="chips" id="resources"></div></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 4</p><h2>Student-reported concerns</h2></div></div><div class="chips" id="concerns"></div><label style="margin-top:16px">Student's description of their main problem<textarea id="reported-problem"></textarea></label></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 5</p><h2>Tutor assessment</h2><p>Keep private tutor observations separate from what the student reports.</p></div></div><div class="grid"><label class="wide">Tutor assessment / consult notes<textarea id="tutor-assessment"></textarea></label><label class="wide">Primary issues I identified<div class="chips" id="tutor-focus"></div></label><label class="wide">Strengths<textarea id="strengths"></textarea></label><label class="wide">Initial plan / recommendations<textarea id="initial-plan"></textarea></label></div></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 6</p><h2>Learning and logistics</h2></div></div><div class="grid"><label>Preferred learning style<div class="chips" id="learning-styles"></div></label><label>Urgency<select id="logistics-urgency"><option value="">Not specified</option><option>Low</option><option>Medium</option><option>High</option></select></label><label>Hours available per week<input id="weekly-hours" type="number" min="0" step="0.5"></label><label>Desired tutoring frequency<input id="frequency" placeholder="Weekly, twice weekly…"></label><label class="wide">General availability<textarea id="availability"></textarea></label><label class="wide">Additional notes<textarea id="additional-notes"></textarea></label></div></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 7</p><h2>Supporting files</h2><p>Keep CPRs and reports attached to the same consult. Files remain private in the existing assessment-reports bucket.</p></div></div><div class="grid"><label>File category<select id="file-category"><option>Candidate Performance Report</option><option>CPR report</option><option>CAT result</option><option>Readiness assessment</option><option>Score report</option><option>ATI report</option><option>HESI report</option><option>Syllabus</option><option>Study guide</option><option>Previous exam</option><option>Screenshot</option><option>Other</option></select></label><label>Upload files<input id="files" type="file" multiple accept=".pdf,image/png,image/jpeg,image/webp"></label></div><p class="small">Upload after saving if the report is not available during the consultation.</p></section>
+          <div class="actions"><button class="button" type="submit">Save consult</button><a class="button secondary" href="madison-leads.html" style="text-decoration:none">Open leads &amp; intake</a><span class="status" id="save-status"></span></div>
+        </form>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
