@@ -20,7 +20,7 @@
     <section class="mg hidden" id="flags-sec"><p class="eyebrow">Student reports</p><h2>Flagged questions <span id="flag-n"></span></h2><p class="intro">Questions students reported while practicing. Open one in the editor, fix it, then mark the report resolved.</p><div id="flag-list"></div></section>
     <section class="mg"><p class="eyebrow">Manage</p><h2>Live question bank</h2><p class="intro">Every question in the master bank. Select any group, then publish it, make it inactive (hidden from students, nothing lost), or delete it permanently.</p><div class="toolbar"><input id="m-search" type="search" placeholder="Search by Q-number, stem, topic"><select id="m-filter"><option value="active">Published to students</option><option value="inactive">Inactive / drafts</option><option value="all">All questions</option></select></div><div class="bulk" style="border-bottom:0"><button class="button secondary" id="import-diag">Add consult diagnostic questions to this bank (inactive)</button><span class="count" id="import-note"></span></div><div class="bulk"><label><input type="checkbox" id="m-all"> Select all shown</label><span class="count" id="m-count"></span><button class="button" data-mbulk="publish">Publish</button><button class="button secondary" data-mbulk="inactive">Make inactive</button><button class="button danger" data-mbulk="delete">Delete forever</button></div><div id="m-list"></div><button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button></section>
     <section class="quality"><p class="eyebrow">New content</p><h2>Quality draft batch</h2><p class="intro">These are newly written, source-reviewed questions. They remain private until you press Publish for an individual item.</p><div class="quality-grid" id="quality-drafts"><p class="empty">No quality drafts have been added yet.</p></div></section>
-    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–50 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
+    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–100 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
       <div class="toolbar"><input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch"><button class="button secondary" id="bulk-preview">Validate and preview</button><button class="button" id="bulk-save" disabled>Save reviewed items as inactive drafts</button></div>
       <label for="bulk-json"><strong>Or paste a JSON batch</strong></label><textarea id="bulk-json" rows="8" style="display:block;width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);font: .82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
       <p class="count" id="bulk-status" role="status" aria-live="polite">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
@@ -133,7 +133,7 @@
       previous.forEach(entry=>{const score=similarity(item.stem,entry.item.stem);if(score>bestScore){best={batchId:entry.item.id};bestScore=score}});
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
-    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=100&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
     function renderBulkPreview(){
       const list=$('bulk-preview-list'),save=$('bulk-save');
       if(!stagedBatch.length){list.innerHTML='';save.disabled=true;return}
@@ -157,7 +157,7 @@
       if(!raw){$('bulk-status').textContent='Choose a JSON file or paste a batch first.';return}
       try{
         const parsed=JSON.parse(raw),items=Array.isArray(parsed)?parsed:parsed&&typeof parsed==='object'?parsed.items:null;
-        if(!Array.isArray(items)||items.length<25||items.length>50)throw new Error(`A batch must contain 25–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
+        if(!Array.isArray(items)||items.length<25||items.length>100)throw new Error(`A batch must contain 25–100 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
         stagedBatch=validateBatchItems(items);
         $('bulk-status').textContent=`Validated ${items.length} items. Review each item and every flagged overlap below.`;
         renderBulkPreview();
