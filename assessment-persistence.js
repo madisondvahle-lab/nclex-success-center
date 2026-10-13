@@ -128,16 +128,8 @@
     if (error) throw error;
     const attempt = Array.isArray(data) ? data[0] : data;
     if (!attempt?.attempt_id) throw new Error('Supabase did not return the assessment attempt');
-    const { data: persistedAttempt, error: persistedAttemptError } = await supabase
-      .from('in_house_assessment_attempts')
-      .select('id,session_key,assessment_key,checkpoint,checkpoint_revision,target_questions,qa_mode,status,total_questions,updated_at')
-      .eq('id', attempt.attempt_id)
-      .single();
-    if (persistedAttemptError) throw persistedAttemptError;
     return {
       ...attempt,
-      ...persistedAttempt,
-      attempt_id: persistedAttempt.id,
       student_id: resolvedStudentId
     };
   }
