@@ -45,6 +45,7 @@ The student Mixed Review query also pages active question records in batches of 
 ## Phase 5: assessments / workspace (context)
 - Two stores: `student_assessment_uploads` and `external_assessments` (Assessments page); the workspace merges both. Admin can delete a report from the workspace, and an entry from the Assessments page (roster cards are clickable).
 - Student dashboard has a weekly CAT trend card (`renderCatTrend`, reads `external_assessments`).
+- Admin home links to a single student workspace with assignments, progress, CAT/readiness data, reports, portal assessment attempts, supplemental practice, and private notes; the activity section combines in-house assessment attempts and supplemental practice results.
 - Shared-guidance/coach-review card and priority map were removed/hidden; private session notes kept.
 
 ## Next

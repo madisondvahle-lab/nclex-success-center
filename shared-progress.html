@@ -28,6 +28,16 @@
 .access-action strong{display:block;font-size:.82rem}
 .access-action span{display:block;margin-top:4px;color:inherit;opacity:.78;font-size:.72rem;line-height:1.4}
 @media(max-width:560px){.access-actions{grid-template-columns:1fr}}
+.workspace-jump{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
+.workspace-jump a{flex:0 0 auto;padding:8px 11px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:.76rem;font-weight:800;text-decoration:none}
+.workspace-jump a:hover,.workspace-jump a:focus-visible{background:var(--soft);outline:2px solid var(--ink);outline-offset:2px}
+.activity-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;padding:12px 14px;background:var(--soft)}
+.activity-row[hidden]{display:none}
+.activity-row h3{margin:0;font-size:.95rem;line-height:1.3}
+.activity-row p{margin:5px 0 0;color:var(--muted);font-size:.78rem;line-height:1.45}
+.activity-kind{align-self:start;padding:4px 7px;background:#fff;color:var(--muted);font-size:.65rem;font-weight:800;text-transform:uppercase}
+.activity-score{grid-column:2;grid-row:1 / span 2;align-self:center;font:400 1.05rem Georgia,serif;white-space:nowrap}
+.activity-more{justify-self:start;margin-top:8px}
 
 .snapshot-section{padding:14px 0;border-top:1px solid var(--line)}
 .snapshot-section:first-child{padding-top:0;border-top:0}
@@ -123,10 +133,13 @@
 </style>
 </head>
 <body>
-  <div class="loading" id="loading">Opening shared progress…</div>
+  <div class="loading" id="loading">Opening student workspace…</div>
   <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html" aria-current="page">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out">Sign out</button></nav></header>
+    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html" aria-current="page">Student workspace</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out">Sign out</button></nav></header>
     <section class="hero"><p class="eyebrow" id="role-label">Shared coaching workspace</p><h1 id="title">Your assessment progress.</h1><p id="intro"></p><select class="student-picker" id="student-picker" aria-label="Choose a student"></select></section>
+    <nav class="workspace-jump coach-only" id="workspace-jump" aria-label="Student workspace sections">
+      <a href="#access-overview">Assignments</a><a href="#summary">Progress</a><a href="#cat-card">CATs &amp; readiness</a><a href="#reports-card">Reports &amp; uploads</a><a href="#portal-activity-card">Portal activity</a><a href="#coach-notes">Coach notes</a>
+    </nav>
     <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Target NCLEX date</span></article><article class="stat"><strong>—</strong><span>Average report score</span></article><article class="stat"><strong>—</strong><span>Uploaded reports</span></article><article class="stat"><strong>—</strong><span>Shared focus areas</span></article></section>
     <section class="card hidden" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
@@ -148,7 +161,7 @@
       <article class="card full hidden" id="system-needs-card"><div class="card-head"><div><p class="eyebrow">UWorld System Needs</p><h2>Your content-system priorities</h2></div><span class="label">Shared view</span></div><p class="client-needs-copy" id="system-needs-source"></p><div class="system-needs-grid" id="system-needs"></div><p class="client-needs-copy" style="margin:16px 0 0"></p></article>
       <article class="card full hidden" id="practice-plan-card"><div class="card-head"><div><p class="eyebrow">Practice priorities</p><h2>Patterns we&apos;re seeing</h2></div><span class="label">Shared view</span></div><div class="practice-grid" id="practice-suggestions"></div></article>
       <article class="card full" hidden style="display:none"><div class="card-head"><div><p class="eyebrow">Individualized analysis</p><h2>Your priority map</h2></div><span class="label">Shared view</span></div><div class="focus-list" id="focus"><p class="empty">No priorities yet.</p></div></article>
-      <article class="card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
+      <article class="card" id="reports-card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
       <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. For a batch, group similar reports together and leave date and score blank unless they apply to every file.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cat">CAT</option><option value="readiness_exam">Readiness exam</option><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
       <article class="card full coach-only" id="discuss-card" style="display:none"><div class="card-head"><div><p class="eyebrow">Consult prep</p><h2>Questions to discuss <span id="discuss-n"></span></h2></div><span class="label">Tutor only</span></div><div class="upload-list" id="discuss-list"></div></article>
       <article class="card full coach-only" id="coach-notes"><div class="card-head"><div><p class="eyebrow">Coach notes</p><h2>Private session notes</h2></div><span class="label">Tutor only</span></div><form id="coach-note-form"><label>New note<textarea id="coach-note" required maxlength="4000" placeholder="Private note for your next session or follow-up."></textarea></label><button class="button" type="submit">Save private note</button><p class="muted" id="coach-note-message" role="status"></p></form><div class="upload-list" id="coach-notes-list" style="margin-top:20px"></div></article>
@@ -470,47 +483,50 @@
         </section>
       `;
     }
-    function renderSupplementalResults(results){
-      const existing=document.getElementById('supplemental-results-card');
+    function renderPortalActivity(attempts,results,attemptError,practiceError){
+      const existing=document.getElementById('portal-activity-card');
       if(existing)existing.remove();
-      if(!results.length)return;
-
+      const events=[
+        ...(attempts||[]).map(item=>({kind:'NCLEX Success Center assessment',title:item.assessment_title||item.assessment_key||'Assessment',mode:item.mode,date:item.completed_at||item.created_at,correct:item.correct_questions,total:item.total_questions,completed:!!item.completed_at})),
+        ...(results||[]).map(item=>({kind:'Practice set',title:item.practice_title||'Practice',date:item.completed_at,correct:item.score,total:item.total_questions,categories:item.category_scores,missed:item.missed_question_ids}))
+      ].sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));
       const card=document.createElement('article');
-      card.id='supplemental-results-card';
+      card.id='portal-activity-card';
       card.className='card full';
-
-      const attempts=results.slice(0,6).map(item=>{
-        const percent=Math.round(Number(item.score)/Number(item.total_questions)*100);
-
-        const categories=Object.entries(item.category_scores||{}).map(([name,data])=>{
+      const activityRows=events.map((item,index)=>{
+        const total=Number(item.total),correct=Number(item.correct);
+        const hasScore=Number.isFinite(total)&&total>0&&Number.isFinite(correct);
+        const percent=hasScore?Math.round(correct/total*100):null;
+        const result=hasScore?`${correct}/${total} correct · ${percent}%`:'In progress';
+        const categories=Object.entries(item.categories||{}).map(([name,data])=>{
           const correct=Number(data?.correct??0);
           const total=Number(data?.total??0);
           if(!total)return '';
           return `<span class="focus-pill">${esc(name)} · ${correct}/${total}</span>`;
         }).filter(Boolean).join('');
-
-        const missed=Array.isArray(item.missed_question_ids)
-          ? item.missed_question_ids
-          : [];
-
+        const missed=Array.isArray(item.missed)?item.missed:[];
         const missedDetail=isAdmin&&missed.length
-          ? `<p class="muted"><strong>Missed:</strong> ${esc(missed.join(', '))}</p>`
+          ? `<br><strong>Missed questions:</strong> ${esc(missed.join(', '))}`
           : '';
-
-        return `<article class="upload">
-          <h3>${esc(item.practice_title)}</h3>
-          <p><strong>${esc(item.score)}/${esc(item.total_questions)} · ${esc(percent)}%</strong></p>
-          ${categories?`<div class="focus-meta">${categories}</div>`:''}
-          ${missedDetail}
-          <p class="muted">Completed ${esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.completed_at)))}</p>
+        const mode=item.mode?` · ${esc(item.mode)}`:'';
+        return `<article class="activity-row"${index>=8?' hidden data-extra-activity="true"':''}>
+          <div><span class="activity-kind">${esc(item.kind)}${mode}</span><h3>${esc(item.title)}</h3>
+          <p>${esc(fmtDateTime(item.date)||'Date unavailable')}${categories?`<br>${categories}`:''}${missedDetail}</p></div>
+          <strong class="activity-score">${esc(result)}</strong>
         </article>`;
       }).join('');
-
-      card.innerHTML='<div class="card-head"><div><p class="eyebrow">Supplemental practice</p><h2>Recent practice</h2></div><span class="label">Shared view</span></div><div class="upload-list">'+attempts+'</div>';
-
+      const errors=[attemptError&&`Portal assessments could not be loaded: ${attemptError.message||attemptError}`,practiceError&&`Practice results could not be loaded: ${practiceError.message||practiceError}`].filter(Boolean);
+      card.innerHTML=`<div class="card-head"><div><p class="eyebrow">Student activity</p><h2>Portal assessments &amp; practice</h2></div><span class="label">${events.length} record${events.length===1?'':'s'}</span></div>
+        ${errors.length?`<p class="empty">${errors.map(esc).join(' ')}</p>`:''}
+        <div class="upload-list">${activityRows||(!errors.length?'<p class="empty">No portal assessments or practice activity yet.</p>':'')}</div>
+        ${events.length>8?`<button class="link activity-more" id="show-more-activity" type="button">Show all ${events.length} records</button>`:''}`;
       const grid=document.querySelector('.grid');
       const anchor=document.getElementById('coach-review')||grid.lastElementChild;
       grid.insertBefore(card,anchor);
+      document.getElementById('show-more-activity')?.addEventListener('click',event=>{
+        document.querySelectorAll('[data-extra-activity]').forEach(row=>row.hidden=false);
+        event.currentTarget.remove();
+      });
     }
     async function openReport(path){const {data,error}=await db.storage.from('assessment-reports').createSignedUrl(path,60);if(error)return alert('This report could not be opened right now.');window.open(data.signedUrl,'_blank','noopener')}
     function renderUploads(items,insights,categories){const map=new Map(insights.map(item=>[item.assessment_id,item]));const categoriesByAssessment=new Map;categories.forEach(item=>categoriesByAssessment.set(item.assessment_id,[...(categoriesByAssessment.get(item.assessment_id)||[]),item]));$('report-count').textContent=`${items.length} report${items.length===1?'':'s'}`;$('uploads').innerHTML=items.length?items.map((item,index)=>{const insight=map.get(item.id);const chips=(categoriesByAssessment.get(item.id)||[]).map(category=>`${esc(category.category)} ${category.score==null?'':`· ${esc(category.score)}%`}`).join(' · ');const uploadedBy=item.fromHistory?'Entered by you':item.uploaded_by===session.user.id?'Uploaded by you':isAdmin?'Uploaded by student':'Uploaded by Madison';const title=item.report_label||`${item.platform} · ${item.assessment_type.replace('_',' ')}${item.attempt_number?` · Attempt ${item.attempt_number}`:''}`;return `<article class="upload"${index>=3?' style="display:none" data-extra-report="true"':''}><h3>${esc(title)}</h3><p>${esc(item.report_filename)} · ${esc(date(item.taken_on))}${item.overall_score!=null?` · ${esc(item.overall_score)}%`:''}</p><p class="muted">${uploadedBy}</p>${chips?`<p class="muted"><strong>Category snapshot:</strong> ${chips}</p>`:''}${insight?.shared_summary?`<div class="insight">${esc(insight.shared_summary)}</div>`:''}${item.report_path?`<button class="link" type="button" data-path="${esc(item.report_path)}">Open private report →</button>`:''}${isAdmin?`<button class="link" type="button" data-delete-report="${esc(item.id)}" style="color:#9b2c2c;margin-left:14px">Delete this report</button>`:''}</article>`}).join(''):'<p class="empty">No reports yet.</p>';if(items.length>3){
@@ -714,7 +730,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       $('practice-plan-card').style.display='none';
       renderFocus(focus.data||[]);
       renderUploads(currentUploads,insights.data||[],allCategories);
-      renderSupplementalResults(practiceRows);
+      renderPortalActivity(inhouseAttempts,practiceRows,inhouse.error,practiceResults.error);
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
@@ -722,7 +738,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }
-    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;if(!isAdmin){location.replace('student-dashboard.html');return}$('role-label').textContent='Private coach view';if($('coach-review'))$('coach-review').style.display='block';$('coach-notes').style.display='block';$('upload-eyebrow').textContent='Add a student report';$('upload-title').textContent='Upload on a student’s behalf';$('upload-intro').textContent='Choose a student above, then upload a report you already received by email. It will appear in that student’s private timeline, marked as uploaded by you.';$('upload-button').textContent='Upload to student timeline';const {data:students}=await db.from('students').select('id,name,email,nclex_target_date,student_type').is('archived_at',null).order('name');const picker=$('student-picker');picker.style.display='block';picker.innerHTML=(students||[]).map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');const requested=new URLSearchParams(location.search).get('student');const selected=(students||[]).find(row=>row.id===requested)||(students||[])[0];if(!selected){$('loading').textContent='Add a student before opening a private progress view.';return}picker.value=selected.id;picker.addEventListener('change',()=>{const next=(students||[]).find(row=>row.id===picker.value);history.replaceState(null,'','?student='+encodeURIComponent(next.id));loadStudent(next)});await loadStudent(selected);$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
+    async function init(){const {data}=await db.auth.getSession();session=data.session;if(!session){location.replace('student-login.html');return}const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();isAdmin=!!admin.data;if(!isAdmin){location.replace('student-dashboard.html');return}    $('role-label').textContent='Student workspace';$('intro').textContent='Assignments, progress, CAT and readiness scores, uploads, portal activity, and private coaching notes for one student.';$('workspace-jump').style.display='flex';if($('coach-review'))$('coach-review').style.display='block';$('coach-notes').style.display='block';$('upload-eyebrow').textContent='Add a student report';$('upload-title').textContent='Upload a report';$('upload-intro').textContent='Upload a report on this student’s behalf. It will appear in the assessment timeline here.';$('upload-button').textContent='Upload to student timeline';const {data:students}=await db.from('students').select('id,name,email,nclex_target_date,student_type').is('archived_at',null).order('name');const picker=$('student-picker');picker.style.display='block';picker.innerHTML=(students||[]).map(row=>`<option value="${esc(row.id)}">${esc(row.name||row.email||'Student')}</option>`).join('');const requested=new URLSearchParams(location.search).get('student');const selected=(students||[]).find(row=>row.id===requested)||(students||[])[0];if(!selected){$('loading').textContent='Add a student before opening a private progress view.';return}picker.value=selected.id;picker.addEventListener('change',()=>{const next=(students||[]).find(row=>row.id===picker.value);history.replaceState(null,'','?student='+encodeURIComponent(next.id));loadStudent(next)});await loadStudent(selected);$('loading').classList.add('hidden');$('app').classList.remove('hidden')}
     $('upload-form').addEventListener('submit',async event=>{event.preventDefault();const files=Array.from($('report-file').files||[]);const message=$('upload-message');if(!files.length)return;const oversized=files.find(file=>file.size>10485760);if(oversized){message.textContent='Please choose files under 10 MB each.';return}const values={platform:$('platform').value,assessment_type:$('assessment-type').value,report_label:$('report-label').value.trim()||null,attempt_number:$('attempt-number').value||null,taken_on:$('taken-on').value||null,overall_score:$('overall-score').value||null};let uploaded=0,failed=0;for(let index=0;index<files.length;index++){const file=files[index];message.textContent=(isAdmin?'Uploading to the student’s private timeline…':'Uploading your private reports…')+' ('+(index+1)+' of '+files.length+')';const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');const path=`${student.id}/${crypto.randomUUID()}-${safe}`;const upload=await db.storage.from('assessment-reports').upload(path,file,{contentType:file.type,upsert:false});if(upload.error){failed++;continue}const row={student_id:student.id,platform:values.platform,assessment_type:values.assessment_type,report_label:files.length===1?values.report_label:null,attempt_number:files.length===1?values.attempt_number:null,taken_on:values.taken_on,overall_score:values.overall_score,report_path:path,report_filename:file.name,report_mime_type:file.type,uploaded_by:session.user.id};const saved=await db.from('student_assessment_uploads').insert(row);if(saved.error){failed++;continue}uploaded++}message.textContent=uploaded?uploaded+' report'+(uploaded===1?'':'s')+' added to the private timeline.'+(failed?' '+failed+' could not be added.':''):'No reports could be added. Please try again.';$('upload-form').reset();if(uploaded)loadStudent(student)});
     $('focus-form')?.addEventListener('submit',async event=>{event.preventDefault();const message=$('focus-message');const row={student_id:student.id,focus_area:$('focus-name').value.trim(),priority:$('focus-priority').value,current_score:$('focus-current').value||null,previous_score:$('focus-previous').value||null,trend:$('focus-trend').value,next_step:$('focus-next').value.trim()||null,updated_by:session.user.id,updated_at:new Date().toISOString()};const saved=await db.from('student_focus_areas').upsert(row,{onConflict:'student_id,focus_area'});message.textContent=saved.error?'We could not save that focus area. Please try again.':'Shared focus area saved.';if(!saved.error){$('focus-form').reset();loadStudent(student)}});
         function parseImportedScores(raw){const scores=new Map;String(raw||'').split(/\r?\n/).forEach(source=>{const line=source.replace(/\u00a0/g,' ').trim();let match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d{1,3}(?:\.\d+)?)\s*%\s*$/);let score;if(match){score=Number(match[2])}else{match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d+)\s*\/\s*(\d+)\s*$/);if(match&&Number(match[3]))score=Math.round(Number(match[2])/Number(match[3])*100)}if(!match||!Number.isFinite(score)||score<0||score>100)return;const category=match[1].replace(/^[-•\s]+/,'').trim();if(category.length>2)scores.set(category,score)});return [...scores.entries()].map(([category,score])=>({category,score}))}
