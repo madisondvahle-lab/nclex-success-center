@@ -177,12 +177,12 @@
   {
     "draft_id": "NEW-20261012-033",
     "stem": "An ICU client has a central venous catheter. While a line is being manipulated, the patient develops sudden dyspnea, chest pain, and hypotension. What should the nurse suspect and do?",
-    "option_a": "Expected anxiety; continue the procedure",
-    "option_b": "Possible venous air embolism; clamp the line, summon urgent help, and provide supportive care per protocol",
-    "option_c": "Minor localized catheter irritation; apply heat",
-    "option_d": "Give oral fluids then reassess",
+    "option_a": "Obtain a portable chest radiograph before interrupting the catheter manipulation",
+    "option_b": "Possible venous air embolism; stop air entry, activate emergency response, provide high-flow oxygen, and follow the positioning protocol",
+    "option_c": "Flush the central line rapidly with saline to clear the suspected air",
+    "option_d": "Give an IV fluid bolus through the affected open lumen before securing its connection",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Continuing catheter manipulation without evaluation may worsen air entry. B: Clamp the implicated line if appropriate, assess and summon urgent help for possible venous air embolism; follow institutional response protocol. C: Local heat does not address acute dyspnea and shock. D: Oral hydration is not emergency therapy for suspected air embolism.",
+    "rationale": "Correct answer: B. A: Imaging may assist subsequent evaluation, but it must not delay stopping further air entry and resuscitation. B: Sudden cardiopulmonary collapse during line manipulation suggests venous air embolism. Immediately occlude or clamp the source, summon emergency assistance, provide high-concentration oxygen, and position per protocol when appropriate. C: Flushing can introduce additional air and must not substitute for securing the system. D: An unsecured affected lumen must be closed first; pushing fluid through it risks worsening air entry and delays emergency support.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -190,13 +190,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Continuing catheter manipulation without evaluation may worsen air entry.",
-      "b": "Clamp the implicated line if appropriate, assess and summon urgent help for possible venous air embolism; follow institutional response protocol.",
-      "c": "Local heat does not address acute dyspnea and shock.",
-      "d": "Oral hydration is not emergency therapy for suspected air embolism."
+      "a": "Imaging may assist subsequent evaluation, but it must not delay stopping further air entry and resuscitation.",
+      "b": "Sudden cardiopulmonary collapse during line manipulation suggests venous air embolism. Immediately occlude or clamp the source, summon emergency assistance, provide high-concentration oxygen, and position per protocol when appropriate.",
+      "c": "Flushing can introduce additional air and must not substitute for securing the system.",
+      "d": "An unsecured affected lumen must be closed first; pushing fluid through it risks worsening air entry and delays emergency support."
     },
     "reference_urls": [
-      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC3665124/",
+      "https://pubmed.ncbi.nlm.nih.gov/28644058/"
     ]
   },
   {
