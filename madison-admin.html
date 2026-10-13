@@ -95,10 +95,11 @@
     .booking-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}
     .booking-intake{color:var(--admin-muted);font-size:.64rem}
     .booking-row .link-button,.cat-row .link-button{padding:6px 8px;font-size:.63rem}
-    .cat-row{grid-template-columns:minmax(0,1fr) auto;align-items:center}
-    .cat-row h3{font:750 .75rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .cat-meta{color:var(--admin-muted);font-size:.65rem;line-height:1.4}
-    .cat-status{display:inline-flex;padding:4px 7px;font-size:.59rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+    .cat-row{display:grid;gap:6px;padding:12px 15px;border-bottom:1px solid #e4e8e4}
+    .cat-row h3{margin:0;font:750 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .cat-meta{color:var(--admin-muted);font-size:.66rem;line-height:1.4}
+    .cat-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+    .cat-status{display:inline-flex;align-items:center;padding:3px 7px;font-size:.59rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
     .cat-status.current{background:#e8f5ee;color:#225b41}
     .cat-status.due{background:#fff3d6;color:#805600}
     .cat-status.missing{background:#f7e5e3;color:#913d4f}
@@ -332,7 +333,7 @@
         const statusClass=current?'current':upload?'due':'missing';
         const detail=upload?`${upload.platform||'CAT'}${upload.report_label?' · '+upload.report_label:''}${upload.overall_score!=null?' · '+upload.overall_score+'%':''}`:'No CAT report uploaded yet';
         const dateText=completed?completed.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Not submitted';
-        return `<article class="cat-row"><div><h3>${esc(student.name||student.email||'Student')}</h3><p class="cat-meta">${esc(student.email||'')}</p></div><div class="cat-meta">${esc(detail)}<br>${esc(dateText)}</div><span class="cat-status ${statusClass}">${status}</span><a class="link-button secondary" href="shared-progress.html?student=${encodeURIComponent(student.id)}">Open student workspace</a></article>`;
+        return `<article class="cat-row"><div><h3>${esc(student.name||student.email||'Student')}</h3><p class="cat-meta">${esc(student.email||'')}</p></div><div class="cat-meta">${esc(detail)} · ${esc(dateText)}</div><div class="cat-bottom"><span class="cat-status ${statusClass}">${status}</span><a class="link-button secondary" href="shared-progress.html?student=${encodeURIComponent(student.id)}">Open student workspace</a></div></article>`;
       }).join('');
     }
     async function loadRoster(){
