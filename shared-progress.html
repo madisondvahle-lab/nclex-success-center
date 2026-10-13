@@ -130,6 +130,47 @@
   .ov-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 16px}.ov-stats div{background:#fff;border:1px solid var(--line);padding:10px 12px}.ov-stats b{display:block;font:400 1.6rem Georgia,serif}.ov-stats span{color:var(--muted);font-size:.75rem}
 .ov-table{width:100%;border-collapse:collapse;font-size:.88rem}.ov-table th,.ov-table td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.ov-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.ov-scroll{overflow-x:auto}
 .ov-chip{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 7px;border:1px solid;white-space:nowrap}.ov-g{color:#2f7d4f;border-color:#2f7d4f;background:#e6f3ea}.ov-a{color:#b7791f;border-color:#b7791f;background:#fbf1de}.ov-r{color:#b4443c;border-color:#b4443c;background:#f8e4e1}.ov-n{color:#567087;border-color:#d8e1db;background:#f4f4f2}
+
+  .activity-review-wrap{grid-column:1/-1;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+  .activity-review-details{font-size:.82rem}
+  .activity-review-summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;color:var(--ink);user-select:none;padding:4px 0}
+  .activity-review-summary:hover{color:var(--accent)}
+  .activity-review-summary-text{display:flex;align-items:center;gap:6px}
+  .activity-review-chevron{font-size:.85rem;color:var(--muted);transition:transform .15s ease}
+  .activity-review-details[open] .activity-review-chevron{transform:rotate(90deg)}
+  .activity-review-body{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+  .review-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .review-filter-btn{background:#fff;border:1px solid var(--line);padding:4px 10px;font-size:.75rem;font-weight:600;border-radius:4px;cursor:pointer;color:var(--ink)}
+  .review-filter-btn:hover{border-color:var(--ink)}
+  .review-filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .review-items-list{display:flex;flex-direction:column;gap:10px}
+  .review-item{background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:.8rem}
+  .review-item.item-missed{border-color:#f2c7c3;background:#fffdfd}
+  .review-item.item-correct{border-color:#c0e0cc;background:#fdfffe}
+  .review-item-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+  .review-item-title{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .review-item-num{font-weight:800;color:var(--muted);font-size:.75rem}
+  .review-item-meta{color:var(--muted);font-size:.72rem}
+  .review-badge{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:3px}
+  .badge-missed{color:#b4443c;background:#f8e4e1;border:1px solid #f2c7c3}
+  .badge-correct{color:#2f7d4f;background:#e6f3ea;border:1px solid #c0e0cc}
+  .review-answers{display:flex;flex-direction:column;gap:4px;background:var(--soft);padding:8px 10px;border-radius:4px;margin:6px 0;font-size:.78rem}
+  .review-ans strong{font-weight:700}
+  .ans-selected{color:#8b221a}
+  .ans-correct{color:#23613b}
+  .ans-selected-correct{color:#23613b}
+  .review-stem{margin:8px 0 6px;font-size:.82rem;line-height:1.45;color:var(--ink)}
+  .review-options-list{display:flex;flex-direction:column;gap:4px;margin:6px 0 8px}
+  .review-option{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:4px;font-size:.78rem;background:#fafaf9;border:1px solid #edece8}
+  .review-option.opt-correct-choice{background:#edf7f0;border-color:#b9e2c4;color:#1e5333;font-weight:600}
+  .review-option.opt-wrong-choice{background:#fdf0ee;border-color:#f4c2be;color:#851d16}
+  .opt-letter{font-weight:700;min-width:18px}
+  .opt-text{flex:1}
+  .opt-tag{font-size:.68rem;font-weight:800;padding:1px 5px;border-radius:3px;margin-left:6px;white-space:nowrap}
+  .opt-tag.correct{background:#2f7d4f;color:#fff}
+  .opt-tag.wrong{background:#b4443c;color:#fff}
+  .review-rationale{margin-top:8px;padding:8px 10px;background:#f5f7f9;border-left:3px solid #567087;border-radius:0 4px 4px 0;font-size:.78rem;line-height:1.45;color:#2c3e50}
+  .review-constraint-note{margin-top:6px;font-size:.72rem;font-style:italic}
 </style>
 </head>
 <body>
@@ -169,6 +210,9 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="in-house-item-bank.js"></script>
+  <script src="diagnostic-question-expansion.js"></script>
+  <script src="consult-diagnostic-bank.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -483,12 +527,458 @@
         </section>
       `;
     }
+
+    const authoritativeBank=new Map(),dbQuestionsCache=new Map(),attemptResponsesCache=new Map(),practiceReviewCache=new Map();
+    let diagnosticParsedPromise=null;
+
+    function initStaticAuthoritativeBanks(){
+      if(authoritativeBank.size>0)return;
+      (window.IN_HOUSE_ITEM_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      (window.DIAGNOSTIC_EXPANSION||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      (window.CONSULT_DIAGNOSTIC_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+    }
+
+    async function ensureDiagnosticBanksLoaded(){
+      initStaticAuthoritativeBanks();
+      if(!diagnosticParsedPromise){
+        diagnosticParsedPromise=(async()=>{
+          try{
+            const res=await fetch('diagnostic.html');
+            if(!res.ok)return;
+            const html=await res.text();
+            const wStub={IN_HOUSE_ITEM_BANK:[],DIAGNOSTIC_EXPANSION:[]};
+            const matchQb=html.match(/const QUESTION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
+            if(matchQb){
+              const fn=new Function('window','return '+matchQb[1].replace(/;$/,''));
+              const qb=fn(wStub);
+              (qb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
+            }
+            const matchRem=html.match(/const REMEDIATION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
+            if(matchRem){
+              const fnRem=new Function('return '+matchRem[1].replace(/;$/,''));
+              const rb=fnRem();
+              (rb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
+            }
+          }catch(_){}
+        })();
+      }
+      await diagnosticParsedPromise;
+    }
+
+    function findAuthoritativeItem(itemId){
+      if(!itemId)return null;
+      initStaticAuthoritativeBanks();
+      if(authoritativeBank.has(itemId))return authoritativeBank.get(itemId);
+      if(dbQuestionsCache.has(itemId))return dbQuestionsCache.get(itemId);
+      if(itemId.includes(':')){
+        const [parentId,subId]=itemId.split(':');
+        const parent=authoritativeBank.get(parentId)||dbQuestionsCache.get(parentId);
+        if(parent&&Array.isArray(parent.questions)){
+          const sub=parent.questions.find(sq=>(sq.qid||sq.id)===subId);
+          if(sub){
+            return {
+              id:itemId,
+              stem:(parent.caseIntro?`[Case Intro: ${parent.caseIntro}]\n\n`:'')+sub.stem,
+              options:sub.options,
+              correct:sub.correct,
+              rationale:sub.rationale,
+              type:sub.type||parent.type,
+              blueprint:parent.blueprint,
+              category:parent.category,
+              difficulty:parent.difficulty
+            };
+          }
+        }
+      }
+      return null;
+    }
+
+    function getRationaleText(rat){
+      if(!rat)return null;
+      if(typeof rat==='string')return rat.trim()||null;
+      if(Array.isArray(rat))return rat.filter(Boolean).join('\n\n');
+      if(typeof rat==='object'){
+        if(typeof rat.correct==='string'&&rat.correct.trim())return rat.correct.trim();
+        if(rat.condition||rat.actions||rat.outcomes||rat.wrong){
+          const p=[];
+          if(rat.condition)p.push(`Condition: ${rat.condition}`);
+          if(rat.actions)p.push(`Actions: ${rat.actions}`);
+          if(rat.outcomes)p.push(`Parameters/Outcomes: ${rat.outcomes}`);
+          if(rat.wrong)p.push(`Incorrect choices: ${rat.wrong}`);
+          return p.join('\n\n');
+        }
+        if(rat.general){
+          const p=[rat.general];
+          if(rat.options&&typeof rat.options==='object'){
+            Object.entries(rat.options).forEach(([k,v])=>{if(v)p.push(`${k}: ${v}`)});
+          }
+          return p.join('\n\n');
+        }
+        if(rat.rationale&&typeof rat.rationale==='string')return rat.rationale.trim();
+        try{return JSON.stringify(rat,null,2)}catch(_){return String(rat)}
+      }
+      return String(rat);
+    }
+
+    function formatBowtiePart(indices,options,label){
+      const arr=indices==null?[]:Array.isArray(indices)?indices:[indices];
+      const items=arr.map(i=>{
+        const text=options?.[i];
+        return text?esc(text):`Option ${Number(i)+1}`;
+      });
+      return `<strong>${esc(label)}:</strong> ${items.join(', ')||'None selected'}`;
+    }
+
+    function formatAnswerDisplay(val,bankItem){
+      if(val===null||val===undefined)return '<span class="muted">— (Not recorded)</span>';
+      if(typeof val==='object'&&!Array.isArray(val)&&(val.left!==undefined||val.center!==undefined||val.right!==undefined)){
+        const p=[];
+        if(val.center!==undefined)p.push(formatBowtiePart(val.center,bankItem?.centerOptions,bankItem?.centerLabel||'Condition'));
+        if(val.left!==undefined)p.push(formatBowtiePart(val.left,bankItem?.leftOptions,bankItem?.leftLabel||'Actions'));
+        if(val.right!==undefined)p.push(formatBowtiePart(val.right,bankItem?.rightOptions,bankItem?.rightLabel||'Parameters'));
+        return p.join('<br>');
+      }
+      if(Array.isArray(val)){
+        if(!val.length)return '<span class="muted">None selected</span>';
+        return val.map(idx=>{
+          if(typeof idx==='number'){
+            const letter=String.fromCharCode(65+idx);
+            const optText=bankItem?.options?.[idx];
+            return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+          }
+          return esc(String(idx));
+        }).join('<br>');
+      }
+      if(typeof val==='number'){
+        const letter=String.fromCharCode(65+val);
+        const optText=bankItem?.options?.[val];
+        return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+      }
+      if(typeof val==='string'&&/^[a-d]$/i.test(val.trim())){
+        const letter=val.trim().toUpperCase();
+        const optIdx=letter.charCodeAt(0)-65;
+        const optText=bankItem?.options?.[optIdx]||bankItem?.['option_'+letter.toLowerCase()];
+        return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
+      }
+      if(typeof val==='object'){
+        try{return esc(JSON.stringify(val))}catch(_){return esc(String(val))}
+      }
+      return esc(String(val));
+    }
+
+    function renderOptionsList(bankItem,selectedVal,correctVal){
+      if(!bankItem)return '';
+      if(bankItem.type==='bowtie')return renderBowtieOptionsList(bankItem,selectedVal,correctVal);
+      if(!Array.isArray(bankItem.options)||!bankItem.options.length)return '';
+
+      const toSet=v=>{
+        if(v===null||v===undefined)return new Set();
+        if(Array.isArray(v))return new Set(v.map(Number));
+        if(typeof v==='number')return new Set([v]);
+        if(typeof v==='string'&&/^[a-d]$/i.test(v.trim()))return new Set([v.trim().toLowerCase().charCodeAt(0)-97]);
+        return new Set();
+      };
+      const selectedIndices=toSet(selectedVal);
+      const correctIndices=toSet(correctVal);
+
+      return '<div class="review-options-list">'+bankItem.options.map((opt,idx)=>{
+        const letter=String.fromCharCode(65+idx);
+        const isSel=selectedIndices.has(idx);
+        const isCor=correctIndices.has(idx);
+        let marker='',cls='review-option';
+        if(isCor&&isSel){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Selected correct</span>';
+        }else if(isCor&&selectedIndices.size>0){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Correct (Student omitted)</span>';
+        }else if(isCor){
+          cls+=' opt-correct-choice';
+          marker=' <span class="opt-tag correct">✓ Correct</span>';
+        }else if(isSel){
+          cls+=' opt-wrong-choice';
+          marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>';
+        }
+        return `<div class="${cls}"><span class="opt-letter">${letter}.</span> <span class="opt-text">${esc(opt)}</span>${marker}</div>`;
+      }).join('')+'</div>';
+    }
+
+    function renderBowtieOptionsList(bankItem,selectedVal,correctVal){
+      const sel=selectedVal||{};
+      const cor=correctVal||{left:bankItem.correctLeft,center:bankItem.correctCenter,right:bankItem.correctRight};
+      const renderSec=(title,opts,sVal,cVal)=>{
+        if(!opts||!opts.length)return '';
+        const sSet=new Set((Array.isArray(sVal)?sVal:[sVal]).filter(x=>x!=null).map(Number));
+        const cSet=new Set((Array.isArray(cVal)?cVal:[cVal]).filter(x=>x!=null).map(Number));
+        const rows=opts.map((opt,idx)=>{
+          const isSel=sSet.has(idx),isCor=cSet.has(idx);
+          let marker='',cls='review-option';
+          if(isCor&&isSel){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Selected correct</span>'}
+          else if(isCor&&sSet.size>0){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Correct (Student omitted)</span>'}
+          else if(isCor){cls+=' opt-correct-choice';marker=' <span class="opt-tag correct">✓ Correct</span>'}
+          else if(isSel){cls+=' opt-wrong-choice';marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>'}
+          return `<div class="${cls}"><span class="opt-letter">•</span> <span class="opt-text">${esc(opt)}</span>${marker}</div>`;
+        }).join('');
+        return `<div style="margin-top:6px;"><strong>${esc(title)}</strong><div class="review-options-list">${rows}</div></div>`;
+      };
+      return `<div class="review-bowtie-wrap">
+        ${renderSec(bankItem.centerLabel||'Condition',bankItem.centerOptions,sel.center,cor.center)}
+        ${renderSec(bankItem.leftLabel||'Actions to Take',bankItem.leftOptions,sel.left,cor.left)}
+        ${renderSec(bankItem.rightLabel||'Parameters to Monitor',bankItem.rightOptions,sel.right,cor.right)}
+      </div>`;
+    }
+
+    window.retryAttemptReview=function(attemptId){
+      const container=document.getElementById('review-body-'+attemptId);
+      if(container)loadAndRenderAttemptReview(attemptId,container);
+    };
+
+    async function preloadDbQuestions(itemIds){
+      const missingUuids=itemIds.filter(id=>!findAuthoritativeItem(id)&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+      if(!missingUuids.length)return;
+      const {data:dbItems}=await db.from('questions').select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,question_no,topic,nclex_category').in('id',missingUuids);
+      (dbItems||[]).forEach(q=>{
+        dbQuestionsCache.set(q.id,{
+          id:q.id,
+          stem:q.stem,
+          options:[q.option_a,q.option_b,q.option_c,q.option_d].filter(Boolean),
+          correct:q.correct_answer?q.correct_answer.toLowerCase().charCodeAt(0)-97:null,
+          rationale:q.rationale,
+          topic:q.topic,
+          category:q.nclex_category
+        });
+      });
+    }
+
+    async function loadAndRenderAttemptReview(attemptId,container){
+      if(!attemptId||!container)return;
+      container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
+      const {data:responses,error}=await db
+        .from('in_house_assessment_item_responses')
+        .select('id,attempt_id,item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
+        .eq('attempt_id',attemptId)
+        .order('answered_at',{ascending:true});
+
+      if(error){
+        container.innerHTML=`<div style="color:#b4443c;padding:6px 0;">
+          <strong>Item responses could not be loaded:</strong> ${esc(error.message||String(error))}
+          <br><button class="button secondary" type="button" style="margin-top:8px;padding:6px 10px;font-size:.75rem;" onclick="retryAttemptReview('${esc(attemptId)}')">Retry loading</button>
+        </div>`;
+        return;
+      }
+      if(!responses||!responses.length){
+        container.innerHTML='<p class="muted" style="margin:4px 0;">No question-level response records were found for this attempt.</p>';
+        return;
+      }
+
+      await ensureDiagnosticBanksLoaded();
+      await preloadDbQuestions(responses.map(r=>r.item_id));
+
+      const missedCount=responses.filter(r=>!r.is_correct).length;
+      const initialFilter=missedCount>0?'missed':'all';
+      attemptResponsesCache.set(attemptId,{responses,filter:initialFilter});
+      renderAttemptReviewHtml(attemptId,container);
+    }
+
+    function renderAttemptReviewHtml(attemptId,container){
+      const cached=attemptResponsesCache.get(attemptId);
+      if(!cached)return;
+      const {responses,filter}=cached;
+      const missedCount=responses.filter(r=>!r.is_correct).length;
+      const totalCount=responses.length;
+      const shownResponses=filter==='missed'?responses.filter(r=>!r.is_correct):responses;
+
+      let itemsHtml='';
+      if(!shownResponses.length){
+        itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this attempt).</p>';
+      }else{
+        itemsHtml=shownResponses.map(r=>{
+          const bankItem=findAuthoritativeItem(r.item_id);
+          const isCorrect=Boolean(r.is_correct);
+          const qNum=responses.indexOf(r)+1;
+          const category=r.nclex_category||r.blueprint||bankItem?.category||bankItem?.blueprint||'';
+          const topic=r.topic||bankItem?.topic||'';
+          const diff=r.difficulty||bankItem?.difficulty||'';
+          const qType=r.question_type||bankItem?.type||'';
+          const stem=bankItem?.stem||null;
+          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const optionsHtml=bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
+
+          return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
+            <div class="review-item-header">
+              <div class="review-item-title">
+                <span class="review-item-num">Q${qNum}</span>
+                <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${isCorrect?'✓ Correct':'✗ Missed'}</span>
+                <strong>${esc(r.item_id)}</strong>
+                ${qType?`<span class="focus-pill">${esc(String(qType).toUpperCase())}</span>`:''}
+                ${diff?`<span class="focus-pill">Diff: ${esc(diff)}</span>`:''}
+              </div>
+              ${category?`<div class="review-item-meta">${esc(category)}${topic?` · ${esc(topic)}`:''}</div>`:''}
+            </div>
+            <div class="review-answers">
+              ${!isCorrect?`<div class="review-ans ans-selected"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)}</div>`:''}
+              <div class="review-ans ans-correct"><strong>Correct answer:</strong> ${formatAnswerDisplay(r.correct_answer,bankItem)}</div>
+              ${isCorrect&&r.selected_answer!==null&&r.selected_answer!==undefined?`<div class="review-ans ans-selected-correct"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)} (Correct)</div>`:''}
+            </div>
+            ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Stored response metadata shown above.</p>'}
+            ${optionsHtml}
+            ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Clinical rationale not indexed in connected bank. Stored response metadata shown above.</p>'}
+          </article>`;
+        }).join('');
+      }
+
+      container.innerHTML=`
+        <div class="review-toolbar">
+          <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-attempt-filter="missed" data-attempt-id="${esc(attemptId)}">Missed only (${missedCount})</button>
+          <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-attempt-filter="all" data-attempt-id="${esc(attemptId)}">All questions (${totalCount})</button>
+        </div>
+        <div class="review-items-list">${itemsHtml}</div>
+      `;
+
+      container.querySelectorAll('[data-attempt-filter]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          cached.filter=btn.dataset.attemptFilter;
+          renderAttemptReviewHtml(attemptId,container);
+        });
+      });
+    }
+
+    async function loadAndRenderPracticeReview(eventItem,container){
+      if(!eventItem||!container)return;
+      const details=Array.isArray(eventItem.answerDetails)?eventItem.answerDetails:[];
+      const missedIds=Array.isArray(eventItem.missed)?eventItem.missed:[];
+
+      await ensureDiagnosticBanksLoaded();
+      const allIds=details.length?details.map(d=>d.id):missedIds;
+      await preloadDbQuestions(allIds);
+
+      const missedCount=details.length?details.filter(d=>!d.is_correct).length:missedIds.length;
+      const initialFilter=missedCount>0?'missed':'all';
+      const practiceId=String(eventItem.id||'practice-'+(eventItem.date||Math.random()));
+      practiceReviewCache.set(practiceId,{eventItem,filter:initialFilter});
+      renderPracticeReviewHtml(practiceId,container);
+    }
+
+    function renderPracticeReviewHtml(practiceId,container){
+      const cached=practiceReviewCache.get(practiceId);
+      if(!cached)return;
+      const {eventItem,filter}=cached;
+      const details=Array.isArray(eventItem.answerDetails)?eventItem.answerDetails:[];
+      const missedIds=Array.isArray(eventItem.missed)?eventItem.missed:[];
+
+      if(details.length){
+        const missedCount=details.filter(d=>!d.is_correct).length;
+        const totalCount=details.length;
+        const shown=filter==='missed'?details.filter(d=>!d.is_correct):details;
+
+        let itemsHtml='';
+        if(!shown.length){
+          itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this practice set).</p>';
+        }else{
+          itemsHtml=shown.map(d=>{
+            const bankItem=findAuthoritativeItem(d.id);
+            const isCorrect=Boolean(d.is_correct);
+            const qNum=details.indexOf(d)+1;
+            const stem=bankItem?.stem||null;
+            const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+            const optionsHtml=bankItem?renderOptionsList(bankItem,d.selected,d.correct):'';
+
+            return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
+              <div class="review-item-header">
+                <div class="review-item-title">
+                  <span class="review-item-num">Q${qNum}</span>
+                  <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${isCorrect?'✓ Correct':'✗ Missed'}</span>
+                  <strong>${esc(d.id)}</strong>
+                  ${d.category?`<span class="focus-pill">${esc(d.category)}</span>`:''}
+                </div>
+              </div>
+              <div class="review-answers">
+                ${!isCorrect?`<div class="review-ans ans-selected"><strong>Student selected:</strong> ${formatAnswerDisplay(d.selected,bankItem)}</div>`:''}
+                <div class="review-ans ans-correct"><strong>Correct answer:</strong> ${formatAnswerDisplay(d.correct,bankItem)}</div>
+                ${isCorrect&&d.selected!==null&&d.selected!==undefined?`<div class="review-ans ans-selected-correct"><strong>Student selected:</strong> ${formatAnswerDisplay(d.selected,bankItem)} (Correct)</div>`:''}
+              </div>
+              ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Stored answer details shown above.</p>'}
+              ${optionsHtml}
+              ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Clinical rationale not indexed in connected bank. Stored answer details shown above.</p>'}
+            </article>`;
+          }).join('');
+        }
+
+        container.innerHTML=`
+          <div class="review-toolbar">
+            <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-practice-filter="missed" data-practice-id="${esc(practiceId)}">Missed only (${missedCount})</button>
+            <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-practice-filter="all" data-practice-id="${esc(practiceId)}">All questions (${totalCount})</button>
+          </div>
+          <div class="review-items-list">${itemsHtml}</div>
+        `;
+
+        container.querySelectorAll('[data-practice-filter]').forEach(btn=>{
+          btn.addEventListener('click',()=>{
+            cached.filter=btn.dataset.practiceFilter;
+            renderPracticeReviewHtml(practiceId,container);
+          });
+        });
+      }else if(missedIds.length){
+        const itemsHtml=missedIds.map((id,index)=>{
+          const bankItem=findAuthoritativeItem(id);
+          const stem=bankItem?.stem||null;
+          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const optionsHtml=bankItem?renderOptionsList(bankItem,null,bankItem.correct):'';
+
+          return `<article class="review-item item-missed">
+            <div class="review-item-header">
+              <div class="review-item-title">
+                <span class="review-item-num">#${index+1}</span>
+                <span class="review-badge badge-missed">✗ Missed</span>
+                <strong>${esc(id)}</strong>
+              </div>
+            </div>
+            ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Missed question ID recorded.</p>'}
+            ${optionsHtml}
+            ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Question-level answer choices were not captured in this practice record. Missed question ID recorded.</p>'}
+          </article>`;
+        }).join('');
+
+        container.innerHTML=`
+          <div class="review-toolbar">
+            <span class="muted" style="font-size:.78rem;font-weight:700;">Missed question IDs (${missedIds.length}):</span>
+          </div>
+          <div class="review-items-list">${itemsHtml}</div>
+        `;
+      }else{
+        container.innerHTML='<p class="muted" style="margin:4px 0;">No missed questions recorded for this practice set.</p>';
+      }
+    }
+
     function renderPortalActivity(attempts,results,attemptError,practiceError){
       const existing=document.getElementById('portal-activity-card');
       if(existing)existing.remove();
       const events=[
-        ...(attempts||[]).map(item=>({kind:'NCLEX Success Center assessment',title:item.assessment_title||item.assessment_key||'Assessment',mode:item.mode,date:item.completed_at||item.created_at,correct:item.correct_questions,total:item.total_questions,completed:!!item.completed_at})),
-        ...(results||[]).map(item=>({kind:'Practice set',title:item.practice_title||'Practice',date:item.completed_at,correct:item.score,total:item.total_questions,categories:item.category_scores,missed:item.missed_question_ids}))
+        ...(attempts||[]).map(item=>({
+          id:item.id,
+          kind:'NCLEX Success Center assessment',
+          title:item.assessment_title||item.assessment_key||'Assessment',
+          mode:item.mode,
+          date:item.completed_at||item.created_at,
+          correct:item.correct_questions,
+          total:item.total_questions,
+          completed:!!item.completed_at,
+          isAssessment:true,
+          raw:item
+        })),
+        ...(results||[]).map(item=>({
+          id:item.id,
+          kind:'Practice set',
+          title:item.practice_title||'Practice',
+          date:item.completed_at,
+          correct:item.score,
+          total:item.total_questions,
+          categories:item.category_scores,
+          missed:item.missed_question_ids,
+          answerDetails:item.answer_details,
+          isAssessment:false,
+          raw:item
+        }))
       ].sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0));
       const card=document.createElement('article');
       card.id='portal-activity-card';
@@ -505,14 +995,42 @@
           return `<span class="focus-pill">${esc(name)} · ${correct}/${total}</span>`;
         }).filter(Boolean).join('');
         const missed=Array.isArray(item.missed)?item.missed:[];
-        const missedDetail=isAdmin&&missed.length
+        const missedDetail=isAdmin&&missed.length&&!item.isAssessment
           ? `<br><strong>Missed questions:</strong> ${esc(missed.join(', '))}`
           : '';
         const mode=item.mode?` · ${esc(item.mode)}`:'';
+
+        const canReview=isAdmin&&(item.isAssessment?Boolean(item.id):(missed.length>0||(Array.isArray(item.answerDetails)&&item.answerDetails.length>0)));
+        let reviewLabel='Review questions';
+        if(item.isAssessment){
+          const mCount=(Number.isFinite(total)&&Number.isFinite(correct)&&total>=correct)?(total-correct):null;
+          reviewLabel=mCount!=null?`Review questions (${mCount} missed)`:'Review questions';
+        }else if(Array.isArray(item.answerDetails)&&item.answerDetails.length){
+          const mCount=item.answerDetails.filter(d=>!d.is_correct).length;
+          reviewLabel=`Review questions (${mCount} missed)`;
+        }else if(missed.length){
+          reviewLabel=`Review missed questions (${missed.length})`;
+        }
+
+        const reviewHtml=canReview?`
+          <div class="activity-review-wrap">
+            <details class="activity-review-details" id="review-details-${esc(item.id)}" data-attempt-id="${item.isAssessment?esc(item.id):''}" data-practice-id="${!item.isAssessment?esc(item.id):''}">
+              <summary class="activity-review-summary">
+                <span class="activity-review-summary-text">${reviewLabel}</span>
+                <span class="activity-review-chevron" aria-hidden="true">▸</span>
+              </summary>
+              <div class="activity-review-body" id="review-body-${esc(item.id)}">
+                <p class="muted" style="margin:4px 0;">Loading…</p>
+              </div>
+            </details>
+          </div>
+        `:'';
+
         return `<article class="activity-row"${index>=8?' hidden data-extra-activity="true"':''}>
           <div><span class="activity-kind">${esc(item.kind)}${mode}</span><h3>${esc(item.title)}</h3>
           <p>${esc(fmtDateTime(item.date)||'Date unavailable')}${categories?`<br>${categories}`:''}${missedDetail}</p></div>
           <strong class="activity-score">${esc(result)}</strong>
+          ${reviewHtml}
         </article>`;
       }).join('');
       const errors=[attemptError&&`Portal assessments could not be loaded: ${attemptError.message||attemptError}`,practiceError&&`Practice results could not be loaded: ${practiceError.message||practiceError}`].filter(Boolean);
@@ -526,6 +1044,33 @@
       document.getElementById('show-more-activity')?.addEventListener('click',event=>{
         document.querySelectorAll('[data-extra-activity]').forEach(row=>row.hidden=false);
         event.currentTarget.remove();
+      });
+
+      card.querySelectorAll('.activity-review-details[data-attempt-id]').forEach(details=>{
+        const attemptId=details.dataset.attemptId;
+        if(!attemptId)return;
+        details.addEventListener('toggle',()=>{
+          if(details.open&&!details.dataset.loaded){
+            details.dataset.loaded='true';
+            const body=document.getElementById('review-body-'+attemptId);
+            loadAndRenderAttemptReview(attemptId,body);
+          }
+        });
+      });
+
+      card.querySelectorAll('.activity-review-details[data-practice-id]').forEach(details=>{
+        const practiceId=details.dataset.practiceId;
+        if(!practiceId)return;
+        details.addEventListener('toggle',()=>{
+          if(details.open&&!details.dataset.loaded){
+            details.dataset.loaded='true';
+            const body=document.getElementById('review-body-'+practiceId);
+            const eventItem=events.find(e=>String(e.id)===String(practiceId));
+            if(eventItem&&body){
+              loadAndRenderPracticeReview(eventItem,body);
+            }
+          }
+        });
       });
     }
     async function openReport(path){const {data,error}=await db.storage.from('assessment-reports').createSignedUrl(path,60);if(error)return alert('This report could not be opened right now.');window.open(data.signedUrl,'_blank','noopener')}
