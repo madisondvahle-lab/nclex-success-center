@@ -171,18 +171,113 @@
   .opt-tag.wrong{background:#b4443c;color:#fff}
   .review-rationale{margin-top:8px;padding:8px 10px;background:#f5f7f9;border-left:3px solid #567087;border-radius:0 4px 4px 0;font-size:.78rem;line-height:1.45;color:#2c3e50}
   .review-constraint-note{margin-top:6px;font-size:.72rem;font-style:italic}
+  :root{--admin-navy:#17344f;--admin-cream:#f5f3ed;--admin-paper:#fffefa;--admin-rose:#a94f67;--admin-muted:#536a7d;--admin-line:#cbd5d1;--admin-soft:#eeeae1}
+  body{background:var(--admin-cream);color:var(--admin-navy)}
+  .admin-app{min-height:100vh;display:grid;grid-template-columns:232px minmax(0,1fr)}
+  .admin-sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:24px;padding:22px 14px;background:var(--admin-navy);color:#fff}
+  .sidebar-brand{padding:0 10px 17px;border-bottom:1px solid #ffffff35;font:700 1rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}
+  .sidebar-brand small{font-size:.7em;opacity:.78}
+  .sidebar-caption{margin:0 10px 5px;color:#d0dce4;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .sidebar-nav{display:grid;gap:3px}
+  .sidebar-nav a,.sidebar-sign-out{display:flex;align-items:center;min-height:38px;padding:8px 10px;border:1px solid transparent;background:none;color:#eff4f7;text-align:left;text-decoration:none;font:700 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .sidebar-nav a:hover,.sidebar-nav a:focus-visible,.sidebar-nav a[aria-current="page"]{background:#ffffff16;border-color:#ffffff30;color:#fff;outline:none}
+  .sidebar-secondary{margin-top:auto}
+  .sidebar-sign-out{width:100%;cursor:pointer}
+  .admin-main{min-width:0}
+  .admin-topbar{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 28px;background:var(--admin-paper);border-bottom:1px solid var(--admin-line)}
+  .topbar-context{font-size:.78rem;font-weight:700;color:var(--admin-muted)}
+  .topbar-actions,.quick-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .topbar-actions a,.quick-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-navy);text-decoration:none;font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .topbar-actions a.primary,.quick-actions a.primary{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+  .topbar-actions a:hover,.quick-actions a:hover{border-color:var(--admin-navy)}
+  .dashboard{width:min(1440px,100%);margin:auto;padding:27px 28px 54px}
+  .dashboard-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}
+  .dashboard-heading h1{margin:0;font:700 2.15rem/1.1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.045em}
+  .dashboard-heading p{margin:7px 0 0;color:var(--admin-muted);font-size:.82rem;line-height:1.5}
+  .student-select{display:grid;gap:5px;min-width:min(290px,100%);color:var(--admin-muted);font-size:.66rem;font-weight:800}
+  .student-picker{width:100%;min-height:38px;margin:0;padding:0 10px;border-color:var(--admin-line);background:var(--admin-paper);font:700 .76rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .workspace-jump{position:sticky;top:62px;z-index:3;display:flex;gap:6px;overflow-x:auto;margin:0 -4px 16px;padding:8px 4px;border:0;background:var(--admin-cream)}
+  .workspace-jump a{flex:0 0 auto;padding:8px 10px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-muted);font-size:.69rem;font-weight:750;text-decoration:none}
+  .workspace-jump a:hover,.workspace-jump a:focus-visible{border-color:var(--admin-navy);color:var(--admin-navy);outline:2px solid var(--admin-navy);outline-offset:1px}
+  .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0 0 18px}
+  .stats .stat{min-height:84px;padding:13px 15px;border-color:var(--admin-line);background:var(--admin-paper)}
+  .stats .stat strong{font:700 1.35rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+  .stats .stat span{margin-top:6px;color:var(--admin-muted);font-size:.7rem;font-weight:700}
+  .card{border-color:var(--admin-line);background:var(--admin-paper);padding:18px}
+  .card.coach-only{border-top-width:1px;margin-top:0;padding-top:18px}
+  .card h2{font:700 1.05rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.025em}
+  .card-head{align-items:center;margin-bottom:14px}
+  .card-head .eyebrow{margin-bottom:5px;font-size:.59rem;letter-spacing:.12em}
+  .grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding-bottom:30px}
+  .access-overview{margin-bottom:14px}
+  .access-actions{margin-top:14px;padding-top:14px}
+  .access-action{font:inherit}
+  .access-action strong{font-size:.75rem}
+  .muted{color:var(--admin-muted)}
+  .button{min-height:38px;padding:0 13px;background:var(--admin-navy);font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .button:hover{background:#294d68}
+  .loading{background:var(--admin-cream);color:var(--admin-muted)}
+  .sidebar-sign-out:hover,.sidebar-sign-out:focus-visible{background:#ffffff16;border-color:#ffffff30;outline:none}
+  .client-need,.system-need,.focus,.focus-analysis,.insight,.coach-weak-row,.review-rationale,.practice-card{border:1px solid var(--admin-line);border-radius:0}
+  .focus.high{background:#fff3f1;border-color:#b04e61}
+  .focus.medium{background:#fff8e8;border-color:#b88b52}
+  .focus.maintenance{background:#f1f7f1;border-color:#5d826c}
+  .coach-weak-row.repeated{border-color:#b04e61}
+  @media(max-width:1080px){.admin-topbar,.dashboard{padding-left:20px;padding-right:20px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:820px){.admin-app{grid-template-columns:1fr}.admin-sidebar{position:static;height:auto;gap:12px;padding:13px 16px}.sidebar-brand{padding:0 3px 11px}.sidebar-nav{display:flex;overflow-x:auto;gap:4px}.sidebar-nav a,.sidebar-sign-out{flex:0 0 auto;min-height:34px;padding:7px 9px}.sidebar-caption,.sidebar-secondary{display:none}.sidebar-sign-out{width:auto}.admin-topbar{position:static}.workspace-jump{top:0}.grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}.dashboard{padding:21px 14px 36px}.dashboard-heading{align-items:flex-start;flex-direction:column}.dashboard-heading h1{font-size:1.75rem}.student-select{width:100%}.workspace-jump{position:static;gap:5px}.workspace-jump a{padding:8px;font-size:.66rem}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stats .stat{min-height:76px;padding:11px}.stats .stat strong{font-size:1.2rem}.grid{grid-template-columns:1fr}.card{padding:15px}.card-head{padding:0}.topbar-actions{justify-content:flex-start}.topbar-actions a{padding:0 9px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening student workspace…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html" aria-current="page">Student workspace</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out">Sign out</button></nav></header>
-    <section class="hero" id="profile-overview"><p class="eyebrow" id="role-label">Shared coaching workspace</p><h1 id="title">Your assessment progress.</h1><p id="intro"></p><select class="student-picker" id="student-picker" aria-label="Choose a student"></select></section>
+  <main class="admin-app hidden" id="app">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · ADMIN</small></div>
+      <div>
+        <p class="sidebar-caption">Workspace</p>
+        <nav class="sidebar-nav" aria-label="Primary admin navigation">
+          <a href="madison-admin.html">Dashboard</a>
+          <a href="madison-admin.html#directory">Students</a>
+          <a href="#profile-overview" aria-current="page">Student workspace</a>
+          <a href="madison-consultations.html">Consultations</a>
+          <a href="madison-leads.html">Leads &amp; intake</a>
+          <a href="madison-assignments.html">Assignments</a>
+          <a href="assessment-history-admin.html">Assessments</a>
+          <a href="question-bank-review.html">Question bank</a>
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance</a>
+        </nav>
+      </div>
+      <div class="sidebar-secondary">
+        <p class="sidebar-caption">More tools</p>
+        <nav class="sidebar-nav" aria-label="Additional admin tools">
+          <a href="madison-cpr.html">CPR tracker</a>
+          <a href="madison-diagnostic.html">Consult diagnostic</a>
+          <a href="student-onboarding.html">Student onboarding</a>
+        </nav>
+      </div>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <span class="topbar-context">Private tutoring workspace</span>
+        <nav class="topbar-actions" aria-label="Quick actions">
+          <a class="primary" href="madison-admin.html">Admin home</a>
+          <a href="student-onboarding.html">Add student</a>
+          <a href="madison-leads.html?new=consult">New consultation</a>
+        </nav>
+      </header>
+      <div class="dashboard">
+        <section class="dashboard-heading" id="profile-overview">
+          <div><h1 id="title">Student workspace</h1><p id="intro"></p></div>
+          <label class="student-select">Selected student<select class="student-picker" id="student-picker" aria-label="Choose a student"></select></label>
+        </section>
     <nav class="workspace-jump coach-only" id="workspace-jump" aria-label="Student workspace sections">
       <a href="#profile-overview">Overview</a><a href="#summary">Performance</a><a href="#portal-activity-card">Practice activity</a><a href="#access-overview">Assignments</a><a href="#reports-card">Reports</a><a href="#coach-notes">Session notes</a>
     </nav>
-    <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Target NCLEX date</span></article><article class="stat"><strong>—</strong><span>Average report score</span></article><article class="stat"><strong>—</strong><span>Uploaded reports</span></article><article class="stat"><strong>—</strong><span>Shared focus areas</span></article></section>
-    <section class="card hidden" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
+    <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Latest score</span></article><article class="stat"><strong>—</strong><span>Previous score</span></article><article class="stat"><strong>—</strong><span>Change</span></article><article class="stat"><strong>—</strong><span>Best score</span></article><article class="stat"><strong>—</strong><span>Until NCLEX</span></article></section>
+    <section class="card hidden access-overview" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
       <article class="card full hidden" id="overview-card"><div class="card-head"><div><p class="eyebrow">Client overview</p><h2>Where the evidence agrees</h2></div><span class="label" id="overview-label">NCLEX prep</span></div><div id="overview-body"><p class="muted">Loading…</p></div></article>
       <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT &amp; readiness exams</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
@@ -207,6 +302,8 @@
       <article class="card full coach-only" id="discuss-card" style="display:none"><div class="card-head"><div><p class="eyebrow">Consult prep</p><h2>Questions to discuss <span id="discuss-n"></span></h2></div><span class="label">Tutor only</span></div><div class="upload-list" id="discuss-list"></div></article>
       <article class="card full coach-only" id="coach-notes"><div class="card-head"><div><p class="eyebrow">Coach notes</p><h2>Private session notes</h2></div><span class="label">Tutor only</span></div><form id="coach-note-form"><label>New note<textarea id="coach-note" required maxlength="4000" placeholder="Private note for your next session or follow-up."></textarea></label><button class="button" type="submit">Save private note</button><p class="muted" id="coach-note-message" role="status"></p></form><div class="upload-list" id="coach-notes-list" style="margin-top:20px"></div></article>
     </section>
+      </div>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
@@ -1304,7 +1401,6 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
       isAdmin=!!admin.data;
       if(!isAdmin){location.replace('student-dashboard.html');return}
-      $('role-label').textContent='Student workspace';
       $('intro').textContent='Assignments, progress, CAT and readiness scores, uploads, portal activity, and private coaching notes for one student.';
       $('workspace-jump').style.display='flex';
       if($('coach-review'))$('coach-review').style.display='block';
