@@ -125,6 +125,12 @@
     #access-items{display:block}
     #access-items .coach-assign-group{margin:18px 0 4px;font-size:.68rem}
     #access-items .coach-assign-row h4{margin:0;font:700 .92rem Inter,sans-serif;color:var(--ink)}
+    .assignment-details{margin-top:10px;border-top:1px solid var(--line)}
+    .assignment-details summary{padding:10px 0;color:var(--ink);font-size:.78rem;font-weight:800;cursor:pointer}
+    .assignment-details[open] summary{margin-bottom:6px}
+    .assignment-details .coach-assign-row{padding:7px 10px}
+    .assignment-details .coach-assign-group{margin-top:12px}
+    .assignment-details .coach-assign-group:first-child{margin-top:4px}
     @media(max-width:760px){.coach-snapshot-grid{grid-template-columns:1fr}}
 
   .ov-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 16px}.ov-stats div{background:#fff;border:1px solid var(--line);padding:10px 12px}.ov-stats b{display:block;font:400 1.6rem Georgia,serif}.ov-stats span{color:var(--muted);font-size:.75rem}
@@ -276,7 +282,7 @@
       <a href="#profile-overview">Overview</a><a href="#summary">Performance</a><a href="#portal-activity-card">Practice activity</a><a href="#access-overview">Assignments</a><a href="#reports-card">Reports</a><a href="#coach-notes">Session notes</a>
     </nav>
     <section class="stats" id="summary"><article class="stat"><strong>—</strong><span>Latest score</span></article><article class="stat"><strong>—</strong><span>Previous score</span></article><article class="stat"><strong>—</strong><span>Change</span></article><article class="stat"><strong>—</strong><span>Best score</span></article><article class="stat"><strong>—</strong><span>Until NCLEX</span></article></section>
-    <section class="card hidden access-overview" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><div class="focus-meta" id="access-items"></div><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
+    <section class="card hidden access-overview" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><details class="assignment-details hidden" id="assignment-details"><summary id="assignment-details-summary">View assignments</summary><div id="access-items"></div></details><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
       <article class="card full hidden" id="overview-card"><div class="card-head"><div><p class="eyebrow">Client overview</p><h2>Where the evidence agrees</h2></div><span class="label" id="overview-label">NCLEX prep</span></div><div id="overview-body"><p class="muted">Loading…</p></div></article>
       <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT &amp; readiness exams</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
@@ -424,7 +430,14 @@
       const practiceRows=resourceRows.filter(item=>item.group==='practice');
       const otherRows=resourceRows.filter(item=>item.group==='resource');
       const total=moduleRows.length+resourceRows.length;
-      $('access-summary').textContent=total?total+' current assignment'+(total===1?'':'s')+', grouped by type.':'No modules or practice resources are assigned yet.';
+      const withActivity=[...moduleRows,...resourceRows].filter(item=>item.activity.count).length;
+      const summaryParts=[];
+      if(moduleRows.length)summaryParts.push(moduleRows.length+' module'+(moduleRows.length===1?'':'s'));
+      if(practiceRows.length)summaryParts.push(practiceRows.length+' practice set'+(practiceRows.length===1?'':'s'));
+      if(otherRows.length)summaryParts.push(otherRows.length+' resource'+(otherRows.length===1?'':'s'));
+      if(total)summaryParts.push(withActivity+' with activity');
+      $('access-summary').textContent=total?summaryParts.join(' · '):'No modules or practice resources are assigned yet.';
+      $('assignment-details-summary').textContent='View all '+total+' assignment'+(total===1?'':'s');
       const rowHtml=item=>{
         const assigned=item.assigned?'Assigned '+new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric'}).format(new Date(item.assigned)):'';
         const act=item.activity;
@@ -435,6 +448,8 @@
       $('access-items').innerHTML=total
         ?groupHtml('Learning modules',moduleRows)+groupHtml('Practice sets & diagnostics',practiceRows)+groupHtml('Other resources',otherRows)
         :'<span class="muted">Use Manage access & assignments to add work.</span>';
+      $('assignment-details').classList.toggle('hidden',!total);
+      $('assignment-details').open=false;
       $('manage-access').href='madison-assignments.html?student='+encodeURIComponent(student.id);
       $('preview-student').href='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
       card.classList.remove('hidden');
