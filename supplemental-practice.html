@@ -1,24 +1,192 @@
 <!doctype html>
+<!--
+THESIS: Replace the unassigned set wall with a private route from each student's own class or NCLEX assignment to its questions.
+OWN-WORLD: Keep the Success Center's navy, rose, and warm-neutral identity; replace the generic card grid with a clear class rail and exam docket.
+STORY: Nursing students move class → exam → assigned materials; NCLEX students see their own review assignments. Existing item content and score history remain unchanged.
+FIRST VIEWPORT: Dashboard link and page title above a two-column class navigator and exam list; on narrow screens the class selector moves above the exam docket.
+FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the selected class in view while its exam work opens; seed key 4070ad86.
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Supplemental Practice · Study With Madison RN</title>
+  <title>Class Exam Prep and NCLEX Review · Study With Madison RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--green:#2f7f5a;--red:#b04e61}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(880px,calc(100% - 32px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 0;border-bottom:1px solid var(--line)}.brand,h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}.brand{font-size:1.2rem;font-weight:700}.brand small{font:700 .63em Inter,sans-serif}.back{color:var(--ink);font-size:.82rem;font-weight:800;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px}.hero{padding:54px 0 28px}.eyebrow{margin:0 0 13px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1{margin:0;font-size:clamp(2.4rem,7vw,4.6rem);line-height:.98}.hero p:not(.eyebrow){max-width:610px;color:var(--muted);line-height:1.65;margin:18px 0 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-bottom:64px}.card{background:var(--paper);border:1px solid var(--line);padding:23px}.card h2{margin:0;font-size:1.45rem}.card p{color:var(--muted);font-size:.86rem;line-height:1.55}.card .meta{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--rose)}button{font:800 .8rem Inter,sans-serif;cursor:pointer}.start{margin-top:12px;border:0;background:var(--ink);color:#fff;padding:12px 14px}.start:hover{background:#294d68}.hidden{display:none!important}.quiz{max-width:760px;margin:40px auto 70px;background:var(--paper);border:1px solid var(--line);padding:clamp(20px,4vw,38px)}.progress{height:7px;background:var(--soft);margin:22px 0}.progress div{height:100%;background:var(--rose);transition:width .2s}.question-number{margin:0 0 8px;color:var(--rose);font-weight:900;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.quiz h2{margin:0;font-size:clamp(1.55rem,4vw,2.2rem);line-height:1.13}.options{display:grid;gap:10px;margin-top:26px}.option{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);padding:15px;background:#fff;cursor:pointer;font-size:.95rem;line-height:1.45}.option:hover{border-color:var(--ink)}.option input{margin-top:4px;accent-color:var(--ink)}.actions{display:flex;justify-content:space-between;gap:12px;margin-top:26px}.secondary,.primary{border:0;padding:12px 15px}.secondary{background:var(--soft);color:var(--ink)}.primary{background:var(--ink);color:#fff}.primary:disabled{opacity:.45;cursor:not-allowed}.feedback{margin-top:22px;padding:16px;border-left:4px solid var(--rose);background:var(--soft);line-height:1.55;color:var(--ink);font-size:.9rem}.feedback strong{display:block;margin-bottom:5px}.correct{border-left-color:var(--green)}.incorrect{border-left-color:var(--red)}.results{text-align:center}.score{font:400 clamp(3.4rem,13vw,6.4rem) Georgia,serif;margin:6px 0;color:var(--ink)}.result-detail{max-width:530px;margin:0 auto;color:var(--muted);line-height:1.6}.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px}.status{min-height:1.4em;margin-top:16px;color:var(--muted);font-size:.82rem}.notice{margin:0 0 22px;padding:14px;background:#fff7f1;border-left:3px solid var(--rose);color:var(--muted);font-size:.82rem;line-height:1.5}@media(max-width:640px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero{padding-top:40px}.quiz{margin-top:24px}.actions{flex-direction:column-reverse}.actions button{width:100%}}
-  .intro-card{background:var(--soft);border-left:4px solid var(--rose);padding:24px 28px;margin:16px 0 24px;border-radius:2px}.intro-card h2{font-family:Inter,-apple-system,sans-serif;font-size:1rem;font-weight:400;line-height:1.7;letter-spacing:0;color:var(--ink);margin:12px 0 0}.intro-label{font-size:.68rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin:0 0 0}.intro-note{color:var(--muted);font-size:.82rem;margin:14px 0 0;font-style:italic;line-height:1.5}#quiz h2{font-size:1.15rem;line-height:1.55;font-weight:700;margin:16px 0 4px;letter-spacing:-.01em}.sata-hint{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#b45309;margin:-8px 0 12px;}.option.correct-opt{border-color:#16a34a;background:#f0fdf4;}.option.wrong-opt{border-color:#dc2626;background:#fef2f2;}
+    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--green:#2f7f5a;--red:#b04e61}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(880px,calc(100% - 32px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 0;border-bottom:1px solid var(--line)}.brand,h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}.brand{font-size:1.2rem;font-weight:700}.brand small{font:700 .63em system-ui,sans-serif}.back{color:var(--ink);font-size:.82rem;font-weight:800;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px}.hero{padding:54px 0 28px}.eyebrow{margin:0 0 13px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}h1{margin:0;font-size:clamp(2.4rem,7vw,4.6rem);line-height:.98}.hero p:not(.eyebrow){max-width:610px;color:var(--muted);line-height:1.65;margin:18px 0 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-bottom:64px}.card{background:var(--paper);border:1px solid var(--line);padding:23px}.card h2{margin:0;font-size:1.45rem}.card p{color:var(--muted);font-size:.86rem;line-height:1.55}.card .meta{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--rose)}button{font:800 .8rem system-ui,sans-serif;cursor:pointer}.start{margin-top:12px;border:0;background:var(--ink);color:#fff;padding:12px 14px}.start:hover{background:#294d68}.hidden{display:none!important}.quiz{max-width:760px;margin:40px auto 70px;background:var(--paper);border:1px solid var(--line);padding:clamp(20px,4vw,38px)}.progress{height:7px;background:var(--soft);margin:22px 0}.progress div{height:100%;background:var(--rose)}.question-number{margin:0 0 8px;color:var(--rose);font-weight:900;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.quiz h2{margin:0;font-size:clamp(1.55rem,4vw,2.2rem);line-height:1.13}.options{display:grid;gap:10px;margin-top:26px}.option{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);padding:15px;background:#fff;cursor:pointer;font-size:.95rem;line-height:1.45}.option:hover{border-color:var(--ink)}.option input{margin-top:4px;accent-color:var(--ink)}.actions{display:flex;justify-content:space-between;gap:12px;margin-top:26px}.secondary,.primary{border:0;padding:12px 15px}.secondary{background:var(--soft);color:var(--ink)}.primary{background:var(--ink);color:#fff}.primary:disabled{opacity:.45;cursor:not-allowed}.feedback{margin-top:22px;padding:16px;border:1px solid var(--line);border-top:3px solid var(--rose);background:var(--soft);line-height:1.55;color:var(--ink);font-size:.9rem}.feedback strong{display:block;margin-bottom:5px}.correct{border-top-color:var(--green)}.incorrect{border-top-color:var(--red)}.results{text-align:center}.score{font:400 clamp(3.4rem,13vw,6.4rem) Georgia,serif;margin:6px 0;color:var(--ink)}.result-detail{max-width:530px;margin:0 auto;color:var(--muted);line-height:1.6}.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px}.status{min-height:1.4em;margin-top:16px;color:var(--muted);font-size:.82rem}.notice{margin:0 0 22px;padding:14px;background:#fff7f1;border:1px solid var(--line);color:var(--muted);font-size:.82rem;line-height:1.5}@media(max-width:640px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.hero{padding-top:40px}.quiz{margin-top:24px}.actions{flex-direction:column-reverse}.actions button{width:100%}}
+  .intro-card{background:var(--soft);border:1px solid var(--line);padding:24px 28px;margin:16px 0 24px}.intro-card h2{font-family:system-ui,-apple-system,sans-serif;font-size:1rem;font-weight:400;line-height:1.7;letter-spacing:0;color:var(--ink);margin:12px 0 0}.intro-label{font-size:.68rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin:0 0 0}.intro-note{color:var(--muted);font-size:.82rem;margin:14px 0 0;font-style:italic;line-height:1.5}#quiz h2{font-size:1.15rem;line-height:1.55;font-weight:700;margin:16px 0 4px;letter-spacing:-.01em}.sata-hint{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#b45309;margin:-8px 0 12px;}.option.correct-opt{border-color:#16a34a;background:#f0fdf4;}.option.wrong-opt{border-color:#dc2626;background:#fef2f2;}
 </style>
+  <style>
+    :root{--ink:#17344f;--cream:#f5f3ed;--paper:#fffefa;--rose:#a94f67;--muted:#536a7d;--line:#cbd5d1;--soft:#eeeae1;--green:#27694a;--red:#a63e4d}
+    body{background:var(--cream)}
+    .shell{width:min(1160px,calc(100% - 48px))}
+    .top{padding:18px 0;border-bottom:1px solid var(--line)}
+    .brand{font:750 1rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}
+    .brand small{font:700 .7em system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .back{padding:10px 12px;border:1px solid var(--line);text-decoration:none}
+    .back:hover{background:var(--paper)}
+    .hero{padding:36px 0 26px}
+    .hero h1{font-size:clamp(2rem,4.2vw,3.25rem);line-height:1.05;letter-spacing:-.04em}
+    .hero p:not(.eyebrow){max-width:66ch;margin-top:12px}
+    .eyebrow{margin-bottom:8px}
+    .workspace{display:grid;grid-template-columns:minmax(205px,260px) minmax(0,1fr);gap:30px;padding:8px 0 72px}
+    .course-nav{align-self:start;position:sticky;top:16px}
+    .course-nav h2{font:700 .78rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px;color:var(--muted)}
+    .course-list{display:grid}
+    .course-choice{display:flex;justify-content:space-between;gap:10px;width:100%;border:0;border-top:1px solid var(--line);padding:15px 12px;background:transparent;color:var(--ink);text-align:left;font:700 .92rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .course-choice:last-child{border-bottom:1px solid var(--line)}
+    .course-choice:hover,.course-choice[aria-current="true"]{background:var(--paper)}
+    .course-choice[aria-current="true"]{box-shadow:inset 3px 0 0 var(--rose)}
+    .course-choice .count{font-size:.75rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+    .course-panel{min-width:0;background:var(--paper);border:1px solid var(--line);padding:clamp(20px,3vw,34px)}
+    .course-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .course-panel-head h2{margin:0;font-size:1.8rem;line-height:1.1}
+    .course-panel-head p{margin:6px 0 0;color:var(--muted);line-height:1.5}
+    .exam-date{white-space:nowrap;color:var(--muted);font-size:.8rem}
+    .exam-group{margin-top:26px}
+    .exam-group h3{margin:0 0 8px;font:700 .76rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+    .assignment-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+    .assignment-row h4{margin:0;font:700 .98rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.01em}
+    .assignment-row p{margin:5px 0 0;color:var(--muted);font-size:.84rem;line-height:1.5}
+    .assignment-kind{display:block;margin-bottom:5px;color:var(--rose);font:800 .68rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+    .assignment-action{display:inline-flex;justify-content:center;align-items:center;min-height:42px;padding:0 14px;border:1px solid var(--ink);background:var(--ink);color:white;text-decoration:none;font:700 .8rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;white-space:nowrap}
+    .assignment-action:hover{background:#294d68}
+    .assignment-action:focus-visible,.course-choice:focus-visible,.back:focus-visible,.secondary:focus-visible,.primary:focus-visible{outline:3px solid #a94f67;outline-offset:3px}
+    .workspace-empty,.library-status{padding:18px 0;color:var(--muted);line-height:1.6}
+    .library-status{min-height:1.5rem}
+    .workspace-empty h3{margin:0 0 6px;color:var(--ink);font:700 1.08rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:0}
+    .nclex-review{padding:8px 0 72px}
+    .review-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+    .review-heading h2{margin:0;font-size:1.8rem}
+    .review-list{margin-top:8px}
+    #quiz{max-width:880px;margin:28px auto 64px;background:var(--paper);border:1px solid var(--line);padding:clamp(20px,4vw,40px)}
+    #quiz .card{border:0;background:transparent;padding:0}
+    #quiz .question-number{color:var(--rose)}
+    #quiz .progress{height:5px;background:#e2ded5}
+    #quiz .progress div{background:var(--rose)}
+    #quiz .options{gap:8px}
+    #quiz .option{border-color:var(--line);background:#fffefa}
+    #quiz .option:hover{border-color:var(--ink);background:#f8f6f0}
+    #quiz .option:focus-within{outline:3px solid #a94f67;outline-offset:2px}
+    #quiz .primary{background:var(--ink);color:#fff}
+    #quiz .secondary{background:var(--soft);color:var(--ink)}
+    #exam-host .ex-app{--ex-dark:#17344f;--ex-bar:#f5f3ed;--ex-line:#cbd5d1;--ex-ink:#1e2c36;--ex-blue:#a94f67;--ex-th:#eeeae1;--ex-stripe:#faf8f2;--ex-fs:19px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    #exam-host .ex-header{background:#17344f;border:0;padding:14px 24px;min-height:64px}
+    #exam-host .ex-header .ex-meta{font-size:.82em}
+    #exam-host .ex-toolbar{background:#f5f3ed;color:#17344f;border-bottom:1px solid #cbd5d1;padding:0 20px}
+    #exam-host .ex-tb{color:#17344f}
+    #exam-host .ex-tb:hover,#exam-host .ex-tb:focus-visible{background:#e8e4db}
+    #exam-host .ex-main{background:#fffefa}
+    #exam-host .ex-pane{max-width:1120px;margin:0 auto;padding:clamp(22px,5vw,58px)}
+    #exam-host .ex-item-no{color:#a94f67;font:800 .74em system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.09em;text-transform:uppercase}
+    #exam-host .ex-stem{max-width:76ch;margin:20px 0 26px;line-height:1.65;font-size:1.06em}
+    #exam-host .ex-opts{margin:0;max-width:76ch}
+    #exam-host .ex-opt{padding:13px 14px;margin:7px 0;border:1px solid #cbd5d1;background:#fffefa;line-height:1.5}
+    #exam-host .ex-opt:hover{border-color:#17344f;background:#f5f3ed}
+    #exam-host .ex-opt:focus-within{outline:3px solid #a94f67;outline-offset:2px}
+    #exam-host .ex-footer{background:#f5f3ed;color:#17344f;border-top:1px solid #cbd5d1}
+    #exam-host .ex-fb{color:#17344f;border-color:#d4dcd7;padding:14px 20px}
+    #exam-host .ex-fb:hover,#exam-host .ex-fb:focus-visible{background:#e8e4db}
+    #exam-host .ex-fb[disabled]{color:#73808a}
+    @media(max-width:760px){
+      .shell{width:min(100% - 28px,600px)}
+      .workspace{grid-template-columns:1fr;gap:14px}
+      .course-nav{position:static}
+      .course-nav h2{margin-bottom:8px}
+      .course-list{display:flex;overflow-x:auto;gap:6px;padding:2px 1px 8px}
+      .course-choice,.course-choice:last-child{width:auto;min-width:max-content;border:1px solid var(--line);padding:10px 12px}
+      .course-choice[aria-current="true"]{box-shadow:inset 0 -3px 0 var(--rose)}
+      .course-panel{padding:20px}
+      .course-panel-head{flex-direction:column}
+      .assignment-row{grid-template-columns:1fr;gap:12px}
+      .assignment-action{justify-self:start}
+      .review-heading{align-items:flex-start;flex-direction:column}
+      #exam-host .ex-header{align-items:flex-start;padding:12px 14px}
+      #exam-host .ex-toolbar{overflow-x:auto;padding:0 8px}
+      #exam-host .ex-fb{padding:12px 10px}
+      #exam-host .ex-mark-l{display:none}
+    }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+    .workspace-empty{grid-column:1/-1}
+    .course-choice{align-items:center;min-height:52px}
+    .course-choice .count{white-space:nowrap}
+    .course-date{color:var(--muted);font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .assignment-row h4{line-height:1.35}
+    .assignment-row p{margin-top:6px}
+    .assignment-action{transition:background-color .16s ease,border-color .16s ease}
+    .nclex-review .review-heading{align-items:center}
+    .review-count{color:var(--muted);font-size:.78rem;font-weight:750}
+    .question-count-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-top:24px}
+    .question-count-choice{display:grid;gap:4px;min-height:80px;padding:13px;border:1px solid var(--line);background:var(--paper);color:var(--ink);text-align:left}
+    .question-count-choice strong{font-size:1.1rem}
+    .question-count-choice span{color:var(--muted);font-size:.72rem}
+    .question-count-choice:hover,.question-count-choice:focus-visible{border-color:var(--ink);background:#f8f6f0;outline:2px solid var(--ink);outline-offset:2px}
+    #quiz{padding:0;border:0;background:transparent}
+    .study-session{max-width:880px;margin:28px auto 68px;background:var(--paper);border:1px solid var(--line)}
+    .study-session-head{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:17px 22px;border-bottom:1px solid var(--line);background:#f0eee7}
+    .study-session-context{min-width:0}
+    .study-session-context strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+    .study-session-context span{display:block;margin-top:3px;color:var(--muted);font-size:.72rem}
+    .study-session-exit{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 11px;font-weight:750}
+    .study-session-exit:hover{border-color:var(--ink)}
+    .study-session-exit:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+    .study-session-body{padding:clamp(20px,4vw,42px)}
+    .study-session-progress{display:flex;justify-content:space-between;gap:16px;align-items:center;color:var(--muted);font-size:.75rem;font-weight:750}
+    .study-session-progress strong{color:var(--ink);font-variant-numeric:tabular-nums}
+    .study-session-track{height:6px;margin:10px 0 27px;background:#e4e4dd}
+    .study-session-track span{display:block;height:100%;background:var(--rose)}
+    .study-session h2{max-width:70ch;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:1.18rem;font-weight:700;line-height:1.55;letter-spacing:-.015em}
+    .study-session .sata-hint{margin:12px 0 0;color:#765214;font-size:.72rem;letter-spacing:.07em}
+    .study-session .options{display:grid;gap:8px;margin-top:23px}
+    .study-session .option{align-items:flex-start;min-height:58px;padding:13px 15px;border-color:var(--line);background:#fffefa}
+    .study-session .option:hover{border-color:var(--ink);background:#f8f6f0}
+    .study-session .option:focus-within{outline:3px solid #a94f67;outline-offset:2px}
+    .option-marker{flex:0 0 28px;display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);background:#f4f2eb;color:var(--ink);font-size:.72rem;font-weight:800}
+    .option-copy{padding-top:3px}
+    .study-session .option.correct-opt{border-color:#27694a;background:#eef6f0}
+    .study-session .option.correct-opt .option-marker{border-color:#27694a;background:#27694a;color:white}
+    .study-session .option.wrong-opt{border-color:#a63e4d;background:#fbf0ef}
+    .study-session .option.wrong-opt .option-marker{border-color:#a63e4d;background:#a63e4d;color:white}
+    .study-session .feedback{margin-top:22px;border:1px solid var(--line);border-top:3px solid var(--green);padding:16px 18px;background:#f3f7f2}
+    .study-session .feedback.incorrect{border-top-color:var(--red);background:#faf2f0}
+    .study-session .feedback strong{margin-bottom:7px}
+    .study-session .actions{justify-content:space-between;flex-wrap:wrap;margin-top:26px}
+    .study-session .actions button{min-height:42px;padding:10px 14px}
+    .study-session .primary{background:var(--ink)}
+    .study-session .primary:hover:not(:disabled){background:#294d68}
+    .study-session .primary:disabled{opacity:.48}
+    .scenario-panel{padding:20px 22px;border:1px solid var(--line);background:#f1f0e9}
+    .scenario-panel .intro-label{color:var(--rose)}
+    .scenario-panel h2{margin-top:12px}
+    .study-session .progress{height:6px;margin:10px 0 25px;background:#e4e4dd}
+    .study-session .progress div{background:var(--rose)}
+    .study-session .question-number{margin-bottom:0;color:var(--muted)}
+    .study-results{text-align:left}
+    .study-results .score{margin:12px 0;font-size:4.6rem}
+    .study-results .result-actions{justify-content:flex-start}
+    .study-results .result-detail{margin:0;max-width:65ch}
+    @media(max-width:640px){
+      .study-session{margin:18px auto 42px}
+      .study-session-head{padding:13px 14px}
+      .study-session-body{padding:20px 16px}
+      .study-session .actions{flex-direction:column}
+      .study-session .actions button{width:100%}
+      .study-results .score{font-size:3.7rem}
+      .study-results .result-actions{flex-direction:column}
+      .study-results .result-actions button{width:100%}
+      .question-count-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+  </style>
 </head>
 <body>
   <main class="shell">
-    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">My dashboard</a></header>
-    <section class="hero" id="library">
-      <p class="eyebrow">Supplemental practice</p>
-      <h1>Practice the next skill.</h1>
-      <p>Short, original NCLEX-style practice sets for when an outside QBank is unavailable. Choose only the set Madison assigned to you.</p>
+    <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">Dashboard</a></header>
+    <section class="hero" id="library" aria-labelledby="page-title">
+      <h1 id="page-title">Your course work, organized by exam.</h1>
+      <p id="page-summary">Open a class to find the study materials and question sets assigned for its exams.</p>
     </section>
-    <section class="grid" id="sets" aria-label="Supplemental practice sets"></section>
+    <p class="library-status" id="library-status" role="status" aria-live="polite"></p>
+    <section class="workspace hidden" id="sets" aria-label="Assigned classes and exam materials"></section>
     <section class="quiz hidden" id="quiz" aria-live="polite"></section>
   </main>
   <link rel="stylesheet" href="exam-ui.css">
@@ -1498,9 +1666,173 @@
       nur215Question('nur215-060','Which statement by a student nurse demonstrates correct understanding of delegation?', ['“If I delegate a task, I no longer have responsibility for the patient.”','“I may delegate nursing judgment if the UAP has worked here for years.”','“I must match the task and patient to the team member’s competence and follow up on outcomes.”','“Any task can be delegated when the unit is busy.”'],2,'Safe delegation matches the task, circumstance, person, and supervision requirements; the RN retains accountability for nursing judgment and follow-up.','Delegation','Hard')
     ]});
 
-    let activeSet=null,index=0,answers=[],revealed=false,student=null;
-    function renderLibrary(){const target=$('sets');target.innerHTML=sets.map(set=>`<article class="card"><p class="meta">${set.tag}</p><h2>${set.title}</h2><p>${set.description}</p><p class="meta">${set.questions.length} questions · original practice</p><button class="start" data-set="${set.id}">Start →</button></article>`).join('');document.querySelectorAll('[data-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.set)))}
-    function startSet(id,count){const set=sets.find(set=>set.id===id);if(!set)return;if(set.id==='jack-nur312-exam1'&&!count){$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');$('quiz').innerHTML=`<section class="card"><p class="eyebrow">NUR 312 Exam 1 Practice</p><h2>How many questions would you like to do?</h2><p>There are ${set.questions.length} questions available. Choose a shorter practice session or complete the full set.</p><div class="actions">${[10,20,40,60,set.questions.length].map(amount=>`<button class="primary question-count" data-count="${amount}" type="button">${amount===set.questions.length?'All '+amount:amount+' questions'}</button>`).join('')}</div></section>`;document.querySelectorAll('.question-count').forEach(button=>button.addEventListener('click',()=>startSet(id,Number(button.dataset.count))));return}const questions=count&&count<set.questions.length?[...set.questions].sort(()=>Math.random()-.5).slice(0,count):set.questions;activeSet={...set,questions};index=0;answers=[];revealed=false;$('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');beginPractice()}
+    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],enabledModules=new Set();
+    const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ngn-acute-01':'core-acute-systems'};
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    function cleanPersonalLabel(value){
+      let text=String(value||'');
+      const names=[student?.name,'Jack McDaniel','Jack'].filter(Boolean);
+      names.forEach(name=>{const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');text=text.replace(new RegExp(`\\b${escaped}(?:['’]s)?\\b`,'gi'),'')});
+      return text.replace(/^[\s·•|—–-]+|[\s·•|—–-]+$/g,'').replace(/\s*[·•|—–-]\s*/g,' ').replace(/\s{2,}/g,' ').trim();
+    }
+    function normalizedUrl(value){
+      if(!value)return '';
+      try{const url=new URL(value,window.location.href);return url.origin===window.location.origin?url.pathname+url.search:''}catch{return ''}
+    }
+    function safeResourceHref(value){
+      if(!value)return '';
+      try{
+        const url=new URL(value,window.location.href);
+        return url.origin===window.location.origin||url.protocol==='https:'?url.href:'';
+      }catch{return ''}
+    }
+    function urlForSet(id){return `supplemental-practice.html?set=${encodeURIComponent(id)}`}
+    function assignedSet(id){
+      const target=normalizedUrl(urlForSet(id));
+      return assignedResources.some(resource=>setFromUrl(resource.url)===id&&normalizedUrl(resource.url)===target)||
+        (modulePracticeSets[id]&&enabledModules.has(modulePracticeSets[id]));
+    }
+    function assignedMixedReview(){
+      return assignedResources.some(resource=>{
+        try{const url=new URL(resource.url,window.location.href);return url.origin===window.location.origin&&url.pathname===window.location.pathname&&url.searchParams.has('mixed')}catch{return false}
+      });
+    }
+    function assignedCourseExam(courseKey,examKey){
+      return assignedResources.some(resource=>{
+        try{
+          const url=new URL(resource.url,window.location.href);
+          return url.origin===window.location.origin&&url.pathname===window.location.pathname&&
+            url.pathname.endsWith('/supplemental-practice.html')&&
+            url.searchParams.get('course')===courseKey&&url.searchParams.get('exam')===examKey;
+        }catch{return false}
+      });
+    }
+    function setFromUrl(value){
+      if(!value)return null;
+      try{const url=new URL(value,window.location.href);return url.origin===window.location.origin&&url.pathname===window.location.pathname&&url.pathname.endsWith('/supplemental-practice.html')?url.searchParams.get('set'):null}catch{return null}
+    }
+    function courseCode(value){
+      const match=String(value||'').match(/\bNUR\s*[-.]?\s*(\d{3})\b/i);
+      return match?`NUR ${match[1]}`:null;
+    }
+    function dateLabel(value){
+      if(!value)return '';
+      const date=new Date(`${value}T12:00:00`);
+      return Number.isNaN(date.getTime())?'':date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    }
+    function examGroup(resource){
+      const match=[resource.title,resource.url,resource.note].filter(Boolean).join(' ').match(/\bexam\s*[-#]?\s*(\d+)\b/i);
+      return match?`Exam ${match[1]}`:'Other assigned materials';
+    }
+    function assignedRows(resources){
+      return resources.slice().sort((a,b)=>(a.due_on||'9999').localeCompare(b.due_on||'9999')||String(a.title||'').localeCompare(String(b.title||''))).map(resource=>{
+        const setId=setFromUrl(resource.url),set=sets.find(item=>item.id===setId);
+        const title=cleanPersonalLabel(set?.title||resource.title)||'Assigned learning';
+        const detail=cleanPersonalLabel(resource.note);
+        const url=escapeHtml(safeResourceHref(resource.url));
+        const kind=resource.resource_type==='practice_set'?'Exam question set':resource.resource_type==='study_guide'?'Study guide':resource.resource_type==='document'?'Course material':'Assigned resource';
+        const questionCount=set?`${set.questions.length} questions`:'';
+        const due=resource.due_on?`Due ${dateLabel(resource.due_on)}`:'';
+        const action=set?`<button class="assignment-action" type="button" data-open-set="${escapeHtml(set.id)}">Open question set</button>`:
+          url?`<a class="assignment-action" href="${url}">${resource.resource_type==='practice_set'?'Open assigned set':'Open material'}</a>`:'';
+        return `<article class="assignment-row"><div><span class="assignment-kind">${kind}</span><h4>${escapeHtml(title)}</h4>${detail?`<p>${escapeHtml(detail)}</p>`:''}${questionCount||due?`<p>${[questionCount,due].filter(Boolean).join(' · ')}</p>`:''}</div>${action}</article>`;
+      }).join('');
+    }
+    function renderCourse(code,courses){
+      const course=courses.find(item=>item.code===code);
+      if(!course)return;
+      $('course-title').textContent=course.label;
+      $('course-summary').textContent='Your assigned exam sets and study materials for this class.';
+      $('course-date').textContent=course.date?`Next exam · ${dateLabel(course.date)}`:'';
+      const groups=new Map();
+      course.resources.forEach(resource=>{
+        const label=examGroup(resource);
+        if(!groups.has(label))groups.set(label,[]);
+        groups.get(label).push(resource);
+      });
+      const items=$('course-items');
+      if(!groups.size){
+        items.innerHTML='<div class="workspace-empty"><h3>No exam materials assigned yet</h3><p>When Madison assigns a question set or study guide for this class, it will appear here.</p></div>';
+      }else{
+        items.innerHTML=[...groups.entries()].sort(([a],[b])=>{
+          const examA=Number(a.match(/\d+/)?.[0]),examB=Number(b.match(/\d+/)?.[0]);
+          if(Number.isFinite(examA)&&Number.isFinite(examB))return examA-examB;
+          if(Number.isFinite(examA))return -1;
+          if(Number.isFinite(examB))return 1;
+          return a.localeCompare(b);
+        }).map(([label,resources])=>`<section class="exam-group"><h3>${escapeHtml(label)}</h3>${assignedRows(resources)}</section>`).join('');
+      }
+      document.querySelectorAll('[data-course]').forEach(button=>button.setAttribute('aria-current',String(button.dataset.course===code)));
+      document.querySelectorAll('[data-open-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.openSet)));
+    }
+    function renderNursingLibrary(){
+      $('page-title').textContent='Exam prep, organized by class.';
+      $('page-summary').textContent='Choose a class to open the question sets and study materials assigned for its exams.';
+      const coursesByCode=new Map();
+      classSchedules.forEach(schedule=>{
+        const code=courseCode(schedule.class_code||schedule.class_name);
+        if(code&&!coursesByCode.has(code))coursesByCode.set(code,{code,label:cleanPersonalLabel(schedule.class_name)||code,date:schedule.next_exam_date||'',resources:[]});
+      });
+      assignedResources.forEach(resource=>{
+        const code=courseCode([resource.title,resource.url,resource.note].join(' '))||'other';
+        if(!coursesByCode.has(code))coursesByCode.set(code,{code,label:code==='other'?'Other assigned work':code,date:'',resources:[]});
+        coursesByCode.get(code).resources.push(resource);
+      });
+      const courses=[...coursesByCode.values()].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||a.label.localeCompare(b.label));
+      const target=$('sets');
+      target.className='workspace';
+      if(!courses.length){
+        target.innerHTML='<div class="workspace-empty"><h3>No classes are connected yet</h3><p>Your class-specific exam materials will appear here after your classes or assignments are added.</p></div>';
+        return;
+      }
+      const firstCourse=courses[0];
+      target.innerHTML=`<nav class="course-nav" aria-label="Your classes"><h2>Your classes</h2><div class="course-list" id="course-list">${courses.map(course=>`<button type="button" class="course-choice" data-course="${escapeHtml(course.code)}" aria-current="${course.code===firstCourse.code}"><span>${escapeHtml(course.label)}</span><span class="count">${course.resources.length}</span></button>`).join('')}</div></nav><section class="course-panel" aria-labelledby="course-title"><div class="course-panel-head"><div><h2 id="course-title"></h2><p id="course-summary"></p></div><span class="course-date" id="course-date"></span></div><div id="course-items"></div></section>`;
+      target.querySelectorAll('[data-course]').forEach(button=>button.addEventListener('click',()=>renderCourse(button.dataset.course,courses)));
+      renderCourse(firstCourse.code,courses);
+    }
+    function renderNclexLibrary(){
+      $('page-title').textContent='Your NCLEX review.';
+      $('page-summary').textContent='Continue with the question sets and review assigned to your account.';
+      const moduleResources=Object.entries(modulePracticeSets)
+        .filter(([,moduleKey])=>enabledModules.has(moduleKey))
+        .map(([setId])=>({title:sets.find(set=>set.id===setId)?.title||'Assigned review',resource_type:'practice_set',url:urlForSet(setId)}));
+      const resources=[...assignedResources,...moduleResources].filter((resource,index,all)=>all.findIndex(other=>normalizedUrl(other.url)===normalizedUrl(resource.url))===index);
+      const target=$('sets');
+      target.className='nclex-review';
+      const rows=assignedRows(resources);
+      target.innerHTML=`<div class="review-heading"><h2>Assigned review</h2><span class="review-count">${resources.length} assigned ${resources.length===1?'item':'items'}</span></div><div class="review-list">${rows||'<div class="workspace-empty"><h3>No NCLEX review assigned yet</h3><p>Assigned question sets will appear here when they are added to your account.</p></div>'}</div>`;
+      target.querySelectorAll('[data-open-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.openSet)));
+    }
+    function renderLibrary(){
+      $('library-status').textContent='';
+      $('library').classList.remove('hidden');
+      $('sets').classList.remove('hidden');
+      $('quiz').classList.add('hidden');
+      if(student?.student_type==='nursing_student')renderNursingLibrary();
+      else renderNclexLibrary();
+    }
+    function startSet(id,count){
+      const set=sets.find(item=>item.id===id);
+      if(!set)return;
+      if(!assignedSet(id)){
+        $('library-status').textContent='This question set is not assigned to your account. Return to your dashboard to view your assigned work.';
+        $('library-status').classList.remove('hidden');
+        return;
+      }
+      if(set.id==='jack-nur312-exam1'&&!count){
+        $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');
+        const amounts=[...new Set([10,20,40,60,set.questions.length])].filter(amount=>amount>0&&amount<=set.questions.length);
+        $('quiz').innerHTML=`<section class="study-session"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(cleanPersonalLabel(set.title))}</strong><span>Choose the length of this study session</span></div><button class="study-session-exit" id="exit-count-choice" type="button">Back to assignments</button></header><div class="study-session-body"><h2>How many questions would you like to answer?</h2><p class="result-detail">This assigned exam set includes ${set.questions.length} questions. Your answers and score will be saved to your history.</p><div class="question-count-grid">${amounts.map(amount=>`<button class="question-count-choice" data-count="${amount}" type="button"><strong>${amount===set.questions.length?'All '+amount:amount}</strong><span>${amount===set.questions.length?'Complete exam set':'Questions'}</span></button>`).join('')}</div></div></section>`;
+        $('quiz').querySelectorAll('.question-count-choice').forEach(button=>button.addEventListener('click',()=>startSet(id,Number(button.dataset.count))));
+        $('exit-count-choice').addEventListener('click',showLibrary);
+        return;
+      }
+      const questions=count&&count<set.questions.length?[...set.questions].sort(()=>Math.random()-.5).slice(0,count):set.questions;
+      activeSet={...set,title:cleanPersonalLabel(set.title),tag:cleanPersonalLabel(set.tag),description:cleanPersonalLabel(set.description),questions};
+      index=0;answers=[];revealed=false;
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');$('library-status').classList.add('hidden');
+      beginPractice();
+    }
     // Runs the active set in the NCLEX-style exam interface; falls back to the classic view if it did not load.
     function beginPractice(){
       if(!window.ExamUI||!window.ExamAdapters){renderQuestion();return}
@@ -1515,7 +1847,47 @@
         onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
     }
     function answersMatch(question,selected){return Array.isArray(question.answer)?Array.isArray(selected)&&question.answer.length===selected.length&&question.answer.every(answer=>selected.includes(answer)):selected===question.answer}
-    function renderQuestion(){const q=activeSet.questions[index];if(q.type==='intro'){$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Scenario ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><div class="intro-card"><p class="intro-label">Clinical Scenario</p><h2>${q.stem}</h2><p class="intro-note">${q.note||'Read this scenario carefully before answering the questions that follow.'}</p></div><div class="actions"><button class="start" id="next">Begin questions →</button></div>`;revealed=true;setTimeout(()=>{const btn=$('next');if(btn)btn.addEventListener('click',()=>{index++;revealed=false;renderQuestion();});},0);return;}const isSATA=Array.isArray(q.answer);const selected=answers[index];const isCorrect=answersMatch(q,selected);$('quiz').innerHTML=`<p class="question-number">${activeSet.title} · Question ${index+1} of ${activeSet.questions.length}</p><div class="progress"><div style="width:${((index)/activeSet.questions.length)*100}%"></div></div><h2>${q.stem}</h2>${isSATA?'<p class="sata-hint">Select all that apply</p>':''}<div class="options">${q.options.map((option,optionIndex)=>{const isChecked=isSATA?(Array.isArray(selected)&&selected.includes(optionIndex)):(selected===optionIndex);return`<label class="option${revealed?(isSATA?(q.answer.includes(optionIndex)?' correct-opt':(Array.isArray(selected)&&selected.includes(optionIndex)?' wrong-opt':'')):(optionIndex===q.answer?' correct-opt':selected===optionIndex?' wrong-opt':'')):''}"><input type="${isSATA?'checkbox':'radio'}" name="answer" value="${optionIndex}" ${isChecked?'checked':''} ${revealed?'disabled':''}><span>${option}</span></label>`;}).join('')}</div>${revealed?`<div class="feedback ${isCorrect?'correct':'incorrect'}"><strong>${isCorrect?'Correct ✓':'Review this one'}</strong>${isSATA?'<em>Select all that apply — all correct choices must be selected.</em>':''}${q.rationale}</div>`:''}<div class="actions"><button class="secondary" id="leave" type="button">Back to sets</button>${index>0?'<button class="secondary" id="previous" type="button">← Previous question</button>':''}<button class="primary" id="next" type="button" ${selected===undefined?'disabled':''}>${revealed?(index===activeSet.questions.length-1?'See results':'Next question'):'Check answer'}</button></div>`;document.querySelectorAll('input[name="answer"]').forEach(input=>input.addEventListener('change',event=>{answers[index]=isSATA?Array.from(document.querySelectorAll('input[name="answer"]:checked')).map(item=>Number(item.value)):Number(event.target.value);$('next').disabled=false}));$('leave').addEventListener('click',showLibrary);const previous=$('previous');if(previous)previous.addEventListener('click',()=>{index--;revealed=false;renderQuestion()});$('next').addEventListener('click',()=>{if(!revealed){revealed=true;renderQuestion();return}if(index===activeSet.questions.length-1){showResults();return}index++;revealed=false;renderQuestion()})}
+    function renderQuestion(){
+      $('quiz').classList.remove('hidden');
+      const q=activeSet.questions[index];
+      const total=activeSet.questions.length;
+      const progress=Math.round(index/total*100);
+      const counter=q.type==='intro'?`Scenario ${index+1} of ${total}`:`Question ${index+1} of ${total}`;
+      const header=`<header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>${escapeHtml(activeSet.tag||'Assigned exam prep')}</span></div><button class="study-session-exit" id="leave" type="button">Exit set</button></header>`;
+      const progressMarkup=`<div class="study-session-progress"><span>${counter}</span><strong>${progress}%</strong></div><div class="study-session-track" role="progressbar" aria-label="Set progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>`;
+      if(q.type==='intro'){
+        $('quiz').innerHTML=`<section class="study-session">${header}<div class="study-session-body">${progressMarkup}<div class="scenario-panel"><p class="intro-label">Clinical scenario</p><h2>${q.stem}</h2><p class="intro-note">${q.note||'Read this scenario carefully before answering the questions that follow.'}</p></div><div class="actions"><span></span><button class="primary" id="next" type="button">Begin questions</button></div></div></section>`;
+        revealed=true;
+        $('leave').addEventListener('click',showLibrary);
+        $('next').addEventListener('click',()=>{index++;revealed=false;renderQuestion()});
+        return;
+      }
+      const isSATA=Array.isArray(q.answer);
+      const selected=answers[index];
+      const isCorrect=answersMatch(q,selected);
+      const options=q.options.map((option,optionIndex)=>{
+        const isChecked=isSATA?(Array.isArray(selected)&&selected.includes(optionIndex)):(selected===optionIndex);
+        const isCorrectOption=isSATA?q.answer.includes(optionIndex):optionIndex===q.answer;
+        const isWrongSelection=isSATA?(Array.isArray(selected)&&selected.includes(optionIndex)&&!isCorrectOption):selected===optionIndex&&!isCorrectOption;
+        const optionState=revealed?(isCorrectOption?' correct-opt':isWrongSelection?' wrong-opt':''):'';
+        const marker=String.fromCharCode(65+optionIndex);
+        return `<label class="option${optionState}"><input type="${isSATA?'checkbox':'radio'}" name="answer" value="${optionIndex}" ${isChecked?'checked':''} ${revealed?'disabled':''}><span class="option-marker" aria-hidden="true">${marker}</span><span class="option-copy">${option}</span></label>`;
+      }).join('');
+      const feedback=revealed?`<section class="feedback ${isCorrect?'correct':'incorrect'}" role="status" aria-live="polite"><strong>${isCorrect?'Correct':'Review this response'}</strong>${isSATA?'<p>Select all that apply. All correct choices must be selected.</p>':''}<div>${q.rationale}</div></section>`:'';
+      $('quiz').innerHTML=`<section class="study-session">${header}<div class="study-session-body">${progressMarkup}<h2>${q.stem}</h2>${isSATA?'<p class="sata-hint">Select all that apply</p>':''}<div class="options">${options}</div>${feedback}<div class="actions">${index>0?'<button class="secondary" id="previous" type="button">Previous question</button>':'<span></span>'}<button class="primary" id="next" type="button" ${selected===undefined?'disabled':''}>${revealed?(index===total-1?'See results':'Next question'):'Check answer'}</button></div></div></section>`;
+      document.querySelectorAll('input[name="answer"]').forEach(input=>input.addEventListener('change',event=>{
+        answers[index]=isSATA?Array.from(document.querySelectorAll('input[name="answer"]:checked')).map(item=>Number(item.value)):Number(event.target.value);
+        $('next').disabled=false;
+      }));
+      $('leave').addEventListener('click',showLibrary);
+      const previous=$('previous');
+      if(previous)previous.addEventListener('click',()=>{index--;revealed=false;renderQuestion()});
+      $('next').addEventListener('click',()=>{
+        if(!revealed){revealed=true;renderQuestion();return}
+        if(index===total-1){showResults();return}
+        index++;revealed=false;renderQuestion();
+      });
+    }
     function categoryForQuestion(id){
       const n=Number(String(id||"").replace("at01-q",""));
       if([1,11,29,30].includes(n))return "Priority & Acute Change";
@@ -1560,7 +1932,19 @@
       }
       return result.error?`Your score is shown here, but it was not saved: ${result.error.message||'Please try again.'}`:"Saved to your shared dashboard.";
     }
-    async function showResults(){const score=answers.reduce((total,answer,questionIndex)=>total+(answersMatch(activeSet.questions[questionIndex],answer)?1:0),0),percent=Math.round(score/activeSet.questions.length*100);$('quiz').innerHTML=`<section class="results"><p class="eyebrow">Practice complete</p><h2>${activeSet.title}</h2><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep this skill in mixed practice.':percent>=60?'Review the rationales, then return to this set once more.':'Review the connected module before retaking this set.'}</p><p class="status" id="save-status">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Try again</button><button class="primary" id="return" type="button">Back to assignments</button></div></section>`;$('save-status').textContent=await saveResult(score);$('retry').addEventListener('click',()=>startSet(activeSet.id));$('return').addEventListener('click',showLibrary)}
+    async function showResults(){
+      const score=answers.reduce((total,answer,questionIndex)=>total+(answersMatch(activeSet.questions[questionIndex],answer)?1:0),0);
+      const percent=Math.round(score/activeSet.questions.length*100);
+      $('quiz').innerHTML=`<section class="study-session study-results"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>Session complete</span></div></header><div class="study-session-body"><p class="question-number">Set complete</p><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep building on this momentum.':percent>=60?'Review the rationales, then return to this set.':'Review the related learning material before retaking this set.'}</p><p class="status" id="save-status" role="status" aria-live="polite">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Retake this set</button><button class="primary" id="return" type="button">Back to assignments</button></div></div></section>`;
+      $('save-status').textContent=await saveResult(score);
+      $('retry').addEventListener('click',()=>{
+        if(sets.some(set=>set.id===activeSet.id)){startSet(activeSet.id);return}
+        index=0;answers=[];revealed=false;
+        $('quiz').classList.add('hidden');
+        beginPractice();
+      });
+      $('return').addEventListener('click',showLibrary);
+    }
     function showLibrary(){if(new URLSearchParams(location.search).get("set")&&document.referrer){history.back();return}activeSet=null;$('quiz').classList.add('hidden');$('library').classList.remove('hidden');$('sets').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 
     function shuffled(items){
@@ -1596,6 +1980,12 @@
     async function buildMixedReview(count,focusCat){
       if(!student){
         alert('Sign in through the Success Center before starting Mixed Review.');
+        return;
+      }
+      if(student.student_type==='nursing_student'&&!assignedMixedReview()){
+        renderLibrary();
+        $('library-status').textContent='Mixed NCLEX review is not assigned to your account.';
+        $('library-status').classList.remove('hidden');
         return;
       }
 
@@ -1719,7 +2109,13 @@
 
     async function buildCourseExamPractice(courseKey,examKey){
       if(!student){
-        alert('Sign in through the Success Center before starting exam practice.');
+        location.replace('student-login.html');
+        return;
+      }
+      if(!assignedCourseExam(courseKey,examKey)){
+        renderLibrary();
+        $('library-status').textContent='This course exam set is not assigned to your account.';
+        $('library-status').classList.remove('hidden');
         return;
       }
 
@@ -1749,13 +2145,13 @@
       })).filter(q=>q.answer>=0);
 
       if(error||!questions.length){
-        $('quiz').innerHTML='<p class="status">This exam practice set could not load. Please return to your dashboard and try again.</p>';
+        $('quiz').innerHTML=`<p class="status">${error?'This exam practice set could not load. '+escapeHtml(error.message):'No questions are currently available in this exam set.'} Please return to your dashboard and try again.</p>`;
         return;
       }
 
       activeSet={
         id:`course-exam-${courseKey}-${examKey}`,
-        title:'NUR 321 OB · Exam 1 Practice',
+        title:courseKey.toUpperCase().replace(/-/g,' ')+' · '+examKey.replace(/([a-z])([0-9])/i,'$1 $2')+' Practice',
         tag:'Course exam practice',
         description:'Practice questions built from your Exam 1 course content and blueprint.',
         questions
@@ -1766,24 +2162,63 @@
       beginPractice();
     }
 
-    async function init(){const immediateSet=new URLSearchParams(window.location.search).get('set');if(sets.some(set=>set.id===immediateSet)){startSet(immediateSet);return}const {data}=await db.auth.getSession();if(data.session){const own=await db.from('students').select('id').eq('auth_user_id',data.session.user.id).maybeSingle();student=own.data||null;const admin=await db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle();if(admin.data){const link=document.getElementById('dashboard-link');link.href='shared-progress.html';link.textContent='Shared progress';}}const params=new URLSearchParams(window.location.search);
-      const mixedCount=Number(params.get('mixed'));
-      const assignedSet=params.get('set');
-      const courseKey=params.get('course');
-      const examKey=params.get('exam');
-
-      const isJack=student?.name?.toLowerCase().includes('jack');
-      if(examKey==='exam1'&&(courseKey==='nur312'||(courseKey==='nur321-ob'&&isJack))){
-        startSet('jack-nur312-exam1');
-      }else if(courseKey&&examKey){
-        await buildCourseExamPractice(courseKey,examKey);
-      }else if([10,20,30,40].includes(mixedCount)){
-        await buildMixedReview(mixedCount,params.get('cat'));
-      }else if(sets.some(set=>set.id===assignedSet)){
-        startSet(assignedSet);
-      }else{
-        renderLibrary();
-      }}
+    async function init(){
+      $('library-status').classList.add('hidden');
+      try{
+        const {data,error}=await db.auth.getSession();
+        if(error)throw error;
+        if(!data.session){location.replace('student-login.html');return}
+        const [{data:own,error:studentError},{data:admin,error:adminError}]=await Promise.all([
+          db.from('students').select('id,name,student_type').eq('auth_user_id',data.session.user.id).maybeSingle(),
+          db.from('app_admins').select('user_id').eq('user_id',data.session.user.id).maybeSingle()
+        ]);
+        if(studentError)throw studentError;
+        if(adminError)throw adminError;
+        student=own;
+        if(admin){
+          const link=$('dashboard-link');
+          link.href='shared-progress.html';
+          link.textContent='Shared progress';
+        }
+        if(!student){
+          $('library-status').textContent='Your student account could not be found. Return to your dashboard or contact Madison for help.';
+          $('library-status').classList.remove('hidden');
+          return;
+        }
+        const [{data:resources,error:resourcesError},{data:access,error:accessError},{data:schedules,error:schedulesError}]=await Promise.all([
+          db.from('student_resources').select('title,url,note,resource_type,due_on').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
+          db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),
+          db.from('student_class_schedules').select('class_code,class_name,next_exam_date').eq('student_id',student.id).order('class_code')
+        ]);
+        if(resourcesError)throw resourcesError;
+        if(accessError)throw accessError;
+        if(schedulesError)throw schedulesError;
+        assignedResources=resources||[];
+        enabledModules=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
+        classSchedules=schedules||[];
+        const params=new URLSearchParams(window.location.search);
+        const requestedSet=params.get('set');
+        const mixedCount=Number(params.get('mixed'));
+        const courseKey=params.get('course');
+        const examKey=params.get('exam');
+        if(courseKey&&examKey){
+          await buildCourseExamPractice(courseKey,examKey);
+        }else if([10,20,30,40].includes(mixedCount)){
+          await buildMixedReview(mixedCount,params.get('cat'));
+        }else if(sets.some(set=>set.id===requestedSet)){
+          if(!assignedSet(requestedSet)){
+            renderLibrary();
+            $('library-status').textContent='This question set is not assigned to your account. Return to your dashboard to view your assigned work.';
+            $('library-status').classList.remove('hidden');
+          }else startSet(requestedSet);
+        }else{
+          renderLibrary();
+        }
+      }catch(error){
+        $('library-status').textContent='Your assigned study materials could not be loaded. '+(error?.message||'Please try again or contact Madison for help.');
+        $('library-status').classList.remove('hidden');
+      }
+    }
     init();
   </script>
 </body>

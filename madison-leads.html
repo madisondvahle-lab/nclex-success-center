@@ -169,7 +169,15 @@
     }
 
     document.getElementById('new-consult').addEventListener('click',()=>{document.getElementById('intake-panel').classList.remove('hidden');document.getElementById('intake-name').focus()});document.getElementById('close-consult').addEventListener('click',()=>document.getElementById('intake-panel').classList.add('hidden'));document.getElementById('intake-form').addEventListener('submit',async event=>{event.preventDefault();const message=document.getElementById('intake-message');message.textContent='Saving consult intake…';const row={full_name:document.getElementById('intake-name').value.trim(),email:document.getElementById('intake-email').value.trim().toLowerCase(),phone:document.getElementById('intake-phone').value.trim()||null,preferred_contact:document.getElementById('intake-contact').value||null,time_zone:document.getElementById('intake-zone').value.trim()||null,nclex_exam:document.getElementById('intake-exam').value||null,graduation_date:document.getElementById('intake-graduation').value||null,prior_attempts:Number(document.getElementById('intake-attempts').value||0),prior_feedback:document.getElementById('intake-feedback').value.trim()||null,nclex_target_date:document.getElementById('intake-target-date').value||null,study_resources:document.getElementById('intake-resources').value.trim()||null,challenge_areas:document.getElementById('intake-challenges').value.trim()||null,strengths:document.getElementById('intake-strengths').value.trim()||null,accommodations_notes:document.getElementById('intake-accommodations').value.trim()||null,learning_preferences:document.getElementById('intake-learning').value.trim()||null,success_goal:document.getElementById('intake-goal').value.trim()||null,biggest_concern:document.getElementById('intake-concern').value.trim()||null,weekly_study_hours:document.getElementById('intake-hours').value||null,support_interest:document.getElementById('intake-interest').value||null,coach_notes:document.getElementById('intake-notes').value.trim()||null};const saved=await db.from('consult_intakes').insert(row);if(saved.error){message.textContent='Could not save this intake. '+saved.error.message;return}message.textContent='Consult intake saved.';document.getElementById('intake-form').reset();init()});
-    document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
+    document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+    init().then(()=>{
+      const params=new URLSearchParams(location.search);
+      if(params.get('new')!=='consult'||document.getElementById('app').classList.contains('hidden'))return;
+      params.delete('new');
+      const query=params.toString();
+      history.replaceState(null,'',location.pathname+(query?'?'+query:'')+location.hash);
+      document.getElementById('new-consult').click();
+    });
   </script>
 </body>
 </html>
