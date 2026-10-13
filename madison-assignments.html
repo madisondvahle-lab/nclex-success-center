@@ -4,71 +4,182 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <title>Student assignments · Study With Madison, RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--green:#167052}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(880px,calc(100% - 36px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid #e2e8e3;gap:18px}.brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}.brand small{font:600 .62em Inter,sans-serif}.nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.nav a,.sign-out{border:0;background:transparent;color:var(--ink);font:800 .78rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px;text-decoration:none}.hero{padding:54px 0 28px}.eyebrow{margin:0 0 9px;color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.13em;font-size:.72rem}.hero h1{font:700 clamp(2.3rem,5vw,4.3rem)/.95 Georgia,serif;letter-spacing:-.06em;margin:0;color:var(--plum)}.hero p:last-child{max-width:640px;color:var(--muted);line-height:1.65;margin:18px 0 0}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 10px 32px #17344f0b;margin-bottom:26px}.card h2{font:700 1.48rem Georgia,serif;letter-spacing:-.035em;color:var(--plum);margin:0 0 8px}.help{color:var(--muted);line-height:1.5;margin:0 0 22px}.field-label{display:block;font-size:.76rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;margin:0 0 8px;color:var(--ink)}select{width:100%;border:1px solid #bfcfc7;border-radius:10px;background:#fff;padding:13px 14px;font:600 1rem Inter,sans-serif;color:var(--ink)}.assignments{display:grid;gap:12px;margin:20px 0}.choice{border:1px solid var(--line);border-radius:12px;padding:15px 16px;display:flex;gap:13px;align-items:flex-start;cursor:pointer;background:#fff}.choice input{margin:3px 0 0;accent-color:var(--plum);width:17px;height:17px}.choice strong{display:block;color:var(--plum);font-size:1rem}.choice span{display:block;color:var(--muted);font-size:.9rem;line-height:1.45;margin-top:3px}.button{appearance:none;border:0;border-radius:999px;background:var(--plum);color:#fff;padding:13px 20px;font:800 .92rem Inter,sans-serif;cursor:pointer}.button:disabled{opacity:.55;cursor:wait}.student-context-bar{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:28px 0 -10px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 4px 16px #17344f08}.student-context-info{display:flex;flex-direction:column;gap:2px}.student-context-info .eyebrow{margin:0 0 2px;font-size:.68rem}.student-context-info h2{font:700 1.22rem Georgia,serif;color:var(--plum);margin:0;letter-spacing:-.02em}.student-context-info p{margin:0;font-size:.86rem;color:var(--muted)}.student-context-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.student-context-actions .button{padding:9px 16px;font-size:.84rem;text-decoration:none;display:inline-flex;align-items:center}.student-context-actions .button.secondary{background:#456276}    .notice{display:none;margin-top:18px;padding:13px 15px;border-radius:10px;line-height:1.45;font-weight:650}.notice.success{display:block;background:#e7f5ee;color:#0f5d42}.notice.error{display:block;background:#fde9e7;color:#9c382d}.notice.info{display:block;background:#eef3f8;color:var(--ink)}.empty{padding:18px;border:1px dashed #b9c9c0;border-radius:12px;color:var(--muted)}.hidden{display:none!important}.upload-file-row{display:flex;gap:10px;align-items:center;padding:10px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:8px;font-size:.88rem}.upload-file-row a{color:var(--plum);font-weight:700;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.upload-file-row .del-btn{border:0;background:transparent;color:#c0392b;cursor:pointer;font-size:1rem;padding:0 4px;flex-shrink:0}@media(max-width:600px){.top{align-items:flex-start;flex-direction:column}.nav{justify-content:flex-start}.card{padding:20px}.hero{padding-top:38px}}
+    /* Assignments page specific styles */
+    .student-context-bar{background:var(--admin-paper);border:1px solid var(--admin-line);padding:14px 18px;margin:0 0 20px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+    .student-context-info{display:flex;flex-direction:column;gap:2px}
+    .student-context-info .eyebrow{margin:0 0 2px;font-size:.68rem;color:var(--admin-rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+    .student-context-info h2{font:700 1.22rem Georgia,serif;color:var(--admin-navy);margin:0;letter-spacing:-.02em}
+    .student-context-info p{margin:0;font-size:.84rem;color:var(--admin-muted)}
+    .student-context-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .student-context-actions .button{padding:8px 14px;font-size:.8rem;text-decoration:none;display:inline-flex;align-items:center}
+    .student-context-actions .button.secondary{background:var(--admin-navy);color:#fff}
+    .field-label{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;margin:0 0 8px;color:var(--admin-navy)}
+    select{width:100%;border:1px solid var(--admin-line);background:#fff;padding:12px 14px;font:600 .95rem Inter,sans-serif;color:var(--admin-navy)}
+    .assignments{display:grid;gap:10px;margin:20px 0}
+    .choice{border:1px solid var(--admin-line);padding:14px 16px;display:flex;gap:13px;align-items:flex-start;cursor:pointer;background:#fff;transition:border-color .15s ease}
+    .choice:hover{border-color:var(--admin-navy)}
+    .choice input{margin:3px 0 0;accent-color:var(--admin-navy);width:17px;height:17px}
+    .choice strong{display:block;color:var(--admin-navy);font-size:.95rem}
+    .choice span{display:block;color:var(--admin-muted);font-size:.84rem;line-height:1.45;margin-top:3px}
+    .panel-body{padding:22px 24px}
+    .notice{display:none;margin-top:16px;padding:12px 14px;line-height:1.45;font-weight:650;font-size:.85rem}
+    .notice.success{display:block;background:#e7f5ee;color:#0f5d42;border:1px solid #b7dfcb}
+    .notice.error{display:block;background:#fde9e7;color:#9c382d;border:1px solid #f3c2bc}
+    .notice.info{display:block;background:#eef3f8;color:var(--admin-navy);border:1px solid #c7d9e8}
+    .empty{padding:18px;border:1px dashed var(--admin-line);color:var(--admin-muted);text-align:center}
+    .upload-file-row{display:flex;gap:10px;align-items:center;padding:10px 14px;border:1px solid var(--admin-line);background:#fff;margin-bottom:8px;font-size:.88rem}
+    .upload-file-row a{color:var(--admin-navy);font-weight:700;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .upload-file-row a:hover{text-decoration:underline}
+    .upload-file-row .del-btn{border:0;background:transparent;color:#c0392b;cursor:pointer;font-size:1.1rem;padding:0 4px;flex-shrink:0}
   </style>
 </head>
 <body>
-  <main class="shell">
-    <header class="top admin-header"><div class="brand">Study With Madison, RN <small>· private admin</small></div><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="student-onboarding.html">New student</a><a id="nav-progress" href="shared-progress.html">Progress</a><a href="madison-assignments.html" aria-current="page">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html">Question bank</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button></nav></header>
-    <div id="loading" class="hero"><p class="eyebrow">Private admin view</p><h1>Loading assignments…</h1></div>
-    <section id="app" class="hidden">
-      <div id="student-context-bar" class="student-context-bar hidden">
-        <div class="student-context-info">
-          <p class="eyebrow">Managing student</p>
-          <h2 id="context-student-name"></h2>
-          <p id="context-student-email"></p>
-        </div>
-        <div class="student-context-actions">
-          <a class="button" id="context-back-link" href="shared-progress.html">← Return to student workspace</a>
-          <a class="button secondary" id="context-preview-link" href="student-dashboard.html" target="_blank" rel="noopener">Preview student dashboard ↗</a>
-        </div>
+  <div id="loading" class="loading">Loading assignments…</div>
+  <div id="app" class="admin-app hidden">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a id="nav-progress" href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html" aria-current="page">Assignments</a>
+        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+          <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
       </div>
-      <section class="hero"><p class="eyebrow">Private admin view</p><h1>Assign student work.</h1><p>Give a student access to specific modules and add a full mock CAT diagnostic to their dashboard. Existing module access stays intact.</p></section>
-      <section class="card">
-        <h2>Make an assignment</h2>
-        <p class="help">Choose a student, select the work to assign, then save. Start with the Core RN Safety Pathway when a student needs a focused, high-yield foundation.</p>
-        <label class="field-label" for="student">Student</label>
-        <select id="student"><option value="">Choose a student…</option></select>
-        <div id="choices" class="assignments hidden">
-          <label class="choice"><input id="m1" type="checkbox"><span><strong>Module 1 · Newborn</strong><span>Assign access to the Newborn module.</span></span></label>
-          <label class="choice"><input id="m2" type="checkbox"><span><strong>Module 2 · Maternal &amp; OB</strong><span>Assign access to the Maternal &amp; OB module.</span></span></label>
-        <label class="choice"><input id="m7" type="checkbox"><span><strong>Module 7 · EKG &amp; Cardiac Rhythms</strong><span>Rhythm recognition, shockable vs non-shockable rhythms, heart blocks, and priority interventions.</span></span></label>
-          <label class="choice"><input id="core-safety-priority" type="checkbox"><span><strong>Core 1 · Safe Care, Priorities &amp; Delegation</strong><span>Priorities, delegation, infection prevention, blood administration, and safe procedures.</span></span></label>
-          <label class="choice"><input id="core-medication-calculations" type="checkbox"><span><strong>Core 2 · Medication, Fluids &amp; Calculations</strong><span>High-alert medications, electrolytes, ABGs, and medication calculations.</span></span></label>
-          <label class="choice"><input id="core-lifespan-reproductive" type="checkbox"><span><strong>Core 3 · OB, Newborn &amp; Pediatric Safety</strong><span>Preeclampsia, fetal monitoring, postpartum, newborn, and pediatric safety.</span></span></label>
-          <label class="choice"><input id="core-acute-systems" type="checkbox"><span><strong>Core 4 · Acute Care, Systems &amp; Procedures</strong><span>Airway, sepsis, shock, fluids, post-op complications, and acute systems care.</span></span></label>
-          <label class="choice"><input id="core-psych-judgment" type="checkbox"><span><strong>Core 5 · Psych, Clinical Judgment &amp; Integration</strong><span>Psych safety, neuroleptic malignant syndrome, therapeutic communication, and clinical judgment.</span></span></label>
-          <label class="choice"><input id="diagnostic" type="checkbox"><span><strong>Full mock CAT diagnostic</strong><span>Add the full mock CAT to the student’s dashboard as a practice set.</span></span></label>
+    </aside>
 
-          <label class="choice">
-            <input id="mixed-review" type="checkbox">
-            <span>
-              <strong>Mixed NCLEX Review</strong>
-              <span>Fresh mixed practice pulled from the live question bank.</span>
-            </span>
-          </label>
-          <label class="choice">
-            <input id="nur215-foundations" type="checkbox">
-            <span>
-              <strong>NUR 215 Foundations Practice</strong>
-              <span>60 mixed application and clinical-judgment questions on professional communication, ethics, law, leadership, conflict, change, and delegation.</span>
-            </span>
-          </label>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Students &amp; Clinical · Assignments</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="shared-progress.html">Student workspace</a>
+          <a class="button secondary" href="student-onboarding.html">New student</a>
+        </div>
+      </header>
 
-          <div id="mixed-options" class="hidden" style="margin:-2px 0 18px 30px">
-            <label class="field-label" for="mixed-count">Number of questions</label>
-            <select id="mixed-count">
-              <option value="10">10 questions</option>
-              <option value="20" selected>20 questions</option>
-              <option value="30">30 questions</option>
-              <option value="40">40 questions</option>
-            </select>
+      <main class="dashboard">
+        <div id="student-context-bar" class="student-context-bar hidden">
+          <div class="student-context-info">
+            <p class="eyebrow">Managing student</p>
+            <h2 id="context-student-name"></h2>
+            <p id="context-student-email"></p>
           </div>
+          <div class="student-context-actions">
+            <a class="button secondary" id="context-back-link" href="shared-progress.html">← Return to student workspace</a>
+            <a class="button secondary" id="context-preview-link" href="student-dashboard.html" target="_blank" rel="noopener">Preview student dashboard ↗</a>
+          </div>
+        </div>
 
-          <label class="choice">
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Students &amp; Clinical · Assignments</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="shared-progress.html">Student workspace</a>
+          <a class="button secondary" href="student-onboarding.html">New student</a>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <header class="dashboard-heading">
+          <div>
+            <h1>Assign student work</h1>
+            <p>Give a student access to specific modules, diagnostic mock exams, or course-specific practice sets. Existing module access stays intact.</p>
+          </div>
+          <div class="quick-actions">
+            <a class="button secondary" href="shared-progress.html">View student progress →</a>
+          </div>
+        </header>
+
+        <section class="metric-grid" aria-label="Assignment metrics">
+          <article class="metric">
+            <strong>Core Modules</strong>
+            <span>Curriculum Access</span>
+            <small>Module 1, 2, 7 &amp; Core RN Safety Pathway</small>
+          </article>
+          <article class="metric">
+            <strong>Mock CAT</strong>
+            <span>Diagnostics</span>
+            <small>Full adaptive diagnostic &amp; mixed review</small>
+          </article>
+          <article class="metric">
+            <strong>Nursing School</strong>
+            <span>Course Exam Prep</span>
+            <small>NUR 215, 312, 321, 416 sets</small>
+          </article>
+          <article class="metric">
+            <strong>Study Materials</strong>
+            <span>Private Uploads</span>
+            <small>Slide decks, DOCX guides, and review notes</small>
+          </article>
+        </section>
+
+        <!-- Make an assignment panel -->
+        <section class="dashboard-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Make an assignment</h2>
+              <p>Choose a student, select the work to assign, then save. Start with the Core RN Safety Pathway when a student needs a focused, high-yield foundation.</p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <label class="field-label" for="student">Student</label>
+            <select id="student"><option value="">Choose a student…</option></select>
+            <div id="choices" class="assignments hidden">
+              <label class="choice"><input id="m1" type="checkbox"><span><strong>Module 1 · Newborn</strong><span>Assign access to the Newborn module.</span></span></label>
+              <label class="choice"><input id="m2" type="checkbox"><span><strong>Module 2 · Maternal &amp; OB</strong><span>Assign access to the Maternal &amp; OB module.</span></span></label>
+              <label class="choice"><input id="m7" type="checkbox"><span><strong>Module 7 · EKG &amp; Cardiac Rhythms</strong><span>Rhythm recognition, shockable vs non-shockable rhythms, heart blocks, and priority interventions.</span></span></label>
+              <label class="choice"><input id="core-safety-priority" type="checkbox"><span><strong>Core 1 · Safe Care, Priorities &amp; Delegation</strong><span>Priorities, delegation, infection prevention, blood administration, and safe procedures.</span></span></label>
+              <label class="choice"><input id="core-medication-calculations" type="checkbox"><span><strong>Core 2 · Medication, Fluids &amp; Calculations</strong><span>High-alert medications, electrolytes, ABGs, and medication calculations.</span></span></label>
+              <label class="choice"><input id="core-lifespan-reproductive" type="checkbox"><span><strong>Core 3 · OB, Newborn &amp; Pediatric Safety</strong><span>Preeclampsia, fetal monitoring, postpartum, newborn, and pediatric safety.</span></span></label>
+              <label class="choice"><input id="core-acute-systems" type="checkbox"><span><strong>Core 4 · Acute Care, Systems &amp; Procedures</strong><span>Airway, sepsis, shock, fluids, post-op complications, and acute systems care.</span></span></label>
+              <label class="choice"><input id="core-psych-judgment" type="checkbox"><span><strong>Core 5 · Psych, Clinical Judgment &amp; Integration</strong><span>Psych safety, neuroleptic malignant syndrome, therapeutic communication, and clinical judgment.</span></span></label>
+              <label class="choice"><input id="diagnostic" type="checkbox"><span><strong>Full mock CAT diagnostic</strong><span>Add the full mock CAT to the student’s dashboard as a practice set.</span></span></label>
+
+              <label class="choice">
+                <input id="mixed-review" type="checkbox">
+                <span>
+                  <strong>Mixed NCLEX Review</strong>
+                  <span>Fresh mixed practice pulled from the live question bank.</span>
+                </span>
+              </label>
+              <label class="choice">
+                <input id="nur215-foundations" type="checkbox">
+                <span>
+                  <strong>NUR 215 Foundations Practice</strong>
+                  <span>60 mixed application and clinical-judgment questions on professional communication, ethics, law, leadership, conflict, change, and delegation.</span>
+                </span>
+              </label>
+
+              <div id="mixed-options" class="hidden" style="margin:-2px 0 18px 30px">
+                <label class="field-label" for="mixed-count">Number of questions</label>
+                <select id="mixed-count">
+                  <option value="10">10 questions</option>
+                  <option value="20" selected>20 questions</option>
+                  <option value="30">30 questions</option>
+                  <option value="40">40 questions</option>
+                </select>
+              </div>
+
+              <label class="choice">
             <input id="nur321-ob-exam1" type="checkbox">
             <span>
               <strong>NUR 312 Exam 1 Practice</strong>
@@ -119,30 +230,40 @@
             </span>
           </label>
 
-          <button id="save" class="button" type="button">Save assignments</button>
+          <p style="margin-top:20px">
+            <button id="save" class="button primary" type="button">Save assignments</button>
+          </p>
         </div>
         <p id="empty" class="empty hidden">No students are available yet.</p>
         <div id="notice" class="notice" role="status"></div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Upload materials for student -->
-      <section class="card">
-        <h2>Upload course materials for a student</h2>
-        <p class="help">Upload slides, syllabi, or study guides on behalf of a student. Files appear in their portal under "Your Uploads" and you can reference them when building practice sets.</p>
+    <!-- Upload materials for student -->
+    <section class="dashboard-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Upload course materials for a student</h2>
+          <p>Upload slides, syllabi, or study guides on behalf of a student. Files appear in their portal under "Your Uploads" and you can reference them when building practice sets.</p>
+        </div>
+      </div>
+      <div class="panel-body">
         <label class="field-label" for="upload-student">Student</label>
         <select id="upload-student"><option value="">Choose a student…</option></select>
         <div id="upload-section" class="hidden" style="margin-top:20px">
-          <label class="field-label" for="upload-label">Label <span style="font-weight:400;text-transform:none;letter-spacing:0">(what this covers)</span></label>
-          <input id="upload-label" type="text" placeholder="e.g. NUR 312 Exam 1 — Hemodynamic Shock" style="width:100%;border:1px solid #bfcfc7;border-radius:10px;background:#fff;padding:13px 14px;font:600 1rem Inter,sans-serif;color:var(--ink);margin-bottom:16px;box-sizing:border-box">
-          <label class="field-label" for="upload-file">File <span style="font-weight:400;text-transform:none;letter-spacing:0">(pptx, pdf, docx — up to 50 MB)</span></label>
-          <input id="upload-file" type="file" accept=".pptx,.pdf,.docx,.doc,.txt,.png,.jpg" style="display:block;margin-bottom:16px;font-size:.9rem">
-          <button id="upload-save" class="button" type="button">Upload file</button>
+          <label class="field-label" for="upload-label">Label <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--admin-muted)">(what this covers)</span></label>
+          <input id="upload-label" type="text" placeholder="e.g. NUR 312 Exam 1 — Hemodynamic Shock" style="width:100%;border:1px solid var(--admin-line);background:#fff;padding:12px 14px;font:600 .95rem Inter,sans-serif;color:var(--admin-navy);margin-bottom:16px;box-sizing:border-box">
+          <label class="field-label" for="upload-file">File <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--admin-muted)">(pptx, pdf, docx — up to 50 MB)</span></label>
+          <input id="upload-file" type="file" accept=".pptx,.pdf,.docx,.doc,.txt,.png,.jpg" style="display:block;margin-bottom:16px;font-size:.88rem">
+          <button id="upload-save" class="button primary" type="button">Upload file</button>
         </div>
         <div id="upload-notice" class="notice" role="status"></div>
         <div id="upload-list" style="margin-top:22px"></div>
-      </section>
+      </div>
     </section>
   </main>
+</div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');

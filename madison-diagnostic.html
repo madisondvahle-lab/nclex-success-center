@@ -4,78 +4,152 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="admin-nav.css">
+  <link rel="stylesheet" href="admin-shell.css">
   <link rel="stylesheet" href="exam-ui.css">
   <title>Consult Diagnostic · Study With Madison, RN</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--good:#2f7d4f;--mid:#b7791f;--low:#b4443c}*{box-sizing:border-box}
-    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .shell{width:min(1100px,calc(100% - 36px));margin:auto;padding-bottom:60px}.hidden{display:none!important}
-    .loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:5}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
-    .brand{font:700 1.2rem Georgia,serif}.brand small{font:600 .62em Inter,sans-serif}
-    h1{font:400 clamp(2rem,5vw,3rem) Georgia,serif;margin:34px 0 8px}h2{font:400 1.5rem Georgia,serif;margin:0 0 12px}h3{margin:18px 0 8px;font-size:1rem}
-    .eyebrow{color:var(--rose);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin:0}
-    .panel{background:var(--paper);border:1px solid var(--line);padding:20px;margin:14px 0}
-    .meta{color:var(--muted);font-size:.88rem;line-height:1.5}
-    button,.button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
-    button.secondary{background:transparent;color:var(--ink)}
-    label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
-    input[type=text],select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink)}
+    /* Consult diagnostic specific styles */
+    .panel{background:var(--admin-paper);border:1px solid var(--admin-line);padding:20px 22px;margin:16px 0}
+    .panel h2{margin:0 0 14px;font:700 1.25rem Georgia,serif;color:var(--admin-navy)}
+    .panel-body{padding:20px 22px}
+    .meta{color:var(--admin-muted);font-size:.85rem;line-height:1.55}
+    label{display:block;font-weight:700;font-size:.78rem;margin-bottom:12px;color:var(--admin-navy)}
+    input[type=text],select{width:100%;margin-top:5px;padding:10px 12px;border:1px solid var(--admin-line);background:#fff;font:inherit;color:var(--admin-navy);font-size:.88rem}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 16px}
-    .check{display:flex;gap:10px;align-items:center;font-weight:600}.check input{width:auto;margin:0}
+    .check{display:flex;gap:10px;align-items:center;font-weight:600;padding:8px 0}.check input{width:auto;margin:0}
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
-    .stat{background:#fff;border:1px solid var(--line);padding:14px}.stat b{display:block;font:400 2rem Georgia,serif}.stat span{color:var(--muted);font-size:.8rem}
-    table.res{width:100%;border-collapse:collapse;font-size:.9rem}table.res th,table.res td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
-    table.res th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .stat{background:#fff;border:1px solid var(--admin-line);padding:14px}.stat b{display:block;font:400 2rem Georgia,serif}.stat span{color:var(--admin-muted);font-size:.8rem}
+    table.res{width:100%;border-collapse:collapse;font-size:.9rem}table.res th,table.res td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--admin-line);vertical-align:middle}
+    table.res th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--admin-muted)}
     .bar{height:10px;background:#e8edf0;min-width:120px;position:relative}.bar i{position:absolute;inset:0 auto 0 0;display:block}
-    .good{color:var(--good)}.mid{color:var(--mid)}.low{color:var(--low)}
-    .bar i.good{background:var(--good)}.bar i.mid{background:var(--mid)}.bar i.low{background:var(--low)}
-    .tag{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--soft);padding:2px 7px;margin-right:4px}
-    details.item{border:1px solid var(--line);background:#fff;margin:8px 0}details.item summary{cursor:pointer;padding:12px 14px;font-weight:600;display:flex;gap:10px;align-items:flex-start}
+    .good{color:var(--admin-green)}.mid{color:var(--admin-amber)}.low{color:#b4443c}
+    .bar i.good{background:var(--admin-green)}.bar i.mid{background:var(--admin-amber)}.bar i.low{background:#b4443c}
+    .tag{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--admin-soft);padding:2px 7px;margin-right:4px}
+    details.item{border:1px solid var(--admin-line);background:#fff;margin:8px 0}details.item summary{cursor:pointer;padding:12px 14px;font-weight:600;display:flex;gap:10px;align-items:flex-start}
     details.item .in{padding:0 16px 16px;line-height:1.55;font-size:.92rem}
-    .rat{background:var(--soft);padding:10px 12px;margin-top:10px;font-size:.88rem}
+    .rat{background:var(--admin-soft);padding:10px 12px;margin-top:10px;font-size:.88rem}
     ul.focus li{margin:6px 0;line-height:1.5}
-    @media print{.admin-header,.noprint{display:none!important}body{background:#fff}details.item{break-inside:avoid}}
+    @media print{.admin-header,.admin-sidebar,.admin-topbar,.noprint{display:none!important}body{background:#fff}details.item{break-inside:avoid}}
   </style>
 </head>
 <body>
   <div class="loading" id="loading">Opening your private tools…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation">
-      <a class="admin-home" href="madison-admin.html">Admin home</a>
-      <a href="madison-consultations.html">Consultations</a><a href="madison-diagnostic.html" aria-current="page">Consult diagnostic</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
-    </nav></header>
+  <div class="admin-app hidden" id="app">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html" aria-current="page">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+          <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
+      </div>
+    </aside>
 
-    <section id="start-view">
-      <p class="eyebrow">Consultation tool</p>
-      <h1>Consult diagnostic.</h1>
-      <p class="meta">Up to 30 items, exam-style snapshot to run with a new prospective student while you share your screen on Zoom. It mixes single-answer, select-all-that-apply, dosage-calculation, and a six-item case study, then shows where the gaps look like <b>content</b> and where they look like <b>how the question is asked</b>.</p>
-      <div class="panel">
-        <div class="grid">
-          <label>Student first name or initials (optional, shown on this screen only)<input type="text" id="who" maxlength="40" autocomplete="off"></label>
-          <label>Number of questions<select id="count"><option value="10">10 (quick check)</option><option value="15">15</option><option value="20">20 (includes case study)</option><option value="25">25</option><option value="30" selected>30 (full)</option></select></label>
-          <label>Link to consultation (saves to their profile)<select id="consult"><option value="">Don't save (practice run)</option></select></label>
-          <label>Time limit<select id="limit"><option value="2700" selected>45 minutes</option><option value="1800">30 minutes</option><option value="3600">60 minutes</option><option value="0">Untimed (count up)</option></select></label>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Pipeline · Consult diagnostic</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="madison-consultations.html">Consultations</a>
+          <a class="button secondary" href="madison-admin.html#prospects">Prospects</a>
         </div>
-        <p class="meta" id="count-note">Questions are spread evenly across content areas. The 6-item case study is included at 20 or more.</p>
-        <p class="meta" id="prior"></p>
-        <label class="check"><input type="checkbox" id="shuffle" checked> Shuffle answer order for each run</label>
-        <p><button id="start" type="button">Start diagnostic</button></p>
-      </div>
-      <div class="panel">
-        <h2>Running it on Zoom</h2>
-        <ul class="meta">
-          <li>Share this browser window, then press Start. The exam fills the screen like the real testing interface.</li>
-          <li>Have the student tell you their answer, or hand over remote control. Tell them to <b>right-click an option to cross it out</b>, just like the exam.</li>
-          <li>Use <b>Feedback</b> in the toolbar to jot a note about how they reasoned on any item; it appears in the results.</li>
-          <li>Choose a consultation to save results privately to that student's record (admin-only). With none selected, results stay on this page only.</li>
-        </ul>
-      </div>
-    </section>
+      </header>
 
-    <section id="result-view" class="hidden"></section>
-  </main>
+      <main class="dashboard">
+        <section id="start-view">
+          <header class="dashboard-heading">
+            <div>
+              <h1>Consult diagnostic</h1>
+              <p>Up to 30 items, exam-style snapshot to run with a prospective student while sharing your screen on Zoom. Mixes single-answer, SATA, dosage-calc, and a six-item case study to pinpoint whether gaps are content knowledge or question reasoning.</p>
+            </div>
+            <div class="quick-actions">
+              <a class="button secondary" href="madison-cpr.html">Open CPR tracker →</a>
+            </div>
+          </header>
+
+          <section class="metric-grid" aria-label="Diagnostic setup overview">
+            <article class="metric">
+              <strong>Interactive Exam</strong>
+              <span>Screen-Share Ready</span>
+              <small>Full testing interface simulation</small>
+            </article>
+            <article class="metric">
+              <strong>Clinical Case Study</strong>
+              <span>NGN 6-Item Set</span>
+              <small>Included on tests of 20+ items</small>
+            </article>
+            <article class="metric">
+              <strong>Strikethrough</strong>
+              <span>Exam Strategy</span>
+              <small>Right-click option elimination</small>
+            </article>
+            <article class="metric">
+              <strong>Private Linking</strong>
+              <span>Student Profile</span>
+              <small>Saves score breakdown to consultation</small>
+            </article>
+          </section>
+
+          <div class="dashboard-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Diagnostic parameters</h2>
+                <p>Configure test length, timer, and consultation profile link</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="grid">
+                <label>Student first name or initials (optional, shown on this screen only)<input type="text" id="who" maxlength="40" autocomplete="off"></label>
+                <label>Number of questions<select id="count"><option value="10">10 (quick check)</option><option value="15">15</option><option value="20">20 (includes case study)</option><option value="25">25</option><option value="30" selected>30 (full)</option></select></label>
+                <label>Link to consultation (saves to their profile)<select id="consult"><option value="">Don't save (practice run)</option></select></label>
+                <label>Time limit<select id="limit"><option value="2700" selected>45 minutes</option><option value="1800">30 minutes</option><option value="3600">60 minutes</option><option value="0">Untimed (count up)</option></select></label>
+              </div>
+              <p class="meta" id="count-note" style="margin-top:12px">Questions are spread evenly across content areas. The 6-item case study is included at 20 or more.</p>
+              <p class="meta" id="prior"></p>
+              <label class="check" style="margin-top:8px"><input type="checkbox" id="shuffle" checked> Shuffle answer order for each run</label>
+              <p style="margin-top:16px"><button class="button primary" id="start" type="button">Start diagnostic</button></p>
+            </div>
+          </div>
+
+          <div class="dashboard-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Running it on Zoom</h2>
+                <p>Recommended live coaching flow during discovery sessions</p>
+              </div>
+            </div>
+            <div class="panel-body">
+              <ul class="meta" style="padding-left:18px;margin:0">
+                <li style="margin-bottom:8px">Share this browser window, then press Start. The exam fills the screen like the real testing interface.</li>
+                <li style="margin-bottom:8px">Have the student tell you their answer, or hand over remote control. Tell them to <b>right-click an option to cross it out</b>, just like the exam.</li>
+                <li style="margin-bottom:8px">Use <b>Feedback</b> in the toolbar to jot a note about how they reasoned on any item; it appears in the results.</li>
+                <li>Choose a consultation to save results privately to that student's record (admin-only). With none selected, results stay on this page only.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="result-view" class="hidden"></section>
+      </main>
+    </div>
+  </div>
   <div id="exam-root"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
