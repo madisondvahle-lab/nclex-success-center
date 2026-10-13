@@ -1,43 +1,887 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">  <meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="admin-nav.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
   <title>Question Bank Review · Study With Madison</title>
   <style>
-    :root{--ink:#17344f;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--green:#39825f;--amber:#9a6a17}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{width:min(1180px,calc(100% - 34px));margin:auto}.loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--cream);color:var(--muted);z-index:3}.hidden{display:none}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}.brand,h1,h2,h3{font-family:Georgia,"Times New Roman",serif}.brand{font-weight:700;font-size:1.2rem}.brand small{font:600 .62em Inter,sans-serif}.link,.button{font:800 .8rem Inter,sans-serif;cursor:pointer}.link{border:0;border-bottom:1px solid currentColor;background:none;color:var(--ink);padding:0 0 3px;text-decoration:none}.actions{display:flex;align-items:center;gap:16px}.hero{padding:52px 0 30px}.eyebrow{color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin:0 0 13px}h1{margin:0;font-size:clamp(2.4rem,6vw,4.5rem);letter-spacing:-.05em;line-height:1}.intro{color:var(--muted);max-width:720px;line-height:1.65}.overview{margin:22px 0}.overview h2{margin:0;font-size:1.5rem}.overview .intro,.mg>.intro{margin:6px 0 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.legacy-stats{grid-template-columns:repeat(3,1fr)}.stat{background:var(--paper);border:1px solid var(--line);padding:17px}.stat strong{display:block;font:700 1.8rem Georgia,serif}.stat span{color:var(--muted);font-size:.75rem;font-weight:700}.toolbar{display:flex;flex-wrap:wrap;gap:11px;align-items:center;margin:22px 0}.toolbar input,.toolbar select{padding:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit}.toolbar input{min-width:260px}.mg{margin:22px 0;padding:22px;background:var(--paper);border:1px solid var(--line)}.mg h2{margin:0 0 6px;font-size:1.5rem}.bank-overlaps .intro{max-width:850px}.bank-overlap-list{display:grid;gap:12px;margin-top:16px}.bank-overlap-pair{padding:18px 0;border-top:1px solid var(--line)}.bank-overlap-pair h3{margin:10px 0 4px;font-size:1rem}.bank-overlap-pair p{margin:0;line-height:1.5}.bulk{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:11px 0;background:var(--paper);border-bottom:1px solid var(--line);margin-bottom:6px}.bulk label{font-weight:800;font-size:.82rem;display:flex;gap:7px;align-items:center}.bulk .count{color:var(--muted);font-size:.8rem;font-weight:700}.qrow{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}.qrow.sel{background:#f3f7f4}.qrow p{margin:0 0 5px;font-size:.88rem;line-height:1.4}.qrow input[type=checkbox],.bulk input[type=checkbox],.pick{width:18px;height:18px;accent-color:var(--ink)}.qrow .meta{gap:5px}.pick{margin-right:8px;vertical-align:middle}.ed{position:fixed;inset:0;background:rgba(23,52,79,.55);z-index:10;display:grid;place-items:start center;overflow:auto;padding:30px 14px}.ed.hidden{display:none}.ed form{background:var(--paper);width:min(720px,100%);padding:24px;border:1px solid var(--line)}.ed h2{margin:0 0 6px}.ed label{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:12px 0 4px}.ed textarea,.ed input[type=text],.ed select{width:100%;padding:9px;border:1px solid var(--line);font:inherit;color:var(--ink);background:#fff}.ed .opt{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:center;margin-bottom:7px}.ed .opt input[type=radio]{width:18px;height:18px;accent-color:var(--green)}.ed .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.candidate-list{display:grid;gap:14px;padding-bottom:60px}.candidate{background:var(--paper);border:1px solid var(--line);padding:23px}.candidate.duplicate{border-left:4px solid var(--amber)}.candidate h2{margin:9px 0 10px;font-size:1.35rem;line-height:1.2}.meta{display:flex;flex-wrap:wrap;gap:7px}.tag{display:inline-block;border-radius:999px;padding:5px 8px;background:var(--soft);color:var(--muted);font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.tag.warn{background:#fff2d6;color:#8e5d00}.tag.good{background:#e7f4ec;color:var(--green)}.rationale{margin:13px 0;color:var(--muted);font-size:.86rem;line-height:1.58}.match{margin:12px 0;padding:12px;border-left:3px solid var(--amber);background:#fff8e7;color:#755617;font-size:.82rem;line-height:1.45}.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.button{border:0;padding:11px 14px;background:var(--ink);color:#fff}.button.secondary{background:#ece6de;color:var(--ink)}.button.danger{background:#8d4b56}.button:disabled{opacity:.55;cursor:not-allowed}.empty{color:var(--muted);line-height:1.5;padding:28px;background:var(--paper);border:1px solid var(--line)}.notice{padding:14px 16px;background:#fff3ef;border-left:3px solid var(--rose);font-size:.84rem;color:var(--muted);line-height:1.5}.quality{margin:22px 0;padding:24px;background:#eef5f0;border:1px solid #cfe0d3}.quality h2{margin:0;font-size:1.55rem}.quality-grid{display:grid;gap:12px;margin-top:16px}@media(max-width:760px){.shell{width:min(100% - 26px,1180px)}.stats,.legacy-stats{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start}.actions{align-items:end;flex-direction:column}.hero{padding-top:38px}.toolbar input{min-width:0;width:100%}}
+    :root{
+      --admin-navy:#17344f;
+      --admin-cream:#f5f3ed;
+      --admin-paper:#fffefa;
+      --admin-rose:#a94f67;
+      --admin-muted:#536a7d;
+      --admin-line:#cbd5d1;
+      --admin-soft:#eeeae1;
+      --admin-green:#27694a;
+      --admin-amber:#8e5d00;
+      --admin-amber-bg:#fff6e3;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--admin-cream);
+      color:var(--admin-navy);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .loading{
+      position:fixed;
+      inset:0;
+      display:grid;
+      place-items:center;
+      background:var(--admin-cream);
+      color:var(--admin-muted);
+      font-size:.9rem;
+      font-weight:700;
+      z-index:20;
+    }
+    .hidden{display:none!important}
+
+    /* Admin shell layout */
+    .admin-app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:232px minmax(0,1fr);
+    }
+    .admin-sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+      padding:22px 14px;
+      background:var(--admin-navy);
+      color:#fff;
+    }
+    h1,h2,h3{
+      font-family:Georgia,"Times New Roman",serif;
+      letter-spacing:-.035em;
+    }
+    .sidebar-brand{
+      padding:0 10px 17px;
+      border-bottom:1px solid #ffffff35;
+      font:700 1.05rem Georgia,"Times New Roman",serif;
+      letter-spacing:-.02em;
+    }
+    .sidebar-brand small{
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-size:.68em;
+      opacity:.82;
+      letter-spacing:.04em;
+    }
+    .sidebar-caption{
+      margin:0 10px 5px;
+      color:#d0dce4;
+      font-size:.62rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .sidebar-nav{display:grid;gap:3px}
+    .sidebar-nav a,.sidebar-sign-out{
+      display:flex;
+      align-items:center;
+      min-height:38px;
+      padding:8px 10px;
+      border:1px solid transparent;
+      background:none;
+      color:#eff4f7;
+      text-align:left;
+      text-decoration:none;
+      font:700 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .sidebar-nav a:hover,.sidebar-nav a:focus-visible,.sidebar-nav a[aria-current="page"]{
+      background:#ffffff16;
+      border-color:#ffffff30;
+      color:#fff;
+      outline:none;
+    }
+    .sidebar-secondary{margin-top:auto}
+    .sidebar-sign-out{width:100%;cursor:pointer}
+    .admin-main{min-width:0}
+
+    /* Top bar */
+    .admin-topbar{
+      position:sticky;
+      top:0;
+      z-index:4;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:13px 28px;
+      background:var(--admin-paper);
+      border-bottom:1px solid var(--admin-line);
+    }
+    .topbar-context{font-size:.78rem;font-weight:700;color:var(--admin-muted)}
+    .topbar-actions,.quick-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .btn-topbar,.btn-action{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:36px;
+      padding:0 12px;
+      border:1px solid var(--admin-line);
+      background:var(--admin-paper);
+      color:var(--admin-navy);
+      text-decoration:none;
+      font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      cursor:pointer;
+    }
+    .btn-topbar.primary,.btn-action.primary{
+      border-color:var(--admin-navy);
+      background:var(--admin-navy);
+      color:#fff;
+    }
+    .btn-topbar:hover,.btn-action:hover{border-color:var(--admin-navy)}
+
+    /* Dashboard body */
+    .dashboard{
+      width:min(1440px,100%);
+      margin:auto;
+      padding:27px 28px 54px;
+    }
+    .dashboard-heading{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .dashboard-heading h1{
+      margin:0;
+      font-size:clamp(1.85rem,3.2vw,2.4rem);
+      line-height:1.1;
+      letter-spacing:-.035em;
+    }
+    .dashboard-heading p{
+      margin:7px 0 0;
+      color:var(--admin-muted);
+      font-size:.82rem;
+      max-width:760px;
+      line-height:1.55;
+    }
+
+    /* Metric cards */
+    .metric-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin:18px 0 22px;
+    }
+    .metric{
+      display:block;
+      min-height:92px;
+      padding:14px 16px;
+      border:1px solid var(--admin-line);
+      background:var(--admin-paper);
+      color:var(--admin-navy);
+      text-decoration:none;
+      cursor:pointer;
+      transition:border-color .15s ease,box-shadow .15s ease;
+    }
+    .metric:hover,.metric:focus-visible{
+      border-color:var(--admin-navy);
+      outline:2px solid var(--admin-navy);
+      outline-offset:2px;
+    }
+    .metric strong{
+      display:block;
+      font:700 1.55rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-variant-numeric:tabular-nums;
+    }
+    .metric span{
+      display:block;
+      margin-top:5px;
+      font-size:.74rem;
+      font-weight:750;
+    }
+    .metric small{
+      display:block;
+      margin-top:4px;
+      color:var(--admin-muted);
+      font-size:.66rem;
+      line-height:1.35;
+    }
+
+    /* Workspace tabs */
+    .workspace-tabs{
+      display:flex;
+      gap:4px;
+      border-bottom:1px solid var(--admin-line);
+      margin:0 0 20px;
+      overflow-x:auto;
+      padding-bottom:1px;
+    }
+    .tab-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      min-height:40px;
+      padding:0 16px;
+      border:1px solid transparent;
+      border-bottom:2px solid transparent;
+      background:transparent;
+      color:var(--admin-muted);
+      font:750 .76rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:color .15s ease,border-color .15s ease,background-color .15s ease;
+    }
+    .tab-btn:hover{color:var(--admin-navy)}
+    .tab-btn.active,.tab-btn[aria-selected="true"]{
+      color:var(--admin-navy);
+      background:var(--admin-paper);
+      border-color:var(--admin-line) var(--admin-line) transparent;
+      border-top:2px solid var(--admin-navy);
+      border-bottom:2px solid var(--admin-paper);
+      margin-bottom:-1px;
+    }
+    .tab-pane{display:none}
+    .tab-pane.active{display:block}
+
+    /* Panels */
+    .dashboard-panel{
+      min-width:0;
+      border:1px solid var(--admin-line);
+      background:var(--admin-paper);
+      margin-bottom:16px;
+    }
+    .panel-heading{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:16px;
+      padding:17px 18px 13px;
+      border-bottom:1px solid var(--admin-line);
+    }
+    .panel-heading h2{
+      margin:0;
+      font:700 1.12rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      letter-spacing:-.025em;
+    }
+    .panel-heading p{
+      margin:4px 0 0;
+      color:var(--admin-muted);
+      font-size:.74rem;
+      line-height:1.45;
+    }
+    .panel-content{padding:18px}
+
+    /* Directory tools / Filters */
+    .directory-tools{
+      display:grid;
+      gap:12px;
+      padding:13px 18px;
+      border-bottom:1px solid var(--admin-line);
+      background:var(--admin-paper);
+    }
+    .directory-search{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .directory-search label{
+      flex:0 0 auto;
+      font-size:.7rem;
+      font-weight:800;
+      color:var(--admin-navy);
+    }
+    .directory-search input{
+      width:min(440px,100%);
+      height:36px;
+      padding:0 11px;
+      border:1px solid var(--admin-line);
+      background:#fff;
+      color:var(--admin-navy);
+      font:400 .78rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .filter-list{display:flex;gap:6px;overflow-x:auto}
+    .filter-btn{
+      min-height:31px;
+      padding:0 10px;
+      border:1px solid var(--admin-line);
+      background:transparent;
+      color:var(--admin-muted);
+      font:750 .68rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      white-space:nowrap;
+      cursor:pointer;
+    }
+    .filter-btn[aria-pressed="true"]{
+      border-color:var(--admin-navy);
+      background:var(--admin-navy);
+      color:#fff;
+    }
+
+    /* Bulk actions */
+    .bulk{
+      position:sticky;
+      top:52px;
+      z-index:3;
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      align-items:center;
+      padding:11px 18px;
+      background:var(--admin-paper);
+      border-bottom:1px solid var(--admin-line);
+    }
+    .bulk label{
+      font-weight:800;
+      font-size:.82rem;
+      display:flex;
+      gap:7px;
+      align-items:center;
+      cursor:pointer;
+    }
+    .bulk .count{
+      color:var(--admin-muted);
+      font-size:.78rem;
+      font-weight:700;
+    }
+    .bulk input[type=checkbox],.qrow input[type=checkbox],.pick{
+      width:18px;
+      height:18px;
+      accent-color:var(--admin-navy);
+      cursor:pointer;
+    }
+    .pick{margin-right:8px;vertical-align:middle}
+
+    /* Common button styles */
+    .button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--admin-navy);
+      padding:8px 12px;
+      background:var(--admin-navy);
+      color:#fff;
+      font:750 .72rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .button.secondary{
+      border-color:var(--admin-line);
+      background:var(--admin-paper);
+      color:var(--admin-navy);
+    }
+    .button.secondary:hover{border-color:var(--admin-navy)}
+    .button.danger{
+      border-color:#8d4b56;
+      background:#8d4b56;
+      color:#fff;
+    }
+    .button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+
+    /* Question rows & cards */
+    .question-stream{padding:0}
+    .qrow{
+      display:grid;
+      grid-template-columns:24px 1fr auto;
+      gap:12px;
+      align-items:start;
+      padding:14px 18px;
+      border-bottom:1px solid var(--admin-line);
+      background:var(--admin-paper);
+    }
+    .qrow.sel{background:#f1f7f3}
+    .qrow p{
+      margin:0 0 6px;
+      font-size:.88rem;
+      line-height:1.45;
+    }
+    .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    .tag{
+      display:inline-block;
+      border-radius:999px;
+      padding:4px 8px;
+      background:var(--admin-soft);
+      color:var(--admin-muted);
+      font-size:.65rem;
+      font-weight:800;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+    .tag.warn{background:#fff2d6;color:#8e5d00}
+    .tag.good{background:#e7f4ec;color:var(--admin-green)}
+    .rationale{
+      margin:10px 0 0;
+      color:var(--admin-muted);
+      font-size:.84rem;
+      line-height:1.52;
+    }
+
+    /* Duplicate overlap card */
+    .bank-overlap-list{display:grid;gap:14px;padding:18px}
+    .bank-overlap-pair{
+      padding:18px;
+      border:1px solid var(--admin-line);
+      background:#fff;
+    }
+    .bank-overlap-pair h3{
+      margin:10px 0 4px;
+      font:700 .98rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .bank-overlap-pair p{margin:0;line-height:1.5}
+
+    /* Candidates & Quality draft grids */
+    .candidate-list{display:grid;gap:14px;margin-top:14px}
+    .candidate{
+      background:#fff;
+      border:1px solid var(--admin-line);
+      padding:20px;
+    }
+    .candidate h2,.candidate h3{
+      margin:8px 0 8px;
+      font:700 1.15rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.3;
+    }
+    .match{
+      margin:12px 0 0;
+      padding:11px 14px;
+      border:1px solid #ebd8a6;
+      background:var(--admin-amber-bg);
+      color:#755617;
+      font-size:.82rem;
+      line-height:1.45;
+    }
+    .quality-grid{display:grid;gap:14px}
+    .quality{background:var(--admin-paper)}
+
+    /* Toolbar for inputs/selects */
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin:14px 0;
+    }
+    .toolbar input,.toolbar select{
+      padding:9px 11px;
+      border:1px solid var(--admin-line);
+      background:#fff;
+      color:var(--admin-navy);
+      font:inherit;
+      font-size:.8rem;
+    }
+    .toolbar input[type="search"]{min-width:280px}
+
+    /* Legacy stats grid */
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin:12px 0 16px;
+    }
+    .stat{
+      background:#fff;
+      border:1px solid var(--admin-line);
+      padding:14px;
+    }
+    .stat strong{
+      display:block;
+      font:700 1.45rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .stat span{
+      color:var(--admin-muted);
+      font-size:.72rem;
+      font-weight:700;
+    }
+
+    /* Notice & Empty states */
+    .empty{
+      color:var(--admin-muted);
+      line-height:1.5;
+      padding:28px;
+      background:#fff;
+      border:1px solid var(--admin-line);
+      font-size:.85rem;
+    }
+    .notice{
+      padding:12px 16px;
+      background:#fff6f3;
+      border:1px solid #f2cfca;
+      font-size:.82rem;
+      color:var(--admin-navy);
+      line-height:1.5;
+      margin-bottom:14px;
+    }
+
+    /* Modal editor */
+    .ed{
+      position:fixed;
+      inset:0;
+      background:rgba(23,52,79,.6);
+      z-index:30;
+      display:grid;
+      place-items:start center;
+      overflow:auto;
+      padding:30px 14px;
+    }
+    .ed form{
+      background:var(--admin-paper);
+      width:min(740px,100%);
+      padding:24px;
+      border:1px solid var(--admin-line);
+      box-shadow:0 12px 32px rgba(0,0,0,.15);
+    }
+    .ed h2{margin:0 0 6px;font:700 1.3rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .ed label{
+      display:block;
+      font-size:.7rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      color:var(--admin-muted);
+      margin:12px 0 4px;
+    }
+    .ed textarea,.ed input[type=text],.ed select{
+      width:100%;
+      padding:9px;
+      border:1px solid var(--admin-line);
+      font:inherit;
+      color:var(--admin-navy);
+      background:#fff;
+    }
+    .ed .opt{
+      display:grid;
+      grid-template-columns:26px 1fr;
+      gap:8px;
+      align-items:center;
+      margin-bottom:7px;
+    }
+    .ed .opt input[type=radio]{
+      width:18px;
+      height:18px;
+      accent-color:var(--admin-green);
+    }
+    .ed .three{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+
+    .pagination-bar{padding:16px 18px}
+
+    /* Responsive adjustments */
+    @media(max-width:1080px){
+      .admin-topbar,.dashboard{padding-left:20px;padding-right:20px}
+    }
+    @media(max-width:820px){
+      .admin-app{grid-template-columns:1fr}
+      .admin-sidebar{
+        position:static;
+        height:auto;
+        gap:12px;
+        padding:13px 16px;
+      }
+      .sidebar-brand{padding:0 3px 11px}
+      .sidebar-nav{display:flex;overflow-x:auto;gap:4px}
+      .sidebar-nav a,.sidebar-sign-out{flex:0 0 auto;min-height:34px;padding:7px 9px}
+      .sidebar-caption,.sidebar-secondary{display:none}
+      .admin-topbar{position:static}
+      .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .stats{grid-template-columns:1fr}
+    }
+    @media(max-width:600px){
+      .admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}
+      .dashboard{padding:21px 14px 36px}
+      .dashboard-heading{align-items:flex-start;flex-direction:column}
+      .dashboard-heading h1{font-size:1.75rem}
+      .metric-grid{gap:7px}
+      .metric{min-height:80px;padding:11px}
+      .metric strong{font-size:1.25rem}
+      .toolbar input[type="search"]{min-width:0;width:100%}
+    }
   </style>
 </head>
 <body>
-  <div class="loading" id="loading">Opening private question review…</div>
-  <main class="shell hidden" id="app">
-    <header class="top admin-header"><span class="brand">Study With Madison <small>RN</small></span><nav class="admin-nav" aria-label="Admin navigation"><a class="admin-home" href="madison-admin.html">Admin home</a><a href="madison-leads.html">Leads &amp; intake</a><a href="student-onboarding.html">New student</a><a href="shared-progress.html">Progress</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="madison-cpr.html">CPR tracker</a><a href="question-bank-review.html" aria-current="page">Question bank</a><button class="admin-sign-out" id="sign-out">Sign out</button></nav></header>
-    <section class="hero"><p class="eyebrow">Private tutor workspace</p><h1>Question bank review.</h1><p class="intro">Review the live bank’s publication status and check for possible overlap between its questions. Legacy import statistics are shown separately.</p></section>
-    <section class="overview" aria-labelledby="bank-stats-heading"><h2 id="bank-stats-heading">Question Bank statistics</h2><div class="stats"><article class="stat"><strong id="bank-total-count">—</strong><span>Total questions</span></article><article class="stat"><strong id="bank-published-count">—</strong><span>Published to students</span></article><article class="stat"><strong id="bank-draft-count">—</strong><span>Inactive drafts</span></article><article class="stat"><strong id="bank-review-count">—</strong><span>Awaiting clinical review</span></article></div></section>
-    <section class="mg" aria-labelledby="legacy-stats-heading"><h2 id="legacy-stats-heading">Legacy import statistics</h2><p class="intro">These counts compare the older source collection with questions already in Supabase. They do not indicate duplicates within the Question Bank.</p><div class="stats legacy-stats"><article class="stat"><strong id="source-count">—</strong><span>Legacy source questions</span></article><article class="stat"><strong id="exact-count">—</strong><span>Legacy questions already imported</span></article><article class="stat"><strong id="remaining-count">—</strong><span>Legacy questions ready to review</span></article></div></section>
-    <section class="mg bank-overlaps" aria-labelledby="bank-overlaps-heading"><h2 id="bank-overlaps-heading">Possible duplicates within the Question Bank</h2><p class="intro">This report checks exact and similar wording plus shared topic or NCLEX category/subcategory tags. Review each match yourself; no questions are changed automatically.</p><p class="count" id="bank-overlap-status" role="status" aria-live="polite">Checking questions in the bank…</p><div class="bank-overlap-list" id="bank-overlap-list"></div></section>
-    <p class="notice">“Import as draft” stores a copy privately in the master bank but does not make it available to students. Use this for items you want to edit or quality-check before publishing.</p>
-    <section class="mg hidden" id="discuss-sec"><p class="eyebrow">For your next session</p><h2>Questions to discuss <span id="discuss-n"></span></h2><p class="intro">Questions students flagged because they want to talk them through with you.</p><div id="discuss-list"></div></section>
-    <section class="mg hidden" id="flags-sec"><p class="eyebrow">Student reports</p><h2>Flagged questions <span id="flag-n"></span></h2><p class="intro">Questions students reported while practicing. Open one in the editor, fix it, then mark the report resolved.</p><div id="flag-list"></div></section>
-    <section class="mg"><p class="eyebrow">Manage</p><h2>Live question bank</h2><p class="intro">Every question in the master bank. Select any group, then publish it, make it inactive (hidden from students, nothing lost), or delete it permanently.</p><div class="toolbar"><input id="m-search" type="search" placeholder="Search by Q-number, stem, topic"><select id="m-filter"><option value="active">Published to students</option><option value="inactive">Inactive / drafts</option><option value="all">All questions</option></select></div><div class="bulk" style="border-bottom:0"><button class="button secondary" id="import-diag">Add consult diagnostic questions to this bank (inactive)</button><span class="count" id="import-note"></span></div><div class="bulk"><label><input type="checkbox" id="m-all"> Select all shown</label><span class="count" id="m-count"></span><button class="button" data-mbulk="publish">Publish</button><button class="button secondary" data-mbulk="inactive">Make inactive</button><button class="button danger" data-mbulk="delete">Delete forever</button></div><div id="m-list"></div><button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button></section>
-    <section class="quality"><p class="eyebrow">New content</p><h2>Quality draft batch</h2><p class="intro">These are newly written, source-reviewed questions. They remain private until you press Publish for an individual item.</p><div class="quality-grid" id="quality-drafts"><p class="empty">No quality drafts have been added yet.</p></div></section>
-    <section class="mg" id="bulk-import"><p class="eyebrow">Controlled intake</p><h2>Import a reviewed batch</h2><p class="intro">Load 25–50 questions as JSON. The importer validates every item and checks its stem against the complete bank, including inactive and course-specific questions. Review every item here before saving; imported items remain inactive and require a separate approval before publication.</p>
-      <div class="toolbar"><input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch"><button class="button secondary" id="bulk-preview">Validate and preview</button><button class="button" id="bulk-save" disabled>Save reviewed items as inactive drafts</button></div>
-      <label for="bulk-json"><strong>Or paste a JSON batch</strong></label><textarea id="bulk-json" rows="8" style="display:block;width:100%;margin-top:8px;padding:12px;border:1px solid var(--line);font: .82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
-      <p class="count" id="bulk-status" role="status" aria-live="polite">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
-      <div class="quality-grid" id="bulk-preview-list"></div>
-    </section>
-    <section class="mg" id="clinical-revisions"><p class="eyebrow">Clinical remediation</p><h2>Correction drafts</h2><p class="intro">Edits to existing bank questions are staged here instead of changing the live question. Approval and application are separate actions; application updates the original question in place, preserving its ID, assignment links, and student attempt history.</p><p class="count" id="revision-status" role="status" aria-live="polite">Loading correction drafts…</p><div class="quality-grid" id="revision-list"></div></section>
-    <div class="toolbar"><input id="search" type="search" placeholder="Search stem, concept, or module"><select id="filter"><option value="pending">Ready to review</option><option value="possible">Possible duplicates</option><option value="all">All source items</option><option value="ignored">Ignored</option><option value="draft">Imported drafts</option></select></div>
-    <div class="bulk"><label><input type="checkbox" id="l-all"> Select all shown (older source items)</label><span class="count" id="l-count"></span><button class="button" data-lbulk="draft">Import selected as drafts</button><button class="button danger" data-lbulk="ignore">Ignore selected</button></div>
-    <section class="candidate-list" id="candidates"></section>
+  <div class="loading" id="loading">Opening private question bank workspace…</div>
+
+  <main class="admin-app hidden" id="app">
+    <!-- Admin Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN · ADMIN</small></div>
+      <div>
+        <p class="sidebar-caption">Workspace</p>
+        <nav class="sidebar-nav" aria-label="Primary admin navigation">
+          <a href="madison-admin.html">Dashboard</a>
+          <a href="madison-admin.html#directory">Students</a>
+          <a href="madison-consultations.html">Consultations</a>
+          <a href="madison-leads.html">Leads &amp; intake</a>
+          <a href="madison-assignments.html">Assignments</a>
+          <a href="assessment-history-admin.html">Assessments</a>
+          <a href="question-bank-review.html" aria-current="page">Question bank</a>
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance</a>
+        </nav>
+      </div>
+      <div class="sidebar-secondary">
+        <p class="sidebar-caption">More tools</p>
+        <nav class="sidebar-nav" aria-label="Additional admin tools">
+          <a href="madison-cpr.html">CPR tracker</a>
+          <a href="madison-diagnostic.html">Consult diagnostic</a>
+          <a href="student-onboarding.html">Student onboarding</a>
+        </nav>
+      </div>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+    </aside>
+
+    <!-- Main Workspace Content -->
+    <div class="admin-main">
+      <!-- Admin Topbar -->
+      <header class="admin-topbar">
+        <span class="topbar-context">Private question bank workspace</span>
+        <nav class="topbar-actions" aria-label="Quick actions">
+          <button type="button" class="btn-topbar primary" id="quick-btn-import">Import batch</button>
+          <button type="button" class="btn-topbar" id="quick-btn-dup">Check duplicates</button>
+          <button type="button" class="btn-topbar" id="quick-btn-review">Needs review (<span id="quick-review-count">0</span>)</button>
+        </nav>
+      </header>
+
+      <div class="dashboard">
+        <!-- Dashboard Heading -->
+        <section class="dashboard-heading">
+          <div>
+            <h1>Question bank review</h1>
+            <p id="qbank-subtitle">Manage master questions, review student flags &amp; clinical corrections, screen for duplicates, and stage new imports.</p>
+          </div>
+          <nav class="quick-actions" aria-label="Common tasks">
+            <button type="button" class="btn-action primary" data-jump-tab="live">Browse live bank</button>
+            <button type="button" class="btn-action" data-jump-tab="duplicates">Duplicate screen</button>
+            <button type="button" class="btn-action" data-jump-tab="import">Batch intake</button>
+          </nav>
+        </section>
+
+        <!-- Question Bank Overview Metric Cards -->
+        <section class="metric-grid" aria-label="Question Bank overview">
+          <a class="metric" href="#live" id="metric-bank-total" data-target-tab="live" data-filter="all">
+            <strong id="bank-total-count">-</strong>
+            <span>Total questions</span>
+            <small>Master bank questions</small>
+          </a>
+          <a class="metric" href="#live" id="metric-bank-published" data-target-tab="live" data-filter="active">
+            <strong id="bank-published-count">-</strong>
+            <span>Published to students</span>
+            <small>Active in student practice</small>
+          </a>
+          <a class="metric" href="#live" id="metric-bank-drafts" data-target-tab="live" data-filter="inactive">
+            <strong id="bank-draft-count">-</strong>
+            <span>Inactive drafts</span>
+            <small>Private to tutors</small>
+          </a>
+          <a class="metric" href="#review" id="metric-bank-review" data-target-tab="review">
+            <strong id="bank-review-count">-</strong>
+            <span>Awaiting clinical review</span>
+            <small id="bank-review-note">Drafts, flags &amp; proposals</small>
+          </a>
+        </section>
+
+        <!-- Workspace Tabs -->
+        <div class="workspace-tabs" role="tablist" aria-label="Question bank sections">
+          <button type="button" class="tab-btn active" role="tab" id="tab-btn-live" aria-selected="true" aria-controls="pane-live" data-tab="live">Live question bank (<span id="tab-count-live">-</span>)</button>
+          <button type="button" class="tab-btn" role="tab" id="tab-btn-review" aria-selected="false" aria-controls="pane-review" data-tab="review">Review &amp; Flags (<span id="tab-count-review">0</span>)</button>
+          <button type="button" class="tab-btn" role="tab" id="tab-btn-duplicates" aria-selected="false" aria-controls="pane-duplicates" data-tab="duplicates">Possible duplicates (<span id="tab-count-duplicates">0</span>)</button>
+          <button type="button" class="tab-btn" role="tab" id="tab-btn-import" aria-selected="false" aria-controls="pane-import" data-tab="import">Intake &amp; Legacy (<span id="tab-count-legacy">-</span>)</button>
+        </div>
+
+        <!-- TAB 1: Live Question Bank -->
+        <div class="tab-pane active" id="pane-live" role="tabpanel" aria-labelledby="tab-btn-live">
+          <section class="dashboard-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Master questions</h2>
+                <p>Every question in the master bank. Select any group, then publish, make inactive, or delete.</p>
+              </div>
+            </div>
+
+            <div class="directory-tools">
+              <div class="directory-search">
+                <label for="m-search">Search</label>
+                <input id="m-search" type="search" placeholder="Search by Q-number, stem, topic, category…">
+              </div>
+              <div class="filter-list" role="group" aria-label="Question status filter">
+                <button type="button" class="filter-btn" data-mfilter="all" aria-pressed="false">All questions</button>
+                <button type="button" class="filter-btn" data-mfilter="active" aria-pressed="true">Published to students</button>
+                <button type="button" class="filter-btn" data-mfilter="inactive" aria-pressed="false">Inactive / drafts</button>
+              </div>
+              <!-- Hidden select for compatibility with existing event triggers -->
+              <select id="m-filter" class="hidden" aria-hidden="true">
+                <option value="active" selected>Published to students</option>
+                <option value="inactive">Inactive / drafts</option>
+                <option value="all">All questions</option>
+              </select>
+            </div>
+
+            <div class="bulk" style="border-bottom:0">
+              <button class="button secondary" id="import-diag" type="button">Add consult diagnostic questions to this bank (inactive)</button>
+              <span class="count" id="import-note"></span>
+            </div>
+
+            <div class="bulk">
+              <label><input type="checkbox" id="m-all"> Select all shown</label>
+              <span class="count" id="m-count"></span>
+              <button class="button" data-mbulk="publish" type="button">Publish</button>
+              <button class="button secondary" data-mbulk="inactive" type="button">Make inactive</button>
+              <button class="button danger" data-mbulk="delete" type="button">Delete forever</button>
+            </div>
+
+            <div id="m-list" class="question-stream"></div>
+            <div class="pagination-bar">
+              <button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- TAB 2: Review & Flags -->
+        <div class="tab-pane" id="pane-review" role="tabpanel" aria-labelledby="tab-btn-review">
+          <div class="review-stack">
+            <div class="empty hidden" id="review-all-caught-up" style="margin-bottom:16px">All caught up! No questions or correction drafts currently require clinical review.</div>
+
+            <section class="dashboard-panel hidden" id="discuss-sec">
+              <div class="panel-heading">
+                <div>
+                  <h2>Questions to discuss <span id="discuss-n"></span></h2>
+                  <p>Questions students flagged because they want to talk them through with you during tutoring sessions.</p>
+                </div>
+              </div>
+              <div id="discuss-list" class="panel-content"></div>
+            </section>
+
+            <section class="dashboard-panel hidden" id="flags-sec">
+              <div class="panel-heading">
+                <div>
+                  <h2>Flagged questions <span id="flag-n"></span></h2>
+                  <p>Questions reported by students during practice. Open in the editor, resolve clinical details, and clear the report.</p>
+                </div>
+              </div>
+              <div id="flag-list" class="panel-content"></div>
+            </section>
+
+            <section class="dashboard-panel" id="clinical-revisions">
+              <div class="panel-heading">
+                <div>
+                  <h2>Clinical correction drafts</h2>
+                  <p>Edits to existing bank questions staged as safe proposals. Applying updates the question in place, preserving question ID, assignments, and student attempt history.</p>
+                </div>
+              </div>
+              <p class="count" id="revision-status" role="status" aria-live="polite" style="padding:12px 18px;margin:0;font-size:.82rem;color:var(--admin-muted)">Loading correction drafts…</p>
+              <div class="quality-grid panel-content" id="revision-list"></div>
+            </section>
+
+            <section class="dashboard-panel quality">
+              <div class="panel-heading">
+                <div>
+                  <h2>Quality draft batch</h2>
+                  <p>Newly written, source-reviewed questions. Private until individually published.</p>
+                </div>
+              </div>
+              <div class="quality-grid panel-content" id="quality-drafts"><p class="empty">No quality drafts have been added yet.</p></div>
+            </section>
+          </div>
+        </div>
+
+        <!-- TAB 3: Possible Duplicates in Live Bank -->
+        <div class="tab-pane" id="pane-duplicates" role="tabpanel" aria-labelledby="tab-btn-duplicates">
+          <section class="dashboard-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Possible duplicates within the Question Bank</h2>
+                <p>Automated screening report checking normalized wording, topics, and NCLEX categories/subcategories across the live bank. Review each match manually; no questions are changed automatically.</p>
+              </div>
+            </div>
+            <div style="padding:14px 18px;border-bottom:1px solid var(--admin-line);background:var(--admin-paper)">
+              <p class="count" id="bank-overlap-status" role="status" aria-live="polite" style="margin:0;font-size:.82rem;color:var(--admin-muted)">Checking questions in the bank…</p>
+            </div>
+            <div class="bank-overlap-list" id="bank-overlap-list"></div>
+          </section>
+        </div>
+
+        <!-- TAB 4: Intake & Legacy -->
+        <div class="tab-pane" id="pane-import" role="tabpanel" aria-labelledby="tab-btn-import">
+          <div class="import-stack">
+            <div class="notice">“Import as draft” stores a copy privately in the master bank but does not make it available to students. Use this for items you want to edit or quality-check before publishing.</div>
+
+            <!-- Controlled Intake -->
+            <section class="dashboard-panel" id="bulk-import">
+              <div class="panel-heading">
+                <div>
+                  <h2>Import a reviewed batch</h2>
+                  <p>Load 25–50 questions as JSON. Importer validates structure, checks against the bank, and stages items as private inactive drafts.</p>
+                </div>
+              </div>
+              <div class="panel-content">
+                <div class="toolbar">
+                  <input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch">
+                  <button class="button secondary" id="bulk-preview" type="button">Validate and preview</button>
+                  <button class="button" id="bulk-save" type="button" disabled>Save reviewed items as inactive drafts</button>
+                </div>
+                <label for="bulk-json" style="display:block;margin:12px 0 6px;font-size:.78rem;font-weight:750">Or paste a JSON batch</label>
+                <textarea id="bulk-json" rows="8" style="display:block;width:100%;padding:12px;border:1px solid var(--admin-line);background:#fff;font:.82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
+                <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
+                <div class="quality-grid" id="bulk-preview-list"></div>
+              </div>
+            </section>
+
+            <!-- Legacy Bank Review -->
+            <section class="dashboard-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Legacy import statistics &amp; source bank</h2>
+                  <p>These counts compare the older source collection with questions already in Supabase. Exact matches are already imported.</p>
+                </div>
+              </div>
+              <div class="panel-content">
+                <div class="stats legacy-stats">
+                  <article class="stat"><strong id="source-count">-</strong><span>Legacy source questions</span></article>
+                  <article class="stat"><strong id="exact-count">-</strong><span>Legacy questions already imported</span></article>
+                  <article class="stat"><strong id="remaining-count">-</strong><span>Legacy questions ready to review</span></article>
+                </div>
+                <div class="toolbar">
+                  <input id="search" type="search" placeholder="Search stem, concept, or module">
+                  <select id="filter">
+                    <option value="pending">Ready to review</option>
+                    <option value="possible">Possible duplicates</option>
+                    <option value="all">All source items</option>
+                    <option value="ignored">Ignored</option>
+                    <option value="draft">Imported drafts</option>
+                  </select>
+                </div>
+                <div class="bulk">
+                  <label><input type="checkbox" id="l-all"> Select all shown (older source items)</label>
+                  <span class="count" id="l-count"></span>
+                  <button class="button" data-lbulk="draft" type="button">Import selected as drafts</button>
+                  <button class="button danger" data-lbulk="ignore" type="button">Ignore selected</button>
+                </div>
+                <div class="candidate-list" id="candidates"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <!-- Edit Question Modal -->
   <div class="ed hidden" id="ed"><form id="ed-form"></form></div>
   <iframe id="legacy-source" src="question-bank.html" style="display:none" aria-hidden="true"></iframe>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let session,legacy=[],live=[],reviews=new Map(),legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[],stagedBatch=[],revisionDrafts=[],bulkImportReady=false,revisionWorkflowReady=false,pendingBulkTracking=null,mVisible=100,bankOverlapSignature=null,bankOverlapPairs=[];
+    let session,legacy=[],live=[],reviews=new Map(),legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[],stagedBatch=[],revisionDrafts=[],bulkImportReady=false,revisionWorkflowReady=false,pendingBulkTracking=null,mVisible=100,bankOverlapSignature=null,bankOverlapPairs=[],flags=[],names=new Map();
     const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
     const words=value=>new Set(normalize(value).split(' ').filter(word=>word.length>3));
     const similarity=(a,b)=>{const aw=words(a),bw=words(b);let both=0;aw.forEach(word=>{if(bw.has(word))both++});return both/Math.max(1,new Set([...aw,...bw]).size)};
@@ -45,6 +889,39 @@
     function exactMatch(item){const stem=normalize(item.stem);return live.find(question=>normalize(question.stem)===stem)}
     function possibleMatch(item){let best=null,bestScore=0;live.forEach(question=>{const score=similarity(item.stem,question.stem);if(score>bestScore){best=question;bestScore=score}});return bestScore>=.55?{question:best,score:bestScore}:null}
     function stateFor(item){return reviews.get(item.id)?.status||'pending'}
+
+    function switchTab(tabId){
+      const tabs=['live','review','duplicates','import'];
+      if(!tabs.includes(tabId))tabId='live';
+      tabs.forEach(t=>{
+        const btn=$(`tab-btn-${t}`),pane=$(`pane-${t}`);
+        const active=t===tabId;
+        if(btn){
+          btn.classList.toggle('active',active);
+          btn.setAttribute('aria-selected',active?'true':'false');
+        }
+        if(pane){
+          pane.classList.toggle('active',active);
+        }
+      });
+      if(history.replaceState){
+        history.replaceState(null,'',`#${tabId}`);
+      }
+    }
+
+    function setLiveFilter(filterVal){
+      const select=$('m-filter');
+      if(select){
+        select.value=filterVal;
+      }
+      document.querySelectorAll('.filter-btn').forEach(btn=>{
+        btn.setAttribute('aria-pressed',btn.dataset.mfilter===filterVal?'true':'false');
+      });
+      mVisible=100;
+      mSel.clear();
+      renderManage();
+    }
+
     function detectBankOverlaps(){
       const indexed=live.map((question,index)=>({
         question,index,stem:normalize(question.stem),topic:normalize(question.topic),
@@ -72,16 +949,34 @@
       });
       return pairs.sort((a,b)=>Number(b.exact)-Number(a.exact)||b.rank-a.rank);
     }
+
     function updateBankOverview(){
       const pendingReviewIds=new Set(live.filter(question=>question.source_key&&reviews.get(question.source_key)?.status==='draft').map(question=>question.id));
       const liveIds=new Set(live.map(question=>question.id));
       revisionDrafts.forEach(revision=>{if(revision.status==='pending_review'&&liveIds.has(revision.question_id))pendingReviewIds.add(revision.question_id)});
+      const openFlagsCount=flags.filter(f=>f.status==='open').length;
+      const totalReviewCount=pendingReviewIds.size+openFlagsCount;
+
       $('bank-total-count').textContent=live.length;
       $('bank-published-count').textContent=live.filter(question=>question.active).length;
       $('bank-draft-count').textContent=live.filter(question=>!question.active).length;
-      $('bank-review-count').textContent=pendingReviewIds.size;
+      $('bank-review-count').textContent=totalReviewCount;
+      $('quick-review-count').textContent=totalReviewCount;
+      $('tab-count-live').textContent=live.length;
+      $('tab-count-review').textContent=totalReviewCount;
+      $('tab-count-legacy').textContent=legacy.length;
+
+      const reviewEmpty=$('review-all-caught-up');
+      if(reviewEmpty){
+        const openRevisions=revisionDrafts.filter(r=>['pending_review','approved'].includes(r.status)).length;
+        const qualityCount=live.filter(q=>q.source_key?.startsWith('quality-')&&!q.active).length;
+        reviewEmpty.classList.toggle('hidden',totalReviewCount>0||openRevisions>0||qualityCount>0);
+      }
+
       const signature=JSON.stringify(live.map(question=>[question.id,question.stem,question.topic,question.nclex_category,question.nclex_sub]));
       if(signature!==bankOverlapSignature){bankOverlapSignature=signature;bankOverlapPairs=detectBankOverlaps()}
+      $('tab-count-duplicates').textContent=bankOverlapPairs.length;
+
       const list=$('bank-overlap-list'),limit=100,pairs=bankOverlapPairs.slice(0,limit);
       $('bank-overlap-status').textContent=bankOverlapPairs.length?`${bankOverlapPairs.length} possible match${bankOverlapPairs.length===1?'':'es'} found${bankOverlapPairs.length>limit?`; showing the first ${limit}`:''}. These are review suggestions, not confirmed duplicates.`:'No exact or likely overlaps found. This automated check is a screening aid, not a guarantee that every conceptual overlap was found.';
       list.innerHTML=pairs.map(pair=>{
@@ -89,6 +984,7 @@
         return `<article class="bank-overlap-pair"><div class="meta"><span class="tag ${pair.exact?'warn':'good'}">${pair.exact?'Exact wording match':'Possible conceptual overlap'}</span><span class="tag">${esc(qlabel(pair.left)||'Question')}</span><span class="tag">${esc(qlabel(pair.right)||'Question')}</span></div><h3>${esc(qlabel(pair.left)||'Question')} · ${esc(pair.left.topic||'Uncategorized')}</h3><p>${esc(pair.left.stem||'')}</p><h3>${esc(qlabel(pair.right)||'Question')} · ${esc(pair.right.topic||'Uncategorized')}</h3><p>${esc(pair.right.stem||'')}</p><p class="rationale"><strong>Match signals:</strong> ${signals}</p></article>`;
       }).join('');
     }
+
     const BULK_TYPES=new Set(['mcq','sata','bowtie','matrix','cloze','highlight','case','fill']);
     function validateBatchItems(items){
       if(!Array.isArray(items))throw new Error('The JSON file must contain an "items" array.');
@@ -185,7 +1081,9 @@
           if(inserted.error)throw inserted.error;
           const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
           pendingBulkTracking={questions:inserted.data,records};
-            live.unshift(...inserted.data);$('m-filter').value='inactive';mVisible=100;mSel.clear();render();renderManage();
+          live.unshift(...inserted.data);
+          setLiveFilter('inactive');
+          render();renderManage();
         }
         const {questions,records}=pendingBulkTracking,tracked=await db.from('question_import_reviews').upsert(records);
         if(tracked.error)throw tracked.error;
@@ -195,16 +1093,109 @@
       }catch(error){$('bulk-status').textContent=`Import did not finish: ${error.message||error}. If drafts were inserted, retry tracking; the current page will not insert them a second time.`}
       finally{save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
     }
-    function renderQualityDrafts(){const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);$('quality-drafts').innerHTML=drafts.length?drafts.map(question=>`<article class="candidate"><div class="meta"><span class="tag good">Private draft</span><span class="tag">${esc(question.nclex_category||'NCLEX')}</span><span class="tag">${esc(question.topic||'Topic')}</span><span class="tag">${esc(question.difficulty||'medium')}</span></div><h2>${esc(question.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(question.rationale||'')}</p><div class="buttons"><button class="button" data-publish="${esc(question.id)}">Publish to students</button></div></article>`).join(''):'<p class="empty">No quality drafts have been added yet.</p>';document.querySelectorAll('[data-publish]').forEach(button=>button.addEventListener('click',()=>publishQualityDraft(button.dataset.publish)))}
-    async function publishQualityDraft(id){const question=live.find(item=>item.id===id);if(!question||!confirm('Publish this question to students now?'))return;const result=await db.from('questions').update({active:true}).eq('id',id);if(result.error){alert(result.error.message);return}await saveReview(question.source_key,'published',id);question.active=true;render();renderManage()}
-    function render(){const query=normalize($('search').value),filter=$('filter').value;const exact=legacy.filter(exactMatch);const reviewable=legacy.filter(item=>!exactMatch(item));$('source-count').textContent=legacy.length;$('exact-count').textContent=exact.length;$('remaining-count').textContent=reviewable.filter(item=>stateFor(item)==='pending').length;updateBankOverview();let items=legacy.filter(item=>{const state=stateFor(item),match=exactMatch(item),possible=possibleMatch(item);const text=normalize([item.stem,item.concept,item.module].join(' '));if(query&&!text.includes(query))return false;if(filter==='pending')return !match&&state==='pending';if(filter==='possible')return !match&&state==='pending'&&possible;if(filter==='ignored'||filter==='draft')return state===filter;return true});$('candidates').innerHTML=items.length?(legacyShown=items,items.slice(0,200)).map(item=>{const exact=exactMatch(item),possible=!exact&&possibleMatch(item),status=stateFor(item),importable=item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1;const button=exact?'<button class="button secondary" disabled>Already in live bank</button>':status==='ignored'?'<button class="button secondary" disabled>Marked ignored</button>':status==='draft'?'<button class="button secondary" disabled>Imported as draft</button>':importable?`<button class="button" data-action="draft" data-id="${esc(item.id)}">Import as draft</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}">Ignore</button>`:`<button class="button secondary" disabled>Needs NGN/manual conversion</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}">Ignore</button>`;return `<article class="candidate ${exact?'duplicate':''}"><div class="meta">${exact||status!=='pending'?'':`<input type="checkbox" class="pick" data-lpick="${esc(item.id)}" ${legSel.has(item.id)?'checked':''}>`}<span class="tag">${esc(item.module||'General')}</span><span class="tag">${esc(item.concept||'Uncategorized')}</span><span class="tag">${esc(item.type||'MCQ')}</span><span class="tag">${esc(difficulty(item.diff))}</span>${exact?'<span class="tag warn">Exact duplicate</span>':''}${status!=='pending'?`<span class="tag good">${esc(status)}</span>`:''}</div><h2>${esc(item.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'No rationale included.')}</p>${exact?`<p class="match"><strong>Existing live match:</strong> ${esc(exact.stem)}</p>`:possible?`<p class="match"><strong>Possible overlap (${Math.round(possible.score*100)}% wording similarity):</strong> ${esc(possible.question.stem)}</p>`:''}<div class="buttons">${button}</div></article>`}).join(''):'<p class="empty">Nothing matches this view yet.</p>';document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>handleAction(button.dataset.action,button.dataset.id)));document.querySelectorAll('[data-lpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?legSel.add(b.dataset.lpick):legSel.delete(b.dataset.lpick);legCount()}));legCount()}
-    async function saveReview(sourceKey,status,importedQuestionId=null){const record={source_key:sourceKey,status,reviewed_by:session.user.id,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString(),imported_question_id:importedQuestionId};const result=await db.from('question_import_reviews').upsert(record);if(result.error)throw result.error;reviews.set(sourceKey,record)}
-    async function doAction(action,item){if(action==='ignore'){await saveReview(item.id,'ignored');return}const options=item.options||[];if(item.type!=='mcq'||options.length!==4||item.correct?.length!==1||!Number.isInteger(item.correct[0]))throw new Error('This item needs manual restructuring before import because it is not a four-option, single-answer question.');const row={stem:item.stem,option_a:options[0],option_b:options[1],option_c:options[2],option_d:options[3],correct_answer:['a','b','c','d'][item.correct[0]],rationale:item.rationale||null,module_key:(item.module||'').match(/\d+/)?.[0]?`m${(item.module||'').match(/\d+/)[0]}`:null,nclex_category:null,nclex_sub:null,topic:item.concept||null,difficulty:difficulty(item.diff),is_ngn:false,active:false,source_key:item.id};const inserted=await db.from('questions').insert(row).select('id').single();if(inserted.error)throw inserted.error;await saveReview(item.id,'draft',inserted.data.id);live.push({...row,id:inserted.data.id})}
-    async function handleAction(action,id){const item=legacy.find(candidate=>candidate.id===id);if(!item)return;const buttons=[...document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`)];buttons.forEach(button=>button.disabled=true);try{await doAction(action,item);render();renderManage()}catch(error){alert(error.message||'That action could not be saved. Confirm the review SQL was run, then try again.');buttons.forEach(button=>button.disabled=false)}}
+    function renderQualityDrafts(){
+      const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);
+      $('quality-drafts').innerHTML=drafts.length?drafts.map(question=>`<article class="candidate"><div class="meta"><span class="tag good">Private draft</span><span class="tag">${esc(question.nclex_category||'NCLEX')}</span><span class="tag">${esc(question.topic||'Topic')}</span><span class="tag">${esc(question.difficulty||'medium')}</span></div><h2>${esc(question.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(question.rationale||'')}</p><div class="buttons"><button class="button" data-publish="${esc(question.id)}" type="button">Publish to students</button></div></article>`).join(''):'<p class="empty">No quality drafts have been added yet.</p>';
+      document.querySelectorAll('[data-publish]').forEach(button=>button.addEventListener('click',()=>publishQualityDraft(button.dataset.publish)));
+    }
+    async function publishQualityDraft(id){
+      const question=live.find(item=>item.id===id);
+      if(!question||!confirm('Publish this question to students now?'))return;
+      const result=await db.from('questions').update({active:true}).eq('id',id);
+      if(result.error){alert(result.error.message);return}
+      await saveReview(question.source_key,'published',id);
+      question.active=true;render();renderManage();
+    }
+    function render(){
+      const query=normalize($('search').value),filter=$('filter').value;
+      const exact=legacy.filter(exactMatch);
+      const reviewable=legacy.filter(item=>!exactMatch(item));
+      $('source-count').textContent=legacy.length;
+      $('exact-count').textContent=exact.length;
+      $('remaining-count').textContent=reviewable.filter(item=>stateFor(item)==='pending').length;
+      updateBankOverview();
+      let items=legacy.filter(item=>{
+        const state=stateFor(item),match=exactMatch(item),possible=possibleMatch(item);
+        const text=normalize([item.stem,item.concept,item.module].join(' '));
+        if(query&&!text.includes(query))return false;
+        if(filter==='pending')return !match&&state==='pending';
+        if(filter==='possible')return !match&&state==='pending'&&possible;
+        if(filter==='ignored'||filter==='draft')return state===filter;
+        return true;
+      });
+      $('candidates').innerHTML=items.length?(legacyShown=items,items.slice(0,200)).map(item=>{
+        const exact=exactMatch(item),possible=!exact&&possibleMatch(item),status=stateFor(item),importable=item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1;
+        const button=exact?'<button class="button secondary" type="button" disabled>Already in live bank</button>':status==='ignored'?'<button class="button secondary" type="button" disabled>Marked ignored</button>':status==='draft'?'<button class="button secondary" type="button" disabled>Imported as draft</button>':importable?`<button class="button" data-action="draft" data-id="${esc(item.id)}" type="button">Import as draft</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}" type="button">Ignore</button>`:`<button class="button secondary" type="button" disabled>Needs NGN/manual conversion</button><button class="button danger" data-action="ignore" data-id="${esc(item.id)}" type="button">Ignore</button>`;
+        return `<article class="candidate ${exact?'duplicate':''}"><div class="meta">${exact||status!=='pending'?'':`<input type="checkbox" class="pick" data-lpick="${esc(item.id)}" ${legSel.has(item.id)?'checked':''}>`}<span class="tag">${esc(item.module||'General')}</span><span class="tag">${esc(item.concept||'Uncategorized')}</span><span class="tag">${esc(item.type||'MCQ')}</span><span class="tag">${esc(difficulty(item.diff))}</span>${exact?'<span class="tag warn">Exact duplicate</span>':''}${status!=='pending'?`<span class="tag good">${esc(status)}</span>`:''}</div><h2>${esc(item.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'No rationale included.')}</p>${exact?`<p class="match"><strong>Existing live match:</strong> ${esc(exact.stem)}</p>`:possible?`<p class="match"><strong>Possible overlap (${Math.round(possible.score*100)}% wording similarity):</strong> ${esc(possible.question.stem)}</p>`:''}<div class="buttons">${button}</div></article>`;
+      }).join(''):'<p class="empty">Nothing matches this view yet.</p>';
+      document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>handleAction(button.dataset.action,button.dataset.id)));
+      document.querySelectorAll('[data-lpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?legSel.add(b.dataset.lpick):legSel.delete(b.dataset.lpick);legCount()}));
+      legCount();
+    }
+    async function saveReview(sourceKey,status,importedQuestionId=null){
+      const record={source_key:sourceKey,status,reviewed_by:session.user.id,reviewed_at:new Date().toISOString(),updated_at:new Date().toISOString(),imported_question_id:importedQuestionId};
+      const result=await db.from('question_import_reviews').upsert(record);
+      if(result.error)throw result.error;
+      reviews.set(sourceKey,record);
+    }
+    async function doAction(action,item){
+      if(action==='ignore'){await saveReview(item.id,'ignored');return}
+      const options=item.options||[];
+      if(item.type!=='mcq'||options.length!==4||item.correct?.length!==1||!Number.isInteger(item.correct[0]))throw new Error('This item needs manual restructuring before import because it is not a four-option, single-answer question.');
+      const row={stem:item.stem,option_a:options[0],option_b:options[1],option_c:options[2],option_d:options[3],correct_answer:['a','b','c','d'][item.correct[0]],rationale:item.rationale||null,module_key:(item.module||'').match(/\d+/)?.[0]?`m${(item.module||'').match(/\d+/)[0]}`:null,nclex_category:null,nclex_sub:null,topic:item.concept||null,difficulty:difficulty(item.diff),is_ngn:false,active:false,source_key:item.id};
+      const inserted=await db.from('questions').insert(row).select('id').single();
+      if(inserted.error)throw inserted.error;
+      await saveReview(item.id,'draft',inserted.data.id);
+      live.push({...row,id:inserted.data.id});
+    }
+    async function handleAction(action,id){
+      const item=legacy.find(candidate=>candidate.id===id);
+      if(!item)return;
+      const buttons=[...document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`)];
+      buttons.forEach(button=>button.disabled=true);
+      try{await doAction(action,item);render();renderManage()}catch(error){alert(error.message||'That action could not be saved. Confirm the review SQL was run, then try again.');buttons.forEach(button=>button.disabled=false)}
+    }
     function legCount(){$('l-count').textContent=legSel.size+' selected';const all=legacyShown.filter(canPick);$('l-all').checked=all.length>0&&all.every(i=>legSel.has(i.id))}
     function canPick(item){return !exactMatch(item)&&stateFor(item)==='pending'}
-    async function legBulk(action){const items=legacy.filter(i=>legSel.has(i.id)&&canPick(i));if(!items.length){alert('Select at least one item first.');return}if(!confirm((action==='ignore'?'Ignore ':'Import as private drafts: ')+items.length+' items?'))return;let done=0,skipped=0,fail=null;for(const item of items){try{if(action==='draft'&&!(item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1)){skipped++;continue}await doAction(action,item);legSel.delete(item.id);done++}catch(e){fail=e;break}}render();renderManage();alert(done+' done'+(skipped?', '+skipped+' skipped (need manual conversion)':'')+(fail?'. Stopped: '+(fail.message||fail):'.'))}
-    function openEdit(id){const q=live.find(x=>x.id===id);if(!q)return;const type=q.item_type||'mcq',data=q.item_data||null;const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';let opts='';if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}else if(type==='sata'&&data&&data.options){opts=`<label>Answer options (tick every correct one)</label>${data.options.map((o,i)=>`<div class="opt"><input type="checkbox" class="e-sata" data-i="${i}" ${(data.correct||[]).includes(i)?'checked':''} aria-label="Correct option ${i+1}"><input type="text" class="e-sopt" value="${esc(o)}" required></div>`).join('')}`}else{opts=`<p class="notice" style="margin-top:14px">This is a ${esc(TYPE_NAME[type]||type)} item. Its layout and answer key are managed as a unit, so you can edit the wording and tags here but not the structure.</p>`}$('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;$('ed').classList.remove('hidden');$('e-cancel').onclick=()=>$('ed').classList.add('hidden');$('ed-form').onsubmit=async ev=>{ev.preventDefault();const row={stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim()||null,topic:$('e-topic').value.trim()||null,nclex_category:$('e-cat').value.trim()||null,difficulty:$('e-dif').value};if(type==='mcq'){L.forEach(l=>row['option_'+l]=$('e-'+l).value.trim());row.correct_answer=document.querySelector('[name=e-ans]:checked').value}let nd=data?JSON.parse(JSON.stringify(data)):null;if(type==='sata'&&nd){const boxes=[...document.querySelectorAll('.e-sata')];if(!boxes.some(b=>b.checked)){alert('Tick at least one correct option.');return}nd.options=[...document.querySelectorAll('.e-sopt')].map(i=>i.value.trim());nd.correct=boxes.map((b,i)=>b.checked?i:-1).filter(i=>i>=0)}if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;row.item_data=nd}const r=await db.from('questions').update(row).eq('id',id);if(r.error){alert(r.error.message);return}Object.assign(q,row);$('ed').classList.add('hidden');render();renderManage()}}
+    async function legBulk(action){
+      const items=legacy.filter(i=>legSel.has(i.id)&&canPick(i));
+      if(!items.length){alert('Select at least one item first.');return}
+      if(!confirm((action==='ignore'?'Ignore ':'Import as private drafts: ')+items.length+' items?'))return;
+      let done=0,skipped=0,fail=null;
+      for(const item of items){try{if(action==='draft'&&!(item.type==='mcq'&&item.options?.length===4&&item.correct?.length===1)){skipped++;continue}await doAction(action,item);legSel.delete(item.id);done++}catch(e){fail=e;break}}
+      render();renderManage();
+      alert(done+' done'+(skipped?', '+skipped+' skipped (need manual conversion)':'')+(fail?'. Stopped: '+(fail.message||fail):'.'));
+    }
+    function openEdit(id){
+      const q=live.find(x=>x.id===id);if(!q)return;
+      const type=q.item_type||'mcq',data=q.item_data||null;
+      const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';
+      let opts='';
+      if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}
+      else if(type==='sata'&&data&&data.options){opts=`<label>Answer options (tick every correct one)</label>${data.options.map((o,i)=>`<div class="opt"><input type="checkbox" class="e-sata" data-i="${i}" ${(data.correct||[]).includes(i)?'checked':''} aria-label="Correct option ${i+1}"><input type="text" class="e-sopt" value="${esc(o)}" required></div>`).join('')}`}
+      else{opts=`<p class="notice" style="margin-top:14px">This is a ${esc(TYPE_NAME[type]||type)} item. Its layout and answer key are managed as a unit, so you can edit the wording and tags here but not the structure.</p>`}
+      $('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;
+      $('ed').classList.remove('hidden');
+      $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
+      $('ed-form').onsubmit=async ev=>{
+        ev.preventDefault();
+        const row={stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim()||null,topic:$('e-topic').value.trim()||null,nclex_category:$('e-cat').value.trim()||null,difficulty:$('e-dif').value};
+        if(type==='mcq'){L.forEach(l=>row['option_'+l]=$('e-'+l).value.trim());row.correct_answer=document.querySelector('[name=e-ans]:checked').value}
+        let nd=data?JSON.parse(JSON.stringify(data)):null;
+        if(type==='sata'&&nd){
+          const boxes=[...document.querySelectorAll('.e-sata')];
+          if(!boxes.some(b=>b.checked)){alert('Tick at least one correct option.');return}
+          nd.options=[...document.querySelectorAll('.e-sopt')].map(i=>i.value.trim());
+          nd.correct=boxes.map((b,i)=>b.checked?i:-1).filter(i=>i>=0);
+        }
+        if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;row.item_data=nd}
+        const r=await db.from('questions').update(row).eq('id',id);
+        if(r.error){alert(r.error.message);return}
+        Object.assign(q,row);
+        $('ed').classList.add('hidden');
+        render();renderManage();
+      }
+    }
     function needsRevisionApproval(question){
       const newDraft=question.source_key?.startsWith('qbank-bulk-')||question.source_key?.startsWith('quality-');
       return!!question.active||(!newDraft&&question.question_no!=null);
@@ -283,16 +1274,90 @@
         revisionDrafts.unshift(result.data);$('ed').classList.add('hidden');renderRevisionDrafts();render();
       };
     }
-    function loadDiagBank(){return new Promise((res,rej)=>{if(window.CONSULT_DIAGNOSTIC_BANK)return res(window.CONSULT_DIAGNOSTIC_BANK);const sc=document.createElement('script');sc.src='consult-diagnostic-bank.js';sc.onload=()=>res(window.CONSULT_DIAGNOSTIC_BANK);sc.onerror=()=>rej(new Error('Could not load the diagnostic bank.'));document.head.appendChild(sc)})}
-    async function importDiag(){const btn=$('import-diag');btn.disabled=true;try{const bank=await loadDiagBank();const have=new Set(live.map(q=>q.source_key).filter(Boolean));const diffN=d=>d===1?'easy':d===3?'hard':'medium';const rows=[];bank.forEach(e=>{const key='consult-'+e.id;if(have.has(key))return;if(e.kind==='case'){rows.push({stem:e.title+' — '+e.scenario,rationale:null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:true,active:false,source_key:key,item_type:'case',item_data:e})}else{const o=e.options||[],mc=e.type==='mcq'&&o.length===4;const row={stem:e.stem.replace(/<[^>]+>/g,''),rationale:e.rationale||null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:e.type!=='mcq'&&e.type!=='sata',active:false,source_key:key,item_type:e.type,item_data:e};if(mc){row.option_a=o[0];row.option_b=o[1];row.option_c=o[2];row.option_d=o[3];row.correct_answer='abcd'[e.correct[0]]}rows.push(row)}});if(!rows.length){$('import-note').textContent='Everything is already in the bank.';return}if(!confirm('Add '+rows.length+' diagnostic questions to the master bank as inactive drafts?'))return;const r=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no');if(r.error)throw r.error;live.unshift(...r.data);$('import-note').textContent=rows.length+' added (inactive).';$('m-filter').value='inactive';mVisible=100;mSel.clear();render();renderManage()}catch(e){alert((e.message||e)+' If this mentions item_type or item_data, run supabase-question-item-types.sql first.')}finally{btn.disabled=false}}
+    function loadDiagBank(){
+      return new Promise((res,rej)=>{if(window.CONSULT_DIAGNOSTIC_BANK)return res(window.CONSULT_DIAGNOSTIC_BANK);const sc=document.createElement('script');sc.src='consult-diagnostic-bank.js';sc.onload=()=>res(window.CONSULT_DIAGNOSTIC_BANK);sc.onerror=()=>rej(new Error('Could not load the diagnostic bank.'));document.head.appendChild(sc)});
+    }
+    async function importDiag(){
+      const btn=$('import-diag');btn.disabled=true;
+      try{
+        const bank=await loadDiagBank();
+        const have=new Set(live.map(q=>q.source_key).filter(Boolean));
+        const diffN=d=>d===1?'easy':d===3?'hard':'medium';
+        const rows=[];
+        bank.forEach(e=>{
+          const key='consult-'+e.id;
+          if(have.has(key))return;
+          if(e.kind==='case'){
+            rows.push({stem:e.title+': '+e.scenario,rationale:null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:true,active:false,source_key:key,item_type:'case',item_data:e});
+          }else{
+            const o=e.options||[],mc=e.type==='mcq'&&o.length===4;
+            const row={stem:e.stem.replace(/<[^>]+>/g,''),rationale:e.rationale||null,topic:e.topic,nclex_category:e.category,difficulty:diffN(e.difficulty),is_ngn:e.type!=='mcq'&&e.type!=='sata',active:false,source_key:key,item_type:e.type,item_data:e};
+            if(mc){row.option_a=o[0];row.option_b=o[1];row.option_c=o[2];row.option_d=o[3];row.correct_answer='abcd'[e.correct[0]]}
+            rows.push(row);
+          }
+        });
+        if(!rows.length){$('import-note').textContent='Everything is already in the bank.';return}
+        if(!confirm('Add '+rows.length+' diagnostic questions to the master bank as inactive drafts?'))return;
+        const r=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no');
+        if(r.error)throw r.error;
+        live.unshift(...r.data);
+        $('import-note').textContent=rows.length+' added (inactive).';
+        setLiveFilter('inactive');
+        render();renderManage();
+      }catch(e){alert((e.message||e)+' If this mentions item_type or item_data, run supabase-question-item-types.sql first.')}
+      finally{btn.disabled=false}
+    }
     const TYPE_NAME={sata:'Select all',bowtie:'Bowtie',matrix:'Matrix',cloze:'Drop-down',highlight:'Highlight',case:'Case study',fill:'Fill in'};
-    let flags=[],names=new Map();
-    function renderDiscuss(){const open=flags.filter(f=>f.status==='open'&&f.kind==='discuss');$('discuss-sec').classList.toggle('hidden',!open.length);$('discuss-n').textContent=open.length?'('+open.length+')':'';$('discuss-list').innerHTML=open.map(f=>{const q=live.find(x=>x.id===f.question_id);const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--ink);color:#fff">${no}</span>`:''}<span class="tag good">${esc(names.get(f.student_id)||'Student')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0"><button class="button secondary" data-dres="${esc(f.id)}">Discussed</button></div></div>`}).join('');document.querySelectorAll('[data-dres]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.dres);if(r.error){alert(r.error.message);b.disabled=false;return}flags.find(x=>x.id===b.dataset.dres).status='resolved';renderDiscuss()}))}
-    function renderFlags(){renderDiscuss();const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss');$('flags-sec').classList.toggle('hidden',!open.length);$('flag-n').textContent=open.length?'('+open.length+')':'';$('flag-list').innerHTML=open.map(f=>{const q=live.find(x=>x.id===f.question_id);const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--ink);color:#fff">${no}</span>`:''}<span class="tag warn">${esc(f.reason||'Reported')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0">${q?`<button class="button" data-fedit="${esc(q.id)}">Open &amp; review</button>`:''}<button class="button secondary" data-fres="${esc(f.id)}">Mark resolved</button></div></div>`}).join('');document.querySelectorAll('[data-fedit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.fedit)));document.querySelectorAll('[data-fres]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.fres);if(r.error){alert(r.error.message);b.disabled=false;return}const f=flags.find(x=>x.id===b.dataset.fres);f.status='resolved';renderFlags()}))}
+    function renderDiscuss(){
+      const open=flags.filter(f=>f.status==='open'&&f.kind==='discuss');
+      $('discuss-sec').classList.toggle('hidden',!open.length);
+      $('discuss-n').textContent=open.length?'('+open.length+')':'';
+      $('discuss-list').innerHTML=open.map(f=>{
+        const q=live.find(x=>x.id===f.question_id);
+        const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';
+        return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--admin-navy);color:#fff">${no}</span>`:''}<span class="tag good">${esc(names.get(f.student_id)||'Student')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0"><button class="button secondary" data-dres="${esc(f.id)}" type="button">Discussed</button></div></div>`;
+      }).join('');
+      document.querySelectorAll('[data-dres]').forEach(b=>b.addEventListener('click',async()=>{
+        b.disabled=true;
+        const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.dres);
+        if(r.error){alert(r.error.message);b.disabled=false;return}
+        flags.find(x=>x.id===b.dataset.dres).status='resolved';
+        renderDiscuss();
+        updateBankOverview();
+      }));
+    }
+    function renderFlags(){
+      renderDiscuss();
+      const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss');
+      $('flags-sec').classList.toggle('hidden',!open.length);
+      $('flag-n').textContent=open.length?'('+open.length+')':'';
+      $('flag-list').innerHTML=open.map(f=>{
+        const q=live.find(x=>x.id===f.question_id);
+        const no=f.question_no?'Q-'+String(f.question_no).padStart(4,'0'):'';
+        return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--admin-navy);color:#fff">${no}</span>`:''}<span class="tag warn">${esc(f.reason||'Reported')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0">${q?`<button class="button" data-fedit="${esc(q.id)}" type="button">Open &amp; review</button>`:''}<button class="button secondary" data-fres="${esc(f.id)}" type="button">Mark resolved</button></div></div>`;
+      }).join('');
+      document.querySelectorAll('[data-fedit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.fedit)));
+      document.querySelectorAll('[data-fres]').forEach(b=>b.addEventListener('click',async()=>{
+        b.disabled=true;
+        const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.fres);
+        if(r.error){alert(r.error.message);b.disabled=false;return}
+        const f=flags.find(x=>x.id===b.dataset.fres);
+        f.status='resolved';
+        renderFlags();
+        updateBankOverview();
+      }));
+    }
     const qlabel=q=>q.question_no?'Q-'+String(q.question_no).padStart(4,'0'):'';
     const topicOf=q=>[q.topic,q.nclex_category].filter(Boolean).join(' · ');
-    function mFiltered(){const query=normalize($('m-search').value),f=$('m-filter').value;return live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q'))))}
-    function mCount(){$('m-count').textContent=mSel.size+' selected';const all=mShown.map(q=>q.id);$('m-all').checked=all.length>0&&all.every(id=>mSel.has(id))}
+    function mFiltered(){
+      const query=normalize($('m-search').value),f=$('m-filter').value;
+      return live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q'))));
+    }
+    function mCount(){
+      $('m-count').textContent=mSel.size+' selected';
+      const all=mShown.map(q=>q.id);
+      $('m-all').checked=all.length>0&&all.every(id=>mSel.has(id));
+    }
     function renderBulkDetails(question){
       if(!question.source_key?.startsWith('qbank-bulk-'))return'';
       const rationales=question.option_rationales||{},refs=Array.isArray(question.reference_list)?question.reference_list:[];
@@ -303,7 +1368,7 @@
     }
     function renderRevisionVersion(title,content){
       const choices=['a','b','c','d'].filter(key=>content[`option_${key}`]).map((key,index)=>`<li><strong>${'ABCD'[index]}${content.correct_answer===key?' · Key':''}:</strong> ${esc(content[`option_${key}`])}<br><span>${esc(content.option_rationales?.[key]||'')}</span></li>`).join('');
-      const refs=Array.isArray(content.reference_list)?content.reference_list.map(ref=>{const url=typeof ref.url==='string'&&/^https?:\/\//i.test(ref.url)?ref.url:'';return`<li>${esc(ref.title||url||'Reference')} ${url?`— <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">source</a>`:''}</li>`}).join(''):'';
+      const refs=Array.isArray(content.reference_list)?content.reference_list.map(ref=>{const url=typeof ref.url==='string'&&/^https?:\/\//i.test(ref.url)?ref.url:'';return`<li>${esc(ref.title||url||'Reference')} ${url?`(<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">source</a>)`:''}</li>`}).join(''):'';
       return `<div><h3>${title}</h3><p><strong>${esc(content.stem||'')}</strong></p>${choices?`<ol>${choices}</ol>`:''}${content.item_data?`<details><summary>NGN data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(content.item_data,null,2))}</pre></details>`:''}<p class="rationale"><strong>Rationale:</strong> ${esc(content.rationale||'')}</p><p class="rationale">${esc(content.nclex_category||'')} · ${esc(content.topic||'')} · ${esc(content.difficulty||'')} · ${esc(content.clinical_judgment_skill||'')}</p><ul>${refs}</ul></div>`;
     }
     function renderRevisionDrafts(){
@@ -311,7 +1376,7 @@
       $('revision-status').textContent=revisionWorkflowReady?`${open.length} correction${open.length===1?'':'s'} awaiting review or application. Existing bank content is unchanged until an approved draft is applied.`:'Run supabase-question-bulk-import.sql to enable safe clinical correction drafts.';
       $('revision-list').innerHTML=open.length?open.map(revision=>{
         const question=live.find(item=>item.id===revision.question_id),status=revision.status;
-        const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}">Reject approved correction</button>`;
+        const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}" type="button">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}" type="button">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject approved correction</button>`;
         return `<article class="candidate"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span><span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${action}</div></article>`;
       }).join(''):'<p class="empty">No correction drafts are awaiting review. Existing question edits will appear here as proposals.</p>';
       document.querySelectorAll('[data-revision-action]').forEach(button=>button.addEventListener('click',()=>handleRevisionAction(button.dataset.revisionAction,button.dataset.revisionId)));
@@ -328,18 +1393,22 @@
         if(question)Object.assign(question,revision.proposed_content);
         revision.status='applied';
       }else{
-        revision.status=action==='approve'?'approved':'rejected';revision.reviewed_by=session.user.id;revision.reviewed_at=new Date().toISOString();
+        revision.status=action==='approve'?'approved':'rejected';
+        revision.reviewed_by=session.user.id;
+        revision.reviewed_at=new Date().toISOString();
       }
       renderRevisionDrafts();render();renderManage();
     }
     function renderManage(){
-      const filtered=mFiltered();mShown=filtered.slice(0,mVisible);[...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
+      const filtered=mFiltered();
+      mShown=filtered.slice(0,mVisible);
+      [...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
       $('m-list').innerHTML=mShown.length?mShown.map(q=>{
         const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null;
-        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}">${status==='approved'?'Publish':status==='published'?'Republish':'Approve'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}">${q.active?'Make inactive':'Publish'}</button>`;
-        const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'): 'Draft — review required';
-        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--ink);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}">Edit</button>${action}</div></div>`;
-      }).join(''):'<p class="empty">No questions match this view.</p>';
+        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
+        const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'):'Draft: review required';
+        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
+      }).join(''):'<p class="empty" style="margin:18px">No questions match this view.</p>';
       document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
       document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));
       document.querySelectorAll('[data-bulk-stage]').forEach(b=>b.addEventListener('click',()=>stageBulkQuestion(b.dataset.bulkStage)));
@@ -431,6 +1500,7 @@
       }
       return rows;
     }
+
     async function init(){
       const {data}=await db.auth.getSession();session=data.session;
       if(!session){location.replace('student-login.html');return}
@@ -446,6 +1516,47 @@
       }catch(error){$('loading').textContent=`Could not load the complete question bank: ${error.message||error}`;return}
       try{revisionDrafts=await loadAllRevisionDrafts();revisionWorkflowReady=true}
       catch(error){revisionWorkflowReady=false;$('revision-status').textContent=`Correction workflow unavailable: ${error.message||error}. Run supabase-question-bulk-import.sql.`}
+
+      // Tab switcher wiring
+      document.querySelectorAll('.tab-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+      });
+      document.querySelectorAll('[data-jump-tab]').forEach(btn=>{
+        btn.addEventListener('click',()=>switchTab(btn.dataset.jumpTab));
+      });
+      $('quick-btn-import').addEventListener('click',()=>{
+        switchTab('import');
+        $('bulk-import').scrollIntoView({behavior:'smooth'});
+      });
+      $('quick-btn-dup').addEventListener('click',()=>switchTab('duplicates'));
+      $('quick-btn-review').addEventListener('click',()=>switchTab('review'));
+
+      // Metric card click-to-filter / tab handlers
+      document.querySelectorAll('.metric').forEach(metric=>{
+        metric.addEventListener('click',e=>{
+          e.preventDefault();
+          const targetTab=metric.dataset.targetTab;
+          if(targetTab)switchTab(targetTab);
+          const filterChoice=metric.dataset.filter;
+          if(filterChoice){
+            setLiveFilter(filterChoice);
+          }
+        });
+      });
+
+      // Filter list buttons in Live Bank tab
+      document.querySelectorAll('.filter-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          setLiveFilter(btn.dataset.mfilter);
+        });
+      });
+
+      // Check initial URL hash for tab activation
+      const hash=location.hash.replace(/^#(tab-)?/,'');
+      if(['live','review','duplicates','import'].includes(hash)){
+        switchTab(hash);
+      }
+
       $('search').addEventListener('input',render);$('filter').addEventListener('change',()=>{legSel.clear();render()});
       $('import-diag').addEventListener('click',importDiag);$('m-search').addEventListener('input',()=>{mVisible=100;renderManage()});
       $('m-filter').addEventListener('change',()=>{mVisible=100;mSel.clear();renderManage()});
@@ -464,11 +1575,12 @@
       });
       $('bulk-json').addEventListener('input',()=>{if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before changing the batch.';return}stagedBatch=[];renderBulkPreview();$('bulk-status').textContent='Batch changed. Validate and preview it again.'});
       render();renderManage();renderRevisionDrafts();
-      db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags()});renderFlags()}});
+      db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags();updateBankOverview()});renderFlags();updateBankOverview()}});
       if(!bulkImportReady)$('bulk-status').textContent='Run supabase-question-bulk-import.sql before using bulk import.';
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
     }
-    $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
+    $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+    init();
   </script>
 </body>
 </html>
