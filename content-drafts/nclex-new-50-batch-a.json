@@ -244,12 +244,12 @@
   {
     "draft_id": "NEW-20261012-012",
     "stem": "A postoperative patient reports sudden shortness of breath and pleuritic chest pain. HR 132/min, SpO2 86%, BP 88/52 mm Hg. Which nursing action has highest priority?",
-    "option_a": "Assist the patient to ambulate",
+    "option_a": "Obtain a 12-lead ECG before contacting the response team",
     "option_b": "Activate rapid response and support airway, oxygenation, and circulation",
-    "option_c": "Encourage deep breathing only and reassess in an hour",
-    "option_d": "Massage the calf to assess tenderness",
+    "option_c": "Request a portable chest radiograph before escalating",
+    "option_d": "Administer prescribed analgesic and reassess chest pain",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Ambulation is unsafe during suspected unstable pulmonary embolism. B: Hypoxemia and hypotension require emergency respiratory and circulatory support. C: Deep breathing alone with delayed reassessment cannot address shock. D: Calf massage is inappropriate when thromboembolism is possible.",
+    "rationale": "Correct answer: B. A: An ECG may be useful but must not delay resuscitation in shock and severe hypoxemia. B: Suspected massive PE or other acute cardiopulmonary emergency requires immediate stabilization and team activation. C: Imaging can follow or occur during stabilization; waiting risks deterioration. D: Analgesia alone does not address hypoxemia, hypotension, or an obstructive cause.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -257,10 +257,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Ambulation is unsafe during suspected unstable pulmonary embolism.",
-      "b": "Hypoxemia and hypotension require emergency respiratory and circulatory support.",
-      "c": "Deep breathing alone with delayed reassessment cannot address shock.",
-      "d": "Calf massage is inappropriate when thromboembolism is possible."
+      "a": "An ECG may be useful but must not delay resuscitation in shock and severe hypoxemia.",
+      "b": "Suspected massive PE or other acute cardiopulmonary emergency requires immediate stabilization and team activation.",
+      "c": "Imaging can follow or occur during stabilization; waiting risks deterioration.",
+      "d": "Analgesia alone does not address hypoxemia, hypotension, or an obstructive cause."
     }
   },
   {
@@ -376,12 +376,12 @@
   {
     "draft_id": "NEW-20261012-018",
     "stem": "A patient being treated for heart failure has new confusion, BP 86/50 mm Hg, cool extremities, and urine output 10 mL/hr. Which response is most appropriate?",
-    "option_a": "Give an additional diuretic without an order",
-    "option_b": "Encourage unrestricted oral fluids",
+    "option_a": "Administer the next scheduled IV diuretic before reassessing perfusion",
+    "option_b": "Start an empiric IV fluid bolus without assessing volume status",
     "option_c": "Urgently assess perfusion and escalate possible low-output shock",
-    "option_d": "Delay assessment until the next scheduled weight",
+    "option_d": "Obtain a routine standing weight before notifying the clinician",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Unordered diuresis may worsen circulatory compromise. B: Unrestricted fluids without volume assessment can be harmful in heart failure. C: Cool extremities, oliguria, altered mentation and hypotension suggest low cardiac output/shock requiring urgent escalation. D: Waiting for the daily weight delays management of acute hypoperfusion.",
+    "rationale": "Correct answer: C. A: Additional diuresis can worsen hypotension and is not a substitute for assessing shock. B: Unassessed fluids can worsen pulmonary congestion in a patient with heart failure. C: Hypotension, oliguria, confusion, and cool skin indicate hypoperfusion needing urgent clinical evaluation. D: Daily weight informs long-term management but cannot delay intervention for acute shock.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -389,10 +389,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Unordered diuresis may worsen circulatory compromise.",
-      "b": "Unrestricted fluids without volume assessment can be harmful in heart failure.",
-      "c": "Cool extremities, oliguria, altered mentation and hypotension suggest low cardiac output/shock requiring urgent escalation.",
-      "d": "Waiting for the daily weight delays management of acute hypoperfusion."
+      "a": "Additional diuresis can worsen hypotension and is not a substitute for assessing shock.",
+      "b": "Unassessed fluids can worsen pulmonary congestion in a patient with heart failure.",
+      "c": "Hypotension, oliguria, confusion, and cool skin indicate hypoperfusion needing urgent clinical evaluation.",
+      "d": "Daily weight informs long-term management but cannot delay intervention for acute shock."
     }
   },
   {
@@ -443,11 +443,11 @@
     "draft_id": "NEW-20261012-021",
     "stem": "The RN has one stable client awaiting routine oral medications and one newly admitted client with sudden unilateral weakness. Which assignment is safest?",
     "option_a": "Assign the new neurologic assessment to the RN and delegate permitted routine support tasks",
-    "option_b": "Delegate the new neurologic assessment to unlicensed assistive personnel",
-    "option_c": "Ask the stable client to assess the new admission",
-    "option_d": "Wait to assess until staffing improves",
+    "option_b": "Have the LPN/LVN complete the initial assessment while the RN administers stable-client oral medications",
+    "option_c": "Have assistive personnel obtain a detailed neurologic examination while the RN finishes documentation",
+    "option_d": "Assign the RN to the stable client and reevaluate the new admission in 30 minutes",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Initial assessment of possible stroke requires the RN; permissible routine tasks can be delegated. B: Unlicensed assistive staff cannot perform a new neurologic assessment. C: Another patient cannot serve as clinical assessor. D: Delaying a suspected stroke assessment can lose time-sensitive treatment opportunities.",
+    "rationale": "Correct answer: A. A: A new focal neurologic deficit needs immediate RN assessment and activation of the stroke pathway; other permissible tasks may be delegated. B: A new unstable neurologic assessment and nursing judgment are RN responsibilities; the LPN can assist with tasks within state scope. C: Assistive personnel may obtain and report basic observations but cannot perform a comprehensive neurologic assessment. D: Delaying assessment of a possible stroke loses time-sensitive treatment opportunities.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -455,10 +455,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Initial assessment of possible stroke requires the RN; permissible routine tasks can be delegated.",
-      "b": "Unlicensed assistive staff cannot perform a new neurologic assessment.",
-      "c": "Another patient cannot serve as clinical assessor.",
-      "d": "Delaying a suspected stroke assessment can lose time-sensitive treatment opportunities."
+      "a": "A new focal neurologic deficit needs immediate RN assessment and activation of the stroke pathway; other permissible tasks may be delegated.",
+      "b": "A new unstable neurologic assessment and nursing judgment are RN responsibilities; the LPN can assist with tasks within state scope.",
+      "c": "Assistive personnel may obtain and report basic observations but cannot perform a comprehensive neurologic assessment.",
+      "d": "Delaying assessment of a possible stroke loses time-sensitive treatment opportunities."
     }
   },
   {
