@@ -26,10 +26,10 @@
     "stem": "A patient has a chest tube following thoracic surgery. Drainage increases to 240 mL of bright-red blood in the past hour, and the patient becomes pale with BP 84/48 mm Hg. What should the nurse do first?",
     "option_a": "Continue routine monitoring because blood-tinged chest-tube output is always expected after surgery",
     "option_b": "Raise the chest drainage unit above the patient's chest to slow the bleeding",
-    "option_c": "Immediately assess perfusion, summon urgent help, and notify the surgical team of possible hemorrhage",
-    "option_d": "Clamp the chest tube until the output becomes less bloody",
-    "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Some postoperative drainage may be expected, but abrupt high-volume bright-red output with hypotension signals possible hemorrhage requiring urgent evaluation. B: Raising the unit interferes with drainage and does not treat bleeding or shock. C: Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage. D: Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding.",
+    "option_c": "Clamp the chest tube until the output becomes less bloody",
+    "option_d": "Immediately assess perfusion, summon urgent help, and notify the surgical team of possible hemorrhage",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Some postoperative drainage may be expected, but abrupt high-volume bright-red output with hypotension signals possible hemorrhage requiring urgent evaluation. B: Raising the unit interferes with drainage and does not treat bleeding or shock. C: Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding. D: Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -39,8 +39,8 @@
     "option_rationales": {
       "a": "Some postoperative drainage may be expected, but abrupt high-volume bright-red output with hypotension signals possible hemorrhage requiring urgent evaluation.",
       "b": "Raising the unit interferes with drainage and does not treat bleeding or shock.",
-      "c": "Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage.",
-      "d": "Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding."
+      "c": "Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding.",
+      "d": "Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage."
     }
   },
   {
