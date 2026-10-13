@@ -21,3 +21,9 @@ All entries are **inactive**, not approved for publication. This is a source/ans
 - Several distractors are too implausible and require rewriting before any question is considered publication-ready.
 - Source verification is **not** equivalent to formal clinical approval, psychometric validation or user-visible publication.
 - Next pass: revise options; verify corrected rationales; log clinical reviewer and approval date.
+
+## Revision pass — October 12, 2026
+
+The following ten production draft records were **revised in Supabase** with strengthened, clinically plausible alternative responses, clearer clinical context and specific explanations for each option: `197–204, 247, 248` (all prefixed `NEW-20261012-`). Answer keys are unchanged. Verified: 10 records exist; 10 have four rationales; **zero are active**. The broader generated set also has zero active records.
+
+**Important:** These revisions do **not** constitute publication approval. Several sources listed above support clinical principles, but detailed source-to-each-claim and product-specific verification, external clinical sign-off, concept-duplication judgment, and final editorial review are pending. The audit file is a review ledger; the database contains the current revised stems and options. The original GitHub generation JSON has not been synchronized and should not be reimported as authoritative.
