@@ -319,12 +319,12 @@
   {
     "draft_id": "NEW-20261012-015",
     "stem": "A client with chronic kidney disease has potassium 6.8 mEq/L and a widened QRS complex. Which prescribed medication should the nurse prioritize?",
-    "option_a": "Oral iron",
-    "option_b": "Subcutaneous erythropoietin",
-    "option_c": "Oral phosphate binder",
+    "option_a": "IV regular insulin with dextrose",
+    "option_b": "Nebulized albuterol",
+    "option_c": "IV sodium bicarbonate",
     "option_d": "IV calcium gluconate",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Oral iron treats iron deficiency rather than ECG-unstable hyperkalemia. B: Erythropoietin has no immediate membrane-stabilizing effect. C: Phosphate binders do not treat imminent ventricular dysrhythmia. D: IV calcium stabilizes myocardium during hyperkalemia with ECG changes; additional therapies are needed to lower potassium.",
+    "rationale": "Correct answer: D. A: Insulin with dextrose shifts potassium but does not immediately stabilize the myocardium. B: Albuterol shifts potassium but does not stabilize the cardiac membrane. C: Bicarbonate is context dependent and not the first choice for ECG instability. D: IV calcium gluconate provides immediate cardiac membrane stabilization; potassium-lowering therapy must follow.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -332,10 +332,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Oral iron treats iron deficiency rather than ECG-unstable hyperkalemia.",
-      "b": "Erythropoietin has no immediate membrane-stabilizing effect.",
-      "c": "Phosphate binders do not treat imminent ventricular dysrhythmia.",
-      "d": "IV calcium stabilizes myocardium during hyperkalemia with ECG changes; additional therapies are needed to lower potassium."
+      "a": "Insulin with dextrose shifts potassium into cells but does not provide immediate cardiac membrane stabilization.",
+      "b": "Albuterol shifts potassium intracellularly but is not the first membrane-stabilizing drug for widened QRS.",
+      "c": "Bicarbonate can be considered in selected acidotic cases but is not the initial membrane-stabilizing intervention.",
+      "d": "IV calcium gluconate stabilizes the myocardium during hyperkalemia with QRS widening; further therapies are needed to shift and eliminate potassium."
     }
   },
   {
