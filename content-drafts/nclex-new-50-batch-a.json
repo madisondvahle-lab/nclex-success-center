@@ -332,12 +332,12 @@
   {
     "draft_id": "NEW-20261012-016",
     "stem": "A patient with acute pancreatitis develops new hypotension, tachycardia, and increasing abdominal distention. What is the nursing priority?",
-    "option_a": "Offer clear liquids",
+    "option_a": "Increase IV crystalloid infusion to a fixed high rate without reassessing response",
     "option_b": "Initiate urgent assessment and notify the rapid response/clinical team",
-    "option_c": "Encourage vigorous ambulation",
-    "option_d": "Apply heat and reassess next shift",
+    "option_c": "Administer the next scheduled analgesic and reassess blood pressure in 30 minutes",
+    "option_d": "Obtain an abdominal CT before notifying the treating team",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Oral fluids may be inappropriate during acute abdominal deterioration. B: Hypotension and distention in pancreatitis warrant immediate assessment for shock/complications and escalation. C: Ambulation does not address hemodynamic instability. D: Heat with delayed reassessment risks missing a serious complication.",
+    "rationale": "Correct answer: B. A: Unmonitored aggressive fluid administration can cause harm in pancreatitis; assess perfusion and use goal-directed orders. B: New hypotension and tachycardia with distention suggest shock or serious complication and warrant immediate escalation. C: Analgesia may be appropriate but must not delay evaluating worsening perfusion. D: Imaging may help identify complications but cannot delay clinical response to instability.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -345,11 +345,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Oral fluids may be inappropriate during acute abdominal deterioration.",
-      "b": "Hypotension and distention in pancreatitis warrant immediate assessment for shock/complications and escalation.",
-      "c": "Ambulation does not address hemodynamic instability.",
-      "d": "Heat with delayed reassessment risks missing a serious complication."
-    }
+      "a": "Unmonitored aggressive fluid administration can cause harm in pancreatitis; assess perfusion and use goal-directed orders.",
+      "b": "New hypotension and tachycardia with distention suggest shock or serious complication and warrant immediate escalation.",
+      "c": "Analgesia may be appropriate but must not delay evaluating worsening perfusion.",
+      "d": "Imaging may help identify complications but cannot delay clinical response to instability."
+    },
+    "reference_urls": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC13221274/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-017",
@@ -420,12 +423,12 @@
   {
     "draft_id": "NEW-20261012-020",
     "stem": "A client with a bowel obstruction develops sudden severe abdominal pain, rigid abdomen, fever, and hypotension. What should the nurse do first?",
-    "option_a": "Administer oral laxatives",
+    "option_a": "Increase nasogastric suction and recheck abdominal findings in 30 minutes before calling the surgeon",
     "option_b": "Notify the surgical team urgently and assess for perforation and shock",
-    "option_c": "Encourage a large meal",
-    "option_d": "Disconnect nasogastric decompression permanently",
+    "option_c": "Administer the next prescribed antiemetic before reassessing blood pressure",
+    "option_d": "Obtain routine abdominal radiographs before notifying the surgical team",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Laxatives are unsafe in suspected obstruction with signs of peritonitis. B: Rigidity and hypotension suggest possible perforation/sepsis and require urgent surgical assessment. C: Feeding worsens risk during acute obstruction/peritonitis. D: Stopping decompression without assessment is not indicated.",
+    "rationale": "Correct answer: B. A: NG decompression may be supportive, but rigid abdomen and hypotension require urgent surgical evaluation. B: A rigid febrile abdomen with hypotension may indicate ischemia, perforation or peritonitis; assess and urgently escalate. C: Treating nausea cannot substitute for responding to suspected shock and peritonitis. D: Imaging can support diagnosis but must not delay emergency surgical assessment.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -433,11 +436,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Laxatives are unsafe in suspected obstruction with signs of peritonitis.",
-      "b": "Rigidity and hypotension suggest possible perforation/sepsis and require urgent surgical assessment.",
-      "c": "Feeding worsens risk during acute obstruction/peritonitis.",
-      "d": "Stopping decompression without assessment is not indicated."
-    }
+      "a": "NG decompression may be supportive, but rigid abdomen and hypotension require urgent surgical evaluation.",
+      "b": "A rigid febrile abdomen with hypotension may indicate ischemia, perforation or peritonitis; assess and urgently escalate.",
+      "c": "Treating nausea cannot substitute for responding to suspected shock and peritonitis.",
+      "d": "Imaging can support diagnosis but must not delay emergency surgical assessment."
+    },
+    "reference_urls": [
+      "https://www.east.org/education-resources/practice-management-guidelines/details/smallbowel-obstruction-evaluation-and-management-of"
+    ]
   },
   {
     "draft_id": "NEW-20261012-021",
