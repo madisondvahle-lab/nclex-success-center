@@ -520,12 +520,12 @@
   {
     "draft_id": "NEW-20261012-049",
     "stem": "A patient has a new tracheostomy placed 12 hours ago. The tube becomes dislodged and the patient develops respiratory distress. Which response is safest?",
-    "option_a": "Blindly reinsert the tube without assessing the stoma",
+    "option_a": "Attempt blind bedside reinsertion immediately to restore airflow",
     "option_b": "Call for emergency airway assistance, support oxygenation and follow fresh-tracheostomy rescue protocol",
-    "option_c": "Wait for spontaneous improvement",
-    "option_d": "Force an oral feeding to calm the patient",
+    "option_c": "Cover the neck stoma with an occlusive dressing and provide face-mask ventilation without checking tracheostomy type or airway anatomy",
+    "option_d": "Try to pass a suction catheter into the dislodged tracheostomy tube before activating the emergency airway team",
     "correct_answer": "b",
-    "rationale": "Correct answer: B. A: Blind reinsertion of a fresh tracheostomy risks creating a false passage. B: Immediate expert airway help and oxygenation support are necessary; use the fresh-tracheostomy rescue algorithm. C: Waiting risks hypoxic injury. D: Feeding is unsafe in acute airway distress.",
+    "rationale": "Correct answer: B. A: Blind reinsertion through an immature tract risks false passage and failure to ventilate. B: Immediately obtain expert airway help and oxygenate while following the emergency algorithm adapted to tracheostomy type and upper-airway patency. C: Occluding the stoma and relying exclusively on upper-airway ventilation may be unsafe without establishing whether the upper airway is patent; oxygenation strategy depends on the airway anatomy. D: The tube is displaced, so attempts to troubleshoot its lumen cannot replace immediate emergency escalation and oxygenation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -533,10 +533,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Blind reinsertion of a fresh tracheostomy risks creating a false passage.",
-      "b": "Immediate expert airway help and oxygenation support are necessary; use the fresh-tracheostomy rescue algorithm.",
-      "c": "Waiting risks hypoxic injury.",
-      "d": "Feeding is unsafe in acute airway distress."
+      "a": "Blind reinsertion through an immature tract risks false passage and failure to ventilate.",
+      "b": "Immediately obtain expert airway help and oxygenate while following the emergency algorithm adapted to tracheostomy type and upper-airway patency.",
+      "c": "Occluding the stoma and relying exclusively on upper-airway ventilation may be unsafe without establishing whether the upper airway is patent; oxygenation strategy depends on the airway anatomy.",
+      "d": "The tube is displaced, so attempts to troubleshoot its lumen cannot replace immediate emergency escalation and oxygenation."
     },
     "reference_urls": [
       "https://tracheostomy.org.uk/resources/papers/tracheostomy-adult-emergency-guidelines"
