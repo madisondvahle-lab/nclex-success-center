@@ -2,12 +2,12 @@
   {
     "draft_id": "NEW-20261012-026",
     "stem": "A patient with suspected meningitis becomes difficult to arouse and develops unequal pupils. Which action takes priority?",
-    "option_a": "Provide a quiet environment and reassess in four hours",
-    "option_b": "Encourage oral fluid intake",
+    "option_a": "Elevate the head of bed and schedule routine neurologic checks",
+    "option_b": "Obtain a nonurgent serum electrolyte panel before contacting the provider",
     "option_c": "Activate emergency evaluation for possible rising intracranial pressure",
-    "option_d": "Perform routine discharge teaching",
+    "option_d": "Administer the next scheduled antipyretic and reassess pupils afterward",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: A delayed environmental intervention fails to address acute neurologic deterioration. B: Oral intake risks aspiration in a patient with reduced consciousness. C: New unequal pupils and decreased arousal suggest a life-threatening intracranial process requiring immediate response. D: Routine discharge education is inappropriate during new neurologic instability.",
+    "rationale": "Correct answer: C. A: Positioning may be supportive, but new unequal pupils and reduced consciousness require emergency escalation, not routine observation. B: Laboratory studies may help later but cannot precede emergency response to possible herniation. C: New anisocoria and declining consciousness suggest acute intracranial deterioration requiring immediate airway/neurologic assessment and help. D: Fever treatment does not address the neurologic emergency and delays definitive evaluation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -15,21 +15,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "A delayed environmental intervention fails to address acute neurologic deterioration.",
-      "b": "Oral intake risks aspiration in a patient with reduced consciousness.",
-      "c": "New unequal pupils and decreased arousal suggest a life-threatening intracranial process requiring immediate response.",
-      "d": "Routine discharge education is inappropriate during new neurologic instability."
+      "a": "Positioning may be supportive, but new unequal pupils and reduced consciousness require emergency escalation, not routine observation.",
+      "b": "Laboratory studies may help later but cannot precede emergency response to possible herniation.",
+      "c": "New anisocoria and declining consciousness suggest acute intracranial deterioration requiring immediate airway/neurologic assessment and help.",
+      "d": "Fever treatment does not address the neurologic emergency and delays definitive evaluation."
     }
   },
   {
     "draft_id": "NEW-20261012-027",
     "stem": "A patient with sodium 119 mEq/L has a generalized seizure. What should the nurse prioritize?",
-    "option_a": "Administer free water",
-    "option_b": "Give routine oral salt tablets during the seizure",
-    "option_c": "Wait for a repeat chemistry panel",
+    "option_a": "Institute seizure precautions and repeat sodium after the seizure ends",
+    "option_b": "Give oral sodium chloride as soon as convulsive movements decrease",
+    "option_c": "Obtain a bedside glucose reading before summoning assistance",
     "option_d": "Protect airway and safety, summon help, and prepare prescribed emergency sodium therapy",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Free water may worsen symptomatic hyponatremia. B: Oral medication during convulsions creates aspiration risk and is inadequate emergency treatment. C: Waiting for later testing delays seizure management. D: Protect airway/safety, summon emergency help, and prepare monitored hypertonic saline when prescribed for severe symptomatic hyponatremia.",
+    "rationale": "Correct answer: D. A: Safety precautions are necessary but repeat testing alone does not treat severe symptomatic hyponatremia. B: Oral tablets are unsafe during reduced consciousness and insufficient for an acute hyponatremic seizure. C: Bedside glucose is useful in seizure evaluation but must not delay summoning help and supporting the airway. D: Manage active seizure safely, summon emergency support, and anticipate protocol-guided hypertonic saline with close monitoring.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -37,10 +37,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Free water may worsen symptomatic hyponatremia.",
-      "b": "Oral medication during convulsions creates aspiration risk and is inadequate emergency treatment.",
-      "c": "Waiting for later testing delays seizure management.",
-      "d": "Protect airway/safety, summon emergency help, and prepare monitored hypertonic saline when prescribed for severe symptomatic hyponatremia."
+      "a": "Safety precautions are necessary but repeat testing alone does not treat severe symptomatic hyponatremia.",
+      "b": "Oral tablets are unsafe during reduced consciousness and insufficient for an acute hyponatremic seizure.",
+      "c": "Bedside glucose is useful in seizure evaluation but must not delay summoning help and supporting the airway.",
+      "d": "Manage active seizure safely, summon emergency support, and anticipate protocol-guided hypertonic saline with close monitoring."
     }
   },
   {
@@ -112,12 +112,12 @@
   {
     "draft_id": "NEW-20261012-031",
     "stem": "A person with diabetes has a foot wound with spreading erythema, fever, hypotension, and confusion. Which nursing action is most appropriate?",
-    "option_a": "Apply topical lotion only",
-    "option_b": "Schedule routine follow-up in two weeks",
-    "option_c": "Encourage walking to improve perfusion",
+    "option_a": "Obtain a wound swab and await culture results before involving the clinician",
+    "option_b": "Administer scheduled subcutaneous insulin and reassess vitals in 60 minutes",
+    "option_c": "Request a routine wound-care consultation as the only intervention",
     "option_d": "Escalate immediately for suspected sepsis and begin ordered resuscitation measures",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Topical lotion alone is inadequate for systemic signs of infection. B: Routine follow-up is unsafe with hypotension and confusion. C: Walking does not address suspected septic shock. D: Hypotension and altered mentation with infection warrant immediate sepsis evaluation and ordered resuscitation.",
+    "rationale": "Correct answer: D. A: Cultures may be indicated, but awaiting results delays treatment of suspected septic shock. B: Glycemic management may be needed but does not take priority over shock and altered mentation. C: Wound-care input is useful after stabilization but cannot replace systemic sepsis management. D: Infected wound plus hypotension and confusion warrants immediate sepsis escalation and ordered therapy.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -125,21 +125,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Topical lotion alone is inadequate for systemic signs of infection.",
-      "b": "Routine follow-up is unsafe with hypotension and confusion.",
-      "c": "Walking does not address suspected septic shock.",
-      "d": "Hypotension and altered mentation with infection warrant immediate sepsis evaluation and ordered resuscitation."
+      "a": "Cultures may be indicated, but awaiting results delays treatment of suspected septic shock.",
+      "b": "Glycemic management may be needed but does not take priority over shock and altered mentation.",
+      "c": "Wound-care input is useful after stabilization but cannot replace systemic sepsis management.",
+      "d": "Infected wound plus hypotension and confusion warrants immediate sepsis escalation and ordered therapy."
     }
   },
   {
     "draft_id": "NEW-20261012-032",
     "stem": "A patient has sudden severe headache described as the worst ever, vomiting, and neck stiffness. What is the priority?",
     "option_a": "Activate emergency neurologic evaluation and monitor airway/neurologic status",
-    "option_b": "Administer a routine laxative",
-    "option_c": "Encourage straining to relieve pressure",
-    "option_d": "Delay assessment pending a routine clinic appointment",
+    "option_b": "Administer the patient's prescribed migraine medication and reassess in one hour",
+    "option_c": "Position the patient quietly and schedule a nonurgent outpatient CT",
+    "option_d": "Obtain a routine pain score before deciding whether to notify the provider",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Thunderclap headache and meningismus suggest possible subarachnoid hemorrhage requiring emergency assessment. B: A laxative does not address possible intracranial bleeding. C: Straining may increase intracranial pressure and is inappropriate. D: Waiting for clinic follow-up can delay time-sensitive neurologic care.",
+    "rationale": "Correct answer: A. A: Thunderclap headache with vomiting and nuchal rigidity raises concern for subarachnoid hemorrhage, requiring emergency neurologic evaluation. B: Symptomatic medication must not delay evaluation of a possible intracranial hemorrhage. C: Quiet positioning is supportive, but outpatient imaging is inappropriate for this acute presentation. D: Pain scoring is secondary to urgent recognition and escalation of potential intracranial bleeding.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -147,10 +147,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Thunderclap headache and meningismus suggest possible subarachnoid hemorrhage requiring emergency assessment.",
-      "b": "A laxative does not address possible intracranial bleeding.",
-      "c": "Straining may increase intracranial pressure and is inappropriate.",
-      "d": "Waiting for clinic follow-up can delay time-sensitive neurologic care."
+      "a": "Thunderclap headache with vomiting and nuchal rigidity raises concern for subarachnoid hemorrhage, requiring emergency neurologic evaluation.",
+      "b": "Symptomatic medication must not delay evaluation of a possible intracranial hemorrhage.",
+      "c": "Quiet positioning is supportive, but outpatient imaging is inappropriate for this acute presentation.",
+      "d": "Pain scoring is secondary to urgent recognition and escalation of potential intracranial bleeding."
     }
   },
   {
@@ -178,12 +178,12 @@
   {
     "draft_id": "NEW-20261012-034",
     "stem": "A patient with cirrhosis starts vomiting bright red blood and becomes dizzy. BP is 80/44 mm Hg. Which action is priority?",
-    "option_a": "Provide a regular meal",
-    "option_b": "Measure abdominal girth at the next shift",
+    "option_a": "Obtain orthostatic blood pressure measurements before calling the clinician",
+    "option_b": "Prepare the next scheduled oral lactulose dose",
     "option_c": "Activate emergency response and prepare airway and circulatory support",
-    "option_d": "Encourage independent ambulation",
+    "option_d": "Arrange a nonurgent abdominal ultrasound before starting IV access",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Oral food is unsafe during active massive hematemesis and instability. B: A nonurgent girth measurement cannot address acute hemorrhagic shock. C: Urgent airway and circulatory support is needed for possible variceal hemorrhage. D: Ambulating a hypotensive actively bleeding patient increases fall risk.",
+    "rationale": "Correct answer: C. A: Orthostatic testing risks worsening instability and delays hemorrhage resuscitation. B: Lactulose does not treat active hematemesis with shock. C: Bright-red hematemesis in cirrhosis with severe hypotension warrants immediate hemorrhage and airway management. D: Nonurgent imaging must not delay resuscitation and urgent bleeding evaluation.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -191,21 +191,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Oral food is unsafe during active massive hematemesis and instability.",
-      "b": "A nonurgent girth measurement cannot address acute hemorrhagic shock.",
-      "c": "Urgent airway and circulatory support is needed for possible variceal hemorrhage.",
-      "d": "Ambulating a hypotensive actively bleeding patient increases fall risk."
+      "a": "Orthostatic testing risks worsening instability and delays hemorrhage resuscitation.",
+      "b": "Lactulose does not treat active hematemesis with shock.",
+      "c": "Bright-red hematemesis in cirrhosis with severe hypotension warrants immediate hemorrhage and airway management.",
+      "d": "Nonurgent imaging must not delay resuscitation and urgent bleeding evaluation."
     }
   },
   {
     "draft_id": "NEW-20261012-035",
     "stem": "A patient with suspected acute coronary syndrome reports new crushing chest pressure. BP is 78/50 mm Hg, HR 118/min. Which intervention is appropriate?",
-    "option_a": "Give sublingual nitroglycerin immediately regardless of BP",
-    "option_b": "Encourage vigorous walking",
-    "option_c": "Wait until tomorrow for a 12-lead ECG",
+    "option_a": "Administer prescribed sublingual nitroglycerin before reassessing blood pressure",
+    "option_b": "Give the scheduled beta blocker before obtaining an ECG",
+    "option_c": "Obtain a repeat troponin in three hours before activating emergency assistance",
     "option_d": "Rapidly assess, obtain ECG and urgent assistance; question nitroglycerin in severe hypotension",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Nitroglycerin can worsen severe hypotension and should not be given reflexively. B: Exertion increases myocardial oxygen demand in an unstable patient. C: Delaying ECG evaluation risks missing time-sensitive acute coronary syndrome. D: Obtain urgent assessment/ECG and emergency help; question nitrates with marked hypotension.",
+    "rationale": "Correct answer: D. A: Nitroglycerin may worsen marked hypotension and should be withheld pending urgent evaluation. B: A beta blocker can worsen hemodynamic instability and should not delay immediate assessment. C: Troponin evaluation is important but must not delay an immediate ECG and response to shock. D: An unstable patient with suspected ACS needs prompt ECG, monitoring, emergency help, and avoidance of reflex nitrate dosing.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -213,21 +213,21 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Nitroglycerin can worsen severe hypotension and should not be given reflexively.",
-      "b": "Exertion increases myocardial oxygen demand in an unstable patient.",
-      "c": "Delaying ECG evaluation risks missing time-sensitive acute coronary syndrome.",
-      "d": "Obtain urgent assessment/ECG and emergency help; question nitrates with marked hypotension."
+      "a": "Nitroglycerin may worsen marked hypotension and should be withheld pending urgent evaluation.",
+      "b": "A beta blocker can worsen hemodynamic instability and should not delay immediate assessment.",
+      "c": "Troponin evaluation is important but must not delay an immediate ECG and response to shock.",
+      "d": "An unstable patient with suspected ACS needs prompt ECG, monitoring, emergency help, and avoidance of reflex nitrate dosing."
     }
   },
   {
     "draft_id": "NEW-20261012-036",
     "stem": "A patient with an indwelling urinary catheter suddenly develops chills, fever, and confusion. Which nurse action is best?",
     "option_a": "Assess for sepsis and notify the clinician promptly",
-    "option_b": "Ignore because catheters routinely cause fever",
-    "option_c": "Collect urine from the drainage bag after it has sat overnight",
-    "option_d": "Administer an unprescribed antibiotic",
+    "option_b": "Replace the catheter and wait for the next shift's routine vital signs",
+    "option_c": "Obtain a urine sample from the catheter's sampling port and await culture results before notifying",
+    "option_d": "Administer a prescribed antipyretic and reassess mental status in two hours",
     "correct_answer": "a",
-    "rationale": "Correct answer: A. A: Fever and confusion in a catheterized patient require evaluation for infection/sepsis and urgent clinician notification. B: Attributing fever to routine catheter use risks missing serious infection. C: Sampling stagnant drainage-bag urine risks contamination and misleading results. D: Giving an unprescribed antibiotic is outside independent nursing prescribing authority.",
+    "rationale": "Correct answer: A. A: New fever, rigors and confusion with a catheter warrant immediate assessment for systemic infection and urgent clinical escalation. B: Catheter replacement may be appropriate by order/protocol but does not replace urgent assessment of sepsis. C: A correctly collected specimen helps diagnosis, but waiting for culture results delays care for possible sepsis. D: Treating fever alone does not address altered mentation and potential systemic deterioration.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -235,10 +235,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Fever and confusion in a catheterized patient require evaluation for infection/sepsis and urgent clinician notification.",
-      "b": "Attributing fever to routine catheter use risks missing serious infection.",
-      "c": "Sampling stagnant drainage-bag urine risks contamination and misleading results.",
-      "d": "Giving an unprescribed antibiotic is outside independent nursing prescribing authority."
+      "a": "New fever, rigors and confusion with a catheter warrant immediate assessment for systemic infection and urgent clinical escalation.",
+      "b": "Catheter replacement may be appropriate by order/protocol but does not replace urgent assessment of sepsis.",
+      "c": "A correctly collected specimen helps diagnosis, but waiting for culture results delays care for possible sepsis.",
+      "d": "Treating fever alone does not address altered mentation and potential systemic deterioration."
     }
   },
   {
@@ -442,12 +442,12 @@
   {
     "draft_id": "NEW-20261012-046",
     "stem": "An RN is assigning care for a newly admitted client with unstable vital signs and a stable client needing a routine dressing change. Which assignment is most appropriate?",
-    "option_a": "Assign the unstable admission assessment to an unlicensed assistant",
-    "option_b": "Have the LPN independently develop the initial plan of care for the unstable patient",
+    "option_a": "Assign the unstable admission to an experienced LPN/LVN for comprehensive initial assessment",
+    "option_b": "Have assistive personnel monitor the unstable patient independently while the RN completes routine care",
     "option_c": "RN assesses unstable admission; delegate routine dressing care based on scope and facility policy",
-    "option_d": "Delay both patients' care",
+    "option_d": "Assign both clients to the RN and postpone all delegated tasks regardless of staff competency",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Initial assessment of an unstable patient cannot be assigned to assistive personnel. B: An LPN/LVN does not independently assume the RN's comprehensive initial assessment or plan of care for an unstable patient. C: An RN should assess instability; suitable predictable tasks may be assigned by local scope and competency. D: Delaying both assignments is unnecessary and potentially unsafe.",
+    "rationale": "Correct answer: C. A: LPN/LVN scope and competency do not replace the RN's initial comprehensive assessment of an unstable patient. B: Assistive personnel can report observations but cannot independently manage unstable changes. C: The RN manages initial instability; stable predictable procedures can be assigned appropriately under facility policy and state scope. D: Delegation of suitable stable care is appropriate and does not require withholding every task.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -455,10 +455,10 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Initial assessment of an unstable patient cannot be assigned to assistive personnel.",
-      "b": "An LPN/LVN does not independently assume the RN's comprehensive initial assessment or plan of care for an unstable patient.",
-      "c": "An RN should assess instability; suitable predictable tasks may be assigned by local scope and competency.",
-      "d": "Delaying both assignments is unnecessary and potentially unsafe."
+      "a": "LPN/LVN scope and competency do not replace the RN's initial comprehensive assessment of an unstable patient.",
+      "b": "Assistive personnel can report observations but cannot independently manage unstable changes.",
+      "c": "The RN manages initial instability; stable predictable procedures can be assigned appropriately under facility policy and state scope.",
+      "d": "Delegation of suitable stable care is appropriate and does not require withholding every task."
     }
   },
   {
