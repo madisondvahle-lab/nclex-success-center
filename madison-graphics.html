@@ -8,33 +8,49 @@
   <title>Graphics library · NCLEX Success Center</title>
   <style>
     /* Graphics library specific styles */
-    .panel{background:var(--admin-paper);border:1px solid var(--admin-line);padding:22px;margin-bottom:20px}
-    .panel h2{font:700 1.3rem Georgia,serif;color:var(--admin-navy);margin:0 0 14px}
-    .drop{border:2px dashed #cfd9d3;padding:26px 20px;text-align:center;cursor:pointer;background:#fff;font-size:.88rem;color:var(--admin-muted);transition:border-color .15s}
-    .drop:hover{border-color:var(--admin-navy)}
-    .drop strong{display:block;color:var(--admin-navy);font-size:1rem;margin-bottom:6px}
+    .panel{background:var(--admin-paper);border:1px solid var(--admin-line);margin-bottom:20px}
+    .panel-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;padding:17px 18px 13px;border-bottom:1px solid var(--admin-line)}
+    .panel-heading h2{margin:0;font:700 1.15rem Georgia,serif;color:var(--admin-navy);letter-spacing:-.02em}
+    .panel-heading p{margin:4px 0 0;color:var(--admin-muted);font-size:.72rem;line-height:1.45}
+    .panel-content{padding:18px 20px 22px}
+    .drop{border:1px dashed #899a9e;padding:24px 20px;text-align:center;cursor:pointer;background:#f7f6f1;font-size:.82rem;color:var(--admin-muted);line-height:1.5;transition:border-color .15s,background-color .15s}
+    .drop:focus-within,.drop:hover{border-color:var(--admin-navy);background:#f0f2ee}
+    .drop strong{display:block;color:var(--admin-navy);font-size:.95rem;margin-bottom:4px}
     .drop input{display:none}
     .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
-    label{font-size:.72rem;font-weight:800;display:block;color:var(--admin-navy);text-transform:uppercase;letter-spacing:.06em}
-    input[type=text],input[type=search],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--admin-line);background:#fff;font:inherit;font-size:.86rem;margin-top:6px;color:var(--admin-navy)}
-    button.btn,a.btn{display:inline-block;background:var(--admin-navy);color:#fff;border:0;padding:9px 13px;font:800 .74rem Inter,sans-serif;cursor:pointer;text-decoration:none}
-    .btn.alt{background:#fff;color:var(--admin-navy);border:1px solid var(--admin-line)}
-    .status{font-size:.84rem;color:var(--admin-muted);margin:12px 0 0;min-height:1.2em}
+    label{font-size:.7rem;font-weight:800;display:block;color:var(--admin-navy);text-transform:uppercase;letter-spacing:.06em}
+    input[type=text],input[type=search],select,textarea{width:100%;min-height:36px;padding:8px 10px;border:1px solid var(--admin-line);background:#fff;font:inherit;font-size:.84rem;margin-top:5px;color:var(--admin-navy)}
+    input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--admin-rose);outline-offset:1px}
+    button.btn,a.btn{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:0 12px;border:1px solid var(--admin-navy);background:var(--admin-navy);color:#fff;font:800 .72rem Inter,sans-serif;cursor:pointer;text-decoration:none}
+    .btn.alt{background:var(--admin-paper);color:var(--admin-navy);border-color:var(--admin-line)}
+    .btn.danger{border-color:#8f3b3b;color:#8f3b3b}
+    button.btn:hover,a.btn:hover,button.btn:focus-visible,a.btn:focus-visible{outline:2px solid var(--admin-navy);outline-offset:2px}
+    .status{font-size:.78rem;color:var(--admin-muted);margin:11px 0 0;min-height:1.2em;line-height:1.5}
     .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
     .filters label{flex:1;min-width:180px}
     .filters label.grow{flex:2;min-width:240px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px}
-    .card{background:var(--admin-paper);border:1px solid var(--admin-line);display:flex;flex-direction:column}
+    .filters label.check-label{display:flex;align-items:center;gap:7px;flex:0 0 auto;min-height:36px;text-transform:none;font-weight:700}
+    .check-label input,.select-label input{width:16px;height:16px;margin:0;accent-color:var(--admin-navy)}
+    .bulk{display:none;flex-wrap:wrap;align-items:end;gap:10px;margin:14px 0 0;padding:14px;border:1px solid var(--admin-line);background:#f7f6f1}
+    .bulk strong{align-self:center;margin-right:4px;font-size:.78rem;color:var(--admin-navy)}
+    .bulk label{flex:1;min-width:150px}
+    .library-summary{margin:14px 0 0;color:var(--admin-muted);font-size:.78rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
+    .card{min-width:0;background:var(--admin-paper);border:1px solid var(--admin-line);display:flex;flex-direction:column}
+    .select-label{display:flex;align-items:center;gap:7px;min-height:36px;padding:6px 12px;border-bottom:1px solid var(--admin-line);font-size:.72rem;font-weight:750;text-transform:none}
     .thumb{aspect-ratio:4/3;background:#eef2ef center top/cover no-repeat;border-bottom:1px solid var(--admin-line)}
     .card .body{padding:14px;display:grid;gap:8px;flex:1}
-    .card h3{margin:0;font:700 1.05rem Georgia,serif;color:var(--admin-navy)}
-    .meta{font-size:.7rem;color:var(--admin-rose);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .card h3{margin:0;font:700 1.05rem Georgia,serif;color:var(--admin-navy);letter-spacing:-.02em}
+    .meta{font-size:.65rem;color:var(--admin-muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .card-description{margin:0;color:var(--admin-muted);font-size:.78rem;line-height:1.5}
     .tags span{display:inline-block;margin:0 4px 4px 0;padding:3px 8px;border-radius:999px;background:#f7e5e3;color:var(--admin-rose);font-size:.64rem;font-weight:800}
-    .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
-    .actions .btn{padding:7px 10px;font-size:.68rem}
+    .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+    .actions .btn{padding:0 9px;min-height:30px;font-size:.68rem}
     dialog{border:1px solid var(--admin-line);padding:24px;width:min(520px,94vw);background:var(--admin-paper);color:var(--admin-navy)}
     dialog::backdrop{background:rgba(16,35,61,.45)}
-    .empty{color:var(--admin-muted);padding:28px 0}
+    .dialog-actions{display:flex;gap:8px;justify-content:space-between;margin-top:18px}
+    .dialog-actions .action-group{display:flex;gap:8px}
+    .empty{grid-column:1/-1;margin:0;padding:24px 18px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-muted);font-size:.82rem}
   </style>
 </head>
 <body>
@@ -45,7 +61,7 @@
       <div class="sidebar-group">
         <div class="sidebar-label">Pipeline</div>
         <a href="madison-admin.html">Overview</a>
-        <a href="madison-leads.html">Leads &amp; intake</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
         <a href="madison-consultations.html">Consultations</a>
         <a href="madison-diagnostic.html">Diagnostic launcher</a>
       </div>
@@ -101,37 +117,51 @@
           </div>
         </section>
 
-        <section class="panel">
-          <h2>Add graphics</h2>
-          <div class="drop" id="drop"><strong>Click or drop images here</strong>PNG, JPG or WebP, up to 15 MB each. You can choose many at once.<input type="file" id="files" accept="image/png,image/jpeg,image/webp" multiple></div>
-          <div class="row">
-            <label>Body system (applied to this upload)<select id="up-system"></select></label>
-            <label>NCLEX category (applied to this upload)<select id="up-cat"><option value="">None</option></select></label>
-            <label>Tags (comma separated)<input type="text" id="up-tags" placeholder="e.g. mnemonic, priority"></label>
+        <section class="panel" aria-labelledby="upload-title">
+          <header class="panel-heading">
+            <div>
+              <h2 id="upload-title">Add graphics</h2>
+              <p>Upload study images and apply topic tags as they are added.</p>
+            </div>
+          </header>
+          <div class="panel-content">
+            <div class="drop" id="drop"><strong>Click or drop images here</strong>PNG, JPG or WebP, up to 15 MB each. You can choose many at once.<input type="file" id="files" accept="image/png,image/jpeg,image/webp" multiple></div>
+            <div class="row">
+              <label>Body system (applied to this upload)<select id="up-system"></select></label>
+              <label>NCLEX category (applied to this upload)<select id="up-cat"><option value="">None</option></select></label>
+              <label>Tags (comma separated)<input type="text" id="up-tags" placeholder="e.g. mnemonic, priority"></label>
+            </div>
+            <p class="status" id="up-status">Titles come from the file name. If you leave system/category blank, known topics (heart failure, chest tubes, torts, etc.) are tagged automatically. You can edit afterward.</p>
           </div>
-          <p class="status" id="up-status">Titles come from the file name. If you leave system/category blank, known topics (heart failure, chest tubes, torts, etc.) are tagged automatically. You can edit afterward.</p>
         </section>
 
-        <section class="panel">
-          <h2>Browse &amp; assign graphics</h2>
-          <div class="filters">
-            <label class="grow">Search<input type="search" id="q" placeholder="Search title, topic, tag, description…"></label>
-            <label>Body system<select id="f-system"><option value="">All systems</option></select></label>
-            <label>NCLEX category<select id="f-cat"><option value="">All categories</option></select></label>
-            <label style="flex-direction:row;align-items:center;gap:6px;display:flex"><input type="checkbox" id="f-untagged" style="width:auto;margin:0"> Needs tags</label>
+        <section class="panel" aria-labelledby="library-title">
+          <header class="panel-heading">
+            <div>
+              <h2 id="library-title">Browse &amp; assign graphics</h2>
+              <p>Search, filter, and manage graphics available to students.</p>
+            </div>
+          </header>
+          <div class="panel-content">
+            <div class="filters">
+              <label class="grow">Search<input type="search" id="q" placeholder="Search title, topic, tag, description…"></label>
+              <label>Body system<select id="f-system"><option value="">All systems</option></select></label>
+              <label>NCLEX category<select id="f-cat"><option value="">All categories</option></select></label>
+              <label class="check-label"><input type="checkbox" id="f-untagged"> Needs tags</label>
+            </div>
+            <div class="bulk" id="bulk">
+              <strong id="b-count"></strong>
+              <label>Set body system<select id="b-system"></select></label>
+              <label>Set NCLEX category<select id="b-cat"></select></label>
+              <label>Add tags<input type="text" id="b-tags" placeholder="comma separated"></label>
+              <button type="button" class="btn" id="b-apply">Apply to selected</button>
+              <button type="button" class="btn alt" id="b-all">Select all shown</button>
+              <button type="button" class="btn alt" id="b-clear">Clear</button>
+              <button type="button" class="btn alt danger" id="b-del">Delete selected</button>
+            </div>
+            <p class="library-summary" id="count" aria-live="polite"></p>
+            <div class="grid" id="grid"></div>
           </div>
-          <div class="filters" id="bulk" style="display:none;background:#eef7f6;padding:12px;border:1px solid #c2ded9;margin:12px 0">
-            <strong id="b-count" style="align-self:center;color:var(--admin-navy)"></strong>
-            <label>Set body system<select id="b-system"></select></label>
-            <label>Set NCLEX category<select id="b-cat"></select></label>
-            <label>Add tags<input type="text" id="b-tags" placeholder="comma separated"></label>
-            <button type="button" class="btn" id="b-apply">Apply to selected</button>
-            <button type="button" class="btn alt" id="b-all">Select all shown</button>
-            <button type="button" class="btn alt" id="b-clear">Clear</button>
-            <button type="button" class="btn alt" id="b-del" style="color:#9c3535">Delete selected</button>
-          </div>
-          <p class="status" id="count"></p>
-          <div class="grid" id="grid"></div>
         </section>
       </div>
     </div>
@@ -146,7 +176,7 @@
       <label>NCLEX category<select id="e-cat"><option value="">None</option></select></label>
     </div>
     <label style="margin-top:10px">Tags (comma separated)<input type="text" id="e-tags"></label>
-    <div style="display:flex;gap:8px;margin-top:14px;justify-content:space-between"><button type="button" class="btn alt" id="e-delete" style="color:#9c3535">Delete</button><span><button type="button" class="btn alt" id="e-cancel">Cancel</button> <button type="submit" class="btn">Save</button></span></div>
+    <div class="dialog-actions"><button type="button" class="btn alt danger" id="e-delete">Delete</button><span class="action-group"><button type="button" class="btn alt" id="e-cancel">Cancel</button> <button type="submit" class="btn">Save</button></span></div>
   </form></dialog>
 
   <dialog id="assign"><form method="dialog">
@@ -155,7 +185,7 @@
     <label>Student<select id="a-student"></select></label>
     <label style="margin-top:10px">Note for the student (optional)<input type="text" id="a-note" placeholder="Review this before our next session"></label>
     <p class="status" id="a-status"></p>
-    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end"><button type="button" class="btn alt" id="a-cancel">Close</button> <button type="button" class="btn" id="a-go">Assign</button></div>
+    <div class="dialog-actions"><span></span><span class="action-group"><button type="button" class="btn alt" id="a-cancel">Close</button> <button type="button" class="btn" id="a-go">Assign</button></span></div>
   </form></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -235,9 +265,9 @@
       const list=items.filter(g=>(!sys||g.body_system===sys)&&(!$('f-untagged').checked||!(g.tags||[]).length||!g.body_system||!g.nclex_category)&&(!cat||g.nclex_category===cat)&&(!q||[g.title,g.description,g.body_system,g.nclex_category,(g.tags||[]).join(' ')].join(' ').toLowerCase().includes(q)));
       shown=list;
       $('count').textContent=`${list.length} of ${items.length} graphic${items.length===1?'':'s'}`;
-      $('grid').innerHTML=list.length?list.map(g=>`<article class="card"><label style="display:flex;gap:6px;padding:6px 10px;font-size:.8rem;font-weight:700"><input type="checkbox" data-sel="${g.id}" ${sel.has(g.id)?'checked':''}> Select</label><div class="thumb" style="background-image:url('${esc(urls[g.image_path]||'')}')"></div><div class="body">
+      $('grid').innerHTML=list.length?list.map(g=>`<article class="card"><label class="select-label"><input type="checkbox" data-sel="${g.id}" ${sel.has(g.id)?'checked':''}> Select</label><div class="thumb" style="background-image:url('${esc(urls[g.image_path]||'')}')"></div><div class="body">
         <span class="meta">${esc([g.body_system,g.nclex_category].filter(Boolean).join(' · ')||'Untagged')}</span><h3>${esc(g.title)}</h3>
-        ${g.description?`<p style="margin:0;font-size:.8rem;color:var(--muted)">${esc(g.description)}</p>`:''}
+        ${g.description?`<p class="card-description">${esc(g.description)}</p>`:''}
         <div class="tags">${(g.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div>
         <div class="actions"><button class="btn" data-a="copy" data-id="${g.id}">Copy link</button><button class="btn alt" data-a="assign" data-id="${g.id}">Assign</button><button class="btn alt" data-a="edit" data-id="${g.id}">Edit</button><a class="btn alt" href="graphic.html?id=${g.id}" target="_blank" rel="noopener">View</a></div></div></article>`).join(''):'<p class="empty">No graphics match. Upload some above or clear the filters.</p>';
       updateBulk();

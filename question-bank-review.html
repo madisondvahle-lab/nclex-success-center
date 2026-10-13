@@ -619,7 +619,7 @@
           <a href="madison-admin.html">Dashboard</a>
           <a href="madison-admin.html#directory">Students</a>
           <a href="madison-consultations.html">Consultations</a>
-          <a href="madison-leads.html">Leads &amp; intake</a>
+          <a href="madison-admin.html#prospects">Prospects</a>
           <a href="madison-assignments.html">Assignments</a>
           <a href="assessment-history-admin.html">Assessments</a>
           <a href="question-bank-review.html" aria-current="page">Question bank</a>
@@ -1405,7 +1405,7 @@
       [...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
       $('m-list').innerHTML=mShown.length?mShown.map(q=>{
         const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null;
-        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
+        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
         const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'):'Draft: review required';
         return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
       }).join(''):'<p class="empty" style="margin:18px">No questions match this view.</p>';
@@ -1424,22 +1424,24 @@
       try{
         if(status==='published'){
           if(!confirm('Republish this previously approved question to students?'))return;
-          const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false);
+          const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false).select('id').maybeSingle();
           if(updated.error)throw updated.error;
-          question.active=true;render();renderManage();return;
+          if(!updated.data)throw new Error('This question is no longer an inactive draft. Refresh the page and try again.');
+          question.active=true;render();setLiveFilter('active');return;
         }
-        if(status!=='approved'){
-          if(!confirm('Approve this reviewed draft for publication? It will remain inactive until you publish it in a separate step.'))return;
-          await saveReview(question.source_key,'approved',question.id);
-          render();renderManage();return;
-        }
-        if(!confirm('Publish this approved question to students now?'))return;
-        const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false);
+        if(!confirm(status==='approved'?'Publish this approved question to students now?':'Approve this reviewed draft and publish it to students now?'))return;
+        const updated=await db.from('questions').update({active:true}).eq('id',id).eq('active',false).select('id').maybeSingle();
         if(updated.error)throw updated.error;
-        question.active=true;
-        await saveReview(question.source_key,'published',question.id);
-        render();renderManage();
-      }catch(error){alert(`Could not ${status==='approved'?'publish':'approve'} this question: ${error.message||error}`)}
+        if(!updated.data)throw new Error('This question is no longer an inactive draft. Refresh the page and try again.');
+        try{
+          await saveReview(question.source_key,'published',question.id);
+        }catch(error){
+          const rollback=await db.from('questions').update({active:false}).eq('id',id).eq('active',true).select('id').maybeSingle();
+          if(rollback.error||!rollback.data)throw new Error(`The question was published, but its review status could not be saved (${error.message||error}) and it could not be returned to inactive status (${rollback.error?.message||'the question was no longer active'}).`);
+          throw error;
+        }
+        question.active=true;render();setLiveFilter('active');
+      }catch(error){alert(`Could not approve and publish this question: ${error.message||error}`)}
     }
     async function mApply(action,ids,skipConfirm){
       if(!ids.length){alert('Select at least one question first.');return}

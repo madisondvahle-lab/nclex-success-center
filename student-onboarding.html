@@ -40,7 +40,7 @@
       <div class="sidebar-group">
         <div class="sidebar-label">Pipeline</div>
         <a href="madison-admin.html">Overview</a>
-        <a href="madison-leads.html">Leads &amp; intake</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
         <a href="madison-consultations.html">Consultations</a>
         <a href="madison-diagnostic.html">Diagnostic launcher</a>
       </div>
@@ -68,7 +68,7 @@
           <h1>New student / consult onboarding</h1>
         </div>
         <div class="admin-actions">
-          <a class="button secondary" href="madison-leads.html" style="text-decoration:none;display:inline-flex;align-items:center">View leads &amp; intake</a>
+          <a class="button secondary" href="madison-admin.html#prospects" style="text-decoration:none;display:inline-flex;align-items:center">View prospects &amp; intake</a>
         </div>
       </header>
 
@@ -107,7 +107,7 @@
           <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 5</p><h2>Tutor assessment</h2><p>Keep private tutor observations separate from what the student reports.</p></div></div><div class="grid"><label class="wide">Tutor assessment / consult notes<textarea id="tutor-assessment"></textarea></label><label class="wide">Primary issues I identified<div class="chips" id="tutor-focus"></div></label><label class="wide">Strengths<textarea id="strengths"></textarea></label><label class="wide">Initial plan / recommendations<textarea id="initial-plan"></textarea></label></div></section>
           <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 6</p><h2>Learning and logistics</h2></div></div><div class="grid"><label>Preferred learning style<div class="chips" id="learning-styles"></div></label><label>Urgency<select id="logistics-urgency"><option value="">Not specified</option><option>Low</option><option>Medium</option><option>High</option></select></label><label>Hours available per week<input id="weekly-hours" type="number" min="0" step="0.5"></label><label>Desired tutoring frequency<input id="frequency" placeholder="Weekly, twice weekly…"></label><label class="wide">General availability<textarea id="availability"></textarea></label><label class="wide">Additional notes<textarea id="additional-notes"></textarea></label></div></section>
           <section class="panel"><div class="panel-head"><div><p class="eyebrow">Step 7</p><h2>Supporting files</h2><p>Keep CPRs and reports attached to the same consult. Files remain private in the existing assessment-reports bucket.</p></div></div><div class="grid"><label>File category<select id="file-category"><option>Candidate Performance Report</option><option>CPR report</option><option>CAT result</option><option>Readiness assessment</option><option>Score report</option><option>ATI report</option><option>HESI report</option><option>Syllabus</option><option>Study guide</option><option>Previous exam</option><option>Screenshot</option><option>Other</option></select></label><label>Upload files<input id="files" type="file" multiple accept=".pdf,image/png,image/jpeg,image/webp"></label></div><p class="small">Upload after saving if the report is not available during the consultation.</p></section>
-          <div class="actions"><button class="button" type="submit">Save consult</button><a class="button secondary" href="madison-leads.html" style="text-decoration:none">Open leads &amp; intake</a><span class="status" id="save-status"></span></div>
+          <div class="actions"><button class="button" type="submit">Save consult</button><a class="button secondary" href="madison-admin.html#prospects" style="text-decoration:none">Return to Admin home</a><span class="status" id="save-status"></span></div>
         </form>
       </div>
     </div>
@@ -161,7 +161,7 @@
         const fileRow=await db.from('consult_intake_files').insert({consult_intake_id:intakeId,category:$('file-category').value,storage_path:path,file_name:file.name,mime_type:file.type||'application/octet-stream'});
         if(fileRow.error){status.textContent='Consult saved, but file metadata could not be saved: '+fileRow.error.message;return}
       }
-      status.textContent='Consult saved to Leads & intake.';$('notice').textContent='The consult is saved as a prospective student. Use Leads & intake to convert it later without re-entering the intake.';$('notice').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
+      status.textContent='Consult saved to Admin home.';$('notice').textContent='The consult is saved as a prospective student. Manage diagnostic access and follow-up from the Prospects section in Admin home.';$('notice').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
     }
     $('onboarding-form').addEventListener('submit',event=>{event.preventDefault();save()});
     $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
