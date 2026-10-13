@@ -1,0 +1,137 @@
+[
+  {
+    "draft_id": "NEW-20261012-051",
+    "stem": "Four days after delivery, a patient has slept less than two hours per night and tells the nurse, 'The baby is possessed. A voice said I must protect everyone from him.' The patient is pacing and attempts to leave with the newborn. What is the nurse's priority?",
+    "option_a": "Encourage the patient to rest while a family member watches the infant at home",
+    "option_b": "Ensure immediate safety of the patient and newborn, remain with the patient, and activate emergency psychiatric evaluation",
+    "option_c": "Ask the patient to journal the experience and reassess mood at the two-week visit",
+    "option_d": "Teach that intrusive thoughts are common after delivery and reinforce routine self-care",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "Rest is supportive but does not address immediate psychosis-associated danger to the parent and infant.",
+      "b": "Possible postpartum psychosis with impaired reality testing and threat-focused commands is an emergency requiring immediate safeguarding and urgent assessment.",
+      "c": "Deferring evaluation risks harm during a potentially rapidly deteriorating psychiatric emergency.",
+      "d": "The presentation exceeds common intrusive thoughts or baby blues because hallucinations and delusional beliefs are present."
+    },
+    "rationale": "Correct answer: B. A: Rest is supportive but does not address immediate psychosis-associated danger to the parent and infant. B: Possible postpartum psychosis with impaired reality testing and threat-focused commands is an emergency requiring immediate safeguarding and urgent assessment. C: Deferring evaluation risks harm during a potentially rapidly deteriorating psychiatric emergency. D: The presentation exceeds common intrusive thoughts or baby blues because hallucinations and delusional beliefs are present.",
+    "topic": "Psychosocial Integrity / Perinatal Mental Health",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "nclex_category": "psychosocial",
+    "reference_urls": [
+      "https://www.acog.org/programs/perinatal-mental-health/patient-screening"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-052",
+    "stem": "At a postpartum follow-up, a patient answers 'yes' to the screening question, 'Have you had thoughts that you would be better off dead?' They add, 'I probably wouldn't do anything.' Which nursing response is most appropriate?",
+    "option_a": "Accept the reassurance and schedule repeat screening at the next routine visit",
+    "option_b": "Ask the patient's partner whether they believe the patient is suicidal before speaking further",
+    "option_c": "Directly assess current thoughts, intent, plan, access to means, and protective factors, then arrange care proportional to risk",
+    "option_d": "Avoid asking detailed suicide questions because doing so could introduce ideas",
+    "correct_answer": "c",
+    "option_rationales": {
+      "a": "An affirmative screen requires timely risk assessment even when the patient initially minimizes intent.",
+      "b": "Collateral information may be useful with consent but does not replace private, direct patient assessment.",
+      "c": "A positive response requires immediate evaluation of likelihood, acuity, and severity, followed by appropriate safety planning or emergency care.",
+      "d": "Directly asking about suicide does not create suicidal thoughts; avoiding assessment can miss imminent risk."
+    },
+    "rationale": "Correct answer: C. A: An affirmative screen requires timely risk assessment even when the patient initially minimizes intent. B: Collateral information may be useful with consent but does not replace private, direct patient assessment. C: A positive response requires immediate evaluation of likelihood, acuity, and severity, followed by appropriate safety planning or emergency care. D: Directly asking about suicide does not create suicidal thoughts; avoiding assessment can miss imminent risk.",
+    "topic": "Psychosocial Integrity / Suicide Risk",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "nclex_category": "psychosocial",
+    "reference_urls": [
+      "https://www.acog.org/programs/perinatal-mental-health/patient-screening"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-053",
+    "stem": "A hospitalized patient with schizophrenia says quietly, 'The voices are telling me to punch my roommate tonight. I don't want to, but they keep repeating it.' The patient is currently calm. What should the RN do first?",
+    "option_a": "Ask what the voices say, whether the patient intends to obey, and whether they can remain safe while arranging appropriate observation and help",
+    "option_b": "Reassure the patient that hallucinations are not real, then leave them alone to rest",
+    "option_c": "Tell the roommate what the patient said before assessing the patient's intent",
+    "option_d": "Encourage the patient to ignore the voices and offer a group activity without additional assessment",
+    "correct_answer": "a",
+    "option_rationales": {
+      "a": "Threatening command hallucinations require direct assessment of content, intent, control, and immediate risk, with appropriate environmental safety actions.",
+      "b": "Dismissing the experience and leaving without assessment misses a foreseeable safety concern.",
+      "c": "The patient's risk needs immediate professional assessment and appropriate confidential safety measures, not indiscriminate disclosure.",
+      "d": "Distraction might later support coping but cannot replace risk assessment when commands involve potential violence."
+    },
+    "rationale": "Correct answer: A. A: Threatening command hallucinations require direct assessment of content, intent, control, and immediate risk, with appropriate environmental safety actions. B: Dismissing the experience and leaving without assessment misses a foreseeable safety concern. C: The patient's risk needs immediate professional assessment and appropriate confidential safety measures, not indiscriminate disclosure. D: Distraction might later support coping but cannot replace risk assessment when commands involve potential violence.",
+    "topic": "Psychosocial Integrity / Therapeutic Communication",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "nclex_category": "psychosocial",
+    "reference_urls": [
+      "https://www.nimh.nih.gov/health/publications/understanding-psychosis"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-054",
+    "stem": "A patient admitted with acute mania has been pacing and speaking continuously for six hours, repeatedly leaves meals untouched, and reports having had only one glass of water today. Which nursing intervention best addresses the most immediate physiologic risk?",
+    "option_a": "Insist that the patient sit through a full three-course meal in the dayroom",
+    "option_b": "Offer frequent portable, calorie-dense foods and fluids while monitoring intake, weight, and hydration status",
+    "option_c": "Delay nutritional assessment until the patient can participate in an hour-long teaching session",
+    "option_d": "Restrict fluids to reduce interruptions from toileting and encourage sleep",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "An extended seated meal may be unrealistic during severe psychomotor agitation and does not ensure adequate intake.",
+      "b": "Portable food, frequent fluids, and intake monitoring adapt care to impaired attention and high activity, reducing dehydration and nutrition risk.",
+      "c": "Nutritional and fluid deficits may worsen while waiting for attention and insight to improve.",
+      "d": "Fluid restriction aggravates dehydration risk and is not a treatment for mania."
+    },
+    "rationale": "Correct answer: B. A: An extended seated meal may be unrealistic during severe psychomotor agitation and does not ensure adequate intake. B: Portable food, frequent fluids, and intake monitoring adapt care to impaired attention and high activity, reducing dehydration and nutrition risk. C: Nutritional and fluid deficits may worsen while waiting for attention and insight to improve. D: Fluid restriction aggravates dehydration risk and is not a treatment for mania.",
+    "topic": "Psychosocial Integrity / Mania",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "nclex_category": "psychosocial",
+    "reference_urls": [
+      "https://www.nimh.nih.gov/health/publications/bipolar-disorder"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-055",
+    "stem": "A patient arrives at an urgent-care clinic with recurrent injuries and a partner who answers every question and refuses to leave the exam room. The patient avoids eye contact. What should the nurse do next?",
+    "option_a": "Ask the partner directly whether the injuries are due to abuse",
+    "option_b": "Explain that part of the assessment is completed privately with every patient, arrange a safe one-on-one conversation, and assess immediate safety",
+    "option_c": "Give the patient a domestic violence brochure in front of the partner and ask them to confront the partner at home",
+    "option_d": "Document suspected abuse as confirmed and call law enforcement without considering jurisdictional reporting requirements",
+    "correct_answer": "b",
+    "option_rationales": {
+      "a": "Accusing a potentially abusive partner can increase danger and prevents confidential disclosure.",
+      "b": "A routine private interview preserves safety, dignity, and the patient's opportunity to disclose coercion without pressure.",
+      "c": "Visible disclosure materials or advice to confront a partner may increase risk once they leave the clinic.",
+      "d": "Documentation should be factual, and mandatory reporting varies by circumstances and jurisdiction; automatic reporting without assessment is not universally appropriate."
+    },
+    "rationale": "Correct answer: B. A: Accusing a potentially abusive partner can increase danger and prevents confidential disclosure. B: A routine private interview preserves safety, dignity, and the patient's opportunity to disclose coercion without pressure. C: Visible disclosure materials or advice to confront a partner may increase risk once they leave the clinic. D: Documentation should be factual, and mandatory reporting varies by circumstances and jurisdiction; automatic reporting without assessment is not universally appropriate.",
+    "topic": "Psychosocial Integrity / Trauma-Informed Care",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "nclex_category": "psychosocial",
+    "reference_urls": [
+      "https://www.cdc.gov/intimate-partner-violence/about/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  }
+]
