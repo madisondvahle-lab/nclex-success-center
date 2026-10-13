@@ -287,13 +287,13 @@
   },
   {
     "draft_id": "NEW-20261012-014",
-    "stem": "A patient on an insulin infusion develops potassium 2.9 mEq/L and frequent ventricular ectopy. What is the priority?",
+    "stem": "A patient receiving an IV insulin infusion for diabetic ketoacidosis has potassium 2.9 mEq/L and frequent ventricular ectopy. What should the nurse do first?",
     "option_a": "Increase the insulin infusion",
     "option_b": "Give sodium polystyrene sulfonate",
-    "option_c": "Promptly notify the clinician and prepare potassium replacement and insulin adjustment per protocol",
+    "option_c": "Stop the insulin infusion per emergency protocol, promptly notify the clinician, and prepare prescribed potassium replacement",
     "option_d": "Encourage exercise",
     "correct_answer": "c",
-    "rationale": "Correct answer: C. A: Continuing/increasing insulin can shift potassium intracellularly and worsen severe hypokalemia. B: Potassium-binding therapy would further lower already deficient potassium. C: Hypokalemia with ventricular ectopy requires urgent evaluation, potassium correction, and protocol-based insulin adjustment. D: Exercise is inappropriate during a symptomatic arrhythmia/electrolyte emergency.",
+    "rationale": "Correct answer: C. A: Increasing insulin can drive potassium into cells, worsening severe hypokalemia. B: Potassium-binding treatment would further lower potassium. C: Stop insulin per emergency protocol, urgently notify the team, and initiate prescribed potassium replacement; resume insulin only after potassium correction per protocol. D: Exercise is unsafe during ventricular ectopy and severe hypokalemia.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -303,7 +303,7 @@
     "option_rationales": {
       "a": "Continuing/increasing insulin can shift potassium intracellularly and worsen severe hypokalemia.",
       "b": "Potassium-binding therapy would further lower already deficient potassium.",
-      "c": "Hypokalemia with ventricular ectopy requires urgent evaluation, potassium correction, and protocol-based insulin adjustment.",
+      "c": "Insulin drives potassium into cells and can worsen dysrhythmias at K 2.9 mEq/L. DKA guidance recommends delaying insulin until potassium is above 3.5 mmol/L while correcting potassium.",
       "d": "Exercise is inappropriate during a symptomatic arrhythmia/electrolyte emergency."
     }
   },
