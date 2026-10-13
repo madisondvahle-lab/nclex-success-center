@@ -241,7 +241,7 @@
           <a href="madison-admin.html#directory">Students</a>
           <a href="#profile-overview" aria-current="page">Student workspace</a>
           <a href="madison-consultations.html">Consultations</a>
-          <a href="madison-assignments.html">Assignments</a>
+          <a href="madison-assignments.html" id="nav-assignments">Assignments</a>
           <a href="assessment-history-admin.html">Assessments</a>
           <a href="question-bank-review.html">Question bank</a>
           <a href="madison-graphics.html">Graphics library</a>
@@ -1343,6 +1343,12 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     });
     async function loadStudent(target){
       student=target;
+      const assignHref='madison-assignments.html?student='+encodeURIComponent(student.id);
+      const previewHref='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
+      const navAssignments=$('nav-assignments')||document.querySelector('.sidebar-nav a[href^="madison-assignments.html"]');
+      if(navAssignments)navAssignments.href=assignHref;
+      if($('manage-access'))$('manage-access').href=assignHref;
+      if($('preview-student'))$('preview-student').href=previewHref;
       $('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';
       $('intro').textContent=isAdmin?'':'';
       if(isAdmin){
