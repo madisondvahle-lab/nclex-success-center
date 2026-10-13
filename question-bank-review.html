@@ -100,6 +100,7 @@
         if(!/^[A-Za-z0-9._-]{1,100}$/.test(id))errors.push('Add a unique id using letters, numbers, dots, underscores, or hyphens (max 100 characters).');
         else if(ids.has(id))errors.push('This id is duplicated within the batch.');
         else ids.add(id);
+        if(id&&live.some(question=>question.source_key===`qbank-bulk-${id}`))errors.push('This item id was previously imported. Use a new unique id or edit the existing draft instead.');
         if(typeof item.stem!=='string'||!stem)errors.push('Question stem is required as text.');
         if(!BULK_TYPES.has(type))errors.push('item_type must be mcq, sata, bowtie, matrix, cloze, highlight, case, or fill.');
         if(!['easy','medium','hard'].includes(item.difficulty))errors.push('difficulty must be easy, medium, or hard.');
@@ -168,12 +169,12 @@
       const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
       try{
         if(!pendingBulkTracking){
-          const batchId=crypto.randomUUID(),rows=stagedBatch.map(({item})=>{
+          const rows=stagedBatch.map(({item})=>{
             const type=String(item.item_type).toLowerCase(),row={
               stem:item.stem.trim(),rationale:item.rationale.trim(),module_key:item.module_key||null,
               nclex_category:item.nclex_category.trim(),nclex_sub:item.nclex_sub||null,topic:item.topic.trim(),
               difficulty:item.difficulty,is_ngn:type!=='mcq',active:false,
-              source_key:`qbank-bulk-${batchId}-${item.id}`,item_type:type,
+              source_key:`qbank-bulk-${item.id}`,item_type:type,
               item_data:type==='mcq'?(item.item_data||null):item.item_data,
               clinical_judgment_skill:item.clinical_judgment_skill.trim(),
               option_rationales:item.option_rationales,reference_list:item.references
@@ -181,6 +182,10 @@
             if(type==='mcq'){row.option_a=item.options[0].trim();row.option_b=item.options[1].trim();row.option_c=item.options[2].trim();row.option_d=item.options[3].trim();row.correct_answer=String(item.correct_answer).toLowerCase()}
             return row;
           });
+          const keys=rows.map(row=>row.source_key);
+          const existing=await db.from('questions').select('source_key').in('source_key',keys);
+          if(existing.error)throw existing.error;
+          if(existing.data?.length)throw new Error('Import blocked: '+existing.data.length+' item ID(s) are already in the question bank. Review existing drafts before retrying.');
           const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
           if(inserted.error)throw inserted.error;
           const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
