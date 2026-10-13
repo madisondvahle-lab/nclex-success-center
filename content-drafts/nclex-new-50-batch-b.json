@@ -376,12 +376,12 @@
   {
     "draft_id": "NEW-20261012-043",
     "stem": "A patient with thrombocytopenia of 18,000/mm³ reports a new severe headache and blurred vision. What should the nurse prioritize?",
-    "option_a": "Offer aspirin",
-    "option_b": "Encourage contact sports",
-    "option_c": "Schedule routine follow-up next month",
+    "option_a": "Perform a focused neurologic assessment and defer provider notification until scheduled laboratory results return",
+    "option_b": "Implement fall precautions and continue routine four-hour neurologic checks",
+    "option_c": "Request a repeat platelet count and wait for the result before notifying the team",
     "option_d": "Urgently assess and report possible intracranial bleeding",
     "correct_answer": "d",
-    "rationale": "Correct answer: D. A: Aspirin impairs platelet function and may worsen bleeding. B: Contact sports increase traumatic bleeding risk in severe thrombocytopenia. C: Routine follow-up is too slow for possible intracranial hemorrhage. D: Severe headache and visual change with platelets 18,000/mm³ require urgent neurologic/bleeding evaluation.",
+    "rationale": "Correct answer: D. A: Neurologic assessment is indicated, but delaying escalation in severe thrombocytopenia with new headache/visual changes is unsafe. B: Precautions support safety but are inadequate for suspected intracranial hemorrhage. C: Repeat labs may be appropriate but cannot delay evaluation of new neurologic warning signs. D: Severe thrombocytopenia plus acute headache and vision change warrants urgent assessment and immediate escalation for possible intracranial bleeding.",
     "topic": "Adult Acute Care / Clinical Judgment",
     "difficulty": "hard",
     "active": false,
@@ -389,11 +389,14 @@
     "exam_key": null,
     "editorial_status": "draft_pending_clinical_signoff",
     "option_rationales": {
-      "a": "Aspirin impairs platelet function and may worsen bleeding.",
-      "b": "Contact sports increase traumatic bleeding risk in severe thrombocytopenia.",
-      "c": "Routine follow-up is too slow for possible intracranial hemorrhage.",
-      "d": "Severe headache and visual change with platelets 18,000/mm³ require urgent neurologic/bleeding evaluation."
-    }
+      "a": "Neurologic assessment is indicated, but delaying escalation in severe thrombocytopenia with new headache/visual changes is unsafe.",
+      "b": "Precautions support safety but are inadequate for suspected intracranial hemorrhage.",
+      "c": "Repeat labs may be appropriate but cannot delay evaluation of new neurologic warning signs.",
+      "d": "Severe thrombocytopenia plus acute headache and vision change warrants urgent assessment and immediate escalation for possible intracranial bleeding."
+    },
+    "reference_urls": [
+      "https://pubmed.ncbi.nlm.nih.gov/40440268/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-044",
