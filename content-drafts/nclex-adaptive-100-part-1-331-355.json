@@ -8,12 +8,12 @@
     "option_d": "A client with a healed wound requesting dressing supplies",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Routine equipment needs are not emergent.",
       "b": "New focal neurologic change requires an immediate stroke response.",
-      "c": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address assignment in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Stable chronic discomfort is lower priority.",
+      "d": "A healed wound is lower priority."
     },
-    "rationale": "New focal neurologic change requires an immediate stroke response.",
+    "rationale": "Correct answer: B. A: Routine equipment needs are not emergent. B: New focal neurologic change requires an immediate stroke response. C: Stable chronic discomfort is lower priority. D: A healed wound is lower priority.",
     "concept_family": "assignment",
     "decision_skill": "prioritize",
     "nclex_category": "management",
@@ -35,12 +35,12 @@
     "option_d": "Decide whether postoperative oxygen can be discontinued",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Interpreting skin changes requires RN assessment.",
+      "b": "Initial teaching is a licensed nursing responsibility.",
       "c": "Routine measurement on a stable patient can be delegated with clear reporting expectations.",
-      "d": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Oxygen discontinuation requires clinical judgment and authorization."
     },
-    "rationale": "Routine measurement on a stable patient can be delegated with clear reporting expectations.",
+    "rationale": "Correct answer: C. A: Interpreting skin changes requires RN assessment. B: Initial teaching is a licensed nursing responsibility. C: Routine measurement on a stable patient can be delegated with clear reporting expectations. D: Oxygen discontinuation requires clinical judgment and authorization.",
     "concept_family": "delegation",
     "decision_skill": "delegate",
     "nclex_category": "management",
@@ -62,12 +62,12 @@
     "option_d": "Pause preparations and notify the procedural team of the refusal",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address consent in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Consent can be withdrawn by a capable patient.",
+      "b": "Sedation should not precede resolution of refusal.",
+      "c": "Family does not overrule a capable adult.",
       "d": "A capable patient may withdraw consent; preparation must stop pending clarification."
     },
-    "rationale": "A capable patient may withdraw consent; preparation must stop pending clarification.",
+    "rationale": "Correct answer: D. A: Consent can be withdrawn by a capable patient. B: Sedation should not precede resolution of refusal. C: Family does not overrule a capable adult. D: A capable patient may withdraw consent; preparation must stop pending clarification.",
     "concept_family": "consent",
     "decision_skill": "respond",
     "nclex_category": "management",
@@ -90,11 +90,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "Immediate assessment for adverse effects and transparent escalation protect the patient.",
-      "b": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address medication error in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "Falsifying medication records compounds the error.",
+      "c": "Symptoms may emerge after a second dose; assessment must not wait.",
+      "d": "Concealment prevents appropriate monitoring and disclosure."
     },
-    "rationale": "Immediate assessment for adverse effects and transparent escalation protect the patient.",
+    "rationale": "Correct answer: A. A: Immediate assessment for adverse effects and transparent escalation protect the patient. B: Falsifying medication records compounds the error. C: Symptoms may emerge after a second dose; assessment must not wait. D: Concealment prevents appropriate monitoring and disclosure.",
     "concept_family": "medication_error",
     "decision_skill": "respond",
     "nclex_category": "management",
@@ -116,12 +116,12 @@
     "option_d": "'Change IV fluids to a faster rate without an order'",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Persistent oliguria requires reassessment.",
       "b": "Persistent oliguria warrants evaluation; the RN communicates specific concerns and requests clinical review.",
-      "c": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address handoff in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Anxiety is not an adequate explanation for low urine output.",
+      "d": "Unordered IV titration is unsafe."
     },
-    "rationale": "Persistent oliguria warrants evaluation; the RN communicates specific concerns and requests clinical review.",
+    "rationale": "Correct answer: B. A: Persistent oliguria requires reassessment. B: Persistent oliguria warrants evaluation; the RN communicates specific concerns and requests clinical review. C: Anxiety is not an adequate explanation for low urine output. D: Unordered IV titration is unsafe.",
     "concept_family": "handoff",
     "decision_skill": "communicate",
     "nclex_category": "management",
@@ -143,12 +143,12 @@
     "option_d": "Ask the child to retrieve records using the client's password",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Family presence alone does not authorize release of protected health information.",
+      "b": "Visible paperwork breaches confidentiality.",
       "c": "A capable patient's information preferences guide disclosure unless law provides an exception.",
-      "d": "This option does not appropriately address confidentiality in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Credential sharing is unsafe and violates access controls."
     },
-    "rationale": "A capable patient's information preferences guide disclosure unless law provides an exception.",
+    "rationale": "Correct answer: C. A: Family presence alone does not authorize release of protected health information. B: Visible paperwork breaches confidentiality. C: A capable patient's information preferences guide disclosure unless law provides an exception. D: Credential sharing is unsafe and violates access controls.",
     "concept_family": "confidentiality",
     "decision_skill": "apply",
     "nclex_category": "management",
@@ -170,12 +170,12 @@
     "option_d": "Delay completion of discharge teaching and arrange supervised practice or appropriate support",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address discharge in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Written instructions alone do not confirm injection competence.",
+      "b": "Independent learning may not be safe for this high-alert medication.",
+      "c": "A patient must not estimate an insulin dose.",
       "d": "Failure to demonstrate high-risk medication technique requires remediation before independent use."
     },
-    "rationale": "Failure to demonstrate high-risk medication technique requires remediation before independent use.",
+    "rationale": "Correct answer: D. A: Written instructions alone do not confirm injection competence. B: Independent learning may not be safe for this high-alert medication. C: A patient must not estimate an insulin dose. D: Failure to demonstrate high-risk medication technique requires remediation before independent use.",
     "concept_family": "discharge",
     "decision_skill": "evaluate",
     "nclex_category": "management",
@@ -198,11 +198,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "A newly abnormal finding requires licensed assessment and action; delegated measurements must be followed up.",
-      "b": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address delegation in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "An aide cannot independently make medication-hold decisions.",
+      "c": "An aide cannot independently initiate IV treatment.",
+      "d": "A marked BP change cannot be disregarded due to who measured it."
     },
-    "rationale": "A newly abnormal finding requires licensed assessment and action; delegated measurements must be followed up.",
+    "rationale": "Correct answer: A. A: A newly abnormal finding requires licensed assessment and action; delegated measurements must be followed up. B: An aide cannot independently make medication-hold decisions. C: An aide cannot independently initiate IV treatment. D: A marked BP change cannot be disregarded due to who measured it.",
     "concept_family": "delegation",
     "decision_skill": "supervise",
     "nclex_category": "management",
@@ -224,12 +224,12 @@
     "option_d": "Assume the concentrator will operate without electricity",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Simply stopping oxygen may cause hypoxemia.",
       "b": "Reliable backup equipment and emergency plans are essential to safe home oxygen use.",
-      "c": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address continuity in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Candles are an ignition risk around oxygen.",
+      "d": "A concentrator generally needs power and an emergency plan."
     },
-    "rationale": "Reliable backup equipment and emergency plans are essential to safe home oxygen use.",
+    "rationale": "Correct answer: B. A: Simply stopping oxygen may cause hypoxemia. B: Reliable backup equipment and emergency plans are essential to safe home oxygen use. C: Candles are an ignition risk around oxygen. D: A concentrator generally needs power and an emergency plan.",
     "concept_family": "continuity",
     "decision_skill": "coordinate",
     "nclex_category": "management",
@@ -251,12 +251,12 @@
     "option_d": "Cancel care because the patient is quiet",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Accusations in front of family may increase danger.",
+      "b": "A family member cannot substitute for patient consent.",
       "c": "Private assessment enables voluntary disclosure and protects patient choice.",
-      "d": "This option does not appropriately address patient advocacy in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Quiet behavior alone is no reason to cancel care."
     },
-    "rationale": "Private assessment enables voluntary disclosure and protects patient choice.",
+    "rationale": "Correct answer: C. A: Accusations in front of family may increase danger. B: A family member cannot substitute for patient consent. C: Private assessment enables voluntary disclosure and protects patient choice. D: Quiet behavior alone is no reason to cancel care.",
     "concept_family": "patient_advocacy",
     "decision_skill": "respond",
     "nclex_category": "management",
@@ -278,12 +278,12 @@
     "option_d": "Mask the patient if tolerated and arrange immediate airborne isolation",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address isolation in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "A crowded area exposes others.",
+      "b": "Contact Precautions alone do not control measles.",
+      "c": "Testing does not precede isolation.",
       "d": "Measles is highly airborne; suspected cases require immediate source control and airborne isolation."
     },
-    "rationale": "Measles is highly airborne; suspected cases require immediate source control and airborne isolation.",
+    "rationale": "Correct answer: D. A: A crowded area exposes others. B: Contact Precautions alone do not control measles. C: Testing does not precede isolation. D: Measles is highly airborne; suspected cases require immediate source control and airborne isolation.",
     "concept_family": "isolation",
     "decision_skill": "apply",
     "nclex_category": "safety",
@@ -306,11 +306,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "Soap and water are indicated when hands are visibly soiled.",
-      "b": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address c difficile in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "Alcohol handrub is not preferred for visibly soiled hands.",
+      "c": "Fresh gloves do not replace cleaning.",
+      "d": "Dry wiping does not adequately remove contamination."
     },
-    "rationale": "Soap and water are indicated when hands are visibly soiled.",
+    "rationale": "Correct answer: A. A: Soap and water are indicated when hands are visibly soiled. B: Alcohol handrub is not preferred for visibly soiled hands. C: Fresh gloves do not replace cleaning. D: Dry wiping does not adequately remove contamination.",
     "concept_family": "c_difficile",
     "decision_skill": "apply",
     "nclex_category": "safety",
@@ -332,12 +332,12 @@
     "option_d": "Ask an assistant whether it looked contaminated",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "An unattended sterile field cannot be assumed safe.",
       "b": "An unobserved sterile field cannot be assumed to remain sterile.",
-      "c": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address sterile field in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Disinfectant spray does not restore field sterility.",
+      "d": "A witness cannot prove an unobserved field remained sterile."
     },
-    "rationale": "An unobserved sterile field cannot be assumed to remain sterile.",
+    "rationale": "Correct answer: B. A: An unattended sterile field cannot be assumed safe. B: An unobserved sterile field cannot be assumed to remain sterile. C: Disinfectant spray does not restore field sterility. D: A witness cannot prove an unobserved field remained sterile.",
     "concept_family": "sterile_field",
     "decision_skill": "recognize",
     "nclex_category": "safety",
@@ -359,12 +359,12 @@
     "option_d": "Give another dose so the patient sleeps",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Encouraging rapid walking risks a fall.",
+      "b": "Raising bed height increases fall risk.",
       "c": "Sedation and impaired balance increase fall risk; supervised toileting is the safe option.",
-      "d": "This option does not appropriately address fall risk in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Additional sedative may worsen imbalance."
     },
-    "rationale": "Sedation and impaired balance increase fall risk; supervised toileting is the safe option.",
+    "rationale": "Correct answer: C. A: Encouraging rapid walking risks a fall. B: Raising bed height increases fall risk. C: Sedation and impaired balance increase fall risk; supervised toileting is the safe option. D: Additional sedative may worsen imbalance.",
     "concept_family": "fall_risk",
     "decision_skill": "intervene",
     "nclex_category": "safety",
@@ -386,12 +386,12 @@
     "option_d": "Choose an approved water-based moisturizer and keep oxygen away from flames",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address oxygen fire in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Using petroleum near oxygen is discouraged.",
+      "b": "A higher flow does not correct flammability hazards.",
+      "c": "Opening a flame near oxygen is dangerous.",
       "d": "Water-based moisturizers and avoidance of ignition sources reduce oxygen-related hazards."
     },
-    "rationale": "Water-based moisturizers and avoidance of ignition sources reduce oxygen-related hazards.",
+    "rationale": "Correct answer: D. A: Using petroleum near oxygen is discouraged. B: A higher flow does not correct flammability hazards. C: Opening a flame near oxygen is dangerous. D: Water-based moisturizers and avoidance of ignition sources reduce oxygen-related hazards.",
     "concept_family": "oxygen_fire",
     "decision_skill": "teach",
     "nclex_category": "safety",
@@ -414,11 +414,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "Immediate cleansing, reporting and evaluation enable time-sensitive postexposure management.",
-      "b": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address needlestick in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "Squeezing does not prevent infection.",
+      "c": "Delay can miss time-sensitive prophylaxis.",
+      "d": "Antibiotics do not replace bloodborne-pathogen evaluation."
     },
-    "rationale": "Immediate cleansing, reporting and evaluation enable time-sensitive postexposure management.",
+    "rationale": "Correct answer: A. A: Immediate cleansing, reporting and evaluation enable time-sensitive postexposure management. B: Squeezing does not prevent infection. C: Delay can miss time-sensitive prophylaxis. D: Antibiotics do not replace bloodborne-pathogen evaluation.",
     "concept_family": "needlestick",
     "decision_skill": "respond",
     "nclex_category": "safety",
@@ -440,12 +440,12 @@
     "option_d": "Ignore pulling unless the catheter is removed",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Restraints are not a routine first response.",
       "b": "Addressing reversible causes and using less-restrictive strategies is the first approach.",
-      "c": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address restraints in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Unilaterally removing required oxygen risks hypoxemia.",
+      "d": "Waiting may result in self-injury or device loss."
     },
-    "rationale": "Addressing reversible causes and using less-restrictive strategies is the first approach.",
+    "rationale": "Correct answer: B. A: Restraints are not a routine first response. B: Addressing reversible causes and using less-restrictive strategies is the first approach. C: Unilaterally removing required oxygen risks hypoxemia. D: Waiting may result in self-injury or device loss.",
     "concept_family": "restraints",
     "decision_skill": "evaluate",
     "nclex_category": "safety",
@@ -467,12 +467,12 @@
     "option_d": "Offer antacid and reassess in a week",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Giving digoxin may worsen bradycardia.",
+      "b": "Exercise could be unsafe with a slow heart rate.",
       "c": "Visual changes and bradycardia with GI symptoms suggest possible digoxin toxicity requiring prompt evaluation.",
-      "d": "This option does not appropriately address digoxin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Antacid treatment delays assessment of toxicity."
     },
-    "rationale": "Visual changes and bradycardia with GI symptoms suggest possible digoxin toxicity requiring prompt evaluation.",
+    "rationale": "Correct answer: C. A: Giving digoxin may worsen bradycardia. B: Exercise could be unsafe with a slow heart rate. C: Visual changes and bradycardia with GI symptoms suggest possible digoxin toxicity requiring prompt evaluation. D: Antacid treatment delays assessment of toxicity.",
     "concept_family": "digoxin",
     "decision_skill": "recognize",
     "nclex_category": "pharm",
@@ -494,12 +494,12 @@
     "option_d": "Maintain reasonably consistent vitamin K intake and keep INR monitoring appointments",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address anticoagulants in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Total vitamin K avoidance is not generally recommended.",
+      "b": "Extra warfarin creates bleeding risk.",
+      "c": "Grapefruit juice is not a nutritional substitute and may interact with drugs.",
       "d": "Consistency of vitamin K intake is more useful than total avoidance during warfarin treatment."
     },
-    "rationale": "Consistency of vitamin K intake is more useful than total avoidance during warfarin treatment.",
+    "rationale": "Correct answer: D. A: Total vitamin K avoidance is not generally recommended. B: Extra warfarin creates bleeding risk. C: Grapefruit juice is not a nutritional substitute and may interact with drugs. D: Consistency of vitamin K intake is more useful than total avoidance during warfarin treatment.",
     "concept_family": "anticoagulants",
     "decision_skill": "teach",
     "nclex_category": "pharm",
@@ -522,11 +522,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "Symptoms after inadequate intake require immediate glucose assessment and treatment.",
-      "b": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address insulin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "More insulin could worsen hypoglycemia.",
+      "c": "Activity increases glucose utilization.",
+      "d": "Delay risks progression to severe hypoglycemia."
     },
-    "rationale": "Symptoms after inadequate intake require immediate glucose assessment and treatment.",
+    "rationale": "Correct answer: A. A: Symptoms after inadequate intake require immediate glucose assessment and treatment. B: More insulin could worsen hypoglycemia. C: Activity increases glucose utilization. D: Delay risks progression to severe hypoglycemia.",
     "concept_family": "insulin",
     "decision_skill": "evaluate",
     "nclex_category": "pharm",
@@ -548,12 +548,12 @@
     "option_d": "Avoid reporting constipation unless severe",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Abrupt fluid restriction may worsen constipation.",
       "b": "Opioids slow gut motility; prevention often includes laxative therapy and appropriate hydration/mobility.",
-      "c": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address opioids in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Additional opioid could worsen constipation and sedation.",
+      "d": "Patients should report persistent constipation early."
     },
-    "rationale": "Opioids slow gut motility; prevention often includes laxative therapy and appropriate hydration/mobility.",
+    "rationale": "Correct answer: B. A: Abrupt fluid restriction may worsen constipation. B: Opioids slow gut motility; prevention often includes laxative therapy and appropriate hydration/mobility. C: Additional opioid could worsen constipation and sedation. D: Patients should report persistent constipation early.",
     "concept_family": "opioids",
     "decision_skill": "teach",
     "nclex_category": "pharm",
@@ -575,12 +575,12 @@
     "option_d": "Three tablets",
     "correct_answer": "c",
     "option_rationales": {
-      "a": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Half a 325-mg tablet provides 162.5 mg.",
+      "b": "A single tablet provides 325 mg.",
       "c": "650 mg divided by 325 mg per tablet equals two tablets.",
-      "d": "This option does not appropriately address med admin in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "d": "Three tablets provide 975 mg and exceed the order."
     },
-    "rationale": "650 mg divided by 325 mg per tablet equals two tablets.",
+    "rationale": "Correct answer: C. A: Half a 325-mg tablet provides 162.5 mg. B: A single tablet provides 325 mg. C: 650 mg divided by 325 mg per tablet equals two tablets. D: Three tablets provide 975 mg and exceed the order.",
     "concept_family": "med_admin",
     "decision_skill": "calculate",
     "nclex_category": "pharm",
@@ -602,12 +602,12 @@
     "option_d": "Stop exposure and obtain emergency evaluation of the airway",
     "correct_answer": "d",
     "option_rationales": {
-      "a": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "b": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address ace inhibitor in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Re-exposure can worsen angioedema.",
+      "b": "Lozenges do not address an evolving airway emergency.",
+      "c": "Waiting risks obstruction.",
       "d": "ACE-inhibitor angioedema may obstruct the airway and needs immediate treatment."
     },
-    "rationale": "ACE-inhibitor angioedema may obstruct the airway and needs immediate treatment.",
+    "rationale": "Correct answer: D. A: Re-exposure can worsen angioedema. B: Lozenges do not address an evolving airway emergency. C: Waiting risks obstruction. D: ACE-inhibitor angioedema may obstruct the airway and needs immediate treatment.",
     "concept_family": "ace_inhibitor",
     "decision_skill": "recognize",
     "nclex_category": "pharm",
@@ -630,11 +630,11 @@
     "correct_answer": "a",
     "option_rationales": {
       "a": "Potassium extravasation can cause tissue injury; the infusion must be stopped and site assessed.",
-      "b": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "c": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address potassium iv in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "b": "Increasing infusion may worsen tissue injury.",
+      "c": "Flushing through an infiltrated catheter worsens exposure.",
+      "d": "Massage can worsen local tissue trauma."
     },
-    "rationale": "Potassium extravasation can cause tissue injury; the infusion must be stopped and site assessed.",
+    "rationale": "Correct answer: A. A: Potassium extravasation can cause tissue injury; the infusion must be stopped and site assessed. B: Increasing infusion may worsen tissue injury. C: Flushing through an infiltrated catheter worsens exposure. D: Massage can worsen local tissue trauma.",
     "concept_family": "potassium_iv",
     "decision_skill": "intervene",
     "nclex_category": "pharm",
@@ -656,12 +656,12 @@
     "option_d": "'I should avoid cleaning the inhaler.'",
     "correct_answer": "b",
     "option_rationales": {
-      "a": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
+      "a": "Inhaled corticosteroids are usually controllers rather than acute rescue treatments.",
       "b": "Rinsing and spitting reduces oral corticosteroid residue and thrush risk.",
-      "c": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision.",
-      "d": "This option does not appropriately address inhaled steroids in the described clinical situation; the keyed response is the safer entry-level nursing decision."
+      "c": "Extra dosing does not treat oral irritation.",
+      "d": "Device cleaning is part of safe use."
     },
-    "rationale": "Rinsing and spitting reduces oral corticosteroid residue and thrush risk.",
+    "rationale": "Correct answer: B. A: Inhaled corticosteroids are usually controllers rather than acute rescue treatments. B: Rinsing and spitting reduces oral corticosteroid residue and thrush risk. C: Extra dosing does not treat oral irritation. D: Device cleaning is part of safe use.",
     "concept_family": "inhaled_steroids",
     "decision_skill": "teach",
     "nclex_category": "pharm",
