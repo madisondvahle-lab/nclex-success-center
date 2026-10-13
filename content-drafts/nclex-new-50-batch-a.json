@@ -41,7 +41,10 @@
       "b": "Raising the unit interferes with drainage and does not treat bleeding or shock.",
       "c": "Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding.",
       "d": "Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage."
-    }
+    },
+    "reference_urls": [
+      "https://www.brit-thoracic.org.uk/quality-improvement/guidelines/pleural-disease/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-003",
@@ -173,7 +176,10 @@
       "b": "Assess and support breathing immediately, escalate oxygen/ventilatory care per protocol, and summon help.",
       "c": "Oral fluids may be unsafe in a confused hypoxemic patient.",
       "d": "Sedation can worsen respiratory compromise."
-    }
+    },
+    "reference_urls": [
+      "https://www.brit-thoracic.org.uk/clinical-resources/guidelines/emergency-oxygen/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-009",
@@ -305,7 +311,10 @@
       "b": "Potassium-binding therapy would further lower already deficient potassium.",
       "c": "Insulin drives potassium into cells and can worsen dysrhythmias at K 2.9 mEq/L. DKA guidance recommends delaying insulin until potassium is above 3.5 mmol/L while correcting potassium.",
       "d": "Exercise is inappropriate during a symptomatic arrhythmia/electrolyte emergency."
-    }
+    },
+    "reference_urls": [
+      "https://doi.org/10.2337/dci24-0032"
+    ]
   },
   {
     "draft_id": "NEW-20261012-015",
