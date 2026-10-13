@@ -19,7 +19,10 @@
       "b": "Laboratory studies may help later but cannot precede emergency response to possible herniation.",
       "c": "New anisocoria and declining consciousness suggest acute intracranial deterioration requiring immediate airway/neurologic assessment and help.",
       "d": "Fever treatment does not address the neurologic emergency and delays definitive evaluation."
-    }
+    },
+    "reference_urls": [
+      "https://www.nice.org.uk/guidance/ng240/chapter/recommendations"
+    ]
   },
   {
     "draft_id": "NEW-20261012-027",
@@ -41,7 +44,10 @@
       "b": "Oral tablets are unsafe during reduced consciousness and insufficient for an acute hyponatremic seizure.",
       "c": "Bedside glucose is useful in seizure evaluation but must not delay summoning help and supporting the airway.",
       "d": "Manage active seizure safely, summon emergency support, and anticipate protocol-guided hypertonic saline with close monitoring."
-    }
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/professional/nephrology/electrolyte-disorders/hyponatremia"
+    ]
   },
   {
     "draft_id": "NEW-20261012-028",
@@ -113,7 +119,10 @@
       "b": "Additional oral opioids can worsen ventilatory depression.",
       "c": "Stop the opioid, support breathing, urgently summon help and prepare naloxone per protocol.",
       "d": "Increasing opioid infusion can worsen severe respiratory depression."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-031",
@@ -135,7 +144,10 @@
       "b": "Glycemic management may be needed but does not take priority over shock and altered mentation.",
       "c": "Wound-care input is useful after stabilization but cannot replace systemic sepsis management.",
       "d": "Infected wound plus hypotension and confusion warrants immediate sepsis escalation and ordered therapy."
-    }
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
   },
   {
     "draft_id": "NEW-20261012-032",
@@ -157,7 +169,10 @@
       "b": "Symptomatic medication must not delay evaluation of a possible intracranial hemorrhage.",
       "c": "Quiet positioning is supportive, but outpatient imaging is inappropriate for this acute presentation.",
       "d": "Pain scoring is secondary to urgent recognition and escalation of potential intracranial bleeding."
-    }
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK441958/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-033",
@@ -179,7 +194,10 @@
       "b": "Clamp the implicated line if appropriate, assess and summon urgent help for possible venous air embolism; follow institutional response protocol.",
       "c": "Local heat does not address acute dyspnea and shock.",
       "d": "Oral hydration is not emergency therapy for suspected air embolism."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-034",
@@ -201,7 +219,10 @@
       "b": "Lactulose does not treat active hematemesis with shock.",
       "c": "Bright-red hematemesis in cirrhosis with severe hypotension warrants immediate hemorrhage and airway management.",
       "d": "Nonurgent imaging must not delay resuscitation and urgent bleeding evaluation."
-    }
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/en-ca/professional/gastrointestinal-disorders/gastrointestinal-bleeding/overview-of-gastrointestinal-bleeding"
+    ]
   },
   {
     "draft_id": "NEW-20261012-035",
@@ -223,7 +244,10 @@
       "b": "A beta blocker can worsen hemodynamic instability and should not delay immediate assessment.",
       "c": "Troponin evaluation is important but must not delay an immediate ECG and response to shock.",
       "d": "An unstable patient with suspected ACS needs prompt ECG, monitoring, emergency help, and avoidance of reflex nitrate dosing."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-036",
@@ -245,7 +269,10 @@
       "b": "Catheter replacement may be appropriate by order/protocol but does not replace urgent assessment of sepsis.",
       "c": "A correctly collected specimen helps diagnosis, but waiting for culture results delays care for possible sepsis.",
       "d": "Treating fever alone does not address altered mentation and potential systemic deterioration."
-    }
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
   },
   {
     "draft_id": "NEW-20261012-037",
@@ -267,7 +294,10 @@
       "b": "Assess correctable mechanical causes without force and use the institutional protocol for an occluded central line before administering medication.",
       "c": "A resistant lumen with absent blood return should not be used for infusion until patency and safe catheter position are established.",
       "d": "Repositioning or withdrawing a tunneled central catheter is not an independent bedside maneuver for occlusion."
-    }
+    },
+    "reference_urls": [
+      "https://www.northerncanceralliance.nhs.uk/wp-content/uploads/2018/11/NECN-Adult-Venous-Access-and-CVAD-Policy-v3-0.pdf"
+    ]
   },
   {
     "draft_id": "NEW-20261012-038",
@@ -289,7 +319,10 @@
       "b": "Symptom control does not address potential perforation or peritonitis.",
       "c": "New rigidity with changing abdominal pain suggests peritoneal irritation and warrants urgent assessment and surgical consultation while maintaining NPO.",
       "d": "Imaging may be warranted but should not delay reporting possible perforation or acute peritonitis."
-    }
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/professional/gastrointestinal-disorders/acute-abdomen-and-surgical-gastroenterology/acute-abdominal-pain"
+    ]
   },
   {
     "draft_id": "NEW-20261012-039",
@@ -311,7 +344,10 @@
       "b": "Further dosing can worsen exposure to a drug causing airway swelling.",
       "c": "Oral care does not address impending upper-airway obstruction.",
       "d": "Stop the suspected medication and activate airway emergency support immediately."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-040",
@@ -333,7 +369,10 @@
       "b": "AV-nodal blocking agents can worsen severe hypotension and must not delay immediate electrical cardioversion in unstable AF.",
       "c": "ECG acquisition is useful when it does not delay resuscitation; laboratory testing must not defer emergency intervention.",
       "d": "Fluid management may be individualized, but observation and waiting for spontaneous rhythm conversion are unsafe during shock."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-041",
@@ -355,7 +394,10 @@
       "b": "Unilateral absent sounds with severe hypotension suggests tension physiology and obstructive shock requiring immediate emergency intervention.",
       "c": "Oxygenation support is appropriate concurrently but is insufficient without urgent decompression.",
       "d": "A chest drain may follow decompression, but transfer for imaging delays immediate treatment."
-    }
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
   },
   {
     "draft_id": "NEW-20261012-042",
@@ -377,7 +419,10 @@
       "b": "Temperature reduction alone does not address possible life-threatening infection during severe neutropenia.",
       "c": "ANC 300/mm³ and fever meet febrile-neutropenia criteria requiring urgent evaluation and prompt empiric antimicrobials.",
       "d": "Repeat counts can clarify trends but must not delay management when severe neutropenia and fever are already documented."
-    }
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/cancer-preventing-infections/patients/fever.html"
+    ]
   },
   {
     "draft_id": "NEW-20261012-043",
@@ -401,7 +446,7 @@
       "d": "Severe thrombocytopenia plus acute headache and vision change warrants urgent assessment and immediate escalation for possible intracranial bleeding."
     },
     "reference_urls": [
-      "https://pubmed.ncbi.nlm.nih.gov/40440268/"
+      "https://www.cancer.org/cancer/side-effects/low-blood-counts/bleeding.html"
     ]
   },
   {
@@ -474,7 +519,10 @@
       "b": "Assistive personnel can report observations but cannot independently manage unstable changes.",
       "c": "The RN manages initial instability; stable predictable procedures can be assigned appropriately under facility policy and state scope.",
       "d": "Delegation of suitable stable care is appropriate and does not require withholding every task."
-    }
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
   },
   {
     "draft_id": "NEW-20261012-047",
@@ -496,7 +544,10 @@
       "b": "Delaying evaluation risks worsening severe hypoxemia.",
       "c": "Documentation without assessment does not treat respiratory compromise.",
       "d": "The RN must promptly assess oxygenation and initiate/escalate appropriate clinical care."
-    }
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
   },
   {
     "draft_id": "NEW-20261012-048",
@@ -518,7 +569,10 @@
       "b": "Unreviewed documentation may conceal worsening acute kidney injury.",
       "c": "Interpreting renal laboratory results is nursing clinical judgment, not an assistive task.",
       "d": "Assistive staff cannot independently change prescribed IV fluids."
-    }
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
   },
   {
     "draft_id": "NEW-20261012-049",
