@@ -1,0 +1,1858 @@
+[
+  {
+    "id": "nur312-exam2-parallel-001",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Cardiac Injury",
+    "q": "A patient with pressure-like chest discomfort has new horizontal ST depression in several contiguous leads. Which interpretation should guide the nurse’s immediate communication to the provider?",
+    "o": [
+      "The tracing may reflect myocardial ischemia and needs prompt evaluation.",
+      "The finding confirms a completed infarction.",
+      "The tracing is diagnostic of pericarditis.",
+      "The change is expected with uncomplicated sinus tachycardia."
+    ],
+    "a": 0,
+    "r": "ST depression can accompany subendocardial ischemia, but ECG changes alone do not establish the cause or extent. Pair the tracing with symptoms and urgent assessment.",
+    "difficulty": 2,
+    "topic": "Cardiac Injury"
+  },
+  {
+    "id": "nur312-exam2-parallel-002",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Cardiac Injury",
+    "q": "A patient being evaluated for acute coronary syndrome has a rising high-sensitivity troponin on serial testing and new ischemic ECG changes. What does the trend most strongly indicate?",
+    "o": [
+      "A chronic, stable elevation unrelated to current symptoms.",
+      "Acute myocardial injury in a clinical picture concerning for infarction.",
+      "Atrial depolarization without ventricular involvement.",
+      "A normal response to exercise that requires no follow-up."
+    ],
+    "a": 1,
+    "r": "A rise or fall in troponin indicates acute myocardial injury; ischemic symptoms and ECG changes support acute MI. Interpret results with timing and the whole presentation.",
+    "difficulty": 2,
+    "topic": "Cardiac Injury"
+  },
+  {
+    "id": "nur312-exam2-parallel-003",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Cardiac Injury",
+    "q": "A patient develops sudden chest pressure, diaphoresis, and ST elevation in contiguous leads. What is the nurse’s priority?",
+    "o": [
+      "Wait for the next routine ECG before reporting the change.",
+      "Ask the patient to walk to see whether symptoms resolve.",
+      "Activate the facility’s acute coronary response and obtain immediate evaluation while maintaining monitoring.",
+      "Document the tracing as a normal variant and reassess at the end of the shift."
+    ],
+    "a": 2,
+    "r": "Acute symptoms with new contiguous ST elevation may represent an occlusive MI and require time-critical evaluation; do not delay escalation.",
+    "difficulty": 2,
+    "topic": "Cardiac Injury"
+  },
+  {
+    "id": "nur312-exam2-parallel-004",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient with a known narrowed aortic valve reports fainting while climbing stairs. Which action is most appropriate?",
+    "o": [
+      "Encourage faster walking to build cardiac endurance.",
+      "Place the patient flat and give an unprescribed fluid bolus.",
+      "Reassure the patient that fainting is expected and harmless.",
+      "Stop exertion, assess vital signs and perfusion, and promptly report the exertional syncope."
+    ],
+    "a": 3,
+    "r": "Exertional syncope can indicate limited forward flow from aortic stenosis. Stop activity and assess before escalating.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-005",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient with a new apical systolic murmur has worsening breathlessness and crackles. Which complication should the nurse suspect?",
+    "o": [
+      "Pulmonary congestion related to impaired mitral valve function.",
+      "Improved left ventricular filling from aortic stenosis.",
+      "An isolated conduction delay with no hemodynamic effect.",
+      "Reduced pulmonary blood flow from a benign flow murmur."
+    ],
+    "a": 0,
+    "r": "A systolic apical murmur with pulmonary symptoms can reflect mitral regurgitation and elevated left atrial/pulmonary pressures; assess oxygenation and escalate.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-006",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient with suspected aortic stenosis asks why an echocardiogram is needed. Which response is accurate?",
+    "o": [
+      "“It is used only to identify coronary artery blockages.”",
+      "“It shows valve structure and how well blood moves through the valve and heart.”",
+      "“It replaces the need to assess your symptoms and blood pressure.”",
+      "“It measures electrical conduction but not valve function.”"
+    ],
+    "a": 1,
+    "r": "Echocardiography evaluates valve anatomy, flow, and ventricular response. It complements, rather than replaces, clinical assessment.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-007",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient with mitral stenosis develops increasing dyspnea when lying flat. Which assessment is the priority?",
+    "o": [
+      "Bowel sounds and abdominal girth only.",
+      "Pupil response and visual acuity.",
+      "Respiratory status, oxygen saturation, lung sounds, and work of breathing.",
+      "Skin turgor on the forearm only."
+    ],
+    "a": 2,
+    "r": "Mitral stenosis can raise left atrial and pulmonary pressures; orthopnea may signal worsening pulmonary congestion.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-008",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient has a harsh systolic murmur radiating toward the neck and diminished peripheral pulses. Which condition best fits this assessment pattern?",
+    "o": [
+      "Mitral stenosis.",
+      "Mitral valve prolapse.",
+      "Tricuspid regurgitation.",
+      "Aortic stenosis."
+    ],
+    "a": 3,
+    "r": "A systolic ejection murmur radiating to the neck with weak pulses is characteristic of aortic outflow obstruction.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-009",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valvular Disease",
+    "q": "A patient with valve disease reports new reduced activity tolerance and swelling in both ankles. What should the nurse do first?",
+    "o": [
+      "Assess vital signs, oxygenation, weight trend, edema, and signs of heart failure.",
+      "Recommend increasing salt intake to improve circulation.",
+      "Advise stopping all prescribed cardiac medicines.",
+      "Wait several weeks because edema is unrelated to valve disease."
+    ],
+    "a": 0,
+    "r": "Reduced tolerance and edema may indicate worsening cardiac function. Focused assessment informs prompt escalation and treatment decisions.",
+    "difficulty": 2,
+    "topic": "Valvular Disease"
+  },
+  {
+    "id": "nur312-exam2-parallel-010",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valve Replacement",
+    "q": "A patient with a mechanical valve is preparing for discharge on long-term anticoagulation. Which statement shows understanding?",
+    "o": [
+      "“Once I feel well, I can stop the anticoagulant.”",
+      "“I will keep my follow-up blood tests and contact the care team before changing medicines.”",
+      "“I can take any over-the-counter pain medicine without checking.”",
+      "“I should double a missed dose whenever I remember.”"
+    ],
+    "a": 1,
+    "r": "Mechanical valves generally require ongoing anticoagulation and monitoring. Changes, missed doses, and interacting medications need clinician guidance.",
+    "difficulty": 2,
+    "topic": "Valve Replacement"
+  },
+  {
+    "id": "nur312-exam2-parallel-011",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valve Replacement",
+    "q": "A patient with a prosthetic heart valve calls before a dental procedure and asks whether to take antibiotics. What is the best nursing response?",
+    "o": [
+      "“Everyone with a valve must take antibiotics before every dental visit.”",
+      "“Antibiotics are never considered for prosthetic valves.”",
+      "“Your clinician needs to review the procedure and your valve history to determine whether prophylaxis is indicated.”",
+      "“Use leftover antibiotics without contacting the clinic.”"
+    ],
+    "a": 2,
+    "r": "Endocarditis prophylaxis recommendations depend on cardiac risk and procedure. Direct the patient to the prescribing team rather than giving a blanket rule.",
+    "difficulty": 2,
+    "topic": "Valve Replacement"
+  },
+  {
+    "id": "nur312-exam2-parallel-012",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valve Replacement",
+    "q": "On the first day after valve surgery, the nurse notes increasing shortness of breath, falling blood pressure, and cool extremities. What is the priority?",
+    "o": [
+      "Wait until the scheduled postoperative round.",
+      "Encourage oral fluids and ambulation without assessment.",
+      "Remove monitoring leads to reduce anxiety.",
+      "Immediately alert the surgical/cardiac team and support airway, breathing, circulation while assessing."
+    ],
+    "a": 3,
+    "r": "Acute respiratory and perfusion deterioration after cardiac surgery may signal a serious complication. Escalate immediately and continue close monitoring.",
+    "difficulty": 2,
+    "topic": "Valve Replacement"
+  },
+  {
+    "id": "nur312-exam2-parallel-013",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valve Replacement",
+    "q": "A patient with a mechanical valve reports black, tarry stools while taking an anticoagulant. Which instruction is most appropriate?",
+    "o": [
+      "Seek urgent medical evaluation and do not independently stop or adjust the medication without guidance.",
+      "Take an extra anticoagulant dose to prevent valve clotting.",
+      "Wait until the next routine appointment.",
+      "Treat the stool with an over-the-counter laxative and continue as usual."
+    ],
+    "a": 0,
+    "r": "Melena may indicate gastrointestinal bleeding during anticoagulation. Urgent evaluation is needed; medication changes require clinician direction.",
+    "difficulty": 2,
+    "topic": "Valve Replacement"
+  },
+  {
+    "id": "nur312-exam2-parallel-014",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Valve Replacement",
+    "q": "A patient after valve replacement asks what symptom should prompt an immediate call. Which response is best?",
+    "o": [
+      "“Only a mild change in appetite matters.”",
+      "“Sudden shortness of breath, chest pain, fainting, or signs of bleeding need prompt attention.”",
+      "“A new fever is expected and never needs reporting.”",
+      "“A missed anticoagulant dose cannot affect the valve.”"
+    ],
+    "a": 1,
+    "r": "Acute cardiopulmonary symptoms, infection signs, and bleeding can indicate important postoperative or anticoagulation complications.",
+    "difficulty": 2,
+    "topic": "Valve Replacement"
+  },
+  {
+    "id": "nur312-exam2-parallel-015",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with chronic mitral regurgitation develops new orthopnea and oxygen saturation below the prescribed target. What is the nurse’s first response?",
+    "o": [
+      "Place the patient flat and leave to obtain a routine weight.",
+      "Encourage a large meal before reassessment.",
+      "Sit the patient upright, assess breathing and oxygenation, and activate prompt clinical support.",
+      "Delay action until a repeat echocardiogram is available."
+    ],
+    "a": 2,
+    "r": "New hypoxemia and orthopnea can reflect pulmonary congestion. Positioning and prompt assessment/escalation take priority over routine testing.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-016",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with mitral regurgitation asks why blood may flow backward during ventricular contraction. Which explanation is correct?",
+    "o": [
+      "The aortic valve blocks all blood from leaving the heart.",
+      "The right ventricle sends blood directly into the left atrium.",
+      "The atria stop contracting during every heartbeat.",
+      "The mitral valve does not close effectively, allowing some blood to return to the left atrium."
+    ],
+    "a": 3,
+    "r": "Mitral regurgitation is backward flow through an incompletely closed mitral valve during systole.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-017",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "Which finding in a patient with mitral regurgitation is most concerning for reduced cardiac output?",
+    "o": [
+      "New confusion with cool, clammy skin and a weak pulse.",
+      "A stable, soft systolic murmur documented previously.",
+      "Warm hands with unchanged activity tolerance.",
+      "A regular pulse and no symptoms after usual activity."
+    ],
+    "a": 0,
+    "r": "Altered mentation and cool skin suggest impaired perfusion and require urgent assessment, unlike a stable known murmur alone.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-018",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with mitral regurgitation is being monitored for pulmonary congestion. Which change is most useful to report promptly?",
+    "o": [
+      "A single unchanged heart sound finding.",
+      "Increasing crackles with a rising oxygen requirement.",
+      "Improved ability to lie flat.",
+      "A stable temperature and appetite."
+    ],
+    "a": 1,
+    "r": "Crackles and increased oxygen need indicate worsening gas exchange, potentially from elevated pulmonary pressures and fluid accumulation.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-019",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with chronic mitral regurgitation says, “I get more winded doing the same walk I did last month.” What is the best response?",
+    "o": [
+      "Tell the patient that exercise tolerance never relates to valve disease.",
+      "Recommend stopping all activity indefinitely without evaluation.",
+      "Assess the change in symptoms and notify the clinician because it may reflect progression or heart failure.",
+      "Suggest doubling any prescribed diuretic dose."
+    ],
+    "a": 2,
+    "r": "A change from baseline can signal worsening regurgitation or heart failure. It warrants assessment and provider review; patients should not self-adjust medication.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-020",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with severe mitral regurgitation suddenly develops pink frothy sputum and severe respiratory distress. What should the nurse do?",
+    "o": [
+      "Offer water and reassess in an hour.",
+      "Ask the patient to lie flat to conserve energy.",
+      "Continue routine documentation before notifying anyone.",
+      "Call emergency response, support oxygenation/ventilation, and remain with the patient."
+    ],
+    "a": 3,
+    "r": "Pink frothy sputum with acute distress is consistent with severe pulmonary edema. Immediate emergency response and airway/breathing support are required.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-021",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "Which assessment pattern is most consistent with mitral regurgitation causing left-sided congestion?",
+    "o": [
+      "Dyspnea, crackles, and reduced exercise tolerance.",
+      "Isolated unilateral calf pain with normal breathing.",
+      "Increased urine output and clear lungs.",
+      "Abdominal tenderness without cardiopulmonary changes."
+    ],
+    "a": 0,
+    "r": "Backflow into the left atrium can raise pulmonary venous pressure, causing dyspnea and crackles.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-022",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with mitral regurgitation is scheduled for echocardiography. Which question is most important for the nurse to clarify beforehand?",
+    "o": [
+      "Whether the patient should stop every medication for a week.",
+      "Whether a transesophageal study is planned and whether the patient received fasting/sedation instructions.",
+      "Whether the patient must avoid all liquids for 24 hours for any echo.",
+      "Whether an ECG is prohibited on the same day."
+    ],
+    "a": 1,
+    "r": "A transthoracic study differs from a transesophageal study; sedation and fasting instructions may apply to the latter and should be confirmed.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-023",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with known mitral regurgitation has new palpitations and lightheadedness. Which action is appropriate?",
+    "o": [
+      "Assume the symptoms are caused by anxiety without assessment.",
+      "Encourage the patient to drive home alone.",
+      "Check pulse and vital signs, obtain/maintain cardiac monitoring as indicated, and report the new symptoms.",
+      "Wait for the next annual visit."
+    ],
+    "a": 2,
+    "r": "New palpitations with lightheadedness may reflect dysrhythmia or compromised perfusion and should be evaluated promptly.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-024",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Mitral Regurgitation",
+    "q": "A patient with mitral regurgitation asks why the care team tracks daily weight. Which explanation is best?",
+    "o": [
+      "“Weight tells us whether the valve has healed.”",
+      "“Daily weight replaces checking for breathing changes.”",
+      "“Weight is used only to decide whether you may eat.”",
+      "“A rapid increase can be an early clue that fluid is accumulating.”"
+    ],
+    "a": 3,
+    "r": "Daily weights help detect fluid retention and worsening heart failure when measured consistently; symptoms and other findings still matter.",
+    "difficulty": 2,
+    "topic": "Mitral Regurgitation"
+  },
+  {
+    "id": "nur312-exam2-parallel-025",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Myocarditis",
+    "q": "A young adult recovering from a viral illness reports chest discomfort, unusual fatigue, and a racing heartbeat. What is the safest nursing advice?",
+    "o": [
+      "Avoid strenuous activity and seek prompt clinical assessment for possible cardiac involvement.",
+      "Resume intense training to test cardiac endurance.",
+      "Use an energy drink and wait several days.",
+      "Ignore the symptoms because myocarditis occurs only in older adults."
+    ],
+    "a": 0,
+    "r": "Myocarditis can follow infection and present with chest symptoms, fatigue, or arrhythmia. Restrict exertion pending evaluation.",
+    "difficulty": 2,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-026",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Myocarditis",
+    "q": "A patient being evaluated for myocarditis develops sustained ventricular tachycardia and becomes unresponsive. What is the priority?",
+    "o": [
+      "Obtain a routine temperature before acting.",
+      "Activate emergency response and begin the facility’s resuscitation protocol.",
+      "Ask the patient to cough and bear down.",
+      "Wait for troponin results to confirm myocarditis."
+    ],
+    "a": 1,
+    "r": "Unresponsiveness with a dangerous ventricular rhythm is an immediate resuscitation emergency; do not wait for diagnostic confirmation.",
+    "difficulty": 2,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-027",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Myocarditis",
+    "q": "Which finding in a patient with suspected myocarditis warrants the most urgent escalation?",
+    "o": [
+      "Mild fatigue with stable vital signs.",
+      "A low-grade temperature with no cardiac symptoms.",
+      "New hypotension with worsening dyspnea and altered mentation.",
+      "A remote history of uncomplicated viral illness."
+    ],
+    "a": 2,
+    "r": "Hypotension, respiratory compromise, and altered mentation suggest hemodynamic deterioration and possible heart failure or shock.",
+    "difficulty": 2,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-028",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Myocarditis",
+    "q": "A patient with suspected myocarditis asks why the clinician ordered an ECG and cardiac biomarkers. Which response is most accurate?",
+    "o": [
+      "“Either test alone proves myocarditis.”",
+      "“They measure only lung function.”",
+      "“Normal results would always exclude every cardiac problem.”",
+      "“They help assess electrical changes and evidence of heart muscle injury, but results are interpreted together with your symptoms and other tests.”"
+    ],
+    "a": 3,
+    "r": "ECG and biomarkers contribute evidence but are not individually definitive. The diagnosis uses the full clinical evaluation.",
+    "difficulty": 2,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-029",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Myocarditis",
+    "q": "A patient diagnosed with myocarditis asks when to return to competitive sports. What should the nurse say?",
+    "o": [
+      "“Wait for your cardiology team to clear you; strenuous activity may need to be restricted during recovery.”",
+      "“Return as soon as the fever resolves.”",
+      "“Exercise through chest pain to rebuild the heart.”",
+      "“Sports are permanently prohibited for everyone with myocarditis.”"
+    ],
+    "a": 0,
+    "r": "Active myocardial inflammation can increase arrhythmia risk with exertion. Return-to-activity decisions require individualized medical clearance.",
+    "difficulty": 2,
+    "topic": "Myocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-030",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Endocarditis",
+    "q": "A patient with a prosthetic valve has fever and chills. Which action is most appropriate?",
+    "o": [
+      "Reassure the patient that fever is unrelated to a valve.",
+      "Promptly notify the clinician and anticipate evaluation for bloodstream infection and endocarditis.",
+      "Recommend waiting one week to see if it resolves.",
+      "Use leftover antibiotics before any cultures are collected."
+    ],
+    "a": 1,
+    "r": "Fever in a patient with a prosthetic valve is concerning for infection. Timely assessment is essential; cultures should not be compromised by unsupervised antibiotics.",
+    "difficulty": 2,
+    "topic": "Endocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-031",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Endocarditis",
+    "q": "A patient with suspected infective endocarditis has blood cultures ordered before the first antimicrobial dose. Why is this sequence important?",
+    "o": [
+      "Cultures prevent all antibiotic adverse effects.",
+      "Antibiotics cannot work unless cultures are positive.",
+      "Cultures can help identify the organism and guide targeted treatment.",
+      "Blood cultures determine the patient’s valve size."
+    ],
+    "a": 2,
+    "r": "Collecting ordered cultures before antimicrobials when clinically feasible improves the chance of identifying the causative organism; urgent care should not be delayed in unstable patients.",
+    "difficulty": 2,
+    "topic": "Endocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-032",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Endocarditis",
+    "q": "A patient receiving treatment for endocarditis suddenly develops facial droop and difficulty speaking. What should the nurse do first?",
+    "o": [
+      "Give oral fluids and reassess later.",
+      "Wait for the next antibiotic dose.",
+      "Encourage the patient to sleep.",
+      "Activate the stroke response and document the time symptoms were first noted."
+    ],
+    "a": 3,
+    "r": "Endocarditis can cause embolic events. New focal neurologic deficits require immediate stroke evaluation and precise last-known-well documentation.",
+    "difficulty": 2,
+    "topic": "Endocarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-033",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Ventricular Septal Defect",
+    "q": "A child with a known ventricular septal defect develops increased work of breathing and poor feeding. What should the nurse do?",
+    "o": [
+      "Assess oxygenation and perfusion promptly and report possible worsening heart failure.",
+      "Assume this is a normal feature of every VSD.",
+      "Delay evaluation until the next routine visit.",
+      "Encourage prolonged feeding without rest breaks."
+    ],
+    "a": 0,
+    "r": "Poor feeding and respiratory effort can signal increased cardiac workload or heart failure in a child with a shunt.",
+    "difficulty": 2,
+    "topic": "Ventricular Septal Defect"
+  },
+  {
+    "id": "nur312-exam2-parallel-034",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Ventricular Septal Defect",
+    "q": "A caregiver asks how a ventricular septal defect can increase pulmonary blood flow. Which explanation is accurate?",
+    "o": [
+      "Blood flows from the pulmonary artery directly into the aorta through the defect.",
+      "Blood can pass from the higher-pressure left ventricle through the opening into the right ventricle and pulmonary circulation.",
+      "The defect prevents any blood from entering the lungs.",
+      "The opening is between the atria, not the ventricles."
+    ],
+    "a": 1,
+    "r": "A VSD may allow left-to-right flow because left ventricular pressure is higher, increasing pulmonary circulation depending on defect size and resistance.",
+    "difficulty": 2,
+    "topic": "Ventricular Septal Defect"
+  },
+  {
+    "id": "nur312-exam2-parallel-035",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Ventricular Septal Defect",
+    "q": "A nurse is assessing an infant with a VSD. Which change is most important to trend over time?",
+    "o": [
+      "Hair color and eye color.",
+      "Number of wet diapers without any intake context.",
+      "Feeding endurance, respiratory effort, growth, and signs of fluid overload.",
+      "Whether the infant startles to a loud sound."
+    ],
+    "a": 2,
+    "r": "Feeding and growth can reveal the sustained energy cost of cardiac disease; respiratory and fluid status help identify heart failure.",
+    "difficulty": 2,
+    "topic": "Ventricular Septal Defect"
+  },
+  {
+    "id": "nur312-exam2-parallel-036",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericarditis",
+    "q": "A patient with sharp chest pain reports that it worsens when lying flat and improves when leaning forward. Which nursing action is appropriate?",
+    "o": [
+      "Label the pain as reflux without further assessment.",
+      "Encourage the patient to lie flat and exercise.",
+      "Withhold all evaluation because positional pain is benign.",
+      "Assess vital signs and ECG findings and promptly report the pattern for evaluation."
+    ],
+    "a": 3,
+    "r": "Positional pleuritic chest pain can occur with pericarditis, but acute chest pain requires assessment to distinguish serious causes.",
+    "difficulty": 2,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-037",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericarditis",
+    "q": "A patient with pericarditis suddenly becomes hypotensive, restless, and increasingly short of breath; neck veins appear distended. What complication should the nurse suspect?",
+    "o": [
+      "Cardiac tamponade from impaired filling.",
+      "Uncomplicated sinus bradycardia.",
+      "Aortic stenosis.",
+      "Chronic stable mitral regurgitation."
+    ],
+    "a": 0,
+    "r": "Hypotension, distress, and venous distention can indicate tamponade, where pericardial pressure limits cardiac filling. This is an emergency.",
+    "difficulty": 2,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-038",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericarditis",
+    "q": "A patient being treated for pericarditis reports increasing chest pain and new faintness. What is the best nursing response?",
+    "o": [
+      "Tell the patient to wait until pain medicine is due.",
+      "Reassess promptly for hemodynamic change and escalate the new symptoms.",
+      "Encourage unassisted ambulation.",
+      "Document the symptoms as expected without assessment."
+    ],
+    "a": 1,
+    "r": "Worsening pain with presyncope can signal progression or hemodynamic compromise; reassessment and escalation are warranted.",
+    "difficulty": 2,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-039",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericarditis",
+    "q": "A patient with acute pericarditis asks why the pain changes with position. Which explanation is most appropriate?",
+    "o": [
+      "“The pain proves that a coronary artery is completely blocked.”",
+      "“It means the heart has stopped contracting.”",
+      "“Inflammation around the heart can make movement and contact with nearby structures painful.”",
+      "“Position changes cause the valve leaflets to detach.”"
+    ],
+    "a": 2,
+    "r": "Pericardial inflammation often causes pleuritic, positional pain. It is not by itself proof of coronary occlusion or valve failure.",
+    "difficulty": 2,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-040",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericarditis",
+    "q": "A patient with pericarditis is discharged with instructions to seek care for which symptom?",
+    "o": [
+      "A brief, unchanged mild ache that improves as instructed.",
+      "A single episode of hiccups.",
+      "Mild thirst after a walk.",
+      "Increasing shortness of breath, fainting, or rapidly worsening chest discomfort."
+    ],
+    "a": 3,
+    "r": "Dyspnea, syncope, and worsening pain may signal effusion or tamponade and require prompt evaluation.",
+    "difficulty": 2,
+    "topic": "Pericarditis"
+  },
+  {
+    "id": "nur312-exam2-parallel-041",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericardial Effusion",
+    "q": "A patient with a known pericardial effusion develops falling blood pressure, muffled heart sounds, and tachycardia. What is the priority?",
+    "o": [
+      "Escalate immediately for possible tamponade and support circulation while monitoring.",
+      "Schedule routine follow-up for next month.",
+      "Encourage oral fluids and leave the patient alone.",
+      "Administer an unprescribed diuretic."
+    ],
+    "a": 0,
+    "r": "Effusion with hypotension, tachycardia, and muffled sounds suggests tamponade. Rapid intervention may be lifesaving.",
+    "difficulty": 2,
+    "topic": "Pericardial Effusion"
+  },
+  {
+    "id": "nur312-exam2-parallel-042",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericardial Effusion",
+    "q": "A patient with a moderate effusion asks why the team is monitoring blood pressure and breathing so closely. Which response is best?",
+    "o": [
+      "“The fluid always strengthens each heartbeat.”",
+      "“Fluid around the heart can sometimes restrict filling and reduce the amount of blood pumped.”",
+      "“Monitoring is only needed to check for pneumonia.”",
+      "“An effusion affects the lungs but cannot affect circulation.”"
+    ],
+    "a": 1,
+    "r": "A growing effusion can impair diastolic filling and cardiac output; close monitoring detects tamponade physiology.",
+    "difficulty": 2,
+    "topic": "Pericardial Effusion"
+  },
+  {
+    "id": "nur312-exam2-parallel-043",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pericardial Effusion",
+    "q": "During assessment of a patient with pericardial effusion, which trend is most concerning?",
+    "o": [
+      "Stable blood pressure and unchanged breathing.",
+      "Improved urine output with warm extremities.",
+      "Progressive tachycardia with narrowing pulse pressure and worsening perfusion.",
+      "A single normal temperature reading."
+    ],
+    "a": 2,
+    "r": "A compensatory rising heart rate and narrowing pulse pressure with poor perfusion can precede overt tamponade.",
+    "difficulty": 2,
+    "topic": "Pericardial Effusion"
+  },
+  {
+    "id": "nur312-exam2-parallel-044",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation has a ventricular rate of 160/min, blood pressure 78/46 mm Hg, and new confusion. What intervention should the nurse anticipate urgently?",
+    "o": [
+      "Routine outpatient rate-control follow-up.",
+      "A vagal maneuver as the only response.",
+      "An unsupervised oral fluid challenge.",
+      "Synchronized cardioversion for an unstable tachyarrhythmia, per emergency protocol."
+    ],
+    "a": 3,
+    "r": "Hypotension and altered mentation indicate instability. Emergency rhythm management, often synchronized cardioversion, should not be delayed.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-045",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation has no symptoms and a stable blood pressure. Which assessment finding is expected?",
+    "o": [
+      "An irregularly irregular pulse.",
+      "A regular pulse with identical intervals.",
+      "A fixed rate of 60/min in every patient.",
+      "A palpable pulse for every atrial depolarization."
+    ],
+    "a": 0,
+    "r": "Atrial fibrillation produces disorganized atrial activity and an irregularly irregular ventricular response unless another rhythm or pacing pattern is present.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-046",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation asks why anticoagulation is being discussed even though the heart rate is controlled. What is the best explanation?",
+    "o": [
+      "“Anticoagulants are used only to slow the heart rate.”",
+      "“Atrial fibrillation can allow blood to pool and form clots; your stroke risk and bleeding risk guide this decision.”",
+      "“A controlled rate means stroke is impossible.”",
+      "“Everyone with atrial fibrillation must take the same anticoagulant dose.”"
+    ],
+    "a": 1,
+    "r": "Rate control does not eliminate embolic risk. Anticoagulation is individualized using stroke and bleeding risk and shared clinical decision-making.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-047",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient scheduled for elective cardioversion for atrial fibrillation is unsure whether to take the prescribed anticoagulant. What should the nurse advise?",
+    "o": [
+      "Stop it immediately because cardioversion does not involve clot risk.",
+      "Double the dose on the morning of the procedure.",
+      "Contact the procedural/cardiology team for instructions and do not stop it independently.",
+      "Replace it with aspirin without clinician approval."
+    ],
+    "a": 2,
+    "r": "Cardioversion planning considers thromboembolic risk and anticoagulation timing. The patient should follow explicit clinician guidance, not self-adjust.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-048",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial flutter becomes pale and diaphoretic and reports chest pressure. Blood pressure is falling. What is the nurse’s priority?",
+    "o": [
+      "Ask the patient to walk to improve circulation.",
+      "Delay action until the rhythm converts spontaneously.",
+      "Offer a meal and repeat vital signs after eating.",
+      "Activate emergency support, assess perfusion, and prepare for urgent rhythm management."
+    ],
+    "a": 3,
+    "r": "Chest pressure with falling pressure signals instability. Rapid escalation and monitoring are essential.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-049",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient taking a rate-controlling medicine for atrial fibrillation reports dizziness when standing. What should the nurse do first?",
+    "o": [
+      "Check heart rate and blood pressure, assess symptoms and fall risk, and report concerning findings.",
+      "Tell the patient to take an additional dose.",
+      "Assume dizziness is unrelated to treatment.",
+      "Advise the patient to discontinue all cardiac medicines immediately."
+    ],
+    "a": 0,
+    "r": "Rate-control therapy may contribute to bradycardia or hypotension. Assess before advising changes and reduce fall risk.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-050",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "The monitor shows an irregular rhythm in a patient with atrial fibrillation, but the patient is alert with stable vital signs. Which action is appropriate?",
+    "o": [
+      "Perform unsynchronized defibrillation.",
+      "Assess the patient, verify the rhythm and pulse, and follow the prescribed rate-control/monitoring plan.",
+      "Ignore the rhythm because atrial fibrillation never causes complications.",
+      "Initiate CPR despite a present pulse and stable condition."
+    ],
+    "a": 1,
+    "r": "Treat the patient rather than the monitor. A stable rhythm warrants verification, assessment, and the prescribed plan, not shock or CPR.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-051",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation taking an anticoagulant reports a sudden severe headache and weakness on one side. What should the nurse do?",
+    "o": [
+      "Reassure the patient that anticoagulants prevent all strokes.",
+      "Give the next anticoagulant dose and wait.",
+      "Activate emergency stroke evaluation immediately and note symptom onset/last known well.",
+      "Schedule a routine appointment for next week."
+    ],
+    "a": 2,
+    "r": "Focal neurologic symptoms may indicate stroke or intracranial bleeding. Immediate emergency assessment is required.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-052",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation has a resting pulse of 48/min with lightheadedness after a dose of a rate-control drug. What is the best action?",
+    "o": [
+      "Give another dose to prevent a fast rate.",
+      "Encourage strenuous exercise to raise the pulse.",
+      "Document the pulse as acceptable without checking symptoms.",
+      "Assess blood pressure and perfusion, hold further dosing only per protocol/order, and promptly notify the prescriber."
+    ],
+    "a": 3,
+    "r": "Symptomatic bradycardia warrants immediate assessment and prescriber notification. Medication changes follow orders/protocols.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-053",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with newly diagnosed atrial fibrillation asks what to do if palpitations occur at home. Which teaching is safest?",
+    "o": [
+      "Seek urgent help for chest pain, fainting, severe breathlessness, or stroke symptoms; report sustained new palpitations to the care team.",
+      "Ignore every palpitation if a diagnosis is already known.",
+      "Take another dose of every heart medicine when symptoms begin.",
+      "Drive to the clinic if faint or short of breath."
+    ],
+    "a": 0,
+    "r": "Teach emergency warning signs and avoid unsafe self-dosing or driving when unstable.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-054",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient taking warfarin for atrial fibrillation asks whether leafy vegetables must be avoided. Which response is best?",
+    "o": [
+      "“Avoid all vegetables permanently.”",
+      "“Keep vitamin K intake reasonably consistent and discuss major diet changes with your anticoagulation team.”",
+      "“Eat a large amount only on days before blood tests.”",
+      "“Diet cannot affect warfarin response.”"
+    ],
+    "a": 1,
+    "r": "Vitamin K intake can affect warfarin anticoagulation. Consistency and monitoring are safer than complete avoidance or abrupt changes.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-055",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation is scheduled for a transesophageal echocardiogram before cardioversion. What should the nurse verify?",
+    "o": [
+      "That the patient has eaten a large meal immediately beforehand.",
+      "That no monitoring is needed after sedation.",
+      "Fasting instructions, consent, and post-sedation safety arrangements.",
+      "That the patient will drive home after receiving sedation."
+    ],
+    "a": 2,
+    "r": "TEE involves esophageal instrumentation and often sedation; fasting, consent, and safe recovery planning are important.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-056",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation has a rapid ventricular response but remains alert with adequate blood pressure. Which initial goal is likely?",
+    "o": [
+      "Deliver unsynchronized shock regardless of stability.",
+      "Suppress all atrial activity with an unprescribed drug.",
+      "Discontinue cardiac monitoring because the patient is stable.",
+      "Control ventricular rate and assess the cause and symptoms under the prescribed plan."
+    ],
+    "a": 3,
+    "r": "In a stable patient, management commonly focuses on rate control and evaluation. Rhythm strategy depends on the clinical context.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-057",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation reports taking an over-the-counter cold remedy and now has a fast heartbeat. What should the nurse do?",
+    "o": [
+      "Ask which product and dose were used, assess vital signs, and contact the clinician/pharmacist about possible interaction.",
+      "Recommend taking more of the cold medicine to finish the course.",
+      "Assume all nonprescription medicines are safe with cardiac conditions.",
+      "Tell the patient to stop prescribed anticoagulation."
+    ],
+    "a": 0,
+    "r": "Some cold products can affect heart rate or blood pressure. Clarify exposure and seek medication guidance without changing essential prescriptions.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-058",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A nurse is teaching a patient prescribed a direct oral anticoagulant for atrial fibrillation. Which statement indicates understanding?",
+    "o": [
+      "“I can stop it when I have no palpitations.”",
+      "“I will take it as prescribed and call the care team for unusual bleeding or a head injury.”",
+      "“I should take a double dose after any missed dose.”",
+      "“I do not need to tell other clinicians that I use it.”"
+    ],
+    "a": 1,
+    "r": "Anticoagulants reduce clot risk but increase bleeding risk. Adherence, injury reporting, and medication disclosure are important; missed-dose advice is product-specific.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-059",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation has a new oxygen requirement and crackles. What should the nurse prioritize?",
+    "o": [
+      "Focus only on counting the apical pulse.",
+      "Encourage the patient to lie flat.",
+      "Assess respiratory distress and perfusion and promptly escalate possible heart failure or ischemia.",
+      "Wait for the next scheduled outpatient visit."
+    ],
+    "a": 2,
+    "r": "New pulmonary congestion with a dysrhythmia may reflect decompensation and needs urgent respiratory and cardiac assessment.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-060",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient asks whether a smartwatch rhythm alert proves atrial fibrillation. What response is most accurate?",
+    "o": [
+      "“A watch alert is always a definitive diagnosis.”",
+      "“A normal watch reading excludes future atrial fibrillation.”",
+      "“The alert means you should take someone else’s medication.”",
+      "“It can flag an irregular pattern, but a clinician needs to confirm the rhythm with appropriate ECG recording.”"
+    ],
+    "a": 3,
+    "r": "Wearables can prompt evaluation but do not replace diagnostic ECG interpretation or clinical assessment.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-061",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial fibrillation and a pulse becomes unresponsive; the monitor shows a pulseless ventricular rhythm. What action is required?",
+    "o": [
+      "Start CPR and follow the pulseless arrest algorithm, including defibrillation if indicated by rhythm.",
+      "Attempt elective synchronized cardioversion.",
+      "Give oral rate-control medication.",
+      "Wait for a cardiologist before starting resuscitation."
+    ],
+    "a": 0,
+    "r": "A pulseless arrest requires immediate CPR and algorithm-based resuscitation; do not delay for consultation.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-062",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient on anticoagulation is scheduled for an invasive procedure and asks whether to skip the next dose. What is the safest response?",
+    "o": [
+      "“Skip every dose for a week.”",
+      "“Do not change the dose on your own; the procedural and prescribing teams should give you a coordinated plan.”",
+      "“Take extra doses to prevent a clot during the procedure.”",
+      "“Replace it with an herbal supplement.”"
+    ],
+    "a": 1,
+    "r": "Periprocedural interruption depends on medication, renal function, and procedure bleeding risk. The team must individualize the plan.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-063",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Atrial Fibrillation/Flutter",
+    "q": "A patient with atrial flutter has a regular narrow-complex rate near 150/min and is stable. Which interpretation is most appropriate?",
+    "o": [
+      "Ventricular fibrillation is present.",
+      "The rhythm is certainly normal sinus rhythm.",
+      "Atrial flutter with possible 2:1 AV conduction should be considered and the rhythm confirmed.",
+      "A regular rate excludes an atrial dysrhythmia."
+    ],
+    "a": 2,
+    "r": "Flutter with 2:1 conduction can produce a regular ventricular rate around 150/min; inspect the tracing and assess the patient.",
+    "difficulty": 2,
+    "topic": "Atrial Fibrillation/Flutter"
+  },
+  {
+    "id": "nur312-exam2-parallel-064",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A stable patient develops a regular narrow-complex tachycardia and remains alert with a palpable pulse. What should the nurse do first?",
+    "o": [
+      "Deliver unsynchronized defibrillation immediately.",
+      "Begin chest compressions despite a pulse.",
+      "Leave the patient alone to obtain a medication.",
+      "Assess hemodynamic stability, obtain/continue ECG monitoring, and follow the ordered SVT protocol."
+    ],
+    "a": 3,
+    "r": "A stable tachycardia with a pulse requires assessment and protocol-based management; electrical therapy depends on instability and rhythm.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-065",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient in a regular narrow-complex tachycardia becomes hypotensive and confused despite initial measures. What intervention should the nurse anticipate?",
+    "o": [
+      "Urgent synchronized cardioversion per emergency protocol.",
+      "Routine observation without intervention.",
+      "An unsupervised oral dose of a home medicine.",
+      "A prolonged walking trial."
+    ],
+    "a": 0,
+    "r": "Instability with tachycardia requires urgent synchronized cardioversion when appropriate; delay risks worsening perfusion.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-066",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A stable patient with a regular narrow-complex tachycardia is instructed by the clinician to try a vagal maneuver. Which teaching is appropriate?",
+    "o": [
+      "Massage both carotid arteries forcefully without supervision.",
+      "Use only the instructed maneuver and stop if severe symptoms occur; never press on the eyes or neck.",
+      "Bear down until losing consciousness.",
+      "Use a household electrical device to reset the rhythm."
+    ],
+    "a": 1,
+    "r": "Vagal maneuvers may be used in selected stable SVT, but unsafe carotid or ocular pressure must be avoided and symptoms monitored.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-067",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient has sinus tachycardia while febrile and dehydrated. Which approach best addresses the rhythm?",
+    "o": [
+      "Assume the sinus rate itself is the primary disease in every case.",
+      "Give a rhythm-control drug without checking the cause.",
+      "Identify and treat the underlying cause while monitoring the patient.",
+      "Ignore the elevated rate because sinus rhythms cannot be harmful."
+    ],
+    "a": 2,
+    "r": "Sinus tachycardia is often a response to fever, hypovolemia, pain, or hypoxia. Treating the trigger is central.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-068",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient’s telemetry shows sinus bradycardia at 52/min. The patient is alert, normotensive, and denies symptoms. What is the appropriate response?",
+    "o": [
+      "Start CPR because the rate is below 60/min.",
+      "Give atropine automatically without an order or symptoms.",
+      "Apply defibrillation pads and shock.",
+      "Continue assessment and monitoring; correlate the rate with symptoms and baseline."
+    ],
+    "a": 3,
+    "r": "A low rate alone does not establish instability. Assess perfusion, symptoms, medications, and baseline before intervention.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-069",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient with sinus bradycardia is pale, hypotensive, and lightheaded. What should the nurse prioritize?",
+    "o": [
+      "Activate urgent support, assess perfusion, and follow the symptomatic bradycardia protocol.",
+      "Reassure the patient that all slow rhythms are harmless.",
+      "Encourage the patient to walk unassisted.",
+      "Delay intervention until a routine ECG is read."
+    ],
+    "a": 0,
+    "r": "Bradycardia with hypotension and symptoms is unstable and requires prompt protocol-based care.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-070",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "The nurse is reviewing a rhythm strip. Which sequence correctly describes normal cardiac conduction?",
+    "o": [
+      "AV node, ventricles, SA node, atria, His-Purkinje system.",
+      "SA node, atria, AV node, His-Purkinje system, ventricles.",
+      "Ventricles, atria, AV node, SA node, bundle branches.",
+      "Purkinje fibers, SA node, AV node, atria, ventricles."
+    ],
+    "a": 1,
+    "r": "Normal impulse formation begins in the SA node, spreads through the atria, pauses at the AV node, and travels through His-Purkinje pathways to the ventricles.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-071",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient with sinus tachycardia reports sudden pleuritic chest pain and severe dyspnea after surgery. What should the nurse do?",
+    "o": [
+      "Assume anxiety is causing the rate and leave the patient alone.",
+      "Ask the patient to ambulate to reduce the heart rate.",
+      "Treat as an emergency, assess oxygenation and circulation, and escalate possible pulmonary embolism.",
+      "Give a dose of a rate-controlling medication without assessment."
+    ],
+    "a": 2,
+    "r": "Sinus tachycardia may be a response to hypoxia or PE. Postoperative pleuritic pain and sudden dyspnea demand urgent evaluation.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-072",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient asks why a 12-lead ECG is obtained during palpitations. Which explanation is correct?",
+    "o": [
+      "“It measures the amount of blood in your lungs.”",
+      "“It permanently corrects an irregular rhythm.”",
+      "“It tells us the exact cause of every palpitation by itself.”",
+      "“It records electrical activity from multiple views and can help identify the rhythm or ischemic changes.”"
+    ],
+    "a": 3,
+    "r": "A 12-lead ECG records cardiac electrical activity from multiple leads; it supports but does not independently answer every clinical question.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-073",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient with a regular tachycardia has a pulse and is alert. Before any rhythm intervention, what is the most important check?",
+    "o": [
+      "Whether the patient is stable, including blood pressure, mental status, chest pain, and signs of shock.",
+      "Whether the patient has eaten today.",
+      "Whether the telemetry alarm can be silenced.",
+      "Whether a family member agrees with the monitor."
+    ],
+    "a": 0,
+    "r": "Treatment urgency depends on hemodynamic stability, not only the displayed rate.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-074",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A patient with a narrow-complex tachycardia has no symptoms and the rate returns to baseline spontaneously. What should the nurse do next?",
+    "o": [
+      "Delete the telemetry record because the rhythm ended.",
+      "Document the episode, assess for triggers and symptoms, and notify the care team per plan.",
+      "Give a rescue medication that was not prescribed.",
+      "Discharge the patient without notifying anyone."
+    ],
+    "a": 1,
+    "r": "Resolution does not remove the need to assess symptoms, triggers, recurrence risk, and prescribed follow-up.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-075",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "SVT/Sinus Rhythms",
+    "q": "A nurse sees a monitor alarm for a fast rate but the patient is talking comfortably. What is the best first step?",
+    "o": [
+      "Silence the alarm permanently.",
+      "Administer emergency medication based only on the display.",
+      "Assess the patient and verify the rhythm and pulse before acting on the alarm.",
+      "Assume the patient is in cardiac arrest."
+    ],
+    "a": 2,
+    "r": "Artifact and monitor errors occur. Correlate the tracing with the patient and a palpable pulse before intervention.",
+    "difficulty": 2,
+    "topic": "SVT/Sinus Rhythms"
+  },
+  {
+    "id": "nur312-exam2-parallel-076",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "ECG Fundamentals",
+    "q": "A student asks what the P wave represents on an ECG. Which answer is correct?",
+    "o": [
+      "Ventricular depolarization.",
+      "Ventricular repolarization.",
+      "The period of ventricular relaxation only.",
+      "Atrial depolarization."
+    ],
+    "a": 3,
+    "r": "The P wave reflects atrial depolarization; the QRS reflects ventricular depolarization and the T wave ventricular repolarization.",
+    "difficulty": 2,
+    "topic": "ECG Fundamentals"
+  },
+  {
+    "id": "nur312-exam2-parallel-077",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "ECG Fundamentals",
+    "q": "A nurse identifies a regular rhythm with a P wave before each QRS and a consistent PR interval. What is the best interpretation if the rate is within the patient’s expected range?",
+    "o": [
+      "Sinus rhythm with coordinated atrioventricular conduction.",
+      "Atrial fibrillation.",
+      "Ventricular fibrillation.",
+      "Complete heart block."
+    ],
+    "a": 0,
+    "r": "Consistent P-to-QRS relationships and regular intervals support sinus rhythm, interpreted with the rate and clinical context.",
+    "difficulty": 2,
+    "topic": "ECG Fundamentals"
+  },
+  {
+    "id": "nur312-exam2-parallel-078",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "ECG Fundamentals",
+    "q": "Telemetry displays a sudden irregular tracing while the patient is moving, but the pulse remains regular. What should the nurse do?",
+    "o": [
+      "Treat the displayed pattern as ventricular fibrillation without checking the patient.",
+      "Check electrode contact and obtain a clean tracing while continuing patient assessment.",
+      "Remove all monitoring and document an arrhythmia.",
+      "Tell the patient not to report symptoms."
+    ],
+    "a": 1,
+    "r": "Movement or poor electrode contact can create artifact. A regular pulse and stable patient call for verification, not reflex treatment.",
+    "difficulty": 2,
+    "topic": "ECG Fundamentals"
+  },
+  {
+    "id": "nur312-exam2-parallel-079",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Chest Tubes",
+    "q": "A patient with a chest tube has continuous bubbling in the water-seal chamber. What should the nurse do first?",
+    "o": [
+      "Clamp the tube routinely for the rest of the shift.",
+      "Strip the tubing forcefully toward the drainage unit.",
+      "Assess the patient and system for an air leak, checking connections and the insertion site per policy.",
+      "Add sterile water to the suction-control chamber without checking the device."
+    ],
+    "a": 2,
+    "r": "Continuous water-seal bubbling may indicate an air leak; assess the patient and system. Routine clamping or stripping can be harmful.",
+    "difficulty": 2,
+    "topic": "Chest Tubes"
+  },
+  {
+    "id": "nur312-exam2-parallel-080",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Chest Tubes",
+    "q": "A chest tube is accidentally pulled out of the patient’s chest. What is the nurse’s immediate action?",
+    "o": [
+      "Reinsert the used tube into the tract.",
+      "Leave the opening uncovered while finding supplies.",
+      "Clamp the remaining tubing and walk away.",
+      "Apply a sterile occlusive dressing according to facility policy, call for help, and assess breathing."
+    ],
+    "a": 3,
+    "r": "A dislodged tube creates risk of air entry. Protect the site and promptly assess respiratory status while obtaining help.",
+    "difficulty": 2,
+    "topic": "Chest Tubes"
+  },
+  {
+    "id": "nur312-exam2-parallel-081",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Chest Tubes",
+    "q": "The chest drainage system tips over, but the tubing remains connected and the patient is stable. What should the nurse do?",
+    "o": [
+      "Restore the unit upright, check the water-seal level and connections, then reassess the patient.",
+      "Disconnect the tube from the drainage unit and leave it open to air.",
+      "Clamp the tube for an extended period.",
+      "Raise the drainage unit above chest level."
+    ],
+    "a": 0,
+    "r": "Keep the system upright below chest level and verify function. Avoid routine disconnection or clamping, which can compromise drainage.",
+    "difficulty": 2,
+    "topic": "Chest Tubes"
+  },
+  {
+    "id": "nur312-exam2-parallel-082",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Chest Tubes",
+    "q": "A patient’s chest tube stops tidaling, and the patient becomes more short of breath. What is the priority?",
+    "o": [
+      "Assume the lung has fully expanded and remove the tube.",
+      "Assess respiratory status and the tubing for obstruction or displacement; promptly notify the clinician.",
+      "Flush the tube without an order.",
+      "Wait until the end of the shift to recheck."
+    ],
+    "a": 1,
+    "r": "Absent tidaling may have more than one explanation, but worsening dyspnea is concerning. Assess the patient and system and escalate.",
+    "difficulty": 2,
+    "topic": "Chest Tubes"
+  },
+  {
+    "id": "nur312-exam2-parallel-083",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Chest Tubes",
+    "q": "A patient with a chest tube asks why the drainage container must remain below the chest. Which response is correct?",
+    "o": [
+      "“It makes the tube drain faster by gravity into your heart.”",
+      "“It prevents every possible infection.”",
+      "“Keeping it lower helps prevent drainage or air from flowing back toward your chest.”",
+      "“The container’s position does not matter.”"
+    ],
+    "a": 2,
+    "r": "The collection system stays below chest level to support drainage and reduce backflow risk.",
+    "difficulty": 2,
+    "topic": "Chest Tubes"
+  },
+  {
+    "id": "nur312-exam2-parallel-084",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "After central-line placement, a patient develops sudden dyspnea, unilateral absent breath sounds, and falling blood pressure. What complication should the nurse suspect?",
+    "o": [
+      "Uncomplicated atelectasis.",
+      "Stable pleural effusion.",
+      "Chronic bronchitis.",
+      "Tension pneumothorax."
+    ],
+    "a": 3,
+    "r": "Acute unilateral loss of breath sounds with respiratory distress and hypotension after a procedure suggests tension physiology and requires emergency response.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-085",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with blunt chest trauma has paradoxical movement of a chest segment and increasing work of breathing. What is the priority?",
+    "o": [
+      "Support oxygenation, assess ventilation, and urgently escalate possible flail chest.",
+      "Apply a tight circumferential chest wrap.",
+      "Encourage deep coughing without pain control or assessment.",
+      "Leave the patient supine and unmonitored."
+    ],
+    "a": 0,
+    "r": "Paradoxical chest-wall motion suggests flail segment and impaired ventilation. Provide respiratory support and urgent evaluation; tight binding limits expansion.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-086",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with suspected hemothorax becomes pale and tachycardic after trauma. Which assessment is most urgent?",
+    "o": [
+      "Visual acuity and hearing.",
+      "Signs of hemorrhagic shock and respiratory compromise.",
+      "Bowel pattern from the prior week.",
+      "Skin color at a healed scar."
+    ],
+    "a": 1,
+    "r": "Blood in the pleural space can impair ventilation and cause significant blood loss; assess circulation and breathing rapidly.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-087",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with a small spontaneous pneumothorax is being observed. Which change requires immediate escalation?",
+    "o": [
+      "Mild soreness at the site with stable vital signs.",
+      "A stable oxygen saturation on the ordered support.",
+      "Sudden worsening dyspnea with hypotension or tracheal shift.",
+      "An unchanged respiratory rate."
+    ],
+    "a": 2,
+    "r": "Worsening distress and hemodynamic compromise can indicate tension pneumothorax, an emergency.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-088",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient has a penetrating chest injury and severe respiratory distress. What should the nurse do first?",
+    "o": [
+      "Remove any object embedded in the chest.",
+      "Offer oral fluids.",
+      "Delay assessment until imaging is completed.",
+      "Activate emergency response and support airway and breathing while applying oxygen per protocol."
+    ],
+    "a": 3,
+    "r": "Penetrating chest trauma can rapidly impair ventilation and circulation. Stabilization and emergency response precede diagnostic imaging.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-089",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with a suspected pneumothorax has unilateral decreased breath sounds but stable vital signs. What is the appropriate nursing action?",
+    "o": [
+      "Continue close respiratory monitoring and promptly notify the clinician for evaluation.",
+      "Dismiss the finding because stable blood pressure excludes pneumothorax.",
+      "Encourage vigorous exercise.",
+      "Perform needle decompression independently without an order or protocol."
+    ],
+    "a": 0,
+    "r": "Unilateral decreased breath sounds can reflect pneumothorax even before instability; timely evaluation and monitoring are appropriate.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-090",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with flail chest reports severe pain and shallow breathing. What nursing approach best supports ventilation?",
+    "o": [
+      "Restrict all analgesia so respiratory rate remains high.",
+      "Promptly address pain using the prescribed plan and encourage coached breathing as tolerated.",
+      "Bind the chest tightly to immobilize the segment.",
+      "Ask the patient to avoid coughing and deep breathing entirely."
+    ],
+    "a": 1,
+    "r": "Pain limits ventilation and secretion clearance. Appropriate analgesia and coached respiratory care support breathing; tight binding can worsen mechanics.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-091",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A nurse is caring for a patient after thoracic trauma. Which trend most strongly suggests worsening respiratory compromise?",
+    "o": [
+      "Stable effort and improving oxygen saturation.",
+      "Mild bruising with unchanged respiratory findings.",
+      "Increasing work of breathing with falling oxygen saturation and new confusion.",
+      "Improved alertness and warm skin."
+    ],
+    "a": 2,
+    "r": "Rising work of breathing, hypoxemia, and mental-status change indicate deteriorating oxygenation and require immediate reassessment.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-092",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with a chest injury has tracheal deviation, distended neck veins, and hypotension. What should the nurse suspect?",
+    "o": [
+      "An uncomplicated rib contusion.",
+      "A stable isolated pleural effusion.",
+      "A normal response to pain.",
+      "Tension pneumothorax with obstructed venous return."
+    ],
+    "a": 3,
+    "r": "These findings can occur in tension pneumothorax, where rising intrathoracic pressure compromises ventilation and venous return; emergency intervention is needed.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-093",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Pneumothorax/Hemothorax/Flail Chest",
+    "q": "A patient with a suspected pneumothorax asks why the clinician ordered chest imaging. Which response is best?",
+    "o": [
+      "“Imaging helps assess the pleural space and lung expansion, while your symptoms and vital signs guide urgency.”",
+      "“A normal image would make respiratory assessment unnecessary.”",
+      "“Imaging measures only the heart’s electrical activity.”",
+      "“Imaging immediately treats the collapsed lung.”"
+    ],
+    "a": 0,
+    "r": "Imaging supports diagnosis and extent assessment, but it does not replace ongoing clinical monitoring or treatment.",
+    "difficulty": 2,
+    "topic": "Pneumothorax/Hemothorax/Flail Chest"
+  },
+  {
+    "id": "nur312-exam2-parallel-094",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A postoperative patient suddenly develops pleuritic chest pain, tachycardia, and severe dyspnea. What should the nurse do first?",
+    "o": [
+      "Massage the calves to dislodge a possible clot.",
+      "Activate emergency support, assess oxygenation and circulation, and report suspected pulmonary embolism.",
+      "Encourage the patient to walk to relieve pain.",
+      "Wait for the next routine vital-sign check."
+    ],
+    "a": 1,
+    "r": "Sudden dyspnea and pleuritic pain after surgery may indicate PE. Stabilize and escalate immediately; do not massage a suspected DVT.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-095",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient has unilateral calf swelling and tenderness. Which action should the nurse avoid?",
+    "o": [
+      "Measuring and comparing both legs as directed.",
+      "Notifying the clinician for evaluation.",
+      "Massaging or vigorously manipulating the affected leg.",
+      "Assessing for chest pain or dyspnea."
+    ],
+    "a": 2,
+    "r": "Manipulation can potentially dislodge thrombus. Assess and escalate suspected DVT without massage.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-096",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient receiving anticoagulation for DVT reports blood in the urine. What should the nurse advise?",
+    "o": [
+      "Take an extra dose to prevent clot extension.",
+      "Stop treatment permanently without notifying anyone.",
+      "Ignore the finding unless pain develops.",
+      "Contact the care team promptly for assessment of possible bleeding; seek urgent care for heavy bleeding or instability."
+    ],
+    "a": 3,
+    "r": "Hematuria may be anticoagulant-associated bleeding. Prompt clinician guidance is needed; severe or unstable bleeding is an emergency.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-097",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient at increased VTE risk is beginning postoperative recovery. Which action helps reduce venous stasis when safe and prescribed?",
+    "o": [
+      "Early mobilization and use of ordered mechanical prophylaxis.",
+      "Keeping the patient immobile for several days.",
+      "Applying tight bands behind the knees.",
+      "Massaging both legs every hour."
+    ],
+    "a": 0,
+    "r": "Early movement and prescribed compression strategies reduce venous stasis; avoid constricting bands and massage.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-098",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient with suspected pulmonary embolism becomes hypotensive and increasingly confused. Which priority is appropriate?",
+    "o": [
+      "A routine outpatient referral.",
+      "Rapid emergency escalation with airway, breathing, and circulation support.",
+      "A long walk to improve circulation.",
+      "Oral fluids followed by discharge."
+    ],
+    "a": 1,
+    "r": "Hypotension and altered mentation suggest high-risk PE with impaired perfusion. Emergency stabilization is required.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-099",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient taking an anticoagulant for a pulmonary embolism asks about using a new herbal supplement. What should the nurse say?",
+    "o": [
+      "All supplements are safe because they are natural.",
+      "Stop the anticoagulant while using the supplement.",
+      "Check with the prescriber or pharmacist before starting it because supplements can interact with anticoagulants.",
+      "Take both at double strength."
+    ],
+    "a": 2,
+    "r": "Herbal products may alter bleeding risk or drug effect. Medication reconciliation with a clinician/pharmacist is safest.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-100",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient with a confirmed DVT asks why the nurse discourages crossing the legs for long periods. Which response is best?",
+    "o": [
+      "“Crossing your legs always breaks the clot apart.”",
+      "“Position has no effect on venous circulation.”",
+      "“You should stay completely still until the clot disappears.”",
+      "“Prolonged pressure and immobility can impede venous return; changing position and moving as directed helps circulation.”"
+    ],
+    "a": 3,
+    "r": "Avoid prolonged immobility and follow prescribed activity guidance. Do not imply that a simple position will dislodge a clot.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-101",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A nurse is teaching a patient prescribed an anticoagulant. Which statement should prompt follow-up teaching?",
+    "o": [
+      "“If I miss a dose, I will double the next one.”",
+      "“I will use the medication exactly as prescribed.”",
+      "“I will report unusual bruising or bleeding.”",
+      "“I will tell clinicians and dentists that I take this medicine.”"
+    ],
+    "a": 0,
+    "r": "Doubling a missed dose may cause harm; missed-dose instructions vary by drug and should come from the care team or official medication guidance.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-102",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient with a prior DVT reports sudden shortness of breath and near-syncope at home. Which instruction is safest?",
+    "o": [
+      "Schedule a routine clinic visit next month.",
+      "Call emergency services now; do not drive yourself.",
+      "Take a family member’s anticoagulant.",
+      "Lie down and wait several hours before seeking help."
+    ],
+    "a": 1,
+    "r": "Sudden dyspnea and presyncope may indicate PE and require emergency assessment; driving while unstable is unsafe.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-103",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient returns after a long trip with unilateral leg swelling. Which additional symptom most increases concern for PE?",
+    "o": [
+      "A mild headache that resolved.",
+      "Chronic unchanged knee stiffness.",
+      "New unexplained shortness of breath.",
+      "A small bruise on the opposite arm."
+    ],
+    "a": 2,
+    "r": "New dyspnea accompanying a possible DVT raises concern that thrombus has embolized to the lungs.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-104",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A hospitalized patient has an order for sequential compression devices but reports new calf pain and swelling. What should the nurse do?",
+    "o": [
+      "Apply the device more tightly over the painful area.",
+      "Massage the calf before putting on the device.",
+      "Ignore the symptom and continue without assessment.",
+      "Pause applying the device to the affected leg and urgently notify the clinician for DVT evaluation."
+    ],
+    "a": 3,
+    "r": "New unilateral pain and swelling require evaluation for DVT before compression is applied to that extremity, according to clinical direction.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-105",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient on anticoagulation falls and strikes their head but feels well. What should the nurse advise?",
+    "o": [
+      "Seek immediate medical evaluation because bleeding may occur even without early symptoms.",
+      "Wait for a severe headache before calling.",
+      "Skip the next several doses without contacting the prescriber.",
+      "Take aspirin for soreness."
+    ],
+    "a": 0,
+    "r": "Head injury during anticoagulation warrants urgent evaluation for internal bleeding; do not self-adjust therapy or add antiplatelets.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-106",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient with PE is receiving oxygen and monitoring. Which change should the nurse report immediately?",
+    "o": [
+      "Stable breathing on the ordered oxygen.",
+      "Worsening oxygenation, new hypotension, or altered mental status.",
+      "Improved chest discomfort and stable vital signs.",
+      "A request for a blanket."
+    ],
+    "a": 1,
+    "r": "These changes can indicate worsening gas exchange or hemodynamic compromise from PE and require rapid escalation.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-107",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "DVT/Pulmonary Embolism",
+    "q": "A patient asks whether compression stockings replace anticoagulant treatment for a diagnosed DVT. What is the best response?",
+    "o": [
+      "“Yes, stockings dissolve any clot.”",
+      "“Stop all medicines once stockings are applied.”",
+      "“No. Follow the prescribed treatment plan; compression may be used for selected reasons but does not replace anticoagulation when it is indicated.”",
+      "“Wear any size as tightly as possible.”"
+    ],
+    "a": 2,
+    "r": "Compression does not substitute for indicated anticoagulation. Treatment is individualized, and garments must fit and be used as directed.",
+    "difficulty": 2,
+    "topic": "DVT/Pulmonary Embolism"
+  },
+  {
+    "id": "nur312-exam2-parallel-108",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Gas Exchange/Respiratory Failure",
+    "q": "A patient with worsening respiratory failure is drowsy, using accessory muscles, and has falling oxygen saturation despite prescribed oxygen. What is the priority?",
+    "o": [
+      "Turn off oxygen to see whether the saturation improves.",
+      "Offer food and encourage sleep.",
+      "Wait for the next scheduled arterial blood gas.",
+      "Escalate immediately for airway/ventilatory support and reassess oxygenation."
+    ],
+    "a": 3,
+    "r": "Mental-status decline and increased work of breathing despite oxygen can signal impending respiratory failure; urgent escalation is essential.",
+    "difficulty": 2,
+    "topic": "Gas Exchange/Respiratory Failure"
+  },
+  {
+    "id": "nur312-exam2-parallel-109",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Gas Exchange/Respiratory Failure",
+    "q": "A patient with chronic lung disease becomes increasingly confused and has shallow respirations. What should the nurse do first?",
+    "o": [
+      "Assess airway, breathing, oxygenation, and ventilation; promptly notify the clinician.",
+      "Assume the confusion is baseline without checking.",
+      "Give sedatives to reduce anxiety before assessment.",
+      "Encourage the patient to lie flat."
+    ],
+    "a": 0,
+    "r": "Confusion and shallow breathing may reflect hypoxemia or hypercapnia. Immediate respiratory assessment and escalation are needed.",
+    "difficulty": 2,
+    "topic": "Gas Exchange/Respiratory Failure"
+  },
+  {
+    "id": "nur312-exam2-parallel-110",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Gas Exchange/Respiratory Failure",
+    "q": "A patient with respiratory failure is being considered for noninvasive ventilation. Which finding should be communicated as a potential concern?",
+    "o": [
+      "Alertness and ability to cooperate with the mask.",
+      "Inability to protect the airway or manage secretions.",
+      "A stable blood pressure and intact cough.",
+      "Understanding how to call for help."
+    ],
+    "a": 1,
+    "r": "Noninvasive ventilation requires a patient able to protect the airway and tolerate the interface; inability to do so may require another airway strategy.",
+    "difficulty": 2,
+    "topic": "Gas Exchange/Respiratory Failure"
+  },
+  {
+    "id": "nur312-exam2-parallel-111",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Gas Exchange/Respiratory Failure",
+    "q": "A patient on oxygen has an unexpectedly low pulse-oximeter reading but is alert and speaking comfortably. What should the nurse do first?",
+    "o": [
+      "Increase oxygen to maximum without assessment or order.",
+      "Document the number as accurate and leave the room.",
+      "Assess the patient and verify the signal, probe placement, and reading while checking for respiratory distress.",
+      "Remove the probe and stop monitoring."
+    ],
+    "a": 2,
+    "r": "Pulse oximetry can be affected by signal quality and perfusion. Correlate the value with the patient and verify promptly without ignoring risk.",
+    "difficulty": 2,
+    "topic": "Gas Exchange/Respiratory Failure"
+  },
+  {
+    "id": "nur312-exam2-parallel-112",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Integrated Cardiac",
+    "q": "A patient with heart failure and a history of valve disease suddenly develops chest pressure, diaphoresis, and hypotension. What is the nurse’s priority?",
+    "o": [
+      "Complete routine intake documentation first.",
+      "Encourage the patient to walk to improve cardiac output.",
+      "Wait for a scheduled echocardiogram.",
+      "Activate emergency cardiac support and assess airway, breathing, circulation, and rhythm."
+    ],
+    "a": 3,
+    "r": "Acute chest pain with hypotension suggests possible ischemia and shock. Stabilization and emergency escalation take precedence.",
+    "difficulty": 2,
+    "topic": "Integrated Cardiac"
+  },
+  {
+    "id": "nur312-exam2-parallel-113",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Integrated Cardiac",
+    "q": "A patient with a cardiac diagnosis has new edema, rising daily weight, and worsening exertional dyspnea. Which response is best?",
+    "o": [
+      "Assess for fluid overload and notify the clinician so the treatment plan can be reviewed.",
+      "Recommend a high-sodium diet and no follow-up.",
+      "Advise the patient to double a diuretic without an order.",
+      "Treat each symptom as unrelated to the heart."
+    ],
+    "a": 0,
+    "r": "The combined trend suggests worsening congestion. Assessment and clinician review are needed; medication adjustment must be prescribed.",
+    "difficulty": 2,
+    "topic": "Integrated Cardiac"
+  },
+  {
+    "id": "nur312-exam2-parallel-114",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Integrated Respiratory",
+    "q": "A patient with a chest tube after a pulmonary embolism workup becomes acutely restless, tachypneic, and cyanotic. What should the nurse do?",
+    "o": [
+      "Focus only on the previous imaging report.",
+      "Call for emergency help and rapidly assess airway, breathing, oxygenation, and chest-drain function.",
+      "Ask the patient to ambulate to improve oxygenation.",
+      "Wait until the next scheduled respiratory treatment."
+    ],
+    "a": 1,
+    "r": "Restlessness, tachypnea, and cyanosis signal severe hypoxemia. Immediate respiratory support and evaluation of the drain and underlying cause are necessary.",
+    "difficulty": 2,
+    "topic": "Integrated Respiratory"
+  },
+  {
+    "id": "nur312-exam2-parallel-115",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Integrated Rhythm",
+    "q": "A patient with a rapid irregular rhythm suddenly loses consciousness and has no palpable pulse. What should the nurse do?",
+    "o": [
+      "Attempt a vagal maneuver.",
+      "Wait for a 12-lead ECG before starting CPR.",
+      "Begin CPR and activate the pulseless-arrest response; use the rhythm-based algorithm.",
+      "Give oral anticoagulation."
+    ],
+    "a": 2,
+    "r": "A pulseless patient is in cardiac arrest regardless of prior rhythm. CPR and emergency algorithm-based resuscitation must start immediately.",
+    "difficulty": 2,
+    "topic": "Integrated Rhythm"
+  },
+  {
+    "id": "nur312-exam2-parallel-116",
+    "source": "nur312-exam2-parallel-original-v1",
+    "type": "Integrated Valve/Rhythm",
+    "q": "A patient with mitral valve disease and atrial fibrillation suddenly reports weakness and cannot move the right arm. What is the priority action?",
+    "o": [
+      "Give food and reassess arm strength later.",
+      "Wait for the scheduled cardiology appointment.",
+      "Assume the weakness is a harmless medication effect.",
+      "Activate stroke response, determine last-known-well time, and maintain emergency monitoring."
+    ],
+    "a": 3,
+    "r": "Atrial fibrillation increases embolic stroke risk. New unilateral weakness demands immediate stroke evaluation and last-known-well documentation.",
+    "difficulty": 2,
+    "topic": "Integrated Valve/Rhythm"
+  }
+]
