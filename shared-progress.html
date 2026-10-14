@@ -306,8 +306,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
-  <script src="in-house-item-bank.js"></script>
-  <script src="diagnostic-question-expansion.js"></script>
+  <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
@@ -629,36 +628,14 @@
 
     function initStaticAuthoritativeBanks(){
       if(authoritativeBank.size>0)return;
-      (window.IN_HOUSE_ITEM_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
-      (window.DIAGNOSTIC_EXPANSION||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
-      (window.CONSULT_DIAGNOSTIC_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      const banks=window.DIAGNOSTIC_BANKS||{};
+      [...(banks.questionBank||[]),...(banks.remediationBank||[]),...(window.CONSULT_DIAGNOSTIC_BANK||[])].forEach(item=>{
+        if(item&&item.id)authoritativeBank.set(item.id,item);
+      });
     }
 
     async function ensureDiagnosticBanksLoaded(){
       initStaticAuthoritativeBanks();
-      if(!diagnosticParsedPromise){
-        diagnosticParsedPromise=(async()=>{
-          try{
-            const res=await fetch('diagnostic.html');
-            if(!res.ok)return;
-            const html=await res.text();
-            const wStub={IN_HOUSE_ITEM_BANK:[],DIAGNOSTIC_EXPANSION:[]};
-            const matchQb=html.match(/const QUESTION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
-            if(matchQb){
-              const fn=new Function('window','return '+matchQb[1].replace(/;$/,''));
-              const qb=fn(wStub);
-              (qb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
-            }
-            const matchRem=html.match(/const REMEDIATION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
-            if(matchRem){
-              const fnRem=new Function('return '+matchRem[1].replace(/;$/,''));
-              const rb=fnRem();
-              (rb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
-            }
-          }catch(_){}
-        })();
-      }
-      await diagnosticParsedPromise;
     }
 
     function findAuthoritativeItem(itemId){
@@ -849,11 +826,10 @@
     async function loadAndRenderAttemptReview(attemptId,container){
       if(!attemptId||!container)return;
       container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
-      const {data:responses,error}=await db
-        .from('in_house_assessment_item_responses')
-        .select('id,attempt_id,item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
-        .eq('attempt_id',attemptId)
-        .order('answered_at',{ascending:true});
+      const {data,error}=await db.functions.invoke('diagnostic-assessment',{
+        body:{action:'review',attemptId}
+      });
+      const responses=data?.responses||null;
 
       if(error){
         container.innerHTML=`<div style="color:#b4443c;padding:6px 0;">
@@ -897,7 +873,7 @@
           const diff=r.difficulty||bankItem?.difficulty||'';
           const qType=r.question_type||bankItem?.type||'';
           const stem=bankItem?.stem||null;
-          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const rationale=getRationaleText(r.rationale);
           const optionsHtml=bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
 
           return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
