@@ -312,6 +312,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="assessment-platforms.js"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script>
@@ -1269,7 +1270,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       return [...attempts,...reports].filter(row=>row.date&&Number.isFinite(row.score)&&row.score>=0&&row.score<=100).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
     }
     function renderComparisonChart(exams,practice,mode){
-      const catRows=mode==='practice'?[]:exams.filter(row=>row.o!=null).map(row=>({date:row.d,score:row.o,label:(row.u.platform||'Exam')+(row.u.report_label?' · '+row.u.report_label:''),total:null}));
+      const catRows=mode==='practice'?[]:exams.filter(row=>row.o!=null).map(row=>({date:row.d,score:row.o,label:AssessmentPlatforms.name(row.u.platform,'Exam')+(row.u.report_label?' · '+row.u.report_label:''),total:null}));
       const practiceRows=mode==='cat'?[]:practice;
       const rows=[...catRows,...practiceRows],days=[...new Set(rows.map(row=>String(row.date).slice(0,10)))].sort();
       if(!rows.length)return '<p class="muted">No scored results in this view yet.</p>';
@@ -1296,21 +1297,23 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const seriesMode=window.__trendSeries||'both';
       const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
       const exams=uploads.filter(catKindOk).map(u=>{const m=[],nn=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!==''){m[i]=Number(c.score);if(c.n!=null&&Number.isFinite(c.n))nn[i]=c.n}});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,nn,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
-      const plats=[...new Set(exams.map(e=>e.u.platform||'Exam'))];
-      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?(exams[exams.length-1].u.platform||'Exam'):'all';
-      const shown=window.__catPlat==='all'?exams:exams.filter(e=>(e.u.platform||'Exam')===window.__catPlat);
+      const platformKey=e=>'platform:'+AssessmentPlatforms.key(e.u.platform);
+      const platformName=key=>AssessmentPlatforms.name(exams.find(e=>platformKey(e)===key)?.u.platform,'Exam');
+      const plats=[...new Set(exams.map(platformKey))];
+      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?platformKey(exams[exams.length-1]):'all';
+      const shown=window.__catPlat==='all'?exams:exams.filter(e=>platformKey(e)===window.__catPlat);
       const scored=shown.filter(e=>e.o!=null),withCats=shown.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
-      const label=e=>(e.u.platform||'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
+      const label=e=>AssessmentPlatforms.name(e.u.platform,'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
       const modeButtons=['cat','practice','both'].map(mode=>'<button type="button" class="button '+(seriesMode===mode?'':'secondary')+'" data-trend-series="'+mode+'" aria-pressed="'+(seriesMode===mode)+'">'+({cat:'CAT only',practice:'Practice only',both:'Compare both'}[mode])+'</button>').join(' ');
       let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px" aria-label="Trend type filter">'+modeButtons+'</div>'+renderComparisonChart(shown,practice,seriesMode)+'<section data-series-panel="cat"'+(seriesMode==='practice'?' hidden':'')+'>';
-      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(pl))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
+      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(platformName(pl)))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
       if(scored.length){
         const last=scored[scored.length-1],prev=scored[scored.length-2];
         const ch=prev?Math.round(last.o-prev.o):null;
         html+='<p style="margin:0 0 8px"><b style="font-size:1.5rem;font-family:Georgia,serif">'+Math.round(last.o)+'%</b> latest ('+esc(label(last))+')'+(ch==null?'':' · <span style="color:'+(ch>=0?'#2f7d4f':'#b4443c')+';font-weight:800">'+(ch>0?'▲ +':ch<0?'▼ ':'● ')+ch+' pts</span> since previous')+'</p>';
       }else html+='<p class="muted">No overall scores yet. Use “Enter exam results” below to add one.</p>';
       if(withCats.length){
-        const head='<tr><th>Category</th>'+withCats.map(e=>'<th>'+esc(catShort(e.d))+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(e.u.platform||'')+'</span></th>').join('')+'<th>Change</th></tr>';
+        const head='<tr><th>Category</th>'+withCats.map(e=>'<th>'+esc(catShort(e.d))+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(AssessmentPlatforms.name(e.u.platform,'Exam'))+'</span></th>').join('')+'<th>Change</th></tr>';
         const body=NCLEXCats.NAMES.map((n,i)=>{
           const vals=withCats.map(e=>e.m[i]),seen=vals.filter(v=>v!=null);
           const d=seen.length>1?Math.round(seen[seen.length-1]-seen[seen.length-2]):null;
@@ -1355,6 +1358,9 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,...(Object.keys(cnts).length?{category_counts:cnts}:{}),entered_by:session.user.id})).error;
       }
       if(err){msg.textContent='Could not save: '+err.message;return}
+      const savedPlatform=target?currentUploads.find(u=>u.id===target)?.platform:$('cat-platform').value;
+      window.__catPlat='platform:'+AssessmentPlatforms.key(savedPlatform);
+      if(window.__trendSeries==='practice')window.__trendSeries='both';
       $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
     });
     async function loadStudent(target){

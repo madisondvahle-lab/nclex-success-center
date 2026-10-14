@@ -530,6 +530,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="assessment-platforms.js"></script>
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
   <script>
@@ -936,7 +937,7 @@
         e.preventDefault();
         const st = $('lc-status'), btn = $('lc-save');
         const cats = NCLEXCats.NAMES.map((n, i) => ({name: n, v: form.querySelector(`[data-c="${i}"]`).value, n: form.querySelector(`[data-n="${i}"]`).value})).filter(c => c.v !== '');
-        const overall = Number($('lc-overall').value), label = $('lc-label').value.trim() || 'CAT';
+        const overall = Number($('lc-overall').value), label = $('lc-label').value.trim() || 'CAT', savedPlatform = $('lc-platform').value;
         const dupe = await db.from('student_assessment_uploads').select('id').eq('student_id', student.id).eq('report_label', label).eq('taken_on', $('lc-date').value).limit(1);
         if (dupe.data && dupe.data.length && !confirm('You already logged an exam with this name and date. Save it again?')) return;
         btn.disabled = true; st.textContent = 'Saving…';
@@ -954,7 +955,7 @@
           }
           saveStage = 'saving the exam details';
           const ins = await db.from('student_assessment_uploads').insert({
-            student_id: student.id, platform: $('lc-platform').value, assessment_type: 'cat', taken_on: $('lc-date').value,
+            student_id: student.id, platform: savedPlatform, assessment_type: 'cat', taken_on: $('lc-date').value,
             overall_score: overall, report_path: path, report_filename: file ? file.name : 'Entered manually',
             report_mime_type: file ? (file.type || 'application/octet-stream') : 'text/plain', uploaded_by: user.id, report_label: label
           }).select('id').single();
@@ -964,9 +965,14 @@
             const cr = await db.from('student_assessment_categories').insert(cats.map(c => ({assessment_id: ins.data.id, category: c.name, score: Number(c.v), total_count: Number(c.n) > 0 ? Number(c.n) : null})));
             if (cr.error) throw cr.error;
           }
-          st.textContent = 'Saved. Your trend has been updated.';
           form.reset(); form.classList.add('hidden'); file = null; $('lc-file').value = '';
-          renderCatTrend(student);
+          st.textContent = 'Saved. Updating your trend…';
+          try {
+            await renderCatTrend(student, savedPlatform);
+            st.textContent = 'Saved. Your trend has been updated.';
+          } catch (err) {
+            st.textContent = `Saved, but your trend could not be refreshed: ${err.message || 'please try again'}. Refresh the page to see it; do not save the exam again.`;
+          }
         } catch (err) {
           st.textContent = `Could not save while ${saveStage}: ${err.message || 'please try again'}. Please tell Madison.`;
         }
@@ -1014,12 +1020,13 @@
     }
 
     // Weekly CAT trend from the assessments Madison enters each week.
-    async function renderCatTrend(student) {
+    async function renderCatTrend(student, savedPlatform) {
       const [ext, upl, practiceResult] = await Promise.all([
         db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores').eq('student_id', student.id),
         db.from('student_assessment_uploads').select('id,platform,assessment_type,report_label,taken_on,created_at,overall_score').eq('student_id', student.id),
         db.from('student_supplemental_practice_results').select('practice_key,practice_title,score,total_questions,completed_at').eq('student_id', student.id).order('completed_at')
       ]);
+      if (savedPlatform && (ext.error || upl.error)) throw ext.error || upl.error;
       const error = ext.error;
       const isPractice = name => /qbank|mixed practice|question practice/i.test(String(name || ''));
       const data = (ext.data || []).filter(row => !isPractice(row.assessment_name));
@@ -1028,22 +1035,26 @@
       const practiceReports = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type === 'qbank_report' && u.overall_score !== null && u.overall_score !== '');
       if (ups.length) {
         const cr = await db.from('student_assessment_categories').select('assessment_id,category,score').in('assessment_id', ups.map(u => u.id));
+        if (savedPlatform && cr.error) throw cr.error;
         const by = new Map();
         (cr.data || []).forEach(c => { if (!by.has(c.assessment_id)) by.set(c.assessment_id, {}); by.get(c.assessment_id)[c.category] = Number(c.score); });
-        const cap = v => String(v || 'Assessment').replace(/^./, c => c.toUpperCase());
-        ups.forEach(u => data.push({platform: cap(u.platform), assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
+        ups.forEach(u => data.push({platform: u.platform, assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
       }
       const practice = [
         ...(practiceResult.data || []).map(row => ({platform:'Success Center practice',assessment_name:row.practice_title||row.practice_key||'Practice set',taken_at:row.completed_at,created_at:row.completed_at,overall_score:Number(row.total_questions)?Number(row.score)/Number(row.total_questions)*100:null,total_questions:Number(row.total_questions)||0})),
-        ...practiceReports.map(row => ({platform:String(row.platform||'QBank').replace(/^./,c=>c.toUpperCase()),assessment_name:row.report_label||'QBank report',taken_at:row.taken_on,created_at:row.created_at,overall_score:row.overall_score,total_questions:null}))
+        ...practiceReports.map(row => ({platform:AssessmentPlatforms.name(row.platform,'QBank'),assessment_name:row.report_label||'QBank report',taken_at:row.taken_on,created_at:row.created_at,overall_score:row.overall_score,total_questions:null}))
       ].filter(row => row.taken_at&&Number.isFinite(Number(row.overall_score))&&Number(row.overall_score)>=0&&Number(row.overall_score)<=100);
       if (error && !data.length && !practice.length) return;
       if (!data.length && !practice.length) return;
       const when = r => String(r.taken_at || r.created_at || '').slice(0,10);
       const byPlatform = new Map();
-      data.forEach(r => { const k = r.platform || 'Assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
+      data.forEach(r => { const k = AssessmentPlatforms.key(r.platform) || 'assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
       const platforms = [...byPlatform.entries()].sort((a, b) => b[1].length - a[1].length).map(([k]) => k);
+      const platformName = key => AssessmentPlatforms.name(byPlatform.get(key)?.[0].platform);
       const card = document.getElementById('cat-trend-card'), body = document.getElementById('cat-trend-body');
+      const preferred = AssessmentPlatforms.key(savedPlatform) || body.dataset.trendPlatform;
+      const selected = byPlatform.has(preferred) ? preferred : platforms[0] || '';
+      if (savedPlatform && window.__studentTrendSeries === 'practice') window.__studentTrendSeries = 'both';
       const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
       const arrow = d => d > 0.5 ? `<span style="color:var(--teal);font-weight:700">▲ ${Math.round(d)}</span>` : d < -0.5 ? `<span style="color:#9c3535;font-weight:700">▼ ${Math.abs(Math.round(d))}</span>` : '<span style="color:#888">— 0</span>';
       const draw = (platform, mode) => {
@@ -1062,7 +1073,7 @@
         const point=(r,kind)=>`${(xFor(r)+(coincides(r)?(kind==='cat'?-4:4):0)).toFixed(1)},${y(r.overall_score).toFixed(1)}`;
         const points=(source,kind)=>source.map(r=>point(r,kind)).join(' ');
         const grid=[0,50,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#888">${v}%</text>`).join('');
-        const dots=(source,kind,color)=>source.map(r=>`<circle cx="${point(r,kind).split(',')[0]}" cy="${y(r.overall_score)}" r="4" fill="${color}"><title>${text(r.assessment_name||r.platform)} · ${Math.round(Number(r.overall_score))}%${r.total_questions?' · '+r.total_questions+' questions':''}</title></circle>`).join('');
+        const dots=(source,kind,color)=>source.map(r=>`<circle cx="${point(r,kind).split(',')[0]}" cy="${y(r.overall_score)}" r="4" fill="${color}"><title>${text(r.assessment_name||AssessmentPlatforms.name(r.platform))} · ${Math.round(Number(r.overall_score))}%${r.total_questions?' · '+r.total_questions+' questions':''}</title></circle>`).join('');
         const dates=[...new Set([...(showCat?catScores:[]),...(showPractice?practiceScores:[])].map(when))].sort();
         const chart=dateValues.length?`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="CAT and practice scores over the same dates, shown as separate series" style="width:100%;height:auto;max-height:230px">${grid}${showCat&&catScores.length>1?`<polyline points="${points(catScores,'cat')}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>`:''}${showPractice&&practiceScores.length>1?`<polyline points="${points(practiceScores,'practice')}" fill="none" stroke="#a94f67" stroke-width="2.5"/>`:''}${showCat?dots(catScores,'cat','var(--teal)'):''}${showPractice?dots(practiceScores,'practice','#a94f67'):''}${dates.map(date=>`<text x="${xFor({taken_at:date})}" y="${H-8}" text-anchor="middle" font-size="11" fill="#888">${fmt(date)}</text>`).join('')}</svg>`:'<p style="color:var(--muted)">No scored results in this view yet.</p>';
         const summary=(label,current,previous,color)=>current?`<p style="margin:0 0 6px;color:${color}"><strong>${Math.round(Number(current.overall_score))}%</strong> latest ${label}${previous?' · '+arrow(Number(current.overall_score)-Number(previous.overall_score))+' since previous':''}${current.total_questions?' · '+current.total_questions+' questions':''}</p>`:'';
@@ -1072,17 +1083,17 @@
         const legend=`<p style="font-size:.78rem;color:var(--muted);margin:4px 0 10px"><span style="color:var(--teal);font-weight:800">● CAT / readiness</span> &nbsp; <span style="color:#a94f67;font-weight:800">● Practice</span> · same date and percent axes, separate scores</p>`;
         return legend+summary('CAT/readiness',catLatest,catPrev,'var(--teal)')+summary('practice',practiceLatest,practicePrev,'#a94f67')+chart+table+(practiceResult.error?'<p style="color:#9c3535">Practice history could not be loaded: '+text(practiceResult.error.message||'Please try again.')+'</p>':'');
       };
-      const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map((pl, i) => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${i === 0}">${text(pl)}</button>`).join('')}</div>` : '';
-      const selected=platforms[0]||'';
+      const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map(pl => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${pl === selected}">${text(platformName(pl))}</button>`).join('')}</div>` : '';
       const seriesButtons=['cat','practice','both'].map(mode=>`<button type="button" class="class-tab" data-trend-series="${mode}" aria-pressed="${(window.__studentTrendSeries||'both')===mode}">${({cat:'CAT only',practice:'Practice only',both:'Compare both'})[mode]}</button>`).join('');
       body.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" aria-label="Trend type filter">${seriesButtons}</div>${chips}<div id="cat-trend-view"></div>`;
       const view = document.getElementById('cat-trend-view');
       let currentPlatform=selected, currentMode=window.__studentTrendSeries||'both';
+      body.dataset.trendPlatform = selected;
       view.innerHTML=draw(currentPlatform,currentMode);
-      document.getElementById('cat-trend-label').textContent=selected||'Practice';
+      document.getElementById('cat-trend-label').textContent=selected?platformName(selected):'Practice';
       body.querySelectorAll('[data-trend-platform]').forEach(b => b.addEventListener('click', () => {
         body.querySelectorAll('[data-trend-platform]').forEach(x => x.setAttribute('aria-selected', x === b));
-        currentPlatform=b.dataset.trendPlatform;view.innerHTML=draw(currentPlatform,currentMode);document.getElementById('cat-trend-label').textContent=currentPlatform;
+        currentPlatform=body.dataset.trendPlatform=b.dataset.trendPlatform;view.innerHTML=draw(currentPlatform,currentMode);document.getElementById('cat-trend-label').textContent=platformName(currentPlatform);
       }));
       body.querySelectorAll('[data-trend-series]').forEach(b=>b.addEventListener('click',()=>{
         currentMode=window.__studentTrendSeries=b.dataset.trendSeries;

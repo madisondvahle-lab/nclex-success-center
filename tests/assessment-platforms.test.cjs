@@ -1,0 +1,256 @@
+const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const { join } = require('node:path');
+const test = require('node:test');
+const vm = require('node:vm');
+
+const read = file => readFileSync(join(__dirname, '..', file), 'utf8');
+const studentHtml = read('student-dashboard.html');
+const tutorHtml = read('shared-progress.html');
+const escape = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+function element() {
+  return {
+    innerHTML: '', textContent: '', value: '', dataset: {}, style: {}, disabled: false,
+    classList: { add() {}, remove() {} },
+    listeners: {},
+    addEventListener(type, fn) { this.listeners[type] = fn; },
+    setAttribute(name, value) { this[name] = String(value); },
+    reset() { this.didReset = true; },
+    querySelectorAll(selector) {
+      const attr = selector.slice(1, -1);
+      this.buttons ||= new Map();
+      if (!this.buttons.has(this.innerHTML)) {
+        this.buttons.set(this.innerHTML, [...this.innerHTML.matchAll(/<button\b([^>]*)>/g)].map(match => {
+          const button = element();
+          button.attrs = {};
+          for (const [, key, value] of match[1].matchAll(/([\w-]+)="([^"]*)"/g)) {
+            button.attrs[key] = value;
+            if (key.startsWith('data-')) button.dataset[key.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
+          }
+          return button;
+        }));
+      }
+      return this.buttons.get(this.innerHTML).filter(button => Object.hasOwn(button.attrs, attr));
+    }
+  };
+}
+
+function fixture() {
+  return {
+    external_assessments: [
+      { platform: 'UWorld', assessment_name: 'CAT Sep', taken_at: '2026-09-22', overall_score: 60, category_scores: { Safety: 40 } },
+      { platform: ' UWORLD ', assessment_name: 'Readiness Sep', taken_at: '2026-09-30', overall_score: 65, category_scores: { Safety: 50 } },
+      { platform: 'Uworld', assessment_name: 'CAT Oct', taken_at: '2026-10-09', overall_score: 70, category_scores: { Safety: 60 } },
+      ...[1, 2, 3, 4, 5].map(i => ({ platform: 'Archer', assessment_name: `Archer ${i}`, taken_at: `2026-10-0${i}`, overall_score: 50, category_scores: {} }))
+    ],
+    student_assessment_uploads: [
+      { id: 'new', platform: ' uworld\t', assessment_type: 'cat', report_label: 'New CAT', taken_on: '2026-10-14', overall_score: 80 },
+      { id: 'qbank', platform: 'UWORLD', assessment_type: 'qbank_report', report_label: 'QBank practice', taken_on: '2026-10-12', overall_score: 55 },
+      { id: 'cpr', platform: 'uworld', assessment_type: 'cpr_report', taken_on: '2026-10-13', overall_score: 99 }
+    ],
+    student_assessment_categories: [{ assessment_id: 'new', category: 'Safety', score: 75 }],
+    student_supplemental_practice_results: [{ practice_title: 'Portal practice', completed_at: '2026-10-11', score: 7, total_questions: 10 }]
+  };
+}
+
+function harness(tables = fixture()) {
+  const elements = new Map();
+  const $ = id => {
+    if (!elements.has(id)) elements.set(id, element());
+    return elements.get(id);
+  };
+  const failures = {};
+  const db = {
+    auth: { getUser: async () => ({ data: { user: { id: 'synthetic-user' } } }) },
+    from(table) {
+      return {
+        select() { return this; }, eq() { return this; }, order() { return this; }, in() { return this; },
+        limit() { this.dupeCheck = true; return this; },
+        insert(rows) { this.rows = rows; return this; },
+        async single() {
+          tables[table].push({ ...this.rows, id: 'saved' });
+          return { data: { id: 'saved' } };
+        },
+        then(resolve, reject) {
+          if (this.rows) tables[table].push(...(Array.isArray(this.rows) ? this.rows : [this.rows]));
+          return Promise.resolve({ data: this.dupeCheck ? [] : tables[table], error: this.rows ? null : failures[table] }).then(resolve, reject);
+        }
+      };
+    }
+  };
+  const context = vm.createContext({
+    window: {}, document: { getElementById: $, querySelectorAll: selector => $('cat-body').querySelectorAll(selector) },
+    db, text: escape, esc: escape, $, NCLEXCats: { NAMES: ['Safety'], index: name => name === 'Safety' ? 0 : -1 },
+    isAdmin: true, student: { id: 'synthetic' }, session: { user: { id: 'synthetic-user' } }, isProgressAssessment: () => true,
+    assessmentDate: row => new Date((row.taken_on || row.created_at) + 'T12:00:00'),
+    ovPct: value => String(value), confirm: () => true
+  });
+  vm.runInContext(read('assessment-platforms.js'), context);
+  context.AssessmentPlatforms = context.window.AssessmentPlatforms;
+  vm.runInContext(studentHtml.slice(studentHtml.indexOf('function initLogCat('), studentHtml.indexOf('// Fills "This week"')), context);
+  vm.runInContext(studentHtml.slice(studentHtml.indexOf('async function renderCatTrend('), studentHtml.indexOf('// ── Nursing portal')), context);
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('const catKindOk='), tutorHtml.indexOf("    $('cat-fields').innerHTML=")), context);
+  return { context, $, tables, failures };
+}
+
+test('platform identity normalizes only case and whitespace, with canonical known labels', () => {
+  const { context: { AssessmentPlatforms: platforms } } = harness();
+  for (const value of ['UWorld', 'Uworld', 'uworld', ' UWORLD\t']) {
+    assert.equal(platforms.key(value), 'uworld');
+    assert.equal(platforms.name(value), 'UWorld');
+  }
+  for (const [value, label] of [['ATI', 'ATI'], ['hesi', 'HESI'], ['ARCHER', 'Archer'], ['kaplan', 'Kaplan'], ['BOOTCAMP', 'Bootcamp']]) {
+    assert.equal(platforms.name(value), label);
+  }
+  assert.equal(platforms.key(' My \t Platform '), platforms.key('my platform'));
+  assert.notEqual(platforms.key('My Platform'), platforms.key('MyPlatform'));
+  assert.notEqual(platforms.key('My Platform'), platforms.key('My-Platform'));
+  assert.equal(platforms.name('constructor'), 'constructor');
+  assert.equal(platforms.name('  '), 'Assessment');
+});
+
+test('student saved-platform trend includes all four dates and the correct latest categories, without mutating records', async () => {
+  const { context, $, tables } = harness();
+  const before = JSON.stringify(tables);
+  context.window.__studentTrendSeries = 'practice';
+  await context.renderCatTrend(context.student, 'uworld');
+  assert.equal($('cat-trend-label').textContent, 'UWorld');
+  assert.equal(context.window.__studentTrendSeries, 'both');
+  const chips = $('cat-trend-body').querySelectorAll('[data-trend-platform]');
+  assert.deepEqual(chips.map(b => b.dataset.trendPlatform).sort(), ['archer', 'uworld']);
+  assert.match($('cat-trend-body').innerHTML, /data-trend-platform="uworld" aria-selected="true">UWorld/);
+  const view = $('cat-trend-view');
+  assert.equal((view.innerHTML.match(/fill="var\(--teal\)"><title>/g) || []).length, 4);
+  assert.equal((view.innerHTML.match(/fill="#a94f67"><title>/g) || []).length, 2);
+  for (const date of ['Sep 22', 'Sep 30', 'Oct 9', 'Oct 14']) assert.ok(view.innerHTML.includes(date));
+  assert.match(view.innerHTML, /80%<\/strong> latest CAT/);
+  assert.match(view.innerHTML, /Safety/);
+  assert.match(view.innerHTML, /75%/);
+  assert.match(view.innerHTML, /▲ 15/);
+  assert.doesNotMatch(view.innerHTML, /99%/);
+  assert.equal(JSON.stringify(tables), before);
+
+  const series = $('cat-trend-body').querySelectorAll('[data-trend-series]');
+  series.find(b => b.dataset.trendSeries === 'practice').listeners.click();
+  assert.doesNotMatch(view.innerHTML, /fill="var\(--teal\)"><title>|Latest CAT categories/);
+  series.find(b => b.dataset.trendSeries === 'cat').listeners.click();
+  assert.doesNotMatch(view.innerHTML, /fill="#a94f67"><title>/);
+  chips.find(b => b.dataset.trendPlatform === 'archer').listeners.click();
+  assert.equal($('cat-trend-label').textContent, 'Archer');
+  await context.renderCatTrend(context.student);
+  assert.equal($('cat-trend-label').textContent, 'Archer');
+});
+
+test('student save awaits the refreshed saved platform and preserves save success on refresh failure', async () => {
+  for (const failure of [null, 'external_assessments', 'student_assessment_uploads', 'student_assessment_categories']) {
+    const { context, $, failures, tables } = harness();
+    const fields = { '[data-c="0"]': { value: '88' }, '[data-n="0"]': { value: '10' } };
+    $('lc-form').querySelector = selector => fields[selector];
+    context.initLogCat(context.student);
+    $('lc-platform').value = 'uworld';
+    $('lc-overall').value = '85';
+    $('lc-label').value = 'Saved exam';
+    $('lc-date').value = '2026-10-15';
+    if (failure) failures[failure] = { message: 'Synthetic refresh failure' };
+    await $('lc-form').listeners.submit({ preventDefault() {} });
+    assert.equal(tables.student_assessment_uploads.filter(row => row.id === 'saved').length, 1);
+    assert.equal($('lc-save').disabled, false);
+    if (failure) {
+      assert.match($('lc-status').textContent, /^Saved, but your trend could not be refreshed:/);
+      assert.match($('lc-status').textContent, /do not save the exam again/);
+    } else {
+      assert.equal($('lc-status').textContent, 'Saved. Your trend has been updated.');
+      assert.equal($('cat-trend-label').textContent, 'UWorld');
+      assert.match($('cat-trend-view').innerHTML, /85%<\/strong> latest CAT/);
+      assert.match($('cat-trend-view').innerHTML, /88%/);
+      assert.match($('cat-trend-view').innerHTML, /Oct 15/);
+    }
+  }
+});
+
+test('tutor chart combines mixed-case sources, retains categories and supports platform/series filters', () => {
+  const { context, $, tables } = harness();
+  const uploads = [
+    ...tables.external_assessments.map((row, i) => ({ ...row, id: `history:${i}`, report_label: row.assessment_name, taken_on: row.taken_at, assessment_type: 'cat' })),
+    ...tables.student_assessment_uploads
+  ];
+  const cats = [
+    ...tables.student_assessment_categories,
+    { assessment_id: 'history:0', category: 'Safety', score: 40 }
+  ];
+  const before = JSON.stringify({ uploads, cats });
+  const draw = () => context.renderCatCard(uploads, cats, [], tables.student_supplemental_practice_results);
+  draw();
+  const body = $('cat-body');
+  const chips = body.querySelectorAll('[data-catplat]');
+  assert.deepEqual(chips.map(b => b.dataset.catplat).sort(), ['all', 'platform:archer', 'platform:uworld']);
+  assert.equal(context.window.__catPlat, 'platform:uworld');
+  assert.match(body.innerHTML, /80%<\/b> latest \(UWorld · New CAT\)/);
+  assert.match(body.innerHTML, /Sep 22/);
+  assert.match(body.innerHTML, /Oct 14/);
+  assert.match(body.innerHTML, /<td>40<\/td>/);
+  assert.match(body.innerHTML, /<td>75<\/td>/);
+  assert.equal((body.innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 4);
+  assert.equal((body.innerHTML.match(/fill="#a94f67"><title>/g) || []).length, 2);
+  chips.find(b => b.dataset.catplat === 'platform:archer').onclick();
+  assert.doesNotMatch(body.innerHTML, /New CAT: 80%/);
+  body.querySelectorAll('[data-trend-series]').find(b => b.dataset.trendSeries === 'practice').onclick();
+  assert.doesNotMatch(body.innerHTML, /fill="#0067a8"><title>/);
+  body.querySelectorAll('[data-trend-series]').find(b => b.dataset.trendSeries === 'cat').onclick();
+  assert.doesNotMatch(body.innerHTML, /fill="#a94f67"><title>/);
+  assert.equal(JSON.stringify({ uploads, cats }), before);
+});
+
+test('unknown platforms remain distinct except for case/whitespace, including a platform called All', async () => {
+  const tables = fixture();
+  tables.external_assessments = ['My Platform', ' MY \t PLATFORM ', 'MyPlatform', 'All'].map(platform => ({
+    platform, assessment_name: 'CAT', overall_score: 60, taken_at: '2026-10-10'
+  }));
+  tables.student_assessment_uploads = [];
+  const { context, $ } = harness(tables);
+  await context.renderCatTrend(context.student);
+  assert.deepEqual($('cat-trend-body').querySelectorAll('[data-trend-platform]').map(b => b.dataset.trendPlatform).sort(),
+    ['all', 'my platform', 'myplatform']);
+  const uploads = tables.external_assessments.map(row => ({ ...row, taken_on: row.taken_at }));
+  context.renderCatCard(uploads, [], [], []);
+  const chips = $('cat-body').querySelectorAll('[data-catplat]');
+  assert.deepEqual(chips.map(b => b.dataset.catplat).sort(),
+    ['all', 'platform:all', 'platform:my platform', 'platform:myplatform']);
+  assert.equal(($('cat-body').innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 1);
+  chips.find(b => b.dataset.catplat === 'all').onclick();
+  assert.equal(($('cat-body').innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 4);
+});
+
+test('tutor saves select the saved platform for new entries and existing uploads', async () => {
+  for (const target of ['', 'new']) {
+    const { context, $ } = harness();
+    context.currentUploads = [{ id: 'new', platform: ' uworld ' }];
+    context.window.__trendSeries = 'practice';
+    context.window.__catPlat = 'platform:archer';
+    let refreshed = false;
+    context.loadStudent = () => { refreshed = true; };
+    // Only the save handler is needed; the rest of the tutor page initializes unrelated panels.
+    vm.runInContext(tutorHtml.slice(tutorHtml.indexOf("    $('cat-form').addEventListener('submit'"), tutorHtml.indexOf('    async function loadStudent(')), context);
+    $('cat-target').value = target;
+    $('cat-overall').value = '82';
+    $('cat-date').value = '2026-10-15';
+    $('cat-platform').value = 'UWorld';
+    $('cat-name').value = 'CAT';
+    if (target) {
+      context.db.from = () => ({ update() { return this; }, eq: async () => ({ error: null }) });
+    }
+    await $('cat-form').listeners.submit({ preventDefault() {} });
+    assert.equal(context.window.__catPlat, 'platform:uworld');
+    assert.equal(context.window.__trendSeries, 'both');
+    assert.equal($('cat-msg').textContent, 'Saved.');
+    assert.equal(refreshed, true);
+  }
+});
+
+test('both dashboards load the shared helper and inline scripts parse', () => {
+  for (const html of [studentHtml, tutorHtml]) {
+    assert.match(html, /<script src="assessment-platforms\.js"><\/script>/);
+    for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
+  }
+});
