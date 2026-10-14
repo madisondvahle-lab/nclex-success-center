@@ -913,11 +913,19 @@
         const dupe = await db.from('student_assessment_uploads').select('id').eq('student_id', student.id).eq('report_label', label).eq('taken_on', $('lc-date').value).limit(1);
         if (dupe.data && dupe.data.length && !confirm('You already logged an exam with this name and date. Save it again?')) return;
         btn.disabled = true; st.textContent = 'Saving…';
+        let saveStage = 'checking your sign-in';
         try {
-          const { data: { user } } = await db.auth.getUser();
+          const { data: { user }, error: userError } = await db.auth.getUser();
+          if (userError) throw userError;
+          if (!user) throw new Error('Please sign in again, then retry.');
           const safe = (file ? file.name : 'entry').replace(/[^\w.-]/g, '_');
           const path = `${student.id}/${Date.now()}-${safe}`;
-          if (file) { const up = await db.storage.from('assessment-reports').upload(path, file); if (up.error) throw up.error; }
+          if (file) {
+            saveStage = 'uploading the report file';
+            const up = await db.storage.from('assessment-reports').upload(path, file);
+            if (up.error) throw up.error;
+          }
+          saveStage = 'saving the exam details';
           const ins = await db.from('student_assessment_uploads').insert({
             student_id: student.id, platform: $('lc-platform').value, assessment_type: 'cat', taken_on: $('lc-date').value,
             overall_score: overall, report_path: path, report_filename: file ? file.name : 'Entered manually',
@@ -925,6 +933,7 @@
           }).select('id').single();
           if (ins.error) throw ins.error;
           if (cats.length) {
+            saveStage = 'saving the category scores';
             const cr = await db.from('student_assessment_categories').insert(cats.map(c => ({assessment_id: ins.data.id, category: c.name, score: Number(c.v), total_count: Number(c.n) > 0 ? Number(c.n) : null})));
             if (cr.error) throw cr.error;
           }
@@ -932,7 +941,7 @@
           form.reset(); form.classList.add('hidden'); file = null; $('lc-file').value = '';
           renderCatTrend(student);
         } catch (err) {
-          st.textContent = 'Could not save: ' + (err.message || 'please try again') + '. Please tell Madison.';
+          st.textContent = `Could not save while ${saveStage}: ${err.message || 'please try again'}. Please tell Madison.`;
         }
         btn.disabled = false;
       });
