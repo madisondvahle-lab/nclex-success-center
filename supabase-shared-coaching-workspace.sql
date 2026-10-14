@@ -135,7 +135,7 @@ create policy "authorized users view private assessment reports" on storage.obje
     bucket_id = 'assessment-reports' and (
       is_app_admin() or exists (
         select 1 from students
-        where students.auth_user_id = auth.uid() and students.id::text = (storage.foldername(name))[1]
+        where students.auth_user_id = auth.uid() and students.id::text = (storage.foldername(storage.objects.name))[1]
       )
     )
   );
@@ -143,7 +143,7 @@ create policy "students upload private assessment reports" on storage.objects
   for insert to authenticated with check (
     bucket_id = 'assessment-reports' and exists (
       select 1 from students
-      where students.auth_user_id = auth.uid() and students.id::text = (storage.foldername(name))[1]
+      where students.auth_user_id = auth.uid() and students.id::text = (storage.foldername(storage.objects.name))[1]
     )
   );
 create policy "admins manage private assessment reports" on storage.objects
