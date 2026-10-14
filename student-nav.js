@@ -13,37 +13,66 @@
       const toggle = document.getElementById('portal-menu-toggle');
       const closeBtn = document.getElementById('portal-sidebar-close');
       const backdrop = document.getElementById('portal-backdrop');
+      const main = document.getElementById('main-content');
+      const mobileBar = document.querySelector('.portal-mobile-bar');
+      const mobile = window.matchMedia('(max-width: 960px)');
 
       // Set active nav link
       this.setActive(active);
 
       // Mobile drawer open/close
       const openDrawer = () => {
-        if (!sidebar) return;
+        if (!sidebar || !mobile.matches) return;
+        sidebar.inert = false;
         sidebar.classList.add('open');
+        sidebar.setAttribute('role', 'dialog');
+        sidebar.setAttribute('aria-modal', 'true');
+        document.body.classList.add('portal-drawer-open');
+        if (main) main.inert = true;
+        if (mobileBar) mobileBar.inert = true;
         if (backdrop) backdrop.classList.add('open');
         if (toggle) toggle.setAttribute('aria-expanded', 'true');
         if (closeBtn) closeBtn.focus();
       };
 
-      const closeDrawer = () => {
+      const closeDrawer = (restoreFocus = true) => {
         if (!sidebar) return;
         sidebar.classList.remove('open');
+        sidebar.inert = mobile.matches;
+        sidebar.removeAttribute('role');
+        sidebar.removeAttribute('aria-modal');
+        document.body.classList.remove('portal-drawer-open');
+        if (main) main.inert = false;
+        if (mobileBar) mobileBar.inert = false;
         if (backdrop) backdrop.classList.remove('open');
         if (toggle) {
           toggle.setAttribute('aria-expanded', 'false');
-          toggle.focus();
+          if (restoreFocus) toggle.focus();
         }
       };
 
       if (toggle) toggle.addEventListener('click', openDrawer);
-      if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+      if (closeBtn) closeBtn.addEventListener('click', () => closeDrawer());
+      if (backdrop) backdrop.addEventListener('click', () => closeDrawer());
+      closeDrawer(false);
+      mobile.addEventListener('change', () => closeDrawer(false));
 
       // Close on Escape key
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
           closeDrawer();
+        }
+        if (e.key === 'Tab' && sidebar && sidebar.classList.contains('open')) {
+          const items = [...sidebar.querySelectorAll('a[href], button:not([disabled])')]
+            .filter(el => el.getClientRects().length);
+          const first = items[0], last = items[items.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
         }
       });
 
@@ -59,6 +88,7 @@
       // Internal in-page anchor smooth scrolling for student-dashboard.html
       if (opts.inPageScroll) {
         this.bindInPageScrolling();
+        window.addEventListener('hashchange', () => this.handleInitialHash(window.location.hash));
       }
 
       // Check if URL has a hash on load to scroll and highlight
@@ -119,7 +149,7 @@
       }
 
       if (practiceLabel) {
-        practiceLabel.textContent = isNursing ? 'Exam Prep' : 'NCLEX Review';
+        practiceLabel.textContent = isNursing ? 'Exam Prep' : 'Create practice';
       }
 
       if (lecturesLabel) {
@@ -127,49 +157,50 @@
       }
     },
 
-    bindInPageScrolling: function() {
-      const scrollTargets = {
-        'nav-item-dashboard': null, // Top of page
-        'nav-item-lectures': ['modules', 'modules-nursing', 'modules-nclex'],
-        'nav-item-previous-tests': ['previous-tests', 'progress-nursing', 'cat-trend-card', 'log-cat-card'],
-        'nav-item-performance': ['performance', 'progress-nursing', 'cat-results-card', 'cat-trend-card']
+    sectionTarget: function(name) {
+      const nursing = document.getElementById('portal-nursing');
+      const isNursing = nursing && !nursing.classList.contains('hidden');
+      const targets = isNursing ? {
+        lectures: ['modules-nursing-card', 'class-schedule-card'],
+        'previous-tests': ['performance-nursing-card', 'class-schedule-card'],
+        performance: ['performance-nursing-card', 'class-schedule-card']
+      } : {
+        lectures: ['modules-nclex-card'],
+        'previous-tests': ['cat-trend-card', 'log-cat-card'],
+        performance: ['cat-results-card', 'cat-trend-card', 'log-cat-card']
       };
+      return (targets[name] || []).map(id => document.getElementById(id))
+        .find(el => el && el.getClientRects().length);
+    },
 
-      Object.entries(scrollTargets).forEach(([navId, targetIds]) => {
-        const btn = document.getElementById(navId);
+    scrollToSection: function(name) {
+      const target = this.sectionTarget(name);
+      if (!target) return false;
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      target.scrollIntoView({ behavior, block: 'start' });
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+      this.setActive(name);
+      history.replaceState(null, '', '#' + ({ lectures: 'modules' }[name] || name));
+      return true;
+    },
+
+    bindInPageScrolling: function() {
+      ['dashboard', 'lectures', 'previous-tests', 'performance'].forEach(name => {
+        const btn = document.getElementById('nav-item-' + name);
         if (!btn) return;
 
         btn.addEventListener('click', (e) => {
-          // If dashboard link on dashboard page, smooth scroll to top
-          if (navId === 'nav-item-dashboard') {
+          if (name === 'dashboard') {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+            window.scrollTo({ top: 0, behavior });
             this.setActive('dashboard');
-            try { history.replaceState(null, '', window.location.pathname); } catch(err) {}
+            history.replaceState(null, '', window.location.pathname + window.location.search);
             return;
           }
-
-          if (!targetIds) return;
-
-          // Find first visible matching target
-          let targetEl = null;
-          for (const id of targetIds) {
-            const el = document.getElementById(id);
-            if (el && !el.classList.contains('hidden') && el.style.display !== 'none') {
-              targetEl = el;
-              break;
-            }
-          }
-
-          if (targetEl) {
+          if (this.scrollToSection(name)) {
             e.preventDefault();
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // Add temporary focus or highlight
-            targetEl.setAttribute('tabindex', '-1');
-            targetEl.focus({ preventScroll: true });
-            const navKey = navId.replace('nav-item-', '');
-            this.setActive(navKey);
-            try { history.replaceState(null, '', '#' + targetEl.id); } catch(err) {}
           }
         });
       });
@@ -178,19 +209,17 @@
     handleInitialHash: function(hash) {
       if (!hash) return;
       const clean = hash.replace(/^#/, '');
-      let el = document.getElementById(clean);
-      if (!el) {
-        if (clean === 'modules') el = document.getElementById('modules-nursing') || document.getElementById('modules-nclex');
-        if (clean === 'previous-tests') el = document.getElementById('progress-nursing') || document.getElementById('cat-trend-card') || document.getElementById('log-cat-card');
-        if (clean === 'performance') el = document.getElementById('progress-nursing') || document.getElementById('cat-results-card');
+      const name = { modules: 'lectures', 'previous-tests': 'previous-tests', performance: 'performance' }[clean];
+      if (name) {
+        this.scrollToSection(name);
+        return;
       }
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const el = document.getElementById(clean);
+      if (el && el.getClientRects().length) {
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        el.scrollIntoView({ behavior, block: 'start' });
         el.setAttribute('tabindex', '-1');
         el.focus({ preventScroll: true });
-        if (clean === 'modules') this.setActive('lectures');
-        else if (clean === 'previous-tests') this.setActive('previous-tests');
-        else if (clean === 'performance') this.setActive('performance');
       }
     }
   };
