@@ -5,7 +5,7 @@ Madison's goal (verbatim): "assign people targeted practice questions to all of 
 
 Agreed 4-step plan:
 1. **Weekly plan template + per-student focus categories** — DONE (this handoff).
-2. Assignment of targeted practice across platforms (UWorld/Archer/portal Question Bank).
+2. **Assignment of targeted practice across platforms** — DONE (step 2, below).
 3. Student reminders on dashboard (email later).
 4. Weekly admin review / retarget queue.
 
@@ -20,17 +20,26 @@ Agreed 4-step plan:
 - **Student view:** `student-dashboard.html` NCLEX view shows a read-only "My weekly study plan" card (7-day strip, focus chips, note) only when a plan row exists.
 - **Tests:** `tests/weekly-plan.test.cjs` (`node --test tests/*.cjs`).
 
+## Step 2 — what exists now
+- **Coach workflow:** `madison-study-plans.html` → **Assign a week**. Choose a Monday and one student or all active NCLEX students with saved plans. Save plan edits before generating. The dated list shows each assignment and completion state. Search/plan editing remains unchanged.
+- **Data:** `supabase-weekly-assignments-migration.sql` adds `assignment_week`, `assignment_kind` (`practice` / `cat`), and `assignment_details` to the existing `student_resources`. No competing assignment table. Snapshot details include platform, count, categories, topics, mode, and (for portal practice) question IDs. Unique student/date/kind index and per-student row locks prevent duplicate generation, including concurrent reruns. Existing assignments and completion are never overwritten when focus changes.
+- **Admin-only RPC:** `generate_weekly_assignments(p_week, p_student)` returns created/existing counts plus per-student/date failures. With no student argument, it uses all active non-nursing students with saved plans. Missing focus blocks targeted practice, not CATs. Archived/nursing students are excluded. Generation does not run automatically on save or deployment.
+- **Portal practice:** stored links use `supplemental-practice.html?assignment=<resource UUID>`. Frozen IDs must all still be active MCQs when launched; insufficient or retired questions fail explicitly without silently substituting unrelated items. Generation canonicalizes existing category/subcategory labels using the rules in `category-names.js` (underscores normalized). It does not infer categories from question stems, modify questions, or activate drafts. Selected categories are ORed; selected topic labels are ORed; when both are present they must both match. Topics match bank labels exactly, ignoring case/outer whitespace. Only supported MCQs are selected; no new NGN rendering or clinical content.
+- **Mode:** portal assignments use the existing ExamUI without immediate correctness feedback; rationales appear after submission. External practice instructions specify timed practice, tutor mode off, followed by rationale review. External platform categories/topics must be selected manually; there is no UWorld/Archer integration or automatic result import.
+- **CATs:** one full CAT/readiness assignment on each saved CAT day; external CATs are manual, portal CATs reuse `diagnostic.html?mode=mock`. They are not restricted to focus categories. Students log CAT reports using the existing dashboard card and mark the dated assignment complete.
+- **Student workflow:** existing Assigned work cards show due date and completion, with Mark complete / Mark not complete. `set_weekly_assignment_complete` is a narrowly scoped security-definer RPC: only an admin or the assignment's owner can change its server-generated completion timestamp. No student UPDATE policy or metadata-edit permission was added. Portal scores save to existing supplemental practice history, then mark that assignment complete; errors distinguish score-save from completion-save failure.
+- **Progress:** `weekly-assignments.js` supplies local-calendar Monday and weekly completion totals. The dashboard's existing This week card uses generated assignment counts across platforms (clearly labeled self-reported). A plan without generated assignments shows its actual schedule instead of the legacy 50-Q goal. Legacy students without a weekly plan retain their previous summary.
+- **Live DB:** additive migration applied to Supabase project `pmjwwktwlsqpetwfvolb` on 2026-10-14. Existing admin-manage/student-read-own RLS preserved, anon resource access and RPC execution denied. No real assignments were generated during deployment.
+- **Validation:** `node --test tests/*.cjs` (27 passing); `supabase db query --linked -f tests/weekly-assignments-rls.sql` (BEGIN/ROLLBACK; asserts enabled) verifies admin generation, single/bulk idempotence, 3 practice + 2 CAT defaults, frozen active IDs, insufficient/missing focus, completion preservation/undo, student isolation/no insert/no metadata update, and anon denial. Verified zero persisted test assignments afterward. Playwright fixture-backed desktop/mobile checks at 1366×900 and 390×844 cover single/bulk/rerun generation, completion/failed-save state, real ExamUI submission + rationale review + auto-completion, unavailable-question errors, and no page errors/horizontal overflow. Screenshots/harness are session artifacts, not production student data.
+- **Limits:** assignment completion is self-reported, not verified external-platform activity. Questions can repeat across practice days/weeks. Editing a plan does not retarget already-generated work; remove incorrect resources through the existing admin assignment tools before regenerating a missing slot. Portal pools may be too small for a requested focus/count; adjust the plan rather than activating questions. No reminders, email, or retarget/review queue were added.
+
 ## Remaining work
-### Step 2 — targeted practice assignment
-- For `practice_platform = 'Portal Question Bank'`: generate links like `supplemental-practice.html?mixed=<n>&cat=<focus category>` (already supported) per practice day, or create `student_resources` rows (`resource_type='practice_set'`) with `due_on` per practice date. Reuse `madison-assignments.html` patterns; don't create a parallel assignment table.
-- For external platforms (UWorld/Archer): the portal can't push into their QBanks; produce a per-day instruction (e.g. "UWorld: 50 Qs, Subjects: X/Y, tutor mode off") from `focus_categories`/`focus_topics`, optionally as `student_resources` link items, and let the student mark complete.
-- Note: dashboard "This week" card still uses a hard-coded portal-only 50-question weekly goal (`renderThisWeek`, `GOAL = 50`); reconcile with the plan once step 2 defines completion tracking.
 
 ### Step 3 — reminders (dashboard first, email later)
-- Use `WeeklyPlan.week()` + today's weekday to show "Today: 50 UWorld questions" / "CAT exam today/tomorrow" on the dashboard. Email can later reuse the `send-strategy-followups` Edge Function + cron pattern (`supabase-strategy-followup-cron.sql`).
+- Prefer dated `student_resources` assignments (`assignment_week`, `due_on`, `assignment_kind`, `completed_at`) for today/tomorrow reminders; `WeeklyPlan.week()` is only the repeating template, not proof that work was assigned. Email can later reuse the `send-strategy-followups` Edge Function + cron pattern (`supabase-strategy-followup-cron.sql`).
 
 ### Step 4 — weekly review / retarget queue
-- Admin list sorted by stale `focus_updated_at` vs latest CAT (`student_assessment_uploads`/`external_assessments` category scores) so Madison sees who needs retargeting; suggest the lowest categories as new focus and save via the existing editor. If plan history is needed, add an append-only history table (RLS admin-only) rather than multiple current rows.
+- Admin list sorted by stale `focus_updated_at` vs latest CAT (`student_assessment_uploads`/`external_assessments` category scores) so Madison sees who needs retargeting; suggest the lowest categories as new focus and save via the existing editor. Use dated assignments and existing practice history for workload/completion, but do not equate a self-reported complete flag with a verified CAT score. If plan history is needed, add an append-only history table (RLS admin-only) rather than multiple current rows.
 
 ## Deployment
 GitHub Pages from `main` (portal.studywithmadison.com). No Netlify/Cloudflare.

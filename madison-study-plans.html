@@ -9,7 +9,7 @@
   <style>
     .panel-body{padding:22px 24px}
     .field-label{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;margin:0 0 8px;color:var(--admin-navy)}
-    select,input[type=number],input[type=text],input[type=search],textarea{width:100%;box-sizing:border-box;border:1px solid var(--admin-line);background:#fff;padding:11px 13px;font:600 .92rem Inter,sans-serif;color:var(--admin-navy)}
+    select,input[type=number],input[type=text],input[type=search],input[type=date],textarea{width:100%;box-sizing:border-box;border:1px solid var(--admin-line);background:#fff;padding:11px 13px;font:600 .92rem Inter,sans-serif;color:var(--admin-navy)}
     textarea{min-height:76px;font-weight:500;resize:vertical}
     .notice{display:none;margin-top:16px;padding:12px 14px;line-height:1.45;font-weight:650;font-size:.85rem}
     .notice.success{display:block;background:#e7f5ee;color:#0f5d42;border:1px solid #b7dfcb}
@@ -168,6 +168,20 @@
           </div>
         </section>
 
+        <section class="dashboard-panel" aria-labelledby="assign-title">
+          <div class="panel-heading"><div><h2 id="assign-title">Assign a week</h2><p>Generate dated practice and CAT assignments from saved plans. Reruns keep existing assignments and completion unchanged. Save plan edits first.</p></div></div>
+          <div class="panel-body">
+            <div class="editor-grid">
+              <div class="field"><label class="field-label" for="assignment-week">Week starting Monday</label><input id="assignment-week" type="date"></div>
+              <div class="field"><label class="field-label" for="assignment-student">Assign to</label><select id="assignment-student"><option value="">All active NCLEX students with plans</option></select></div>
+            </div>
+            <p class="hint">External platforms require manual setup by the student. Portal practice uses active multiple-choice questions matching the saved categories and topics (exact bank topic labels); insufficient pools are reported, not broadened. CAT assignments use a full CAT, not focus-filtered practice.</p>
+            <div class="editor-actions"><button id="generate-week" type="button" class="button primary">Generate weekly assignments</button><button id="view-week" type="button" class="button secondary">View assigned week</button></div>
+            <div id="assignment-notice" class="notice" role="status"></div>
+            <div id="assignment-list" class="resource-list"></div>
+          </div>
+        </section>
+
         <section class="dashboard-panel">
           <div class="panel-heading"><div><h2>Students</h2><p id="roster-sub">Active NCLEX students.</p></div></div>
           <div class="panel-body">
@@ -191,6 +205,7 @@
   <script src="category-names.js"></script>
   <script src="assessment-platforms.js"></script>
   <script src="weekly-plan.js"></script>
+  <script src="weekly-assignments.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -203,6 +218,10 @@
     function fmtDate(v){return v?new Date(v).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}
 
     function renderRoster(){
+      const assignedStudent=$('assignment-student').value;
+      $('assignment-student').innerHTML='<option value="">All active NCLEX students with plans</option>';
+      students.filter(s=>plans.has(s.id)).forEach(s=>$('assignment-student').append(new Option(s.name,s.id)));
+      $('assignment-student').value=assignedStudent;
       const q=$('search').value.trim().toLowerCase(),onlyMissing=$('only-missing').checked;
       const rows=students.filter(s=>(!q||(s.name+' '+(s.email||'')).toLowerCase().includes(q))&&(!onlyMissing||!plans.has(s.id)));
       $('roster').innerHTML=rows.map(s=>{
@@ -264,6 +283,28 @@
     }
     function closeEditor(){editing=null;$('editor-panel').hidden=true;history.replaceState(null,'',location.pathname);renderRoster()}
 
+    async function viewAssignments(){
+      const week=$('assignment-week').value,studentId=$('assignment-student').value;
+      let query=db.from('student_resources').select('id,student_id,title,due_on,completed_at,note').eq('assignment_week',week).order('due_on');
+      if(studentId)query=query.eq('student_id',studentId);
+      const {data,error}=await query;
+      if(error)throw error;
+      $('assignment-list').innerHTML=(data||[]).map(r=>`<article style="padding:12px 0;border-bottom:1px solid var(--admin-line)"><strong>${esc(students.find(s=>s.id===r.student_id)?.name||'Student')} · ${esc(r.due_on)} · ${r.completed_at?'Complete':'Not complete'}</strong><p>${esc(r.title)}</p><p class="hint">${esc(r.note)}</p></article>`).join('')||'<p class="muted">No assignments for this selection.</p>';
+    }
+    async function generateAssignments(){
+      const btn=$('generate-week'),week=$('assignment-week').value;
+      if(!week||WeeklyAssignments.monday(week)!==week)return notice('assignment-notice','Choose a Monday.','error');
+      btn.disabled=true;notice('assignment-notice','Generating from saved plans…','info');
+      try{
+        const {data,error}=await db.rpc('generate_weekly_assignments',{p_week:week,p_student:$('assignment-student').value||null});
+        if(error)throw error;
+        const failures=data.failures||[];
+        notice('assignment-notice',`${data.created} created; ${data.existing} already assigned.`+(failures.length?' Not generated: '+failures.map(f=>(students.find(s=>s.id===f.student_id)?.name||'Student')+' ('+f.due_on+'): '+f.reason).join(' '):''),failures.length?'warn':'success');
+        await viewAssignments();
+      }catch(err){notice('assignment-notice','Could not generate assignments: '+err.message,'error')}
+      finally{btn.disabled=false}
+    }
+
     async function upsertPlans(rows,ignoreDuplicates){
       const {data,error}=await db.from('student_study_plans').upsert(rows,{onConflict:'student_id',ignoreDuplicates}).select(PLAN_COLS);
       if(error)throw error;
@@ -317,6 +358,9 @@
       if(pl.error)throw new Error('Could not load study plans (has supabase-weekly-study-plan-migration.sql been run?): '+pl.error.message);
       students=(st.data||[]).filter(s=>s.student_type!=='nursing_student');
       (pl.data||[]).forEach(r=>plans.set(r.student_id,r));
+      $('assignment-week').value=WeeklyAssignments.monday();
+      $('generate-week').addEventListener('click',generateAssignments);
+      $('view-week').addEventListener('click',()=>viewAssignments().catch(err=>notice('assignment-notice','Could not load assignments: '+err.message,'error')));
 
       $('default-summary').textContent='Default: '+WP.summary(WP.DEFAULTS);
       dayInputs($('practice-days'),'pd');dayInputs($('cat-days'),'cd');
@@ -341,6 +385,7 @@
       renderRoster();
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
       const requested=new URLSearchParams(location.search).get('student');
+      if(requested&&plans.has(requested))$('assignment-student').value=requested;
       if(requested&&students.some(s=>s.id===requested))openEditor(requested);
       else if(requested)notice('notice','That student isn’t an active NCLEX student. Choose one from the list.','error');
     }
