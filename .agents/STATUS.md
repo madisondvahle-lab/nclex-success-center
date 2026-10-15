@@ -196,3 +196,9 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 - Portal practice uses frozen active MCQ IDs matching saved focus; external platforms receive manual setup instructions. Students see due dates, mark completion, and portal practice completion follows score saving.
 - `supabase-weekly-assignments-migration.sql` applied live 2026-10-14; admin/student/anon RLS and generation verified in rolled-back SQL tests. No questions or real assignments changed during validation.
 - Step 3 dashboard reminders and step 4 Weekly review queue are live. Details, limits, and validation commands: `.agents/tasks/weekly-study-plans.md`.
+
+## Student study calendar
+- `student-dashboard.html` provides a shared month-grid calendar for NCLEX and nursing students. NCLEX students can set/update their next attempt date in the calendar (existing `update_my_nclex_target_date` RPC); nursing students use the class-specific exam-date controls. The grid shows weekly-plan repeats through the NCLEX target date, dated assignments, class exam dates, and scheduled tutoring appointments linked to the signed-in student.
+- `study-calendar.js` builds local-calendar month grids and event lists. Dated work replaces the matching recurring NCLEX plan entry. Consultation details use a narrow student-scoped RPC; the consultation table remains admin-only.
+- Apply `supabase-student-calendar-consultations-migration.sql` after the Calendly consultations migration to enable student appointment display. Without it, the calendar still shows other events and reports appointment unavailability.
+- Validation: `node --test tests/study-calendar.test.cjs`; dashboard inline-script parse and `git diff --check`.
