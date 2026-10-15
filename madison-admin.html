@@ -105,6 +105,17 @@
     .cat-status.missing{background:#f7e5e3;color:#913d4f}
     .cat-row .link-button{width:100%;max-width:100%;white-space:normal;text-align:center;line-height:1.35}
     .cat-note{margin:0;padding:10px 15px;border-top:1px solid var(--admin-line);color:var(--admin-muted);font-size:.63rem;line-height:1.45}
+    .gmail-actions{display:flex;gap:7px;padding:12px 15px}
+    .gmail-actions button,.gmail-message button{min-height:31px;padding:0 9px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:750 .66rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+    .gmail-actions button.primary{border-color:var(--admin-navy);background:var(--admin-navy);color:#fff}
+    .gmail-actions button:disabled,.gmail-message button:disabled{opacity:.55;cursor:wait}
+    .gmail-status{margin:0;padding:0 15px 11px;color:var(--admin-muted);font-size:.68rem;line-height:1.45}
+    .gmail-message{display:grid;gap:6px;padding:12px 15px;border-top:1px solid #e4e8e4}
+    .gmail-subject{font-size:.74rem;font-weight:800;overflow-wrap:anywhere}
+    .gmail-meta,.gmail-snippet,.gmail-attachment{color:var(--admin-muted);font-size:.66rem;line-height:1.45;overflow-wrap:anywhere}
+    .gmail-attachments{display:grid;gap:5px;margin-top:2px}
+    .gmail-attachment{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .gmail-attachment button{flex:0 0 auto}
     .prospect-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
     .prospect-panel{min-width:0}
     .prospect-panel h3{padding:13px 0;margin:0;border-bottom:1px solid var(--admin-line);font:750 .82rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -154,6 +165,7 @@
           <a href="#prospects">Prospects</a>
           <a href="madison-assignments.html">Assignments</a>
           <a href="madison-study-plans.html">Weekly plans</a>
+          <a href="#gmail-inbox">Email attachments</a>
           <a href="assessment-history-admin.html">Assessments</a>
           <a href="question-bank-review.html">Question bank</a>
           <a href="madison-graphics.html">Graphics library</a>
@@ -222,6 +234,15 @@
               <div class="cat-list" id="cat-checkin"><p class="table-empty">Loading CAT status…</p></div>
               <p class="cat-note">Status uses the report’s completion date when available, otherwise its upload date.</p>
             </section>
+            <section class="dashboard-panel" id="gmail-inbox" aria-labelledby="gmail-title">
+              <div class="panel-heading"><div><h2 id="gmail-title">Unread email attachments</h2><p>Read-only Gmail view · visible to admins only</p></div></div>
+              <div class="gmail-actions">
+                <button class="primary" id="gmail-connect" type="button">Connect Gmail</button>
+                <button id="gmail-refresh" type="button" class="hidden">Refresh</button>
+              </div>
+              <p class="gmail-status" id="gmail-status" role="status" aria-live="polite">Connect your Google account to check unread messages with attachments.</p>
+              <div id="gmail-messages" class="booking-list"></div>
+            </section>
           </aside>
         </div>
         <section class="dashboard-panel" id="prospects" aria-labelledby="prospects-title">
@@ -258,6 +279,7 @@
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin-gmail.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -275,6 +297,8 @@
       if(!session){location.replace('student-login.html');return}
       const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
       if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      if(typeof window.initAdminGmail==='function')initAdminGmail();
+      else $('gmail-status').textContent='The email attachment panel could not load. Refresh the page to try again.';
       $('dashboard-date').textContent=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric'}).format(new Date());
       $('student-search').addEventListener('input',renderDirectory);
       document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
