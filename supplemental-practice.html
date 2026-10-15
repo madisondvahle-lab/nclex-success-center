@@ -1978,7 +1978,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const items=ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
-      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:true,noFeedback:true,
+      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:!activeSet.assignmentId,noFeedback:true,
         onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,kind:f.kind||'report',note:f.note||null});return !r.error}:null,
         onFinish:res=>{host.remove();answers=ExamAdapters.toPracticeAnswers(source,res);$('quiz').classList.remove('hidden');showResults()},
         onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
@@ -2067,6 +2067,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       if(result.error&&/answer_details|category_scores|missed_question_ids|schema cache|column/i.test(result.error.message||'')){
         result=await db.from("student_supplemental_practice_results").insert(baseResult);
       }
+      if(!result.error&&activeSet.assignmentId){
+        const completion=await db.rpc('set_weekly_assignment_complete',{p_assignment:activeSet.assignmentId,p_complete:true});
+        if(completion.error)return 'Score saved, but assignment completion could not be saved: '+completion.error.message+'. Mark it complete on your dashboard.';
+      }
       return result.error?`Your score is shown here, but it was not saved: ${result.error.message||'Please try again.'}`:"Saved to your shared dashboard.";
     }
     async function showResults(){
@@ -2074,6 +2078,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const percent=Math.round(score/activeSet.questions.length*100);
       $('quiz').innerHTML=`<section class="study-session study-results"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>Session complete</span></div></header><div class="study-session-body"><p class="question-number">Set complete</p><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep building on this momentum.':percent>=60?'Review the rationales, then return to this set.':'Review the related learning material before retaking this set.'}</p><p class="status" id="save-status" role="status" aria-live="polite">Saving your result…</p><div class="result-actions"><button class="secondary" id="retry" type="button">Retake this set</button><button class="primary" id="return" type="button">Back to assignments</button></div></div></section>`;
       $('save-status').textContent=await saveResult(score);
+      if(activeSet.assignmentId){
+        const review=document.createElement('div');
+        review.className='study-session-body';
+        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${escapeHtml(q.options[answers[i]]||'Not answered')}</p><p>Correct answer: ${escapeHtml(q.options[q.answer])}</p><p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
+        $('quiz').appendChild(review);
+      }
       $('retry').addEventListener('click',()=>{
         if(sets.some(set=>set.id===activeSet.id)){startSet(activeSet.id);return}
         index=0;answers=[];revealed=false;
@@ -2112,6 +2122,30 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         return 'Fundamentals / Safety';
 
       return 'Adult Health';
+    }
+
+    async function buildWeeklyAssignment(id){
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');
+      $('quiz').innerHTML='<p class="status">Loading your assigned questions…</p>';
+      try{
+        if(!window.ExamUI||!window.ExamAdapters)throw new Error('The practice engine could not load. Refresh the page and try again.');
+        const {data:resource,error}=await db.from('student_resources').select('id,title,assignment_kind,assignment_details').eq('id',id).eq('student_id',student.id).maybeSingle();
+        if(error)throw error;
+        if(!resource||resource.assignment_kind!=='practice'||resource.assignment_details?.platform!=='Portal Question Bank')throw new Error('This portal practice assignment is not available to your account.');
+        const ids=resource.assignment_details.question_ids;
+        if(!Array.isArray(ids)||ids.length!==resource.assignment_details.question_count)throw new Error('The assigned question list is incomplete. Contact Madison.');
+        const {data:bank,error:bankError}=await db.from('questions').select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,nclex_category,nclex_sub,question_no').in('id',ids).eq('active',true).eq('item_type','mcq');
+        if(bankError)throw bankError;
+        if(bank.length!==ids.length||bank.some(q=>!['a','b','c','d'].includes(String(q.correct_answer).toLowerCase())))throw new Error('Some assigned questions are no longer available. Contact Madison to replace this assignment; no unrelated questions were substituted.');
+        activeSet={id:'weekly-'+id,assignmentId:id,title:resource.title,tag:'Weekly targeted practice',questions:shuffled(bank).map(q=>({
+          id:String(q.id),dbId:q.id,qno:q.question_no,stem:q.stem,options:[q.option_a,q.option_b,q.option_c,q.option_d],
+          answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),rationale:q.rationale,
+          category:NCLEXCats.canon([q.nclex_category,q.nclex_sub].filter(Boolean).join(' ').replace(/_/g,' '),'Other')
+        }))};
+        index=0;answers=[];revealed=false;beginPractice();
+      }catch(error){
+        $('quiz').innerHTML=`<p class="status">${escapeHtml(error.message)} <a href="student-dashboard.html">Return to dashboard</a></p>`;
+      }
     }
 
     async function buildMixedReview(count,focusCat,focusTopics){
@@ -2369,7 +2403,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const mixedCount=Number(params.get('mixed'));
         const courseKey=params.get('course');
         const examKey=params.get('exam');
-        if(courseKey&&examKey){
+        if(params.get('assignment')){
+          await buildWeeklyAssignment(params.get('assignment'));
+        }else if(courseKey&&examKey){
           await buildCourseExamPractice(courseKey,examKey);
         }else if([10,20,30,40,50,60,75,100].includes(mixedCount)){
           await buildMixedReview(mixedCount,params.get('cat'));

@@ -101,7 +101,7 @@ test('inline student scripts remain valid JavaScript', () => {
 test('NCLEX assigned work shows practice sets as well as study resources', () => {
   const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   const renderer = html.slice(html.indexOf('function renderResources('), html.indexOf('function studentResourceText('));
-  const container = { innerHTML: '' };
+  const container = { innerHTML: '', querySelectorAll: () => [] };
   const context = {
     document: { getElementById: () => container },
     text: String,
