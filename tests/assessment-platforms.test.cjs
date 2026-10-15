@@ -248,6 +248,79 @@ test('tutor saves select the saved platform for new entries and existing uploads
   }
 });
 
+test('tutor CAT report uploads save extracted overall and category scores', async () => {
+  const { context, $, tables } = harness();
+  const file = { name: 'eric-cat.pdf', type: 'application/pdf', size: 100 };
+  context.AssessmentImport = {
+    readFile: async () => ({
+      overall: 74, date: '2026-10-14',
+      cats: { 'Safety and Infection Control': 62 },
+      counts: { 'Safety and Infection Control': 18 }
+    })
+  };
+  context.crypto = { randomUUID: () => 'synthetic-file-id' };
+  context.db.storage = { from: () => ({ upload: async () => ({ error: null }) }) };
+  context.loadStudent = async () => {};
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    let parsedTimelineFile=null'), tutorHtml.indexOf("    $('focus-form')?.addEventListener")), context);
+
+  $('assessment-type').value = 'cat';
+  $('report-file').files = [file];
+  await $('report-file').listeners.change();
+  assert.equal($('overall-score').value, 74);
+  assert.match($('upload-score-preview').textContent, /overall 74%/);
+  assert.match($('upload-score-preview').textContent, /Safety and Infection Control 62%/);
+
+  await $('upload-form').listeners.submit({ preventDefault() {} });
+  const savedUpload = tables.student_assessment_uploads.find(row => row.report_filename === file.name);
+  assert.equal(savedUpload.overall_score, 74);
+  assert.equal(savedUpload.taken_on, '2026-10-14');
+  assert.equal(JSON.stringify(tables.student_assessment_categories.at(-1)), JSON.stringify({
+    assessment_id: 'saved',
+    category: 'Safety and Infection Control',
+    score: 62,
+    total_count: 18
+  }));
+});
+
+test('admin can recover scores from an existing private CAT report', async () => {
+  const { context, tables } = harness();
+  const upload = {
+    id: 'older-cat', platform: 'uworld', assessment_type: 'cat',
+    report_path: 'synthetic/report.pdf', report_filename: 'older-cat.pdf',
+    report_mime_type: 'application/pdf', overall_score: null, taken_on: null
+  };
+  tables.student_assessment_uploads.push(upload);
+  context.currentUploads = [upload];
+  context.File = class {
+    constructor(parts, name, options) { this.name = name; this.type = options.type; }
+  };
+  context.db.storage = { from: () => ({ download: async () => ({ data: { type: 'application/pdf' }, error: null }) }) };
+  context.AssessmentImport = {
+    readFile: async file => {
+      assert.equal(file.name, 'older-cat.pdf');
+      return { overall: 71, date: '2026-10-12', cats: { 'Safety and Infection Control': 59 }, counts: { 'Safety and Infection Control': 20 } };
+    }
+  };
+  context.confirm = () => true;
+  context.loadStudent = async () => {};
+  context.db.from = table => {
+    if (table === 'student_assessment_categories') return { insert: async rows => { tables[table].push(...rows); return { error: null }; } };
+    if (table === 'student_assessment_uploads') return { update: patch => ({ eq: async (_column, id) => { Object.assign(tables[table].find(row => row.id === id), patch); return { error: null }; } }) };
+    throw new Error(`Unexpected table ${table}`);
+  };
+  const functionStart = tutorHtml.indexOf('    async function readTimelineScores(');
+  vm.runInContext(tutorHtml.slice(functionStart, tutorHtml.indexOf('    async function deleteReport(', functionStart)), context);
+  const status = { textContent: '' };
+  const button = { disabled: false, closest: () => ({ querySelector: () => status }) };
+
+  await context.readTimelineScores(upload.id, button);
+  assert.equal(upload.overall_score, 71);
+  assert.equal(upload.taken_on, '2026-10-12');
+  assert.equal(tables.student_assessment_categories.at(-1).assessment_id, upload.id);
+  assert.equal(tables.student_assessment_categories.at(-1).total_count, 20);
+  assert.equal(button.disabled, false);
+});
+
 test('both dashboards load the shared helper and inline scripts parse', () => {
   for (const html of [studentHtml, tutorHtml]) {
     assert.match(html, /<script src="assessment-platforms\.js"><\/script>/);
