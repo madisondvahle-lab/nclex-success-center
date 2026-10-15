@@ -52,6 +52,7 @@
     .pill.review{background:#fff6e5;color:#7a4b00}
     .pill.assigned{background:#e7f5ee;color:#0f5d42}
     .pill.no-plan{background:#eef3f8;color:var(--admin-navy)}
+    .pill.nursing{background:#f1edf8;color:#4b2a7a}
     .flags{margin:6px 0 0;padding-left:16px;font-size:.78rem;line-height:1.4;color:#9c382d}
     .line{display:block;line-height:1.45}
     .warn-text{color:#9c382d;font-weight:750}
@@ -136,7 +137,7 @@
           <div class="panel-body">
             <div class="review-tools">
               <div class="field"><label class="field-label" for="review-week">Week starting Monday</label><div class="week-step"><button id="review-prev" class="button secondary" type="button" aria-label="Previous week">‹ Prev</button><input id="review-week" type="date"><button id="review-next" class="button secondary" type="button" aria-label="Next week">Next ›</button></div></div>
-              <div class="field"><label class="field-label" for="review-filter">Show</label><select id="review-filter"><option value="review">To review (next week not assigned)</option><option value="all">All NCLEX students</option><option value="assigned">Next week assigned</option><option value="no-plan">No plan yet</option></select></div>
+              <div class="field"><label class="field-label" for="review-filter">Show</label><select id="review-filter"><option value="review">To review (next week not assigned)</option><option value="all">All students</option><option value="assigned">Next week assigned</option><option value="no-plan">No plan yet</option><option value="nursing">Nursing students (review only)</option></select></div>
               <div class="field"><label class="field-label" for="review-search">Search</label><input id="review-search" type="search" placeholder="Name or email"></div>
               <button id="review-refresh" class="button secondary" type="button">Refresh</button>
             </div>
@@ -368,7 +369,7 @@
     }
 
     /* Weekly review queue */
-    let reviewWeek=null,reviewData=null,reviewFailed=[],reviewSeq=0,nursingCount=0,returnRow=null;
+    let reviewWeek=null,reviewData=null,reviewFailed=[],reviewSeq=0,nursingStudents=[],returnRow=null;
     const expanded=new Set(),busy=new Set(),rowMsg=new Map();
     const fmtDay=v=>{try{return new Date(v+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}catch{return v}};
     const pct=v=>v==null?'':Math.round(v*10)/10+'%';
@@ -385,35 +386,37 @@
       if(!reviewWeek)return;
       const body=$('review-rows');
       if(!reviewData){body.innerHTML='';return}
-      const all=WeeklyReview.rows(students,plans,reviewData,reviewWeek,todayIso(),reviewFailed);
+      const all=WeeklyReview.rows(students.concat(nursingStudents),plans,reviewData,reviewWeek,todayIso(),reviewFailed);
       const count=k=>all.filter(r=>r.status===k).length;
-      $('review-summary').textContent=`${fmtDay(reviewWeek.start)} – ${fmtDay(reviewWeek.end)}: ${all.length} active NCLEX student${all.length===1?'':'s'} · ${count('review')} to review · ${count('assigned')} with next week assigned · ${count('no-plan')} without a plan.`+(nursingCount?` ${nursingCount} nursing student${nursingCount===1?' isn’t':'s aren’t'} listed; weekly plans are NCLEX-only.`:'');
+      $('review-summary').textContent=`${fmtDay(reviewWeek.start)} – ${fmtDay(reviewWeek.end)}: ${all.length-count('nursing')} active NCLEX student${all.length-count('nursing')===1?'':'s'} · ${count('review')} to review · ${count('assigned')} with next week assigned · ${count('no-plan')} without a plan.`+(count('nursing')?` ${count('nursing')} nursing student${count('nursing')===1?'':'s'} listed for review only (weekly plans and generation are NCLEX-only).`:'');
       const filter=$('review-filter').value,q=$('review-search').value.trim().toLowerCase();
       const rows=all.filter(r=>(filter==='all'||r.status===filter)&&(!q||(r.student.name+' '+(r.student.email||'')).toLowerCase().includes(q)));
       body.innerHTML=rows.map(reviewRow).join('');
-      const empty={review:'Nobody left to review: every student with a plan has next week assigned.',assigned:'No students have next week assigned yet.','no-plan':'Every active NCLEX student has a plan.',all:'No active NCLEX students.'}[filter];
+      const empty={review:'Nobody left to review: every student with a plan has next week assigned.',assigned:'No students have next week assigned yet.','no-plan':'Every active NCLEX student has a plan.',all:'No active students.',nursing:'No active nursing students.'}[filter];
       $('review-empty').textContent=q?'No students match that search.':empty;
       $('review-empty').classList.toggle('hidden',rows.length>0);
     }
     function todayIso(){return WeeklyReview.localDay(Date.now())}
     function reviewRow(r){
       const s=r.student,id=esc(s.id),c=r.counts,n=r.plan?WP.normalize(r.plan):null;
-      const status={review:'To review','no-plan':'No plan',assigned:'Next week assigned'}[r.status];
-      const work=!r.plan?'<span class="muted">No plan</span>':!r.work.length?'<span class="warn-text">None generated</span>':
+      const status={review:'To review','no-plan':'No plan',assigned:'Next week assigned',nursing:'Nursing'}[r.status];
+      const work=r.nursing&&!r.work.length?'<span class="muted">No weekly assignments</span>':!r.plan&&!r.nursing?'<span class="muted">No plan</span>':!r.work.length?'<span class="warn-text">None generated</span>':
         `<span class="line">Practice ${c.practiceDone}/${c.practice} day${c.practice===1?'':'s'} · ${c.questionsDone}/${c.questions} Qs</span><span class="line">CATs ${c.catsDone}/${c.cats}</span>`+(c.overdue?`<span class="line warn-text">${c.overdue} overdue</span>`:'');
       const results=r.resultsUnavailable?'<span class="warn-text">Unavailable: some result sources failed to load</span>':!r.results.length?'<span class="muted">None recorded this week</span>':
         r.results.slice(0,3).map(x=>`<span class="line">${esc(resultText(x))}</span>`).join('')+(r.results.length>3?`<small>+${r.results.length-3} more in details</small>`:'');
       const focus=n&&(n.focus_categories.length||n.focus_topics.length)?n.focus_categories.map(x=>`<span class="chip">${esc(x)}</span>`).join('')+n.focus_topics.map(x=>`<span class="chip topic">${esc(x)}</span>`).join(''):'<span class="muted">Not set</span>';
+      const focusCell=r.nursing?'<span class="muted">Weekly plans are NCLEX-only</span>':null;
       const focusDate=n?`<small>${r.focusUpdated?'Focus updated '+esc(fmtDate(r.focusUpdated)):'Focus never updated'}</small>`:'';
-      const next=!r.plan?'<span class="muted">—</span>':c.next?`<span class="line">${c.next} assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`:`<span class="line">Not assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`;
+      const next=r.nursing?'<span class="muted">Not generated for nursing students</span>':!r.plan?'<span class="muted">—</span>':c.next?`<span class="line">${c.next} assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`:`<span class="line">Not assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`;
       const open=expanded.has(s.id),msg=rowMsg.get(s.id);
       const actions=`<div class="actions"><button class="button secondary" type="button" data-detail="${id}" aria-expanded="${open}" aria-controls="detail-${id}">${open?'Hide details':'Details'}</button>`+
-        `<button class="button ${r.plan?'secondary':'primary'}" type="button" data-edit="${id}" data-from-review="1">${r.plan?'Edit focus & plan':'Create plan'}</button>`+
+        (r.nursing?'':`<button class="button ${r.plan?'secondary':'primary'}" type="button" data-edit="${id}" data-from-review="1">${r.plan?'Edit focus & plan':'Create plan'}</button>`)+
         (r.plan?`<button class="button primary" type="button" data-assign="${id}"${busy.has(s.id)?' disabled':''}>${busy.has(s.id)?'Assigning…':c.next?'Fill missing next-week days':'Assign next week'}</button>`:'')+
         `<a class="button secondary" href="shared-progress.html?student=${encodeURIComponent(s.id)}">Workspace</a></div>`+
+        (r.nursing?'<small class="muted">Plan editing and next-week generation aren’t available for nursing students.</small>':'')+
         (msg?`<div class="row-msg ${msg.type}" role="status">${esc(msg.text)}</div>`:'');
       return `<tr data-review="${id}"${editing===s.id?' class="selected"':''}><td data-label="Student"><strong>${esc(s.name)}</strong>${s.email?`<small>${esc(s.email)}</small>`:''}<span class="pill ${r.status}">${status}</span>${r.flags.length?`<ul class="flags">${r.flags.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}</td>`+
-        `<td data-label="This week · self-reported">${work}</td><td data-label="Recorded results">${results}</td><td data-label="Focus">${focus}${focusDate}</td><td data-label="Next week">${next}</td><td>${actions}</td></tr>`+
+        `<td data-label="This week · self-reported">${work}</td><td data-label="Recorded results">${results}</td><td data-label="Focus">${focusCell||focus+focusDate}</td><td data-label="Next week">${next}</td><td>${actions}</td></tr>`+
         `<tr class="review-detail" id="detail-${id}"${open?'':' hidden'}><td colspan="6">${open?detail(r,n):''}</td></tr>`;
     }
     function detail(r,n){
@@ -461,8 +464,8 @@
     }
     async function assignNext(id){
       if(busy.has(id)||!reviewWeek)return;
-      const plan=plans.get(id),name=students.find(s=>s.id===id)?.name||'Student';
-      if(!plan)return;
+      const plan=plans.get(id),name=students.find(s=>s.id===id)?.name;
+      if(!plan||!name)return;
       if(editorDirty(id)){rowMsg.set(id,{type:'error',text:'Save or close the open plan edits first so next week uses the plan you see.'});return renderReview()}
       if(!WP.meetsPracticeMinimum(plan)){rowMsg.set(id,{type:'error',text:`Plan has ${WP.practiceOnlyDays(plan).length} practice days without a CAT; set at least ${WP.MIN_PRACTICE_DAYS} first.`});return renderReview()}
       const week=reviewWeek.next;
@@ -526,7 +529,7 @@
       if(st.error)throw new Error('Could not load students: '+st.error.message);
       if(pl.error)throw new Error('Could not load study plans (has supabase-weekly-study-plan-migration.sql been run?): '+pl.error.message);
       students=(st.data||[]).filter(s=>s.student_type!=='nursing_student');
-      nursingCount=(st.data||[]).length-students.length;
+      nursingStudents=(st.data||[]).filter(s=>s.student_type==='nursing_student');
       (pl.data||[]).forEach(r=>plans.set(r.student_id,r));
       $('assignment-week').value=WeeklyAssignments.monday();
       $('generate-week').addEventListener('click',generateAssignments);

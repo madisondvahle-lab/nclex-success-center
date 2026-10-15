@@ -75,6 +75,33 @@ test('queue rows count self-reported work, flag gaps factually, and order the qu
   assert.ok(!unavailable.flags.some(f => f.includes('CAT marked complete')));
 });
 
+test('nursing students appear read-only with their own work and results, never as plan or generation candidates', () => {
+  const R = load(), week = R.range('2026-10-12');
+  const students = [{ id: 'n', name: 'Nia', student_type: 'nursing_student' }, { id: 'x', name: 'Xan', student_type: 'nclex' }, { id: 'm', name: 'Mo', student_type: 'nursing_student' }];
+  const plans = new Map([['n', { focus_categories: ['Pharmacological and Parenteral Therapies'] }], ['x', { focus_categories: ['Management of Care'] }]]);
+  const data = {
+    resources: [
+      { id: 1, student_id: 'n', assignment_week: '2026-10-12', assignment_kind: 'practice', due_on: '2026-10-13', completed_at: null, assignment_details: { question_count: 20 } },
+      { id: 2, student_id: 'n', assignment_week: '2026-10-19', assignment_kind: 'practice', due_on: '2026-10-19', completed_at: null }
+    ],
+    practice: [{ student_id: 'm', practice_title: 'Cardiac', score: 8, total_questions: 10, completed_at: '2026-10-14T15:00:00Z' }]
+  };
+  const rows = R.rows(students, plans, data, week, '2026-10-15', []);
+  assert.deepEqual(plain(rows.map(r => [r.student.id, r.status, r.nursing])), [['x', 'review', false], ['m', 'nursing', true], ['n', 'nursing', true]]);
+  const n = rows.find(r => r.student.id === 'n'), m = rows.find(r => r.student.id === 'm');
+  assert.equal(n.plan, null, 'a stray plan row must not make a nursing student assignable');
+  assert.deepEqual(plain(n.counts), { practice: 1, practiceDone: 0, questions: 20, questionsDone: 0, cats: 0, catsDone: 0, overdue: 1, next: 1 });
+  assert.deepEqual(plain(n.flags), ['1 overdue (not marked complete)']);
+  assert.deepEqual(plain(m.flags), []);
+  assert.equal(m.results.length, 1);
+  const html = read('madison-study-plans.html');
+  assert.match(html, /nursingStudents=\(st\.data\|\|\[\]\)\.filter\(s=>s\.student_type==='nursing_student'\)/);
+  assert.match(html, /students\.concat\(nursingStudents\)/);
+  assert.match(html, /r\.nursing\?'':`<button[^`]*data-edit=/);
+  assert.match(html, /aren’t available for nursing students/);
+  assert.match(html, /<option value="nursing">/);
+});
+
 test('weekly plans page wires the review queue and its inline scripts compile', () => {
   const html = read('madison-study-plans.html');
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);

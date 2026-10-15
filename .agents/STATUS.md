@@ -188,7 +188,7 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 ## Weekly study plans (step 1 of 4)
 - `madison-study-plans.html` (admin "Weekly plans") sets each NCLEX student's weekly rhythm (default 3×50 Qs Mon/Wed/Fri + 2 spaced CATs Tue/Sat, platform) and focus categories; students see it read-only on `student-dashboard.html`.
 - Data extends the existing `student_study_plans` table via `supabase-weekly-study-plan-migration.sql` (applied to live Supabase 2026-10-14; RLS verified). Shared logic: `weekly-plan.js`.
-- Step 4: **Weekly review** section on the same page lists per-week completion (self-reported) and recorded results per student, with Edit focus & plan and idempotent Assign next week; no migration (`weekly-review.js`). Steps 2–4 details: see `.agents/tasks/weekly-study-plans.md`.
+- Step 4: **Weekly review** section on the same page lists per-week completion (self-reported) and recorded results per NCLEX and nursing student (nursing rows are review-only), with Edit focus & plan and idempotent Assign next week; no migration (`weekly-review.js`). Steps 2–4 details: see `.agents/tasks/weekly-study-plans.md`.
 
 ## Weekly assignments (step 2 of 4)
 - Admin Weekly plans now generates one student's or all planned NCLEX students' dated practice/CAT assignments for a selected week, reusing `student_resources`; reruns preserve existing work and completion.
