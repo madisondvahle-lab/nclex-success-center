@@ -38,7 +38,25 @@ Before using it, run `supabase-question-bulk-import.sql` after the question-bank
 
 Batch JSON is either an array or `{ "items": [...] }`. Each item uses `id`, `stem`, `item_type`, `difficulty`, `nclex_category`, `topic`, `clinical_judgment_skill`, `rationale`, `option_rationales`, and `references` (`[{ "title": "...", "url": "https://..." }]`). MCQ items also provide `options` (four strings) and `correct_answer` (`a`–`d`); NGN items provide their full structure in `item_data`. New imports only—do not use the intake path to overwrite audited questions or submit the unapproved replacement drafts from PR #143.
 
-Edits to existing numbered or active questions now create `question_revision_drafts`; they do not change the live row. Admins compare original/proposed content, approve or reject, and only then apply an approved revision. The apply RPC locks the existing question and rejects stale drafts if any tracked content changed after proposal. It updates the same UUID and leaves `question_no`, `module_key`, active state, assignments, and student responses intact. The revision table is append-only from the browser, and deletion of a question with revision history is restricted.
+Edits to existing numbered or active questions now create `question_revision_drafts`; they do not change the live row. Admins compare original/proposed content, approve or reject, and only then apply an approved revision. The apply RPC locks the existing question and rejects stale drafts if any tracked content changed after proposal. It updates the same UUID and leaves `question_no`, `module_key`, active state, assignments, and student responses intact. Direct browser table writes remain insert-only, and deletion of a question with revision history is restricted.
+
+### Reopening correction drafts
+Apply `supabase-question-revision-edit.sql` after the bulk-import migration
+(applied live October 14, 2026). Reopening an existing question loads its open
+correction's proposed fields and reason rather than the original bank values.
+The correction list also has **Edit correction draft**. Saving an existing
+correction uses an admin-only RPC to update the same draft, preserving its base
+snapshot and leaving the question untouched. Editing an approved correction
+clears approval and returns it to pending review. Expected proposal time and
+status prevent stale edits; failures keep the unsaved form open. New corrections
+still insert once, with double-submit protection.
+
+Validation: `node --test tests/question-revision-edit.test.cjs` and
+`supabase db query --linked --file tests/question-revision-edit.sql`.
+The SQL test rolls back all draft/review changes and checks base preservation,
+fresh approval, stale/closed draft rejection, admin-only permission, and unchanged
+live question content. The migration adds a function only; no clinical content
+or existing drafts were persistently modified during implementation.
 
 The student Mixed Review query also pages active question records in batches of 500 so newly published MCQs remain discoverable beyond 1,000 rows. The existing practice renderer still filters to single-answer questions; NGN rendering/scoring remains a separate follow-up.
 

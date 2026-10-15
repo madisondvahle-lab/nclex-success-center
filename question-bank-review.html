@@ -1167,8 +1167,8 @@
       render();renderManage();
       alert(done+' done'+(skipped?', '+skipped+' skipped (need manual conversion)':'')+(fail?'. Stopped: '+(fail.message||fail):'.'));
     }
-    function openEdit(id){
-      const q=live.find(x=>x.id===id);if(!q)return;
+    function openEdit(id,values){
+      const q=values||live.find(x=>x.id===id);if(!q)return;
       const type=q.item_type||'mcq',data=q.item_data||null;
       const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';
       let opts='';
@@ -1212,21 +1212,28 @@
         }
       }
     }
-    function openCorrectionEditor(question){
+    async function openCorrectionEditor(question){
       if(!revisionWorkflowReady){alert('Run supabase-question-bulk-import.sql before proposing corrections. The live question has not been changed.');return}
-      openEdit(question.id);
-      const form=$('ed-form'),type=question.item_type||'mcq',intro=form.querySelector('.intro');
-      intro.textContent='This is an existing question. Your changes will be stored as a correction draft and will not affect students until a separate approval and application.';
+      let revision;
+      try{
+        const result=await db.from('question_revision_drafts').select('*').eq('question_id',question.id).in('status',['pending_review','approved']).maybeSingle();
+        if(result.error)throw result.error;
+        revision=result.data;
+      }catch(error){alert(`Could not load the correction draft: ${error.message||error}. Refresh and try again. The original question remains unchanged.`);return}
+      const editable=revision?{...question,...revision.proposed_content}:question;
+      openEdit(question.id,editable);
+      const form=$('ed-form'),type=editable.item_type||'mcq',intro=form.querySelector('.intro');
+      intro.textContent=revision?'You are editing the saved correction draft, not the original question. Saving changes requires fresh approval before application.':'This is an existing question. Your changes will be stored as a correction draft and will not affect students until a separate approval and application.';
       form.querySelector('button[type="submit"]').textContent='Save correction draft';
       const fields=document.createElement('div');
-      fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required></textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(question.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(question.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(question.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(question.item_data||{},null,2))}</textarea>`}`;
+      fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(editable.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(editable.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(editable.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(editable.item_data||{},null,2))}</textarea>`}`;
       form.querySelector('.buttons').before(fields);
       form.onsubmit=async event=>{
         event.preventDefault();
         const summary=$('e-summary').value.trim();
         if(!summary){alert('Add the clinical/audit reason for this proposed correction.');return}
         if(!$('e-rat').value.trim()){alert('A correction must include its full rationale.');return}
-        let optionRationales,references,itemData=question.item_data?JSON.parse(JSON.stringify(question.item_data)):null;
+        let optionRationales,references,itemData=editable.item_data?JSON.parse(JSON.stringify(editable.item_data)):null;
         try{
           optionRationales=JSON.parse($('e-option-rationales').value);
           references=JSON.parse($('e-reference-list').value);
@@ -1238,12 +1245,12 @@
           }
         }catch(error){alert(error.message||'Check the metadata JSON.');return}
         const proposed={
-          stem:$('e-stem').value.trim(),option_a:question.option_a??null,option_b:question.option_b??null,
-          option_c:question.option_c??null,option_d:question.option_d??null,
-          correct_answer:question.correct_answer??null,rationale:$('e-rat').value.trim(),
-          module_key:question.module_key??null,nclex_category:$('e-cat').value.trim()||null,
-          nclex_sub:question.nclex_sub??null,topic:$('e-topic').value.trim()||null,
-          difficulty:$('e-dif').value,is_ngn:question.is_ngn??type!=='mcq',item_type:type,
+          stem:$('e-stem').value.trim(),option_a:editable.option_a??null,option_b:editable.option_b??null,
+          option_c:editable.option_c??null,option_d:editable.option_d??null,
+          correct_answer:editable.correct_answer??null,rationale:$('e-rat').value.trim(),
+          module_key:editable.module_key??null,nclex_category:$('e-cat').value.trim()||null,
+          nclex_sub:editable.nclex_sub??null,topic:$('e-topic').value.trim()||null,
+          difficulty:$('e-dif').value,is_ngn:editable.is_ngn??type!=='mcq',item_type:type,
           item_data:itemData,clinical_judgment_skill:$('e-cj').value.trim()||null,
           option_rationales:optionRationales,reference_list:references
         };
@@ -1270,9 +1277,20 @@
           clinical_judgment_skill:question.clinical_judgment_skill??null,
           option_rationales:question.option_rationales||{},reference_list:question.reference_list||[]
         };
-        const result=await db.from('question_revision_drafts').insert({question_id:question.id,base_content:base,proposed_content:proposed,change_summary:summary,proposed_by:session.user.id,status:'pending_review'}).select('*').single();
-        if(result.error){alert(`Correction draft was not saved: ${result.error.message}. The original question remains unchanged.`);return}
-        revisionDrafts.unshift(result.data);$('ed').classList.add('hidden');renderRevisionDrafts();render();
+        const save=form.querySelector('button[type="submit"]');
+        if(save.disabled)return;
+        save.disabled=true;save.textContent='Saving correction draft…';
+        try{
+          const result=revision
+            ?await db.rpc('update_question_revision_draft',{p_revision_id:revision.id,p_expected_proposed_at:revision.proposed_at,p_expected_status:revision.status,p_proposed_content:proposed,p_change_summary:summary})
+            :await db.from('question_revision_drafts').insert({question_id:question.id,base_content:base,proposed_content:proposed,change_summary:summary,proposed_by:session.user.id,status:'pending_review'}).select('*').single();
+          if(result.error)throw result.error;
+          revisionDrafts=revisionDrafts.filter(item=>item.id!==result.data.id);
+          revisionDrafts.unshift(result.data);$('ed').classList.add('hidden');renderRevisionDrafts();render();
+        }catch(error){
+          const message=error.code==='23505'?'Another open correction draft already exists. Copy your unsaved edits, then cancel and reopen to load the saved draft.':error.message||error;
+          alert(`Correction draft was not saved: ${message}. Your edits remain in this form. The original question remains unchanged.`);
+        }finally{save.disabled=false;save.textContent='Save correction draft'}
       };
     }
     function loadDiagBank(){
@@ -1378,9 +1396,10 @@
       $('revision-list').innerHTML=open.length?open.map(revision=>{
         const question=live.find(item=>item.id===revision.question_id),status=revision.status;
         const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}" type="button">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}" type="button">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject approved correction</button>`;
-        return `<article class="candidate"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span><span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${action}</div></article>`;
+        return `<article class="candidate"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span><span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${question?`<button class="button secondary" data-revision-edit="${esc(question.id)}" type="button">Edit correction draft</button>`:''}${action}</div></article>`;
       }).join(''):'<p class="empty">No correction drafts are awaiting review. Existing question edits will appear here as proposals.</p>';
       document.querySelectorAll('[data-revision-action]').forEach(button=>button.addEventListener('click',()=>handleRevisionAction(button.dataset.revisionAction,button.dataset.revisionId)));
+      document.querySelectorAll('[data-revision-edit]').forEach(button=>button.addEventListener('click',()=>openManagedEdit(button.dataset.revisionEdit)));
     }
     async function handleRevisionAction(action,id){
       const revision=revisionDrafts.find(item=>item.id===id);if(!revision)return;
