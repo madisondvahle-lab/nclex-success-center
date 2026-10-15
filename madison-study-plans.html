@@ -294,6 +294,9 @@
     async function generateAssignments(){
       const btn=$('generate-week'),week=$('assignment-week').value;
       if(!week||WeeklyAssignments.monday(week)!==week)return notice('assignment-notice','Choose a Monday.','error');
+      if(!students.some(s=>plans.has(s.id)))return notice('assignment-notice','Save a weekly plan for an active NCLEX student first.','error');
+      const selectedPlan=plans.get($('assignment-student').value);
+      if(selectedPlan&&!WP.meetsPracticeMinimum(selectedPlan))return notice('assignment-notice',`This plan has ${WP.practiceOnlyDays(selectedPlan).length} practice days without a CAT. Set at least ${WP.MIN_PRACTICE_DAYS} before generating; weekends are allowed.`,'error');
       btn.disabled=true;notice('assignment-notice','Generating from saved plans…','info');
       try{
         const {data,error}=await db.rpc('generate_weekly_assignments',{p_week:week,p_student:$('assignment-student').value||null});

@@ -65,6 +65,16 @@ BEGIN
   UPDATE public.student_study_plans SET focus_categories='{}',focus_topics='{}' WHERE student_id=sid;
   result := public.generate_weekly_assignments('2099-02-02',sid);
   ASSERT (result->>'created')::int=2 AND jsonb_array_length(result->'failures')=3, 'Missing focus must be explicit';
+  UPDATE public.student_study_plans SET focus_categories=ARRAY[focus],practice_platform='UWorld',
+    practice_days=ARRAY['tue','thu','sun'],cat_days=ARRAY['mon','fri'] WHERE student_id=sid;
+  result := public.generate_weekly_assignments('2099-02-09',sid);
+  ASSERT (result->>'created')::int=5, 'Per-student schedules may include weekends';
+  ASSERT EXISTS (SELECT 1 FROM public.student_resources WHERE student_id=sid AND due_on='2099-02-15' AND assignment_kind='practice');
+  UPDATE public.student_study_plans SET practice_days=ARRAY['mon','tue','wed'],cat_days=ARRAY['tue','sat'] WHERE student_id=sid;
+  result := public.generate_weekly_assignments('2099-02-16',sid);
+  ASSERT (result->>'created')::int=0 AND jsonb_array_length(result->'failures')=1,
+    'At least three practice days without a CAT are required';
+  UPDATE public.student_study_plans SET practice_days=ARRAY['mon','wed','fri'] WHERE student_id=sid;
   UPDATE public.student_study_plans SET focus_categories=ARRAY[focus],practice_platform='UWorld' WHERE student_id=sid;
   INSERT INTO public.student_study_plans(student_id,focus_categories)
     VALUES(other_id,ARRAY[focus]) ON CONFLICT(student_id) DO UPDATE SET

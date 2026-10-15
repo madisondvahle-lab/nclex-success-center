@@ -35,6 +35,11 @@ BEGIN
   LOOP
     -- Serialize concurrent generation for a student without changing their plan.
     PERFORM 1 FROM public.student_study_plans WHERE student_id = p.student_id FOR UPDATE;
+    IF (SELECT count(DISTINCT d) FROM unnest(p.practice_days) d WHERE NOT (d = ANY(p.cat_days))) < 3 THEN
+      failures := failures || jsonb_build_array(jsonb_build_object('student_id',p.student_id,'due_on',p_week,
+        'reason','Set at least 3 practice days without a CAT before generating this week. Any days, including weekends, are allowed.'));
+      CONTINUE;
+    END IF;
     FOR slot IN
       SELECT p_week + d.i AS due, k.kind
       FROM (VALUES (0,'mon'),(1,'tue'),(2,'wed'),(3,'thu'),(4,'fri'),(5,'sat'),(6,'sun')) d(i,day)

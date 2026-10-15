@@ -2081,7 +2081,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       if(activeSet.assignmentId){
         const review=document.createElement('div');
         review.className='study-session-body';
-        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary>Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${escapeHtml(q.options[answers[i]]||'Not answered')}</p><p>Correct answer: ${escapeHtml(q.options[q.answer])}</p><p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
+        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${escapeHtml(q.options[answers[i]]||'Not answered')}</p><p>Correct answer: ${escapeHtml(q.options[q.answer])}</p><p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
         $('quiz').appendChild(review);
       }
       $('retry').addEventListener('click',()=>{

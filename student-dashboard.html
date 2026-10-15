@@ -832,14 +832,14 @@
     }
 
     // NCLEX assigned work includes practice; uploads stay in their dedicated view.
-    function renderResources(items, containerId) {
+    function renderResources(items, containerId, plan) {
       const filtered = items.filter(r => r.resource_type !== 'student_upload');
       if (!filtered.length) return;
       document.getElementById(containerId).innerHTML = filtered.map(item =>
         `<article class="resource">
           <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
           <h3>${studentResourceText(item.title)}</h3>
-          ${item.assignment_week ? `<p>Due ${text(item.due_on)} · ${item.completed_at ? 'Complete' : 'Not complete'}</p>` : ''}
+          ${item.assignment_week ? `<p data-weekly-state>Due ${text(item.due_on)} · ${item.completed_at ? 'Complete' : 'Not complete'}</p>` : ''}
           ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
           ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">${item.resource_type === 'practice_set' ? 'Open assigned set' : 'Open resource'} →</a>` : ''}
           ${item.assignment_week ? `<button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">${item.completed_at ? 'Mark not complete' : 'Mark complete'}</button><p role="status" data-completion-status></p>` : ''}
@@ -854,9 +854,12 @@
             const { data, error } = await db.rpc('set_weekly_assignment_complete', { p_assignment: item.id, p_complete: !item.completed_at });
             if (error) throw error;
             item.completed_at = data;
-            renderResources(items, containerId);
+            button.textContent = item.completed_at ? 'Mark not complete' : 'Mark complete';
+            button.parentElement.querySelector('[data-weekly-state]').textContent = `Due ${item.due_on} · ${item.completed_at ? 'Complete' : 'Not complete'}`;
+            status.textContent = item.completed_at ? 'Marked complete.' : 'Marked not complete.';
+            button.disabled = false;
             const student = { id: item.student_id };
-            await renderThisWeek(student, items);
+            await renderThisWeek(student, items, plan);
           } catch (error) {
             status.textContent = 'Could not save completion: ' + error.message;
             button.disabled = false;
@@ -907,7 +910,7 @@
         }).join('');
       }
       renderWeeklyPlan(plans[0]);
-      renderResources(resources, 'resources-nclex');
+      renderResources(resources, 'resources-nclex', plans[0]);
       renderModulesInto('modules-nclex', catalog, access);
 
       // Render CAT results if present

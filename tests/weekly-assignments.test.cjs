@@ -68,8 +68,12 @@ test('migration reuses resources, keeps generation admin-only, and restricts stu
   assert.match(sql, /CREATE UNIQUE INDEX IF NOT EXISTS student_resources_weekly_slot/);
   assert.match(sql, /IF NOT public\.is_app_admin\(\) THEN RAISE EXCEPTION/);
   assert.match(sql, /FOR UPDATE/);
+  assert.match(sql, /count\(DISTINCT d\).*NOT \(d = ANY\(p\.cat_days\)\)\) < 3/);
   assert.match(sql, /b\.active = true AND b\.item_type = 'mcq'/);
   assert.match(sql, /s\.auth_user_id = auth\.uid\(\)/);
   assert.match(sql, /REVOKE ALL ON FUNCTION public\.set_weekly_assignment_complete\(uuid, boolean\) FROM PUBLIC, anon/);
   assert.doesNotMatch(sql, /CREATE POLICY.*UPDATE/i);
+  const admin = read('madison-study-plans.html');
+  assert.match(admin, /WP\.meetsPracticeMinimum\(selectedPlan\)/);
+  assert.match(admin, /WP\.practiceOnlyDays\(selectedPlan\)/);
 });
