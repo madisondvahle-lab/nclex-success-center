@@ -230,6 +230,7 @@
             <section class="prospect-panel" aria-labelledby="intakes-title">
               <h3 id="intakes-title">Consult intakes</h3>
               <p class="prospect-summary" id="intake-summary">Loading consult intakes…</p>
+              <label class="prospect-meta"><input type="checkbox" id="show-hidden-prospects"> Show hidden prospects instead</label>
               <p class="prospect-status" id="intake-action-status" role="status" aria-live="polite"></p>
               <div class="prospect-list" id="consult-intakes"></div>
               <details class="merge-details">
@@ -373,7 +374,7 @@
     async function loadProspectData(){
       const [leadResult,intakeResult,studentsResult]=await Promise.all([
         db.from('diagnostic_leads').select('id,full_name,email,readiness_band,overall_score,nclex_target_date,created_at').order('created_at',{ascending:false}),
-        db.from('consult_intakes').select('id,full_name,email,phone,nclex_exam,nclex_target_date,status,support_interest,student_id,created_at').order('created_at',{ascending:false}),
+        db.from('consult_intakes').select('id,full_name,email,phone,nclex_exam,nclex_target_date,status,support_interest,student_id,created_at,prospect_hidden_at').order('created_at',{ascending:false}),
         db.from('students').select('id,auth_user_id,portal_stage')
       ]);
       if(leadResult.error){
@@ -453,12 +454,16 @@
       const currentClients=studentAccessAvailable
         ?items.filter(item=>item.student_id&&studentStageById.get(item.student_id)==='active')
         :[];
-      const prospects=items.filter(item=>item.status!=='active_student'&&(
+      const prospects=items.filter(item=>!item.prospect_hidden_at&&item.status!=='active_student'&&(
         !studentAccessAvailable||!item.student_id||studentStageById.get(item.student_id)!=='active'
       ));
+      const hidden=items.filter(item=>item.prospect_hidden_at);
+      const showHidden=$('show-hidden-prospects').checked;
+      const visible=showHidden?hidden:prospects;
+      $('show-hidden-prospects').onchange=()=>renderConsultIntakes(items);
       const recent=prospects.filter(item=>Date.now()-new Date(item.created_at).getTime()<=7*24*60*60*1000).length;
-      $('intake-summary').textContent=`${prospects.length} prospects · ${currentClients.length} active clients in the student roster · ${recent} added in the last 7 days`;
-      $('consult-intakes').innerHTML=prospects.length?prospects.map(item=>{
+      $('intake-summary').textContent=`${prospects.length} prospects · ${currentClients.length} active clients in the student roster · ${recent} added in the last 7 days · ${hidden.length} hidden`;
+      $('consult-intakes').innerHTML=visible.length?visible.map(item=>{
         const accessReady=studentAccessAvailable&&item.student_id&&studentAccessById.get(item.student_id);
         const stage=item.student_id?(studentStageById.get(item.student_id)||'active'):null;
         let actions='';
@@ -468,8 +473,9 @@
         else if(stage==='assessment')actions='<button class="primary" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><span>Creates a secure email-link sign-in.</span>';
         else if(accessReady)actions='<span>Portal access ready</span><a href="shared-progress.html?student='+encodeURIComponent(item.student_id)+'">Open student workspace →</a><button type="button" data-switch-assessment="'+esc(item.id)+'">Switch to assessment-only</button>';
         else actions='<button class="primary" type="button" data-create-diagnostic="'+esc(item.id)+'">Create diagnostic access</button><span>Moves this pre-purchase client to the assessment-only portal.</span>';
+        actions+='<button type="button" data-prospect-visibility="'+esc(item.id)+'">'+(item.prospect_hidden_at?'Restore to Prospects':'Hide from Prospects')+'</button>';
         return `<article class="prospect-row"><div><div class="prospect-name">${esc(item.full_name)}</div><div class="prospect-meta"><a href="mailto:${esc(item.email||'')}">${esc(item.email||'No email on file')}</a>${item.phone?' · '+esc(item.phone):''}<br>${esc(item.nclex_exam||'Program not specified')}${item.nclex_target_date?' · Target '+esc(prospectDate(item.nclex_target_date)):''}<br>${esc((item.status||'new_lead').replaceAll('_',' '))} · Saved ${esc(prospectDate(item.created_at))}</div><label class="prospect-meta">Support type <select data-support="${esc(item.id)}">${['','One-time strategy session','Ongoing tutoring','Help deciding'].map(value=>`<option value="${esc(value)}"${(item.support_interest||'')===value?' selected':''}>${esc(value||'Not specified')}</option>`).join('')}</select></label></div><div class="prospect-actions">${actions}</div></article>`;
-      }).join(''):'<p class="table-empty">No consult intakes yet. Use New intake to capture a prospective student.</p>';
+      }).join(''):(showHidden?'<p class="table-empty">No hidden prospects.</p>':'<p class="table-empty">No prospects to follow up with. Use New intake to add someone, or Show hidden prospects to restore a profile.</p>');
       $('consult-intakes').querySelectorAll('[data-support]').forEach(select=>select.addEventListener('change',async()=>{
         const {error}=await db.from('consult_intakes').update({support_interest:select.value||null}).eq('id',select.dataset.support);
         if(error){$('intake-action-status').textContent='Could not save support type: '+error.message;return}
@@ -482,6 +488,23 @@
       $('consult-intakes').querySelectorAll('[data-create-diagnostic]').forEach(button=>button.addEventListener('click',()=>prepareDiagnosticAccess(button.dataset.createDiagnostic)));
       $('consult-intakes').querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote)));
       $('consult-intakes').querySelectorAll('[data-switch-assessment]').forEach(button=>button.addEventListener('click',()=>switchToAssessmentOnly(button.dataset.switchAssessment)));
+      $('consult-intakes').querySelectorAll('[data-prospect-visibility]').forEach(button=>button.addEventListener('click',()=>setProspectVisibility(button.dataset.prospectVisibility,button)));
+    }
+    async function setProspectVisibility(id,button){
+      const item=consultIntakes.find(row=>row.id===id);if(!item)return;
+      const status=$('intake-action-status');
+      button.disabled=true;
+      status.textContent=item.prospect_hidden_at?'Restoring prospect…':'Hiding prospect…';
+      try{
+        const {data,error}=await db.from('consult_intakes').update({prospect_hidden_at:item.prospect_hidden_at?null:new Date().toISOString()}).eq('id',id).select('id,prospect_hidden_at').single();
+        if(error)throw error;
+        item.prospect_hidden_at=data.prospect_hidden_at;
+        renderConsultIntakes(consultIntakes);
+        status.textContent=item.prospect_hidden_at?'Hidden from Prospects. Profile, history, and portal access are unchanged. Use Show hidden prospects to restore.':'Prospect visibility restored. Existing active-student filters still apply.';
+      }catch(error){
+        status.textContent='Could not update prospect visibility. '+error.message;
+        button.disabled=false;
+      }
     }
     async function convertToStudent(id){
       const item=consultIntakes.find(row=>row.id===id);if(!item)return;
