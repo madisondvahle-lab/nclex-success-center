@@ -87,3 +87,11 @@ test('admin sidebars link to the weekly plans page', () => {
     assert.match(read(file), /href="madison-study-plans\.html"/, file);
   }
 });
+
+test('practice minimum counts only practice days without a CAT, on any weekday or weekend', () => {
+  const WP = load();
+  assert.equal(WP.meetsPracticeMinimum(WP.DEFAULTS), true);
+  assert.equal(WP.meetsPracticeMinimum({ practice_days: ['fri', 'sat', 'sun'], cat_days: ['tue', 'thu'] }), true);
+  assert.equal(WP.meetsPracticeMinimum({ practice_days: ['mon', 'wed', 'sat'], cat_days: ['wed', 'sat'] }), false);
+  assert.deepEqual([...WP.practiceOnlyDays({ practice_days: ['mon', 'wed', 'sat', 'sun'], cat_days: ['sat'] })], ['mon', 'wed', 'sun']);
+});

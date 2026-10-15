@@ -63,6 +63,13 @@
     }
     return true;
   }
+  var MIN_PRACTICE_DAYS = 3;
+  // Practice days that are not also CAT days; Madison wants at least 3 per week.
+  function practiceOnlyDays(plan) {
+    var p = normalize(plan);
+    return p.practice_days.filter(function (d) { return p.cat_days.indexOf(d) < 0; });
+  }
+  function meetsPracticeMinimum(plan) { return practiceOnlyDays(plan).length >= MIN_PRACTICE_DAYS; }
   function week(plan) {
     var p = normalize(plan);
     return DAYS.map(function (d) {
@@ -78,6 +85,6 @@
   }
   window.WeeklyPlan = {
     DAYS: DAYS, LABELS: LABELS, LONG: LONG, PLATFORMS: PLATFORMS, PORTAL: PORTAL, DEFAULTS: DEFAULTS,
-    normalize: normalize, catSpacingOk: catSpacingOk, week: week, summary: summary, topics: list
+    MIN_PRACTICE_DAYS: MIN_PRACTICE_DAYS, normalize: normalize, catSpacingOk: catSpacingOk, practiceOnlyDays: practiceOnlyDays, meetsPracticeMinimum: meetsPracticeMinimum, week: week, summary: summary, topics: list
   };
 })();

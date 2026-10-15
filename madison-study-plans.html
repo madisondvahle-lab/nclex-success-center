@@ -134,7 +134,7 @@
                   <div class="field">
                     <span class="field-label" id="cd-label">CAT exam days</span>
                     <div class="daypick" id="cat-days" role="group" aria-labelledby="cd-label"></div>
-                    <p class="hint" id="cat-hint">Two CATs per week, spaced at least one day apart.</p>
+                    <p class="hint" id="cat-hint">Two spaced CATs per week, plus at least 3 practice days without a CAT. Any days work, including weekends.</p>
                   </div>
                   <div class="field">
                     <label class="field-label" for="cat-platform">CAT platform</label>
@@ -207,7 +207,7 @@
       const rows=students.filter(s=>(!q||(s.name+' '+(s.email||'')).toLowerCase().includes(q))&&(!onlyMissing||!plans.has(s.id)));
       $('roster').innerHTML=rows.map(s=>{
         const p=plans.get(s.id);
-        const plan=p?esc(WP.summary(p)):'<span class="muted">No plan yet</span>';
+        const plan=p?esc(WP.summary(p))+(WP.meetsPracticeMinimum(p)?'':`<small style="color:#9c382d">Fewer than ${WP.MIN_PRACTICE_DAYS} practice days without a CAT</small>`):'<span class="muted">No plan yet</span>';
         const n=p?WP.normalize(p):null;
         const focus=n&&(n.focus_categories.length||n.focus_topics.length)
           ?n.focus_categories.map(c=>`<span class="chip">${esc(c)}</span>`).join('')+n.focus_topics.map(t=>`<span class="chip topic">${esc(t)}</span>`).join('')
@@ -239,9 +239,11 @@
       const v=formValue(),overlap=v.practice_days.filter(d=>v.cat_days.includes(d));
       $('summary-preview').textContent=WP.summary(v);
       const warn=[];
+      const offCat=WP.practiceOnlyDays(v).length;
+      if(offCat<WP.MIN_PRACTICE_DAYS)warn.push(`Only ${offCat} practice day${offCat===1?'':'s'} without a CAT; aim for at least ${WP.MIN_PRACTICE_DAYS}.`);
       if(!WP.catSpacingOk(v.cat_days))warn.push('CAT days are back-to-back; space them out.');
       if(overlap.length)warn.push('Practice and CAT fall on the same day ('+overlap.map(d=>WP.LABELS[d]).join(', ')+').');
-      $('cat-hint').textContent=warn.length?warn.join(' '):'Two CATs per week, spaced at least one day apart.';
+      $('cat-hint').textContent=warn.length?warn.join(' '):'Two spaced CATs per week, plus at least '+WP.MIN_PRACTICE_DAYS+' practice days without a CAT. Any days work, including weekends.';
       $('cat-hint').style.color=warn.length?'#9c382d':'';
     }
 
