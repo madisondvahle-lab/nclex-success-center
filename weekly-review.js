@@ -80,7 +80,9 @@
     const resources = (data.resources || []).filter(r => r.assignment_kind === 'practice' || r.assignment_kind === 'cat');
     const unavailable = !!(failed && failed.length);
     return students.map(s => {
-      const plan = plans.get(s.id) || null;
+      // Weekly plans and assignment generation are NCLEX-only (generate_weekly_assignments skips nursing_student).
+      const nursing = s.student_type === 'nursing_student';
+      const plan = nursing ? null : plans.get(s.id) || null;
       const work = resources.filter(r => r.student_id === s.id && r.assignment_week === week.start).sort((a, b) => String(a.due_on).localeCompare(String(b.due_on)));
       const next = resources.filter(r => r.student_id === s.id && r.assignment_week === week.next);
       const practice = work.filter(r => r.assignment_kind === 'practice'), cats = work.filter(r => r.assignment_kind === 'cat');
@@ -96,17 +98,19 @@
       };
       const flags = [];
       const focus = plan ? (plan.focus_categories || []).length + (plan.focus_topics || []).length : 0;
-      if (!plan) flags.push('No weekly plan');
+      if (nursing) {
+        if (counts.overdue) flags.push(counts.overdue + ' overdue (not marked complete)');
+      } else if (!plan) flags.push('No weekly plan');
       else {
         if (!work.length) flags.push('No assignments generated for this week');
         if (counts.overdue) flags.push(counts.overdue + ' overdue (not marked complete)');
         if (!focus) flags.push('No focus categories or topics');
         if (!unavailable && counts.catsDone > assessments) flags.push(counts.catsDone + ' CAT' + (counts.catsDone === 1 ? '' : 's') + ' marked complete; ' + assessments + ' CAT/readiness score' + (assessments === 1 ? '' : 's') + ' recorded');
       }
-      const status = !plan ? 'no-plan' : counts.next ? 'assigned' : 'review';
-      return { student: s, plan, status, flags, counts, work, results: mine, resultsUnavailable: unavailable, focusUpdated: plan && plan.focus_updated_at || null };
+      const status = nursing ? 'nursing' : !plan ? 'no-plan' : counts.next ? 'assigned' : 'review';
+      return { student: s, nursing, plan, status, flags, counts, work, results: mine, resultsUnavailable: unavailable, focusUpdated: plan && plan.focus_updated_at || null };
     }).sort((a, b) => {
-      const rank = { review: 0, 'no-plan': 1, assigned: 2 };
+      const rank = { review: 0, 'no-plan': 1, assigned: 2, nursing: 3 };
       return rank[a.status] - rank[b.status] || String(a.focusUpdated || '').localeCompare(String(b.focusUpdated || '')) || String(a.student.name).localeCompare(String(b.student.name));
     });
   }
