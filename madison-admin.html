@@ -449,9 +449,15 @@
       await loadProspectData();
     }
     function renderConsultIntakes(items){
-      const recent=items.filter(item=>Date.now()-new Date(item.created_at).getTime()<=7*24*60*60*1000).length;
-      $('intake-summary').textContent=`${items.length} profiles · ${recent} added in the last 7 days`;
-      $('consult-intakes').innerHTML=items.length?items.map(item=>{
+      const currentClients=studentAccessAvailable
+        ?items.filter(item=>item.student_id&&studentStageById.get(item.student_id)==='active')
+        :[];
+      const prospects=studentAccessAvailable
+        ?items.filter(item=>!item.student_id||studentStageById.get(item.student_id)!=='active')
+        :items;
+      const recent=prospects.filter(item=>Date.now()-new Date(item.created_at).getTime()<=7*24*60*60*1000).length;
+      $('intake-summary').textContent=`${prospects.length} prospects · ${currentClients.length} active clients in the student roster · ${recent} added in the last 7 days`;
+      $('consult-intakes').innerHTML=prospects.length?prospects.map(item=>{
         const accessReady=studentAccessAvailable&&item.student_id&&studentAccessById.get(item.student_id);
         const stage=item.student_id?(studentStageById.get(item.student_id)||'active'):null;
         let actions='';
@@ -640,10 +646,12 @@
       const statusControl=archived
         ?`<button type="button" data-restore="${id}" ${lifecycleAvailable?'':'disabled'}>Restore</button>`
         :`<select aria-label="Change status for ${esc(name)}" data-status="${id}" ${lifecycleAvailable?'':'disabled'}>${['active','paused','completed'].map(value=>`<option value="${value}" ${student.status===value?'selected':''}>${value[0].toUpperCase()+value.slice(1)}</option>`).join('')}</select><button class="archive" type="button" data-archive="${id}" ${lifecycleAvailable?'':'disabled'}>Archive</button>`;
-      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${statusControl}</div></td></tr>`;
+      const portalStageControl=archived?'':`<select aria-label="Change portal access for ${esc(name)}" data-portal-stage="${id}"><option value="assessment" ${student.portal_stage==='assessment'?'selected':''}>Assessment only</option><option value="active" ${student.portal_stage!=='assessment'?'selected':''}>Regular portal</option></select>`;
+      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${portalStageControl}${statusControl}</div></td></tr>`;
     }
     function bindLifecycleControls(root){
       root.querySelectorAll('[data-status]').forEach(select=>select.addEventListener('change',()=>changeStatus(select.dataset.status,select.value,select)));
+      root.querySelectorAll('[data-portal-stage]').forEach(select=>select.addEventListener('change',()=>changePortalStage(select.dataset.portalStage,select.value,select)));
       root.querySelectorAll('[data-archive]').forEach(button=>button.addEventListener('click',()=>archiveStudent(button.dataset.archive,button)));
       root.querySelectorAll('[data-restore]').forEach(button=>button.addEventListener('click',()=>restoreStudent(button.dataset.restore,button)));
       root.querySelectorAll('[data-open-url]').forEach(row=>{
@@ -656,6 +664,13 @@
       const {error}=await db.from('students').update({status}).eq('id',id);
       control.disabled=false;
       if(error){alert('The student status could not be changed: '+error.message);await loadRoster()}else{await loadRoster();await loadDashboardData()}
+    }
+    async function changePortalStage(id,portal_stage,control){
+      control.disabled=true;
+      const {error}=await db.from('students').update({portal_stage}).eq('id',id);
+      control.disabled=false;
+      if(error){alert('The student portal access could not be changed: '+error.message);await loadRoster();return}
+      await Promise.all([loadRoster(),loadProspectData(),loadDashboardData()]);
     }
     async function archiveStudent(id,button){
       if(!confirm('Archive this student? Their record and history will be preserved, but they will be removed from current operational lists.'))return;
