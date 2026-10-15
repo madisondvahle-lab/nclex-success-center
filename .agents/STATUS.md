@@ -175,6 +175,7 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 
 ## Student CAT logging (Phase 9)
 - `student-dashboard.html` "Log a CAT or readiness exam" card: PDF (pdf.js) or image (Tesseract.js) is read in the browser by `assessment-import.js` (UWorld table parser, generic "Category NN%" fallback), shown on a confirm form, then saved to `student_assessment_uploads` + `student_assessment_categories` (question counts in `total_count`).
+- `shared-progress.html` timeline upload also reads one CAT/readiness PDF or image at a time in-browser, previews extracted scores, then saves recognized overall and category scores with the uploaded report. Admins can use **Read CAT scores** on an existing CAT/readiness timeline report that has no category scores. Batch uploads remain attachment-only.
 - Requires `supabase-student-score-entry.sql` (student INSERT policy on categories). Report files go to the private `assessment-reports` bucket; apply `supabase-assessment-report-storage-rls-fix.sql` to ensure student access checks use the storage object path.
 - Admin workspace reads `total_count` as the per-category question count; counts under 5 are flagged low sample.
 - Practice buttons on the student home use `supplemental-practice.html?mixed=10&cat=<name>`.
