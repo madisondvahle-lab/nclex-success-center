@@ -48,6 +48,18 @@
     .roadmap p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}
     .empty{margin:0;padding:18px 0;color:var(--muted);font-size:.88rem;line-height:1.55}
     .resource-link{display:inline-block;margin-top:18px;color:var(--ink);font-size:.8rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
+    .plan-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:0 0 20px;padding:0;list-style:none}
+    .plan-week li{border:1px solid var(--line);background:#fff;padding:10px 8px;min-height:74px;display:flex;flex-direction:column;gap:4px}
+    .plan-week li strong{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+    .plan-week li span{font-size:.76rem;line-height:1.35;color:var(--muted)}
+    .plan-week li.practice{background:var(--sage);border-color:var(--sage)}
+    .plan-week li.practice span,.plan-week li.cat span{color:var(--ink);font-weight:700}
+    .plan-week li.cat{background:var(--plum);border-color:var(--plum);color:#fff}
+    .plan-week li.cat span{color:#f2dce6}
+    .plan-focus h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .plan-chip{display:inline-block;margin:0 6px 6px 0;padding:5px 10px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.78rem;font-weight:800}
+    .plan-chip.topic{background:var(--teal-light);color:var(--teal)}
+    .plan-note{margin:14px 0 0;padding:12px 14px;background:var(--soft);font-size:.86rem;line-height:1.5}
     .weekly{background:var(--ink);color:#fff}
     .weekly .label{background:#f2c2c9;color:var(--plum)}
     .weekly .card-head{margin-bottom:14px}
@@ -199,6 +211,9 @@
       .practice-actions{width:100%}
       .card{padding:24px 20px}
       .card-head{flex-wrap:wrap}
+      .plan-week{grid-template-columns:1fr}
+      .plan-week li{min-height:0;flex-direction:row;align-items:baseline;gap:12px}
+      .plan-week li strong{min-width:42px}
     }
     @media(max-width:960px){
       #app .top{display:none}
@@ -373,6 +388,11 @@
         </div>
       </section>
       <section class="grid">
+        <article class="card" id="weekly-plan-card" style="grid-column:1/-1" hidden>
+          <div class="card-head"><div><p class="eyebrow">Your weekly rhythm</p><h2>My weekly study plan</h2></div><span class="label" id="weekly-plan-total">Set by Madison</span></div>
+          <ol class="plan-week" id="weekly-plan-days" aria-label="Weekly schedule"></ol>
+          <div class="plan-focus" id="weekly-plan-focus"></div>
+        </article>
         <article class="card resources" id="assigned-work-nclex">
           <div class="card-head"><div><h2>Assigned work</h2></div></div>
           <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
@@ -531,6 +551,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="assessment-platforms.js"></script>
+  <script src="weekly-plan.js"></script>
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
   <script>
@@ -786,6 +807,25 @@
       return daily;
     }
 
+    // Read-only weekly schedule + focus categories set on madison-study-plans.html.
+    function renderWeeklyPlan(plan) {
+      const card = document.getElementById('weekly-plan-card');
+      if (!card || !plan || !Array.isArray(plan.practice_days) || !window.WeeklyPlan) return;
+      const p = WeeklyPlan.normalize(plan);
+      document.getElementById('weekly-plan-days').innerHTML = WeeklyPlan.week(p).map(d => {
+        const parts = [];
+        if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
+        if (d.cat) parts.push(`CAT exam · ${text(p.cat_platform)}`);
+        return `<li class="${d.cat ? 'cat' : d.practice ? 'practice' : ''}"><strong aria-label="${d.long}">${d.label}</strong><span>${parts.length ? parts.join('<br>') : 'Rest / review'}</span></li>`;
+      }).join('');
+      document.getElementById('weekly-plan-total').textContent = `${p.practice_days.length * p.practice_questions_per_day} Qs + ${p.cat_days.length} CAT${p.cat_days.length === 1 ? '' : 's'} / week`;
+      const chips = p.focus_categories.map(c => `<span class="plan-chip">${text(c)}</span>`).join('') + p.focus_topics.map(t => `<span class="plan-chip topic">${text(t)}</span>`).join('');
+      document.getElementById('weekly-plan-focus').innerHTML =
+        `<h3>Focus your practice on</h3>${chips || '<p class="empty" style="padding:0">Madison will add your focus categories after your next CAT review.</p>'}` +
+        (p.plan_notes ? `<p class="plan-note">${text(p.plan_notes)}</p>` : '');
+      card.hidden = false;
+    }
+
     // NCLEX assigned work includes practice; uploads stay in their dedicated view.
     function renderResources(items, containerId) {
       const filtered = items.filter(r => r.resource_type !== 'student_upload');
@@ -841,6 +881,7 @@
           return `<div class="task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
         }).join('');
       }
+      renderWeeklyPlan(plans[0]);
       renderResources(resources, 'resources-nclex');
       renderModulesInto('modules-nclex', catalog, access);
 

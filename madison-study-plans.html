@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-shell.css">
+  <title>Weekly study plans · Study With Madison, RN</title>
+  <style>
+    .panel-body{padding:22px 24px}
+    .field-label{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;margin:0 0 8px;color:var(--admin-navy)}
+    select,input[type=number],input[type=text],input[type=search],textarea{width:100%;box-sizing:border-box;border:1px solid var(--admin-line);background:#fff;padding:11px 13px;font:600 .92rem Inter,sans-serif;color:var(--admin-navy)}
+    textarea{min-height:76px;font-weight:500;resize:vertical}
+    .notice{display:none;margin-top:16px;padding:12px 14px;line-height:1.45;font-weight:650;font-size:.85rem}
+    .notice.success{display:block;background:#e7f5ee;color:#0f5d42;border:1px solid #b7dfcb}
+    .notice.error{display:block;background:#fde9e7;color:#9c382d;border:1px solid #f3c2bc}
+    .notice.info{display:block;background:#eef3f8;color:var(--admin-navy);border:1px solid #c7d9e8}
+    .notice.warn{display:block;background:#fff6e5;color:#7a4b00;border:1px solid #f0d49b}
+    .default-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+    .default-row p{margin:0;color:var(--admin-navy);font-weight:650}
+    .roster-tools{display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .roster-tools input{max-width:320px}
+    .roster-tools label{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--admin-muted);font-weight:650}
+    table.roster{width:100%;border-collapse:collapse;font-size:.88rem}
+    .roster th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--admin-muted);padding:8px 10px;border-bottom:1px solid var(--admin-line)}
+    .roster td{padding:12px 10px;border-bottom:1px solid var(--admin-line);vertical-align:top;color:var(--admin-navy)}
+    .roster td small{display:block;color:var(--admin-muted);margin-top:2px}
+    .roster .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .roster .actions .button{padding:8px 12px;font-size:.78rem;min-height:40px}
+    .roster tr.selected td{background:#f3f6fa}
+    .chip{display:inline-block;margin:0 4px 4px 0;padding:3px 8px;border-radius:999px;background:#f7e5e3;color:#8a3a4c;font-size:.72rem;font-weight:750}
+    .chip.topic{background:#e6f1ef;color:#1f5a50}
+    .muted{color:var(--admin-muted)}
+    .editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .daypick{display:flex;gap:6px;flex-wrap:wrap}
+    .daypick label{display:flex;align-items:center;justify-content:center;min-width:48px;min-height:44px;border:1px solid var(--admin-line);background:#fff;font-weight:750;font-size:.84rem;color:var(--admin-navy);cursor:pointer;user-select:none}
+    .daypick input{position:absolute;opacity:0;pointer-events:none}
+    .daypick label:has(input:checked){background:var(--admin-navy);color:#fff;border-color:var(--admin-navy)}
+    .daypick label:has(input:focus-visible){outline:2px solid var(--admin-rose);outline-offset:2px}
+    .cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .cats label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--admin-line);padding:10px 12px;background:#fff;font-size:.86rem;color:var(--admin-navy);font-weight:650;cursor:pointer;min-height:44px;box-sizing:border-box}
+    .cats input{margin:2px 0 0;accent-color:var(--admin-navy);width:17px;height:17px;flex-shrink:0}
+    .field{margin-bottom:18px}
+    .hint{margin:6px 0 0;font-size:.78rem;color:var(--admin-muted)}
+    .editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    @media(max-width:820px){
+      .editor-grid,.cats{grid-template-columns:1fr}
+      table.roster thead{display:none}
+      table.roster,table.roster tbody,table.roster tr,table.roster td{display:block;width:100%;box-sizing:border-box}
+      table.roster tr{border:1px solid var(--admin-line);margin-bottom:12px;background:#fff}
+      table.roster td{border-bottom:0;padding:8px 12px}
+      .roster .actions{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">Loading study plans…</div>
+  <div id="app" class="admin-app hidden">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-diagnostic.html">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="madison-study-plans.html" aria-current="page">Weekly plans</a>
+        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+          <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-context">Students &amp; Clinical · Weekly plans</div>
+        <div class="topbar-actions">
+          <a class="button secondary" href="madison-assignments.html">Assignments</a>
+          <a class="button secondary" href="shared-progress.html">Student workspace</a>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <header class="dashboard-heading">
+          <div>
+            <h1>Weekly study plans</h1>
+            <p>Set each NCLEX student’s weekly rhythm (practice days, questions per day, spaced CAT days, platform) and the focus categories they should target. Students see their plan read-only on their dashboard.</p>
+          </div>
+        </header>
+
+        <section class="dashboard-panel">
+          <div class="panel-heading"><div><h2>Default plan</h2><p>New plans start from this default. Edit any student afterward.</p></div></div>
+          <div class="panel-body">
+            <div class="default-row">
+              <p id="default-summary"></p>
+              <button id="apply-missing" class="button primary" type="button">Give the default to students without a plan</button>
+            </div>
+            <div id="default-notice" class="notice" role="status"></div>
+          </div>
+        </section>
+
+        <section class="dashboard-panel" id="editor-panel" hidden>
+          <div class="panel-heading"><div><h2 id="editor-title">Edit plan</h2><p id="editor-sub">Changes save to this student only.</p></div></div>
+          <div class="panel-body">
+            <form id="editor" novalidate>
+              <div class="editor-grid">
+                <div>
+                  <div class="field">
+                    <span class="field-label" id="pd-label">Practice days</span>
+                    <div class="daypick" id="practice-days" role="group" aria-labelledby="pd-label"></div>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="qpd">Questions per practice day</label>
+                    <input id="qpd" type="number" min="1" max="300" step="1" inputmode="numeric">
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="practice-platform">Practice platform</label>
+                    <select id="practice-platform"></select>
+                  </div>
+                  <div class="field">
+                    <span class="field-label" id="cd-label">CAT exam days</span>
+                    <div class="daypick" id="cat-days" role="group" aria-labelledby="cd-label"></div>
+                    <p class="hint" id="cat-hint">Two CATs per week, spaced at least one day apart.</p>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="cat-platform">CAT platform</label>
+                    <select id="cat-platform"></select>
+                  </div>
+                </div>
+                <div>
+                  <div class="field">
+                    <span class="field-label" id="fc-label">Focus categories</span>
+                    <div class="cats" id="focus-cats" role="group" aria-labelledby="fc-label"></div>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="focus-topics">Other focus topics</label>
+                    <input id="focus-topics" type="text" maxlength="400" placeholder="e.g. Cardiac, Pediatrics, Prioritization">
+                    <p class="hint">Comma-separated. Use for UWorld/Archer subjects or systems.</p>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="plan-notes">Note for the student</label>
+                    <textarea id="plan-notes" maxlength="1000" placeholder="Optional. Shown on the student’s dashboard."></textarea>
+                  </div>
+                </div>
+              </div>
+              <p id="summary-preview" class="muted" aria-live="polite"></p>
+              <div class="editor-actions">
+                <button id="save" class="button primary" type="submit">Save plan</button>
+                <button id="reset-default" class="button secondary" type="button">Reset schedule to default</button>
+                <button id="cancel" class="button secondary" type="button">Close</button>
+              </div>
+              <div id="editor-notice" class="notice" role="status"></div>
+            </form>
+          </div>
+        </section>
+
+        <section class="dashboard-panel">
+          <div class="panel-heading"><div><h2>Students</h2><p id="roster-sub">Active NCLEX students.</p></div></div>
+          <div class="panel-body">
+            <div class="roster-tools">
+              <input id="search" type="search" placeholder="Search students" aria-label="Search students">
+              <label><input id="only-missing" type="checkbox"> Only students without a plan</label>
+            </div>
+            <table class="roster">
+              <thead><tr><th>Student</th><th>Weekly plan</th><th>Focus</th><th>Updated</th><th aria-label="Actions"></th></tr></thead>
+              <tbody id="roster"></tbody>
+            </table>
+            <p id="empty" class="muted hidden">No students match.</p>
+            <div id="notice" class="notice" role="status"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
+  <script src="assessment-platforms.js"></script>
+  <script src="weekly-plan.js"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const $=id=>document.getElementById(id);
+    const WP=window.WeeklyPlan;
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const notice=(id,msg,type)=>{const b=$(id);b.textContent=msg||'';b.className='notice'+(msg?' '+type:'')};
+    const PLAN_COLS='student_id,practice_days,practice_questions_per_day,practice_platform,cat_days,cat_platform,focus_categories,focus_topics,plan_notes,focus_updated_at,updated_at';
+    let session=null,students=[],plans=new Map(),editing=null;
+
+    function fmtDate(v){return v?new Date(v).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}
+
+    function renderRoster(){
+      const q=$('search').value.trim().toLowerCase(),onlyMissing=$('only-missing').checked;
+      const rows=students.filter(s=>(!q||(s.name+' '+(s.email||'')).toLowerCase().includes(q))&&(!onlyMissing||!plans.has(s.id)));
+      $('roster').innerHTML=rows.map(s=>{
+        const p=plans.get(s.id);
+        const plan=p?esc(WP.summary(p)):'<span class="muted">No plan yet</span>';
+        const n=p?WP.normalize(p):null;
+        const focus=n&&(n.focus_categories.length||n.focus_topics.length)
+          ?n.focus_categories.map(c=>`<span class="chip">${esc(c)}</span>`).join('')+n.focus_topics.map(t=>`<span class="chip topic">${esc(t)}</span>`).join('')
+          :'<span class="muted">Not set</span>';
+        const updated=p?esc(fmtDate(p.updated_at))+(p.focus_updated_at?`<small>Focus ${esc(fmtDate(p.focus_updated_at))}</small>`:''):'';
+        return `<tr data-id="${esc(s.id)}"${editing===s.id?' class="selected"':''}><td><strong>${esc(s.name)}</strong>${s.email?`<small>${esc(s.email)}</small>`:''}</td><td>${plan}</td><td>${focus}</td><td>${updated}</td><td><div class="actions">${p?'':`<button class="button secondary" type="button" data-default="${esc(s.id)}">Apply default</button>`}<button class="button primary" type="button" data-edit="${esc(s.id)}">${p?'Edit':'Customize'}</button></div></td></tr>`;
+      }).join('');
+      $('empty').classList.toggle('hidden',rows.length>0);
+      const missing=students.filter(s=>!plans.has(s.id)).length;
+      $('roster-sub').textContent=`${students.length} active NCLEX student${students.length===1?'':'s'} · ${missing} without a plan.`;
+      $('apply-missing').disabled=!missing;
+      $('apply-missing').textContent=missing?`Give the default to ${missing} student${missing===1?'':'s'} without a plan`:'Every student has a plan';
+    }
+
+    function dayInputs(host,name){host.innerHTML=WP.DAYS.map(d=>`<label title="${WP.LONG[d]}"><input type="checkbox" name="${name}" value="${d}" aria-label="${WP.LONG[d]}">${WP.LABELS[d]}</label>`).join('')}
+    function checked(name){return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i=>i.value)}
+    function setChecked(name,values){document.querySelectorAll(`input[name="${name}"]`).forEach(i=>{i.checked=values.includes(i.value)})}
+
+    function formValue(){
+      return WP.normalize({
+        practice_days:checked('pd'),practice_questions_per_day:Number($('qpd').value),practice_platform:$('practice-platform').value,
+        cat_days:checked('cd'),cat_platform:$('cat-platform').value,focus_categories:checked('fc'),
+        focus_topics:WP.topics($('focus-topics').value),plan_notes:$('plan-notes').value
+      });
+    }
+    function fillSchedule(p){setChecked('pd',p.practice_days);$('qpd').value=p.practice_questions_per_day;$('practice-platform').value=p.practice_platform;setChecked('cd',p.cat_days);$('cat-platform').value=p.cat_platform}
+    function ensureOption(sel,val){if(val&&![...sel.options].some(o=>o.value===val))sel.append(new Option(val,val))}
+    function updatePreview(){
+      const v=formValue(),overlap=v.practice_days.filter(d=>v.cat_days.includes(d));
+      $('summary-preview').textContent=WP.summary(v);
+      const warn=[];
+      if(!WP.catSpacingOk(v.cat_days))warn.push('CAT days are back-to-back; space them out.');
+      if(overlap.length)warn.push('Practice and CAT fall on the same day ('+overlap.map(d=>WP.LABELS[d]).join(', ')+').');
+      $('cat-hint').textContent=warn.length?warn.join(' '):'Two CATs per week, spaced at least one day apart.';
+      $('cat-hint').style.color=warn.length?'#9c382d':'';
+    }
+
+    function openEditor(id){
+      const s=students.find(x=>x.id===id);if(!s)return;
+      editing=id;
+      const p=WP.normalize(plans.get(id)||WP.DEFAULTS);
+      ensureOption($('practice-platform'),p.practice_platform);ensureOption($('cat-platform'),p.cat_platform);
+      fillSchedule(p);setChecked('fc',p.focus_categories);
+      $('focus-topics').value=p.focus_topics.join(', ');$('plan-notes').value=p.plan_notes;
+      $('editor-title').textContent=(plans.has(id)?'Edit plan · ':'New plan · ')+s.name;
+      $('editor-sub').textContent=plans.has(id)?'Changes save to this student only.':'Starts from the default. Save to create this student’s plan.';
+      notice('editor-notice','');updatePreview();
+      $('editor-panel').hidden=false;renderRoster();
+      history.replaceState(null,'','?student='+encodeURIComponent(id));
+      $('editor-panel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+      $('qpd').focus({preventScroll:true});
+    }
+    function closeEditor(){editing=null;$('editor-panel').hidden=true;history.replaceState(null,'',location.pathname);renderRoster()}
+
+    async function upsertPlans(rows,ignoreDuplicates){
+      const {data,error}=await db.from('student_study_plans').upsert(rows,{onConflict:'student_id',ignoreDuplicates}).select(PLAN_COLS);
+      if(error)throw error;
+      (data||[]).forEach(r=>plans.set(r.student_id,r));
+      return data||[];
+    }
+    function defaultRow(id){const now=new Date().toISOString();return {student_id:id,...WP.DEFAULTS,updated_at:now,updated_by:session.user.id}}
+
+    async function save(e){
+      e.preventDefault();
+      const btn=$('save'),id=editing;if(!id)return;
+      const v=formValue();
+      const qpd=Number($('qpd').value);
+      if(!Number.isInteger(qpd)||qpd<1||qpd>300)return notice('editor-notice','Questions per day must be a whole number from 1 to 300.','error');
+      if(!v.practice_days.length&&!v.cat_days.length)return notice('editor-notice','Choose at least one practice day or CAT day.','error');
+      const prev=plans.has(id)?WP.normalize(plans.get(id)):null;
+      const focusChanged=!prev||prev.focus_categories.join('|')!==v.focus_categories.join('|')||prev.focus_topics.join('|')!==v.focus_topics.join('|');
+      const now=new Date().toISOString();
+      const row={student_id:id,...v,plan_notes:v.plan_notes||null,updated_at:now,updated_by:session.user.id};
+      if(focusChanged&&(v.focus_categories.length||v.focus_topics.length||prev))row.focus_updated_at=now;
+      btn.disabled=true;btn.textContent='Saving…';
+      try{await upsertPlans([row],false);notice('editor-notice','Saved. The student will see this plan on their dashboard.','success');$('editor-title').textContent='Edit plan · '+students.find(s=>s.id===id).name;$('editor-sub').textContent='Changes save to this student only.';renderRoster()}
+      catch(err){notice('editor-notice','Could not save: '+err.message,'error')}
+      finally{btn.disabled=false;btn.textContent='Save plan'}
+    }
+
+    async function applyDefault(ids,btn){
+      if(!ids.length)return;
+      if(btn){btn.disabled=true}
+      try{
+        await upsertPlans(ids.map(defaultRow),true);
+        const {data,error}=await db.from('student_study_plans').select(PLAN_COLS).in('student_id',ids);
+        if(error)throw error;
+        (data||[]).forEach(r=>plans.set(r.student_id,r));
+        notice('default-notice',`Default plan given to ${ids.length} student${ids.length===1?'':'s'}. Add focus categories with Edit.`,'success');
+      }catch(err){notice('default-notice','Could not apply the default: '+err.message,'error')}
+      finally{if(btn)btn.disabled=false;renderRoster()}
+    }
+
+    async function init(){
+      ({data:{session}}=await db.auth.getSession());
+      if(!session){location.replace('student-login.html');return}
+      const {data:admin,error:adminError}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(adminError)throw new Error('Could not verify admin access: '+adminError.message);
+      if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      const [st,pl]=await Promise.all([
+        db.from('students').select('id,name,email,student_type').is('archived_at',null).order('name'),
+        db.from('student_study_plans').select(PLAN_COLS)
+      ]);
+      if(st.error)throw new Error('Could not load students: '+st.error.message);
+      if(pl.error)throw new Error('Could not load study plans (has supabase-weekly-study-plan-migration.sql been run?): '+pl.error.message);
+      students=(st.data||[]).filter(s=>s.student_type!=='nursing_student');
+      (pl.data||[]).forEach(r=>plans.set(r.student_id,r));
+
+      $('default-summary').textContent='Default: '+WP.summary(WP.DEFAULTS);
+      dayInputs($('practice-days'),'pd');dayInputs($('cat-days'),'cd');
+      for(const sel of [$('practice-platform'),$('cat-platform')])WP.PLATFORMS.forEach(p=>sel.append(new Option(p,p)));
+      $('focus-cats').innerHTML=(window.NCLEXCats?.NAMES||[]).map(n=>`<label><input type="checkbox" name="fc" value="${esc(n)}"><span>${esc(n)}</span></label>`).join('');
+
+      $('editor').addEventListener('submit',save);
+      $('editor').addEventListener('input',updatePreview);
+      $('editor').addEventListener('change',updatePreview);
+      $('reset-default').addEventListener('click',()=>{fillSchedule(WP.normalize(WP.DEFAULTS));updatePreview()});
+      $('cancel').addEventListener('click',closeEditor);
+      $('search').addEventListener('input',renderRoster);
+      $('only-missing').addEventListener('change',renderRoster);
+      $('roster').addEventListener('click',e=>{
+        const b=e.target.closest('button');if(!b)return;
+        if(b.dataset.edit)openEditor(b.dataset.edit);
+        else if(b.dataset.default)applyDefault([b.dataset.default],b);
+      });
+      $('apply-missing').addEventListener('click',e=>applyDefault(students.filter(s=>!plans.has(s.id)).map(s=>s.id),e.currentTarget));
+      $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+
+      renderRoster();
+      $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+      const requested=new URLSearchParams(location.search).get('student');
+      if(requested&&students.some(s=>s.id===requested))openEditor(requested);
+      else if(requested)notice('notice','That student isn’t an active NCLEX student. Choose one from the list.','error');
+    }
+    init().catch(err=>{$('loading').textContent=err.message||String(err)});
+  </script>
+</body>
+</html>
