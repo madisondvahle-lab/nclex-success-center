@@ -452,9 +452,9 @@
       const currentClients=studentAccessAvailable
         ?items.filter(item=>item.student_id&&studentStageById.get(item.student_id)==='active')
         :[];
-      const prospects=studentAccessAvailable
-        ?items.filter(item=>!item.student_id||studentStageById.get(item.student_id)!=='active')
-        :items;
+      const prospects=items.filter(item=>item.status!=='active_student'&&(
+        !studentAccessAvailable||!item.student_id||studentStageById.get(item.student_id)!=='active'
+      ));
       const recent=prospects.filter(item=>Date.now()-new Date(item.created_at).getTime()<=7*24*60*60*1000).length;
       $('intake-summary').textContent=`${prospects.length} prospects · ${currentClients.length} active clients in the student roster · ${recent} added in the last 7 days`;
       $('consult-intakes').innerHTML=prospects.length?prospects.map(item=>{
