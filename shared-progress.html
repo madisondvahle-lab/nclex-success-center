@@ -464,7 +464,7 @@
       list.innerHTML=(notes||[]).length?(notes||[]).map(item=>'<article class="upload"><p>'+esc(item.note||'')+'</p><p class="muted">'+esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.created_at)))+'</p></article>').join(''):'<p class="empty">No private notes yet.</p>';
     }
 
-    function renderTrend(uploads){
+    function renderTrend(uploads,categories){
       let card=$('progress-trend-card');
 
       if(!card){
@@ -500,6 +500,15 @@
         return;
       }
 
+      const latest=scored[scored.length-1];
+      const byAssessment=new Map;
+      (categories||[]).forEach(item=>{
+        if(!byAssessment.has(item.assessment_id))byAssessment.set(item.assessment_id,[]);
+        byAssessment.get(item.assessment_id).push(item);
+      });
+      const breakdown=Object.entries(latest.category_scores||{}).map(([category,score])=>({category,score:Number(score)}));
+      if(!breakdown.length)(byAssessment.get(latest.id)||[]).forEach(item=>breakdown.push({category:item.category,score:Number(item.score)}));
+      const latestCategories=breakdown.filter(item=>Number.isFinite(item.score)).sort((a,b)=>a.score-b.score);
       trend.innerHTML=`
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:1.35rem;font-weight:800">
           ${scored.map((item,index)=>{
@@ -508,6 +517,7 @@
             return `<span>${esc(Math.round(item.score))}%${arrow}</span>${index<scored.length-1?'<span style="opacity:.35">→</span>':''}`;
           }).join('')}
         </div>
+        ${latestCategories.length?`<h3 style="margin:16px 0 6px;font-size:1rem">Latest CAT sections${latest.taken_on?' · '+esc(date(latest.taken_on)):''}</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 16px">${latestCategories.map(item=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.8rem"><span>${esc(item.category)}</span><strong>${Math.round(item.score)}%</strong></div>`).join('')}</div>`:''}
       `;
     }
 
@@ -1431,7 +1441,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const allCategories=[...(categories.data||[]).map(c=>({...c,n:c.total_count!=null?Number(c.total_count):undefined})),...ext.categories];
       const practiceRows=practiceResults.data||[];
       renderSummary(focus.data||[],currentUploads,buildPortalScores(inhouseAttempts,practiceRows));
-      renderTrend(currentUploads);
+      renderTrend(currentUploads,allCategories);
       renderRecentAssessments(currentUploads);
       renderClientNeeds(allCategories);
       renderSystemNeeds(allCategories);

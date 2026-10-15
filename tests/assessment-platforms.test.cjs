@@ -202,6 +202,34 @@ test('tutor chart combines mixed-case sources, retains categories and supports p
   assert.equal(JSON.stringify({ uploads, cats }), before);
 });
 
+test('admin progress trend shows the latest assessment category snapshot', () => {
+  const { context, $ } = harness();
+  context.date = value => value;
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    function renderTrend('), tutorHtml.indexOf('    function renderRecentAssessments(')), context);
+  const categories = [
+    ['Management of Care', 67],
+    ['Safety and Infection Control', 33],
+    ['Health Promotion and Maintenance', 74],
+    ['Psychosocial Integrity', 83],
+    ['Basic Care and Comfort', 36],
+    ['Pharmacological and Parenteral Therapies', 53],
+    ['Reduction of Risk Potential', 86],
+    ['Physiological Adaptation', 62]
+  ].map(([category, score]) => ({ assessment_id: 'cat-1014', category, score }));
+
+  context.renderTrend([
+    { id: 'cat-1014', assessment_type: 'cat', report_label: 'UWORLD (1014) CAT', taken_on: '2026-10-14', overall_score: 65 }
+  ], categories);
+
+  const trend = $('progress-trend').innerHTML;
+  assert.match(trend, /Latest CAT sections/);
+  assert.match(trend, /65%/);
+  for (const [category, score] of categories.map(({ category, score }) => [category, score])) {
+    assert.ok(trend.includes(category), `missing category ${category}`);
+    assert.match(trend, new RegExp(`<strong>${score}%<\\/strong>`));
+  }
+});
+
 test('unknown platforms remain distinct except for case/whitespace, including a platform called All', async () => {
   const tables = fixture();
   tables.external_assessments = ['My Platform', ' MY \t PLATFORM ', 'MyPlatform', 'All'].map(platform => ({
