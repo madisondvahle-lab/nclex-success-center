@@ -7,7 +7,7 @@ Agreed 4-step plan:
 1. **Weekly plan template + per-student focus categories** — DONE (this handoff).
 2. **Assignment of targeted practice across platforms** — DONE (step 2, below).
 3. **Student reminders on dashboard** — DONE (step 3, below; email deferred).
-4. Weekly admin review / retarget queue.
+4. **Weekly admin review / retarget queue** — DONE (step 4, below).
 
 ## Clinical-content authorization
 - [x] Clinical content is locked. Steps 1–4 are workflow/UI work; do not change questions, answers, rationales, or activate questions.
@@ -43,13 +43,23 @@ Agreed 4-step plan:
 - **No migration or manual Supabase step.** Auth/RLS, assignment generation, clinical content, and real student records were not changed. Browser tests stubbed all Supabase responses and blocked non-local traffic except the stubbed client script; no real assignments or completions were created.
 - **Limits:** completion remains self-reported, and external-platform work must be set up manually. Nursing students see only generated records already assigned to them; the existing NCLEX-only generation rules were not broadened. No email reminders, cron jobs, notifications permission prompts, or admin review/retarget queue were added.
 
+## Step 4 — weekly review / retarget queue
+- **Where:** `madison-study-plans.html` → **Weekly review** (first section). Pick a week (snaps to its Monday; Prev/Next), filter (To review / All / Next week assigned / No plan), search, Refresh. Pure logic lives in `weekly-review.js` (`WeeklyReview.range/results/rows`).
+- **Per student row:** status, completed/total generated assignments for the week (practice and CAT split, overdue count), recorded results dated in that week, and factual flags (no plan, nothing generated, overdue, no focus, "N CATs marked complete; M CAT/readiness scores recorded"). Rows sort To review → No plan → Next week assigned, then oldest `focus_updated_at`, then name. Active NCLEX students only; nursing students are excluded with a count in the summary.
+- **Results sources (admin RLS reads, unchanged):** `external_assessments`, `student_assessment_uploads` + `student_assessment_categories`, `student_supplemental_practice_results`, `in_house_assessment_attempts`; platforms normalized with `assessment-platforms.js`, categories with `category-names.js`. Missing test date falls back to the logged date and is labeled so. **Details** lists each result with category scores lowest-first, "current focus" and "low sample" (<5 questions) markers. Completion is labeled self-reported; scores are labeled recorded. Results are never linked to specific assignments, and nothing is suggested automatically — the tutor decides focus.
+- **Actions:** **Edit focus & plan** opens the existing editor; saving states that new focus applies to assignments generated afterwards and existing snapshots keep their original focus. **Assign next week** calls the existing idempotent `generate_weekly_assignments` for that student (button reads "Fill missing next-week days" when some exist; busy-locked per student; blocked while that student's editor has unsaved changes or the plan has <3 non-CAT practice days). Existing/completed assignments are never overwritten.
+- **Reviewed state:** derived, not stored — a student leaves "To review" once next week has generated assignments. No migration, no new table.
+- **Errors:** assignment-load failure shows no rows ("nothing is shown so completion isn't misreported"); a failed results source marks results Unavailable with a warning and suppresses CAT-score flags.
+- **Validation:** `node --test tests/weekly-review.test.cjs` (week ranges across DST/time zones, result normalization/filtering, row counts/flags/order, page wiring + inline script compile). Live read-only check confirmed all queried columns exist and admin SELECT policies cover each source. Fixture-only Playwright Chromium at 1366×900 and 390×844: auth redirect, summary/order/filters, details, dirty-editor block, save message, assign once + idempotent rerun, week navigation, partial/total failures, no overflow/page errors. No real student data written.
+- **Limits:** no persistent "reviewed" marker; completion is self-reported; external platform results appear only if logged/uploaded; no automatic retargeting, emails, or integrations.
+
+### Step 4 follow-ups (not built)
+- Optional append-only plan/focus history (admin-only RLS) if Madison wants a record of past focus changes.
+
 ## Remaining work
 
 ### Email reminders — explicitly deferred
 - A later authorized email step could reuse the `send-strategy-followups` Edge Function + cron pattern (`supabase-strategy-followup-cron.sql`); nothing was wired in step 3.
-
-### Step 4 — weekly review / retarget queue
-- Admin list sorted by stale `focus_updated_at` vs latest CAT (`student_assessment_uploads`/`external_assessments` category scores) so Madison sees who needs retargeting; suggest the lowest categories as new focus and save via the existing editor. Use dated assignments and existing practice history for workload/completion, but do not equate a self-reported complete flag with a verified CAT score. If plan history is needed, add an append-only history table (RLS admin-only) rather than multiple current rows.
 
 ## Deployment
 GitHub Pages from `main` (portal.studywithmadison.com). No Netlify/Cloudflare.

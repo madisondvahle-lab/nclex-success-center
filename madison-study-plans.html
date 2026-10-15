@@ -43,7 +43,36 @@
     .field{margin-bottom:18px}
     .hint{margin:6px 0 0;font-size:.78rem;color:var(--admin-muted)}
     .editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .review-tools{display:grid;grid-template-columns:minmax(270px,1.3fr) minmax(190px,1fr) minmax(190px,1fr) auto;gap:14px;align-items:end}
+    .review-tools .field{margin:0}
+    .week-step{display:flex;gap:6px}
+    .week-step .button,.review-tools>.button{padding:8px 12px;min-height:44px;white-space:nowrap}
+    .review-summary{margin:16px 0 6px;font-weight:650;color:var(--admin-navy);line-height:1.5}
+    .pill{display:inline-block;margin-top:6px;padding:2px 9px;border-radius:999px;font-size:.7rem;font-weight:800}
+    .pill.review{background:#fff6e5;color:#7a4b00}
+    .pill.assigned{background:#e7f5ee;color:#0f5d42}
+    .pill.no-plan{background:#eef3f8;color:var(--admin-navy)}
+    .flags{margin:6px 0 0;padding-left:16px;font-size:.78rem;line-height:1.4;color:#9c382d}
+    .line{display:block;line-height:1.45}
+    .warn-text{color:#9c382d;font-weight:750}
+    .review-detail td{background:#f8fafc}
+    table.roster tr.review-detail[hidden]{display:none}
+    .detail-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:26px;padding:6px 2px}
+    .detail-grid h3{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px;color:var(--admin-navy)}
+    .detail-list{list-style:none;margin:0;padding:0}
+    .detail-list li{padding:8px 0;border-bottom:1px solid var(--admin-line);font-size:.84rem;line-height:1.45}
+    .cat-scores{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+    .cat-score{font-size:.72rem;padding:2px 7px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy)}
+    .cat-score.focus{border-color:#8a3a4c;color:#8a3a4c;font-weight:750}
+    .row-msg{font-size:.78rem;margin-top:8px;font-weight:650;line-height:1.4;max-width:30ch;text-align:right}
+    .row-msg.error{color:#9c382d}.row-msg.success{color:#0f5d42}.row-msg.warn{color:#7a4b00}.row-msg.info{color:var(--admin-muted)}
+    .review td:last-child{min-width:190px}
+    @media(max-width:1100px){.review-tools{grid-template-columns:1fr 1fr}}
     @media(max-width:820px){
+      .review-tools,.detail-grid{grid-template-columns:1fr}
+      .review td[data-label]::before{content:attr(data-label);display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--admin-muted);margin-bottom:2px}
+      .review td:last-child{min-width:0}
+      .row-msg{text-align:left;max-width:none}
       .editor-grid,.cats{grid-template-columns:1fr}
       table.roster thead{display:none}
       table.roster,table.roster tbody,table.roster tr,table.roster td{display:block;width:100%;box-sizing:border-box}
@@ -98,18 +127,26 @@
         <header class="dashboard-heading">
           <div>
             <h1>Weekly study plans</h1>
-            <p>Set each NCLEX student’s weekly rhythm (practice days, questions per day, spaced CAT days, platform) and the focus categories they should target. Students see their plan read-only on their dashboard.</p>
+            <p>Review each NCLEX student’s week, retarget their focus, and assign next week. Below that, set each student’s weekly rhythm (practice days, questions per day, spaced CAT days, platform). Students see their plan read-only on their dashboard.</p>
           </div>
         </header>
 
-        <section class="dashboard-panel">
-          <div class="panel-heading"><div><h2>Default plan</h2><p>New plans start from this default. Edit any student afterward.</p></div></div>
+        <section class="dashboard-panel" id="review" aria-labelledby="review-title">
+          <div class="panel-heading"><div><h2 id="review-title">Weekly review</h2><p>Check each student’s week, update their focus, then assign next week. Completion is self-reported by students. Results are what was recorded for the calendar week (Monday–Sunday) and are not matched to specific assignments.</p></div></div>
           <div class="panel-body">
-            <div class="default-row">
-              <p id="default-summary"></p>
-              <button id="apply-missing" class="button primary" type="button">Give the default to students without a plan</button>
+            <div class="review-tools">
+              <div class="field"><label class="field-label" for="review-week">Week starting Monday</label><div class="week-step"><button id="review-prev" class="button secondary" type="button" aria-label="Previous week">‹ Prev</button><input id="review-week" type="date"><button id="review-next" class="button secondary" type="button" aria-label="Next week">Next ›</button></div></div>
+              <div class="field"><label class="field-label" for="review-filter">Show</label><select id="review-filter"><option value="review">To review (next week not assigned)</option><option value="all">All NCLEX students</option><option value="assigned">Next week assigned</option><option value="no-plan">No plan yet</option></select></div>
+              <div class="field"><label class="field-label" for="review-search">Search</label><input id="review-search" type="search" placeholder="Name or email"></div>
+              <button id="review-refresh" class="button secondary" type="button">Refresh</button>
             </div>
-            <div id="default-notice" class="notice" role="status"></div>
+            <p id="review-summary" class="review-summary" aria-live="polite"></p>
+            <div id="review-notice" class="notice" role="status"></div>
+            <table class="roster review">
+              <thead><tr><th>Student</th><th>This week · self-reported</th><th>Recorded results</th><th>Focus</th><th>Next week</th><th aria-label="Actions"></th></tr></thead>
+              <tbody id="review-rows"></tbody>
+            </table>
+            <p id="review-empty" class="muted hidden"></p>
           </div>
         </section>
 
@@ -145,6 +182,7 @@
                   <div class="field">
                     <span class="field-label" id="fc-label">Focus categories</span>
                     <div class="cats" id="focus-cats" role="group" aria-labelledby="fc-label"></div>
+                    <p class="hint">Focus changes apply to assignments generated after you save. Already-generated assignments keep the focus they were created with.</p>
                   </div>
                   <div class="field">
                     <label class="field-label" for="focus-topics">Other focus topics</label>
@@ -165,6 +203,17 @@
               </div>
               <div id="editor-notice" class="notice" role="status"></div>
             </form>
+          </div>
+        </section>
+
+        <section class="dashboard-panel">
+          <div class="panel-heading"><div><h2>Default plan</h2><p>New plans start from this default. Edit any student afterward.</p></div></div>
+          <div class="panel-body">
+            <div class="default-row">
+              <p id="default-summary"></p>
+              <button id="apply-missing" class="button primary" type="button">Give the default to students without a plan</button>
+            </div>
+            <div id="default-notice" class="notice" role="status"></div>
           </div>
         </section>
 
@@ -206,6 +255,7 @@
   <script src="assessment-platforms.js"></script>
   <script src="weekly-plan.js"></script>
   <script src="weekly-assignments.js"></script>
+  <script src="weekly-review.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -281,7 +331,11 @@
       $('editor-panel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
       $('qpd').focus({preventScroll:true});
     }
-    function closeEditor(){editing=null;$('editor-panel').hidden=true;history.replaceState(null,'',location.pathname);renderRoster()}
+    function closeEditor(){
+      editing=null;$('editor-panel').hidden=true;history.replaceState(null,'',location.pathname);renderRoster();renderReview();
+      const row=returnRow&&document.querySelector(`tr[data-review="${CSS.escape(returnRow)}"]`);returnRow=null;
+      if(row){row.scrollIntoView({block:'center'});row.querySelector('[data-edit]')?.focus({preventScroll:true})}
+    }
 
     async function viewAssignments(){
       const week=$('assignment-week').value,studentId=$('assignment-student').value;
@@ -291,6 +345,12 @@
       if(error)throw error;
       $('assignment-list').innerHTML=(data||[]).map(r=>`<article style="padding:12px 0;border-bottom:1px solid var(--admin-line)"><strong>${esc(students.find(s=>s.id===r.student_id)?.name||'Student')} · ${esc(r.due_on)} · ${r.completed_at?'Complete':'Not complete'}</strong><p>${esc(r.title)}</p><p class="hint">${esc(r.note)}</p></article>`).join('')||'<p class="muted">No assignments for this selection.</p>';
     }
+    async function runGenerate(week,studentId){
+      const {data,error}=await db.rpc('generate_weekly_assignments',{p_week:week,p_student:studentId||null});
+      if(error)throw error;
+      const failures=data.failures||[];
+      return {failures,text:`${data.created} created; ${data.existing} already assigned.`+(failures.length?' Not generated: '+failures.map(f=>(students.find(s=>s.id===f.student_id)?.name||'Student')+' ('+f.due_on+'): '+f.reason).join(' '):'')};
+    }
     async function generateAssignments(){
       const btn=$('generate-week'),week=$('assignment-week').value;
       if(!week||WeeklyAssignments.monday(week)!==week)return notice('assignment-notice','Choose a Monday.','error');
@@ -299,13 +359,119 @@
       if(selectedPlan&&!WP.meetsPracticeMinimum(selectedPlan))return notice('assignment-notice',`This plan has ${WP.practiceOnlyDays(selectedPlan).length} practice days without a CAT. Set at least ${WP.MIN_PRACTICE_DAYS} before generating; weekends are allowed.`,'error');
       btn.disabled=true;notice('assignment-notice','Generating from saved plans…','info');
       try{
-        const {data,error}=await db.rpc('generate_weekly_assignments',{p_week:week,p_student:$('assignment-student').value||null});
-        if(error)throw error;
-        const failures=data.failures||[];
-        notice('assignment-notice',`${data.created} created; ${data.existing} already assigned.`+(failures.length?' Not generated: '+failures.map(f=>(students.find(s=>s.id===f.student_id)?.name||'Student')+' ('+f.due_on+'): '+f.reason).join(' '):''),failures.length?'warn':'success');
+        const r=await runGenerate(week,$('assignment-student').value);
+        notice('assignment-notice',r.text,r.failures.length?'warn':'success');
         await viewAssignments();
+        if(reviewWeek&&(week===reviewWeek.start||week===reviewWeek.next))loadReview();
       }catch(err){notice('assignment-notice','Could not generate assignments: '+err.message,'error')}
       finally{btn.disabled=false}
+    }
+
+    /* Weekly review queue */
+    let reviewWeek=null,reviewData=null,reviewFailed=[],reviewSeq=0,nursingCount=0,returnRow=null;
+    const expanded=new Set(),busy=new Set(),rowMsg=new Map();
+    const fmtDay=v=>{try{return new Date(v+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}catch{return v}};
+    const pct=v=>v==null?'':Math.round(v*10)/10+'%';
+    function resultText(r){
+      const score=r.overall!=null?pct(r.overall):r.correct!=null&&r.total?`${r.correct}/${r.total} correct`:'no overall score';
+      return `${r.platform} · ${r.label} · ${score}`;
+    }
+    function editorDirty(id){
+      if(editing!==id||$('editor-panel').hidden)return false;
+      const saved=plans.get(id);
+      return !saved||JSON.stringify(formValue())!==JSON.stringify(WP.normalize(saved));
+    }
+    function renderReview(){
+      if(!reviewWeek)return;
+      const body=$('review-rows');
+      if(!reviewData){body.innerHTML='';return}
+      const all=WeeklyReview.rows(students,plans,reviewData,reviewWeek,todayIso(),reviewFailed);
+      const count=k=>all.filter(r=>r.status===k).length;
+      $('review-summary').textContent=`${fmtDay(reviewWeek.start)} – ${fmtDay(reviewWeek.end)}: ${all.length} active NCLEX student${all.length===1?'':'s'} · ${count('review')} to review · ${count('assigned')} with next week assigned · ${count('no-plan')} without a plan.`+(nursingCount?` ${nursingCount} nursing student${nursingCount===1?' isn’t':'s aren’t'} listed; weekly plans are NCLEX-only.`:'');
+      const filter=$('review-filter').value,q=$('review-search').value.trim().toLowerCase();
+      const rows=all.filter(r=>(filter==='all'||r.status===filter)&&(!q||(r.student.name+' '+(r.student.email||'')).toLowerCase().includes(q)));
+      body.innerHTML=rows.map(reviewRow).join('');
+      const empty={review:'Nobody left to review: every student with a plan has next week assigned.',assigned:'No students have next week assigned yet.','no-plan':'Every active NCLEX student has a plan.',all:'No active NCLEX students.'}[filter];
+      $('review-empty').textContent=q?'No students match that search.':empty;
+      $('review-empty').classList.toggle('hidden',rows.length>0);
+    }
+    function todayIso(){return WeeklyReview.localDay(Date.now())}
+    function reviewRow(r){
+      const s=r.student,id=esc(s.id),c=r.counts,n=r.plan?WP.normalize(r.plan):null;
+      const status={review:'To review','no-plan':'No plan',assigned:'Next week assigned'}[r.status];
+      const work=!r.plan?'<span class="muted">No plan</span>':!r.work.length?'<span class="warn-text">None generated</span>':
+        `<span class="line">Practice ${c.practiceDone}/${c.practice} day${c.practice===1?'':'s'} · ${c.questionsDone}/${c.questions} Qs</span><span class="line">CATs ${c.catsDone}/${c.cats}</span>`+(c.overdue?`<span class="line warn-text">${c.overdue} overdue</span>`:'');
+      const results=r.resultsUnavailable?'<span class="warn-text">Unavailable: some result sources failed to load</span>':!r.results.length?'<span class="muted">None recorded this week</span>':
+        r.results.slice(0,3).map(x=>`<span class="line">${esc(resultText(x))}</span>`).join('')+(r.results.length>3?`<small>+${r.results.length-3} more in details</small>`:'');
+      const focus=n&&(n.focus_categories.length||n.focus_topics.length)?n.focus_categories.map(x=>`<span class="chip">${esc(x)}</span>`).join('')+n.focus_topics.map(x=>`<span class="chip topic">${esc(x)}</span>`).join(''):'<span class="muted">Not set</span>';
+      const focusDate=n?`<small>${r.focusUpdated?'Focus updated '+esc(fmtDate(r.focusUpdated)):'Focus never updated'}</small>`:'';
+      const next=!r.plan?'<span class="muted">—</span>':c.next?`<span class="line">${c.next} assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`:`<span class="line">Not assigned</span><small>Week of ${esc(fmtDay(reviewWeek.next))}</small>`;
+      const open=expanded.has(s.id),msg=rowMsg.get(s.id);
+      const actions=`<div class="actions"><button class="button secondary" type="button" data-detail="${id}" aria-expanded="${open}" aria-controls="detail-${id}">${open?'Hide details':'Details'}</button>`+
+        `<button class="button ${r.plan?'secondary':'primary'}" type="button" data-edit="${id}" data-from-review="1">${r.plan?'Edit focus & plan':'Create plan'}</button>`+
+        (r.plan?`<button class="button primary" type="button" data-assign="${id}"${busy.has(s.id)?' disabled':''}>${busy.has(s.id)?'Assigning…':c.next?'Fill missing next-week days':'Assign next week'}</button>`:'')+
+        `<a class="button secondary" href="shared-progress.html?student=${encodeURIComponent(s.id)}">Workspace</a></div>`+
+        (msg?`<div class="row-msg ${msg.type}" role="status">${esc(msg.text)}</div>`:'');
+      return `<tr data-review="${id}"${editing===s.id?' class="selected"':''}><td data-label="Student"><strong>${esc(s.name)}</strong>${s.email?`<small>${esc(s.email)}</small>`:''}<span class="pill ${r.status}">${status}</span>${r.flags.length?`<ul class="flags">${r.flags.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}</td>`+
+        `<td data-label="This week · self-reported">${work}</td><td data-label="Recorded results">${results}</td><td data-label="Focus">${focus}${focusDate}</td><td data-label="Next week">${next}</td><td>${actions}</td></tr>`+
+        `<tr class="review-detail" id="detail-${id}"${open?'':' hidden'}><td colspan="6">${open?detail(r,n):''}</td></tr>`;
+    }
+    function detail(r,n){
+      const focus=n?n.focus_categories:[];
+      const work=r.work.length?r.work.map(a=>`<li><strong>${esc(fmtDay(a.due_on))}</strong> · ${a.assignment_kind==='cat'?'CAT':'Practice'} · ${a.completed_at?'Marked complete':(a.due_on<todayIso()?'<span class="warn-text">Overdue</span>':'Not complete')}<br>${esc(a.title)}${a.assignment_details?.categories?.length?`<br><small class="muted">Assigned focus: ${esc(a.assignment_details.categories.join(', '))}</small>`:''}</li>`).join(''):'<li class="muted">No assignments generated for this week.</li>';
+      const res=r.resultsUnavailable?'<li class="warn-text">Some result sources failed to load. Refresh before deciding on focus changes.</li>':r.results.length?r.results.map(x=>`<li><strong>${esc(fmtDay(x.date))}</strong>${x.dateKnown?'':' <small class="muted">(test date not recorded; date logged)</small>'} · ${esc(x.source)}<br>${esc(resultText(x))}`+
+        (x.categories.length?`<div class="cat-scores" aria-label="Category scores, lowest first">${x.categories.map(k=>`<span class="cat-score${focus.includes(k.name)?' focus':''}">${esc(k.name)} ${esc(pct(k.score))}${k.n!=null?` · ${esc(k.n)} q${k.n<5?' · low sample':''}`:''}${focus.includes(k.name)?' · current focus':''}</span>`).join('')}</div>`:'<br><small class="muted">No category scores recorded.</small>')+'</li>').join(''):'<li class="muted">No CAT, readiness, or practice results recorded for this week.</li>';
+      return `<div class="detail-grid"><div><h3>Assignments this week</h3><ul class="detail-list">${work}</ul></div><div><h3>Recorded results this week</h3><ul class="detail-list">${res}</ul><p class="hint">Category scores are listed lowest first as recorded. You decide any focus change.</p></div></div>`;
+    }
+    function setReviewWeek(value){
+      let monday;
+      try{monday=WeeklyAssignments.monday(value)}catch{return notice('review-notice','Choose a valid date.','error')}
+      if(monday!==value)notice('review-notice',`Showing the week starting Monday ${fmtDay(monday)}.`,'info');else notice('review-notice','');
+      $('review-week').value=monday;expanded.clear();rowMsg.clear();loadReview();
+    }
+    async function loadReview(){
+      const seq=++reviewSeq,week=WeeklyReview.range($('review-week').value);
+      reviewWeek=week;reviewData=null;$('review-refresh').disabled=true;
+      $('review-summary').textContent='Loading the week…';$('review-rows').innerHTML='';$('review-empty').classList.add('hidden');
+      const dated=col=>`and(${col}.gte.${week.start},${col}.lte.${week.end}),and(${col}.is.null,created_at.gte."${week.startAt}",created_at.lt."${week.endAt}")`;
+      try{
+        const [res,ext,up,pr,ih]=await Promise.all([
+          db.from('student_resources').select('id,student_id,title,assignment_week,assignment_kind,assignment_details,due_on,completed_at').in('assignment_week',[week.start,week.next]).in('assignment_kind',['practice','cat']),
+          db.from('external_assessments').select('*').or(dated('taken_at')),
+          db.from('student_assessment_uploads').select('id,student_id,platform,assessment_type,report_label,taken_on,overall_score,created_at').or(dated('taken_on')),
+          db.from('student_supplemental_practice_results').select('student_id,practice_title,score,total_questions,completed_at').gte('completed_at',week.startAt).lt('completed_at',week.endAt),
+          db.from('in_house_assessment_attempts').select('student_id,assessment_title,mode,total_questions,correct_questions,completed_at').gte('completed_at',week.startAt).lt('completed_at',week.endAt)
+        ]);
+        if(seq!==reviewSeq)return;
+        if(res.error)throw new Error('Could not load assignments for this week: '+res.error.message);
+        const failed=[];
+        if(ext.error)failed.push('logged scores');if(up.error)failed.push('uploaded reports');if(pr.error)failed.push('portal practice');if(ih.error)failed.push('portal assessments');
+        const ids=(up.data||[]).map(u=>u.id);let cats={data:[]};
+        if(ids.length){cats=await db.from('student_assessment_categories').select('assessment_id,category,score,total_count').in('assessment_id',ids);if(cats.error)failed.push('report category scores')}
+        if(seq!==reviewSeq)return;
+        reviewFailed=failed;
+        reviewData={resources:res.data||[],external:ext.data||[],uploads:up.data||[],uploadCats:cats.data||[],practice:pr.data||[],inHouse:ih.data||[]};
+        if(failed.length)notice('review-notice','Could not load '+failed.join(', ')+'. Results are marked unavailable rather than empty; refresh to try again.','warn');
+        renderReview();
+      }catch(err){
+        if(seq!==reviewSeq)return;
+        reviewData=null;$('review-summary').textContent='';
+        notice('review-notice',(err.message||String(err))+' Nothing is shown so completion isn’t misreported. Refresh to try again.','error');
+      }finally{if(seq===reviewSeq)$('review-refresh').disabled=false}
+    }
+    async function assignNext(id){
+      if(busy.has(id)||!reviewWeek)return;
+      const plan=plans.get(id),name=students.find(s=>s.id===id)?.name||'Student';
+      if(!plan)return;
+      if(editorDirty(id)){rowMsg.set(id,{type:'error',text:'Save or close the open plan edits first so next week uses the plan you see.'});return renderReview()}
+      if(!WP.meetsPracticeMinimum(plan)){rowMsg.set(id,{type:'error',text:`Plan has ${WP.practiceOnlyDays(plan).length} practice days without a CAT; set at least ${WP.MIN_PRACTICE_DAYS} first.`});return renderReview()}
+      const week=reviewWeek.next;
+      busy.add(id);rowMsg.set(id,{type:'info',text:`Assigning the week of ${fmtDay(week)} for ${name}…`});renderReview();
+      try{
+        const r=await runGenerate(week,id);
+        rowMsg.set(id,{type:r.failures.length?'warn':'success',text:`Week of ${fmtDay(week)}: `+r.text});
+      }catch(err){rowMsg.set(id,{type:'error',text:'Could not assign: '+err.message})}
+      finally{busy.delete(id);await loadReview()}
     }
 
     async function upsertPlans(rows,ignoreDuplicates){
@@ -329,7 +495,7 @@
       const row={student_id:id,...v,plan_notes:v.plan_notes||null,updated_at:now,updated_by:session.user.id};
       if(focusChanged&&(v.focus_categories.length||v.focus_topics.length||prev))row.focus_updated_at=now;
       btn.disabled=true;btn.textContent='Saving…';
-      try{await upsertPlans([row],false);notice('editor-notice','Saved. The student will see this plan on their dashboard.','success');$('editor-title').textContent='Edit plan · '+students.find(s=>s.id===id).name;$('editor-sub').textContent='Changes save to this student only.';renderRoster()}
+      try{await upsertPlans([row],false);notice('editor-notice',row.focus_updated_at?'Saved. The new focus applies to assignments generated from now on; already-generated assignments keep their saved focus. The student sees this plan on their dashboard.':'Saved. The student will see this plan on their dashboard.','success');$('editor-title').textContent='Edit plan · '+students.find(s=>s.id===id).name;$('editor-sub').textContent='Changes save to this student only.';renderRoster();renderReview()}
       catch(err){notice('editor-notice','Could not save: '+err.message,'error')}
       finally{btn.disabled=false;btn.textContent='Save plan'}
     }
@@ -344,7 +510,7 @@
         (data||[]).forEach(r=>plans.set(r.student_id,r));
         notice('default-notice',`Default plan given to ${ids.length} student${ids.length===1?'':'s'}. Add focus categories with Edit.`,'success');
       }catch(err){notice('default-notice','Could not apply the default: '+err.message,'error')}
-      finally{if(btn)btn.disabled=false;renderRoster()}
+      finally{if(btn)btn.disabled=false;renderRoster();renderReview()}
     }
 
     async function init(){
@@ -360,6 +526,7 @@
       if(st.error)throw new Error('Could not load students: '+st.error.message);
       if(pl.error)throw new Error('Could not load study plans (has supabase-weekly-study-plan-migration.sql been run?): '+pl.error.message);
       students=(st.data||[]).filter(s=>s.student_type!=='nursing_student');
+      nursingCount=(st.data||[]).length-students.length;
       (pl.data||[]).forEach(r=>plans.set(r.student_id,r));
       $('assignment-week').value=WeeklyAssignments.monday();
       $('generate-week').addEventListener('click',generateAssignments);
@@ -379,14 +546,28 @@
       $('only-missing').addEventListener('change',renderRoster);
       $('roster').addEventListener('click',e=>{
         const b=e.target.closest('button');if(!b)return;
-        if(b.dataset.edit)openEditor(b.dataset.edit);
+        if(b.dataset.edit){returnRow=null;openEditor(b.dataset.edit)}
         else if(b.dataset.default)applyDefault([b.dataset.default],b);
       });
       $('apply-missing').addEventListener('click',e=>applyDefault(students.filter(s=>!plans.has(s.id)).map(s=>s.id),e.currentTarget));
       $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+      $('review-week').value=WeeklyAssignments.monday();
+      $('review-week').addEventListener('change',()=>{if($('review-week').value)setReviewWeek($('review-week').value)});
+      $('review-prev').addEventListener('click',()=>setReviewWeek(WeeklyReview.addDays(WeeklyAssignments.monday($('review-week').value||undefined),-7)));
+      $('review-next').addEventListener('click',()=>setReviewWeek(WeeklyReview.addDays(WeeklyAssignments.monday($('review-week').value||undefined),7)));
+      $('review-refresh').addEventListener('click',()=>{rowMsg.clear();loadReview()});
+      $('review-filter').addEventListener('change',renderReview);
+      $('review-search').addEventListener('input',renderReview);
+      $('review-rows').addEventListener('click',e=>{
+        const b=e.target.closest('button');if(!b)return;
+        if(b.dataset.detail){const id=b.dataset.detail;expanded.has(id)?expanded.delete(id):expanded.add(id);renderReview();document.querySelector(`[data-detail="${CSS.escape(id)}"]`)?.focus()}
+        else if(b.dataset.edit){returnRow=b.dataset.edit;openEditor(b.dataset.edit)}
+        else if(b.dataset.assign)assignNext(b.dataset.assign);
+      });
 
       renderRoster();
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+      loadReview();
       const requested=new URLSearchParams(location.search).get('student');
       if(requested&&plans.has(requested))$('assignment-student').value=requested;
       if(requested&&students.some(s=>s.id===requested))openEditor(requested);

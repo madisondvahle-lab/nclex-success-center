@@ -188,10 +188,10 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 ## Weekly study plans (step 1 of 4)
 - `madison-study-plans.html` (admin "Weekly plans") sets each NCLEX student's weekly rhythm (default 3×50 Qs Mon/Wed/Fri + 2 spaced CATs Tue/Sat, platform) and focus categories; students see it read-only on `student-dashboard.html`.
 - Data extends the existing `student_study_plans` table via `supabase-weekly-study-plan-migration.sql` (applied to live Supabase 2026-10-14; RLS verified). Shared logic: `weekly-plan.js`.
-- Steps 2–4 (targeted assignment, reminders, retarget queue): see `.agents/tasks/weekly-study-plans.md`.
+- Step 4: **Weekly review** section on the same page lists per-week completion (self-reported) and recorded results per student, with Edit focus & plan and idempotent Assign next week; no migration (`weekly-review.js`). Steps 2–4 details: see `.agents/tasks/weekly-study-plans.md`.
 
 ## Weekly assignments (step 2 of 4)
 - Admin Weekly plans now generates one student's or all planned NCLEX students' dated practice/CAT assignments for a selected week, reusing `student_resources`; reruns preserve existing work and completion.
 - Portal practice uses frozen active MCQ IDs matching saved focus; external platforms receive manual setup instructions. Students see due dates, mark completion, and portal practice completion follows score saving.
 - `supabase-weekly-assignments-migration.sql` applied live 2026-10-14; admin/student/anon RLS and generation verified in rolled-back SQL tests. No questions or real assignments changed during validation.
-- Reminders and review/retarget queue remain unbuilt (steps 3–4). Details, limits, and validation commands: `.agents/tasks/weekly-study-plans.md`.
+- Step 3 dashboard reminders and step 4 Weekly review queue are live. Details, limits, and validation commands: `.agents/tasks/weekly-study-plans.md`.
