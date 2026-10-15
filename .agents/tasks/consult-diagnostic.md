@@ -41,6 +41,10 @@ Batch JSON is either an array or `{ "items": [...] }`. Each item uses `id`, `ste
 Edits to existing numbered or active questions now create `question_revision_drafts`; they do not change the live row. Admins compare original/proposed content, approve or reject, and only then apply an approved revision. The apply RPC locks the existing question and rejects stale drafts if any tracked content changed after proposal. It updates the same UUID and leaves `question_no`, `module_key`, active state, assignments, and student responses intact. Direct browser table writes remain insert-only, and deletion of a question with revision history is restricted.
 
 ### Reopening correction drafts
+The question editor uses the shared `category-names.js` list for its NCLEX
+category dropdown. Blank and nonstandard saved categories remain selectable
+without automatic normalization; topic remains free text.
+
 Apply `supabase-question-revision-edit.sql` after the bulk-import migration
 (applied live October 14, 2026). Reopening an existing question loads its open
 correction's proposed fields and reason rather than the original bank values.
