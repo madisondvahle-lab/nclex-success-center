@@ -35,7 +35,7 @@
     .bulk strong{align-self:center;margin-right:4px;font-size:.78rem;color:var(--admin-navy)}
     .bulk label{flex:1;min-width:150px}
     .library-summary{margin:14px 0 0;color:var(--admin-muted);font-size:.78rem}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;margin-top:14px}
     .card{min-width:0;background:var(--admin-paper);border:1px solid var(--admin-line);display:flex;flex-direction:column}
     .select-label{display:flex;align-items:center;gap:7px;min-height:36px;padding:6px 12px;border-bottom:1px solid var(--admin-line);font-size:.72rem;font-weight:750;text-transform:none}
     .thumb{aspect-ratio:4/3;background:#eef2ef center top/cover no-repeat;border-bottom:1px solid var(--admin-line)}
@@ -51,6 +51,11 @@
     .dialog-actions{display:flex;gap:8px;justify-content:space-between;margin-top:18px}
     .dialog-actions .action-group{display:flex;gap:8px}
     .empty{grid-column:1/-1;margin:0;padding:24px 18px;border:1px solid var(--admin-line);background:var(--admin-paper);color:var(--admin-muted);font-size:.82rem}
+    @media(max-width:600px){
+      .row{grid-template-columns:minmax(0,1fr)}
+      .filters label,.filters label.grow{min-width:0;flex-basis:100%}
+      .panel-content{padding:14px 12px}
+    }
   </style>
 </head>
 <body>
@@ -58,15 +63,15 @@
   <div class="admin-app hidden" id="app">
     <aside class="admin-sidebar">
       <div class="sidebar-brand">Study With Madison <small>RN · Admin</small></div>
-      <div class="sidebar-group">
-        <div class="sidebar-label">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline">
+        <div class="sidebar-caption">Pipeline</div>
         <a href="madison-admin.html">Overview</a>
         <a href="madison-admin.html#prospects">Prospects</a>
         <a href="madison-consultations.html">Consultations</a>
         <a href="madison-diagnostic.html">Diagnostic launcher</a>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-label">Students &amp; Clinical</div>
+      </nav>
+      <nav class="sidebar-nav" aria-label="Students and clinical">
+        <div class="sidebar-caption">Students &amp; Clinical</div>
         <a href="student-onboarding.html">New student onboarding</a>
         <a href="shared-progress.html">Student progress</a>
         <a href="madison-assignments.html">Assignments</a>
@@ -74,48 +79,46 @@
         <a href="assessment-history-admin.html">Assessment history</a>
         <a href="madison-cpr.html">CPR tracker</a>
         <a href="question-bank-review.html">Question bank</a>
-      </div>
-      <div class="sidebar-group">
-        <div class="sidebar-label">Operations</div>
-        <a href="madison-graphics.html" class="active">Teaching graphics</a>
+      </nav>
+      <nav class="sidebar-nav" aria-label="Operations">
+        <div class="sidebar-caption">Operations</div>
+        <a href="madison-graphics.html" aria-current="page">Teaching graphics</a>
         <a href="finance.html">Finance &amp; bookkeeping</a>
-        <button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
-      </div>
+      </nav>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
     </aside>
 
     <div class="admin-main">
       <header class="admin-topbar">
-        <div class="admin-context">
-          <span class="eyebrow" style="margin:0">Admin Shell</span>
-          <h1>Teaching graphics library</h1>
-        </div>
-        <div class="admin-actions">
-          <button class="button secondary" type="button" onclick="document.getElementById('drop').scrollIntoView({behavior:'smooth'})">+ Add new graphic</button>
+        <span class="topbar-context">Private tutoring workspace</span>
+        <div class="topbar-actions">
+          <button type="button" onclick="document.getElementById('drop').scrollIntoView({behavior:'smooth'})">+ Add new graphic</button>
         </div>
       </header>
 
-      <div class="admin-content">
+      <main class="dashboard">
+        <div class="dashboard-heading"><h1>Teaching graphics library</h1></div>
         <section class="metric-grid">
-          <div class="metric-card">
-            <span class="metric-label">Asset library</span>
-            <div class="metric-value">Teaching</div>
-            <span class="metric-subtext">Clinical diagrams &amp; mnemonics</span>
+          <div class="metric">
+            <span>Asset library</span>
+            <strong>Teaching</strong>
+            <small>Clinical diagrams &amp; mnemonics</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Storage bucket</span>
-            <div class="metric-value" style="font-size:1.4rem">graphics-lib</div>
-            <span class="metric-subtext">Auto-signed URLs (3600s TTL)</span>
+          <div class="metric">
+            <span>Storage bucket</span>
+            <strong>graphics-lib</strong>
+            <small>Auto-signed URLs (3600s TTL)</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Tagging engine</span>
-            <div class="metric-value" style="font-size:1.4rem">Auto + Manual</div>
-            <span class="metric-subtext">14+ smart pattern recognizers</span>
+          <div class="metric">
+            <span>Tagging engine</span>
+            <strong>Auto + Manual</strong>
+            <small>14+ smart pattern recognizers</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Student delivery</span>
-            <div class="metric-value" style="font-size:1.4rem">1-Click Assign</div>
-            <span class="metric-subtext">Direct to student_resources</span>
-          </div>
+          <div class="metric">
+            <span>Student delivery</span>
+            <strong>1-Click Assign</strong>
+            <small>Direct to student_resources</small>
+          </main>
         </section>
 
         <section class="panel" aria-labelledby="upload-title">
