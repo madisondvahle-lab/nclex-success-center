@@ -85,6 +85,23 @@
     [data-weekly-complete]:disabled{opacity:.65;cursor:wait}
     [data-weekly-complete]:focus-visible,.weekly-assignment-link:focus-visible{outline:3px solid currentColor;outline-offset:3px}
     .weekly-assignment-link{display:inline-flex;align-items:center;min-height:44px;color:#fff;font-size:.82rem;font-weight:800;text-underline-offset:3px}
+    .assignment-reminders{margin:0 0 24px;padding:24px;background:var(--paper);border:1px solid var(--line)}
+    .reminder-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .reminder-heading h2{margin:0;font-size:1.5rem}
+    .reminder-heading button{min-height:44px;cursor:pointer;font-family:inherit}
+    .reminder-heading button:disabled{opacity:.65;cursor:wait}
+    .assignment-reminders :is(button,a):focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+    .reminder-list{list-style:none;padding:0;margin:12px 0 0}
+    .reminder-item{padding:16px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+    .reminder-item h3{margin:6px 0;font:800 .95rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:normal}
+    .reminder-item p,.reminder-message{margin:4px 0;color:var(--muted);font-size:.83rem;line-height:1.5}
+    .reminder-state{font-size:.78rem;font-weight:800;color:var(--teal)}
+    .reminder-state.overdue,.reminder-error{color:#9c3535}
+    .reminder-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:8px}
+    .reminder-actions [data-weekly-complete]{margin-top:0}
+    .reminder-actions a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-size:.82rem;font-weight:800;text-underline-offset:3px}
+    .reminder-item summary{display:flex;align-items:center;min-height:44px;cursor:pointer;font-size:.82rem;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+    .reminder-item summary:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
@@ -381,6 +398,7 @@
         </div>
         <aside class="countdown" id="countdown-nclex"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
       </section>
+      <section class="assignment-reminders" id="assignment-reminders-nclex" aria-labelledby="reminder-title-nclex"></section>
       <section class="practice-start" aria-labelledby="practice-title-nclex">
         <div>
           <h2 id="practice-title-nclex">Make time for practice.</h2>
@@ -458,6 +476,7 @@
         </div>
         <aside class="countdown nursing" id="countdown-nursing"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
       </section>
+      <section class="assignment-reminders" id="assignment-reminders-nursing" aria-labelledby="reminder-title-nursing"></section>
       <section class="practice-start" aria-labelledby="practice-title-nursing">
         <div>
           <h2 id="practice-title-nursing">Prepare for your next exam.</h2>
@@ -831,10 +850,104 @@
       card.hidden = false;
     }
 
+    let assignmentState = null;
+    async function fetchStudentResources(studentId) {
+      try {
+        return await db.from('student_resources').select('*').eq('student_id', studentId).order('due_on', { ascending: true });
+      } catch (error) {
+        return { data: null, error };
+      }
+    }
+    function renderAssignmentReminders() {
+      const state = assignmentState;
+      if (!state) return;
+      const host = document.getElementById('assignment-reminders-' + state.role);
+      const summary = WeeklyAssignments.reminders(state.resources);
+      const message = state.error ? 'Could not load assignment reminders. Refresh to try again; completion and due dates could not be checked.'
+        : !summary.count ? 'No dated practice or CAT assignments yet. Your saved weekly plan is not an assignment.'
+        : !summary.pending ? 'All assigned practice and CATs are marked complete. No reminders right now.'
+        : !summary.items.length ? 'Nothing due today or tomorrow. Future dated practice remains in your assigned work.'
+        : 'Practice due today or tomorrow, overdue work, and your next assigned CAT. Completion is self-reported.';
+      host.innerHTML = `<div class="reminder-heading"><h2 id="reminder-title-${state.role}">Assignment reminders</h2><button type="button" class="resource-button" data-refresh-reminders ${state.busy ? 'disabled' : ''}>${state.busy ? 'Refreshing...' : 'Refresh'}</button></div>
+        <p class="reminder-message ${state.error ? 'reminder-error' : ''}" role="status">${text(message)}</p>
+        ${!state.error && summary.invalid ? '<p class="reminder-message reminder-error">An incomplete assignment has a missing or invalid due date. Ask Madison to check your assigned work.</p>' : ''}
+        <ul class="reminder-list">${state.error ? '' : summary.items.map(({ item, label, overdue, date }) => {
+          const url = WeeklyAssignments.actionUrl(item.url, location.href);
+          const external = !item.url && item.assignment_details?.platform && item.assignment_details.platform !== 'Portal Question Bank';
+          return `<li class="reminder-item">
+            <span class="reminder-state ${overdue ? 'overdue' : ''}">${text(label)} · <time datetime="${text(item.due_on)}">${text(date)}</time></span>
+            <h3>${studentResourceText(item.title || (item.assignment_kind === 'cat' ? 'CAT / readiness exam' : 'Assigned practice'))}</h3>
+            <p>${text(item.assignment_details?.platform || 'Platform not specified')}${item.assignment_kind === 'practice' && item.assignment_details?.question_count ? ' · ' + text(item.assignment_details.question_count) + ' questions' : ''}</p>
+            ${external ? '<p>Set this up manually in your assigned platform; results are not imported automatically.</p>' : ''}
+            <div class="reminder-actions">${url ? `<a href="${text(url)}" target="_blank" rel="noopener">${item.assignment_kind === 'cat' ? 'Open assigned CAT' : 'Open assigned practice'}</a>` : external ? '' : '<span class="reminder-message reminder-error">Assignment link unavailable. Ask Madison for access.</span>'}
+              <button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">Mark complete</button></div>
+            ${item.note ? `<details><summary>View assignment instructions</summary><p>${studentResourceText(item.note)}</p></details>` : ''}
+            <p role="status" data-completion-status></p>
+          </li>`;
+        }).join('')}</ul>`;
+      host.querySelector('[data-refresh-reminders]').addEventListener('click', refreshAssignmentReminders);
+      bindWeeklyCompletion(host, state.resources, state.plan);
+    }
+    async function refreshAssignmentReminders() {
+      const state = assignmentState;
+      if (!state || state.busy || state.saving) return;
+      state.busy = true;
+      renderAssignmentReminders();
+      const result = await fetchStudentResources(state.student.id);
+      state.busy = false;
+      state.error = result.error;
+      if (!result.error) state.resources = result.data || [];
+      renderAssignmentReminders();
+      if (state.role === 'nclex') {
+        if (state.error) {
+          document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
+          document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
+        } else {
+          renderResources(state.resources, 'resources-nclex', state.plan);
+          await renderThisWeek(state.student, state.resources, state.plan);
+        }
+      }
+    }
+    function bindWeeklyCompletion(container, items, plan) {
+      container.querySelectorAll('[data-weekly-complete]').forEach(button => {
+        button.addEventListener('click', async () => {
+          if (assignmentState?.busy || assignmentState?.saving) return;
+          const item = items.find(r => r.id === button.dataset.weeklyComplete);
+          const status = button.closest('.resource, .reminder-item').querySelector('[data-completion-status]');
+          if (assignmentState) assignmentState.saving = true;
+          button.disabled = true;
+          try {
+            const { data, error } = await db.rpc('set_weekly_assignment_complete', { p_assignment: item.id, p_complete: !item.completed_at });
+            if (error) throw error;
+            item.completed_at = data;
+            document.querySelectorAll('[data-weekly-complete]').forEach(control => {
+              if (control.dataset.weeklyComplete !== item.id) return;
+              control.textContent = item.completed_at ? 'Mark not complete' : 'Mark complete';
+              const due = control.closest('.resource, .reminder-item').querySelector('[data-weekly-state]');
+              if (due) due.textContent = `Due ${item.due_on} · ${item.completed_at ? 'Complete' : 'Not complete'}`;
+            });
+            status.textContent = item.completed_at ? 'Marked complete.' : 'Marked not complete.';
+            const hadFocus = container.contains(document.activeElement) && container.classList.contains('assignment-reminders');
+            renderAssignmentReminders();
+            if (hadFocus) container.querySelector('[data-refresh-reminders]').focus();
+            if (!assignmentState || assignmentState.role === 'nclex') await renderThisWeek({ id: item.student_id }, items, plan);
+          } catch (error) {
+            status.textContent = 'Could not save completion: ' + error.message;
+          } finally {
+            button.disabled = false;
+            if (assignmentState) assignmentState.saving = false;
+          }
+        });
+      });
+    }
+
     // NCLEX assigned work includes practice; uploads stay in their dedicated view.
     function renderResources(items, containerId, plan) {
       const filtered = items.filter(r => r.resource_type !== 'student_upload');
-      if (!filtered.length) return;
+      if (!filtered.length) {
+        document.getElementById(containerId).innerHTML = '<p class="empty">No resources are assigned yet. Madison will add materials for your current focus.</p>';
+        return;
+      }
       document.getElementById(containerId).innerHTML = filtered.map(item =>
         `<article class="resource">
           <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
@@ -845,27 +958,7 @@
           ${item.assignment_week ? `<button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">${item.completed_at ? 'Mark not complete' : 'Mark complete'}</button><p role="status" data-completion-status></p>` : ''}
         </article>`
       ).join('');
-      document.getElementById(containerId).querySelectorAll('[data-weekly-complete]').forEach(button => {
-        button.addEventListener('click', async () => {
-          const item = items.find(r => r.id === button.dataset.weeklyComplete);
-          const status = button.parentElement.querySelector('[data-completion-status]');
-          button.disabled = true;
-          try {
-            const { data, error } = await db.rpc('set_weekly_assignment_complete', { p_assignment: item.id, p_complete: !item.completed_at });
-            if (error) throw error;
-            item.completed_at = data;
-            button.textContent = item.completed_at ? 'Mark not complete' : 'Mark complete';
-            button.parentElement.querySelector('[data-weekly-state]').textContent = `Due ${item.due_on} · ${item.completed_at ? 'Complete' : 'Not complete'}`;
-            status.textContent = item.completed_at ? 'Marked complete.' : 'Marked not complete.';
-            button.disabled = false;
-            const student = { id: item.student_id };
-            await renderThisWeek(student, items, plan);
-          } catch (error) {
-            status.textContent = 'Could not save completion: ' + error.message;
-            button.disabled = false;
-          }
-        });
-      });
+      bindWeeklyCompletion(document.getElementById(containerId), items, plan);
     }
 
     function studentResourceText(value) {
@@ -1051,6 +1144,10 @@
 
     // Fills "This week" with the weakest categories and the week's practice, using only data the student can read.
     async function renderThisWeek(student, resources, plan) {
+      if (assignmentState?.error) {
+        document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
+        return;
+      }
       const host = document.getElementById('daily-priorities-nclex');
       if (!host) return;
       const assigned = WeeklyAssignments.progress(resources || []);
@@ -1405,7 +1502,7 @@
 
       const fetches = [
         db.from('student_study_plans').select('*').eq('student_id', student.id).order('updated_at', { ascending: false }).limit(1),
-        db.from('student_resources').select('*').eq('student_id', student.id).order('due_on', { ascending: true }),
+        fetchStudentResources(student.id),
         db.from('modules').select('*').order('module_number'),
         db.from('student_module_access').select('module_key,enabled').eq('student_id', student.id),
       ];
@@ -1422,6 +1519,7 @@
 
       const results = await Promise.all(fetches);
       const [plans, resources, catalog, access, schedules, practiceRes] = results;
+      assignmentState = { student, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false, saving: false };
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
@@ -1435,6 +1533,14 @@
       } else {
         renderNclex(student, plans.data || [], resources.data || [], catalog.data || [], access.data || []);
       }
+      renderAssignmentReminders();
+      if (resources.error && !isNursing) {
+        document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
+        document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
+      }
+      window.addEventListener('focus', refreshAssignmentReminders);
+      window.addEventListener('pageshow', event => { if (event.persisted) refreshAssignmentReminders(); });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAssignmentReminders(); });
 
       if (window.StudentNav) {
         StudentNav.init({ active: 'dashboard', inPageScroll: true });

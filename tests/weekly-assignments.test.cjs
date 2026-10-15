@@ -30,13 +30,13 @@ test('weekly progress counts completion once and separates practice from CATs', 
 });
 test('completion changes use restricted RPC and report failures without losing state', async () => {
   const html = read('student-dashboard.html');
-  const renderer = html.slice(html.indexOf('function renderResources('), html.indexOf('function studentResourceText('));
+  const renderer = html.slice(html.indexOf('let assignmentState ='), html.indexOf('function studentResourceText('));
   let listener, message = {}, saved;
-  const button = { dataset: { weeklyComplete: 'one' }, parentElement: { querySelector: () => message }, addEventListener: (_, fn) => { listener = fn; } };
-  const container = { innerHTML: '', querySelectorAll: () => [button] };
+  const button = { dataset: { weeklyComplete: 'one' }, closest: () => ({ querySelector: () => message }), addEventListener: (_, fn) => { listener = fn; } };
+  const container = { innerHTML: '', querySelectorAll: () => [button], contains: () => false };
   const row = { id: 'one', assignment_week: '2026-10-12', assignment_kind: 'practice', student_id: 'student' };
   const context = {
-    document: { getElementById: () => container }, text: String, studentResourceText: String,
+    document: { getElementById: () => container, querySelectorAll: () => [button] }, text: String, studentResourceText: String,
     db: { rpc: async (name, args) => { saved = { name, args }; return { data: 'saved-time' }; } },
     renderThisWeek: async () => {}
   };
