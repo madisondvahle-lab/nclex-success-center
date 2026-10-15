@@ -184,3 +184,14 @@ The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case
 - `assessment-import.js`: Archer report parser (overall Classic/NGN only; no category %), `parseCPR` (strict: only fills when all 8 categories are confidently read), used by `madison-cpr.html` "Read it for me".
 - Graphics library: `supabase-graphics-library.sql` (run it), `madison-graphics.html` (admin), `graphic.html` (viewer), searchable card on the student dashboard.
 - Graphics library is shared: nursing-student hub also has the searchable card (`gfxn`) with a topic filter; one `graphics` table serves NCLEX and nursing students.
+
+## Weekly study plans (step 1 of 4)
+- `madison-study-plans.html` (admin "Weekly plans") sets each NCLEX student's weekly rhythm (default 3×50 Qs Mon/Wed/Fri + 2 spaced CATs Tue/Sat, platform) and focus categories; students see it read-only on `student-dashboard.html`.
+- Data extends the existing `student_study_plans` table via `supabase-weekly-study-plan-migration.sql` (applied to live Supabase 2026-10-14; RLS verified). Shared logic: `weekly-plan.js`.
+- Steps 2–4 (targeted assignment, reminders, retarget queue): see `.agents/tasks/weekly-study-plans.md`.
+
+## Weekly assignments (step 2 of 4)
+- Admin Weekly plans now generates one student's or all planned NCLEX students' dated practice/CAT assignments for a selected week, reusing `student_resources`; reruns preserve existing work and completion.
+- Portal practice uses frozen active MCQ IDs matching saved focus; external platforms receive manual setup instructions. Students see due dates, mark completion, and portal practice completion follows score saving.
+- `supabase-weekly-assignments-migration.sql` applied live 2026-10-14; admin/student/anon RLS and generation verified in rolled-back SQL tests. No questions or real assignments changed during validation.
+- Reminders and review/retarget queue remain unbuilt (steps 3–4). Details, limits, and validation commands: `.agents/tasks/weekly-study-plans.md`.

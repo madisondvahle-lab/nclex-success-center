@@ -3,6 +3,16 @@
 ## Task
 Build the responsive student practice navigation shell (sidebar + mobile drawer) inspired by nursing school QBank platforms, wire it exclusively to existing student features without placeholder routes, and document gaps for features that do not yet exist.
 
+## October 14, 2026: Practice-first student home
+- Started from current `main` (`28e7e7c`), not the obsolete clinical-audit branch.
+- Both student dashboard and practice navigation now explicitly say **Question Bank**. NCLEX students see **Create practice**; nursing students retain **Exam Prep**. Both use `supplemental-practice.html`, which already selects the appropriate student workflow.
+- The dashboard now opens with a compact greeting and a prominent **Start practice** action. NCLEX assigned work (including assigned practice sets) and available modules appear before the plan and performance sections. Nursing students retain their class-selection prerequisite and assigned exam workflow.
+- Repaired role-aware sidebar section links and incoming hashes. Links select visible cards in the active portal; nursing students who have not selected a class are taken to the class selector rather than hidden content. Removed duplicate module element IDs.
+- Corrected the mobile shell layout, closed-drawer keyboard access, focus containment, Escape/backdrop closing, body scroll locking, and resize behavior. Preserved the existing navy/teal/cream identity and NCLEX rose accents; the design detector's incumbent Inter-font warning is intentionally not a reason to change the site's typography.
+- No clinical content, question IDs, bank activation, Supabase queries for practice, authentication, assignment checks, RLS, database schema, or tutor tools changed. The existing practice account lookup still requires the signed-in student's profile; a tutor without a student profile is not treated as a student or given a bypass.
+- Validation: `node --test tests/student-nav.test.cjs`; headless browser checks using synthetic Supabase responses at 1440px, 390px, and 320px for NCLEX and nursing students. Checked practice destinations, role-specific builder vs assigned exam lists, section/hash links, focus handling, empty assignments, and signed-out/missing-profile redirects. No production student data was used.
+- Deployment remains **GitHub Pages from `main`, repository root**, at `portal.studywithmadison.com`. Review and merge the feature branch into `main` to publish; no migration, production deployment, or merge was performed by this task.
+
 ## Scope
 ### Files changed / created
 - `student-nav.css` (Created: responsive sidebar, off-canvas mobile drawer, skip-links, focus outlines, Nursing teal vs NCLEX rose themes)

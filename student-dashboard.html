@@ -15,11 +15,20 @@
     .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
     .brand small{font:600 .62em Inter,sans-serif}
     .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
-    .hero{padding:61px 0 46px;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end}
+    .hero{padding:32px 0 24px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
     .eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
     h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}
-    h1{margin:0;font-size:clamp(2.7rem,6vw,4.9rem);line-height:1}
-    .hero p:not(.eyebrow){max-width:620px;margin:19px 0 0;color:var(--muted);line-height:1.65}
+    h1{margin:0;font-size:2rem;line-height:1.15;letter-spacing:-.03em;overflow-wrap:anywhere}
+    .hero p:not(.eyebrow){max-width:620px;margin:12px 0 0;color:var(--muted);line-height:1.55}
+    .practice-start{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0 28px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+    .practice-start h2{margin:0;font-size:1.5rem;letter-spacing:-.03em}
+    .practice-start p{margin:8px 0 0;max-width:60ch;color:var(--muted);font-size:.9rem;line-height:1.55}
+    .practice-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;flex-shrink:0}
+    .practice-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 20px;background:var(--teal);color:#fff;text-decoration:none;font-size:.88rem;font-weight:800;border-radius:4px}
+    .practice-primary:hover{background:#236b5f}
+    .practice-secondary{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-size:.82rem;font-weight:700;text-underline-offset:4px}
+    .practice-actions a:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+    .card[id]{scroll-margin-top:72px}
     .countdown{min-width:170px;padding:20px 22px;background:var(--plum);color:#fff}
     .countdown strong{display:block;font:400 2rem Georgia,serif}
     .countdown span{display:block;margin-top:5px;color:#eedce5;font-size:.75rem;line-height:1.35}
@@ -39,6 +48,18 @@
     .roadmap p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}
     .empty{margin:0;padding:18px 0;color:var(--muted);font-size:.88rem;line-height:1.55}
     .resource-link{display:inline-block;margin-top:18px;color:var(--ink);font-size:.8rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
+    .plan-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:0 0 20px;padding:0;list-style:none}
+    .plan-week li{border:1px solid var(--line);background:#fff;padding:10px 8px;min-height:74px;display:flex;flex-direction:column;gap:4px}
+    .plan-week li strong{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+    .plan-week li span{font-size:.76rem;line-height:1.35;color:var(--muted)}
+    .plan-week li.practice{background:var(--sage);border-color:var(--sage)}
+    .plan-week li.practice span,.plan-week li.cat span{color:var(--ink);font-weight:700}
+    .plan-week li.cat{background:var(--plum);border-color:var(--plum);color:#fff}
+    .plan-week li.cat span{color:#f2dce6}
+    .plan-focus h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .plan-chip{display:inline-block;margin:0 6px 6px 0;padding:5px 10px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.78rem;font-weight:800}
+    .plan-chip.topic{background:var(--teal-light);color:var(--teal)}
+    .plan-note{margin:14px 0 0;padding:12px 14px;background:var(--soft);font-size:.86rem;line-height:1.5}
     .weekly{background:var(--ink);color:#fff}
     .weekly .label{background:#f2c2c9;color:var(--plum)}
     .weekly .card-head{margin-bottom:14px}
@@ -60,6 +81,10 @@
     .resource-button{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;padding:10px 15px;border:2px solid var(--teal);border-radius:999px;color:var(--teal);background:transparent;font-size:.78rem;font-weight:900;line-height:1.1;text-decoration:none}
     .resource-button:hover{color:#fff;background:var(--teal)}
     .resource-button.disabled{border-color:var(--muted);color:var(--muted);cursor:not-allowed}
+    [data-weekly-complete]{min-height:44px;margin-top:12px;font-family:inherit;cursor:pointer}
+    [data-weekly-complete]:disabled{opacity:.65;cursor:wait}
+    [data-weekly-complete]:focus-visible,.weekly-assignment-link:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+    .weekly-assignment-link{display:inline-flex;align-items:center;min-height:44px;color:#fff;font-size:.82rem;font-weight:800;text-underline-offset:3px}
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
@@ -177,14 +202,25 @@
 
     @media(max-width:800px){
       .hero{grid-template-columns:1fr;align-items:start}
-      .countdown{width:max-content}
+      .countdown{display:flex;align-items:center;gap:12px;min-width:0;padding:12px 16px}
+      .countdown strong{font-size:1.25rem;flex-shrink:0}
+      .countdown span{margin:0}
       .grid{grid-template-columns:1fr}
       .resources,.modules,.uploads-full{grid-column:auto}
       .resource-list,.module-list,.progress-grid{grid-template-columns:1fr}
       .exam-summary,.practice-list{grid-template-columns:1fr}
       .shell{width:min(100% - 28px,1160px)}
-      .hero{padding:40px 0}
+      .hero{padding:28px 0 18px}
+      .practice-start{align-items:flex-start;flex-direction:column;gap:16px;padding:16px 0 24px}
+      .practice-actions{width:100%}
       .card{padding:24px 20px}
+      .card-head{flex-wrap:wrap}
+      .plan-week{grid-template-columns:1fr}
+      .plan-week li{min-height:0;flex-direction:row;align-items:baseline;gap:12px}
+      .plan-week li strong{min-width:42px}
+    }
+    @media(max-width:960px){
+      #app .top{display:none}
     }
   </style>
 </head>
@@ -297,10 +333,10 @@
 
       <!-- QBank group -->
       <div class="portal-nav-group">
-        <span class="portal-nav-heading">QBank</span>
+        <span class="portal-nav-heading">Question Bank</span>
         <a class="portal-nav-item" id="nav-item-practice" href="supplemental-practice.html">
           <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          <span id="nav-label-practice">Exam Prep</span>
+          <span id="nav-label-practice">Start practice</span>
         </a>
         <a class="portal-nav-item" id="nav-item-previous-tests" href="#previous-tests">
           <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -340,13 +376,35 @@
     <div id="portal-nclex" class="hidden">
       <section class="hero">
         <div>
-          <p class="eyebrow">NCLEX Success Center</p>
           <h1 id="welcome-nclex">Welcome back.</h1>
-          <p>Your private place for the roadmap, resources, and next study moves Madison has selected for you.</p>
+          <p>Practice questions, work on your assigned review, and follow your study plan.</p>
         </div>
         <aside class="countdown" id="countdown-nclex"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
       </section>
+      <section class="practice-start" aria-labelledby="practice-title-nclex">
+        <div>
+          <h2 id="practice-title-nclex">Make time for practice.</h2>
+          <p>Choose your topics and question count in the Question Bank, or continue a set Madison assigned.</p>
+        </div>
+        <div class="practice-actions">
+          <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
+          <a class="practice-secondary" href="#assigned-work-nclex">View assigned work</a>
+        </div>
+      </section>
       <section class="grid">
+        <article class="card" id="weekly-plan-card" style="grid-column:1/-1" hidden>
+          <div class="card-head"><div><p class="eyebrow">Your weekly rhythm</p><h2>My weekly study plan</h2></div><span class="label" id="weekly-plan-total">Set by Madison</span></div>
+          <ol class="plan-week" id="weekly-plan-days" aria-label="Weekly schedule"></ol>
+          <div class="plan-focus" id="weekly-plan-focus"></div>
+        </article>
+        <article class="card resources" id="assigned-work-nclex">
+          <div class="card-head"><div><h2>Assigned work</h2></div></div>
+          <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
+        </article>
+        <article class="card modules" id="modules-nclex-card">
+          <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
+          <div class="module-library" id="modules-nclex"><p class="empty">Your assigned learning modules will appear here.</p></div>
+        </article>
         <article class="card">
           <div class="card-head"><div><p class="eyebrow">Your roadmap</p><h2 id="plan-title-nclex">NCLEX Roadmap</h2></div><span class="label">Personal plan</span></div>
           <ol class="roadmap" id="roadmap-nclex"><li><span>1</span><div><strong>Your roadmap is being prepared.</strong><p>Madison will add your test-date plan and weekly focus here.</p></div></li></ol>
@@ -356,14 +414,12 @@
           <p id="weekly-intro-nclex">Your current weekly priorities will appear here after Madison updates your plan.</p>
           <div class="task-list" id="daily-priorities-nclex"></div>
         </article>
-        <div id="performance-nclex" class="anchor-point"></div>
         <article class="card" id="cat-results-card" style="display:none">
           <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
           <div id="cat-results-body"></div>
         </article>
-        <div id="previous-tests-nclex" class="anchor-point"></div>
         <article class="card" id="cat-trend-card" style="display:none;grid-column:1/-1">
-          <div class="card-head"><div><p class="eyebrow">Weekly CAT trend</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
+          <div class="card-head"><div><p class="eyebrow">CAT and practice trends</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
           <div id="cat-trend-body"></div>
         </article>
         <article class="card" id="gfx-card" style="grid-column:1/-1;display:none">
@@ -387,15 +443,6 @@
             <button class="upload-action-btn" type="submit" id="lc-save" style="margin-top:14px">Save to my trend</button>
           </form>
         </article>
-        <article class="card resources">
-          <div class="card-head"><div><p class="eyebrow">Selected for you</p><h2>Study resources</h2></div><span class="label">Assigned</span></div>
-          <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
-        </article>
-        <article class="card modules" id="modules-nclex-card">
-          <div id="modules-nclex" class="anchor-point"></div>
-          <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
-          <div class="module-library" id="modules-nclex"><p class="empty">Your assigned learning modules will appear here.</p></div>
-        </article>
       </section>
     </div>
 
@@ -406,11 +453,20 @@
 
       <section class="hero">
         <div>
-          <p class="eyebrow" style="color:var(--teal)">Nursing Student Hub</p>
           <h1 id="welcome-nursing">Welcome back.</h1>
           <p id="hero-course-line">Your private place for class resources, exam prep, and the next steps Madison has selected for you.</p>
         </div>
         <aside class="countdown nursing" id="countdown-nursing"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
+      </section>
+      <section class="practice-start" aria-labelledby="practice-title-nursing">
+        <div>
+          <h2 id="practice-title-nursing">Prepare for your next exam.</h2>
+          <p>Open Exam Prep to find your assigned question sets by class and exam. Your class resources are below.</p>
+        </div>
+        <div class="practice-actions">
+          <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
+          <a class="practice-secondary" href="#class-schedule-card">Choose a class</a>
+        </div>
       </section>
 
       <section class="grid">
@@ -473,8 +529,6 @@
 
         <!-- 4 · Recent quiz scores (full width) -->
         <article class="card nursing-support class-dependent-panel hidden" id="performance-nursing-card" style="grid-column:1/-1">
-          <div id="previous-tests-nursing" class="anchor-point"></div>
-          <div id="performance-nursing" class="anchor-point"></div>
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Your progress</p><h2>Recent quiz scores</h2></div>
             <span class="label teal">Performance</span>
@@ -485,7 +539,6 @@
 
         <!-- 5 · Class modules / study guides (full width) -->
         <article class="card modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
-          <div id="modules-nursing" class="anchor-point"></div>
           <div class="card-head">
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
             <span class="label teal">Course access</span>
@@ -501,6 +554,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="assessment-platforms.js"></script>
+  <script src="weekly-plan.js"></script>
+  <script src="weekly-assignments.js"></script>
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
   <script>
@@ -756,20 +812,60 @@
       return daily;
     }
 
-    // Resources — only types that are NOT practice_set or student_upload
-    function renderResources(items, containerId) {
-      const filtered = items.filter(r =>
-        r.resource_type !== 'practice_set' && r.resource_type !== 'student_upload'
-      );
+    // Read-only weekly schedule + focus categories set on madison-study-plans.html.
+    function renderWeeklyPlan(plan) {
+      const card = document.getElementById('weekly-plan-card');
+      if (!card || !plan || !Array.isArray(plan.practice_days) || !window.WeeklyPlan) return;
+      const p = WeeklyPlan.normalize(plan);
+      document.getElementById('weekly-plan-days').innerHTML = WeeklyPlan.week(p).map(d => {
+        const parts = [];
+        if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
+        if (d.cat) parts.push(`CAT exam · ${text(p.cat_platform)}`);
+        return `<li class="${d.cat ? 'cat' : d.practice ? 'practice' : ''}"><strong aria-label="${d.long}">${d.label}</strong><span>${parts.length ? parts.join('<br>') : 'Rest / review'}</span></li>`;
+      }).join('');
+      document.getElementById('weekly-plan-total').textContent = `${p.practice_days.length * p.practice_questions_per_day} Qs + ${p.cat_days.length} CAT${p.cat_days.length === 1 ? '' : 's'} / week`;
+      const chips = p.focus_categories.map(c => `<span class="plan-chip">${text(c)}</span>`).join('') + p.focus_topics.map(t => `<span class="plan-chip topic">${text(t)}</span>`).join('');
+      document.getElementById('weekly-plan-focus').innerHTML =
+        `<h3>Focus your practice on</h3>${chips || '<p class="empty" style="padding:0">Madison will add your focus categories after your next CAT review.</p>'}` +
+        (p.plan_notes ? `<p class="plan-note">${text(p.plan_notes)}</p>` : '');
+      card.hidden = false;
+    }
+
+    // NCLEX assigned work includes practice; uploads stay in their dedicated view.
+    function renderResources(items, containerId, plan) {
+      const filtered = items.filter(r => r.resource_type !== 'student_upload');
       if (!filtered.length) return;
       document.getElementById(containerId).innerHTML = filtered.map(item =>
         `<article class="resource">
           <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
           <h3>${studentResourceText(item.title)}</h3>
+          ${item.assignment_week ? `<p data-weekly-state>Due ${text(item.due_on)} · ${item.completed_at ? 'Complete' : 'Not complete'}</p>` : ''}
           ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
-          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">${item.resource_type === 'practice_set' ? 'Open assigned set' : 'Open resource'} →</a>` : ''}
+          ${item.assignment_week ? `<button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">${item.completed_at ? 'Mark not complete' : 'Mark complete'}</button><p role="status" data-completion-status></p>` : ''}
         </article>`
       ).join('');
+      document.getElementById(containerId).querySelectorAll('[data-weekly-complete]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const item = items.find(r => r.id === button.dataset.weeklyComplete);
+          const status = button.parentElement.querySelector('[data-completion-status]');
+          button.disabled = true;
+          try {
+            const { data, error } = await db.rpc('set_weekly_assignment_complete', { p_assignment: item.id, p_complete: !item.completed_at });
+            if (error) throw error;
+            item.completed_at = data;
+            button.textContent = item.completed_at ? 'Mark not complete' : 'Mark complete';
+            button.parentElement.querySelector('[data-weekly-state]').textContent = `Due ${item.due_on} · ${item.completed_at ? 'Complete' : 'Not complete'}`;
+            status.textContent = item.completed_at ? 'Marked complete.' : 'Marked not complete.';
+            button.disabled = false;
+            const student = { id: item.student_id };
+            await renderThisWeek(student, items, plan);
+          } catch (error) {
+            status.textContent = 'Could not save completion: ' + error.message;
+            button.disabled = false;
+          }
+        });
+      });
     }
 
     function studentResourceText(value) {
@@ -813,7 +909,8 @@
           return `<div class="task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
         }).join('');
       }
-      renderResources(resources, 'resources-nclex');
+      renderWeeklyPlan(plans[0]);
+      renderResources(resources, 'resources-nclex', plans[0]);
       renderModulesInto('modules-nclex', catalog, access);
 
       // Render CAT results if present
@@ -845,7 +942,7 @@
       initLogCat(student);
       initGraphics();
       renderCatTrend(student);
-      renderThisWeek(student, resources);
+      renderThisWeek(student, resources, plans[0]);
       document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
@@ -909,7 +1006,7 @@
         e.preventDefault();
         const st = $('lc-status'), btn = $('lc-save');
         const cats = NCLEXCats.NAMES.map((n, i) => ({name: n, v: form.querySelector(`[data-c="${i}"]`).value, n: form.querySelector(`[data-n="${i}"]`).value})).filter(c => c.v !== '');
-        const overall = Number($('lc-overall').value), label = $('lc-label').value.trim() || 'CAT';
+        const overall = Number($('lc-overall').value), label = $('lc-label').value.trim() || 'CAT', savedPlatform = $('lc-platform').value;
         const dupe = await db.from('student_assessment_uploads').select('id').eq('student_id', student.id).eq('report_label', label).eq('taken_on', $('lc-date').value).limit(1);
         if (dupe.data && dupe.data.length && !confirm('You already logged an exam with this name and date. Save it again?')) return;
         btn.disabled = true; st.textContent = 'Saving…';
@@ -927,7 +1024,7 @@
           }
           saveStage = 'saving the exam details';
           const ins = await db.from('student_assessment_uploads').insert({
-            student_id: student.id, platform: $('lc-platform').value, assessment_type: 'cat', taken_on: $('lc-date').value,
+            student_id: student.id, platform: savedPlatform, assessment_type: 'cat', taken_on: $('lc-date').value,
             overall_score: overall, report_path: path, report_filename: file ? file.name : 'Entered manually',
             report_mime_type: file ? (file.type || 'application/octet-stream') : 'text/plain', uploaded_by: user.id, report_label: label
           }).select('id').single();
@@ -937,9 +1034,14 @@
             const cr = await db.from('student_assessment_categories').insert(cats.map(c => ({assessment_id: ins.data.id, category: c.name, score: Number(c.v), total_count: Number(c.n) > 0 ? Number(c.n) : null})));
             if (cr.error) throw cr.error;
           }
-          st.textContent = 'Saved. Your trend has been updated.';
           form.reset(); form.classList.add('hidden'); file = null; $('lc-file').value = '';
-          renderCatTrend(student);
+          st.textContent = 'Saved. Updating your trend…';
+          try {
+            await renderCatTrend(student, savedPlatform);
+            st.textContent = 'Saved. Your trend has been updated.';
+          } catch (err) {
+            st.textContent = `Saved, but your trend could not be refreshed: ${err.message || 'please try again'}. Refresh the page to see it; do not save the exam again.`;
+          }
         } catch (err) {
           st.textContent = `Could not save while ${saveStage}: ${err.message || 'please try again'}. Please tell Madison.`;
         }
@@ -948,9 +1050,20 @@
     }
 
     // Fills "This week" with the weakest categories and the week's practice, using only data the student can read.
-    async function renderThisWeek(student, resources) {
+    async function renderThisWeek(student, resources, plan) {
       const host = document.getElementById('daily-priorities-nclex');
       if (!host) return;
+      const assigned = WeeklyAssignments.progress(resources || []);
+      if (assigned.count) {
+        document.getElementById('weekly-intro-nclex').textContent = 'Track the dated assignments Madison selected for this week.';
+        host.innerHTML = `<div class="task"><strong>Assigned week: ${assigned.done} of ${assigned.count} complete</strong><span>${assigned.questionsDone} of ${assigned.questions} practice questions · ${assigned.catsDone} of ${assigned.cats} CATs marked complete. Completion is self-reported; scores remain in practice and assessment history.</span><a class="weekly-assignment-link" href="#assigned-work-nclex">View assigned work</a></div>`;
+        return;
+      }
+      if (plan && Array.isArray(plan.practice_days)) {
+        document.getElementById('weekly-intro-nclex').textContent = 'Your saved weekly rhythm.';
+        host.innerHTML = `<div class="task"><strong>${text(WeeklyPlan.summary(plan))}</strong><span>No dated assignments have been generated for this week yet. Your saved weekly plan and focus are shown below.</span></div>`;
+        return;
+      }
       const [ea, pr] = await Promise.all([
         db.from('external_assessments').select('taken_at,created_at,category_scores').eq('student_id', student.id),
         db.from('student_supplemental_practice_results').select('score,total_questions,completed_at').eq('student_id', student.id).gte('completed_at', new Date(Date.now() - 7 * 86400000).toISOString())
@@ -987,70 +1100,85 @@
     }
 
     // Weekly CAT trend from the assessments Madison enters each week.
-    async function renderCatTrend(student) {
-      const [ext, upl] = await Promise.all([
+    async function renderCatTrend(student, savedPlatform) {
+      const [ext, upl, practiceResult] = await Promise.all([
         db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores').eq('student_id', student.id),
-        db.from('student_assessment_uploads').select('id,platform,assessment_type,report_label,taken_on,created_at,overall_score').eq('student_id', student.id)
+        db.from('student_assessment_uploads').select('id,platform,assessment_type,report_label,taken_on,created_at,overall_score').eq('student_id', student.id),
+        db.from('student_supplemental_practice_results').select('practice_key,practice_title,score,total_questions,completed_at').eq('student_id', student.id).order('completed_at')
       ]);
+      if (savedPlatform && (ext.error || upl.error)) throw ext.error || upl.error;
       const error = ext.error;
-      const data = (ext.data || []).slice();
-      // Reports Madison uploaded and scored also count toward the trend.
-      const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || '') && u.overall_score !== null && u.overall_score !== '');
+      const isPractice = name => /qbank|mixed practice|question practice/i.test(String(name || ''));
+      const data = (ext.data || []).filter(row => !isPractice(row.assessment_name));
+      // Keep scored CAT/readiness reports out of the QBank practice series.
+      const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && u.assessment_type !== 'qbank_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || '') && u.overall_score !== null && u.overall_score !== '');
+      const practiceReports = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type === 'qbank_report' && u.overall_score !== null && u.overall_score !== '');
       if (ups.length) {
         const cr = await db.from('student_assessment_categories').select('assessment_id,category,score').in('assessment_id', ups.map(u => u.id));
+        if (savedPlatform && cr.error) throw cr.error;
         const by = new Map();
         (cr.data || []).forEach(c => { if (!by.has(c.assessment_id)) by.set(c.assessment_id, {}); by.get(c.assessment_id)[c.category] = Number(c.score); });
-        const cap = v => String(v || 'Assessment').replace(/^./, c => c.toUpperCase());
-        ups.forEach(u => data.push({platform: cap(u.platform), assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
+        ups.forEach(u => data.push({platform: u.platform, assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
       }
-      if (error && !data.length) return;
-      if (!data.length) return;
-      const when = r => (r.taken_at || String(r.created_at).slice(0, 10));
+      const practice = [
+        ...(practiceResult.data || []).map(row => ({platform:'Success Center practice',assessment_name:row.practice_title||row.practice_key||'Practice set',taken_at:row.completed_at,created_at:row.completed_at,overall_score:Number(row.total_questions)?Number(row.score)/Number(row.total_questions)*100:null,total_questions:Number(row.total_questions)||0})),
+        ...practiceReports.map(row => ({platform:AssessmentPlatforms.name(row.platform,'QBank'),assessment_name:row.report_label||'QBank report',taken_at:row.taken_on,created_at:row.created_at,overall_score:row.overall_score,total_questions:null}))
+      ].filter(row => row.taken_at&&Number.isFinite(Number(row.overall_score))&&Number(row.overall_score)>=0&&Number(row.overall_score)<=100);
+      if (error && !data.length && !practice.length) return;
+      if (!data.length && !practice.length) return;
+      const when = r => String(r.taken_at || r.created_at || '').slice(0,10);
       const byPlatform = new Map();
-      data.forEach(r => { const k = r.platform || 'Assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
+      data.forEach(r => { const k = AssessmentPlatforms.key(r.platform) || 'assessment'; if (!byPlatform.has(k)) byPlatform.set(k, []); byPlatform.get(k).push(r); });
       const platforms = [...byPlatform.entries()].sort((a, b) => b[1].length - a[1].length).map(([k]) => k);
+      const platformName = key => AssessmentPlatforms.name(byPlatform.get(key)?.[0].platform);
       const card = document.getElementById('cat-trend-card'), body = document.getElementById('cat-trend-body');
+      const preferred = AssessmentPlatforms.key(savedPlatform) || body.dataset.trendPlatform;
+      const selected = byPlatform.has(preferred) ? preferred : platforms[0] || '';
+      if (savedPlatform && window.__studentTrendSeries === 'practice') window.__studentTrendSeries = 'both';
       const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
       const arrow = d => d > 0.5 ? `<span style="color:var(--teal);font-weight:700">▲ ${Math.round(d)}</span>` : d < -0.5 ? `<span style="color:#9c3535;font-weight:700">▼ ${Math.abs(Math.round(d))}</span>` : '<span style="color:#888">— 0</span>';
-      const draw = platform => {
-        const rows = byPlatform.get(platform).slice().sort((a, b) => when(a).localeCompare(when(b)));
-        const scored = rows.filter(r => r.overall_score !== null && r.overall_score !== '' && Number.isFinite(Number(r.overall_score)));
-        const latest = rows[rows.length - 1], prev = rows.length > 1 ? rows[rows.length - 2] : null;
-        let chart = '';
-        if (scored.length >= 2) {
-          const W = 640, H = 190, L = 34, R = 14, T = 14, B = 28;
-          const vals = scored.map(r => Number(r.overall_score));
-          const lo = Math.max(0, Math.floor((Math.min(...vals) - 8) / 10) * 10), hi = Math.min(100, Math.ceil((Math.max(...vals) + 8) / 10) * 10);
-          const x = i => L + (scored.length === 1 ? 0 : i * (W - L - R) / (scored.length - 1));
-          const y = v => T + (hi - v) / (hi - lo || 1) * (H - T - B);
-          const pts = scored.map((r, i) => `${x(i).toFixed(1)},${y(Number(r.overall_score)).toFixed(1)}`).join(' ');
-          const grid = [lo, (lo + hi) / 2, hi].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#888">${Math.round(v)}%</text>`).join('');
-          const dots = scored.map((r, i) => `<circle cx="${x(i)}" cy="${y(Number(r.overall_score))}" r="4" fill="var(--teal)"/><text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#888">${fmt(when(r))}</text><text x="${x(i)}" y="${y(Number(r.overall_score)) - 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#17344f">${Math.round(Number(r.overall_score))}</text>`).join('');
-          chart = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Overall score by week" style="width:100%;height:auto;max-height:230px">${grid}<polyline points="${pts}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>${dots}</svg>`;
-        }
-        const first = scored[0], last = scored[scored.length - 1];
-        const headline = scored.length >= 2
-          ? `<p style="margin:0 0 10px"><strong style="font-size:1.4rem;font-family:Georgia,serif">${Math.round(Number(last.overall_score))}%</strong> latest overall · ${arrow(Number(last.overall_score) - Number(scored[scored.length - 2].overall_score))} since last check-in · ${arrow(Number(last.overall_score) - Number(first.overall_score))} since ${fmt(when(first))}</p>`
-          : `<p style="margin:0 0 10px"><strong style="font-size:1.4rem;font-family:Georgia,serif">${scored.length ? Math.round(Number(last.overall_score)) + '%' : '—'}</strong> latest overall · Your trend line appears after your second weekly check-in.</p>`;
-        const cats = Object.entries(latest.category_scores || {}).map(([name, v]) => {
-          const cur = Number(v), before = prev && prev.category_scores && prev.category_scores[name] != null ? Number(prev.category_scores[name]) : null;
-          return {name, cur, delta: before !== null && Number.isFinite(before) ? cur - before : null};
-        }).filter(c => Number.isFinite(c.cur)).sort((a, b) => a.cur - b.cur);
-        const table = cats.length ? `<h3 style="margin:16px 0 6px;font-size:.95rem">Categories · ${fmt(when(latest))}${prev ? ' vs ' + fmt(when(prev)) : ''}</h3>` + cats.map(c => {
-          const col = c.cur < 55 ? '#9c3535' : c.cur < 70 ? '#b07830' : 'var(--teal)';
-          return `<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta !== null ? ' · ' + arrow(c.delta) : ''}</span></div><div style="height:6px;border-radius:3px;background:#e5e7eb;margin-top:4px"><div style="height:6px;border-radius:3px;width:${Math.min(100, c.cur)}%;background:${col}"></div></div></div>`;
-        }).join('') : '';
-        const hist = rows.length > 1 ? `<p style="font-size:.78rem;color:#888;margin-top:12px">${rows.length} check-ins: ${rows.map(r => fmt(when(r)) + (r.overall_score != null ? ' (' + Math.round(Number(r.overall_score)) + '%)' : '')).join(' · ')}</p>` : '';
-        return headline + chart + table + hist;
+      const draw = (platform, mode) => {
+        const rows=(byPlatform.get(platform)||[]).slice().sort((a,b)=>when(a).localeCompare(when(b)));
+        const catScores=rows.filter(r=>r.overall_score!==null&&r.overall_score!==''&&Number.isFinite(Number(r.overall_score)));
+        const practiceScores=practice.slice().sort((a,b)=>when(a).localeCompare(when(b)));
+        const showCat=mode!=='practice',showPractice=mode!=='cat';
+        const catLatest=catScores[catScores.length-1],catPrev=catScores[catScores.length-2];
+        const practiceLatest=practiceScores[practiceScores.length-1],practicePrev=practiceScores[practiceScores.length-2];
+        const W=640,H=190,L=34,R=14,T=14,B=34;
+        const dateValues=[...(showCat?catScores:[]),...(showPractice?practiceScores:[])].map(r=>new Date(when(r)+'T12:00:00').getTime()).filter(Number.isFinite);
+        const minTime=dateValues.length?Math.min(...dateValues):0,maxTime=dateValues.length?Math.max(...dateValues):0;
+        const xFor=r=>L+(minTime===maxTime?(W-L-R)/2:(new Date(when(r)+'T12:00:00').getTime()-minTime)/(maxTime-minTime)*(W-L-R));
+        const y=v=>T+(100-Number(v))/100*(H-T-B);
+        const coincides=r=>catScores.some(c=>when(c)===when(r));
+        const point=(r,kind)=>`${(xFor(r)+(coincides(r)?(kind==='cat'?-4:4):0)).toFixed(1)},${y(r.overall_score).toFixed(1)}`;
+        const points=(source,kind)=>source.map(r=>point(r,kind)).join(' ');
+        const grid=[0,50,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#888">${v}%</text>`).join('');
+        const dots=(source,kind,color)=>source.map(r=>`<circle cx="${point(r,kind).split(',')[0]}" cy="${y(r.overall_score)}" r="4" fill="${color}"><title>${text(r.assessment_name||AssessmentPlatforms.name(r.platform))} · ${Math.round(Number(r.overall_score))}%${r.total_questions?' · '+r.total_questions+' questions':''}</title></circle>`).join('');
+        const dates=[...new Set([...(showCat?catScores:[]),...(showPractice?practiceScores:[])].map(when))].sort();
+        const chart=dateValues.length?`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="CAT and practice scores over the same dates, shown as separate series" style="width:100%;height:auto;max-height:230px">${grid}${showCat&&catScores.length>1?`<polyline points="${points(catScores,'cat')}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>`:''}${showPractice&&practiceScores.length>1?`<polyline points="${points(practiceScores,'practice')}" fill="none" stroke="#a94f67" stroke-width="2.5"/>`:''}${showCat?dots(catScores,'cat','var(--teal)'):''}${showPractice?dots(practiceScores,'practice','#a94f67'):''}${dates.map(date=>`<text x="${xFor({taken_at:date})}" y="${H-8}" text-anchor="middle" font-size="11" fill="#888">${fmt(date)}</text>`).join('')}</svg>`:'<p style="color:var(--muted)">No scored results in this view yet.</p>';
+        const summary=(label,current,previous,color)=>current?`<p style="margin:0 0 6px;color:${color}"><strong>${Math.round(Number(current.overall_score))}%</strong> latest ${label}${previous?' · '+arrow(Number(current.overall_score)-Number(previous.overall_score))+' since previous':''}${current.total_questions?' · '+current.total_questions+' questions':''}</p>`:'';
+        const latest=catLatest,prev=catPrev;
+        const cats=showCat&&latest?Object.entries(latest.category_scores||{}).map(([name,v])=>{const cur=Number(v),before=prev&&prev.category_scores&&prev.category_scores[name]!=null?Number(prev.category_scores[name]):null;return{name,cur,delta:before!==null&&Number.isFinite(before)?cur-before:null}}).filter(c=>Number.isFinite(c.cur)).sort((a,b)=>a.cur-b.cur):[];
+        const table=cats.length?`<h3 style="margin:16px 0 6px;font-size:.95rem">Latest CAT categories · ${fmt(when(latest))}</h3>`+cats.map(c=>{const col=c.cur<55?'#9c3535':c.cur<70?'#b07830':'var(--teal)';return`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta!==null?' · '+arrow(c.delta):''}</span></div></div>`}).join(''):'';
+        const legend=`<p style="font-size:.78rem;color:var(--muted);margin:4px 0 10px"><span style="color:var(--teal);font-weight:800">● CAT / readiness</span> &nbsp; <span style="color:#a94f67;font-weight:800">● Practice</span> · same date and percent axes, separate scores</p>`;
+        return legend+summary('CAT/readiness',catLatest,catPrev,'var(--teal)')+summary('practice',practiceLatest,practicePrev,'#a94f67')+chart+table+(practiceResult.error?'<p style="color:#9c3535">Practice history could not be loaded: '+text(practiceResult.error.message||'Please try again.')+'</p>':'');
       };
-      const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map((pl, i) => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${i === 0}">${text(pl)}</button>`).join('')}</div>` : '';
-      body.innerHTML = chips + '<div id="cat-trend-view"></div>';
+      const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map(pl => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${pl === selected}">${text(platformName(pl))}</button>`).join('')}</div>` : '';
+      const seriesButtons=['cat','practice','both'].map(mode=>`<button type="button" class="class-tab" data-trend-series="${mode}" aria-pressed="${(window.__studentTrendSeries||'both')===mode}">${({cat:'CAT only',practice:'Practice only',both:'Compare both'})[mode]}</button>`).join('');
+      body.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" aria-label="Trend type filter">${seriesButtons}</div>${chips}<div id="cat-trend-view"></div>`;
       const view = document.getElementById('cat-trend-view');
-      view.innerHTML = draw(platforms[0]);
-      document.getElementById('cat-trend-label').textContent = platforms[0];
+      let currentPlatform=selected, currentMode=window.__studentTrendSeries||'both';
+      body.dataset.trendPlatform = selected;
+      view.innerHTML=draw(currentPlatform,currentMode);
+      document.getElementById('cat-trend-label').textContent=selected?platformName(selected):'Practice';
       body.querySelectorAll('[data-trend-platform]').forEach(b => b.addEventListener('click', () => {
         body.querySelectorAll('[data-trend-platform]').forEach(x => x.setAttribute('aria-selected', x === b));
-        view.innerHTML = draw(b.dataset.trendPlatform); document.getElementById('cat-trend-label').textContent = b.dataset.trendPlatform;
+        currentPlatform=body.dataset.trendPlatform=b.dataset.trendPlatform;view.innerHTML=draw(currentPlatform,currentMode);document.getElementById('cat-trend-label').textContent=platformName(currentPlatform);
+      }));
+      body.querySelectorAll('[data-trend-series]').forEach(b=>b.addEventListener('click',()=>{
+        currentMode=window.__studentTrendSeries=b.dataset.trendSeries;
+        body.querySelectorAll('[data-trend-series]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+        view.innerHTML=draw(currentPlatform,currentMode);
       }));
       card.style.display = '';
     }
@@ -1309,7 +1437,7 @@
       }
 
       if (window.StudentNav) {
-        StudentNav.init({ active: 'dashboard' });
+        StudentNav.init({ active: 'dashboard', inPageScroll: true });
         StudentNav.updateStudent(student, isPreview);
       }
     }

@@ -19,6 +19,8 @@
     .row{display:grid;grid-template-columns:2fr 1.4fr auto;gap:16px;align-items:center}
     .meta{color:var(--muted);font-size:.88rem;line-height:1.5}.label{display:inline-block;background:var(--soft);padding:3px 8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
     .label.cancelled,.label.rescheduled{background:#f3dcdc}.label.in_progress{background:#dcebf3}.label.completed{background:#dff0e3}
+    .history-group{margin:24px 0}
+    .history-group>summary{padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.9rem;font-weight:800;cursor:pointer}
     button,.button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
     button.secondary,.button.secondary{background:transparent;color:var(--ink)}
     label{display:block;font-weight:700;font-size:.85rem;margin-bottom:12px}
@@ -50,7 +52,7 @@
     <aside class="admin-sidebar">
       <div class="sidebar-brand">Study With Madison <small>RN · ADMIN</small></div>
       <div><p class="sidebar-caption">Workspace</p><nav class="sidebar-nav" aria-label="Primary admin navigation">
-        <a href="madison-admin.html">Dashboard</a><a href="madison-admin.html#directory">Students</a><a href="madison-consultations.html" aria-current="page">Consultations</a><a href="madison-admin.html#prospects">Prospects</a><a href="madison-assignments.html">Assignments</a><a href="assessment-history-admin.html">Assessments</a><a href="question-bank-review.html">Question bank</a><a href="madison-graphics.html">Graphics library</a><a href="finance.html">Finance</a>
+        <a href="madison-admin.html">Dashboard</a><a href="madison-admin.html#directory">Students</a><a href="madison-consultations.html" aria-current="page">Consultations</a><a href="madison-admin.html#prospects">Prospects</a><a href="madison-assignments.html">Assignments</a><a href="madison-study-plans.html">Weekly plans</a><a href="assessment-history-admin.html">Assessments</a><a href="question-bank-review.html">Question bank</a><a href="madison-graphics.html">Graphics library</a><a href="finance.html">Finance</a>
       </nav></div>
       <div class="sidebar-secondary"><p class="sidebar-caption">More tools</p><nav class="sidebar-nav" aria-label="Additional admin tools"><a href="madison-cpr.html">CPR tracker</a><a href="madison-diagnostic.html">Consult diagnostic</a><a href="student-onboarding.html">Student onboarding</a></nav></div>
       <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
@@ -141,12 +143,16 @@
       consults=data||[];
       const names=await profileNames(consults);
       const list=document.getElementById('list');
-      list.innerHTML=consults.length?consults.map(c=>{
+      const upcoming=consults.filter(c=>c.status==='scheduled'||c.status==='in_progress');
+      const history=consults.filter(c=>c.status!=='scheduled'&&c.status!=='in_progress');
+      const renderRows=items=>items.map(c=>{
         const p=names.get(c.id)||{};
         const canStart=c.status==='scheduled';
         return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}${isStrat(c)&&c.credit_status!=='none'?'<br>Credit: '+esc(CREDIT_LABEL[c.credit_status]):''}</div></div>
         <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
-        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join(''):'<p class="empty">No consultations yet. Once the Calendly webhook is connected, new free-consultation bookings appear here.</p>';
+        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join('');
+      list.innerHTML=(upcoming.length?renderRows(upcoming):'<p class="empty">No upcoming or in-progress consultations.</p>')
+        +(history.length?`<details class="history-group"><summary>Past and cancelled consultations (${history.length})</summary>${renderRows(history)}</details>`:'');
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
       list.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openConsult(b.dataset.open)));
     }

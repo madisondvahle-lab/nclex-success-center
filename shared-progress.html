@@ -248,6 +248,7 @@
           <a href="#profile-overview" aria-current="page">Student workspace</a>
           <a href="madison-consultations.html">Consultations</a>
           <a href="madison-assignments.html" id="nav-assignments">Assignments</a>
+          <a href="madison-study-plans.html" id="nav-study-plans">Weekly plans</a>
           <a href="assessment-history-admin.html">Assessments</a>
           <a href="question-bank-review.html">Question bank</a>
           <a href="madison-graphics.html">Graphics library</a>
@@ -285,7 +286,7 @@
     <section class="card hidden access-overview" id="access-overview"><div class="card-head"><div><p class="eyebrow">Student access</p><h2>Current assignments</h2></div><span class="label">Coach view</span></div><p class="muted" id="access-summary">Loading current access…</p><details class="assignment-details hidden" id="assignment-details"><summary id="assignment-details-summary">View assignments</summary><div id="access-items"></div></details><div class="access-actions"><a class="access-action" id="manage-access" href="madison-assignments.html"><strong>Manage assignments</strong><span>Add, remove, or update this student’s assigned work.</span></a><a class="access-action secondary" id="preview-student" href="student-dashboard.html"><strong>Preview student view</strong><span>Open the dashboard exactly as the student sees it.</span></a></div></section>
     <section class="grid">
       <article class="card full hidden" id="overview-card"><div class="card-head"><div><p class="eyebrow">Client overview</p><h2>Where the evidence agrees</h2></div><span class="label" id="overview-label">NCLEX prep</span></div><div id="overview-body"><p class="muted">Loading…</p></div></article>
-      <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT &amp; readiness exams</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
+      <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT, readiness &amp; practice</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
         <details id="cat-entry" style="margin-top:16px"><summary style="cursor:pointer;font-weight:800">Enter exam results</summary>
           <form id="cat-form" style="margin-top:12px"><div class="form-grid">
             <label>Save to<select id="cat-target"><option value="">New entry</option></select></label>
@@ -312,8 +313,8 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
-  <script src="in-house-item-bank.js"></script>
-  <script src="diagnostic-question-expansion.js"></script>
+  <script src="assessment-platforms.js"></script>
+  <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
@@ -337,7 +338,7 @@
     function isProgressAssessment(item){
       const source=((item.report_label||'')+' '+(item.assessment_type||'')+' '+(item.report_filename||'')).toLowerCase();
 
-      return !(
+      return item.assessment_type!=='qbank_report'&&! (
         source.includes('cumulative') ||
         source.includes('client needs') ||
         source.includes('system needs') ||
@@ -644,36 +645,14 @@
 
     function initStaticAuthoritativeBanks(){
       if(authoritativeBank.size>0)return;
-      (window.IN_HOUSE_ITEM_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
-      (window.DIAGNOSTIC_EXPANSION||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
-      (window.CONSULT_DIAGNOSTIC_BANK||[]).forEach(item=>{if(item&&item.id)authoritativeBank.set(item.id,item)});
+      const banks=window.DIAGNOSTIC_BANKS||{};
+      [...(banks.questionBank||[]),...(banks.remediationBank||[]),...(window.CONSULT_DIAGNOSTIC_BANK||[])].forEach(item=>{
+        if(item&&item.id)authoritativeBank.set(item.id,item);
+      });
     }
 
     async function ensureDiagnosticBanksLoaded(){
       initStaticAuthoritativeBanks();
-      if(!diagnosticParsedPromise){
-        diagnosticParsedPromise=(async()=>{
-          try{
-            const res=await fetch('diagnostic.html');
-            if(!res.ok)return;
-            const html=await res.text();
-            const wStub={IN_HOUSE_ITEM_BANK:[],DIAGNOSTIC_EXPANSION:[]};
-            const matchQb=html.match(/const QUESTION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
-            if(matchQb){
-              const fn=new Function('window','return '+matchQb[1].replace(/;$/,''));
-              const qb=fn(wStub);
-              (qb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
-            }
-            const matchRem=html.match(/const REMEDIATION_BANK\s*=\s*(\[[\s\S]*?\n\];)/);
-            if(matchRem){
-              const fnRem=new Function('return '+matchRem[1].replace(/;$/,''));
-              const rb=fnRem();
-              (rb||[]).forEach(q=>{if(q&&q.id&&!authoritativeBank.has(q.id))authoritativeBank.set(q.id,q)});
-            }
-          }catch(_){}
-        })();
-      }
-      await diagnosticParsedPromise;
     }
 
     function findAuthoritativeItem(itemId){
@@ -864,11 +843,10 @@
     async function loadAndRenderAttemptReview(attemptId,container){
       if(!attemptId||!container)return;
       container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
-      const {data:responses,error}=await db
-        .from('in_house_assessment_item_responses')
-        .select('id,attempt_id,item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
-        .eq('attempt_id',attemptId)
-        .order('answered_at',{ascending:true});
+      const {data,error}=await db.functions.invoke('diagnostic-assessment',{
+        body:{action:'review',attemptId}
+      });
+      const responses=data?.responses||null;
 
       if(error){
         container.innerHTML=`<div style="color:#b4443c;padding:6px 0;">
@@ -912,7 +890,7 @@
           const diff=r.difficulty||bankItem?.difficulty||'';
           const qType=r.question_type||bankItem?.type||'';
           const stem=bankItem?.stem||null;
-          const rationale=bankItem?getRationaleText(bankItem.rationale):null;
+          const rationale=getRationaleText(r.rationale);
           const optionsHtml=bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
 
           return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
@@ -1254,9 +1232,10 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const diagCats=[];((diag[0]?.summary||{}).categories||[]).forEach(c=>{const i=ovIdx(c.label);if(i>=0&&c.n)diagCats[i]=c.points/c.n*100});
       const byUpload=new Map;cats.forEach(c=>byUpload.set(c.assessment_id,[...(byUpload.get(c.assessment_id)||[]),c]));
       const outside=[];let outsideSrc='';
-      uploads.forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outside[i]==null&&c.score!=null){outside[i]=Number(c.score);if(!outsideSrc)outsideSrc=(u.report_label||u.platform||'Report')}}));
-      const outPrev=[];const lastU=uploads.find(u=>(byUpload.get(u.id)||[]).length);
-      if(lastU)uploads.filter(u=>u!==lastU&&u.platform===lastU.platform&&(byUpload.get(u.id)||[]).length&&assessmentDate(u)<=assessmentDate(lastU)).forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outPrev[i]==null&&c.score!=null&&c.score!=='')outPrev[i]=Number(c.score)}));
+      const scoredUploads=uploads.filter(u=>u.assessment_type!=='qbank_report');
+      scoredUploads.forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outside[i]==null&&c.score!=null){outside[i]=Number(c.score);if(!outsideSrc)outsideSrc=(u.report_label||u.platform||'Report')}}));
+      const outPrev=[];const lastU=scoredUploads.find(u=>(byUpload.get(u.id)||[]).length);
+      if(lastU)scoredUploads.filter(u=>u!==lastU&&u.platform===lastU.platform&&(byUpload.get(u.id)||[]).length&&assessmentDate(u)<=assessmentDate(lastU)).forEach(u=>(byUpload.get(u.id)||[]).forEach(c=>{const i=ovIdx(c.category);if(i>=0&&outPrev[i]==null&&c.score!=null&&c.score!=='')outPrev[i]=Number(c.score)}));
       const dlt=i=>outside[i]!=null&&outPrev[i]!=null&&Math.abs(outside[i]-outPrev[i])>=1?' <b style="color:'+(outside[i]>outPrev[i]?'#2f7d4f':'#b4443c')+'" title="vs previous '+esc(lastU.platform||'')+' report">'+(outside[i]>outPrev[i]?'▲ +':'▼ ')+Math.round(outside[i]-outPrev[i])+'</b>':'';
       const prac=[];
       const pr=(await db.from('student_supplemental_practice_results').select('category_scores').eq('student_id',st.id)).data||[];
@@ -1274,7 +1253,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         const c=ovCpr[cNow[i]];
         return {name,weak,verdict,html:'<tr><td>'+esc(name)+'</td><td>'+(c?'<span class="ov-chip '+c[1]+'">'+c[0]+'</span>'+arrow:'<span class="ov-chip ov-n">—</span>')+'</td><td>'+ovPct(diagCats[i])+'</td><td>'+ovPct(outside[i])+'</td><td>'+ovPct(prac[i])+'</td><td><span class="ov-chip '+verdict[1]+'">'+verdict[0]+'</span></td></tr>'};
       });
-      const latestCat=uploads.find(u=>u.overall_score!=null);
+      const latestCat=uploads.find(u=>u.overall_score!=null&&catKindOk(u));
       const stats='<div class="ov-stats"><div><b>'+esc(st.nclex_target_date?new Date(st.nclex_target_date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—')+'</b><span>Target NCLEX date</span></div>'
         +'<div><b>'+(lastCpr?.question_count||'—')+'</b><span>Items on latest CPR'+(att.length>1?' ('+att.length+' attempts)':'')+'</span></div>'
         +'<div><b>'+(latestCat?Math.round(latestCat.overall_score)+'%':'—')+'</b><span>Latest outside score</span></div>'
@@ -1284,34 +1263,58 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         +'<p class="muted" style="margin-top:12px">'+(focus.length?'<b>Start with:</b> '+focus.slice(0,3).map(r=>esc(r.name)).join(', ')+'. ':'')+'“Confirmed focus” means at least two sources are weak (CPR near/below, diagnostic under 70%, outside report or practice (3+ questions) under 65%). Enter CPRs on the <a href="madison-cpr.html">CPR tracker</a>.</p>';
     }
 
-    const catKindOk=u=>u.assessment_type!=='cpr_report'&&isProgressAssessment(u);
+    const catKindOk=u=>u.assessment_type!=='cpr_report'&&u.assessment_type!=='qbank_report'&&isProgressAssessment(u);
     const catShort=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    function renderCatCard(uploads,cats,focus){
+    function practiceTrendRows(uploads,results){
+      const attempts=(results||[]).map(row=>({date:row.completed_at,score:Number(row.total_questions)?Number(row.score)/Number(row.total_questions)*100:null,total:Number(row.total_questions)||0,label:row.practice_title||row.practice_key||'Portal practice'}));
+      const reports=(uploads||[]).filter(row=>row.assessment_type==='qbank_report').map(row=>({date:row.taken_on||row.created_at,score:row.overall_score==null||row.overall_score===''?null:Number(row.overall_score),total:null,label:row.report_label||row.report_filename||'QBank practice'}));
+      return [...attempts,...reports].filter(row=>row.date&&Number.isFinite(row.score)&&row.score>=0&&row.score<=100).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+    }
+    function renderComparisonChart(exams,practice,mode){
+      const catRows=mode==='practice'?[]:exams.filter(row=>row.o!=null).map(row=>({date:row.d,score:row.o,label:AssessmentPlatforms.name(row.u.platform,'Exam')+(row.u.report_label?' · '+row.u.report_label:''),total:null}));
+      const practiceRows=mode==='cat'?[]:practice;
+      const rows=[...catRows,...practiceRows],days=[...new Set(rows.map(row=>String(row.date).slice(0,10)))].sort();
+      if(!rows.length)return '<p class="muted">No scored results in this view yet.</p>';
+      const W=640,H=190,L=36,R=16,T=16,B=34,minTime=new Date(days[0]+'T12:00:00').getTime(),maxTime=new Date(days[days.length-1]+'T12:00:00').getTime();
+      const xFor=row=>L+(minTime===maxTime?(W-L-R)/2:(new Date(String(row.date).slice(0,10)+'T12:00:00').getTime()-minTime)/(maxTime-minTime)*(W-L-R));
+      const y=value=>T+(100-Number(value))/100*(H-T-B);
+      const point=(row,kind)=>`${(xFor(row)+(days.length>1&&catRows.some(cat=>String(cat.date).slice(0,10)===String(row.date).slice(0,10))&&practiceRows.some(item=>String(item.date).slice(0,10)===String(row.date).slice(0,10))?(kind==='cat'?-4:4):0)).toFixed(1)},${y(row.score).toFixed(1)}`;
+      const line=(source,kind,color)=>source.length>1?'<polyline fill="none" stroke="'+color+'" stroke-width="2.5" points="'+source.map(row=>point(row,kind)).join(' ')+'"/>':'';
+      const dots=(source,kind,color)=>source.map(row=>'<circle cx="'+point(row,kind).split(',')[0]+'" cy="'+y(row.score)+'" r="5" fill="'+color+'"><title>'+esc(row.label)+': '+Math.round(row.score)+'%'+(row.total?' · '+row.total+' questions':'')+'</title></circle>').join('');
+      const grid=[0,50,100].map(value=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(value)+'" y2="'+y(value)+'" stroke="#d8e1db"/><text x="'+(L-6)+'" y="'+(y(value)+4)+'" text-anchor="end" font-size="11" fill="#567087">'+value+'%</text>').join('');
+      const ticks=days.length<=4?days:[days[0],days[Math.floor((days.length-1)/2)],days[days.length-1]];
+      const labels=ticks.map(day=>'<text x="'+xFor({date:day})+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#567087">'+esc(catShort(new Date(day+'T12:00:00')) )+'</text>').join('');
+      return '<p class="muted" style="margin:0 0 8px"><strong style="color:#0067a8">CAT/readiness</strong> and <strong style="color:#a94f67">practice</strong> share the date and 0–100% axes, but remain separate scores.</p><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="CAT and practice scores over the same dates, shown as separate series" style="width:100%;height:auto;max-height:230px">'+grid+line(catRows,'cat','#0067a8')+line(practiceRows,'practice','#a94f67')+dots(catRows,'cat','#0067a8')+dots(practiceRows,'practice','#a94f67')+labels+'</svg>';
+    }
+    function renderPracticeTrend(rows){
+      if(!rows.length)return '<p class="muted">Practice scores will appear here after a portal practice set is completed or a scored QBank report is uploaded.</p>';
+      return '<p class="muted">Practice attempts are plotted separately from CAT/readiness results. Portal scores include the question count; scored QBank reports use their entered overall percentage.</p>';
+    }
+    function renderCatCard(uploads,cats,focus,practiceRows,practiceError){
       const card=$('cat-card');
       if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
       card.classList.remove('hidden');
+      const practice=practiceTrendRows(uploads,practiceRows);
+      const seriesMode=window.__trendSeries||'both';
       const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
       const exams=uploads.filter(catKindOk).map(u=>{const m=[],nn=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!==''){m[i]=Number(c.score);if(c.n!=null&&Number.isFinite(c.n))nn[i]=c.n}});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,nn,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
-      const plats=[...new Set(exams.map(e=>e.u.platform||'Exam'))];
-      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?(exams[exams.length-1].u.platform||'Exam'):'all';
-      const shown=window.__catPlat==='all'?exams:exams.filter(e=>(e.u.platform||'Exam')===window.__catPlat);
+      const platformKey=e=>'platform:'+AssessmentPlatforms.key(e.u.platform);
+      const platformName=key=>AssessmentPlatforms.name(exams.find(e=>platformKey(e)===key)?.u.platform,'Exam');
+      const plats=[...new Set(exams.map(platformKey))];
+      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?platformKey(exams[exams.length-1]):'all';
+      const shown=window.__catPlat==='all'?exams:exams.filter(e=>platformKey(e)===window.__catPlat);
       const scored=shown.filter(e=>e.o!=null),withCats=shown.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
-      const label=e=>(e.u.platform||'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
-      let html='';
-      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(pl))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
+      const label=e=>AssessmentPlatforms.name(e.u.platform,'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
+      const modeButtons=['cat','practice','both'].map(mode=>'<button type="button" class="button '+(seriesMode===mode?'':'secondary')+'" data-trend-series="'+mode+'" aria-pressed="'+(seriesMode===mode)+'">'+({cat:'CAT only',practice:'Practice only',both:'Compare both'}[mode])+'</button>').join(' ');
+      let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px" aria-label="Trend type filter">'+modeButtons+'</div>'+renderComparisonChart(shown,practice,seriesMode)+'<section data-series-panel="cat"'+(seriesMode==='practice'?' hidden':'')+'>';
+      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(platformName(pl)))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
       if(scored.length){
-        const W=640,H=200,L=36,R=16,T=16,B=34,vals=scored.map(e=>e.o);
-        const lo=Math.max(0,Math.floor((Math.min(...vals)-8)/10)*10),hi=Math.min(100,Math.ceil((Math.max(...vals)+8)/10)*10);
-        const x=i=>L+(scored.length===1?(W-L-R)/2:i*(W-L-R)/(scored.length-1)),y=v=>T+(hi-v)/((hi-lo)||1)*(H-T-B);
-        const grid=[lo,(lo+hi)/2,hi].map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#d8e1db"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="#567087">'+Math.round(v)+'%</text>').join('');
-        const line=scored.length>1?'<polyline fill="none" stroke="#0067a8" stroke-width="2.5" points="'+scored.map((e,i)=>x(i).toFixed(1)+','+y(e.o).toFixed(1)).join(' ')+'"/>':'';
-        const dots=scored.map((e,i)=>'<circle cx="'+x(i)+'" cy="'+y(e.o)+'" r="5" fill="#0067a8"/><text x="'+x(i)+'" y="'+(y(e.o)-10)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#0b2a43">'+Math.round(e.o)+'%</text><text x="'+x(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#567087">'+catShort(e.d)+'</text>').join('');
         const last=scored[scored.length-1],prev=scored[scored.length-2];
         const ch=prev?Math.round(last.o-prev.o):null;
-        html+='<p style="margin:0 0 8px"><b style="font-size:1.5rem;font-family:Georgia,serif">'+Math.round(last.o)+'%</b> latest ('+esc(label(last))+')'+(ch==null?'':' · <span style="color:'+(ch>=0?'#2f7d4f':'#b4443c')+';font-weight:800">'+(ch>0?'▲ +':ch<0?'▼ ':'● ')+ch+' pts</span> since previous')+'</p><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Overall exam score over time" style="width:100%;height:auto;max-height:230px">'+grid+line+dots+'</svg>';
+        html+='<p style="margin:0 0 8px"><b style="font-size:1.5rem;font-family:Georgia,serif">'+Math.round(last.o)+'%</b> latest ('+esc(label(last))+')'+(ch==null?'':' · <span style="color:'+(ch>=0?'#2f7d4f':'#b4443c')+';font-weight:800">'+(ch>0?'▲ +':ch<0?'▼ ':'● ')+ch+' pts</span> since previous')+'</p>';
       }else html+='<p class="muted">No overall scores yet. Use “Enter exam results” below to add one.</p>';
       if(withCats.length){
-        const head='<tr><th>Category</th>'+withCats.map(e=>'<th>'+esc(catShort(e.d))+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(e.u.platform||'')+'</span></th>').join('')+'<th>Change</th></tr>';
+        const head='<tr><th>Category</th>'+withCats.map(e=>'<th>'+esc(catShort(e.d))+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(AssessmentPlatforms.name(e.u.platform,'Exam'))+'</span></th>').join('')+'<th>Change</th></tr>';
         const body=NCLEXCats.NAMES.map((n,i)=>{
           const vals=withCats.map(e=>e.m[i]),seen=vals.filter(v=>v!=null);
           const d=seen.length>1?Math.round(seen[seen.length-1]-seen[seen.length-2]):null;
@@ -1325,8 +1328,10 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const fs=(focus||[]).filter(f=>f.current_score!==null&&f.current_score!==undefined&&f.current_score!=='');
       if(fs.length)html+='<h3 style="margin:18px 0 6px;font-size:1rem">Scores entered as focus areas</h3><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Area</th><th>Previous</th><th>Current</th></tr></thead><tbody>'+fs.map(f=>'<tr><td>'+esc(f.focus_area)+'</td><td>'+(f.previous_score==null||f.previous_score===''?'—':esc(f.previous_score)+'%')+'</td><td>'+esc(f.current_score)+'%</td></tr>').join('')+'</tbody></table></div><p class="muted">These were typed into the Priorities form, so they are not part of the exam chart. Re-enter them under “Enter exam results” to chart them.</p>';
       html+='<p class="muted" style="margin-top:12px;font-size:.78rem">On file for this client: '+uploads.length+' assessment record'+(uploads.length===1?'':'s')+' ('+exams.length+' shown here, '+scored.length+' with an overall score, '+withCats.length+' with category scores), '+(focus||[]).length+' priorit'+((focus||[]).length===1?'y':'ies')+'.</p>';
+      html+='</section><section data-series-panel="practice"'+(seriesMode==='cat'?' hidden':'')+'><h3 style="margin:18px 0 6px;font-size:1rem">Practice series details</h3>'+(practiceError?'<p class="muted">Practice history could not be loaded: '+esc(practiceError.message||practiceError)+'</p>':renderPracticeTrend(practice))+'</section>';
       $('cat-body').innerHTML=html;
-      document.querySelectorAll('[data-catplat]').forEach(b=>b.onclick=()=>{window.__catPlat=b.dataset.catplat;renderCatCard(uploads,cats,focus)});
+      document.querySelectorAll('[data-catplat]').forEach(b=>b.onclick=()=>{window.__catPlat=b.dataset.catplat;renderCatCard(uploads,cats,focus,practiceRows,practiceError)});
+      document.querySelectorAll('[data-trend-series]').forEach(b=>b.onclick=()=>{window.__trendSeries=b.dataset.trendSeries;renderCatCard(uploads,cats,focus,practiceRows,practiceError)});
       $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
       $('cat-entry').open=!exams.length||!!empty.length;
     }
@@ -1354,6 +1359,9 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,...(Object.keys(cnts).length?{category_counts:cnts}:{}),entered_by:session.user.id})).error;
       }
       if(err){msg.textContent='Could not save: '+err.message;return}
+      const savedPlatform=target?currentUploads.find(u=>u.id===target)?.platform:$('cat-platform').value;
+      window.__catPlat='platform:'+AssessmentPlatforms.key(savedPlatform);
+      if(window.__trendSeries==='practice')window.__trendSeries='both';
       $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
     });
     async function loadStudent(target){
@@ -1362,6 +1370,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const previewHref='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
       const navAssignments=$('nav-assignments')||document.querySelector('.sidebar-nav a[href^="madison-assignments.html"]');
       if(navAssignments)navAssignments.href=assignHref;
+      if($('nav-study-plans'))$('nav-study-plans').href='madison-study-plans.html?student='+encodeURIComponent(student.id);
       if($('manage-access'))$('manage-access').href=assignHref;
       if($('preview-student'))$('preview-student').href=previewHref;
       $('title').textContent=isAdmin?`${student.name||'Student'}`:'Your assessment progress.';
@@ -1403,7 +1412,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
-      renderCatCard(currentUploads,allCategories,focus.data||[]);
+      renderCatCard(currentUploads,allCategories,focus.data||[],practiceRows,practiceResults.error);
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }

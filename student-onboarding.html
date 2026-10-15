@@ -8,6 +8,12 @@
   <title>New student / consult · Study With Madison RN</title>
   <style>
     /* Student onboarding specific styles */
+    .admin-sidebar{overflow-y:auto}
+    .sidebar-group{min-width:0}
+    .admin-context{min-width:0}
+    .admin-context h1{margin:6px 0 0;font:700 clamp(1.35rem,2.5vw,1.85rem)/1.2 Georgia,serif}
+    .eyebrow{margin:0 0 6px;color:var(--admin-rose);font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .metric{overflow-wrap:anywhere}
     .panel{margin:0 0 20px;padding:26px;background:var(--admin-paper);border:1px solid var(--admin-line)}
     .panel-head{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:20px}
     .panel-head p{margin:7px 0 0;color:var(--admin-muted);font-size:.84rem;line-height:1.5}
@@ -38,61 +44,68 @@
     <aside class="admin-sidebar">
       <div class="sidebar-brand">Study With Madison <small>RN · Admin</small></div>
       <div class="sidebar-group">
-        <div class="sidebar-label">Pipeline</div>
+        <div class="sidebar-caption">Pipeline</div>
+        <nav class="sidebar-nav" aria-label="Pipeline">
         <a href="madison-admin.html">Overview</a>
         <a href="madison-admin.html#prospects">Prospects</a>
         <a href="madison-consultations.html">Consultations</a>
         <a href="madison-diagnostic.html">Diagnostic launcher</a>
+        </nav>
       </div>
       <div class="sidebar-group">
-        <div class="sidebar-label">Students &amp; Clinical</div>
-        <a href="student-onboarding.html" class="active">New student onboarding</a>
+        <div class="sidebar-caption">Students &amp; Clinical</div>
+        <nav class="sidebar-nav" aria-label="Students and clinical">
+        <a href="student-onboarding.html" aria-current="page">New student onboarding</a>
         <a href="shared-progress.html">Student progress</a>
         <a href="madison-assignments.html">Assignments</a>
+        <a href="madison-study-plans.html">Weekly plans</a>
         <a href="assessment-history-admin.html">Assessment history</a>
         <a href="madison-cpr.html">CPR tracker</a>
         <a href="question-bank-review.html">Question bank</a>
+        </nav>
       </div>
       <div class="sidebar-group">
-        <div class="sidebar-label">Operations</div>
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations">
         <a href="madison-graphics.html">Teaching graphics</a>
         <a href="finance.html">Finance &amp; bookkeeping</a>
-        <button class="admin-sign-out" id="sign-out" type="button">Sign out</button>
+        </nav>
+        <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
       </div>
     </aside>
 
     <div class="admin-main">
       <header class="admin-topbar">
         <div class="admin-context">
-          <span class="eyebrow" style="margin:0">Admin Shell</span>
+          <span class="topbar-context">Admin Shell</span>
           <h1>New student / consult onboarding</h1>
         </div>
-        <div class="admin-actions">
+        <div class="topbar-actions">
           <a class="button secondary" href="madison-admin.html#prospects" style="text-decoration:none;display:inline-flex;align-items:center">View prospects &amp; intake</a>
         </div>
       </header>
 
-      <div class="admin-content">
+      <div class="dashboard">
         <section class="metric-grid">
-          <div class="metric-card">
-            <span class="metric-label">Workflow step</span>
-            <div class="metric-value">Step 1–7</div>
-            <span class="metric-subtext">Comprehensive intake wizard</span>
+          <div class="metric">
+            <span>Workflow step</span>
+            <strong>Step 1–7</strong>
+            <small>Comprehensive intake wizard</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Profile status</span>
-            <div class="metric-value" style="font-size:1.4rem">New Consult</div>
-            <span class="metric-subtext">Direct save to consult_intakes</span>
+          <div class="metric">
+            <span>Profile status</span>
+            <strong>New Consult</strong>
+            <small>Direct save to consult_intakes</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">NCLEX CPR domain</span>
-            <div class="metric-value">8 areas</div>
-            <span class="metric-subtext">Detailed item counts &amp; shutoff</span>
+          <div class="metric">
+            <span>NCLEX CPR domain</span>
+            <strong>8 areas</strong>
+            <small>Detailed item counts &amp; shutoff</small>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Report storage</span>
-            <div class="metric-value" style="font-size:1.4rem">Private bucket</div>
-            <span class="metric-subtext">assessment-reports upload</span>
+          <div class="metric">
+            <span>Report storage</span>
+            <strong>Private bucket</strong>
+            <small>assessment-reports upload</small>
           </div>
         </section>
 
