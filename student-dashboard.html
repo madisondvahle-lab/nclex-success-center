@@ -7,14 +7,14 @@
   <title>My Study Plan · NCLEX Success Center</title>
   <link rel="stylesheet" href="student-nav.css">
   <style>
-    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3;--font-sans:"Avenir Next",Avenir,"Segoe UI",sans-serif}
+    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}
     *{box-sizing:border-box}
-    body{margin:0;color:var(--ink);background:var(--cream);font-family:var(--font-sans)}
+    body{margin:0;color:var(--ink);background:var(--cream);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     .shell{width:min(1160px,calc(100% - 38px));margin:auto}
     .top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 0;border-bottom:1px solid #e1e8e2}
     .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
-    .brand small{font:600 .62em var(--font-sans)}
-    .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem var(--font-sans);cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
+    .brand small{font:600 .62em Inter,sans-serif}
+    .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
     .hero{padding:24px 0 16px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
     .eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
     h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}
@@ -88,7 +88,7 @@
     .study-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
     .study-calendar-heading h2{margin:0}
     .study-calendar-nav{display:flex;align-items:center;gap:8px}
-    .study-calendar-nav button{min-width:44px;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:800 .84rem var(--font-sans);cursor:pointer}
+    .study-calendar-nav button{min-width:44px;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:800 .84rem Inter,sans-serif;cursor:pointer}
     .study-calendar-nav button:focus-visible,.study-calendar-day:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     .study-calendar-month{min-width:150px;text-align:center;font-weight:800}
     .study-calendar-legend{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0;color:var(--muted);font-size:.75rem}
@@ -158,10 +158,10 @@
     .field textarea{resize:vertical;min-height:80px}
     .field-hint{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.45}
     .modal-actions{display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap}
-    .btn-primary{padding:12px 24px;background:var(--teal);color:#fff;border:0;font:800 .85rem var(--font-sans);cursor:pointer;letter-spacing:.04em}
+    .btn-primary{padding:12px 24px;background:var(--teal);color:#fff;border:0;font:800 .85rem Inter,sans-serif;cursor:pointer;letter-spacing:.04em}
     .btn-primary:hover{background:#236b5f}
     .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-    .btn-skip{background:transparent;border:0;font:600 .8rem var(--font-sans);color:var(--muted);cursor:pointer;padding:0;text-decoration:underline}
+    .btn-skip{background:transparent;border:0;font:600 .8rem Inter,sans-serif;color:var(--muted);cursor:pointer;padding:0;text-decoration:underline}
     .step-dots{display:flex;gap:6px;margin-bottom:24px}
     .dot{width:8px;height:8px;border-radius:50%;background:var(--line)}
     .dot.active{background:var(--teal)}
@@ -180,7 +180,7 @@
     .upload-item-body{flex:1;min-width:0}
     .upload-item-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .upload-item-meta{font-size:.75rem;color:var(--muted);margin-top:2px}
-    .upload-action-btn{padding:9px 20px;background:var(--teal);color:#fff;border:0;font:800 .8rem var(--font-sans);cursor:pointer;margin-top:4px}
+    .upload-action-btn{padding:9px 20px;background:var(--teal);color:#fff;border:0;font:800 .8rem Inter,sans-serif;cursor:pointer;margin-top:4px}
     .upload-action-btn:hover{background:#236b5f}
 
     /* ── Exam date inline prompt ─────────────────────────────── */
@@ -200,15 +200,15 @@
     .practice-item-open{display:inline-block;margin-top:8px;padding:8px 11px;border:1px solid currentColor;border-radius:999px;font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none}
     .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
     .class-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px}
-    .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem var(--font-sans);cursor:pointer}
+    .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem Inter,sans-serif;cursor:pointer}
     .class-tab[aria-selected="true"]{background:var(--teal);color:#fff}
     .class-schedule-panel{padding:15px;background:var(--teal-light);border:1px solid var(--teal-sage)}
     .class-schedule-panel h3{margin:0;font-size:1rem}
     .class-schedule-panel p{margin:5px 0 0;color:var(--muted);font-size:.82rem}
     .class-schedule-form{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-top:12px}
     .class-schedule-form label{display:grid;gap:5px;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-    .class-schedule-form input{padding:9px 10px;border:1px solid var(--teal-sage);background:#fff;color:var(--ink);font:400 .86rem var(--font-sans)}
-    .class-schedule-form button{border:0;background:var(--ink);color:#fff;padding:10px 13px;font:800 .76rem var(--font-sans);cursor:pointer}
+    .class-schedule-form input{padding:9px 10px;border:1px solid var(--teal-sage);background:#fff;color:var(--ink);font:400 .86rem Inter,sans-serif}
+    .class-schedule-form button{border:0;background:var(--ink);color:#fff;padding:10px 13px;font:800 .76rem Inter,sans-serif;cursor:pointer}
     .class-schedule-message{color:var(--muted);font-size:.75rem}
     .nursing-primary{grid-column:1/-1}
     .nursing-primary .card-head{margin-bottom:16px}
@@ -218,8 +218,8 @@
     .exam-edit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
     .exam-edit summary{color:var(--teal);cursor:pointer;font-size:.8rem;font-weight:900}
     .exam-edit-form{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px}
-    .exam-edit-form input{padding:8px 10px;border:1px solid var(--line);color:var(--ink);font:400 .85rem var(--font-sans)}
-    .exam-edit-form button{padding:8px 12px;border:0;background:var(--teal);color:#fff;font:800 .78rem var(--font-sans);cursor:pointer}
+    .exam-edit-form input{padding:8px 10px;border:1px solid var(--line);color:var(--ink);font:400 .85rem Inter,sans-serif}
+    .exam-edit-form button{padding:8px 12px;border:0;background:var(--teal);color:#fff;font:800 .78rem Inter,sans-serif;cursor:pointer}
     .exam-edit-message{color:var(--muted);font-size:.75rem}
     .exam-topics-label{display:block;margin:0 0 8px;color:var(--muted);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
     .exam-topic{margin:0 0 6px;font-size:.88rem;line-height:1.45}
