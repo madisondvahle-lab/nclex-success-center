@@ -6,24 +6,29 @@ const vm = require('node:vm');
 
 const html = readFileSync(join(__dirname, '..', 'madison-consultations.html'), 'utf8');
 
-test('consultations list adds only upcoming tutoring sessions for student profiles', () => {
+test('consultations list excludes student profiles but keeps prospects', () => {
   const helper = html.match(/function excludeStudentConsultations\(items\)\{[\s\S]*?\n    \}/);
-  const futureHelper = html.match(/function isFutureTutoringSession\(c\)\{[\s\S]*?\n    \}/);
-  assert.ok(helper && futureHelper);
-  const context = { Date };
-  vm.runInNewContext(`${futureHelper[0]};${helper[0]};this.exclude=excludeStudentConsultations;`, context);
-  const future = new Date(Date.now() + 86400000).toISOString();
-  const past = new Date(Date.now() - 86400000).toISOString();
+  assert.ok(helper);
+  const context = {};
+  vm.runInNewContext(`${helper[0]};this.exclude=excludeStudentConsultations;`, context);
   const visible = context.exclude([
-    { id: 'student-consult', student_id: 'student', consult_type: 'free_consultation', status: 'scheduled', scheduled_start: future },
-    { id: 'future-tutoring', student_id: 'student', consult_type: 'tutoring_session', status: 'scheduled', scheduled_start: future },
-    { id: 'active-tutoring', student_id: 'student', consult_type: 'tutoring_session', status: 'in_progress', scheduled_start: past },
-    { id: 'past-tutoring', student_id: 'student', consult_type: 'tutoring_session', status: 'completed', scheduled_start: past },
-    { id: 'prospect-consult', student_id: null, consult_type: 'free_consultation', status: 'scheduled', scheduled_start: future }
+    { id: 'student-consult', student_id: 'student' },
+    { id: 'eric-consult', student_id: 'eric' },
+    { id: 'prospect-consult', student_id: null }
   ]);
-  assert.deepEqual(Array.from(visible, consultation => consultation.id), ['future-tutoring', 'active-tutoring', 'prospect-consult']);
-  assert.match(html, /Private notes for this session/);
-  assert.match(html, /session_notes:document\.getElementById\('session-notes'\)\.value/);
-  assert.match(html, /\.in\('status',\['scheduled','in_progress'\]\)/);
+  assert.deepEqual(Array.from(visible, consultation => consultation.id), ['prospect-consult']);
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
+});
+
+test('tutoring sessions page keeps session notes separate and admin-only', () => {
+  const page = readFileSync(join(__dirname, '..', 'madison-tutoring-sessions.html'), 'utf8');
+  assert.match(page, /consult_type'\s*,\s*'tutoring_session|consult_type", "tutoring_session/);
+  assert.match(page, /session_notes/);
+  assert.match(page, /app_admins/);
+  assert.match(page, /scheduled_start/);
+  assert.match(page, /status==='in_progress'[\s\S]*?status==='scheduled'&&session\.scheduled_start[\s\S]*?>new Date\(\)/);
+  assert.match(page, /\.eq\('status',current\.status\)/);
+  assert.match(readFileSync(join(__dirname, '..', 'madison-admin.html'), 'utf8'), /href="madison-tutoring-sessions\.html">Tutoring sessions/);
+  assert.doesNotMatch(html, /Open session notes|Private notes for this session/);
+  for (const match of page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
