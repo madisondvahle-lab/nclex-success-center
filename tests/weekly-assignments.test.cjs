@@ -28,29 +28,9 @@ test('weekly progress counts completion once and separates practice from CATs', 
   assert.deepEqual(JSON.parse(JSON.stringify(W.progress(rows, '2026-10-12'))),
     { count: 3, done: 2, questions: 100, questionsDone: 50, cats: 1, catsDone: 1 });
 });
-test('completion changes use restricted RPC and report failures without losing state', async () => {
-  const html = read('student-dashboard.html');
-  const renderer = html.slice(html.indexOf('let assignmentState ='), html.indexOf('function studentResourceText('));
-  let listener, message = {}, saved;
-  const button = { dataset: { weeklyComplete: 'one' }, closest: () => ({ querySelector: () => message }), addEventListener: (_, fn) => { listener = fn; } };
-  const container = { innerHTML: '', querySelectorAll: () => [button], contains: () => false };
-  const row = { id: 'one', assignment_week: '2026-10-12', assignment_kind: 'practice', student_id: 'student' };
-  const context = {
-    document: { getElementById: () => container, querySelectorAll: () => [button] }, text: String, studentResourceText: String,
-    db: { rpc: async (name, args) => { saved = { name, args }; return { data: 'saved-time' }; } },
-    renderThisWeek: async () => {}
-  };
-  vm.runInNewContext(renderer, context);
-  context.renderResources([row], 'resources');
-  await listener();
-  assert.equal(row.completed_at, 'saved-time');
-  assert.equal(saved.name, 'set_weekly_assignment_complete');
-  assert.equal(saved.args.p_complete, true);
-  context.db.rpc = async () => ({ error: { message: 'Access denied' } });
-  await listener();
-  assert.equal(row.completed_at, 'saved-time');
-  assert.match(message.textContent, /Could not save completion: Access denied/);
-  assert.equal(button.disabled, false);
+test('removed dashboard assignment panels do not retain completion controls', () => {
+  assert.doesNotMatch(read('student-dashboard.html'), /data-weekly-complete|set_weekly_assignment_complete/);
+  assert.match(read('supplemental-practice.html'), /set_weekly_assignment_complete/);
 });
 test('portal assignments require exact stored active question set and preserve assignment identity', () => {
   const page = read('supplemental-practice.html');

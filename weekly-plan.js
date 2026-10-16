@@ -70,6 +70,24 @@
     return p.practice_days.filter(function (d) { return p.cat_days.indexOf(d) < 0; });
   }
   function meetsPracticeMinimum(plan) { return practiceOnlyDays(plan).length >= MIN_PRACTICE_DAYS; }
+  function dayChangeError(plan, practiceDays, catDays) {
+    var p = normalize(plan);
+    if (!Array.isArray(practiceDays) || !Array.isArray(catDays) ||
+        practiceDays.concat(catDays).some(function (d) { return DAYS.indexOf(d) < 0; })) {
+      return 'Choose valid days from Monday through Sunday.';
+    }
+    if (days(practiceDays, []).length !== practiceDays.length || days(catDays, []).length !== catDays.length) {
+      return 'Choose each day only once.';
+    }
+    if (practiceDays.length !== p.practice_days.length || catDays.length !== p.cat_days.length) {
+      return 'Choose ' + p.practice_days.length + ' practice days and ' + p.cat_days.length + ' CAT days to keep your assigned weekly workload.';
+    }
+    if (practiceDays.some(function (d) { return catDays.indexOf(d) >= 0; })) {
+      return 'Choose separate days for practice and CAT exams.';
+    }
+    if (!catSpacingOk(catDays)) return 'Leave at least one day between CAT exams, including across weeks.';
+    return '';
+  }
   function week(plan) {
     var p = normalize(plan);
     return DAYS.map(function (d) {
@@ -85,6 +103,6 @@
   }
   window.WeeklyPlan = {
     DAYS: DAYS, LABELS: LABELS, LONG: LONG, PLATFORMS: PLATFORMS, PORTAL: PORTAL, DEFAULTS: DEFAULTS,
-    MIN_PRACTICE_DAYS: MIN_PRACTICE_DAYS, normalize: normalize, catSpacingOk: catSpacingOk, practiceOnlyDays: practiceOnlyDays, meetsPracticeMinimum: meetsPracticeMinimum, week: week, summary: summary, topics: list
+    MIN_PRACTICE_DAYS: MIN_PRACTICE_DAYS, normalize: normalize, catSpacingOk: catSpacingOk, practiceOnlyDays: practiceOnlyDays, meetsPracticeMinimum: meetsPracticeMinimum, dayChangeError: dayChangeError, week: week, summary: summary, topics: list
   };
 })();
