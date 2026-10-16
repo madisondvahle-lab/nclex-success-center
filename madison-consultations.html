@@ -62,7 +62,7 @@
       <div class="admin-subpage-content">
     <section id="list-view">
       <h1>Consultations.</h1>
-      <p class="meta">Free consultations and paid NCLEX Strategy Sessions arrive from Calendly automatically and are linked to the matching profile by email.</p>
+      <p class="meta">Consultations and tutoring sessions arrive from Calendly automatically and are linked to the matching profile by email. Upcoming tutoring sessions have private, session-specific notes.</p>
       <p class="meta" id="list-status" role="status"></p>
       <div id="list"></div>
       <section class="panel" id="auto-panel" style="margin-top:24px"><h2>Automatic Strategy Session follow-ups</h2>
@@ -86,9 +86,9 @@
     const CHECKLIST=[['approach','Explained individualized tutoring approach'],['content_vs_testing','Discussed content vs. test-taking challenges'],['session_structure','Explained tutoring session structure'],['packages','Discussed available tutoring packages'],['strategy_session','Explained NCLEX Strategy Session'],['questions','Answered questions']];
     const STRAT_CHECKLIST=[['reports','Reviewed available performance reports'],['question_analysis','Completed guided question analysis'],['patterns','Identified potential performance patterns'],['recommendations','Gave individualized recommendations'],['no_commitment','Explained no tutoring commitment is required'],['credit','Explained the package credit and seven-day window'],['questions','Answered questions']];
     const isStrat=c=>c&&c.consult_type==='strategy_session';
-    const TYPE_LABEL={free_consultation:'Free 15-min consult',strategy_session:'Strategy Session (45 min)'};
+    const TYPE_LABEL={free_consultation:'Free 15-min consult',strategy_session:'Strategy Session (45 min)',tutoring_session:'Tutoring Session'};
     const RECS=['Private Tutoring','NCLEX Strategy Session','Independent Preparation','Follow-Up Needed','Not a Good Fit'];
-    let consults=[],current=null,saveTimer=null,timerHandle=null,dirty=false,saving=false;
+    let consults=[],current=null,saveTimer=null,timerHandle=null,dirty=false,saving=false,sessionNotesDirty=false,sessionNotesMode=false;
 
     async function init(){
       const {data:{session}}=await db.auth.getSession();
@@ -148,9 +148,10 @@
       const renderRows=items=>items.map(c=>{
         const p=names.get(c.id)||{};
         const canStart=c.status==='scheduled';
+        const sessionNotes=isFutureTutoringSession(c);
         return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}${isStrat(c)&&c.credit_status!=='none'?'<br>Credit: '+esc(CREDIT_LABEL[c.credit_status]):''}</div></div>
         <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
-        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join('');
+        <div>${sessionNotes?'<button class="secondary" data-open="'+esc(c.id)+'">Open session notes</button>':c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join('');
       list.innerHTML=(upcoming.length?renderRows(upcoming):'<p class="empty">No upcoming or in-progress consultations.</p>')
         +(history.length?`<details class="history-group"><summary>Past and cancelled consultations (${history.length})</summary>${renderRows(history)}</details>`:'');
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
@@ -158,7 +159,12 @@
     }
 
     function excludeStudentConsultations(items){
-      return items.filter(c=>!c.student_id);
+      return items.filter(c=>!c.student_id||isFutureTutoringSession(c));
+    }
+
+    function isFutureTutoringSession(c){
+      return c?.consult_type==='tutoring_session'&&
+        (c.status==='in_progress'||(c.status==='scheduled'&&c.scheduled_start&&new Date(c.scheduled_start)>new Date()));
     }
 
     async function profileNames(items){
@@ -204,6 +210,11 @@
     }
 
     function renderDetail(events){
+      if(isFutureTutoringSession(current)){
+        renderTutoringSessionNotes();
+        return;
+      }
+      sessionNotesMode=false;
       const c=current,t=c.template,s=t.snapshot||{},strat=isStrat(c),items=strat?STRAT_CHECKLIST:CHECKLIST,readOnly=c.status==='cancelled'||c.status==='rescheduled'||c.status==='scheduled';
       const answers=(c.calendly_answers||[]).filter(a=>a.answer).map(a=>`<strong>${esc(a.question)}</strong>: ${esc(a.answer)}`).join('<br>');
       const f=(key,label,type)=>`<label>${label}${type==='area'?`<textarea data-snap="${key}" ${readOnly?'disabled':''}>${esc(s[key])}</textarea>`:type==='date'?`<input type="date" data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`:`<input data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`}</label>`;
@@ -244,6 +255,47 @@
       const done=document.getElementById('complete');if(done)done.addEventListener('click',completeConsult);
     }
 
+    function renderTutoringSessionNotes(){
+      const c=current,view=document.getElementById('detail-view');
+      sessionNotesMode=true;
+      sessionNotesDirty=false;
+      view.innerHTML=`<p style="margin-top:24px"><button class="secondary" id="back">← All consultations</button></p>
+        <section class="panel"><p class="eyebrow">Tutoring session</p><h2>${esc(c.invitee_name)}</h2>
+          <p class="meta">${esc(c.invitee_email)} · ${esc(fmt(c.scheduled_start))} · ${esc(c.status.replace('_',' '))}</p>
+          <form id="session-notes-form"><label>Private notes for this session<textarea id="session-notes" maxlength="4000" placeholder="Record what you worked on, progress, and follow-up items.">${esc(c.template.session_notes||'')}</textarea></label>
+            <button id="save-session-notes" type="submit">Save session notes</button> <span class="save" id="session-notes-state" role="status"></span></form>
+        </section>`;
+      document.getElementById('list-view').classList.add('hidden');view.classList.remove('hidden');
+      document.getElementById('back').addEventListener('click',closeDetail);
+      document.getElementById('session-notes').addEventListener('input',()=>{
+        sessionNotesDirty=true;
+        const state=document.getElementById('session-notes-state');
+        state.textContent='Unsaved changes…';
+        state.classList.remove('err');
+      });
+      document.getElementById('session-notes-form').addEventListener('submit',async event=>{
+        event.preventDefault();
+        await saveTutoringSessionNotes();
+      });
+    }
+
+    async function saveTutoringSessionNotes(){
+      if(!sessionNotesMode||!current)return false;
+      const button=document.getElementById('save-session-notes'),state=document.getElementById('session-notes-state');
+      button.disabled=true;state.classList.remove('err');state.textContent='Saving…';
+      const template={...current.template,session_notes:document.getElementById('session-notes').value};
+      const {data,error}=await db.from('consultations').update({template}).eq('id',current.id).in('status',['scheduled','in_progress']).select('id').maybeSingle();
+      button.disabled=false;
+      if(error||!data){
+        state.classList.add('err');
+        state.textContent=error?.message||'This session is no longer upcoming or in progress, so the notes were not saved.';
+        return false;
+      }
+      current.template=template;sessionNotesDirty=false;
+      state.textContent='Session notes saved.';
+      return true;
+    }
+
     function collect(){
       const v=document.getElementById('detail-view'),t={snapshot:{},checklist:{},recommendations:[]};
       v.querySelectorAll('[data-snap]').forEach(e=>t.snapshot[e.dataset.snap]=e.value);
@@ -275,6 +327,12 @@
       await loadList();openConsult(current.id);
     }
     async function closeDetail(){
+      if(sessionNotesMode){
+        if(sessionNotesDirty&&!(await saveTutoringSessionNotes()))return;
+        clearInterval(timerHandle);timerHandle=null;current=null;sessionNotesMode=false;
+        document.getElementById('detail-view').classList.add('hidden');document.getElementById('list-view').classList.remove('hidden');loadList();
+        return;
+      }
       clearTimeout(saveTimer);await save();clearInterval(timerHandle);timerHandle=null;current=null;
       document.getElementById('detail-view').classList.add('hidden');document.getElementById('list-view').classList.remove('hidden');loadList();
     }
@@ -308,7 +366,7 @@
       document.getElementById('copy-draft').onclick=async()=>{await navigator.clipboard.writeText(area.value);document.getElementById('copy-draft').textContent='Copied'};
     }
 
-    window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+    window.addEventListener('beforeunload',e=>{if(dirty||sessionNotesDirty){e.preventDefault();e.returnValue=''}});
     init();
   </script>
 </body>
