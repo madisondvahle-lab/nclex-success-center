@@ -76,11 +76,14 @@
     .admin-calendar-date{display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:.69rem;font-weight:800}
     .admin-calendar-number{display:grid;place-items:center;width:22px;height:22px;border-radius:50%}
     .admin-calendar-day.today .admin-calendar-number{background:var(--admin-navy);color:#fff}
-    .admin-calendar-markers{display:inline-flex;gap:3px}
-    .admin-calendar-markers i{width:5px;height:5px;border-radius:50%;background:#536a7d}
-    .admin-calendar-markers i.free{background:#3974a5}.admin-calendar-markers i.strategy{background:#a94f67}.admin-calendar-markers i.tutoring{background:#278071}
-    .admin-calendar-chip{display:block;overflow:hidden;margin:2px 0;padding:2px 3px;background:#edf1f3;font-size:.59rem;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
-    .admin-calendar-chip.free{background:#edf4f8}.admin-calendar-chip.strategy{background:#f7edf0}.admin-calendar-chip.tutoring{background:#eaf4f1}
+    .admin-calendar-count{margin-left:auto;padding:1px 6px;border-radius:999px;background:var(--admin-navy);color:#fff;font-size:.6rem;font-weight:850;line-height:1.5}
+    .admin-calendar-chip{display:block;overflow:hidden;margin:2px 0;padding:2px 4px;border-left:3px solid #536a7d;background:#edf1f3;color:var(--admin-navy);font-size:.59rem;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+    .admin-calendar-chip b{font-weight:850}
+    .admin-calendar-chip.free{border-left-color:#3974a5;background:#dcebf6;color:#1d4c73}.admin-calendar-chip.strategy{border-left-color:#a94f67;background:#f6dce3;color:#7c3045}.admin-calendar-chip.tutoring{border-left-color:#278071;background:#d6eee8;color:#175a4f}
+    .admin-calendar-more{display:block;margin-top:2px;color:var(--admin-navy);font-size:.59rem;font-weight:850;text-decoration:underline}
+    .admin-agenda-type{display:inline-block;margin-right:6px;padding:1px 6px;border-radius:999px;color:#fff;font-size:.6rem;font-weight:800}
+    .admin-agenda-type.free{background:#3974a5}.admin-agenda-type.strategy{background:#a94f67}.admin-agenda-type.tutoring{background:#278071}
+    .admin-agenda-row.free{border-left:4px solid #3974a5}.admin-agenda-row.strategy{border-left:4px solid #a94f67}.admin-agenda-row.tutoring{border-left:4px solid #278071}
     .admin-calendar-status{min-height:1.2em;margin:0;padding:0 16px 9px;color:var(--admin-muted);font-size:.68rem}
     .admin-calendar-agenda{padding:13px 16px;border-top:1px solid var(--admin-line)}
     .admin-calendar-agenda h3{margin:0 0 8px;font:750 .84rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -182,7 +185,7 @@
     .loading{z-index:10}
     @media(max-width:1080px){.admin-workspace{grid-template-columns:minmax(0,1fr) 270px}.admin-topbar,.dashboard{padding-left:20px;padding-right:20px}.row-controls{flex-wrap:wrap}}
     @media(max-width:820px){.admin-app{grid-template-columns:1fr}.admin-sidebar{position:static;height:auto;gap:12px;padding:13px 16px}.sidebar-brand{padding:0 3px 11px}.sidebar-nav{display:flex;overflow-x:auto;gap:4px}.sidebar-nav a,.sidebar-sign-out{flex:0 0 auto;min-height:34px;padding:7px 9px}.sidebar-caption,.sidebar-secondary{display:none}.admin-topbar{position:static}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-workspace{grid-template-columns:1fr}.side-widgets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.prospect-grid{grid-template-columns:1fr}}
-    @media(max-width:600px){.admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}.dashboard{padding:21px 14px 36px}.dashboard-heading{align-items:flex-start;flex-direction:column}.dashboard-heading h1{font-size:1.75rem}.metric-grid{gap:7px}.metric{min-height:80px;padding:11px}.metric strong{font-size:1.25rem}.quick-actions{gap:6px}.quick-actions a{padding:0 9px}.side-widgets{grid-template-columns:1fr}.directory-tools{padding:12px}.directory-search{align-items:flex-start;flex-direction:column}.directory-search input{width:100%}.student-table{min-width:780px}.panel-heading{padding:14px 12px}.merge-grid{grid-template-columns:1fr}.prospect-row{grid-template-columns:1fr}.admin-calendar-day{min-height:60px;padding:3px}.admin-calendar-weekdays{padding:0 8px}.admin-calendar-grid{padding:0 8px 10px}.admin-calendar-chip{display:none}.admin-calendar-heading{align-items:flex-start;flex-direction:column}.admin-agenda-row{align-items:flex-start}.admin-calendar-month{min-width:110px}}
+    @media(max-width:600px){.admin-topbar{align-items:flex-start;flex-direction:column;padding:12px 14px}.dashboard{padding:21px 14px 36px}.dashboard-heading{align-items:flex-start;flex-direction:column}.dashboard-heading h1{font-size:1.75rem}.metric-grid{gap:7px}.metric{min-height:80px;padding:11px}.metric strong{font-size:1.25rem}.quick-actions{gap:6px}.quick-actions a{padding:0 9px}.side-widgets{grid-template-columns:1fr}.directory-tools{padding:12px}.directory-search{align-items:flex-start;flex-direction:column}.directory-search input{width:100%}.student-table{min-width:780px}.panel-heading{padding:14px 12px}.merge-grid{grid-template-columns:1fr}.prospect-row{grid-template-columns:1fr}.admin-calendar-day{min-height:60px;padding:3px}.admin-calendar-weekdays{padding:0 8px}.admin-calendar-grid{padding:0 8px 10px}.admin-calendar-chip,.admin-calendar-more{display:none}.admin-calendar-heading{align-items:flex-start;flex-direction:column}.admin-agenda-row{align-items:flex-start}.admin-calendar-month{min-width:110px}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
@@ -255,6 +258,7 @@
             <span><i class="admin-calendar-dot free"></i>Initial consult</span>
             <span><i class="admin-calendar-dot strategy"></i>Strategy session</span>
             <span><i class="admin-calendar-dot tutoring"></i>Tutoring session</span>
+            <span>Number = meetings that day · select a date to see everyone booked</span>
           </div>
           <div class="admin-calendar-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
           <div class="admin-calendar-grid" id="appointments-grid" role="grid" aria-label="Monthly appointment calendar"></div>
@@ -378,6 +382,7 @@
       $(id+'-note').textContent=note;
     }
     const appointmentKind=type=>({free_consultation:'free',strategy_session:'strategy',tutoring_session:'tutoring'}[type]||'free');
+    const appointmentShortLabel=type=>({strategy_session:'Strategy',tutoring_session:'Tutoring'}[type]||'Consult');
     function renderAppointmentCalendar(){
       const range=StudyCalendar.visibleRange(appointmentMonth),today=StudyCalendar.isoDate(new Date());
       $('appointments-month').textContent=new Date(`${appointmentMonth}-01T12:00:00`).toLocaleDateString('en-US',{month:'long',year:'numeric'});
@@ -386,9 +391,11 @@
         const classes=[date.slice(0,7)!==appointmentMonth?'outside':'',date===appointmentSelectedDate?'selected':'',date===today?'today':''].filter(Boolean).join(' ');
         const dateLabel=new Date(`${date}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
         const eventDescription=events.map(event=>`${event.time} ${event.name}, ${event.label}`).join('; ');
-        const markers=events.slice(0,3).map(event=>`<i class="${appointmentKind(event.consult_type)}"></i>`).join('');
-        const chips=events.slice(0,2).map(event=>`<span class="admin-calendar-chip ${appointmentKind(event.consult_type)}" title="${esc(event.time+' · '+event.name)}">${esc(event.time+' · '+event.name)}</span>`).join('');
-        return `<button type="button" class="admin-calendar-day ${classes}" role="gridcell" aria-pressed="${date===appointmentSelectedDate}" aria-label="${esc(dateLabel+(events.length?`, ${events.length} appointment${events.length===1?'':'s'}: ${eventDescription}`:''))}" data-appointment-date="${date}"><span class="admin-calendar-date"><span class="admin-calendar-number">${Number(date.slice(-2))}</span>${markers?`<span class="admin-calendar-markers" aria-hidden="true">${markers}</span>`:''}</span>${chips}</button>`;
+        const shown=events.slice(0,2),hidden=events.length-shown.length;
+        const count=events.length?`<span class="admin-calendar-count" aria-hidden="true" title="${events.length} meeting${events.length===1?'':'s'}">${events.length}</span>`:'';
+        const chips=shown.map(event=>`<span class="admin-calendar-chip ${appointmentKind(event.consult_type)}" title="${esc(event.time+' · '+event.name+' · '+event.label)}"><b>${esc(appointmentShortLabel(event.consult_type))}</b> ${esc(event.time+' · '+event.name)}</span>`).join('');
+        const more=hidden>0?`<span class="admin-calendar-more" aria-hidden="true">+${hidden} more</span>`:'';
+        return `<button type="button" class="admin-calendar-day ${classes}" role="gridcell" aria-pressed="${date===appointmentSelectedDate}" aria-label="${esc(dateLabel+(events.length?`, ${events.length} appointment${events.length===1?'':'s'}: ${eventDescription}`:''))}" data-appointment-date="${date}"><span class="admin-calendar-date"><span class="admin-calendar-number">${Number(date.slice(-2))}</span>${count}</span>${chips}${more}</button>`;
       }).join('');
       $('appointments-grid').querySelectorAll('[data-appointment-date]').forEach(button=>button.addEventListener('click',()=>{
         appointmentSelectedDate=button.dataset.appointmentDate;
@@ -396,7 +403,7 @@
       }));
       const selectedEvents=appointmentsByDate.get(appointmentSelectedDate)||[];
       const selectedLabel=new Date(`${appointmentSelectedDate}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-      $('appointments-agenda').innerHTML=`<h3>${esc(selectedLabel)}</h3>${selectedEvents.length?selectedEvents.map(event=>`<article class="admin-agenda-row"><div class="admin-agenda-main"><span class="admin-agenda-name">${esc(event.name)}</span><span class="admin-agenda-meta">${esc(event.time)} · ${esc(event.label)}</span></div><a href="${esc(event.url)}">Open →</a></article>`).join(''):'<p class="table-empty">No upcoming Calendly appointments on this day.</p>'}`;
+      $('appointments-agenda').innerHTML=`<h3>${esc(selectedLabel)}${selectedEvents.length?` · ${selectedEvents.length} appointment${selectedEvents.length===1?'':'s'}`:''}</h3>${selectedEvents.length?selectedEvents.map(event=>`<article class="admin-agenda-row ${appointmentKind(event.consult_type)}"><div class="admin-agenda-main"><span class="admin-agenda-name">${esc(event.name)}</span><span class="admin-agenda-meta"><span class="admin-agenda-type ${appointmentKind(event.consult_type)}">${esc(event.label)}</span>${esc(event.time)}</span></div><a href="${esc(event.url)}">Open →</a></article>`).join(''):'<p class="table-empty">No upcoming Calendly appointments on this day.</p>'}`;
     }
     async function loadAppointmentCalendar(){
       const request=++appointmentRequest;
