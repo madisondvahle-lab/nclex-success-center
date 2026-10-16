@@ -495,7 +495,7 @@
       const cutoff=new Date(Date.now()-30*24*60*60*1000).toISOString();
       const results=await Promise.all([
         db.from('student_supplemental_practice_results').select('student_id,practice_title,completed_at').gte('completed_at',cutoff).order('completed_at',{ascending:false}).limit(1000),
-        db.from('in_house_assessment_attempts').select('student_id,assessment_title,completed_at,created_at').gte('completed_at',cutoff).order('completed_at',{ascending:false}).limit(1000),
+        db.from('in_house_assessment_attempts').select('student_id,assessment_title,mode,completed_at,created_at').gte('completed_at',cutoff).order('completed_at',{ascending:false}).limit(1000),
         db.from('student_assessment_uploads').select('student_id,platform,report_label,created_at').gte('created_at',cutoff).order('created_at',{ascending:false}).limit(1000),
         db.from('external_assessments').select('student_id,platform,assessment_name,created_at').gte('created_at',cutoff).order('created_at',{ascending:false}).limit(1000)
       ]);
@@ -503,7 +503,7 @@
       activitySourcesComplete=results.every(result=>!result.error);
       const sources=[
         {result:results[0],date:'completed_at',title:row=>`Practice · ${row.practice_title||'Question set'}`},
-        {result:results[1],date:'completed_at',title:row=>`Assessment · ${row.assessment_title||'In-house assessment'}`},
+        {result:results[1],date:'completed_at',title:row=>`Assessment · ${row.mode==='mock'?'SWM-CAT':row.assessment_title||'In-house assessment'}`},
         {result:results[2],date:'created_at',title:row=>`Report · ${row.report_label||row.platform||'Uploaded'}`},
         {result:results[3],date:'created_at',title:row=>`Assessment · ${row.assessment_name||row.platform||'External'}`}
       ];

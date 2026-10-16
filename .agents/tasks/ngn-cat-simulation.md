@@ -236,8 +236,9 @@ official CAT decision. Keep this as an educational simulation.
   attempt over time. After completion, students should see a readiness summary,
   category breakdown, and item-by-item rationales.
 - The timer behavior on explicit save-and-exit/resume is settled: pause while
-  away, resume on return. Tutor presentation of post-exam detail remains to be
-  specified.
+  away, resume on return. Tutors can review completed mock CATs in the Student
+  workspace as SWM-CAT, with Client Needs and blueprint-area breakdowns plus
+  item review. Tutors do not launch a CAT on a student's behalf.
 - A true psychometric CAT depends on validated/calibrated item parameters and
   defensible stopping rules. Do not claim official NCLEX equivalence or
   predictive accuracy without supporting validation.
@@ -289,6 +290,15 @@ remain future work. No clinical-content changes have been made.
 - Tutor question review now uses the admin-authorized `review` action. Existing
   admin-only summary queries may continue reading attempt rows through the
   retained admin RLS policy; students no longer have a row policy for them.
+- Completed mock attempts are labeled SWM-CAT in the tutor workspace and
+  admin activity feed. Expanding the attempt review shows Client Needs and
+  blueprint-area percentages before the item-by-item review. Existing mock
+  attempts are identified by their saved `mode`; new ones also save
+  `assessment_title` as SWM-CAT. The tutor CAT/readiness trend includes
+  completed SWM-CAT, Core-Safe CAT, readiness-assessment, and outside-platform
+  scores in chronological order by default, with platform filters available.
+  Practice results remain a separate series. Cross-platform changes are
+  directional because platform scoring and difficulty may differ.
 - Focused verification: `node --test supabase/functions/_shared/diagnostic-assessment.test.mjs`,
   JavaScript/Edge syntax checks, assessment JSX parsing, and `git diff --check`.
   Supabase SQL application, Edge deployment, and authenticated browser

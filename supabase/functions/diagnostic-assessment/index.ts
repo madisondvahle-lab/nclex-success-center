@@ -277,7 +277,11 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
       runningSince: now,
     }, mode)
     : null;
-  const title = mode === 'assessment' ? 'NCLEX Readiness Assessment' : String(body.profile?.name || 'Adaptive Diagnostic').slice(0, 120);
+  const title = mode === 'assessment'
+    ? 'NCLEX Readiness Assessment'
+    : mode === 'mock'
+      ? 'SWM-CAT'
+      : String(body.profile?.name || 'Adaptive Diagnostic').slice(0, 120);
   const checkpoint = {
     schemaVersion: 3,
     assessmentVersion: 'in-house-core-v1',
