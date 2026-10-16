@@ -7,7 +7,7 @@ const vm = require('node:vm');
 const read = file => readFileSync(join(__dirname, '..', file), 'utf8');
 
 function loadCalendar() {
-  const context = { window: {} };
+  const context = { window: {}, Date };
   for (const file of ['category-names.js', 'assessment-platforms.js', 'weekly-plan.js', 'study-calendar.js']) {
     vm.runInNewContext(read(file), context, { filename: file });
   }
@@ -46,9 +46,25 @@ test('NCLEX plan repeats to the target date and dated assignments replace matchi
   assert.equal(result.events.get('2026-10-17').find(item => item.type === 'assignment').completed, true);
   assert.equal(result.events.get('2026-10-19').find(item => item.type === 'plan').label, '40 practice questions');
   assert.equal(result.events.get('2026-10-19').find(item => item.type === 'consultation').label, 'Strategy session');
-  assert.equal(result.events.get('2026-10-20').find(item => item.type === 'exam').label, 'NCLEX target date');
+  const examDay = result.events.get('2026-10-20').find(item => item.type === 'exam');
+  assert.equal(examDay.label, 'NCLEX EXAM DAY');
+  assert.equal(examDay.milestone, true);
   assert.equal(result.events.get('2026-10-20').some(item => item.type === 'plan'), false);
   assert.equal(result.events.get('2026-10-21'), undefined);
+});
+
+test('recurring calendar CAT events show the configured platform, title, and instructions', () => {
+  const calendar = loadCalendar();
+  const result = calendar.buildEvents({
+    month: '2026-10', today: new Date(2026, 9, 20),
+    plan: {
+      cat_days: ['tue'], cat_platform: 'UWorld',
+      cat_assignments: { tue: { platform: 'Bootcamp', title: 'Bootcamp CAT assessment', instructions: 'Use CAT mode.' } }
+    }
+  });
+  const item = result.events.get('2026-10-20').find(event => event.type === 'plan');
+  assert.equal(item.label, 'Bootcamp CAT assessment');
+  assert.equal(item.detail, 'Bootcamp · Use CAT mode.');
 });
 
 test('nursing calendar uses class-specific exams and assigned work without NCLEX plan dates', () => {

@@ -175,8 +175,13 @@
                     <p class="hint" id="cat-hint">Two spaced CATs per week, plus at least 3 practice days without a CAT. Any days work, including weekends.</p>
                   </div>
                   <div class="field">
-                    <label class="field-label" for="cat-platform">CAT platform</label>
+                    <label class="field-label" for="cat-platform">Default CAT platform</label>
                     <select id="cat-platform"></select>
+                  </div>
+                  <div class="field">
+                    <span class="field-label" id="cat-assignment-label">CAT task by day (optional)</span>
+                    <div id="cat-assignments" aria-labelledby="cat-assignment-label"></div>
+                    <p class="hint">Set a different platform, task title, or instructions for an individual CAT. These settings apply to future assignments; existing assignments stay unchanged.</p>
                   </div>
                 </div>
                 <div>
@@ -263,7 +268,7 @@
     const WP=window.WeeklyPlan;
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const notice=(id,msg,type)=>{const b=$(id);b.textContent=msg||'';b.className='notice'+(msg?' '+type:'')};
-    const PLAN_COLS='student_id,practice_days,practice_questions_per_day,practice_platform,cat_days,cat_platform,focus_categories,focus_topics,plan_notes,focus_updated_at,updated_at';
+    const PLAN_COLS='student_id,practice_days,practice_questions_per_day,practice_platform,cat_days,cat_platform,cat_assignments,focus_categories,focus_topics,plan_notes,focus_updated_at,updated_at';
     let session=null,students=[],plans=new Map(),editing=null;
 
     function fmtDate(v){return v?new Date(v).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}
@@ -296,14 +301,30 @@
     function checked(name){return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i=>i.value)}
     function setChecked(name,values){document.querySelectorAll(`input[name="${name}"]`).forEach(i=>{i.checked=values.includes(i.value)})}
 
+    function catAssignmentInputs(values={}){
+      const days=checked('cd'),fallback=$('cat-platform').value;
+      $('cat-assignments').innerHTML=days.map(day=>{
+        const item=values[day]||{};
+        const platform=item.platform||'',platforms=!platform||WP.PLATFORMS.includes(platform)?WP.PLATFORMS:WP.PLATFORMS.concat(platform);
+        const options=`<option value=""${platform?'':' selected'}>Use default CAT platform</option>`+platforms.map(p=>`<option value="${esc(p)}"${p===platform?' selected':''}>${esc(p)}</option>`).join('');
+        return `<fieldset class="field" style="margin:8px 0;padding:10px;border:1px solid var(--admin-line);border-radius:8px"><legend>${WP.LONG[day]} CAT</legend><label class="field-label" for="cat-platform-${day}">Platform</label><select id="cat-platform-${day}" data-cat-platform="${day}">${options}</select><label class="field-label" for="cat-title-${day}">Task title</label><input id="cat-title-${day}" data-cat-title="${day}" maxlength="120" value="${esc(item.title||'')}" placeholder="${esc((item.platform||fallback)+' CAT assessment')}"><label class="field-label" for="cat-instructions-${day}">Instructions</label><textarea id="cat-instructions-${day}" data-cat-instructions="${day}" maxlength="500" placeholder="Optional directions for this CAT">${esc(item.instructions||'')}</textarea></fieldset>`;
+      }).join('')||'<p class="muted">Choose CAT days to set an individual platform or task.</p>';
+    }
+
     function formValue(){
+      const cat_assignments={};
+      document.querySelectorAll('[data-cat-platform]').forEach(input=>{
+        const day=input.dataset.catPlatform;
+        const title=$(`cat-title-${day}`).value.trim(),instructions=$(`cat-instructions-${day}`).value.trim();
+        if(input.value||title||instructions)cat_assignments[day]={platform:input.value,title,instructions};
+      });
       return WP.normalize({
         practice_days:checked('pd'),practice_questions_per_day:Number($('qpd').value),practice_platform:$('practice-platform').value,
-        cat_days:checked('cd'),cat_platform:$('cat-platform').value,focus_categories:checked('fc'),
+        cat_days:checked('cd'),cat_platform:$('cat-platform').value,cat_assignments,focus_categories:checked('fc'),
         focus_topics:WP.topics($('focus-topics').value),plan_notes:$('plan-notes').value
       });
     }
-    function fillSchedule(p){setChecked('pd',p.practice_days);$('qpd').value=p.practice_questions_per_day;$('practice-platform').value=p.practice_platform;setChecked('cd',p.cat_days);$('cat-platform').value=p.cat_platform}
+    function fillSchedule(p){setChecked('pd',p.practice_days);$('qpd').value=p.practice_questions_per_day;$('practice-platform').value=p.practice_platform;setChecked('cd',p.cat_days);$('cat-platform').value=p.cat_platform;catAssignmentInputs(p.cat_assignments)}
     function ensureOption(sel,val){if(val&&![...sel.options].some(o=>o.value===val))sel.append(new Option(val,val))}
     function updatePreview(){
       const v=formValue(),overlap=v.practice_days.filter(d=>v.cat_days.includes(d));
@@ -421,7 +442,7 @@
     }
     function detail(r,n){
       const focus=n?n.focus_categories:[];
-      const work=r.work.length?r.work.map(a=>`<li><strong>${esc(fmtDay(a.due_on))}</strong> · ${a.assignment_kind==='cat'?'CAT':'Practice'} · ${a.completed_at?'Marked complete':(a.due_on<todayIso()?'<span class="warn-text">Overdue</span>':'Not complete')}<br>${esc(a.title)}${a.assignment_details?.categories?.length?`<br><small class="muted">Assigned focus: ${esc(a.assignment_details.categories.join(', '))}</small>`:''}</li>`).join(''):'<li class="muted">No assignments generated for this week.</li>';
+      const work=r.work.length?r.work.map(a=>`<li><strong>${esc(fmtDay(a.due_on))}</strong> · ${a.assignment_kind==='cat'?'CAT':'Practice'} · ${a.completed_at?'Marked complete':(a.due_on<todayIso()?'<span class="warn-text">Overdue</span>':'Not complete')}<br>${esc(a.title)}${a.assignment_details?.platform?`<br><small class="muted">Platform: ${esc(a.assignment_details.platform)}</small>`:''}${a.assignment_details?.task_instructions?`<br><small class="muted">Instructions: ${esc(a.assignment_details.task_instructions)}</small>`:''}${a.assignment_details?.categories?.length?`<br><small class="muted">Assigned focus: ${esc(a.assignment_details.categories.join(', '))}</small>`:''}</li>`).join(''):'<li class="muted">No assignments generated for this week.</li>';
       const res=r.resultsUnavailable?'<li class="warn-text">Some result sources failed to load. Refresh before deciding on focus changes.</li>':r.results.length?r.results.map(x=>`<li><strong>${esc(fmtDay(x.date))}</strong>${x.dateKnown?'':' <small class="muted">(test date not recorded; date logged)</small>'} · ${esc(x.source)}<br>${esc(resultText(x))}`+
         (x.categories.length?`<div class="cat-scores" aria-label="Category scores, lowest first">${x.categories.map(k=>`<span class="cat-score${focus.includes(k.name)?' focus':''}">${esc(k.name)} ${esc(pct(k.score))}${k.n!=null?` · ${esc(k.n)} q${k.n<5?' · low sample':''}`:''}${focus.includes(k.name)?' · current focus':''}</span>`).join('')}</div>`:'<br><small class="muted">No category scores recorded.</small>')+'</li>').join(''):'<li class="muted">No CAT, readiness, or practice results recorded for this week.</li>';
       return `<div class="detail-grid"><div><h3>Assignments this week</h3><ul class="detail-list">${work}</ul></div><div><h3>Recorded results this week</h3><ul class="detail-list">${res}</ul><p class="hint">Category scores are listed lowest first as recorded. You decide any focus change.</p></div></div>`;
@@ -542,7 +563,7 @@
 
       $('editor').addEventListener('submit',save);
       $('editor').addEventListener('input',updatePreview);
-      $('editor').addEventListener('change',updatePreview);
+      $('editor').addEventListener('change',e=>{if(e.target.matches('input[name="cd"]'))catAssignmentInputs(formValue().cat_assignments);updatePreview()});
       $('reset-default').addEventListener('click',()=>{fillSchedule(WP.normalize(WP.DEFAULTS));updatePreview()});
       $('cancel').addEventListener('click',closeEditor);
       $('search').addEventListener('input',renderRoster);

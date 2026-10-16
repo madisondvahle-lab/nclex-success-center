@@ -42,12 +42,41 @@ test('normalize cleans days, counts, platforms, categories and topics', () => {
   assert.deepEqual([...WP.normalize({ practice_days: [] }).practice_days], []);
 });
 
+test('platforms include Remar and NurseMeg and CAT tasks normalize per day', () => {
+  const WP = load();
+  const p = WP.normalize({
+    cat_platform: 'UWorld',
+    cat_assignments: {
+      tue: { platform: 'Bootcamp', title: 'Bootcamp CAT assessment', instructions: 'Use CAT mode.' },
+      sat: { platform: 'nurse meg', title: '  NurseMeg Readiness  ' },
+      sun: { platform: 'remar' },
+      bogus: { platform: 'Remar', title: 'Ignored invalid day' }
+    }
+  });
+  assert.ok(WP.PLATFORMS.includes('Remar'));
+  assert.ok(WP.PLATFORMS.includes('NurseMeg'));
+  assert.deepEqual(JSON.parse(JSON.stringify(p.cat_assignments)), {
+    tue: { platform: 'Bootcamp', title: 'Bootcamp CAT assessment', instructions: 'Use CAT mode.' },
+    sat: { platform: 'NurseMeg', title: 'NurseMeg Readiness', instructions: '' },
+    sun: { platform: 'Remar', title: '', instructions: '' }
+  });
+  assert.match(WP.summary(p), /Tue: Bootcamp — Bootcamp CAT assessment/);
+});
+
 test('CAT spacing flags back-to-back days, including across the week boundary', () => {
   const WP = load();
   assert.equal(WP.catSpacingOk(['tue', 'wed']), false);
   assert.equal(WP.catSpacingOk(['sun', 'mon']), false);
   assert.equal(WP.catSpacingOk(['tue', 'fri']), true);
   assert.equal(WP.catSpacingOk(['sat']), true);
+});
+
+test('unchanged CAT defaults normalize without creating phantom customizations', () => {
+  const WP = load();
+  assert.deepEqual(Object.keys(WP.normalize({
+    cat_platform: 'Archer',
+    cat_assignments: { tue: { platform: 'Archer', title: '', instructions: '' } }
+  }).cat_assignments), []);
 });
 
 test('week view marks practice and CAT days', () => {
@@ -107,7 +136,9 @@ test('coach page and student dashboard load the helper, gate admin, and parse', 
   }
   assert.match(admin, /from\('app_admins'\)/);
   assert.match(admin, /onConflict:'student_id'/);
+  assert.match(admin, /cat_assignments/);
   assert.match(student, /id="weekly-plan-card"[^>]*hidden/);
+  assert.match(student, /cat\.title/);
   assert.doesNotMatch(student, /from\('student_study_plans'\)\.(upsert|insert|update|delete)/);
 });
 

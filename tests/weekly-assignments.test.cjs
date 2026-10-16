@@ -57,3 +57,17 @@ test('migration reuses resources, keeps generation admin-only, and restricts stu
   assert.match(admin, /WP\.meetsPracticeMinimum\(selectedPlan\)/);
   assert.match(admin, /WP\.practiceOnlyDays\(selectedPlan\)/);
 });
+
+test('CAT detail migration snapshots per-day platform, title, and instructions', () => {
+  const sql = read('supabase-weekly-cat-details-migration.sql');
+  assert.match(sql, /ADD COLUMN IF NOT EXISTS cat_assignments jsonb NOT NULL DEFAULT '\{\}'::jsonb/);
+  assert.match(sql, /p\.cat_assignments->slot\.day/);
+  assert.match(sql, /task_title/);
+  assert.match(sql, /task_instructions/);
+  assert.match(sql, /s\.nclex_target_date AS nclex_target_date/);
+  assert.match(sql, /p_week \+ d\.i < p\.nclex_target_date/);
+  assert.match(sql, /Assignments on or after the NCLEX target date were skipped/);
+  assert.match(sql, /coalesce\(task_title,platform \|\| ' CAT \/ readiness exam'\)/);
+  assert.match(sql, /Instructions: ' \|\| task_instructions/);
+  assert.match(sql, /REVOKE ALL ON FUNCTION public\.generate_weekly_assignments\(date, uuid\) FROM PUBLIC, anon/);
+});

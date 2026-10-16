@@ -2,6 +2,7 @@
   'use strict';
   const names = {
     uworld: 'UWorld', archer: 'Archer', kaplan: 'Kaplan', bootcamp: 'Bootcamp',
+    remar: 'Remar', nursemeg: 'NurseMeg', 'nurse meg': 'NurseMeg',
     ati: 'ATI', hesi: 'HESI', ncsbn: 'NCSBN', other: 'Other'
   };
   const clean = value => String(value || '').trim().replace(/\s+/g, ' ');

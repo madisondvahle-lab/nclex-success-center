@@ -5,7 +5,7 @@
   var LABELS = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
   var LONG = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
   var PORTAL = 'Portal Question Bank';
-  var PLATFORMS = ['UWorld', 'Archer', 'Kaplan', 'Bootcamp', PORTAL, 'Other'];
+  var PLATFORMS = ['UWorld', 'Archer', 'Kaplan', 'Bootcamp', 'Remar', 'NurseMeg', PORTAL, 'Other'];
   var DEFAULTS = Object.freeze({
     practice_days: ['mon', 'wed', 'fri'],
     practice_questions_per_day: 50,
@@ -39,6 +39,21 @@
     var picked = list(value).map(function (v) { return C ? C.canon(v, null) : v; }).filter(Boolean);
     return C ? C.NAMES.filter(function (n) { return picked.indexOf(n) >= 0; }) : picked;
   }
+  function catAssignments(value, fallback) {
+    var out = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+    DAYS.forEach(function (day) {
+      var item = value[day];
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return;
+      var task = {
+        platform: platform(item.platform, fallback),
+        title: String(item.title || '').trim().slice(0, 120),
+        instructions: String(item.instructions || '').trim().slice(0, 500)
+      };
+      if (task.platform !== fallback || task.title || task.instructions) out[day] = task;
+    });
+    return out;
+  }
   function normalize(row) {
     row = row || {};
     var n = Number(row.practice_questions_per_day);
@@ -48,6 +63,7 @@
       practice_platform: platform(row.practice_platform, DEFAULTS.practice_platform),
       cat_days: days(row.cat_days, DEFAULTS.cat_days),
       cat_platform: platform(row.cat_platform, DEFAULTS.cat_platform),
+      cat_assignments: catAssignments(row.cat_assignments, platform(row.cat_platform, DEFAULTS.cat_platform)),
       focus_categories: categories(row.focus_categories),
       focus_topics: list(row.focus_topics),
       plan_notes: String(row.plan_notes || '').trim()
@@ -98,8 +114,15 @@
     var p = normalize(plan);
     var total = p.practice_days.length * p.practice_questions_per_day;
     var lbl = function (arr) { return arr.map(function (d) { return LABELS[d]; }).join('/') || 'none'; };
-    return p.practice_days.length + '× ' + p.practice_questions_per_day + ' Qs (' + lbl(p.practice_days) + ', ' + p.practice_platform + ') · ' +
+    var base = p.practice_days.length + '× ' + p.practice_questions_per_day + ' Qs (' + lbl(p.practice_days) + ', ' + p.practice_platform + ') · ' +
       p.cat_days.length + ' CAT' + (p.cat_days.length === 1 ? '' : 's') + ' (' + lbl(p.cat_days) + ', ' + p.cat_platform + ') · ' + total + ' Qs/week';
+    var details = p.cat_days.map(function (day) {
+      var item = p.cat_assignments[day];
+      if (!item || (item.platform === p.cat_platform && !item.title && !item.instructions)) return '';
+      return LABELS[day] + ': ' + item.platform + (item.title ? ' — ' + item.title : '') +
+        (item.instructions ? ' (' + item.instructions + ')' : '');
+    }).filter(Boolean);
+    return base + (details.length ? ' · CAT details: ' + details.join('; ') : '');
   }
   window.WeeklyPlan = {
     DAYS: DAYS, LABELS: LABELS, LONG: LONG, PLATFORMS: PLATFORMS, PORTAL: PORTAL, DEFAULTS: DEFAULTS,

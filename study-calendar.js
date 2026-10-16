@@ -65,7 +65,10 @@
         addEvent(events, options.studentExamDate, { type: 'exam', label: 'Next class exam', detail: 'Class exam' });
       }
     } else if (dates.has(options.examDate)) {
-      addEvent(events, options.examDate, { type: 'exam', label: 'NCLEX target date', detail: 'Target NCLEX date' });
+      addEvent(events, options.examDate, {
+        type: 'exam', kind: 'nclex-target', milestone: true,
+        label: 'NCLEX EXAM DAY', detail: 'Your scheduled NCLEX test'
+      });
     }
 
     const assignments = options.resources || [];
@@ -96,7 +99,12 @@
           });
         }
         if (plan.cat_days.includes(day) && !actualKinds.has('cat')) {
-          addEvent(events, date, { type: 'plan', kind: 'cat', label: 'CAT / readiness exam', detail: plan.cat_platform });
+          const cat = plan.cat_assignments[day] || {};
+          addEvent(events, date, {
+            type: 'plan', kind: 'cat',
+            label: cat.title || 'CAT / readiness exam',
+            detail: [cat.platform || plan.cat_platform, cat.instructions].filter(Boolean).join(' · ')
+          });
         }
       });
     }

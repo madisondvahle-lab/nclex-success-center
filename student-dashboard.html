@@ -116,6 +116,12 @@
     .study-calendar-date{display:grid;place-items:center;width:25px;height:25px;margin-bottom:4px;border-radius:50%;font-size:.75rem;font-weight:800}
     .study-calendar-chip{display:block;overflow:hidden;margin:3px 0;padding:3px 4px;border-radius:3px;background:#edf4f8;font-size:.64rem;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
     .study-calendar-chip.exam{background:#f9edef}.study-calendar-chip.consultation{background:#f2eef6}.study-calendar-chip.plan{background:#fbf4e9}
+    .study-calendar-day.exam-day{position:relative;z-index:1;border:2px solid #9d2638;background:#fff2f3;box-shadow:inset 0 0 0 2px #f3cbd0}
+    .study-calendar-day.exam-day .study-calendar-date{width:30px;height:30px;background:#9d2638;color:#fff}
+    .study-calendar-chip.exam.milestone{height:auto;max-height:none;white-space:normal;background:#9d2638;color:#fff;font-size:.7rem;font-weight:900;line-height:1.2}
+    .study-calendar-agenda li.exam.milestone{padding:18px 16px;border:2px solid #9d2638;background:#fff2f3}
+    .study-calendar-agenda li.exam.milestone strong{display:block;color:#781b2a;font-size:1.3rem;letter-spacing:.04em}
+    .exam-day-badge{display:inline-block;margin-bottom:7px;padding:4px 9px;border-radius:999px;background:#9d2638;color:#fff;font-size:.68rem;font-weight:900;letter-spacing:.12em}
     .study-calendar-chip.completed{text-decoration:line-through;opacity:.65}
     .study-calendar-more{display:block;color:var(--muted);font-size:.62rem}
     .study-calendar-agenda{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
@@ -918,7 +924,11 @@
       document.getElementById('weekly-plan-days').innerHTML = WeeklyPlan.week(p).map(d => {
         const parts = [];
         if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
-        if (d.cat) parts.push(`CAT exam · ${text(p.cat_platform)}`);
+        if (d.cat) {
+          const cat = p.cat_assignments[d.day] || {};
+          parts.push(`${text(cat.title || 'CAT exam')} · ${text(cat.platform || p.cat_platform)}`);
+          if (cat.instructions) parts.push(text(cat.instructions));
+        }
         return `<li class="${d.cat ? 'cat' : d.practice ? 'practice' : ''}"><strong aria-label="${d.long}">${d.label}</strong><span>${parts.length ? parts.join('<br>') : 'Rest / review'}</span></li>`;
       }).join('');
       document.getElementById('weekly-plan-total').textContent = `${p.practice_days.length * p.practice_questions_per_day} Qs + ${p.cat_days.length} CAT${p.cat_days.length === 1 ? '' : 's'} / week`;
@@ -1004,8 +1014,9 @@
           date === StudyCalendar.isoDate(new Date()) ? 'today' : ''
         ].filter(Boolean).join(' ');
         const dateNumber = Number(date.slice(-2));
-        return `<button type="button" class="study-calendar-day ${classes}" role="gridcell" aria-pressed="${date === state.selectedDate}" aria-label="${text(new Date(`${date}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}))}${events.length?`, ${events.length} scheduled item${events.length===1?'':'s'}`:''}" data-calendar-date="${date}">
-          <span class="study-calendar-date">${dateNumber}</span>${events.slice(0, 2).map(event => `<span class="study-calendar-chip ${event.type}${event.completed?' completed':''}">${text(event.label)}</span>`).join('')}${events.length > 2 ? `<span class="study-calendar-more">+${events.length - 2} more</span>` : ''}
+        const examDay=events.some(event=>event.milestone);
+        return `<button type="button" class="study-calendar-day ${classes}${examDay?' exam-day':''}" role="gridcell" aria-pressed="${date === state.selectedDate}" aria-label="${text(new Date(`${date}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}))}${events.length?`, ${events.length} scheduled item${events.length===1?'':'s'}${examDay?', NCLEX EXAM DAY':''}`:''}" data-calendar-date="${date}">
+          <span class="study-calendar-date">${dateNumber}</span>${events.slice(0, 2).map(event => `<span class="study-calendar-chip ${event.type}${event.milestone?' milestone':''}${event.completed?' completed':''}">${text(event.label)}</span>`).join('')}${events.length > 2 ? `<span class="study-calendar-more">+${events.length - 2} more</span>` : ''}
         </button>`;
       }).join('');
       grid.querySelectorAll('[data-calendar-date]').forEach(button => button.addEventListener('click', () => {
@@ -1016,7 +1027,7 @@
       agenda.innerHTML = `<h3>${text(new Date(`${state.selectedDate}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))}</h3>${dateEvents.length ? `<ul>${dateEvents.map(event => {
         const detail = [event.detail, event.completed ? 'Completed' : ''].filter(Boolean).join(' · ');
         const url = WeeklyAssignments.actionUrl(event.url, location.href);
-        return `<li class="${event.type}"><strong>${text(event.label)}</strong>${detail?`<small>${text(detail)}</small>`:''}${url?`<small><a href="${text(url)}">Open assignment</a></small>`:''}</li>`;
+        return `<li class="${event.type}${event.milestone?' milestone':''}">${event.milestone?'<span class="exam-day-badge">BIG DAY</span>':''}<strong>${text(event.label)}</strong>${detail?`<small>${text(detail)}</small>`:''}${url?`<small><a href="${text(url)}">Open assignment</a></small>`:''}</li>`;
       }).join('')}</ul>` : '<p class="empty">Nothing scheduled for this day.</p>'}`;
       const messages = [];
       if (state.assignmentError) messages.push('Assigned work could not be loaded.');
