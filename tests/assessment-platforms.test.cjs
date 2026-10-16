@@ -345,8 +345,8 @@ test('tutor saves select the saved platform for new entries and existing uploads
     assert.equal(context.window.__trendSeries, 'both');
     assert.equal($('cat-msg').textContent, 'Exam record saved.');
   }
-  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'saved').platform, 'UWorld');
-  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'new').platform, 'UWorld');
+  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'saved').platform, 'uworld');
+  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'new').platform, 'uworld');
   assert.ok(filters.some(([key, value]) => key === 'student_id' && value === 'synthetic'));
   assert.equal(refreshed, true);
 });
@@ -391,7 +391,7 @@ test('tutor CAT entry saves scores and an optional private report together', asy
   $('cat-overall').value = '70.3';
   await $('cat-form').listeners.submit({ preventDefault() {} });
   const savedUpload = tables.student_assessment_uploads.find(row => row.report_filename === file.name);
-  assert.equal(savedUpload.platform, 'Bootcamp');
+  assert.equal(savedUpload.platform, 'bootcamp');
   assert.equal(savedUpload.overall_score, 70.3);
   assert.equal(savedUpload.taken_on, '2026-10-16');
   assert.equal(savedUpload.report_path, uploadedPath);
