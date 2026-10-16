@@ -91,6 +91,39 @@
     .reminder-heading button{min-height:44px;cursor:pointer;font-family:inherit}
     .reminder-heading button:disabled{opacity:.65;cursor:wait}
     .assignment-reminders :is(button,a):focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+    .study-calendar{margin:0 0 24px;padding:24px;background:var(--paper);border:1px solid var(--line)}
+    .study-calendar[hidden]{display:none}
+    .study-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .study-calendar-heading h2{margin:0}
+    .study-calendar-nav{display:flex;align-items:center;gap:8px}
+    .study-calendar-nav button{min-width:44px;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:800 .84rem Inter,sans-serif;cursor:pointer}
+    .study-calendar-nav button:focus-visible,.study-calendar-day:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+    .study-calendar-month{min-width:150px;text-align:center;font-weight:800}
+    .study-calendar-legend{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0;color:var(--muted);font-size:.75rem}
+    .study-calendar-legend span{display:inline-flex;align-items:center;gap:6px}
+    .study-calendar-dot{width:9px;height:9px;border-radius:50%;background:var(--teal)}
+    .study-calendar-dot.exam{background:#a94352}.study-calendar-dot.consultation{background:#80619c}.study-calendar-dot.assignment{background:#3974a5}.study-calendar-dot.plan{background:#c48838}
+    .study-calendar-weekdays,.study-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+    .study-calendar-weekdays{color:var(--muted);font-size:.7rem;font-weight:900;text-align:center}
+    .study-calendar-weekdays span{padding:8px 2px}
+    .study-calendar-day{min-width:0;min-height:94px;padding:7px 5px;border:1px solid var(--line);margin:-1px 0 0 -1px;background:#fff;color:var(--ink);text-align:left;cursor:pointer}
+    .study-calendar-day.outside{background:#f6f5f2;color:#81909c}
+    .study-calendar-day.selected{position:relative;z-index:1;outline:2px solid var(--teal)}
+    .study-calendar-day.today .study-calendar-date{background:var(--ink);color:#fff}
+    .study-calendar-date{display:grid;place-items:center;width:25px;height:25px;margin-bottom:4px;border-radius:50%;font-size:.75rem;font-weight:800}
+    .study-calendar-chip{display:block;overflow:hidden;margin:3px 0;padding:3px 4px;border-radius:3px;background:#edf4f8;font-size:.64rem;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+    .study-calendar-chip.exam{background:#f9edef}.study-calendar-chip.consultation{background:#f2eef6}.study-calendar-chip.plan{background:#fbf4e9}
+    .study-calendar-chip.completed{text-decoration:line-through;opacity:.65}
+    .study-calendar-more{display:block;color:var(--muted);font-size:.62rem}
+    .study-calendar-agenda{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+    .study-calendar-agenda h3{margin:0 0 9px;font-size:1.1rem}
+    .study-calendar-agenda ul{list-style:none;padding:0;margin:0}
+    .study-calendar-agenda li{padding:9px 10px;border-radius:3px;background:#edf4f8;margin-top:6px;font-size:.8rem;line-height:1.45}
+    .study-calendar-agenda li.exam{background:#f9edef}.study-calendar-agenda li.consultation{background:#f2eef6}.study-calendar-agenda li.plan{background:#fbf4e9}
+    .study-calendar-agenda small{display:block;color:var(--muted)}
+    .study-calendar-status{min-height:1.3em;margin:10px 0 0;color:var(--muted);font-size:.76rem}
+    .study-calendar-status.error{color:#9c3535}
+    @media(max-width:600px){.study-calendar{padding:16px 10px}.study-calendar-day{min-height:70px;padding:4px 2px}.study-calendar-chip{padding:2px;font-size:.55rem}.study-calendar-weekdays{font-size:.62rem}.study-calendar-month{min-width:120px}}
     .reminder-list{list-style:none;padding:0;margin:12px 0 0}
     .reminder-item{padding:16px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
     .reminder-item h3{margin:6px 0;font:800 .95rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:normal}
@@ -464,6 +497,34 @@
       </section>
     </div>
 
+    <section class="study-calendar" id="study-calendar" aria-labelledby="study-calendar-title" hidden>
+      <div class="study-calendar-heading">
+        <div><p class="eyebrow">Your month at a glance</p><h2 id="study-calendar-title">Study calendar</h2></div>
+        <div class="study-calendar-nav" aria-label="Calendar navigation">
+          <button type="button" id="calendar-previous" aria-label="Previous month">‹</button>
+          <span class="study-calendar-month" id="calendar-month" aria-live="polite"></span>
+          <button type="button" id="calendar-next" aria-label="Next month">›</button>
+          <button type="button" id="calendar-today">Today</button>
+        </div>
+      </div>
+      <p class="card-desc" id="study-calendar-intro">Your exam dates, plan, assignments, and scheduled tutoring sessions in one place.</p>
+      <form id="calendar-nclex-date-form" class="class-schedule-form" hidden>
+        <label>Next NCLEX attempt date<input id="calendar-nclex-date" type="date" required></label>
+        <button type="submit">Save NCLEX date</button><span id="calendar-nclex-date-status" class="class-schedule-message" role="status"></span>
+      </form>
+      <p id="calendar-nursing-date-hint" class="card-desc" hidden>Set or update class exam dates in <a href="#class-schedule-card">Class schedule</a>.</p>
+      <div class="study-calendar-legend" aria-label="Calendar event key">
+        <span><i class="study-calendar-dot exam"></i>Exam date</span>
+        <span><i class="study-calendar-dot plan"></i>Weekly plan</span>
+        <span><i class="study-calendar-dot assignment"></i>Assigned work</span>
+        <span><i class="study-calendar-dot consultation"></i>Tutoring session</span>
+      </div>
+      <div class="study-calendar-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div class="study-calendar-grid" id="study-calendar-grid" role="grid" aria-label="Monthly study calendar"></div>
+      <p class="study-calendar-status" id="study-calendar-status" role="status" aria-live="polite"></p>
+      <div class="study-calendar-agenda" id="study-calendar-agenda" aria-live="polite"></div>
+    </section>
+
     <!-- ═══════════════════════════════════════════════════════════════
          NURSING STUDENT PORTAL
     ═══════════════════════════════════════════════════════════════ -->
@@ -576,6 +637,7 @@
   <script src="assessment-platforms.js"></script>
   <script src="weekly-plan.js"></script>
   <script src="weekly-assignments.js"></script>
+  <script src="study-calendar.js"></script>
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
   <script>
@@ -851,6 +913,126 @@
     }
 
     let assignmentState = null;
+    let studyCalendarState = null;
+    function renderStudyCalendar() {
+      const state = studyCalendarState, card = document.getElementById('study-calendar');
+      if (!state || !card) return;
+      const model = StudyCalendar.buildEvents({
+        month: state.month, today: new Date(), examDate: state.student.nclex_target_date,
+        studentExamDate: state.student.exam_date, isNursing: state.isNursing,
+        schedules: state.schedules, plan: state.plan, resources: state.resources,
+        consultations: state.consultations
+      });
+      const monthDate = new Date(`${state.month}-01T12:00:00`);
+      document.getElementById('calendar-month').textContent = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const grid = document.getElementById('study-calendar-grid');
+      grid.innerHTML = model.dates.map(date => {
+        const events = model.events.get(date) || [], classes = [
+          date.slice(0, 7) !== state.month ? 'outside' : '',
+          date === state.selectedDate ? 'selected' : '',
+          date === StudyCalendar.isoDate(new Date()) ? 'today' : ''
+        ].filter(Boolean).join(' ');
+        const dateNumber = Number(date.slice(-2));
+        return `<button type="button" class="study-calendar-day ${classes}" role="gridcell" aria-pressed="${date === state.selectedDate}" aria-label="${text(new Date(`${date}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}))}${events.length?`, ${events.length} scheduled item${events.length===1?'':'s'}`:''}" data-calendar-date="${date}">
+          <span class="study-calendar-date">${dateNumber}</span>${events.slice(0, 2).map(event => `<span class="study-calendar-chip ${event.type}${event.completed?' completed':''}">${text(event.label)}</span>`).join('')}${events.length > 2 ? `<span class="study-calendar-more">+${events.length - 2} more</span>` : ''}
+        </button>`;
+      }).join('');
+      grid.querySelectorAll('[data-calendar-date]').forEach(button => button.addEventListener('click', () => {
+        state.selectedDate = button.dataset.calendarDate;
+        renderStudyCalendar();
+      }));
+      const agenda = document.getElementById('study-calendar-agenda'), dateEvents = model.events.get(state.selectedDate) || [];
+      agenda.innerHTML = `<h3>${text(new Date(`${state.selectedDate}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))}</h3>${dateEvents.length ? `<ul>${dateEvents.map(event => {
+        const detail = [event.detail, event.completed ? 'Completed' : ''].filter(Boolean).join(' · ');
+        const url = WeeklyAssignments.actionUrl(event.url, location.href);
+        return `<li class="${event.type}"><strong>${text(event.label)}</strong>${detail?`<small>${text(detail)}</small>`:''}${url?`<small><a href="${text(url)}">Open assignment</a></small>`:''}</li>`;
+      }).join('')}</ul>` : '<p class="empty">Nothing scheduled for this day.</p>'}`;
+      const messages = [];
+      if (state.assignmentError) messages.push('Assigned work could not be loaded.');
+      if (state.sessionError) messages.push('Scheduled tutoring sessions are unavailable.');
+      const status = messages.length ? messages.join(' ') + ' Other calendar dates are still shown.'
+        : state.isPreview ? 'Staff preview does not show private student sessions.'
+          : state.loading ? 'Loading scheduled tutoring sessions…'
+            : state.isNursing ? 'Your saved class exam dates, assigned work, and scheduled sessions appear here.'
+              : state.student.nclex_target_date
+                ? 'Your weekly plan repeats on its saved days through your NCLEX date. Dated assignments replace matching plan reminders.'
+                : 'Your weekly plan repeats on its saved days. Set a target NCLEX date to mark when that plan ends.';
+      const statusElement = document.getElementById('study-calendar-status');
+      statusElement.textContent = status;
+      statusElement.classList.toggle('error', messages.length > 0);
+      const nclexForm = document.getElementById('calendar-nclex-date-form');
+      nclexForm.hidden = state.isNursing || state.isPreview;
+      document.getElementById('calendar-nclex-date').value = state.student.nclex_target_date || '';
+      document.getElementById('calendar-nclex-date').min = StudyCalendar.isoDate(new Date());
+      document.getElementById('calendar-nursing-date-hint').hidden = !state.isNursing || state.isPreview;
+      card.hidden = false;
+    }
+    async function loadStudyCalendar(student, isNursing, plan, resources, schedules, isPreview, assignmentError) {
+      const now = new Date(), month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      studyCalendarState = {
+        student, isNursing, plan, resources: resources || [], schedules: schedules || [],
+        consultations: [], month, selectedDate: StudyCalendar.monthGrid(month).find(day => day === StudyCalendar.isoDate(now)) || `${month}-01`,
+        loading: !isPreview, sessionError: false, isPreview, assignmentError: Boolean(assignmentError), sessionRequest: 0
+      };
+      document.getElementById('calendar-previous').onclick = () => shiftStudyCalendarMonth(-1);
+      document.getElementById('calendar-next').onclick = () => shiftStudyCalendarMonth(1);
+      document.getElementById('calendar-today').onclick = () => {
+        const today = new Date();
+        studyCalendarState.month = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        studyCalendarState.selectedDate = StudyCalendar.isoDate(today);
+        refreshStudyCalendar();
+      };
+      document.getElementById('calendar-nclex-date-form').onsubmit = async event => {
+        event.preventDefault();
+        const input = document.getElementById('calendar-nclex-date'), status = document.getElementById('calendar-nclex-date-status'), button = event.currentTarget.querySelector('button');
+        button.disabled = true;status.textContent = 'Saving your NCLEX date…';
+        try {
+          const { data, error } = await db.rpc('update_my_nclex_target_date', { new_target_date: input.value });
+          if (error) throw error;
+          studyCalendarState.student.nclex_target_date = data;
+          status.textContent = 'Your NCLEX date is saved.';
+          renderStudyCalendar();
+        } catch (error) {
+          status.textContent = 'Unable to save your NCLEX date. Please try again.';
+        } finally { button.disabled = false; }
+      };
+      renderStudyCalendar();
+      if (isPreview) return;
+      await refreshStudyCalendar();
+    }
+    function shiftStudyCalendarMonth(amount) {
+      const [year, month] = studyCalendarState.month.split('-').map(Number);
+      const next = new Date(year, month - 1 + amount, 1);
+      studyCalendarState.month = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
+      studyCalendarState.selectedDate = `${studyCalendarState.month}-01`;
+      refreshStudyCalendar();
+    }
+    async function refreshStudyCalendar() {
+      const state = studyCalendarState;
+      if (!state) return;
+      const range = StudyCalendar.visibleRange(state.month);
+      const requestId = ++state.sessionRequest;
+      state.loading = !state.isPreview;
+      state.sessionError = false;
+      renderStudyCalendar();
+      if (state.isPreview) return;
+      const start = new Date(`${range.start}T00:00:00`).toISOString();
+      const end = new Date(`${range.end}T00:00:00`).toISOString();
+      try {
+        const { data, error } = await db.rpc('get_my_scheduled_consultations', { p_start: start, p_end: end });
+        if (error) throw error;
+        if (requestId !== state.sessionRequest) return;
+        state.consultations = data || [];
+      } catch (error) {
+        if (requestId !== state.sessionRequest) return;
+        state.consultations = [];
+        state.sessionError = true;
+      } finally {
+        if (requestId !== state.sessionRequest) return;
+        state.loading = false;
+        renderStudyCalendar();
+      }
+    }
     async function fetchStudentResources(studentId) {
       try {
         return await db.from('student_resources').select('*').eq('student_id', studentId).order('due_on', { ascending: true });
@@ -861,6 +1043,11 @@
     function renderAssignmentReminders() {
       const state = assignmentState;
       if (!state) return;
+      if (studyCalendarState && studyCalendarState.student.id === state.student.id) {
+        studyCalendarState.resources = state.resources || [];
+        studyCalendarState.assignmentError = Boolean(state.error);
+        renderStudyCalendar();
+      }
       const host = document.getElementById('assignment-reminders-' + state.role);
       const summary = WeeklyAssignments.reminders(state.resources);
       const message = state.error ? 'Could not load assignment reminders. Refresh to try again; completion and due dates could not be checked.'
@@ -1331,6 +1518,10 @@
             return;
           }
           byClass.set(selected, data);
+          if (studyCalendarState) {
+            studyCalendarState.schedules = [...byClass.values()];
+            renderStudyCalendar();
+          }
           render();
           if (onSelect) onSelect(selected);
         });
@@ -1533,6 +1724,7 @@
       } else {
         renderNclex(student, plans.data || [], resources.data || [], catalog.data || [], access.data || []);
       }
+      loadStudyCalendar(student, isNursing, plans.data?.[0], resources.data || [], schedules && !schedules.error ? schedules.data || [] : [], isPreview, resources.error);
       renderAssignmentReminders();
       if (resources.error && !isNursing) {
         document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';

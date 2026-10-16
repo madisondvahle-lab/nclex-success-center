@@ -304,7 +304,7 @@
       <article class="card full hidden" id="practice-plan-card"><div class="card-head"><div><p class="eyebrow">Practice priorities</p><h2>Patterns we&apos;re seeing</h2></div><span class="label">Shared view</span></div><div class="practice-grid" id="practice-suggestions"></div></article>
       <article class="card full" hidden style="display:none"><div class="card-head"><div><p class="eyebrow">Individualized analysis</p><h2>Your priority map</h2></div><span class="label">Shared view</span></div><div class="focus-list" id="focus"><p class="empty">No priorities yet.</p></div></article>
       <article class="card" id="reports-card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
-      <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. For a batch, group similar reports together and leave date and score blank unless they apply to every file.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cat">CAT</option><option value="readiness_exam">Readiness exam</option><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
+      <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. For a batch, group similar reports together and leave date and score blank unless they apply to every file.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cat">CAT</option><option value="readiness_exam">Readiness exam</option><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><p class="muted" id="upload-score-preview" role="status" aria-live="polite"></p><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
       <article class="card full coach-only" id="discuss-card" style="display:none"><div class="card-head"><div><p class="eyebrow">Consult prep</p><h2>Questions to discuss <span id="discuss-n"></span></h2></div><span class="label">Tutor only</span></div><div class="upload-list" id="discuss-list"></div></article>
       <article class="card full coach-only" id="coach-notes"><div class="card-head"><div><p class="eyebrow">Coach notes</p><h2>Private session notes</h2></div><span class="label">Tutor only</span></div><form id="coach-note-form"><label>New note<textarea id="coach-note" required maxlength="4000" placeholder="Private note for your next session or follow-up."></textarea></label><button class="button" type="submit">Save private note</button><p class="muted" id="coach-note-message" role="status"></p></form><div class="upload-list" id="coach-notes-list" style="margin-top:20px"></div></article>
     </section>
@@ -314,6 +314,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="assessment-platforms.js"></script>
+  <script src="assessment-import.js"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script>
@@ -463,7 +464,7 @@
       list.innerHTML=(notes||[]).length?(notes||[]).map(item=>'<article class="upload"><p>'+esc(item.note||'')+'</p><p class="muted">'+esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.created_at)))+'</p></article>').join(''):'<p class="empty">No private notes yet.</p>';
     }
 
-    function renderTrend(uploads){
+    function renderTrend(uploads,categories){
       let card=$('progress-trend-card');
 
       if(!card){
@@ -499,6 +500,15 @@
         return;
       }
 
+      const latest=scored[scored.length-1];
+      const byAssessment=new Map;
+      (categories||[]).forEach(item=>{
+        if(!byAssessment.has(item.assessment_id))byAssessment.set(item.assessment_id,[]);
+        byAssessment.get(item.assessment_id).push(item);
+      });
+      const breakdown=Object.entries(latest.category_scores||{}).map(([category,score])=>({category,score:Number(score)}));
+      if(!breakdown.length)(byAssessment.get(latest.id)||[]).forEach(item=>breakdown.push({category:item.category,score:Number(item.score)}));
+      const latestCategories=breakdown.filter(item=>Number.isFinite(item.score)).sort((a,b)=>a.score-b.score);
       trend.innerHTML=`
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:1.35rem;font-weight:800">
           ${scored.map((item,index)=>{
@@ -507,6 +517,7 @@
             return `<span>${esc(Math.round(item.score))}%${arrow}</span>${index<scored.length-1?'<span style="opacity:.35">→</span>':''}`;
           }).join('')}
         </div>
+        ${latestCategories.length?`<h3 style="margin:16px 0 6px;font-size:1rem">Latest CAT sections${latest.taken_on?' · '+esc(date(latest.taken_on)):''}</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 16px">${latestCategories.map(item=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.8rem"><span>${esc(item.category)}</span><strong>${Math.round(item.score)}%</strong></div>`).join('')}</div>`:''}
       `;
     }
 
@@ -1163,7 +1174,7 @@
       });
     }
     async function openReport(path){const {data,error}=await db.storage.from('assessment-reports').createSignedUrl(path,60);if(error)return alert('This report could not be opened right now.');window.open(data.signedUrl,'_blank','noopener')}
-    function renderUploads(items,insights,categories){const map=new Map(insights.map(item=>[item.assessment_id,item]));const categoriesByAssessment=new Map;categories.forEach(item=>categoriesByAssessment.set(item.assessment_id,[...(categoriesByAssessment.get(item.assessment_id)||[]),item]));$('report-count').textContent=`${items.length} report${items.length===1?'':'s'}`;$('uploads').innerHTML=items.length?items.map((item,index)=>{const insight=map.get(item.id);const chips=(categoriesByAssessment.get(item.id)||[]).map(category=>`${esc(category.category)} ${category.score==null?'':`· ${esc(category.score)}%`}`).join(' · ');const uploadedBy=item.fromHistory?'Entered by you':item.uploaded_by===session.user.id?'Uploaded by you':isAdmin?'Uploaded by student':'Uploaded by Madison';const title=item.report_label||`${item.platform} · ${item.assessment_type.replace('_',' ')}${item.attempt_number?` · Attempt ${item.attempt_number}`:''}`;return `<article class="upload"${index>=3?' style="display:none" data-extra-report="true"':''}><h3>${esc(title)}</h3><p>${esc(item.report_filename)} · ${esc(date(item.taken_on))}${item.overall_score!=null?` · ${esc(item.overall_score)}%`:''}</p><p class="muted">${uploadedBy}</p>${chips?`<p class="muted"><strong>Category snapshot:</strong> ${chips}</p>`:''}${insight?.shared_summary?`<div class="insight">${esc(insight.shared_summary)}</div>`:''}${item.report_path?`<button class="link" type="button" data-path="${esc(item.report_path)}">Open private report →</button>`:''}${isAdmin?`<button class="link" type="button" data-delete-report="${esc(item.id)}" style="color:#9b2c2c;margin-left:14px">Delete this report</button>`:''}</article>`}).join(''):'<p class="empty">No reports yet.</p>';if(items.length>3){
+    function renderUploads(items,insights,categories){const map=new Map(insights.map(item=>[item.assessment_id,item]));const categoriesByAssessment=new Map;categories.forEach(item=>categoriesByAssessment.set(item.assessment_id,[...(categoriesByAssessment.get(item.assessment_id)||[]),item]));$('report-count').textContent=`${items.length} report${items.length===1?'':'s'}`;$('uploads').innerHTML=items.length?items.map((item,index)=>{const insight=map.get(item.id),itemCategories=categoriesByAssessment.get(item.id)||[];const chips=itemCategories.map(category=>`${esc(category.category)} ${category.score==null?'':`· ${esc(category.score)}%`}`).join(' · ');const uploadedBy=item.fromHistory?'Entered by you':item.uploaded_by===session.user.id?'Uploaded by you':isAdmin?'Uploaded by student':'Uploaded by Madison';const title=item.report_label||`${item.platform} · ${item.assessment_type.replace('_',' ')}${item.attempt_number?` · Attempt ${item.attempt_number}`:''}`;const canReadScores=isAdmin&&!item.fromHistory&&item.report_path&&['cat','readiness_exam'].includes(item.assessment_type)&&!itemCategories.length;return `<article class="upload"${index>=3?' style="display:none" data-extra-report="true"':''}><h3>${esc(title)}</h3><p>${esc(item.report_filename)} · ${esc(date(item.taken_on))}${item.overall_score!=null?` · ${esc(item.overall_score)}%`:''}</p><p class="muted">${uploadedBy}</p>${chips?`<p class="muted"><strong>Category snapshot:</strong> ${chips}</p>`:''}${insight?.shared_summary?`<div class="insight">${esc(insight.shared_summary)}</div>`:''}${item.report_path?`<button class="link" type="button" data-path="${esc(item.report_path)}">Open private report →</button>`:''}${canReadScores?`<button class="link" type="button" data-read-scores="${esc(item.id)}">Read CAT scores</button><p class="muted" data-score-read-status></p>`:''}${isAdmin?`<button class="link" type="button" data-delete-report="${esc(item.id)}" style="color:#9b2c2c;margin-left:14px">Delete this report</button>`:''}</article>`}).join(''):'<p class="empty">No reports yet.</p>';if(items.length>3){
   $('uploads').insertAdjacentHTML('beforeend',
     `<button class="link" id="show-all-reports" type="button">View all ${items.length} reports →</button>`
   );
@@ -1173,7 +1184,37 @@
   });
 }
 document.querySelectorAll('[data-path]').forEach(button=>button.addEventListener('click',()=>openReport(button.dataset.path)));
+document.querySelectorAll('[data-read-scores]').forEach(button=>button.addEventListener('click',()=>readTimelineScores(button.dataset.readScores,button)));
 document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEventListener('click',()=>deleteReport(button.dataset.deleteReport)))}
+    async function readTimelineScores(id,button){
+      const item=currentUploads.find(upload=>upload.id===id&&!upload.fromHistory),status=button.closest('.upload').querySelector('[data-score-read-status]');
+      if(!item)return;
+      button.disabled=true;status.textContent='Reading the private report…';
+      try{
+        const {data,error}=await db.storage.from('assessment-reports').download(item.report_path);
+        if(error)throw error;
+        const file=new File([data],item.report_filename||'assessment.pdf',{type:item.report_mime_type||data.type||'application/pdf'});
+        const result=await AssessmentImport.readFile(file),categories=Object.entries(result.cats||{});
+        const summary=[result.overall!=null?'Overall: '+result.overall+'%':'',...categories.map(([category,score])=>category+': '+score+'%')].filter(Boolean);
+        if(!summary.length){status.textContent=result.note||'No scores were recognized in this report.';return}
+        if(!confirm('Scores read from '+(item.report_filename||'this report')+':\n\n'+summary.join('\n')+'\n\nSave these scores to the student timeline?')){status.textContent='No changes made.';return}
+        if(categories.length){
+          const rows=categories.map(([category,score])=>({assessment_id:item.id,category,score:Number(score),total_count:Number(result.counts?.[category])>0?Number(result.counts[category]):null}));
+          const savedCategories=await db.from('student_assessment_categories').insert(rows);
+          if(savedCategories.error)throw savedCategories.error;
+        }
+        const patch={};
+        if(item.overall_score==null&&result.overall!=null)patch.overall_score=result.overall;
+        if(!item.taken_on&&result.date)patch.taken_on=result.date;
+        if(Object.keys(patch).length){
+          const savedUpload=await db.from('student_assessment_uploads').update(patch).eq('id',item.id);
+          if(savedUpload.error){status.textContent=categories.length?'Category scores saved, but the overall score/date could not be saved: '+savedUpload.error.message:'Could not save extracted scores: '+savedUpload.error.message;return}
+        }
+        status.textContent='Scores saved. Refreshing the timeline…';
+        await loadStudent(student);
+      }catch(error){status.textContent='Could not read or save scores: '+(error.message||'Please try again.')}
+      finally{button.disabled=false}
+    }
     async function deleteReport(id){
       const item=currentUploads.find(x=>x.id===id);if(!item)return;
       if(!confirm('Permanently delete this report ('+(item.report_label||item.platform)+', '+date(item.taken_on)+')? This also removes its scores and attached file and cannot be undone.'))return;
@@ -1400,7 +1441,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const allCategories=[...(categories.data||[]).map(c=>({...c,n:c.total_count!=null?Number(c.total_count):undefined})),...ext.categories];
       const practiceRows=practiceResults.data||[];
       renderSummary(focus.data||[],currentUploads,buildPortalScores(inhouseAttempts,practiceRows));
-      renderTrend(currentUploads);
+      renderTrend(currentUploads,allCategories);
       renderRecentAssessments(currentUploads);
       renderClientNeeds(allCategories);
       renderSystemNeeds(allCategories);
@@ -1461,7 +1502,73 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       $('loading').classList.add('hidden');
       $('app').classList.remove('hidden');
     }
-    $('upload-form').addEventListener('submit',async event=>{event.preventDefault();const files=Array.from($('report-file').files||[]);const message=$('upload-message');if(!files.length)return;const oversized=files.find(file=>file.size>10485760);if(oversized){message.textContent='Please choose files under 10 MB each.';return}const values={platform:$('platform').value,assessment_type:$('assessment-type').value,report_label:$('report-label').value.trim()||null,attempt_number:$('attempt-number').value||null,taken_on:$('taken-on').value||null,overall_score:$('overall-score').value||null};let uploaded=0,failed=0;for(let index=0;index<files.length;index++){const file=files[index];message.textContent=(isAdmin?'Uploading to the student’s private timeline…':'Uploading your private reports…')+' ('+(index+1)+' of '+files.length+')';const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');const path=`${student.id}/${crypto.randomUUID()}-${safe}`;const upload=await db.storage.from('assessment-reports').upload(path,file,{contentType:file.type,upsert:false});if(upload.error){failed++;continue}const row={student_id:student.id,platform:values.platform,assessment_type:values.assessment_type,report_label:files.length===1?values.report_label:null,attempt_number:files.length===1?values.attempt_number:null,taken_on:values.taken_on,overall_score:values.overall_score,report_path:path,report_filename:file.name,report_mime_type:file.type,uploaded_by:session.user.id};const saved=await db.from('student_assessment_uploads').insert(row);if(saved.error){failed++;continue}uploaded++}message.textContent=uploaded?uploaded+' report'+(uploaded===1?'':'s')+' added to the private timeline.'+(failed?' '+failed+' could not be added.':''):'No reports could be added. Please try again.';$('upload-form').reset();if(uploaded)loadStudent(student)});
+    let parsedTimelineFile=null,parsedTimelineScores=null,autoFilledTimelineOverall=null,autoFilledTimelineDate=null,timelineReadId=0;
+    function clearAutoFilledTimelineValues(){
+      if(autoFilledTimelineOverall!==null&&$('overall-score').value===String(autoFilledTimelineOverall))$('overall-score').value='';
+      if(autoFilledTimelineDate&&$('taken-on').value===autoFilledTimelineDate)$('taken-on').value='';
+      autoFilledTimelineOverall=null;autoFilledTimelineDate=null;
+    }
+    async function previewTimelineScores(){
+      const requestId=++timelineReadId,files=Array.from($('report-file').files||[]),preview=$('upload-score-preview'),button=$('upload-button');
+      clearAutoFilledTimelineValues();parsedTimelineFile=null;parsedTimelineScores=null;
+      if(!files.length||!['cat','readiness_exam'].includes($('assessment-type').value)){preview.textContent='';button.disabled=false;return}
+      if(files.length!==1){preview.textContent='Automatic score reading is available for one CAT or readiness report at a time. Batch uploads will save the reports without extracting scores.';button.disabled=false;return}
+      const file=files[0];parsedTimelineFile=file;button.disabled=true;preview.textContent='Reading CAT scores in your browser…';
+      try{
+        const result=await AssessmentImport.readFile(file);
+        if(parsedTimelineFile!==file)return;
+        parsedTimelineScores=result;
+        if(result.overall!=null&&$('overall-score').value===''){
+          $('overall-score').value=result.overall;autoFilledTimelineOverall=result.overall;
+        }
+        if(result.date&&!$('taken-on').value){
+          $('taken-on').value=result.date;autoFilledTimelineDate=result.date;
+        }
+        const categories=Object.entries(result.cats||{});
+        const found=[];
+        if(result.overall!=null)found.push('overall '+result.overall+'%');
+        if(categories.length)found.push(categories.length+' category '+(categories.length===1?'score':'scores')+': '+categories.map(([name,score])=>name+' '+score+'%').join(', '));
+        preview.textContent=found.length?'Found '+found.join(' · ')+'. Check the extracted values; they will be saved with this report when uploaded.':(result.note||'No scores were recognized. The report can still be uploaded, then scores can be entered under “Enter exam results.”');
+      }catch(error){
+        if(parsedTimelineFile===file){parsedTimelineFile=null;parsedTimelineScores=null;preview.textContent='Could not read scores automatically. The report can still be uploaded, then scores can be entered under “Enter exam results.”'}
+      }finally{
+        if(requestId===timelineReadId)button.disabled=false;
+      }
+    }
+    $('report-file').addEventListener('change',previewTimelineScores);
+    $('assessment-type').addEventListener('change',previewTimelineScores);
+    $('upload-form').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const files=Array.from($('report-file').files||[]),message=$('upload-message');
+      if(!files.length)return;
+      const oversized=files.find(file=>file.size>10485760);
+      if(oversized){message.textContent='Please choose files under 10 MB each.';return}
+      const values={platform:$('platform').value,assessment_type:$('assessment-type').value,report_label:$('report-label').value.trim()||null,attempt_number:$('attempt-number').value||null,taken_on:$('taken-on').value||null,overall_score:$('overall-score').value||null};
+      const scoresToSave=files.length===1&&parsedTimelineFile===files[0]?parsedTimelineScores:null;
+      let uploaded=0,failed=0,scoresFailed=false;
+      $('upload-button').disabled=true;
+      try{
+        for(let index=0;index<files.length;index++){
+          const file=files[index];
+          message.textContent=(isAdmin?'Uploading to the student’s private timeline…':'Uploading your private reports…')+' ('+(index+1)+' of '+files.length+')';
+          const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-'),path=`${student.id}/${crypto.randomUUID()}-${safe}`;
+          const upload=await db.storage.from('assessment-reports').upload(path,file,{contentType:file.type,upsert:false});
+          if(upload.error){failed++;continue}
+          const row={student_id:student.id,platform:values.platform,assessment_type:values.assessment_type,report_label:files.length===1?values.report_label:null,attempt_number:files.length===1?values.attempt_number:null,taken_on:values.taken_on,overall_score:values.overall_score,report_path:path,report_filename:file.name,report_mime_type:file.type,uploaded_by:session.user.id};
+          const saved=await db.from('student_assessment_uploads').insert(row).select('id').single();
+          if(saved.error){failed++;continue}
+          uploaded++;
+          if(scoresToSave&&scoresToSave.cats&&Object.keys(scoresToSave.cats).length){
+            const categories=Object.entries(scoresToSave.cats).map(([category,score])=>({assessment_id:saved.data.id,category,score:Number(score),total_count:Number(scoresToSave.counts?.[category])>0?Number(scoresToSave.counts[category]):null}));
+            const categorySave=await db.from('student_assessment_categories').insert(categories);
+            if(categorySave.error)scoresFailed=true;
+          }
+        }
+        message.textContent=uploaded?uploaded+' report'+(uploaded===1?'':'s')+' added to the private timeline.'+(failed?' '+failed+' could not be added.':'')+(scoresFailed?' The report was saved, but its extracted category scores could not be saved. Add them under “Enter exam results.”':''):'No reports could be added. Please try again.';
+        $('upload-form').reset();$('upload-score-preview').textContent='';clearAutoFilledTimelineValues();parsedTimelineFile=null;parsedTimelineScores=null;
+        if(uploaded)await loadStudent(student);
+      }finally{$('upload-button').disabled=false}
+    });
     $('focus-form')?.addEventListener('submit',async event=>{event.preventDefault();const message=$('focus-message');const row={student_id:student.id,focus_area:$('focus-name').value.trim(),priority:$('focus-priority').value,current_score:$('focus-current').value||null,previous_score:$('focus-previous').value||null,trend:$('focus-trend').value,next_step:$('focus-next').value.trim()||null,updated_by:session.user.id,updated_at:new Date().toISOString()};const saved=await db.from('student_focus_areas').upsert(row,{onConflict:'student_id,focus_area'});message.textContent=saved.error?'We could not save that focus area. Please try again.':'Shared focus area saved.';if(!saved.error){$('focus-form').reset();loadStudent(student)}});
         function parseImportedScores(raw){const scores=new Map;String(raw||'').split(/\r?\n/).forEach(source=>{const line=source.replace(/\u00a0/g,' ').trim();let match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d{1,3}(?:\.\d+)?)\s*%\s*$/);let score;if(match){score=Number(match[2])}else{match=line.match(/^(.*?)(?:\t+|\s{2,}|[:|,]\s*|\s)(\d+)\s*\/\s*(\d+)\s*$/);if(match&&Number(match[3]))score=Math.round(Number(match[2])/Number(match[3])*100)}if(!match||!Number.isFinite(score)||score<0||score>100)return;const category=match[1].replace(/^[-•\s]+/,'').trim();if(category.length>2)scores.set(category,score)});return [...scores.entries()].map(([category,score])=>({category,score}))}
     $('parse-review-scores')?.addEventListener('click',()=>{const rows=parseImportedScores($('review-raw').value);const message=$('review-message');if(!rows.length){message.textContent='No score rows were recognized. Paste one category and score per line, such as “Management of Care: 55%.”';return}$('review-categories').value=rows.map(item=>item.category+': '+item.score).join('\n');message.textContent=rows.length+' category score'+(rows.length===1?' was':'s were')+' added for your review. Edit anything needed, then publish the summary.'});
