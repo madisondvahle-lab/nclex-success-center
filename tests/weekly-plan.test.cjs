@@ -58,6 +58,35 @@ test('week view marks practice and CAT days', () => {
   assert.deepEqual([...week.filter(d => d.cat).map(d => d.day)], ['tue', 'sat']);
 });
 
+test('student day changes preserve workload, separate practice from CATs, and space CATs across weeks', () => {
+  const WP = load();
+  assert.equal(WP.dayChangeError(WP.DEFAULTS, ['tue', 'thu', 'sun'], ['mon', 'fri']), '');
+  assert.match(WP.dayChangeError(WP.DEFAULTS, ['tue'], ['mon', 'fri']), /3 practice days and 2 CAT days/);
+  assert.match(WP.dayChangeError(WP.DEFAULTS, ['mon', 'wed', 'fri'], ['mon', 'sat']), /separate days/);
+  assert.match(WP.dayChangeError(WP.DEFAULTS, ['tue', 'thu', 'fri'], ['sun', 'mon']), /between CAT/);
+  assert.match(WP.dayChangeError(WP.DEFAULTS, ['mon', 'mon', 'fri'], ['tue', 'sat']), /only once/);
+  assert.match(WP.dayChangeError(WP.DEFAULTS, ['mon', 'bad', 'fri'], ['tue', 'sat']), /valid days/);
+  assert.match(WP.dayChangeError(WP.DEFAULTS, null, []), /valid days/);
+  assert.equal(WP.dayChangeError({ practice_days: [], cat_days: [] }, [], []), '');
+});
+
+test('student schedule RPC changes only owner days and checks stale edits without broad update access', () => {
+  const sql = read('supabase-student-study-days-migration.sql');
+  assert.match(sql, /s\.auth_user_id = auth\.uid\(\) AND s\.archived_at IS NULL/);
+  assert.match(sql, /student_type IS DISTINCT FROM 'nursing_student'/);
+  assert.match(sql, /FOR UPDATE OF sp/);
+  assert.match(sql, /updated_at IS DISTINCT FROM p_expected_updated_at/);
+  assert.match(sql, /cardinality\(practice\) <> cardinality\(saved\.practice_days\)/);
+  assert.match(sql, /IF practice && cats/);
+  assert.match(sql, /SET practice_days = practice, cat_days = cats, updated_at = clock_timestamp\(\)/);
+  assert.match(sql, /FROM PUBLIC, anon/);
+  assert.doesNotMatch(sql, /CREATE POLICY|UPDATE public\.student_resources|SET (focus|practice_questions|practice_platform|cat_platform)/i);
+  const page = read('student-dashboard.html');
+  assert.doesNotMatch(page, /Ready to practice\?|roadmap-nclex|daily-priorities-nclex|What matters now/);
+  assert.match(page, /assignmentState\?\.isPreview/);
+  assert.match(page, /studyCalendarState\.plan = data/);
+});
+
 test('migration extends the existing RLS-protected plan table additively', () => {
   const sql = read('supabase-weekly-study-plan-migration.sql');
   assert.match(sql, /ALTER TABLE student_study_plans\s+ADD COLUMN IF NOT EXISTS/);

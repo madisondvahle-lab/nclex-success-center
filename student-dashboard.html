@@ -60,6 +60,17 @@
     .plan-chip{display:inline-block;margin:0 6px 6px 0;padding:5px 10px;border-radius:999px;background:#f7e5e3;color:var(--rose);font-size:.78rem;font-weight:800}
     .plan-chip.topic{background:var(--teal-light);color:var(--teal)}
     .plan-note{margin:14px 0 0;padding:12px 14px;background:var(--soft);font-size:.86rem;line-height:1.5}
+    .study-days-editor{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+    .study-days-editor fieldset{margin:16px 0;padding:0;border:0}
+    .study-days-editor legend{margin-bottom:8px;font-weight:800;font-size:.88rem}
+    .study-day-options{display:flex;flex-wrap:wrap;gap:8px}
+    .study-day-options label{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;background:var(--soft);cursor:pointer}
+    .study-day-options input{accent-color:var(--teal);width:18px;height:18px}
+    .study-days-editor :is(input,button):focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+    .study-days-editor button{min-height:44px;padding:10px 18px;border:0;background:var(--teal);color:#fff;font:inherit;font-size:.85rem;font-weight:800;cursor:pointer}
+    .study-days-editor button:disabled{opacity:.6;cursor:not-allowed}
+    .study-days-status{margin:12px 0 0;font-size:.85rem;line-height:1.5}
+    .study-days-status.error{color:#9c3535}
     .weekly{background:var(--ink);color:#fff}
     .weekly .label{background:#f2c2c9;color:var(--plum)}
     .weekly .card-head{margin-bottom:14px}
@@ -447,34 +458,23 @@
         </div>
         <aside class="countdown" id="countdown-nclex" hidden><strong></strong><span></span></aside>
       </section>
-      <section class="practice-start" aria-labelledby="practice-title-nclex">
-        <div>
-          <h2 id="practice-title-nclex">Ready to practice?</h2>
-          <p>Choose topics and question count in the Question Bank.</p>
-        </div>
-        <div class="practice-actions">
-          <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
-        </div>
-      </section>
       <section class="grid">
         <article class="card" id="weekly-plan-card" style="grid-column:1/-1" hidden>
           <div class="card-head"><div><p class="eyebrow">Your weekly rhythm</p><h2>My weekly study plan</h2></div><span class="label" id="weekly-plan-total">Set by Madison</span></div>
           <ol class="plan-week" id="weekly-plan-days" aria-label="Weekly schedule"></ol>
           <div class="plan-focus" id="weekly-plan-focus"></div>
+          <form class="study-days-editor" id="study-days-form" aria-describedby="study-days-help">
+            <p class="card-desc" id="study-days-help"></p>
+            <fieldset id="study-practice-days"><legend>Practice days</legend><div class="study-day-options"></div></fieldset>
+            <fieldset id="study-cat-days"><legend>CAT days</legend><div class="study-day-options"></div></fieldset>
+            <button type="submit" id="study-days-save">Save my days</button>
+            <p class="study-days-status" id="study-days-status" role="status" aria-live="polite"></p>
+          </form>
         </article>
         <article class="card modules" id="modules-nclex-card">
           <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
           <div class="module-library" id="modules-nclex"><p class="empty">Modules available to you will appear here.</p></div>
           <div id="learning-resources-nclex" hidden></div>
-        </article>
-        <article class="card">
-          <div class="card-head"><div><p class="eyebrow">Your roadmap</p><h2 id="plan-title-nclex">NCLEX Roadmap</h2></div><span class="label">Personal plan</span></div>
-          <ol class="roadmap" id="roadmap-nclex"><li><span>1</span><div><strong>Your roadmap is being prepared.</strong><p>Madison will add your test-date plan and weekly focus here.</p></div></li></ol>
-        </article>
-        <article class="card weekly">
-          <div class="card-head"><div><p class="eyebrow">This week</p><h2>What matters now</h2></div><span class="label">Next steps</span></div>
-          <p id="weekly-intro-nclex">Your current weekly priorities will appear here after Madison updates your plan.</p>
-          <div class="task-list" id="daily-priorities-nclex"></div>
         </article>
         <article class="card" id="cat-results-card" style="display:none">
           <div class="card-head"><div><p class="eyebrow">Archer CAT Results</p><h2>Your performance by category</h2></div><span class="label">Latest test</span></div>
@@ -875,11 +875,12 @@
       return daily;
     }
 
-    // Read-only weekly schedule + focus categories set on madison-study-plans.html.
+    let weeklyPlanState = null;
     function renderWeeklyPlan(plan) {
       const card = document.getElementById('weekly-plan-card');
       if (!card || !plan || !Array.isArray(plan.practice_days) || !window.WeeklyPlan) return;
       const p = WeeklyPlan.normalize(plan);
+      weeklyPlanState = plan;
       document.getElementById('weekly-plan-days').innerHTML = WeeklyPlan.week(p).map(d => {
         const parts = [];
         if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
@@ -891,8 +892,62 @@
       document.getElementById('weekly-plan-focus').innerHTML =
         `<h3>Focus your practice on</h3>${chips || '<p class="empty" style="padding:0">Madison will add your focus categories after your next CAT review.</p>'}` +
         (p.plan_notes ? `<p class="plan-note">${text(p.plan_notes)}</p>` : '');
+      const preview = assignmentState?.isPreview;
+      document.getElementById('study-days-help').textContent =
+        `Choose ${p.practice_days.length} practice days and ${p.cat_days.length} spaced CAT days. Madison sets your question counts, platforms, and focus. Changes update your recurring calendar and future assignments; existing assignment dates stay the same.` +
+        (preview ? ' Schedule editing is read-only in staff preview.' : '');
+      for (const [kind, selected] of [['practice', p.practice_days], ['cat', p.cat_days]]) {
+        const fieldset = document.getElementById('study-' + kind + '-days');
+        fieldset.disabled = Boolean(preview);
+        fieldset.querySelector('.study-day-options').innerHTML = WeeklyPlan.DAYS.map(day =>
+          `<label><input type="checkbox" name="${kind}_days" value="${day}" ${selected.includes(day) ? 'checked' : ''}><span>${WeeklyPlan.LONG[day]}</span></label>`
+        ).join('');
+      }
+      document.getElementById('study-days-save').disabled = Boolean(preview);
       card.hidden = false;
     }
+
+    async function saveStudyDays(event) {
+      event.preventDefault();
+      if (!weeklyPlanState || assignmentState?.isPreview) return;
+      const form = event.currentTarget;
+      const button = document.getElementById('study-days-save');
+      if (button.disabled) return;
+      const status = document.getElementById('study-days-status');
+      const selected = kind => Array.from(form.querySelectorAll(`input[name="${kind}_days"]:checked`), input => input.value);
+      const practice = selected('practice'), cats = selected('cat');
+      const validation = WeeklyPlan.dayChangeError(weeklyPlanState, practice, cats);
+      status.classList.toggle('error', Boolean(validation));
+      status.textContent = validation;
+      if (validation) return;
+      button.disabled = true;
+      form.querySelectorAll('fieldset').forEach(fieldset => { fieldset.disabled = true; });
+      status.textContent = 'Saving your days...';
+      try {
+        const { data, error } = await db.rpc('update_my_study_days', {
+          p_practice_days: practice, p_cat_days: cats,
+          p_expected_updated_at: weeklyPlanState.updated_at
+        });
+        if (error) throw error;
+        if (!data || !Array.isArray(data.practice_days) || !Array.isArray(data.cat_days)) {
+          throw new Error('The saved schedule could not be confirmed. Reload this page to check your plan.');
+        }
+        renderWeeklyPlan(data);
+        if (assignmentState) assignmentState.plan = data;
+        if (studyCalendarState) {
+          studyCalendarState.plan = data;
+          renderStudyCalendar();
+        }
+        status.textContent = 'Your days are saved. Existing dated assignments have not moved.';
+      } catch (error) {
+        status.classList.add('error');
+        status.textContent = 'Could not save your days: ' + error.message;
+      } finally {
+        button.disabled = false;
+        form.querySelectorAll('fieldset').forEach(fieldset => { fieldset.disabled = false; });
+      }
+    }
+    document.getElementById('study-days-form').addEventListener('submit', saveStudyDays);
 
     let assignmentState = null;
     let studyCalendarState = null;
@@ -1060,10 +1115,8 @@
           const library = document.getElementById('learning-resources-nclex');
           library.hidden = false;
           library.innerHTML = '<p class="empty">Could not load study resources. Reload this page to try again.</p>';
-          document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
         } else {
           renderLibraryResources(state.resources, 'learning-resources-nclex');
-          await renderThisWeek(state.student, state.resources, state.plan);
         }
       }
     }
@@ -1121,15 +1174,6 @@
           ? `<strong>${days} days</strong><span>until your target NCLEX date</span>`
           : `<strong>Target date passed</strong><span>Update your test date in your study calendar</span>`;
       }
-      const daily = renderRoadmapInto(document.getElementById('roadmap-nclex'), document.getElementById('plan-title-nclex'), plans[0]);
-      if (daily.length) {
-        document.getElementById('weekly-intro-nclex').textContent = 'These are the focused next steps Madison has selected for your current plan.';
-        document.getElementById('daily-priorities-nclex').innerHTML = daily.map(item => {
-          const title  = typeof item === 'string' ? item : (item.title || item.task || 'Study priority');
-          const detail = typeof item === 'object'  ? (item.detail || item.description || '') : '';
-          return `<div class="task"><strong>${text(title)}</strong>${detail ? `<span>${text(detail)}</span>` : ''}</div>`;
-        }).join('');
-      }
       renderWeeklyPlan(plans[0]);
       renderLibraryResources(resources, 'learning-resources-nclex');
       renderModulesInto('modules-nclex', catalog, access);
@@ -1163,7 +1207,6 @@
       initLogCat(student);
       initGraphics();
       renderCatTrend(student);
-      renderThisWeek(student, resources, plans[0]);
       document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
@@ -1268,60 +1311,6 @@
         }
         btn.disabled = false;
       });
-    }
-
-    // Fills "This week" with the weakest categories and the week's practice, using only data the student can read.
-    async function renderThisWeek(student, resources, plan) {
-      if (assignmentState?.error) {
-        document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
-        return;
-      }
-      const host = document.getElementById('daily-priorities-nclex');
-      if (!host) return;
-      const assigned = WeeklyAssignments.progress(resources || []);
-      if (assigned.count) {
-        document.getElementById('weekly-intro-nclex').textContent = 'Track the dated assignments Madison selected for this week.';
-        host.innerHTML = `<div class="task"><strong>Assigned week: ${assigned.done} of ${assigned.count} complete</strong><span>${assigned.questionsDone} of ${assigned.questions} practice questions · ${assigned.catsDone} of ${assigned.cats} CATs marked complete. Completion is self-reported; scores remain in practice and assessment history.</span><a class="weekly-assignment-link" href="#study-calendar">View study calendar</a></div>`;
-        return;
-      }
-      if (plan && Array.isArray(plan.practice_days)) {
-        document.getElementById('weekly-intro-nclex').textContent = 'Your saved weekly rhythm.';
-        host.innerHTML = `<div class="task"><strong>${text(WeeklyPlan.summary(plan))}</strong><span>No dated assignments have been generated for this week yet. Your saved weekly plan and focus are shown below.</span></div>`;
-        return;
-      }
-      const [ea, pr] = await Promise.all([
-        db.from('external_assessments').select('taken_at,created_at,category_scores').eq('student_id', student.id),
-        db.from('student_supplemental_practice_results').select('score,total_questions,completed_at').eq('student_id', student.id).gte('completed_at', new Date(Date.now() - 7 * 86400000).toISOString())
-      ]);
-      const rows = (ea.data || []).slice().sort((a, b) => String(a.taken_at || a.created_at).localeCompare(String(b.taken_at || b.created_at)));
-      const latest = rows[rows.length - 1];
-      const weak = latest ? Object.entries(latest.category_scores || {}).map(([n, v]) => [n, Number(v)]).filter(x => Number.isFinite(x[1])).sort((a, b) => a[1] - b[1]).slice(0, 3) : [];
-      const week = pr.error ? [] : (pr.data || []);
-      const done = week.reduce((a, r) => a + (Number(r.total_questions) || 0), 0);
-      const right = week.reduce((a, r) => a + (Number(r.score) || 0), 0);
-      const next = (resources || []).filter(r => r.due_on && r.due_on >= new Date().toISOString().slice(0, 10)).sort((a, b) => a.due_on.localeCompare(b.due_on))[0];
-      let html = '';
-      const GOAL = 50;
-      const btn = 'display:inline-block;margin-top:8px;padding:6px 12px;background:#f3bfc7;color:#3a2330;font-weight:800;font-size:.74rem;text-decoration:none;border-radius:4px';
-      weak.forEach(w => {
-        const pct = Math.round(w[1]);
-        html += `<div class="task"><strong>${text(w[0])} · ${pct}%</strong><span>${pct < 65 ? 'Below the 65% target. Do 10–15 questions in this area this week.' : 'Close to target. Keep it sharp with a short set.'}</span><a href="supplemental-practice.html?mixed=10&cat=${encodeURIComponent(w[0])}" style="${btn}">Review this area →</a></div>`;
-      });
-      const pctDone = Math.min(100, Math.round(done / GOAL * 100));
-      html += `<div class="task"><strong>Weekly goal: ${Math.min(done, GOAL)} of ${GOAL} NCLEX review questions</strong><span>${done ? Math.round(right / done * 100) + '% correct so far this week.' : 'Nothing logged yet. Start with a short set today.'}</span><div style="height:6px;background:#35516a;border-radius:3px;margin-top:8px"><div style="height:6px;width:${pctDone}%;background:#f3bfc7;border-radius:3px"></div></div>${done >= GOAL ? '' : `<a href="supplemental-practice.html" style="${btn}">Open NCLEX review →</a>`}</div>`;
-      const roadmap = document.getElementById('roadmap-nclex');
-      if (roadmap && /being prepared/.test(roadmap.textContent)) {
-        const steps = [];
-        if (weak.length) steps.push(['Close your biggest gaps', `Work on ${weak.map(w => w[0]).join(', ')} first. These were your lowest categories on your latest exam.`]);
-        steps.push(['Practice a little every day', `Aim for ${GOAL} questions a week, and read every rationale, including for the ones you got right.`]);
-        steps.push(['Retake a full CAT', 'After a week or two of focused practice, take another CAT so we can see which categories moved.']);
-        if (student.nclex_target_date) steps.push(['Hold your test date', `Your target date is ${new Date(student.nclex_target_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}. Madison will fine-tune this plan with you.`]);
-        roadmap.innerHTML = steps.map((st, i) => `<li><span>${i + 1}</span><div><strong>${text(st[0])}</strong><p>${text(st[1])}</p></div></li>`).join('');
-      }
-      if (next) html += `<div class="task"><strong>Next due: ${text(next.title || 'Assigned item')}</strong><span>${new Date(next.due_on + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span></div>`;
-      host.insertAdjacentHTML('beforeend', html);
-      const intro = document.getElementById('weekly-intro-nclex');
-      if (intro && /will appear here/.test(intro.textContent)) intro.textContent = 'Do these this week. Madison will adjust them as your scores move.';
     }
 
     // Weekly CAT trend from the assessments Madison enters each week.
@@ -1653,7 +1642,7 @@
 
       const results = await Promise.all(fetches);
       const [plans, resources, catalog, access, schedules, practiceRes] = results;
-      assignmentState = { student, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
+      assignmentState = { student, isPreview, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
@@ -1675,7 +1664,6 @@
         const library = document.getElementById('learning-resources-nclex');
         library.hidden = false;
         library.innerHTML = '<p class="empty">Could not load study resources. Reload this page to try again.</p>';
-        document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
       }
       window.addEventListener('focus', refreshCalendarAssignments);
       window.addEventListener('pageshow', event => { if (event.persisted) refreshCalendarAssignments(); });
