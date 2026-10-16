@@ -172,6 +172,7 @@ The Admin home Prospects section includes the admin-only merge workflow for dupl
 ## Question bank management and flags
 The master `questions` table now has `item_type`/`item_data` (SATA, bowtie, case), `question_no` (Q-0001 numbering) and a `question_flags` table (student reports and 'discuss' flags). `question-bank-review.html` manages the bank (bulk actions, edit, flagged inboxes). Details and the SQL files to run are in `.agents/tasks/consult-diagnostic.md`. Deployment is unchanged: GitHub Pages from `main`.
 - NCLEX student practice in `supplemental-practice.html` offers broad active-MCQ category filters, optional topic narrowing, and difficulty selection (Medium + Hard by default). Topic/category counts reflect active MCQs; student practice still does not render NGN item types.
+- Student question-bank access uses the authenticated SELECT policy in `supabase-questions-student-read-rls-fix.sql` (applied live 2026-10-16); students can read active rows only, while the existing admin policy continues to govern inactive questions and management. Verified as the authenticated role: 366 active MCQs visible (75 easy, 189 medium, 102 hard).
 - Ideas not yet built: weekly per-client report with chart, admin "Needs attention" list, shared category names across CPR/practice/diagnostic, link CPR tracker to client records, hide/redirect `diagnostic.html?mode=mock`.
 
 ## Student CAT logging (Phase 9)
