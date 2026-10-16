@@ -121,6 +121,7 @@ test('admin appointment calendar uses the existing shared month-grid helpers and
   assert.ok(html.indexOf('id="appointment-calendar"') < html.indexOf('id="directory"'));
   assert.match(html, /id="appointments-grid"/);
   assert.match(html, /tutoring_session:'Tutoring session'/);
+  assert.match(html, /response\.clone\(\)\.json\(\)/);
   assert.match(webhook, /CALENDLY_TUTORING_EVENT_TYPE_URI/);
   assert.match(webhook, /eventType === tutoringType\) consultType = "tutoring_session"/);
   assert.match(webhook, /eventName === "60-Min Single Tutoring Session"/);

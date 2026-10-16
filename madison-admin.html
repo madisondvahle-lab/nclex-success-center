@@ -462,7 +462,14 @@
       status.textContent='Checking Calendly for upcoming meetings…';
       try{
         const {data,error}=await db.functions.invoke('import-calendly-appointments',{body:{}});
-        if(error)throw error;
+        if(error){
+          const response=error.context;
+          if(response&&typeof response.clone==='function'){
+            const result=await response.clone().json().catch(()=>null);
+            if(result?.error)throw new Error(result.error);
+          }
+          throw error;
+        }
         if(!data?.ok)throw new Error(data?.error||'Calendly appointments could not be imported.');
         status.textContent=`Import complete: ${data.imported} added, ${data.skipped} already recorded or not a supported event type.`;
         await loadAppointmentCalendar();
