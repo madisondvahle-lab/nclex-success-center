@@ -61,24 +61,16 @@ test('action URLs reject executable schemes but retain stored assignment links',
   assert.equal(W.actionUrl('supplemental-practice.html?assignment=one', base), 'https://portal.studywithmadison.com/supplemental-practice.html?assignment=one');
   for (const url of ['', null, 'javascript:alert(1)', 'data:text/html,bad']) assert.equal(W.actionUrl(url, base), '');
 });
-test('both roles render visible empty/error states, escape assignment content, and refresh from the same student-scoped query', async () => {
+test('calendar retains student-scoped assignment refresh and explicit load errors without reminder panels', async () => {
   const html = read('student-dashboard.html');
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
-  assert.match(html, /window\.addEventListener\('focus', refreshAssignmentReminders\)/);
+  assert.match(html, /window\.addEventListener\('focus', refreshCalendarAssignments\)/);
   assert.match(html, /event\.persisted/);
-  assert.match(html, /if \(!document\.hidden\) refreshAssignmentReminders/);
-  let output = '', queryStudent, response = { data: [], error: null };
-  const hostClasses = new Set();
-  const host = {
-    set innerHTML(value) { output = value; }, get innerHTML() { return output; },
-    classList: {
-      toggle(name, force) { if (force) hostClasses.add(name); else hostClasses.delete(name); },
-      contains(name) { return hostClasses.has(name); }
-    },
-    querySelector: () => ({ addEventListener() {} }), querySelectorAll: () => []
-  };
+  assert.match(html, /if \(!document\.hidden\) refreshCalendarAssignments/);
+  let queryStudent, renders = 0, response = { data: [], error: null };
   const context = {
-    document: { getElementById: id => id.startsWith('assignment-reminders-') ? host : { innerHTML: '', querySelectorAll: () => [] } }, location: { href: 'https://portal.studywithmadison.com/student-dashboard.html' },
+    document: { getElementById: () => ({ innerHTML: '' }) },
+    renderStudyCalendar: () => { renders++; },
     WeeklyAssignments: helpers(), text: v => String(v ?? '').replaceAll('<', '&lt;').replaceAll('"', '&quot;'),
     studentResourceText: v => String(v).replaceAll('<', '&lt;'),
     db: { from: table => { assert.equal(table, 'student_resources'); return { select: () => ({ eq: (field, id) => {
@@ -88,30 +80,23 @@ test('both roles render visible empty/error states, escape assignment content, a
   };
   vm.createContext(context);
   vm.runInContext(html.slice(html.indexOf('let assignmentState ='), html.indexOf('function studentResourceText(')), context);
+  context.renderStudyCalendar = () => { renders++; };
   for (const role of ['nclex', 'nursing']) {
-    vm.runInContext(`assignmentState = { role: '${role}', student: { id: 'own-student' }, resources: [], busy: false }; renderAssignmentReminders();`, context);
-    assert.match(output, /No dated practice or CAT assignments/);
-    assert.equal(host.classList.contains('is-quiet'), true);
+    vm.runInContext(`assignmentState = { role: '${role}', student: { id: 'own-student' }, resources: [], busy: false }; studyCalendarState = { student: { id: 'own-student' } }; syncCalendarAssignments();`, context);
     response = { data: [row('done', '2026-10-14', 'practice', 'saved')], error: null };
-    await context.refreshAssignmentReminders();
+    await context.refreshCalendarAssignments();
     assert.equal(queryStudent, 'own-student');
-    assert.match(output, /All assigned practice and CATs are marked complete/);
-    assert.equal(host.classList.contains('is-quiet'), true);
+    assert.equal(vm.runInContext('studyCalendarState.resources[0].id', context), 'done');
+    assert.equal(vm.runInContext('studyCalendarState.assignmentError', context), false);
     response = { data: null, error: { message: 'Unavailable' } };
-    await context.refreshAssignmentReminders();
-    assert.match(output, /Could not load assignment reminders/);
-    assert.equal(host.classList.contains('is-quiet'), false);
-    assert.doesNotMatch(output, /All assigned practice/);
-    response = { data: [{ ...row('unsafe', '2020-01-01'), title: '<img src=x onerror=bad>', url: 'javascript:bad()' }], error: null };
-    await context.refreshAssignmentReminders();
-    assert.match(output, /&lt;img/);
-    assert.equal(host.classList.contains('is-quiet'), false);
-    assert.doesNotMatch(output, /href="javascript:/);
-    assert.match(output, /Assignment link unavailable/);
+    await context.refreshCalendarAssignments();
+    assert.equal(vm.runInContext('studyCalendarState.assignmentError', context), true);
     response = { data: [], error: null };
-    await context.refreshAssignmentReminders();
-    assert.match(output, /No dated practice or CAT assignments/);
+    await context.refreshCalendarAssignments();
+    assert.equal(vm.runInContext('studyCalendarState.resources.length', context), 0);
+    assert.equal(vm.runInContext('studyCalendarState.assignmentError', context), false);
   }
+  assert.ok(renders > 0);
   context.db.from = () => { throw new Error('Offline'); };
   const failure = await context.fetchStudentResources('own-student');
   assert.equal(failure.error.message, 'Offline');
