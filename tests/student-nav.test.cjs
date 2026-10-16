@@ -9,11 +9,15 @@ const source = readFileSync(join(root, 'student-nav.js'), 'utf8');
 
 function navigation(nursing, visibleIds) {
   const elements = new Map();
-  for (const id of [...visibleIds, 'portal-nursing', 'nav-label-practice', 'portal-user-role']) {
+  for (const id of [...visibleIds, 'portal-nursing', 'nav-label-practice', 'portal-user-role', 'main-content']) {
+    const classes = new Set(id === 'portal-nursing' && !nursing ? ['hidden'] : []);
     elements.set(id, {
       id,
       textContent: '',
-      classList: { contains: name => name === 'hidden' && !nursing },
+      classList: {
+        contains: name => classes.has(name),
+        toggle(name, force) { if (force) classes.add(name); else classes.delete(name); }
+      },
       getClientRects: () => visibleIds.includes(id) ? [{}] : [],
       scrollIntoView(options) { this.scrolled = options; },
       setAttribute() {},
@@ -87,6 +91,23 @@ test('incoming section hashes focus visible role-specific content and honor redu
   assert.equal(target.focused, true);
   assert.equal(target.scrolled.behavior, 'auto');
   assert.equal(history.url, '#modules');
+  assert.equal(elements.get('main-content').classList.contains('library-view'), true);
+});
+
+test('library opens separately and closes for dashboard, performance, calendar, and empty hashes', () => {
+  for (const nursing of [false, true]) {
+    const moduleId = nursing ? 'modules-nursing-card' : 'modules-nclex-card';
+    const { nav, elements } = navigation(nursing, [moduleId, 'study-calendar', 'log-cat-card', 'performance-nursing-card']);
+    const main = elements.get('main-content');
+    for (const destination of ['', '#study-calendar', '#performance', '#previous-tests']) {
+      nav.handleInitialHash('#modules');
+      assert.equal(main.classList.contains('library-view'), true);
+      nav.handleInitialHash(destination);
+      assert.equal(main.classList.contains('library-view'), false);
+    }
+    nav.setSectionView('dashboard');
+    assert.equal(main.classList.contains('library-view'), false);
+  }
 });
 
 test('inline student scripts remain valid JavaScript', () => {
@@ -98,9 +119,21 @@ test('inline student scripts remain valid JavaScript', () => {
   }
 });
 
-test('NCLEX dashboard separates assigned question sets from learning resources', () => {
+test('dashboard omits assigned work and reminders while retaining calendar and sidebar-only modules', () => {
   const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
-  const renderer = html.slice(html.indexOf('function renderResources('), html.indexOf('function studentResourceText('));
+  assert.doesNotMatch(html, /assigned-work-nclex|id="resources-nclex"|assignment-reminders|View assigned work/);
+  assert.match(html, /id="study-calendar"/);
+  assert.match(html, /#main-content:not\(\.library-view\) :is\(\.modules,\.graphics-library\)\{display:none!important\}/);
+  assert.match(html, /class="card graphics-library" id="gfx-card"/);
+  assert.match(html, /class="card nursing-support graphics-library" id="gfxn-card"/);
+  assert.match(html, /insertBefore\(activePortal\.querySelector\('\.hero'\), document\.getElementById\('study-calendar'\)\)/);
+  assert.match(html, /id="modules-nclex-card"/);
+  assert.match(html, /id="modules-nursing-card"/);
+});
+
+test('Learning Library retains study resources without practice sets or private uploads', () => {
+  const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  const renderer = html.slice(html.indexOf('function renderLibraryResources('), html.indexOf('function studentResourceText('));
   const work = { innerHTML: '', querySelectorAll: () => [] };
   const library = { innerHTML: '', hidden: true };
   const context = {
@@ -118,14 +151,7 @@ test('NCLEX dashboard separates assigned question sets from learning resources',
     { title: 'CAT results', resource_type: 'cat_results' },
     { title: 'Private upload', resource_type: 'student_upload', url: 'student/file.pdf' }
   ];
-  context.renderResources(resources, 'work');
   context.renderLibraryResources(resources, 'library');
-  assert.match(work.innerHTML, /Assigned practice/);
-  assert.match(work.innerHTML, /Weekly questions/);
-  assert.match(work.innerHTML, /Weekly CAT/);
-  assert.match(work.innerHTML, /Open assigned set/);
-  assert.match(work.innerHTML, /Open assigned CAT/);
-  assert.doesNotMatch(work.innerHTML, /Assigned guide|CAT results|Private upload/);
   assert.match(library.innerHTML, /Assigned guide/);
   assert.doesNotMatch(library.innerHTML, /Assigned practice|Weekly questions|Weekly CAT|CAT results|Private upload/);
   assert.equal(library.hidden, false);

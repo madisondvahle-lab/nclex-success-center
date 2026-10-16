@@ -81,19 +81,8 @@
     .resource-button{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:auto;padding:10px 15px;border:2px solid var(--teal);border-radius:999px;color:var(--teal);background:transparent;font-size:.78rem;font-weight:900;line-height:1.1;text-decoration:none}
     .resource-button:hover{color:#fff;background:var(--teal)}
     .resource-button.disabled{border-color:var(--muted);color:var(--muted);cursor:not-allowed}
-    [data-weekly-complete]{min-height:44px;margin-top:12px;font-family:inherit;cursor:pointer}
-    [data-weekly-complete]:disabled{opacity:.65;cursor:wait}
-    [data-weekly-complete]:focus-visible,.weekly-assignment-link:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+    .weekly-assignment-link:focus-visible{outline:3px solid currentColor;outline-offset:3px}
     .weekly-assignment-link{display:inline-flex;align-items:center;min-height:44px;color:#fff;font-size:.82rem;font-weight:800;text-underline-offset:3px}
-    .assignment-reminders{margin:0 0 18px;padding:20px;background:var(--paper);border:1px solid var(--line)}
-    .assignment-reminders.is-quiet{padding:12px 0;background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-    .assignment-reminders.is-quiet .reminder-heading h2{font-size:1.05rem}
-    .assignment-reminders.is-quiet .reminder-message{margin-top:3px}
-    .reminder-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .reminder-heading h2{margin:0;font-size:1.5rem}
-    .reminder-heading button{min-height:44px;cursor:pointer;font-family:inherit}
-    .reminder-heading button:disabled{opacity:.65;cursor:wait}
-    .assignment-reminders :is(button,a):focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     .study-calendar{margin:0 0 24px;padding:24px;background:var(--paper);border:1px solid var(--line)}
     .study-calendar[hidden]{display:none}
     .study-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -127,21 +116,16 @@
     .study-calendar-status{min-height:1.3em;margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .study-calendar-status.error{color:#9c3535}
     @media(max-width:600px){.study-calendar{padding:16px 10px}.study-calendar-day{min-height:70px;padding:4px 2px}.study-calendar-chip{padding:2px;font-size:.55rem}.study-calendar-weekdays{font-size:.62rem}.study-calendar-month{min-width:120px}}
-    .reminder-list{list-style:none;padding:0;margin:12px 0 0}
-    .reminder-item{padding:16px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
-    .reminder-item h3{margin:6px 0;font:800 .95rem var(--font-sans);letter-spacing:normal}
-    .reminder-item p,.reminder-message{margin:4px 0;color:var(--muted);font-size:.83rem;line-height:1.5}
-    .reminder-state{font-size:.78rem;font-weight:800;color:var(--teal)}
-    .reminder-state.overdue,.reminder-error{color:#9c3535}
-    .reminder-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:8px}
-    .reminder-actions [data-weekly-complete]{margin-top:0}
-    .reminder-actions a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-size:.82rem;font-weight:800;text-underline-offset:3px}
-    .reminder-item summary{display:flex;align-items:center;min-height:44px;cursor:pointer;font-size:.82rem;font-weight:800;text-decoration:underline;text-underline-offset:3px}
-    .reminder-item summary:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
     .modules{grid-column:1/-1}
+    #main-content:not(.library-view) :is(.modules,.graphics-library){display:none!important}
+    #main-content.library-view .study-calendar,
+    #main-content.library-view .hero,
+    #main-content.library-view .practice-start,
+    #main-content.library-view .exam-prompt,
+    #main-content.library-view .grid > :not(.modules):not(.graphics-library):not(#class-schedule-card){display:none}
     .library-resource-heading{margin:24px 0 12px;padding-top:20px;border-top:1px solid var(--line);font-size:1.15rem}
     .module-group+.module-group{margin-top:25px;padding-top:23px;border-top:1px solid var(--line)}
     .module-group-label{margin:0 0 11px;color:var(--rose);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
@@ -463,7 +447,6 @@
         </div>
         <aside class="countdown" id="countdown-nclex" hidden><strong></strong><span></span></aside>
       </section>
-      <section class="assignment-reminders" id="assignment-reminders-nclex" aria-labelledby="reminder-title-nclex"></section>
       <section class="practice-start" aria-labelledby="practice-title-nclex">
         <div>
           <h2 id="practice-title-nclex">Ready to practice?</h2>
@@ -471,7 +454,6 @@
         </div>
         <div class="practice-actions">
           <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
-          <a class="practice-secondary" href="#assigned-work-nclex">View assigned work</a>
         </div>
       </section>
       <section class="grid">
@@ -479,11 +461,6 @@
           <div class="card-head"><div><p class="eyebrow">Your weekly rhythm</p><h2>My weekly study plan</h2></div><span class="label" id="weekly-plan-total">Set by Madison</span></div>
           <ol class="plan-week" id="weekly-plan-days" aria-label="Weekly schedule"></ol>
           <div class="plan-focus" id="weekly-plan-focus"></div>
-        </article>
-        <article class="card resources" id="assigned-work-nclex">
-          <div class="card-head"><div><h2>Assigned practice</h2></div></div>
-          <p class="card-desc">Question sets and CAT/readiness exams assigned by Madison appear here. Find modules and other study resources in the learning library.</p>
-          <div class="resource-list" id="resources-nclex"><p class="empty">Your assigned question sets and CAT/readiness exams will appear here.</p></div>
         </article>
         <article class="card modules" id="modules-nclex-card">
           <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
@@ -507,7 +484,7 @@
           <div class="card-head"><div><p class="eyebrow">CAT and practice trends</p><h2>How your scores are moving</h2></div><span class="label teal" id="cat-trend-label">Trend</span></div>
           <div id="cat-trend-body"></div>
         </article>
-        <article class="card" id="gfx-card" style="grid-column:1/-1;display:none">
+        <article class="card graphics-library" id="gfx-card" style="grid-column:1/-1;display:none">
           <div class="card-head"><div><p class="eyebrow">Study graphics</p><h2>Graphics library</h2></div></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px"><input id="gfx-q" type="search" placeholder="Search graphics (e.g. leadership, delegation, torts)" aria-label="Search graphics" style="flex:1;min-width:200px;padding:10px;border:1px solid #cfd8dc;border-radius:8px"><select id="gfx-sys" aria-label="Filter by topic" style="padding:10px;border:1px solid #cfd8dc;border-radius:8px"><option value="">All topics</option></select></div>
           <div id="gfx-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
@@ -543,7 +520,6 @@
         </div>
         <aside class="countdown nursing" id="countdown-nursing" hidden><strong></strong><span></span></aside>
       </section>
-      <section class="assignment-reminders" id="assignment-reminders-nursing" aria-labelledby="reminder-title-nursing"></section>
       <section class="practice-start" aria-labelledby="practice-title-nursing">
         <div>
           <h2 id="practice-title-nursing">Prepare for your next exam.</h2>
@@ -588,7 +564,7 @@
           <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
         </article>
 
-        <article class="card nursing-support" id="gfxn-card" style="grid-column:1/-1;display:none">
+        <article class="card nursing-support graphics-library" id="gfxn-card" style="grid-column:1/-1;display:none">
           <div class="card-head"><div><p class="eyebrow" style="color:var(--teal)">Study graphics</p><h2>Graphics library</h2></div></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px"><input id="gfxn-q" type="search" placeholder="Search graphics (e.g. leadership, delegation, torts)" aria-label="Search graphics" style="flex:1;min-width:200px;padding:10px;border:1px solid #cfd8dc;border-radius:8px"><select id="gfxn-sys" aria-label="Filter by topic" style="padding:10px;border:1px solid #cfd8dc;border-radius:8px"><option value="">All topics</option></select></div>
           <div id="gfxn-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
@@ -1060,7 +1036,7 @@
         return { data: null, error };
       }
     }
-    function renderAssignmentReminders() {
+    function syncCalendarAssignments() {
       const state = assignmentState;
       if (!state) return;
       if (studyCalendarState && studyCalendarState.student.id === state.student.id) {
@@ -1068,115 +1044,29 @@
         studyCalendarState.assignmentError = Boolean(state.error);
         renderStudyCalendar();
       }
-      const host = document.getElementById('assignment-reminders-' + state.role);
-      const summary = WeeklyAssignments.reminders(state.resources);
-      host.classList.toggle('is-quiet', !state.error && !summary.items.length);
-      const message = state.error ? 'Could not load assignment reminders. Refresh to try again; completion and due dates could not be checked.'
-        : !summary.count ? 'No dated practice or CAT assignments yet. Your saved weekly plan is not an assignment.'
-        : !summary.pending ? 'All assigned practice and CATs are marked complete. No reminders right now.'
-        : !summary.items.length ? 'Nothing due today or tomorrow. Future dated practice remains in your assigned work.'
-        : 'Practice due today or tomorrow, overdue work, and your next assigned CAT. Completion is self-reported.';
-      host.innerHTML = `<div class="reminder-heading"><h2 id="reminder-title-${state.role}">Assignment reminders</h2><button type="button" class="resource-button" data-refresh-reminders ${state.busy ? 'disabled' : ''}>${state.busy ? 'Refreshing...' : 'Refresh'}</button></div>
-        <p class="reminder-message ${state.error ? 'reminder-error' : ''}" role="status">${text(message)}</p>
-        ${!state.error && summary.invalid ? '<p class="reminder-message reminder-error">An incomplete assignment has a missing or invalid due date. Ask Madison to check your assigned work.</p>' : ''}
-        <ul class="reminder-list">${state.error ? '' : summary.items.map(({ item, label, overdue, date }) => {
-          const url = WeeklyAssignments.actionUrl(item.url, location.href);
-          const external = !item.url && item.assignment_details?.platform && item.assignment_details.platform !== 'Portal Question Bank';
-          return `<li class="reminder-item">
-            <span class="reminder-state ${overdue ? 'overdue' : ''}">${text(label)} · <time datetime="${text(item.due_on)}">${text(date)}</time></span>
-            <h3>${studentResourceText(item.title || (item.assignment_kind === 'cat' ? 'CAT / readiness exam' : 'Assigned practice'))}</h3>
-            <p>${text(item.assignment_details?.platform || 'Platform not specified')}${item.assignment_kind === 'practice' && item.assignment_details?.question_count ? ' · ' + text(item.assignment_details.question_count) + ' questions' : ''}</p>
-            ${external ? '<p>Set this up manually in your assigned platform; results are not imported automatically.</p>' : ''}
-            <div class="reminder-actions">${url ? `<a href="${text(url)}" target="_blank" rel="noopener">${item.assignment_kind === 'cat' ? 'Open assigned CAT' : 'Open assigned practice'}</a>` : external ? '' : '<span class="reminder-message reminder-error">Assignment link unavailable. Ask Madison for access.</span>'}
-              <button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">Mark complete</button></div>
-            ${item.note ? `<details><summary>View assignment instructions</summary><p>${studentResourceText(item.note)}</p></details>` : ''}
-            <p role="status" data-completion-status></p>
-          </li>`;
-        }).join('')}</ul>`;
-      host.querySelector('[data-refresh-reminders]').addEventListener('click', refreshAssignmentReminders);
-      bindWeeklyCompletion(host, state.resources, state.plan);
     }
-    async function refreshAssignmentReminders() {
+    async function refreshCalendarAssignments() {
       const state = assignmentState;
-      if (!state || state.busy || state.saving) return;
+      if (!state || state.busy) return;
       state.busy = true;
-      renderAssignmentReminders();
+      syncCalendarAssignments();
       const result = await fetchStudentResources(state.student.id);
       state.busy = false;
       state.error = result.error;
       if (!result.error) state.resources = result.data || [];
-      renderAssignmentReminders();
+      syncCalendarAssignments();
       if (state.role === 'nclex') {
         if (state.error) {
-          document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
           const library = document.getElementById('learning-resources-nclex');
           library.hidden = false;
-          library.innerHTML = '<p class="empty">Could not load study resources. Use Refresh in Assignment reminders to try again.</p>';
+          library.innerHTML = '<p class="empty">Could not load study resources. Reload this page to try again.</p>';
           document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
         } else {
-          renderResources(state.resources, 'resources-nclex', state.plan);
           renderLibraryResources(state.resources, 'learning-resources-nclex');
           await renderThisWeek(state.student, state.resources, state.plan);
         }
       }
     }
-    function bindWeeklyCompletion(container, items, plan) {
-      container.querySelectorAll('[data-weekly-complete]').forEach(button => {
-        button.addEventListener('click', async () => {
-          if (assignmentState?.busy || assignmentState?.saving) return;
-          const item = items.find(r => r.id === button.dataset.weeklyComplete);
-          const status = button.closest('.resource, .reminder-item').querySelector('[data-completion-status]');
-          if (assignmentState) assignmentState.saving = true;
-          button.disabled = true;
-          try {
-            const { data, error } = await db.rpc('set_weekly_assignment_complete', { p_assignment: item.id, p_complete: !item.completed_at });
-            if (error) throw error;
-            item.completed_at = data;
-            document.querySelectorAll('[data-weekly-complete]').forEach(control => {
-              if (control.dataset.weeklyComplete !== item.id) return;
-              control.textContent = item.completed_at ? 'Mark not complete' : 'Mark complete';
-              const due = control.closest('.resource, .reminder-item').querySelector('[data-weekly-state]');
-              if (due) due.textContent = `Due ${item.due_on} · ${item.completed_at ? 'Complete' : 'Not complete'}`;
-            });
-            status.textContent = item.completed_at ? 'Marked complete.' : 'Marked not complete.';
-            const hadFocus = container.contains(document.activeElement) && container.classList.contains('assignment-reminders');
-            renderAssignmentReminders();
-            if (hadFocus) container.querySelector('[data-refresh-reminders]').focus();
-            if (!assignmentState || assignmentState.role === 'nclex') await renderThisWeek({ id: item.student_id }, items, plan);
-          } catch (error) {
-            status.textContent = 'Could not save completion: ' + error.message;
-          } finally {
-            button.disabled = false;
-            if (assignmentState) assignmentState.saving = false;
-          }
-        });
-      });
-    }
-
-    // Only question sets and generated practice/CATs are assignments; other materials belong in the library.
-    function renderResources(items, containerId, plan) {
-      const filtered = items.filter(r =>
-        r.resource_type === 'practice_set' ||
-        r.assignment_kind === 'practice' ||
-        r.assignment_kind === 'cat'
-      );
-      if (!filtered.length) {
-        document.getElementById(containerId).innerHTML = '<p class="empty">No question sets or CAT or readiness exams are assigned yet.</p>';
-        return;
-      }
-      document.getElementById(containerId).innerHTML = filtered.map(item =>
-        `<article class="resource">
-          <span class="resource-type">${item.assignment_kind === 'cat' ? 'CAT / readiness exam' : item.resource_type === 'practice_set' ? 'Practice set' : 'Assigned practice'}</span>
-          <h3>${studentResourceText(item.title)}</h3>
-          ${item.assignment_week ? `<p data-weekly-state>Due ${text(item.due_on)} · ${item.completed_at ? 'Complete' : 'Not complete'}</p>` : ''}
-          ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
-          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">${item.assignment_kind === 'cat' ? 'Open assigned CAT' : 'Open assigned set'} →</a>` : ''}
-          ${item.assignment_week ? `<button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">${item.completed_at ? 'Mark not complete' : 'Mark complete'}</button><p role="status" data-completion-status></p>` : ''}
-        </article>`
-      ).join('');
-      bindWeeklyCompletion(document.getElementById(containerId), items, plan);
-    }
-
     function renderLibraryResources(items, containerId) {
       const resources = items.filter(r =>
         !['practice_set', 'student_upload', 'cat_results'].includes(r.resource_type) &&
@@ -1241,7 +1131,6 @@
         }).join('');
       }
       renderWeeklyPlan(plans[0]);
-      renderResources(resources, 'resources-nclex', plans[0]);
       renderLibraryResources(resources, 'learning-resources-nclex');
       renderModulesInto('modules-nclex', catalog, access);
 
@@ -1392,7 +1281,7 @@
       const assigned = WeeklyAssignments.progress(resources || []);
       if (assigned.count) {
         document.getElementById('weekly-intro-nclex').textContent = 'Track the dated assignments Madison selected for this week.';
-        host.innerHTML = `<div class="task"><strong>Assigned week: ${assigned.done} of ${assigned.count} complete</strong><span>${assigned.questionsDone} of ${assigned.questions} practice questions · ${assigned.catsDone} of ${assigned.cats} CATs marked complete. Completion is self-reported; scores remain in practice and assessment history.</span><a class="weekly-assignment-link" href="#assigned-work-nclex">View assigned work</a></div>`;
+        host.innerHTML = `<div class="task"><strong>Assigned week: ${assigned.done} of ${assigned.count} complete</strong><span>${assigned.questionsDone} of ${assigned.questions} practice questions · ${assigned.catsDone} of ${assigned.cats} CATs marked complete. Completion is self-reported; scores remain in practice and assessment history.</span><a class="weekly-assignment-link" href="#study-calendar">View study calendar</a></div>`;
         return;
       }
       if (plan && Array.isArray(plan.practice_days)) {
@@ -1764,7 +1653,7 @@
 
       const results = await Promise.all(fetches);
       const [plans, resources, catalog, access, schedules, practiceRes] = results;
-      assignmentState = { student, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false, saving: false };
+      assignmentState = { student, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
@@ -1778,18 +1667,19 @@
       } else {
         renderNclex(student, plans.data || [], resources.data || [], catalog.data || [], access.data || []);
       }
+      const activePortal = document.getElementById(isNursing ? 'portal-nursing' : 'portal-nclex');
+      document.getElementById('main-content').insertBefore(activePortal.querySelector('.hero'), document.getElementById('study-calendar'));
       loadStudyCalendar(student, isNursing, plans.data?.[0], resources.data || [], schedules && !schedules.error ? schedules.data || [] : [], isPreview, resources.error);
-      renderAssignmentReminders();
+      syncCalendarAssignments();
       if (resources.error && !isNursing) {
-        document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
         const library = document.getElementById('learning-resources-nclex');
         library.hidden = false;
-        library.innerHTML = '<p class="empty">Could not load study resources. Use Refresh in Assignment reminders to try again.</p>';
+        library.innerHTML = '<p class="empty">Could not load study resources. Reload this page to try again.</p>';
         document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
       }
-      window.addEventListener('focus', refreshAssignmentReminders);
-      window.addEventListener('pageshow', event => { if (event.persisted) refreshAssignmentReminders(); });
-      document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshAssignmentReminders(); });
+      window.addEventListener('focus', refreshCalendarAssignments);
+      window.addEventListener('pageshow', event => { if (event.persisted) refreshCalendarAssignments(); });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshCalendarAssignments(); });
 
       if (window.StudentNav) {
         StudentNav.init({ active: 'dashboard', inPageScroll: true });

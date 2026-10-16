@@ -4,6 +4,13 @@
 Build the responsive student practice navigation shell (sidebar + mobile drawer) inspired by nursing school QBank platforms, wire it exclusively to existing student features without placeholder routes, and document gaps for features that do not yet exist.
 
 ## October 14, 2026: Practice-first student home
+### October 15 correction: dashboard content
+- User-directed: remove the NCLEX **Assigned work** card list and both roles' assignment-reminder panels; keep the study calendar and its dated assignments.
+- Module cards now appear only after selecting **Learning Library** / **Study Guides & Modules** in the sidebar (including incoming `#modules` links). Dashboard navigation restores the main view. Nursing class selection remains available in the library.
+- User clarified before publication: welcome must be above the calendar, and graphics belong alongside modules under the sidebar Learning Library, not on the dashboard. Preserved concurrent study-resource separation and wording updates from `main`.
+- Assignments, module access, preview authorization, and clinical content are unchanged. This supersedes the original inline placement below.
+- Deployment remains GitHub Pages from `main`, repository root; branch changes must reach `main` before appearing live.
+
 - Started from current `main` (`28e7e7c`), not the obsolete clinical-audit branch.
 - Both student dashboard and practice navigation now explicitly say **Question Bank**. NCLEX students see **Create practice**; nursing students retain **Exam Prep**. Both use `supplemental-practice.html`, which already selects the appropriate student workflow.
 - The dashboard now opens with a compact greeting and a prominent **Start practice** action. NCLEX assigned work (including assigned practice sets) and available modules appear before the plan and performance sections. Nursing students retain their class-selection prerequisite and assigned exam workflow.

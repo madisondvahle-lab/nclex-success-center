@@ -88,6 +88,7 @@
       // Internal in-page anchor smooth scrolling for student-dashboard.html
       if (opts.inPageScroll) {
         this.bindInPageScrolling();
+        this.setSectionView('dashboard');
         window.addEventListener('hashchange', () => this.handleInitialHash(window.location.hash));
       }
 
@@ -153,8 +154,13 @@
       }
 
       if (lecturesLabel) {
-        lecturesLabel.textContent = isNursing ? 'Study Guides & Modules' : 'Learning Library';
+        lecturesLabel.textContent = 'Learning Library';
       }
+    },
+
+    setSectionView: function(name) {
+      const main = document.getElementById('main-content');
+      if (main) main.classList.toggle('library-view', name === 'lectures');
     },
 
     sectionTarget: function(name) {
@@ -174,6 +180,7 @@
     },
 
     scrollToSection: function(name) {
+      this.setSectionView(name);
       const target = this.sectionTarget(name);
       if (!target) return false;
       const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
@@ -193,6 +200,7 @@
         btn.addEventListener('click', (e) => {
           if (name === 'dashboard') {
             e.preventDefault();
+            this.setSectionView('dashboard');
             const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
             window.scrollTo({ top: 0, behavior });
             this.setActive('dashboard');
@@ -207,13 +215,19 @@
     },
 
     handleInitialHash: function(hash) {
-      if (!hash) return;
+      if (!hash) {
+        this.setSectionView('dashboard');
+        this.setActive('dashboard');
+        return;
+      }
       const clean = hash.replace(/^#/, '');
       const name = { modules: 'lectures', 'previous-tests': 'previous-tests', performance: 'performance' }[clean];
       if (name) {
         this.scrollToSection(name);
         return;
       }
+      this.setSectionView('dashboard');
+      this.setActive('dashboard');
       const el = document.getElementById(clean);
       if (el && el.getClientRects().length) {
         const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
