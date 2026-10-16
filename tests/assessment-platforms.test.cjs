@@ -88,7 +88,7 @@ function harness(tables = fixture()) {
   });
   vm.runInContext(read('assessment-platforms.js'), context);
   context.AssessmentPlatforms = context.window.AssessmentPlatforms;
-  vm.runInContext(studentHtml.slice(studentHtml.indexOf('function initLogCat('), studentHtml.indexOf('// Fills "This week"')), context);
+  vm.runInContext(studentHtml.slice(studentHtml.indexOf('function initLogCat('), studentHtml.indexOf('// Weekly CAT trend')), context);
   vm.runInContext(studentHtml.slice(studentHtml.indexOf('async function renderCatTrend('), studentHtml.indexOf('// ── Nursing portal')), context);
   vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('const catKindOk='), tutorHtml.indexOf("    $('cat-fields').innerHTML=")), context);
   return { context, $, tables, failures };
@@ -140,6 +140,31 @@ test('student saved-platform trend includes all four dates and the correct lates
   assert.equal($('cat-trend-label').textContent, 'Archer');
   await context.renderCatTrend(context.student);
   assert.equal($('cat-trend-label').textContent, 'Archer');
+});
+
+test('student trend shows category-only SimpleNursing results without inventing an overall score', async () => {
+  for (const source of ['external_assessments', 'student_assessment_uploads']) {
+    const tables = fixture();
+    tables.external_assessments = source === 'external_assessments'
+      ? [{ platform: 'SimpleNursing', assessment_name: 'CAT', taken_at: '2026-10-12', overall_score: null, category_scores: { Safety: 72 } }]
+      : [];
+    tables.student_assessment_uploads = source === 'student_assessment_uploads'
+      ? [{ id: 'simple-nursing', platform: 'SimpleNursing', assessment_type: 'cat', report_label: 'CAT', taken_on: '2026-10-12', overall_score: null }]
+      : [];
+    tables.student_assessment_categories = source === 'student_assessment_uploads'
+      ? [{ assessment_id: 'simple-nursing', category: 'Safety', score: 72 }]
+      : [];
+    tables.student_supplemental_practice_results = [];
+    const { context, $ } = harness(tables);
+    await context.renderCatTrend(context.student, 'simplenursing');
+    const view = $('cat-trend-view').innerHTML;
+    assert.equal($('cat-trend-label').textContent, 'SimpleNursing');
+    assert.match(view, /No overall score to chart in this view yet/);
+    assert.match(view, /Latest CAT categories · Oct 12 \(SimpleNursing\)/);
+    assert.match(view, /Safety/);
+    assert.match(view, /72%/);
+    assert.doesNotMatch(view, />72%<\/strong> latest CAT/);
+  }
 });
 
 test('student save awaits the refreshed saved platform and preserves save success on refresh failure', async () => {

@@ -583,12 +583,13 @@
             <span class="label teal">My uploads</span>
           </div>
           <p class="card-desc">Files you've uploaded — your syllabus, professor notes, or study guides. Madison uses these to generate practice questions that match your actual course content.</p>
+          <p id="upload-class-context" style="font-size:.85rem;font-weight:700;color:var(--teal)"></p>
           <div id="student-uploads-list"></div>
           <div style="margin-top:16px">
             <div class="upload-zone" id="dashboard-upload-zone" onclick="document.getElementById('dashboard-file-input').click()">
               <div style="font-size:1.5rem">📎</div>
               <div style="font-weight:700;font-size:.85rem;margin-top:6px">Upload a file</div>
-              <p>Syllabus, notes, or study guide · PDF, Word, or image</p>
+              <p>Syllabus, notes, or study guide for the selected class · PDF, Word, or image</p>
               <input type="file" id="dashboard-file-input" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="handleDashboardUpload(this)">
             </div>
             <p id="dashboard-upload-status" style="font-size:.8rem;color:var(--teal);font-weight:700;margin-top:8px;display:none"></p>
@@ -765,9 +766,18 @@
     document.getElementById('ob-skip-upload').addEventListener('click', () => finishOnboarding(true));
 
     // ── Dashboard file upload ─────────────────────────────────────────
+    let selectedNursingClass = null;
     async function handleDashboardUpload(input) {
       const file = input.files[0];
       if (!file || !_student) return;
+      const uploadClass = _student.student_type === 'nursing_student' ? selectedNursingClass : null;
+      if (_student.student_type === 'nursing_student' && !uploadClass) {
+        const statusEl = document.getElementById('dashboard-upload-status');
+        statusEl.textContent = 'Choose a class before uploading materials.';
+        statusEl.style.display = 'block';
+        input.value = '';
+        return;
+      }
       const statusEl = document.getElementById('dashboard-upload-status');
       statusEl.textContent = 'Uploading…';
       statusEl.style.display = 'block';
@@ -785,10 +795,11 @@
           note:          'Uploaded by student',
           resource_type: 'student_upload',
           url:           path,
+          ...(uploadClass ? { class_code: uploadClass } : {}),
         });
         if (resourceError) throw resourceError;
-        statusEl.textContent = 'Uploaded. Madison will see this before your next session.';
-        await loadStudentUploads(_student.id);
+        statusEl.textContent = `Uploaded under ${uploadClass || 'your student materials'}. Madison will see this before your next session.`;
+        await loadStudentUploads(_student.id, uploadClass, ++uploadListRequestId);
       } catch(e) {
         let message=e.message||'please try again.';
         if(uploaded){
@@ -805,7 +816,7 @@
       input.value = '';
     }
 
-    async function loadStudentUploads(studentId) {
+    async function loadStudentUploads(studentId, classCode, requestId) {
       const list = document.getElementById('student-uploads-list');
       let data,error;
       try {
@@ -815,18 +826,22 @@
           .eq('resource_type', 'student_upload')
           .order('created_at', { ascending: false }));
       } catch(loadError) {
+        if (requestId !== undefined && requestId !== uploadListRequestId) return;
         list.textContent = 'Could not load your uploaded materials: ' + (loadError.message || 'network error');
         return;
       }
+      if (requestId !== undefined && requestId !== uploadListRequestId) return;
       if (error) {
         list.textContent = 'Could not load your uploaded materials: ' + error.message;
         return;
       }
-      if (!data || !data.length) {
-        list.innerHTML = '<p class="empty">No files uploaded yet. Use the area below to share your course materials with Madison.</p>';
+      const currentUploads = (data || []).filter(file => file.class_code === classCode);
+      const unassignedUploads = (data || []).filter(file => !file.class_code);
+      if (!currentUploads.length && !unassignedUploads.length) {
+        list.innerHTML = '<p class="empty">No files uploaded for this class yet. Use the area below to share materials with Madison.</p>';
         return;
       }
-      const entries=await Promise.all(data.map(async file=>{
+      const renderEntries = async files => Promise.all(files.map(async file=>{
         const row=document.createElement('div');
         row.className='upload-item';
         const icon=document.createElement('div');
@@ -862,9 +877,28 @@
         }
         return row;
       }));
-      list.replaceChildren(...entries);
+      const entries = await renderEntries(currentUploads);
+      if (requestId !== undefined && requestId !== uploadListRequestId) return;
+      const sections = [];
+      if (currentUploads.length) {
+        const section = document.createElement('section');
+        const heading = document.createElement('h3');
+        heading.textContent = classCode ? `For ${classCode}` : 'Your uploads';
+        section.append(heading, ...entries);
+        sections.push(section);
+      }
+      if (unassignedUploads.length) {
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = `Uploads without a class (${unassignedUploads.length})`;
+        details.append(summary, ...await renderEntries(unassignedUploads));
+        if (requestId !== undefined && requestId !== uploadListRequestId) return;
+        sections.push(details);
+      }
+      list.replaceChildren(...sections);
     }
 
+    let uploadListRequestId = 0;
     // ── Shared helpers ───────────────────────────────────────────────
     function renderRoadmapInto(listEl, titleEl, plan) {
       if (!plan) return [];
@@ -1336,14 +1370,19 @@
       const isPractice = name => /qbank|mixed practice|question practice/i.test(String(name || ''));
       const data = (ext.data || []).filter(row => !isPractice(row.assessment_name));
       // Keep scored CAT/readiness reports out of the QBank practice series.
-      const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && u.assessment_type !== 'qbank_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || '') && u.overall_score !== null && u.overall_score !== '');
+      const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && u.assessment_type !== 'qbank_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || ''));
       const practiceReports = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type === 'qbank_report' && u.overall_score !== null && u.overall_score !== '');
       if (ups.length) {
         const cr = await db.from('student_assessment_categories').select('assessment_id,category,score').in('assessment_id', ups.map(u => u.id));
         if (savedPlatform && cr.error) throw cr.error;
         const by = new Map();
         (cr.data || []).forEach(c => { if (!by.has(c.assessment_id)) by.set(c.assessment_id, {}); by.get(c.assessment_id)[c.category] = Number(c.score); });
-        ups.forEach(u => data.push({platform: u.platform, assessment_name: u.report_label, taken_at: u.taken_on, created_at: u.created_at, overall_score: u.overall_score, category_scores: by.get(u.id) || {}}));
+        ups.forEach(u => {
+          const categoryScores=by.get(u.id)||{};
+          if((u.overall_score!==null&&u.overall_score!=='')||Object.keys(categoryScores).length){
+            data.push({platform:u.platform,assessment_name:u.report_label,taken_at:u.taken_on,created_at:u.created_at,overall_score:u.overall_score,category_scores:categoryScores});
+          }
+        });
       }
       const practice = [
         ...(practiceResult.data || []).map(row => ({platform:'Success Center practice',assessment_name:row.practice_title||row.practice_key||'Practice set',taken_at:row.completed_at,created_at:row.completed_at,overall_score:Number(row.total_questions)?Number(row.score)/Number(row.total_questions)*100:null,total_questions:Number(row.total_questions)||0})),
@@ -1380,11 +1419,12 @@
         const grid=[0,50,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#888">${v}%</text>`).join('');
         const dots=(source,kind,color)=>source.map(r=>`<circle cx="${point(r,kind).split(',')[0]}" cy="${y(r.overall_score)}" r="4" fill="${color}"><title>${text(r.assessment_name||AssessmentPlatforms.name(r.platform))} · ${Math.round(Number(r.overall_score))}%${r.total_questions?' · '+r.total_questions+' questions':''}</title></circle>`).join('');
         const dates=[...new Set([...(showCat?catScores:[]),...(showPractice?practiceScores:[])].map(when))].sort();
-        const chart=dateValues.length?`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="CAT and practice scores over the same dates, shown as separate series" style="width:100%;height:auto;max-height:230px">${grid}${showCat&&catScores.length>1?`<polyline points="${points(catScores,'cat')}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>`:''}${showPractice&&practiceScores.length>1?`<polyline points="${points(practiceScores,'practice')}" fill="none" stroke="#a94f67" stroke-width="2.5"/>`:''}${showCat?dots(catScores,'cat','var(--teal)'):''}${showPractice?dots(practiceScores,'practice','#a94f67'):''}${dates.map(date=>`<text x="${xFor({taken_at:date})}" y="${H-8}" text-anchor="middle" font-size="11" fill="#888">${fmt(date)}</text>`).join('')}</svg>`:'<p style="color:var(--muted)">No scored results in this view yet.</p>';
+        const chart=dateValues.length?`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="CAT and practice scores over the same dates, shown as separate series" style="width:100%;height:auto;max-height:230px">${grid}${showCat&&catScores.length>1?`<polyline points="${points(catScores,'cat')}" fill="none" stroke="var(--teal)" stroke-width="2.5"/>`:''}${showPractice&&practiceScores.length>1?`<polyline points="${points(practiceScores,'practice')}" fill="none" stroke="#a94f67" stroke-width="2.5"/>`:''}${showCat?dots(catScores,'cat','var(--teal)'):''}${showPractice?dots(practiceScores,'practice','#a94f67'):''}${dates.map(date=>`<text x="${xFor({taken_at:date})}" y="${H-8}" text-anchor="middle" font-size="11" fill="#888">${fmt(date)}</text>`).join('')}</svg>`:'<p style="color:var(--muted)">No overall score to chart in this view yet.</p>';
         const summary=(label,current,previous,color)=>current?`<p style="margin:0 0 6px;color:${color}"><strong>${Math.round(Number(current.overall_score))}%</strong> latest ${label}${previous?' · '+arrow(Number(current.overall_score)-Number(previous.overall_score))+' since previous':''}${current.total_questions?' · '+current.total_questions+' questions':''}</p>`:'';
-        const latest=catLatest,prev=catPrev;
-        const cats=showCat&&latest?Object.entries(latest.category_scores||{}).map(([name,v])=>{const cur=Number(v),before=prev&&prev.category_scores&&prev.category_scores[name]!=null?Number(prev.category_scores[name]):null;return{name,cur,delta:before!==null&&Number.isFinite(before)?cur-before:null}}).filter(c=>Number.isFinite(c.cur)).sort((a,b)=>a.cur-b.cur):[];
-        const table=cats.length?`<h3 style="margin:16px 0 6px;font-size:.95rem">Latest CAT categories · ${fmt(when(latest))}</h3>`+cats.map(c=>{const col=c.cur<55?'#9c3535':c.cur<70?'#b07830':'var(--teal)';return`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta!==null?' · '+arrow(c.delta):''}</span></div></div>`}).join(''):'';
+        const categoryRows=rows.filter(r=>Object.values(r.category_scores||{}).some(value=>value!==null&&value!==''&&Number.isFinite(Number(value))));
+        const latest=categoryRows[categoryRows.length-1],prev=categoryRows[categoryRows.length-2];
+        const cats=showCat&&latest?Object.entries(latest.category_scores||{}).map(([name,v])=>{const cur=Number(v),before=prev&&prev.category_scores&&prev.category_scores[name]!=null&&prev.category_scores[name]!==''?Number(prev.category_scores[name]):null;return{name,cur,delta:before!==null&&Number.isFinite(before)?cur-before:null}}).filter(c=>Number.isFinite(c.cur)).sort((a,b)=>a.cur-b.cur):[];
+        const table=cats.length?`<h3 style="margin:16px 0 6px;font-size:.95rem">Latest CAT categories · ${fmt(when(latest))} (${text(AssessmentPlatforms.name(latest.platform))})</h3>`+cats.map(c=>{const col=c.cur<55?'#9c3535':c.cur<70?'#b07830':'var(--teal)';return`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta!==null?' · '+arrow(c.delta):''}</span></div></div>`}).join(''):'';
         const legend=`<p style="font-size:.78rem;color:var(--muted);margin:4px 0 10px"><span style="color:var(--teal);font-weight:800">● CAT / readiness</span> &nbsp; <span style="color:#a94f67;font-weight:800">● Practice</span> · same date and percent axes, separate scores</p>`;
         return legend+summary('CAT/readiness',catLatest,catPrev,'var(--teal)')+summary('practice',practiceLatest,practicePrev,'#a94f67')+chart+table+(practiceResult.error?'<p style="color:#9c3535">Practice history could not be loaded: '+text(practiceResult.error.message||'Please try again.')+'</p>':'');
       };
@@ -1409,7 +1449,7 @@
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
-    function renderClassSchedule(student, schedules, isPreview, onSelect) {
+    function renderClassSchedule(student, schedules, notes, notesError, isPreview, onSelect) {
       const classCodesByEmail = { 'bianca.edwards86@gmail.com': ['NUR 215', 'NUR 235'] };
       const classes = (classCodesByEmail[String(student.email || '').toLowerCase()] || ['NUR 312', 'NUR 321', 'NUR 416'])
         .map(code => ({ code, name: code }));
@@ -1432,13 +1472,39 @@
         }
         const item = byClass.get(selected);
         const date = item?.next_exam_date || '';
-        panel.innerHTML = `<h3>${selected}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
+        const note = notes.get(selected) || '';
+        panel.innerHTML = `<h3>${selected}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${notesError ? `<p role="status">Class reminders could not be loaded: ${text(notesError)}</p>` : ''}${note ? `<aside class="class-tutor-note"><strong>Note from Madison</strong><p>${text(note)}</p></aside>` : ''}${isPreview ? `<form class="class-note-form"><label>Note for this class<textarea name="tutor_note" rows="3" maxlength="2000">${text(note)}</textarea></label><button type="submit">Save class note</button><span class="class-note-message" role="status"></span></form>` : ''}${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
         tabs.querySelectorAll('[data-class]').forEach(button => button.addEventListener('click', () => {
           selected = button.dataset.class;
           render();
           if (onSelect) onSelect(selected);
         }));
-        const form = panel.querySelector('form');
+        const form = panel.querySelector('.class-schedule-form');
+        const noteForm = panel.querySelector('.class-note-form');
+        if (noteForm) noteForm.addEventListener('submit', async event => {
+          event.preventDefault();
+          const button = noteForm.querySelector('button');
+          const message = noteForm.querySelector('.class-note-message');
+          button.disabled = true;
+          const classCode = selected;
+          const value = noteForm.elements.tutor_note.value.trim();
+          const { error } = await db.from('student_class_notes').upsert({
+            student_id: student.id,
+            class_code: classCode,
+            note: value || null,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'student_id,class_code' });
+          if (error) {
+            message.textContent = 'Could not save this class note: ' + error.message;
+            button.disabled = false;
+            return;
+          }
+          if (value) notes.set(classCode, value);
+          else notes.delete(classCode);
+          message.textContent = 'Class note saved.';
+          button.disabled = false;
+          render();
+        });
         if (form) form.addEventListener('submit', async event => {
           event.preventDefault();
           const button = form.querySelector('button');
@@ -1469,11 +1535,14 @@
       };
       render();
     }
-    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules) {
+    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError) {
       initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
       const activateClass = classCode => {
+        selectedNursingClass = classCode;
+        document.getElementById('upload-class-context').textContent = `New uploads will be filed under ${classCode}.`;
+        loadStudentUploads(student.id, classCode, ++uploadListRequestId);
         classPanels.forEach(panel => panel.classList.remove('hidden'));
         document.querySelectorAll('#practice-shortcut-nursing .practice-group, #resources-nursing .resource-group').forEach(group => {
           group.hidden = !group.dataset.class || group.dataset.class !== classCode;
@@ -1482,7 +1551,7 @@
         countdown.hidden = false;
         countdown.innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
-      renderClassSchedule(student, schedules, isPreview, activateClass);
+      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass);
 
       // Course name in hero subtitle
       if (student.course_name) {
@@ -1569,9 +1638,6 @@
         `).join('');
       }
 
-      // Student uploads
-      loadStudentUploads(student.id);
-
       // Recent quiz scores
       if (practiceResults && practiceResults.length) {
         document.getElementById('progress-nursing').innerHTML = practiceResults.slice(0, 3).map(r => {
@@ -1643,6 +1709,7 @@
       if (isNursing) {
         fetches.push(
           db.from('student_class_schedules').select('id,class_code,class_name,next_exam_date').eq('student_id', student.id).order('class_code'),
+          db.from('student_class_notes').select('class_code,note').eq('student_id', student.id),
           db.from('student_supplemental_practice_results')
             .select('practice_key,practice_title,score,total_questions,completed_at')
             .eq('student_id', student.id)
@@ -1652,14 +1719,15 @@
       }
 
       const results = await Promise.all(fetches);
-      const [plans, resources, catalog, access, schedules, practiceRes] = results;
+      const [plans, resources, catalog, access, schedules, classNotes, practiceRes] = results;
       assignmentState = { student, isPreview, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
       app.classList.remove('hidden');
 
       if (isNursing) {
-        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : []);
+        const notesByClass = new Map((classNotes && !classNotes.error ? classNotes.data || [] : []).map(item => [item.class_code, item.note || '']));
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '');
         // Show onboarding modal only on true first login (never in preview)
         if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');
