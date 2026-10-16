@@ -7,14 +7,14 @@
   <title>My Study Plan · NCLEX Success Center</title>
   <link rel="stylesheet" href="student-nav.css">
   <style>
-    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}
+    :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3;--font-sans:"Avenir Next",Avenir,"Segoe UI",sans-serif}
     *{box-sizing:border-box}
-    body{margin:0;color:var(--ink);background:var(--cream);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{margin:0;color:var(--ink);background:var(--cream);font-family:var(--font-sans)}
     .shell{width:min(1160px,calc(100% - 38px));margin:auto}
     .top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:23px 0;border-bottom:1px solid #e1e8e2}
     .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
-    .brand small{font:600 .62em Inter,sans-serif}
-    .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
+    .brand small{font:600 .62em var(--font-sans)}
+    .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem var(--font-sans);cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
     .hero{padding:24px 0 16px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
     .eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
     h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}
@@ -99,7 +99,7 @@
     .study-calendar-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
     .study-calendar-heading h2{margin:0}
     .study-calendar-nav{display:flex;align-items:center;gap:8px}
-    .study-calendar-nav button{min-width:44px;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:800 .84rem Inter,sans-serif;cursor:pointer}
+    .study-calendar-nav button{min-width:44px;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:800 .84rem var(--font-sans);cursor:pointer}
     .study-calendar-nav button:focus-visible,.study-calendar-day:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     .study-calendar-month{min-width:150px;text-align:center;font-weight:800}
     .study-calendar-legend{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0;color:var(--muted);font-size:.75rem}
@@ -129,7 +129,7 @@
     @media(max-width:600px){.study-calendar{padding:16px 10px}.study-calendar-day{min-height:70px;padding:4px 2px}.study-calendar-chip{padding:2px;font-size:.55rem}.study-calendar-weekdays{font-size:.62rem}.study-calendar-month{min-width:120px}}
     .reminder-list{list-style:none;padding:0;margin:12px 0 0}
     .reminder-item{padding:16px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
-    .reminder-item h3{margin:6px 0;font:800 .95rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:normal}
+    .reminder-item h3{margin:6px 0;font:800 .95rem var(--font-sans);letter-spacing:normal}
     .reminder-item p,.reminder-message{margin:4px 0;color:var(--muted);font-size:.83rem;line-height:1.5}
     .reminder-state{font-size:.78rem;font-weight:800;color:var(--teal)}
     .reminder-state.overdue,.reminder-error{color:#9c3535}
@@ -142,6 +142,7 @@
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
     .modules{grid-column:1/-1}
+    .library-resource-heading{margin:24px 0 12px;padding-top:20px;border-top:1px solid var(--line);font-size:1.15rem}
     .module-group+.module-group{margin-top:25px;padding-top:23px;border-top:1px solid var(--line)}
     .module-group-label{margin:0 0 11px;color:var(--rose);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
     .module-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -173,10 +174,10 @@
     .field textarea{resize:vertical;min-height:80px}
     .field-hint{font-size:.76rem;color:var(--muted);margin-top:5px;line-height:1.45}
     .modal-actions{display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap}
-    .btn-primary{padding:12px 24px;background:var(--teal);color:#fff;border:0;font:800 .85rem Inter,sans-serif;cursor:pointer;letter-spacing:.04em}
+    .btn-primary{padding:12px 24px;background:var(--teal);color:#fff;border:0;font:800 .85rem var(--font-sans);cursor:pointer;letter-spacing:.04em}
     .btn-primary:hover{background:#236b5f}
     .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-    .btn-skip{background:transparent;border:0;font:600 .8rem Inter,sans-serif;color:var(--muted);cursor:pointer;padding:0;text-decoration:underline}
+    .btn-skip{background:transparent;border:0;font:600 .8rem var(--font-sans);color:var(--muted);cursor:pointer;padding:0;text-decoration:underline}
     .step-dots{display:flex;gap:6px;margin-bottom:24px}
     .dot{width:8px;height:8px;border-radius:50%;background:var(--line)}
     .dot.active{background:var(--teal)}
@@ -195,7 +196,7 @@
     .upload-item-body{flex:1;min-width:0}
     .upload-item-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .upload-item-meta{font-size:.75rem;color:var(--muted);margin-top:2px}
-    .upload-action-btn{padding:9px 20px;background:var(--teal);color:#fff;border:0;font:800 .8rem Inter,sans-serif;cursor:pointer;margin-top:4px}
+    .upload-action-btn{padding:9px 20px;background:var(--teal);color:#fff;border:0;font:800 .8rem var(--font-sans);cursor:pointer;margin-top:4px}
     .upload-action-btn:hover{background:#236b5f}
 
     /* ── Exam date inline prompt ─────────────────────────────── */
@@ -215,15 +216,15 @@
     .practice-item-open{display:inline-block;margin-top:8px;padding:8px 11px;border:1px solid currentColor;border-radius:999px;font-size:.8rem;font-weight:900;color:var(--teal);text-decoration:none}
     .practice-item-meta{font-size:.73rem;color:var(--teal);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:block}
     .class-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px}
-    .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem Inter,sans-serif;cursor:pointer}
+    .class-tab{border:1px solid var(--teal);background:transparent;color:var(--teal-dark);padding:9px 12px;font:800 .78rem var(--font-sans);cursor:pointer}
     .class-tab[aria-selected="true"]{background:var(--teal);color:#fff}
     .class-schedule-panel{padding:15px;background:var(--teal-light);border:1px solid var(--teal-sage)}
     .class-schedule-panel h3{margin:0;font-size:1rem}
     .class-schedule-panel p{margin:5px 0 0;color:var(--muted);font-size:.82rem}
     .class-schedule-form{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-top:12px}
     .class-schedule-form label{display:grid;gap:5px;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
-    .class-schedule-form input{padding:9px 10px;border:1px solid var(--teal-sage);background:#fff;color:var(--ink);font:400 .86rem Inter,sans-serif}
-    .class-schedule-form button{border:0;background:var(--ink);color:#fff;padding:10px 13px;font:800 .76rem Inter,sans-serif;cursor:pointer}
+    .class-schedule-form input{padding:9px 10px;border:1px solid var(--teal-sage);background:#fff;color:var(--ink);font:400 .86rem var(--font-sans)}
+    .class-schedule-form button{border:0;background:var(--ink);color:#fff;padding:10px 13px;font:800 .76rem var(--font-sans);cursor:pointer}
     .class-schedule-message{color:var(--muted);font-size:.75rem}
     .nursing-primary{grid-column:1/-1}
     .nursing-primary .card-head{margin-bottom:16px}
@@ -233,8 +234,8 @@
     .exam-edit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
     .exam-edit summary{color:var(--teal);cursor:pointer;font-size:.8rem;font-weight:900}
     .exam-edit-form{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px}
-    .exam-edit-form input{padding:8px 10px;border:1px solid var(--line);color:var(--ink);font:400 .85rem Inter,sans-serif}
-    .exam-edit-form button{padding:8px 12px;border:0;background:var(--teal);color:#fff;font:800 .78rem Inter,sans-serif;cursor:pointer}
+    .exam-edit-form input{padding:8px 10px;border:1px solid var(--line);color:var(--ink);font:400 .85rem var(--font-sans)}
+    .exam-edit-form button{padding:8px 12px;border:0;background:var(--teal);color:#fff;font:800 .78rem var(--font-sans);cursor:pointer}
     .exam-edit-message{color:var(--muted);font-size:.75rem}
     .exam-topics-label{display:block;margin:0 0 8px;color:var(--muted);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
     .exam-topic{margin:0 0 6px;font-size:.88rem;line-height:1.45}
@@ -458,7 +459,7 @@
       <section class="hero">
         <div>
           <h1 id="welcome-nclex">Welcome back.</h1>
-          <p>Practice questions, work on your assigned review, and follow your study plan.</p>
+          <p>Practice questions, your study plan, and the modules available to you are here.</p>
         </div>
         <aside class="countdown" id="countdown-nclex" hidden><strong></strong><span></span></aside>
       </section>
@@ -480,12 +481,14 @@
           <div class="plan-focus" id="weekly-plan-focus"></div>
         </article>
         <article class="card resources" id="assigned-work-nclex">
-          <div class="card-head"><div><h2>Assigned work</h2></div></div>
-          <div class="resource-list" id="resources-nclex"><p class="empty">No resources are assigned yet. Madison will add the materials that support your current focus area.</p></div>
+          <div class="card-head"><div><h2>Assigned practice</h2></div></div>
+          <p class="card-desc">Question sets and CAT/readiness exams assigned by Madison appear here. Find modules and other study resources in the learning library.</p>
+          <div class="resource-list" id="resources-nclex"><p class="empty">Your assigned question sets and CAT/readiness exams will appear here.</p></div>
         </article>
         <article class="card modules" id="modules-nclex-card">
           <div class="card-head"><div><p class="eyebrow">Learning library</p><h2>Your available modules</h2></div><span class="label">Course access</span></div>
-          <div class="module-library" id="modules-nclex"><p class="empty">Your assigned learning modules will appear here.</p></div>
+          <div class="module-library" id="modules-nclex"><p class="empty">Modules available to you will appear here.</p></div>
+          <div id="learning-resources-nclex" hidden></div>
         </article>
         <article class="card">
           <div class="card-head"><div><p class="eyebrow">Your roadmap</p><h2 id="plan-title-nclex">NCLEX Roadmap</h2></div><span class="label">Personal plan</span></div>
@@ -571,18 +574,18 @@
           </div>
           <p class="card-desc">Open the question set assigned for the exam you’re preparing for. You can work through your assigned sets in any order.</p>
           <div id="practice-shortcut-nursing">
-            <p class="empty">No practice set assigned yet — Madison will add one before your next session.</p>
+            <p class="empty">Exam practice sets assigned for your classes will appear here.</p>
           </div>
         </article>
 
         <!-- 2 · Study resources (full width) — non-practice content only -->
         <article class="card resources nursing-support class-dependent-panel hidden">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Selected for you</p><h2>Study resources</h2></div>
-            <span class="label teal">Assigned</span>
+            <div><p class="eyebrow" style="color:var(--teal)">Class library</p><h2>Study resources</h2></div>
+            <span class="label teal">For this class</span>
           </div>
-          <p class="card-desc">Study guides, infographics, and reference materials selected for your current unit, separate from your exam question sets.</p>
-          <div class="resource-list" id="resources-nursing"><p class="empty">No study resources assigned yet. Madison will add materials for your current unit here.</p></div>
+          <p class="card-desc">Study guides, infographics, and reference materials for your selected class. Assigned exam question sets appear in Exam Prep.</p>
+          <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
         </article>
 
         <article class="card nursing-support" id="gfxn-card" style="grid-column:1/-1;display:none">
@@ -626,7 +629,7 @@
             <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
             <span class="label teal">Course access</span>
           </div>
-          <div class="module-library" id="modules-nursing"><p class="empty">Your assigned study guides and modules will appear here.</p></div>
+          <div class="module-library" id="modules-nursing"><p class="empty">Study guides and modules available to you will appear here.</p></div>
         </article>
 
       </section>
@@ -1106,9 +1109,13 @@
       if (state.role === 'nclex') {
         if (state.error) {
           document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
+          const library = document.getElementById('learning-resources-nclex');
+          library.hidden = false;
+          library.innerHTML = '<p class="empty">Could not load study resources. Use Refresh in Assignment reminders to try again.</p>';
           document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
         } else {
           renderResources(state.resources, 'resources-nclex', state.plan);
+          renderLibraryResources(state.resources, 'learning-resources-nclex');
           await renderThisWeek(state.student, state.resources, state.plan);
         }
       }
@@ -1146,24 +1153,49 @@
       });
     }
 
-    // NCLEX assigned work includes practice; uploads stay in their dedicated view.
+    // Only question sets and generated practice/CATs are assignments; other materials belong in the library.
     function renderResources(items, containerId, plan) {
-      const filtered = items.filter(r => r.resource_type !== 'student_upload');
+      const filtered = items.filter(r =>
+        r.resource_type === 'practice_set' ||
+        r.assignment_kind === 'practice' ||
+        r.assignment_kind === 'cat'
+      );
       if (!filtered.length) {
-        document.getElementById(containerId).innerHTML = '<p class="empty">No resources are assigned yet. Madison will add materials for your current focus.</p>';
+        document.getElementById(containerId).innerHTML = '<p class="empty">No question sets or CAT or readiness exams are assigned yet.</p>';
         return;
       }
       document.getElementById(containerId).innerHTML = filtered.map(item =>
         `<article class="resource">
-          <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g,' '))}</span>
+          <span class="resource-type">${item.assignment_kind === 'cat' ? 'CAT / readiness exam' : item.resource_type === 'practice_set' ? 'Practice set' : 'Assigned practice'}</span>
           <h3>${studentResourceText(item.title)}</h3>
           ${item.assignment_week ? `<p data-weekly-state>Due ${text(item.due_on)} · ${item.completed_at ? 'Complete' : 'Not complete'}</p>` : ''}
           ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
-          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">${item.resource_type === 'practice_set' ? 'Open assigned set' : 'Open resource'} →</a>` : ''}
+          ${item.url  ? `<a href="${text(item.url)}" target="_blank" rel="noopener">${item.assignment_kind === 'cat' ? 'Open assigned CAT' : 'Open assigned set'} →</a>` : ''}
           ${item.assignment_week ? `<button type="button" class="resource-button" data-weekly-complete="${text(item.id)}">${item.completed_at ? 'Mark not complete' : 'Mark complete'}</button><p role="status" data-completion-status></p>` : ''}
         </article>`
       ).join('');
       bindWeeklyCompletion(document.getElementById(containerId), items, plan);
+    }
+
+    function renderLibraryResources(items, containerId) {
+      const resources = items.filter(r =>
+        !['practice_set', 'student_upload', 'cat_results'].includes(r.resource_type) &&
+        !['practice', 'cat'].includes(r.assignment_kind)
+      );
+      const host = document.getElementById(containerId);
+      if (!resources.length) {
+        host.hidden = true;
+        host.innerHTML = '';
+        return;
+      }
+      host.hidden = false;
+      host.innerHTML = `<h3 class="library-resource-heading">Study resources</h3>
+        <div class="resource-list">${resources.map(item => `<article class="resource">
+          <span class="resource-type">${text((item.resource_type || 'resource').replace(/_/g, ' '))}</span>
+          <h3>${studentResourceText(item.title)}</h3>
+          ${item.note ? `<p>${studentResourceText(item.note)}</p>` : ''}
+          ${item.url ? `<a href="${text(item.url)}" target="_blank" rel="noopener">Open resource →</a>` : ''}
+        </article>`).join('')}</div>`;
     }
 
     function studentResourceText(value) {
@@ -1185,7 +1217,7 @@
       </article>`;
       document.getElementById(containerId).innerHTML =
         (core.length     ? `<div class="module-group"><p class="module-group-label">Core RN Safety Pathway</p><div class="module-list">${core.map(card).join('')}</div></div>` : '') +
-        (deepDive.length ? `<div class="module-group"><p class="module-group-label">Assigned modules</p><div class="module-list">${deepDive.map(card).join('')}</div></div>` : '');
+        (deepDive.length ? `<div class="module-group"><p class="module-group-label">Additional modules</p><div class="module-list">${deepDive.map(card).join('')}</div></div>` : '');
     }
 
     // ── NCLEX portal ─────────────────────────────────────────────────
@@ -1210,6 +1242,7 @@
       }
       renderWeeklyPlan(plans[0]);
       renderResources(resources, 'resources-nclex', plans[0]);
+      renderLibraryResources(resources, 'learning-resources-nclex');
       renderModulesInto('modules-nclex', catalog, access);
 
       // Render CAT results if present
@@ -1749,6 +1782,9 @@
       renderAssignmentReminders();
       if (resources.error && !isNursing) {
         document.getElementById('resources-nclex').innerHTML = '<p class="empty">Could not load assigned work. Use Refresh in Assignment reminders to try again.</p>';
+        const library = document.getElementById('learning-resources-nclex');
+        library.hidden = false;
+        library.innerHTML = '<p class="empty">Could not load study resources. Use Refresh in Assignment reminders to try again.</p>';
         document.getElementById('daily-priorities-nclex').innerHTML = '<p>Assignment progress is unavailable until assigned work loads.</p>';
       }
       window.addEventListener('focus', refreshAssignmentReminders);
