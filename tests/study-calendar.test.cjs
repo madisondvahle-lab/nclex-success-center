@@ -108,6 +108,9 @@ test('dashboard wires NCLEX date entry, nursing schedule link, and calendar quer
   assert.match(html, /Next NCLEX attempt date/);
   assert.match(html, /class exam dates in <a href="#class-schedule-card">Class schedule/);
   assert.match(html, /get_my_scheduled_consultations/);
+  assert.match(html, /if \(state\.isPreview\) \{\s+const intakes = await db\.from\('consult_intakes'\)\.select\('id'\)\.eq\('student_id', state\.student\.id\)/);
+  assert.match(html, /select\('id,scheduled_start,scheduled_end,consult_type'\)/);
+  assert.doesNotMatch(html, /Staff preview does not show private student sessions/);
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
 
