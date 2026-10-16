@@ -283,6 +283,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="question-bank-selection.js"></script>
   <script src="exam-ui.js"></script>
   <script src="exam-adapters.js"></script>
   <script src="student-nav.js"></script>
@@ -1758,7 +1759,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       nur215Question('nur215-060','Which statement by a student nurse demonstrates correct understanding of delegation?', ['“If I delegate a task, I no longer have responsibility for the patient.”','“I may delegate nursing judgment if the UAP has worked here for years.”','“I must match the task and patient to the team member’s competence and follow up on outcomes.”','“Any task can be delegated when the unit is busy.”'],2,'Safe delegation matches the task, circumstance, person, and supervision requirements; the RN retains accountability for nursing judgment and follow-up.','Delegation','Hard')
     ]});
 
-    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],enabledModules=new Set(),questionTopics=[],questionTopicsError='';
+    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],enabledModules=new Set(),questionCatalog=[],questionTopics=[],questionCategories=[],questionTopicsError='';
     const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ngn-acute-01':'core-acute-systems'};
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     function cleanPersonalLabel(value){
@@ -1789,15 +1790,35 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         try{const url=new URL(resource.url,window.location.href);return url.origin===window.location.origin&&url.pathname===window.location.pathname&&url.searchParams.has('mixed')}catch{return false}
       });
     }
-    async function loadQuestionTopics(){
-      const names=new Set(),pageSize=500;
+    async function loadQuestionCatalog(){
+      const rows=[],pageSize=500;
       for(let start=0;;start+=pageSize){
-        const page=await db.from('questions').select('id,topic').eq('active',true).order('id').range(start,start+pageSize-1);
+        const page=await db.from('questions').select('topic,nclex_category,difficulty').eq('active',true).eq('item_type','mcq').order('id').range(start,start+pageSize-1);
         if(page.error)throw page.error;
-        (page.data||[]).forEach(row=>{const topic=String(row.topic||'').trim();if(topic)names.add(topic)});
+        rows.push(...(page.data||[]));
         if((page.data||[]).length<pageSize)break;
       }
-      return [...names].sort((a,b)=>a.localeCompare(b));
+      const topics=new Map(),categories=new Map();
+      rows.forEach(row=>{
+        const topic=String(row.topic||'').trim();
+        const category=String(row.nclex_category||'').trim();
+        if(topic)topics.set(topic,(topics.get(topic)||0)+1);
+        const key=category||'__uncategorized__';
+        categories.set(key,(categories.get(key)||0)+1);
+      });
+      questionCatalog=rows.map(row=>({
+        topic:String(row.topic||'').trim(),
+        nclexCategory:String(row.nclex_category||'').trim(),
+        difficulty:row.difficulty||'medium'
+      }));
+      return {
+        topics:[...topics].map(([name,count])=>({name,count})).sort((a,b)=>a.name.localeCompare(b.name)),
+        categories:[...categories].map(([value,count])=>({
+          value,
+          label:value==='__uncategorized__'?'Uncategorized':value.replace(/[_-]+/g,' ').replace(/\b[a-z]/g,char=>char.toUpperCase()),
+          count
+        })).sort((a,b)=>a.label.localeCompare(b.label))
+      };
     }
     function assignedCourseExam(courseKey,examKey){
       return assignedResources.some(resource=>{
@@ -1902,17 +1923,31 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const target=$('sets');
       target.className='nclex-review';
       const rows=assignedRows(resources);
-      const topicOptions=questionTopics.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-choice value="${escapeHtml(topic)}"><span>${escapeHtml(topic)}</span></label>`).join('');
+      const topicOptions=questionTopics.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-choice value="${escapeHtml(topic.name)}"><span>${escapeHtml(topic.name)} <small>(${topic.count})</small></span></label>`).join('');
+      const categoryOptions=questionCategories.map(category=>`<label class="custom-topic-option"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)} <small>(${category.count})</small></span></label>`).join('');
       target.innerHTML=`<section class="custom-builder" aria-labelledby="custom-builder-title">
         <h2 id="custom-builder-title">Build your own question set</h2>
-        <p>Choose a session length and, optionally, one or more topics. Leave topics unchecked for a mixed NCLEX set. Your score will be saved to your practice history.</p>
+        <p>Choose a session length and difficulty. Select broad categories to focus your set, then optionally narrow by topic. Leave categories and topics unchecked for mixed practice. Your score will be saved to your practice history.</p>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Topic choices could not load: ${escapeHtml(questionTopicsError)} You can still start a mixed set.</p>`:''}
         <div class="custom-builder-controls">
           <label for="custom-count">Questions per session
             <select id="custom-count">${[10,20,30,40,50,60,75,100].map(count=>`<option value="${count}"${count===20?' selected':''}>${count} questions</option>`).join('')}</select>
           </label>
+          <label for="custom-difficulty">Difficulty
+            <select id="custom-difficulty">
+              <option value="medium-hard" selected>Medium + Hard</option>
+              <option value="all">All levels</option>
+              <option value="medium">Medium only</option>
+              <option value="hard">Hard only</option>
+              <option value="easy">Easy only</option>
+            </select>
+          </label>
           <fieldset class="custom-topic-picker" style="border:0;padding:0;margin:0">
-            <legend>Topics (optional)</legend>
+            <legend>NCLEX categories (optional)</legend>
+            ${categoryOptions?`<div class="custom-topic-list">${categoryOptions}</div>`:'<p class="custom-topic-note">No active categories are available; mixed practice remains available.</p>'}
+          </fieldset>
+          <fieldset class="custom-topic-picker" style="border:0;padding:0;margin:0">
+            <legend>Topics (optional; narrows selected categories)</legend>
             ${questionTopics.length?`<details><summary>Choose from ${questionTopics.length} available topics</summary>
               <label for="custom-topic-search">Filter topics</label>
               <input class="custom-topic-search" id="custom-topic-search" type="search" placeholder="Search topics">
@@ -1930,14 +1965,28 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const query=topicSearch.value.trim().toLowerCase();
         target.querySelectorAll('.custom-topic-option').forEach(option=>{option.hidden=!option.textContent.toLowerCase().includes(query)});
       });
+      const updateAvailability=()=>{
+        const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
+        const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
+        const difficulty=target.querySelector('#custom-difficulty')?.value||'medium-hard';
+        const count=Number(target.querySelector('#custom-count')?.value);
+        const matching=PracticeQuestionSelection.filter(questionCatalog,{categories,topics,difficulty}).length;
+        target.querySelector('#custom-review-status').textContent=matching
+          ?`${matching} active questions match your filters. This set will use up to ${Math.min(count,matching)}.`
+          :'No active questions match these filters. Adjust the category, topic, or difficulty.';
+      };
+      target.querySelectorAll('[data-category-choice],[data-topic-choice],#custom-difficulty,#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
+      updateAvailability();
       target.querySelector('#start-custom-review')?.addEventListener('click',()=>{
         const count=Number(target.querySelector('#custom-count')?.value);
+        const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
         const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
+        const difficulty=target.querySelector('#custom-difficulty')?.value||'medium-hard';
         if(![10,20,30,40,50,60,75,100].includes(count)){
           target.querySelector('#custom-review-status').textContent='Choose a question count from 10 to 100.';
           return;
         }
-        buildMixedReview(count,null,topics);
+        buildMixedReview(count,null,topics,categories,difficulty);
       });
     }
     function renderLibrary(){
@@ -2148,8 +2197,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       }
     }
 
-    async function buildMixedReview(count,focusCat,focusTopics){
+    async function buildMixedReview(count,focusCat,focusTopics,focusCategories,difficultyFilter){
       const isCustom=Array.isArray(focusTopics);
+      const categories=new Set((focusCategories||[]).map(category=>String(category||'').trim()));
+      const difficulty=difficultyFilter||'all';
       if(![10,20,30,40,50,60,75,100].includes(count)){
         $('library-status').textContent='Choose a question count from 10 to 100.';
         $('library-status').classList.remove('hidden');
@@ -2178,6 +2229,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             const page=await db.from('questions')
               .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no')
               .eq('active',true)
+              .eq('item_type','mcq')
               .order('created_at')
               .order('id')
               .range(start,start+pageSize-1);
@@ -2221,9 +2273,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
         rationale:q.rationale||'Review the underlying nursing principle for this item.',
         category:mixedCategory(q),
+        nclexCategory:String(q.nclex_category||'').trim(),
         topic:String(q.topic||'').trim(),
         difficulty:q.difficulty||'medium'
-      })).filter(q=>q.answer>=0);
+      })).filter(q=>q.answer>=0&&q.options.every(option=>String(option||'').trim()));
 
       const weights={
         'Priority & Clinical Judgment':.40,
@@ -2239,6 +2292,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const chosenIds=new Set();
       const focus=focusCat&&window.NCLEXCats?NCLEXCats.canon(focusCat,''):'';
       const topics=new Set((focusTopics||[]).map(topic=>String(topic||'').trim()).filter(Boolean));
+      const filtered=PracticeQuestionSelection.filter(normalized,{categories:[...categories],topics:[...topics],difficulty});
 
       function addFrom(pool,amount){
         shuffled(pool).forEach(q=>{
@@ -2249,17 +2303,17 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         });
       }
 
-      if(topics.size){
-        const pool=normalized.filter(q=>topics.has(q.topic));
+      if(topics.size||categories.size){
+        const pool=filtered;
         if(!pool.length){
-          $('quiz').innerHTML='<p class="status">There are no active questions for the selected topics. Choose different topics or start a mixed review.</p>';
+          $('quiz').innerHTML='<p class="status">There are no active questions matching your selected categories, topics, and difficulty. Choose different filters or start a mixed review.</p>';
           return;
         }
         addFrom(pool.filter(q=>!seen.has(q.id)),count);
         addFrom(pool.filter(q=>missed.has(q.id)),count-chosen.length);
         addFrom(pool,count-chosen.length);
       }else if(focus){
-        const pool=normalized.filter(q=>q.category===focus);
+        const pool=filtered.filter(q=>q.category===focus);
         if(!pool.length){
           $('quiz').innerHTML='<p class="status">There are no questions tagged '+focus+' yet. Try a mixed review instead.</p>';
           return;
@@ -2269,18 +2323,18 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         addFrom(pool,count-chosen.length);
       }else Object.entries(weights).forEach(([category,weight])=>{
         const amount=Math.max(1,Math.round(count*weight));
-        const pool=normalized.filter(q=>q.category===category && !seen.has(q.id));
+        const pool=filtered.filter(q=>q.category===category && !seen.has(q.id));
         addFrom(pool,amount);
       });
 
       if(!focus&&!topics.size&&chosen.length<count)
-        addFrom(normalized.filter(q=>!seen.has(q.id)),count-chosen.length);
+        addFrom(filtered.filter(q=>!seen.has(q.id)),count-chosen.length);
 
       if(!focus&&!topics.size&&chosen.length<count)
-        addFrom(normalized.filter(q=>missed.has(q.id)),count-chosen.length);
+        addFrom(filtered.filter(q=>missed.has(q.id)),count-chosen.length);
 
       if(!focus&&!topics.size&&chosen.length<count)
-        addFrom(normalized,count-chosen.length);
+        addFrom(filtered,count-chosen.length);
 
       if(!chosen.length){
         $('quiz').innerHTML='<p class="status">No active questions are available for this review yet. Return to your assignments or try again later.</p>';
@@ -2289,9 +2343,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
 
       activeSet={
         id:'mixed-review-'+Date.now(),
-        title:isCustom?(topics.size?'Custom NCLEX Topic Review':'Custom Mixed NCLEX Review'):(focus?focus+' Practice':'Mixed NCLEX Review'),
-        tag:isCustom?`Student-built practice${chosen.length<count?` · ${chosen.length} questions available`:''}`:(focus?'Focused on your weak area':'Assigned mixed review'),
-        description:topics.size?'Practice questions selected from your chosen NCLEX topics.':'Mixed NCLEX-style review across priority, systems, medications, OB, pediatrics, mental health, and safety.',
+        title:isCustom?(topics.size?'Custom NCLEX Topic Review':categories.size?'Custom NCLEX Category Review':'Custom Mixed NCLEX Review'):(focus?focus+' Practice':'Mixed NCLEX Review'),
+        tag:isCustom?`Student-built practice${chosen.length<count?` · ${chosen.length} matching questions available`:''}`:(focus?'Focused on your weak area':'Assigned mixed review'),
+        description:topics.size||categories.size?'Practice questions selected from your chosen NCLEX categories and topics.':'Mixed NCLEX-style review across priority, systems, medications, OB, pediatrics, mental health, and safety.',
         questions:shuffled(chosen).slice(0,count)
       };
 
@@ -2395,7 +2449,11 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         enabledModules=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
         classSchedules=schedules||[];
         if(student.student_type!=='nursing_student'){
-          try{questionTopics=await loadQuestionTopics()}
+          try{
+            const catalog=await loadQuestionCatalog();
+            questionTopics=catalog.topics;
+            questionCategories=catalog.categories;
+          }
           catch(error){questionTopicsError=error?.message||'Could not load the available topic list.'}
         }
         const params=new URLSearchParams(window.location.search);
