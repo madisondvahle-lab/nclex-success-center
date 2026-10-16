@@ -290,11 +290,12 @@
       <article class="card full hidden coach-only" id="cat-card"><div class="card-head"><div><p class="eyebrow">CAT, readiness &amp; practice</p><h2>Scores over time</h2></div><span class="label" id="cat-label">Tutor</span></div><div id="cat-body"></div>
         <details id="cat-entry" style="margin-top:16px"><summary style="cursor:pointer;font-weight:800">Enter exam results</summary>
           <form id="cat-form" style="margin-top:12px"><div class="form-grid">
-            <label>Save to<select id="cat-target"><option value="">New entry</option></select></label>
+            <label>Save to<select id="cat-target"><option value="">New exam record</option></select></label>
             <label>Platform<select id="cat-platform"><option>Archer</option><option>UWorld</option><option>Kaplan</option><option>ATI</option><option>Bootcamp</option><option>NCSBN</option><option>Other</option></select></label>
             <label>Name<input id="cat-name" maxlength="120" placeholder="e.g. CAT #2"></label>
             <label>Date completed<input id="cat-date" type="date"></label>
             <label>Overall score %<input id="cat-overall" type="number" min="0" max="100" step="0.1"></label>
+            <label class="wide">Attach report (optional)<input id="cat-report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp"><span class="muted">The report and scores will be saved together to this exam record.</span></label>
             <label class="wide">Paste category lines (optional)<textarea id="cat-paste" rows="4" placeholder="Management of Care 62%&#10;Pharmacological and Parenteral Therapies 48%"></textarea></label>
           </div>
           <button class="button secondary" type="button" id="cat-parse">Fill categories from paste</button>
@@ -305,7 +306,7 @@
       <article class="card full hidden" id="practice-plan-card"><div class="card-head"><div><p class="eyebrow">Practice priorities</p><h2>Patterns we&apos;re seeing</h2></div><span class="label">Shared view</span></div><div class="practice-grid" id="practice-suggestions"></div></article>
       <article class="card full" hidden style="display:none"><div class="card-head"><div><p class="eyebrow">Individualized analysis</p><h2>Your priority map</h2></div><span class="label">Shared view</span></div><div class="focus-list" id="focus"><p class="empty">No priorities yet.</p></div></article>
       <article class="card" id="reports-card"><div class="card-head"><div><p class="eyebrow">Assessment timeline</p><h2>Your reports</h2></div><span class="label" id="report-count">0 reports</span></div><div class="upload-list" id="uploads"><p class="empty">No reports yet.</p></div></article>
-      <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. For a batch, group similar reports together and leave date and score blank unless they apply to every file.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cat">CAT</option><option value="readiness_exam">Readiness exam</option><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><p class="muted" id="upload-score-preview" role="status" aria-live="polite"></p><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
+      <article class="card full"><div class="card-head"><div><p class="eyebrow" id="upload-eyebrow">Add an assessment</p><h2 id="upload-title">Upload a report</h2></div><span class="label">Private</span></div><p class="muted" id="upload-intro">Upload one or more Kaplan, Archer, Bootcamp, UWorld, or CPR PDFs or screenshots. They are visible only to you and Madison. CAT and readiness results can be entered with their category scores above; use this for other reports or attachments without CAT scores.</p><form id="upload-form"><div class="form-grid"><label>Platform<select id="platform" required><option value="kaplan">Kaplan</option><option value="archer">Archer</option><option value="bootcamp">Bootcamp</option><option value="uworld">UWorld</option><option value="cpr">CPR</option><option value="other">Other</option></select></label><label>Report type<select id="assessment-type" required><option value="cpr_report">CPR report</option><option value="qbank_report">QBank report</option><option value="other">Other</option></select></label><label>Report label (optional)<input id="report-label" maxlength="120" placeholder="e.g. Kaplan CPR #2"></label><label>Attempt number (optional)<input id="attempt-number" type="number" min="1" step="1" placeholder="e.g. 2"></label><label>Date completed<input id="taken-on" type="date"></label><label>Overall score (optional)<input id="overall-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 62"></label><label class="wide">PDF or image report(s)<input id="report-file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" multiple required></label></div><p class="muted" id="upload-score-preview" role="status" aria-live="polite"></p><button class="button" id="upload-button" type="submit">Upload private report</button><p class="muted" id="upload-message" role="status"></p></form></article>
       <article class="card full coach-only" id="discuss-card" style="display:none"><div class="card-head"><div><p class="eyebrow">Consult prep</p><h2>Questions to discuss <span id="discuss-n"></span></h2></div><span class="label">Tutor only</span></div><div class="upload-list" id="discuss-list"></div></article>
       <article class="card full coach-only" id="coach-notes"><div class="card-head"><div><p class="eyebrow">Coach notes</p><h2>Private session notes</h2></div><span class="label">Tutor only</span></div><form id="coach-note-form"><label>New note<textarea id="coach-note" required maxlength="4000" placeholder="Private note for your next session or follow-up."></textarea></label><button class="button" type="submit">Save private note</button><p class="muted" id="coach-note-message" role="status"></p></form><div class="upload-list" id="coach-notes-list" style="margin-top:20px"></div></article>
     </section>
@@ -1441,22 +1442,80 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       const scores={};document.querySelectorAll('[data-cat]').forEach(inp=>{if(inp.value!=='')scores[NCLEXCats.NAMES[+inp.dataset.cat]]=Number(inp.value)});
       const cnts={};document.querySelectorAll('[data-n]').forEach(inp=>{const nm=NCLEXCats.NAMES[+inp.dataset.n];if(inp.value!==''&&scores[nm]!=null)cnts[nm]=Number(inp.value)});
       const ov=$('cat-overall').value,overall=ov===''?null:Number(ov),date=$('cat-date').value||null,target=$('cat-target').value;
+      const file=$('cat-report-file').files[0]||null;
       if(overall==null&&!Object.keys(scores).length){msg.textContent='Enter an overall score or at least one category.';return}
-      let err;
-      if(target){
-        const patch={};if(overall!=null)patch.overall_score=overall;if(date)patch.taken_on=date;
-        if(Object.keys(patch).length)err=(await db.from('student_assessment_uploads').update(patch).eq('id',target)).error;
-        if(!err&&Object.keys(scores).length){
-          err=(await db.from('student_assessment_categories').delete().eq('assessment_id',target)).error;
-          if(!err)err=(await db.from('student_assessment_categories').insert(Object.entries(scores).map(([category,score])=>({assessment_id:target,category,score})))).error;
+      if(file&&file.size>10485760){msg.textContent='The report file must be 10 MB or smaller.';return}
+      if(file&&!['application/pdf','image/jpeg','image/png','image/webp'].includes(file.type)){msg.textContent='Attach a PDF, PNG, JPG, or WEBP report.';return}
+      let uploadedPath=null,oldPath=null,assessmentId=target||null,oldFileCleanupError=null;
+      try{
+        if(file){
+          const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'-');
+          uploadedPath=`${student.id}/${crypto.randomUUID()}-${safe}`;
+          const stored=await db.storage.from('assessment-reports').upload(uploadedPath,file,{contentType:file.type,upsert:false});
+          if(stored.error)throw new Error('The exam report could not be uploaded: '+stored.error.message);
         }
-      }else{
-        err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,...(Object.keys(cnts).length?{category_counts:cnts}:{}),entered_by:session.user.id})).error;
+        const exam={
+          student_id:student.id,
+          platform:$('cat-platform').value,
+          assessment_type:'cat',
+          report_label:$('cat-name').value.trim()||null,
+          attempt_number:null,
+          taken_on:date,
+          overall_score:overall,
+          report_path:uploadedPath,
+          report_filename:file?file.name:'Entered manually',
+          report_mime_type:file?file.type:'text/plain',
+          uploaded_by:session.user.id
+        };
+        if(target){
+          const current=await db.from('student_assessment_uploads').select('report_path').eq('id',target).eq('student_id',student.id).single();
+          if(current.error)throw current.error;
+          oldPath=current.data.report_path;
+          const patch={platform:exam.platform,assessment_type:'cat'};
+          if(exam.report_label)patch.report_label=exam.report_label;
+          if(date)patch.taken_on=date;
+          if(overall!=null)patch.overall_score=overall;
+          if(file){patch.report_path=uploadedPath;patch.report_filename=file.name;patch.report_mime_type=file.type}
+          const saved=await db.from('student_assessment_uploads').update(patch).eq('id',target).eq('student_id',student.id);
+          if(saved.error)throw saved.error;
+        }else{
+          const saved=await db.from('student_assessment_uploads').insert(exam).select('id').single();
+          if(saved.error)throw saved.error;
+          assessmentId=saved.data.id;
+        }
+      }catch(error){
+        if(uploadedPath){
+          const cleanup=await db.storage.from('assessment-reports').remove([uploadedPath]);
+          msg.textContent='Could not save the exam: '+(error.message||'Please try again.')+(cleanup.error?' The unused uploaded file could not be removed.':'');
+        }else msg.textContent='Could not save the exam: '+(error.message||'Please try again.');
+        return;
       }
-      if(err){msg.textContent='Could not save: '+err.message;return}
+      const categoryRows=Object.entries(scores).map(([category,score])=>({assessment_id:assessmentId,category,score,total_count:cnts[category]||null}));
+      let categoryError=null;
+      if(target&&categoryRows.length){
+        const removed=await db.from('student_assessment_categories').delete().eq('assessment_id',target);
+        categoryError=removed.error;
+      }
+      if(!categoryError&&categoryRows.length){
+        const savedCategories=await db.from('student_assessment_categories').insert(categoryRows);
+        categoryError=savedCategories.error;
+      }
+      if(target&&file&&oldPath){
+        const cleanup=await db.storage.from('assessment-reports').remove([oldPath]);
+        if(cleanup.error)oldFileCleanupError=cleanup.error;
+      }
       window.__catPlat='all';
       if(window.__trendSeries==='practice')window.__trendSeries='both';
-      $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
+      $('cat-form').reset();
+      if(categoryError){
+        msg.textContent='Exam record saved, but category scores could not be saved: '+categoryError.message;
+      }else if(oldFileCleanupError){
+        msg.textContent='Exam and category scores saved, but its previous report file could not be removed: '+oldFileCleanupError.message;
+      }else{
+        const savedParts=[];if(categoryRows.length)savedParts.push('category scores');if(file)savedParts.push('report');
+        msg.textContent=savedParts.length?'Exam record and '+savedParts.join(' and ')+' saved together.':'Exam record saved.';
+      }
+      await loadStudent(student);
     });
     async function loadStudent(target){
       student=target;

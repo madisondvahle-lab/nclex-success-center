@@ -11,7 +11,7 @@ const escape = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quo
 
 function element() {
   return {
-    innerHTML: '', textContent: '', value: '', dataset: {}, style: {}, disabled: false,
+    innerHTML: '', textContent: '', value: '', dataset: {}, style: {}, disabled: false, files: [],
     classList: { add() {}, remove() {} },
     listeners: {},
     addEventListener(type, fn) { this.listeners[type] = fn; },
@@ -302,63 +302,107 @@ test('unknown platforms remain distinct except for case/whitespace, including a 
 });
 
 test('tutor saves select the saved platform for new entries and existing uploads', async () => {
+  const { context, $, tables } = harness();
+  context.currentUploads = [{ id: 'new', platform: ' uworld ' }];
+  context.window.__trendSeries = 'practice';
+  context.window.__catPlat = 'platform:archer';
+  let refreshed = false;
+  context.loadStudent = () => { refreshed = true; };
+  const filters = [];
+  context.db.from = table => {
+    let operation = null, value = null;
+    const query = {
+      select() { return this; },
+      eq(key, match) { filters.push([key, match]); return this; },
+      insert(rows) { operation = 'insert'; value = rows; return this; },
+      update(patch) { operation = 'update'; value = patch; return this; },
+      async single() {
+        if (operation === 'insert') {
+          const row = { ...value, id: 'saved' };
+          tables[table].push(row);
+          return { data: { id: row.id }, error: null };
+        }
+        return { data: { report_path: null }, error: null };
+      },
+      then(resolve) {
+        if (operation === 'update') Object.assign(tables[table].find(row => row.id === 'new'), value);
+        return Promise.resolve({ data: null, error: null }).then(resolve);
+      }
+    };
+    return query;
+  };
+  // Only the save handler is needed; the rest of the tutor page initializes unrelated panels.
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf("    $('cat-form').addEventListener('submit'"), tutorHtml.indexOf('    async function loadStudent(')), context);
+  $('cat-overall').value = '82';
+  $('cat-date').value = '2026-10-15';
+  $('cat-platform').value = 'UWorld';
+  $('cat-name').value = 'CAT';
   for (const target of ['', 'new']) {
-    const { context, $ } = harness();
-    context.currentUploads = [{ id: 'new', platform: ' uworld ' }];
-    context.window.__trendSeries = 'practice';
-    context.window.__catPlat = 'platform:archer';
-    let refreshed = false;
-    context.loadStudent = () => { refreshed = true; };
-    // Only the save handler is needed; the rest of the tutor page initializes unrelated panels.
-    vm.runInContext(tutorHtml.slice(tutorHtml.indexOf("    $('cat-form').addEventListener('submit'"), tutorHtml.indexOf('    async function loadStudent(')), context);
     $('cat-target').value = target;
-    $('cat-overall').value = '82';
-    $('cat-date').value = '2026-10-15';
-    $('cat-platform').value = 'UWorld';
-    $('cat-name').value = 'CAT';
-    if (target) {
-      context.db.from = () => ({ update() { return this; }, eq: async () => ({ error: null }) });
-    }
     await $('cat-form').listeners.submit({ preventDefault() {} });
     assert.equal(context.window.__catPlat, 'all');
     assert.equal(context.window.__trendSeries, 'both');
-    assert.equal($('cat-msg').textContent, 'Saved.');
-    assert.equal(refreshed, true);
+    assert.equal($('cat-msg').textContent, 'Exam record saved.');
   }
+  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'saved').platform, 'UWorld');
+  assert.equal(tables.student_assessment_uploads.find(row => row.id === 'new').platform, 'UWorld');
+  assert.ok(filters.some(([key, value]) => key === 'student_id' && value === 'synthetic'));
+  assert.equal(refreshed, true);
 });
 
-test('tutor CAT report uploads save extracted overall and category scores', async () => {
+test('tutor CAT entry saves scores and an optional private report together', async () => {
   const { context, $, tables } = harness();
-  const file = { name: 'eric-cat.pdf', type: 'application/pdf', size: 100 };
-  context.AssessmentImport = {
-    readFile: async () => ({
-      overall: 74, date: '2026-10-14',
-      cats: { 'Safety and Infection Control': 62 },
-      counts: { 'Safety and Infection Control': 18 }
-    })
-  };
+  const file = { name: 'carla-cat.pdf', type: 'application/pdf', size: 100 };
+  const scoreInputs = [{ dataset: { cat: '0' }, value: '74' }];
+  const countInputs = [{ dataset: { n: '0' }, value: '18' }];
+  context.document.querySelectorAll = selector => selector === '[data-cat]' ? scoreInputs : selector === '[data-n]' ? countInputs : [];
   context.crypto = { randomUUID: () => 'synthetic-file-id' };
-  context.db.storage = { from: () => ({ upload: async () => ({ error: null }) }) };
+  let uploadedPath = null;
+  context.db.storage = { from: () => ({
+    async upload(path, uploaded) { uploadedPath = path; assert.equal(uploaded, file); return { error: null }; },
+    async remove() { return { error: null }; }
+  }) };
   context.loadStudent = async () => {};
-  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    let parsedTimelineFile=null'), tutorHtml.indexOf("    $('focus-form')?.addEventListener")), context);
-
-  $('assessment-type').value = 'cat';
-  $('report-file').files = [file];
-  await $('report-file').listeners.change();
-  assert.equal($('overall-score').value, 74);
-  assert.match($('upload-score-preview').textContent, /overall 74%/);
-  assert.match($('upload-score-preview').textContent, /Safety and Infection Control 62%/);
-
-  await $('upload-form').listeners.submit({ preventDefault() {} });
+  context.db.from = table => {
+    let rows;
+    return {
+      insert(value) { rows = value; return this; },
+      select() { return this; },
+      async single() {
+        if (table === 'student_assessment_uploads') {
+          tables[table].push({ ...rows, id: 'saved' });
+          return { data: { id: 'saved' }, error: null };
+        }
+        tables[table].push(...rows);
+        return { data: null, error: null };
+      },
+      then(resolve) {
+        tables[table].push(...rows);
+        return Promise.resolve({ data: null, error: null }).then(resolve);
+      }
+    };
+  };
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf("    $('cat-form').addEventListener('submit'"), tutorHtml.indexOf('    async function loadStudent(')), context);
+  $('cat-report-file').files = [file];
+  $('cat-platform').value = 'Bootcamp';
+  $('cat-name').value = 'CAT Readiness Exam 1';
+  $('cat-date').value = '2026-10-16';
+  $('cat-overall').value = '70.3';
+  await $('cat-form').listeners.submit({ preventDefault() {} });
   const savedUpload = tables.student_assessment_uploads.find(row => row.report_filename === file.name);
-  assert.equal(savedUpload.overall_score, 74);
-  assert.equal(savedUpload.taken_on, '2026-10-14');
+  assert.equal(savedUpload.platform, 'Bootcamp');
+  assert.equal(savedUpload.overall_score, 70.3);
+  assert.equal(savedUpload.taken_on, '2026-10-16');
+  assert.equal(savedUpload.report_path, uploadedPath);
   assert.equal(JSON.stringify(tables.student_assessment_categories.at(-1)), JSON.stringify({
     assessment_id: 'saved',
-    category: 'Safety and Infection Control',
-    score: 62,
+    category: 'Safety',
+    score: 74,
     total_count: 18
   }));
+  assert.match(tutorHtml, /Attach report \(optional\)/);
+  assert.doesNotMatch(tutorHtml, /<option value="cat">CAT<\/option>/);
+  assert.doesNotMatch(tutorHtml, /<option value="readiness_exam">Readiness exam<\/option>/);
 });
 
 test('admin can recover scores from an existing private CAT report', async () => {
