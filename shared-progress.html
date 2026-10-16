@@ -1371,8 +1371,9 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     }
     function renderCatCard(uploads,cats,focus,practiceRows,practiceError,portalAttempts=[]){
       const card=$('cat-card');
-      if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
+      if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');card.style.display='none';return}
       card.classList.remove('hidden');
+      card.style.display='block';
       const practice=practiceTrendRows(uploads,practiceRows);
       const seriesMode=window.__trendSeries||'both';
       const swmCatUploads=(portalAttempts||[]).flatMap(item=>{
