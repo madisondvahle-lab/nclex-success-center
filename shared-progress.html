@@ -851,7 +851,7 @@
       });
     }
 
-    async function loadAndRenderAttemptReview(attemptId,container){
+    async function loadAndRenderAttemptReview(attemptId,container,isSwmCat=false){
       if(!attemptId||!container)return;
       container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
       const {data,error}=await db.functions.invoke('diagnostic-assessment',{
@@ -876,17 +876,47 @@
 
       const missedCount=responses.filter(r=>!r.is_correct).length;
       const initialFilter=missedCount>0?'missed':'all';
-      attemptResponsesCache.set(attemptId,{responses,filter:initialFilter});
+      attemptResponsesCache.set(attemptId,{responses,filter:initialFilter,isSwmCat});
       renderAttemptReviewHtml(attemptId,container);
     }
 
     function renderAttemptReviewHtml(attemptId,container){
       const cached=attemptResponsesCache.get(attemptId);
       if(!cached)return;
-      const {responses,filter}=cached;
+      const {responses,filter,isSwmCat}=cached;
       const missedCount=responses.filter(r=>!r.is_correct).length;
       const totalCount=responses.length;
       const shownResponses=filter==='missed'?responses.filter(r=>!r.is_correct):responses;
+      const summarize=field=>{
+        const grouped=new Map;
+        responses.forEach(response=>{
+          const label=field==='nclex_category'
+            ? NCLEXCats.canon(response.nclex_category,null)
+            : response[field];
+          if(!label)return;
+          const score=grouped.get(label)||{correct:0,total:0};
+          score.total++;
+          if(response.is_correct)score.correct++;
+          grouped.set(label,score);
+        });
+        return grouped;
+      };
+      const clientNeeds=summarize('nclex_category');
+      const blueprints=summarize('blueprint');
+      const breakdownGroup=(title,rows,labels=null)=>`
+        <section>
+          <h3 style="margin:0 0 8px;font-size:.82rem;color:var(--muted)">${esc(title)}</h3>
+          <div class="snapshot-scores">${(labels||[...rows.keys()]).map(label=>{
+            const score=rows.get(label);
+            return `<div class="snapshot-score"><span>${esc(label)}</span><strong>${score?`${Math.round(score.correct/score.total*100)}% · ${score.correct}/${score.total}`:'Not assessed'}</strong></div>`;
+          }).join('')||'<p class="empty">No section data was recorded for this attempt.</p>'}</div>
+        </section>`;
+      const breakdownHtml=isSwmCat?`
+        <div style="display:grid;gap:16px;margin-bottom:18px;padding:14px;background:var(--soft)">
+          <div><strong>SWM-CAT section breakdown</strong><p class="muted" style="margin:4px 0 0">Percent correct by section. Small samples are less stable.</p></div>
+          ${breakdownGroup('Client Needs',clientNeeds,NCLEXCats.NAMES)}
+          ${breakdownGroup('Blueprint areas',blueprints)}
+        </div>`:'';
 
       let itemsHtml='';
       if(!shownResponses.length){
@@ -928,6 +958,7 @@
       }
 
       container.innerHTML=`
+        ${breakdownHtml}
         <div class="review-toolbar">
           <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-attempt-filter="missed" data-attempt-id="${esc(attemptId)}">Missed only (${missedCount})</button>
           <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-attempt-filter="all" data-attempt-id="${esc(attemptId)}">All questions (${totalCount})</button>
@@ -1056,13 +1087,13 @@
       const events=[
         ...(attempts||[]).map(item=>({
           id:item.id,
-          kind:'NCLEX Success Center assessment',
-          title:item.assessment_title||item.assessment_key||'Assessment',
+          kind:item.mode==='mock'?'Adaptive mock CAT':'NCLEX Success Center assessment',
+          title:item.mode==='mock'?'SWM-CAT':item.assessment_title||item.assessment_key||'Assessment',
           mode:item.mode,
           date:item.completed_at||item.created_at,
           correct:item.correct_questions,
           total:item.total_questions,
-          completed:!!item.completed_at,
+          completed:item.status==='completed'||!!item.completed_at,
           isAssessment:true,
           raw:item
         })),
@@ -1100,7 +1131,7 @@
           : '';
         const mode=item.mode?` · ${esc(item.mode)}`:'';
 
-        const canReview=isAdmin&&(item.isAssessment?Boolean(item.id):(missed.length>0||(Array.isArray(item.answerDetails)&&item.answerDetails.length>0)));
+        const canReview=isAdmin&&(item.isAssessment?Boolean(item.id)&&item.completed:(missed.length>0||(Array.isArray(item.answerDetails)&&item.answerDetails.length>0)));
         let reviewLabel='Review questions';
         if(item.isAssessment){
           const mCount=(Number.isFinite(total)&&Number.isFinite(correct)&&total>=correct)?(total-correct):null;
@@ -1114,7 +1145,7 @@
 
         const reviewHtml=canReview?`
           <div class="activity-review-wrap">
-            <details class="activity-review-details" id="review-details-${esc(item.id)}" data-attempt-id="${item.isAssessment?esc(item.id):''}" data-practice-id="${!item.isAssessment?esc(item.id):''}">
+            <details class="activity-review-details" id="review-details-${esc(item.id)}" data-attempt-id="${item.isAssessment?esc(item.id):''}" data-attempt-mode="${item.isAssessment?esc(item.mode||''):''}" data-practice-id="${!item.isAssessment?esc(item.id):''}">
               <summary class="activity-review-summary">
                 <span class="activity-review-summary-text">${reviewLabel}</span>
                 <span class="activity-review-chevron" aria-hidden="true">▸</span>
@@ -1127,7 +1158,7 @@
         `:'';
 
         return `<article class="activity-row"${index>=8?' hidden data-extra-activity="true"':''}>
-          <div><span class="activity-kind">${esc(item.kind)}${mode}</span><h3>${esc(item.title)}</h3>
+          <div><span class="activity-kind">${esc(item.kind)}${item.mode==='mock'?'':mode}</span><h3>${esc(item.title)}</h3>
           <p>${esc(fmtDateTime(item.date)||'Date unavailable')}${categories?`<br>${categories}`:''}${missedDetail}</p></div>
           <strong class="activity-score">${esc(result)}</strong>
           ${reviewHtml}
@@ -1153,7 +1184,7 @@
           if(details.open&&!details.dataset.loaded){
             details.dataset.loaded='true';
             const body=document.getElementById('review-body-'+attemptId);
-            loadAndRenderAttemptReview(attemptId,body);
+            loadAndRenderAttemptReview(attemptId,body,details.dataset.attemptMode==='mock');
           }
         });
       });
@@ -1312,14 +1343,19 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       return [...attempts,...reports].filter(row=>row.date&&Number.isFinite(row.score)&&row.score>=0&&row.score<=100).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
     }
     function renderComparisonChart(exams,practice,mode){
-      const catRows=mode==='practice'?[]:exams.filter(row=>row.o!=null).map(row=>({date:row.d,score:row.o,label:AssessmentPlatforms.name(row.u.platform,'Exam')+(row.u.report_label?' · '+row.u.report_label:''),total:null}));
-      const practiceRows=mode==='cat'?[]:practice;
-      const rows=[...catRows,...practiceRows],days=[...new Set(rows.map(row=>String(row.date).slice(0,10)))].sort();
+      const dateKey=value=>{
+        const parsed=value instanceof Date?value:new Date(value);
+        return Number.isNaN(parsed.getTime())?'':[parsed.getFullYear(),String(parsed.getMonth()+1).padStart(2,'0'),String(parsed.getDate()).padStart(2,'0')].join('-');
+      };
+      const catRows=(mode==='practice'?[]:exams.filter(row=>row.o!=null).map(row=>({date:row.d,score:row.o,label:AssessmentPlatforms.name(row.u.platform,'Exam')+(row.u.report_label?' · '+row.u.report_label:''),total:null})))
+        .filter(row=>dateKey(row.date)).sort((a,b)=>dateKey(a.date).localeCompare(dateKey(b.date)));
+      const practiceRows=(mode==='cat'?[]:practice).filter(row=>dateKey(row.date)).sort((a,b)=>dateKey(a.date).localeCompare(dateKey(b.date)));
+      const rows=[...catRows,...practiceRows],days=[...new Set(rows.map(row=>dateKey(row.date)).filter(Boolean))].sort();
       if(!rows.length)return '<p class="muted">No scored results in this view yet.</p>';
       const W=640,H=190,L=36,R=16,T=16,B=34,minTime=new Date(days[0]+'T12:00:00').getTime(),maxTime=new Date(days[days.length-1]+'T12:00:00').getTime();
-      const xFor=row=>L+(minTime===maxTime?(W-L-R)/2:(new Date(String(row.date).slice(0,10)+'T12:00:00').getTime()-minTime)/(maxTime-minTime)*(W-L-R));
+      const xFor=row=>L+(minTime===maxTime?(W-L-R)/2:(new Date(dateKey(row.date)+'T12:00:00').getTime()-minTime)/(maxTime-minTime)*(W-L-R));
       const y=value=>T+(100-Number(value))/100*(H-T-B);
-      const point=(row,kind)=>`${(xFor(row)+(days.length>1&&catRows.some(cat=>String(cat.date).slice(0,10)===String(row.date).slice(0,10))&&practiceRows.some(item=>String(item.date).slice(0,10)===String(row.date).slice(0,10))?(kind==='cat'?-4:4):0)).toFixed(1)},${y(row.score).toFixed(1)}`;
+      const point=(row,kind)=>`${(xFor(row)+(days.length>1&&catRows.some(cat=>dateKey(cat.date)===dateKey(row.date))&&practiceRows.some(item=>dateKey(item.date)===dateKey(row.date))?(kind==='cat'?-4:4):0)).toFixed(1)},${y(row.score).toFixed(1)}`;
       const line=(source,kind,color)=>source.length>1?'<polyline fill="none" stroke="'+color+'" stroke-width="2.5" points="'+source.map(row=>point(row,kind)).join(' ')+'"/>':'';
       const dots=(source,kind,color)=>source.map(row=>'<circle cx="'+point(row,kind).split(',')[0]+'" cy="'+y(row.score)+'" r="5" fill="'+color+'"><title>'+esc(row.label)+': '+Math.round(row.score)+'%'+(row.total?' · '+row.total+' questions':'')+'</title></circle>').join('');
       const grid=[0,50,100].map(value=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(value)+'" y2="'+y(value)+'" stroke="#d8e1db"/><text x="'+(L-6)+'" y="'+(y(value)+4)+'" text-anchor="end" font-size="11" fill="#567087">'+value+'%</text>').join('');
@@ -1331,24 +1367,41 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       if(!rows.length)return '<p class="muted">Practice scores will appear here after a portal practice set is completed or a scored QBank report is uploaded.</p>';
       return '<p class="muted">Practice attempts are plotted separately from CAT/readiness results. Portal scores include the question count; scored QBank reports use their entered overall percentage.</p>';
     }
-    function renderCatCard(uploads,cats,focus,practiceRows,practiceError){
+    function renderCatCard(uploads,cats,focus,practiceRows,practiceError,portalAttempts=[]){
       const card=$('cat-card');
       if(!isAdmin||(student.student_type&&!/nclex/i.test(student.student_type))){card.classList.add('hidden');return}
       card.classList.remove('hidden');
       const practice=practiceTrendRows(uploads,practiceRows);
       const seriesMode=window.__trendSeries||'both';
+      const swmCatUploads=(portalAttempts||[]).flatMap(item=>{
+        const label=item.mode==='mock'?'SWM-CAT'
+          :item.mode==='nclex'?'Core-Safe CAT'
+            :item.assessment_key==='readiness-assessment'?'Readiness Assessment'
+              :null;
+        if(!label||item.status!=='completed')return [];
+        return [{
+        id:'swm-cat:'+item.id,
+        fromHistory:true,
+        platform:label,
+        assessment_type:'cat',
+        taken_on:item.completed_at,
+        created_at:item.completed_at,
+        overall_score:Number(item.total_questions)>0?Number(item.correct_questions)/Number(item.total_questions)*100:null
+        }];
+      });
+      const catUploads=[...uploads,...swmCatUploads];
       const byId=new Map;cats.forEach(c=>byId.set(c.assessment_id,[...(byId.get(c.assessment_id)||[]),c]));
-      const exams=uploads.filter(catKindOk).map(u=>{const m=[],nn=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!==''){m[i]=Number(c.score);if(c.n!=null&&Number.isFinite(c.n))nn[i]=c.n}});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,nn,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
+      const exams=catUploads.filter(catKindOk).map(u=>{const m=[],nn=[];(byId.get(u.id)||[]).forEach(c=>{const i=NCLEXCats.index(c.category);if(i>=0&&c.score!=null&&c.score!==''){m[i]=Number(c.score);if(c.n!=null&&Number.isFinite(c.n))nn[i]=c.n}});const o=u.overall_score===null||u.overall_score===undefined||u.overall_score===''?null:Number(u.overall_score);return {u,d:assessmentDate(u),o:Number.isFinite(o)?o:null,m,nn,has:m.some(v=>v!=null)}}).sort((a,b)=>a.d-b.d);
       const platformKey=e=>'platform:'+AssessmentPlatforms.key(e.u.platform);
       const platformName=key=>AssessmentPlatforms.name(exams.find(e=>platformKey(e)===key)?.u.platform,'Exam');
       const plats=[...new Set(exams.map(platformKey))];
-      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat=plats.length?platformKey(exams[exams.length-1]):'all';
+      if(!window.__catPlat||(window.__catPlat!=='all'&&!plats.includes(window.__catPlat)))window.__catPlat='all';
       const shown=window.__catPlat==='all'?exams:exams.filter(e=>platformKey(e)===window.__catPlat);
       const scored=shown.filter(e=>e.o!=null),withCats=shown.filter(e=>e.has).slice(-6),empty=exams.filter(e=>e.o==null&&!e.has);
       const label=e=>AssessmentPlatforms.name(e.u.platform,'Exam')+(e.u.report_label?' · '+e.u.report_label:'');
       const modeButtons=['cat','practice','both'].map(mode=>'<button type="button" class="button '+(seriesMode===mode?'':'secondary')+'" data-trend-series="'+mode+'" aria-pressed="'+(seriesMode===mode)+'">'+({cat:'CAT only',practice:'Practice only',both:'Compare both'}[mode])+'</button>').join(' ');
       let html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px" aria-label="Trend type filter">'+modeButtons+'</div>'+renderComparisonChart(shown,practice,seriesMode)+'<section data-series-panel="cat"'+(seriesMode==='practice'?' hidden':'')+'>';
-      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(platformName(pl)))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">Trends compare the same platform; different platforms score on different scales.</p>';
+      if(plats.length>1)html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+plats.concat(['all']).map(pl=>'<button type="button" class="button '+(window.__catPlat===pl?'':'secondary')+'" data-catplat="'+esc(pl)+'">'+(pl==='all'?'All platforms':esc(platformName(pl)))+'</button>').join('')+'</div><p class="muted" style="margin:0 0 10px">All platforms are shown together in date order. Scores are directional because each platform may use a different difficulty and scoring method.</p>';
       if(scored.length){
         const last=scored[scored.length-1],prev=scored[scored.length-2];
         const ch=prev?Math.round(last.o-prev.o):null;
@@ -1368,11 +1421,11 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       if(empty.length)html+='<p class="muted" style="margin-top:10px"><b>Uploaded with no scores yet:</b> '+empty.map(e=>esc(label(e))+' ('+esc(catShort(e.d))+')').join('; ')+'. Choose it under “Save to” below to add its scores to the chart.</p>';
       const fs=(focus||[]).filter(f=>f.current_score!==null&&f.current_score!==undefined&&f.current_score!=='');
       if(fs.length)html+='<h3 style="margin:18px 0 6px;font-size:1rem">Scores entered as focus areas</h3><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Area</th><th>Previous</th><th>Current</th></tr></thead><tbody>'+fs.map(f=>'<tr><td>'+esc(f.focus_area)+'</td><td>'+(f.previous_score==null||f.previous_score===''?'—':esc(f.previous_score)+'%')+'</td><td>'+esc(f.current_score)+'%</td></tr>').join('')+'</tbody></table></div><p class="muted">These were typed into the Priorities form, so they are not part of the exam chart. Re-enter them under “Enter exam results” to chart them.</p>';
-      html+='<p class="muted" style="margin-top:12px;font-size:.78rem">On file for this client: '+uploads.length+' assessment record'+(uploads.length===1?'':'s')+' ('+exams.length+' shown here, '+scored.length+' with an overall score, '+withCats.length+' with category scores), '+(focus||[]).length+' priorit'+((focus||[]).length===1?'y':'ies')+'.</p>';
+      html+='<p class="muted" style="margin-top:12px;font-size:.78rem">On file for this client: '+catUploads.length+' CAT/readiness record'+(catUploads.length===1?'':'s')+' ('+exams.length+' shown here, '+scored.length+' with an overall score, '+withCats.length+' with category scores), '+(focus||[]).length+' priorit'+((focus||[]).length===1?'y':'ies')+'.</p>';
       html+='</section><section data-series-panel="practice"'+(seriesMode==='cat'?' hidden':'')+'><h3 style="margin:18px 0 6px;font-size:1rem">Practice series details</h3>'+(practiceError?'<p class="muted">Practice history could not be loaded: '+esc(practiceError.message||practiceError)+'</p>':renderPracticeTrend(practice))+'</section>';
       $('cat-body').innerHTML=html;
-      document.querySelectorAll('[data-catplat]').forEach(b=>b.onclick=()=>{window.__catPlat=b.dataset.catplat;renderCatCard(uploads,cats,focus,practiceRows,practiceError)});
-      document.querySelectorAll('[data-trend-series]').forEach(b=>b.onclick=()=>{window.__trendSeries=b.dataset.trendSeries;renderCatCard(uploads,cats,focus,practiceRows,practiceError)});
+      document.querySelectorAll('[data-catplat]').forEach(b=>b.onclick=()=>{window.__catPlat=b.dataset.catplat;renderCatCard(uploads,cats,focus,practiceRows,practiceError,portalAttempts)});
+      document.querySelectorAll('[data-trend-series]').forEach(b=>b.onclick=()=>{window.__trendSeries=b.dataset.trendSeries;renderCatCard(uploads,cats,focus,practiceRows,practiceError,portalAttempts)});
       $('cat-target').innerHTML='<option value="">New entry</option>'+uploads.filter(u=>!u.fromHistory&&catKindOk(u)).map(u=>'<option value="'+esc(u.id)+'">Uploaded: '+esc((u.platform||'')+' '+(u.report_label||u.report_filename||'')+' ('+catShort(assessmentDate(u))+')')+'</option>').join('');
       $('cat-entry').open=!exams.length||!!empty.length;
     }
@@ -1400,8 +1453,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         err=(await db.from('external_assessments').insert({student_id:student.id,platform:$('cat-platform').value,assessment_name:$('cat-name').value.trim(),taken_at:date,overall_score:overall,category_scores:scores,...(Object.keys(cnts).length?{category_counts:cnts}:{}),entered_by:session.user.id})).error;
       }
       if(err){msg.textContent='Could not save: '+err.message;return}
-      const savedPlatform=target?currentUploads.find(u=>u.id===target)?.platform:$('cat-platform').value;
-      window.__catPlat='platform:'+AssessmentPlatforms.key(savedPlatform);
+      window.__catPlat='all';
       if(window.__trendSeries==='practice')window.__trendSeries='both';
       $('cat-form').reset();msg.textContent='Saved.';loadStudent(student)
     });
@@ -1433,7 +1485,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
         db.from('modules').select('module_key,name'),
         db.from('student_resources').select('title,url').eq('student_id',student.id),
         isAdmin?db.from('session_notes').select('id,note,created_at').eq('student_id',student.id).order('created_at',{ascending:false}).limit(8):Promise.resolve({data:[],error:null}),
-        isAdmin?db.from('in_house_assessment_attempts').select('id,assessment_key,assessment_title,mode,total_questions,correct_questions,completed_at,created_at').eq('student_id',student.id).order('completed_at',{ascending:false}).limit(60):Promise.resolve({data:[],error:null})
+        isAdmin?db.from('in_house_assessment_attempts').select('id,assessment_key,assessment_title,mode,status,total_questions,correct_questions,completed_at,created_at').eq('student_id',student.id).order('completed_at',{ascending:false}).limit(60):Promise.resolve({data:[],error:null})
       ]);
       const inhouseAttempts=inhouse.data||[];
       const ext=await loadHistoryAssessments(student.id);
@@ -1453,7 +1505,7 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
       renderAccessOverview(access.data||[],modules.data||[],resources.data||[],inhouseAttempts,practiceRows);
       renderCoachNotes(notes.data||[],notes.error);
       loadDiscussFlags(student.id);
-      renderCatCard(currentUploads,allCategories,focus.data||[],practiceRows,practiceResults.error);
+      renderCatCard(currentUploads,allCategories,focus.data||[],practiceRows,practiceResults.error,inhouseAttempts);
       renderClientOverview(student,currentUploads,allCategories).catch(e=>{$('overview-body').innerHTML='<p class="muted">Could not build overview: '+esc(e.message||e)+'</p>'});
       if(isAdmin&&$('review-assessment')){const reviewable=currentUploads.filter(item=>!item.fromHistory);$('review-assessment').innerHTML=reviewable.length?reviewable.map(item=>`<option value="${esc(item.id)}">${esc(item.platform)} · ${esc(item.assessment_type.replace('_',' '))} · ${esc(date(item.taken_on))}</option>`).join(''):'<option value="">No uploaded assessments yet</option>';$('review-assessment').disabled=!reviewable.length}
     }

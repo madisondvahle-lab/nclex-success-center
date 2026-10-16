@@ -185,13 +185,13 @@ test('tutor chart combines mixed-case sources, retains categories and supports p
   const body = $('cat-body');
   const chips = body.querySelectorAll('[data-catplat]');
   assert.deepEqual(chips.map(b => b.dataset.catplat).sort(), ['all', 'platform:archer', 'platform:uworld']);
-  assert.equal(context.window.__catPlat, 'platform:uworld');
+  assert.equal(context.window.__catPlat, 'all');
   assert.match(body.innerHTML, /80%<\/b> latest \(UWorld · New CAT\)/);
   assert.match(body.innerHTML, /Sep 22/);
   assert.match(body.innerHTML, /Oct 14/);
   assert.match(body.innerHTML, /<td>40<\/td>/);
   assert.match(body.innerHTML, /<td>75<\/td>/);
-  assert.equal((body.innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 4);
+  assert.equal((body.innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 9);
   assert.equal((body.innerHTML.match(/fill="#a94f67"><title>/g) || []).length, 2);
   chips.find(b => b.dataset.catplat === 'platform:archer').onclick();
   assert.doesNotMatch(body.innerHTML, /New CAT: 80%/);
@@ -200,6 +200,32 @@ test('tutor chart combines mixed-case sources, retains categories and supports p
   body.querySelectorAll('[data-trend-series]').find(b => b.dataset.trendSeries === 'cat').onclick();
   assert.doesNotMatch(body.innerHTML, /fill="#a94f67"><title>/);
   assert.equal(JSON.stringify({ uploads, cats }), before);
+});
+
+test('tutor CAT trend combines completed portal CATs with outside platforms in date order', () => {
+  const { context, $ } = harness();
+  const uploads = [
+    { id: 'outside-1', platform: 'Archer', assessment_type: 'cat', taken_on: '2026-10-01', overall_score: 60, report_label: 'CAT 1' },
+    { id: 'practice-report', platform: 'Archer', assessment_type: 'qbank_report', taken_on: '2026-10-14', overall_score: 99, report_label: 'Practice' }
+  ];
+  const attempts = [
+    { id: 'mock-1', mode: 'mock', status: 'completed', completed_at: '2026-10-15', total_questions: 100, correct_questions: 65 },
+    { id: 'core-1', mode: 'nclex', status: 'completed', completed_at: '2026-10-10', total_questions: 45, correct_questions: 30 },
+    { id: 'readiness-1', assessment_key: 'readiness-assessment', mode: 'practice', status: 'completed', completed_at: '2026-10-12', total_questions: 85, correct_questions: 50 },
+    { id: 'unfinished', mode: 'mock', status: 'in_progress', completed_at: '2026-10-16', total_questions: 100, correct_questions: 99 }
+  ];
+
+  context.renderCatCard(uploads, [], [], [], null, attempts);
+  const html = $('cat-body').innerHTML;
+  assert.equal(context.window.__catPlat, 'all');
+  assert.match(html, /65%<\/b> latest \(SWM-CAT\) · <span[^>]*>▲ \+6 pts<\/span> since previous/);
+  assert.match(html, /data-catplat="platform:swm-cat">SWM-CAT/);
+  assert.match(html, /data-catplat="platform:core-safe cat">Core-Safe CAT/);
+  assert.match(html, /data-catplat="platform:readiness assessment">Readiness Assessment/);
+  assert.equal((html.match(/fill="#0067a8"><title>/g) || []).length, 4);
+  assert.doesNotMatch(html, /unfinished|SWM-CAT: 99%|NaN|Invalid Date/);
+  assert.match(html, /SWM-CAT: 65%/);
+  assert.match(html, /All platforms are shown together in date order/);
 });
 
 test('admin progress trend shows the latest assessment category snapshot', () => {
@@ -245,7 +271,7 @@ test('unknown platforms remain distinct except for case/whitespace, including a 
   const chips = $('cat-body').querySelectorAll('[data-catplat]');
   assert.deepEqual(chips.map(b => b.dataset.catplat).sort(),
     ['all', 'platform:all', 'platform:my platform', 'platform:myplatform']);
-  assert.equal(($('cat-body').innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 1);
+  assert.equal(($('cat-body').innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 4);
   chips.find(b => b.dataset.catplat === 'all').onclick();
   assert.equal(($('cat-body').innerHTML.match(/fill="#0067a8"><title>/g) || []).length, 4);
 });
@@ -269,7 +295,7 @@ test('tutor saves select the saved platform for new entries and existing uploads
       context.db.from = () => ({ update() { return this; }, eq: async () => ({ error: null }) });
     }
     await $('cat-form').listeners.submit({ preventDefault() {} });
-    assert.equal(context.window.__catPlat, 'platform:uworld');
+    assert.equal(context.window.__catPlat, 'all');
     assert.equal(context.window.__trendSeries, 'both');
     assert.equal($('cat-msg').textContent, 'Saved.');
     assert.equal(refreshed, true);
