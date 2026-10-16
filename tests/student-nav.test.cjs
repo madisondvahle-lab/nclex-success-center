@@ -121,9 +121,38 @@ test('inline student scripts remain valid JavaScript', () => {
 
 test('dashboard omits assigned work and reminders while retaining calendar and sidebar-only modules', () => {
   const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
-  assert.doesNotMatch(html, /assigned-work-nclex|resources-nclex|assignment-reminders|View assigned work/);
+  assert.doesNotMatch(html, /assigned-work-nclex|id="resources-nclex"|assignment-reminders|View assigned work/);
   assert.match(html, /id="study-calendar"/);
-  assert.match(html, /#main-content:not\(\.library-view\) \.modules\{display:none\}/);
+  assert.match(html, /#main-content:not\(\.library-view\) :is\(\.modules,\.graphics-library\)\{display:none!important\}/);
+  assert.match(html, /class="card graphics-library" id="gfx-card"/);
+  assert.match(html, /class="card nursing-support graphics-library" id="gfxn-card"/);
+  assert.match(html, /insertBefore\(activePortal\.querySelector\('\.hero'\), document\.getElementById\('study-calendar'\)\)/);
   assert.match(html, /id="modules-nclex-card"/);
   assert.match(html, /id="modules-nursing-card"/);
+});
+
+test('Learning Library retains study resources without practice sets or private uploads', () => {
+  const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  const renderer = html.slice(html.indexOf('function renderLibraryResources('), html.indexOf('function studentResourceText('));
+  const work = { innerHTML: '', querySelectorAll: () => [] };
+  const library = { innerHTML: '', hidden: true };
+  const context = {
+    document: { getElementById: id => id === 'work' ? work : library },
+    text: String,
+    studentResourceText: String,
+    bindWeeklyCompletion: () => {}
+  };
+  vm.runInNewContext(renderer, context);
+  const resources = [
+    { title: 'Assigned practice', resource_type: 'practice_set', url: 'supplemental-practice.html?set=assigned' },
+    { title: 'Weekly questions', assignment_kind: 'practice', resource_type: 'practice_set', assignment_week: '2026-10-12' },
+    { title: 'Weekly CAT', assignment_kind: 'cat', resource_type: 'practice_set', assignment_week: '2026-10-12', url: 'diagnostic.html?mode=mock' },
+    { title: 'Assigned guide', resource_type: 'study_guide', url: 'module1-guide.html' },
+    { title: 'CAT results', resource_type: 'cat_results' },
+    { title: 'Private upload', resource_type: 'student_upload', url: 'student/file.pdf' }
+  ];
+  context.renderLibraryResources(resources, 'library');
+  assert.match(library.innerHTML, /Assigned guide/);
+  assert.doesNotMatch(library.innerHTML, /Assigned practice|Weekly questions|Weekly CAT|CAT results|Private upload/);
+  assert.equal(library.hidden, false);
 });

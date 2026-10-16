@@ -7,6 +7,7 @@ Build the responsive student practice navigation shell (sidebar + mobile drawer)
 ### October 15 correction: dashboard content
 - User-directed: remove the NCLEX **Assigned work** card list and both roles' assignment-reminder panels; keep the study calendar and its dated assignments.
 - Module cards now appear only after selecting **Learning Library** / **Study Guides & Modules** in the sidebar (including incoming `#modules` links). Dashboard navigation restores the main view. Nursing class selection remains available in the library.
+- User clarified before publication: welcome must be above the calendar, and graphics belong alongside modules under the sidebar Learning Library, not on the dashboard. Preserved concurrent study-resource separation and wording updates from `main`.
 - Assignments, module access, preview authorization, and clinical content are unchanged. This supersedes the original inline placement below.
 - Deployment remains GitHub Pages from `main`, repository root; branch changes must reach `main` before appearing live.
 

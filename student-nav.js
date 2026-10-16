@@ -154,7 +154,7 @@
       }
 
       if (lecturesLabel) {
-        lecturesLabel.textContent = isNursing ? 'Study Guides & Modules' : 'Learning Library';
+        lecturesLabel.textContent = 'Learning Library';
       }
     },
 
