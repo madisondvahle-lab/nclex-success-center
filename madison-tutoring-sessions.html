@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="admin-nav.css">
+  <title>Tutoring Sessions · Study With Madison, RN</title>
+  <style>
+    :root{--ink:#17344f;--cream:#f5f3ed;--paper:#fffefa;--rose:#a94f67;--muted:#536a7d;--line:#cbd5d1}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .admin-subpage-content{width:min(1050px,calc(100% - 36px));margin:34px auto 60px}
+    h1{margin:0 0 10px;font-size:2rem;letter-spacing:-.03em}
+    h2{margin:0 0 12px;font-size:1.2rem}
+    .meta{color:var(--muted);font-size:.9rem;line-height:1.5}
+    .status{min-height:1.5em}
+    .session-list{display:grid;gap:12px;margin-top:20px}
+    .session,.notes-panel{background:var(--paper);border:1px solid var(--line);padding:20px}
+    .session{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px}
+    .session h2{margin-bottom:5px}
+    .session-date{color:var(--muted);font-size:.9rem}
+    button{font:800 .85rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer}
+    button.secondary{background:transparent;color:var(--ink)}
+    button:disabled{opacity:.6;cursor:wait}
+    label{display:block;font-weight:700;font-size:.9rem;margin:18px 0 12px}
+    textarea{display:block;width:100%;min-height:220px;margin-top:7px;padding:12px;border:1px solid var(--line);background:white;color:var(--ink);font:inherit;line-height:1.5;resize:vertical}
+    .save{margin-left:10px;color:var(--muted);font-size:.88rem}
+    .save.error{color:#a23;font-weight:700}
+    .hidden{display:none!important}
+    @media(max-width:650px){.session{grid-template-columns:1fr}.session button{justify-self:start}.admin-subpage-content{margin-top:24px}}
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">Loading tutoring sessions…</div>
+  <div id="app" class="admin-app hidden">
+    <aside class="admin-sidebar" aria-label="Admin sidebar">
+      <div class="sidebar-brand">Study With Madison, RN <small>· coach portal</small></div>
+      <div class="sidebar-caption">Pipeline</div>
+      <nav class="sidebar-nav" aria-label="Pipeline navigation">
+        <a href="madison-admin.html">Dashboard home</a>
+        <a href="madison-admin.html#prospects">Prospects</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-tutoring-sessions.html" aria-current="page">Tutoring sessions</a>
+        <a href="madison-diagnostic.html">Consult diagnostic</a>
+      </nav>
+      <div class="sidebar-caption">Students &amp; Clinical</div>
+      <nav class="sidebar-nav" aria-label="Student management navigation">
+        <a href="student-onboarding.html">New student</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-assignments.html">Assignments</a>
+        <a href="madison-study-plans.html">Weekly plans</a>
+        <a href="assessment-history-admin.html">Assessments</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="question-bank-review.html">Question bank</a>
+      </nav>
+      <div class="sidebar-secondary">
+        <div class="sidebar-caption">Operations</div>
+        <nav class="sidebar-nav" aria-label="Operations navigation">
+          <a href="madison-graphics.html">Graphics library</a>
+          <a href="finance.html">Finance &amp; receipts</a>
+        </nav>
+      </div>
+      <button class="sidebar-sign-out" id="sign-out" type="button">Sign out</button>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar"><span class="topbar-context">Student sessions · Tutoring</span><nav class="topbar-actions" aria-label="Quick actions"><a href="madison-admin.html">Admin home</a></nav></header>
+      <main class="admin-subpage-content">
+        <h1>Tutoring sessions</h1>
+        <p class="meta">Upcoming and in-progress tutoring bookings. Open a session to keep private notes specific to that meeting.</p>
+        <p class="meta status" id="session-list-status" role="status" aria-live="polite">Loading tutoring sessions…</p>
+        <div class="session-list" id="session-list"></div>
+        <section class="notes-panel hidden" id="session-notes-panel">
+          <p><button type="button" class="secondary" id="back-to-sessions">← All tutoring sessions</button></p>
+          <h2 id="session-title"></h2>
+          <p class="meta" id="session-meta"></p>
+          <form id="session-notes-form">
+            <label for="session-notes">Private notes for this session</label>
+            <textarea id="session-notes" maxlength="4000" placeholder="Record what you worked on, progress, and follow-up items."></textarea>
+            <button type="submit" id="save-session-notes">Save session notes</button>
+            <span class="save" id="session-notes-status" role="status" aria-live="polite"></span>
+          </form>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
+    const $=id=>document.getElementById(id);
+    const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const fmt=value=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(value));
+    let sessions=[],current=null,notesDirty=false;
+
+    async function init(){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){location.replace('student-login.html');return}
+      const {data:admin,error}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+      if(error||!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
+      $('back-to-sessions').addEventListener('click',closeSession);
+      $('session-notes').addEventListener('input',()=>{
+        notesDirty=true;
+        $('session-notes-status').classList.remove('error');
+        $('session-notes-status').textContent='Unsaved changes…';
+      });
+      $('session-notes-form').addEventListener('submit',async event=>{
+        event.preventDefault();
+        await saveNotes();
+      });
+      await loadSessions();
+      $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+    }
+
+    function isAvailable(session){
+      return session.status==='in_progress'||
+        (session.status==='scheduled'&&session.scheduled_start&&new Date(session.scheduled_start)>new Date());
+    }
+
+    async function loadSessions(){
+      const {data,error}=await db.from('consultations')
+        .select('id,invitee_name,invitee_email,scheduled_start,status,template')
+        .eq('consult_type','tutoring_session')
+        .in('status',['scheduled','in_progress'])
+        .order('scheduled_start',{ascending:true});
+      if(error){
+        $('session-list-status').textContent='Tutoring sessions could not load. Refresh the page to try again.';
+        console.error('Could not load tutoring sessions',error.message);
+        return;
+      }
+      sessions=(data||[]).filter(isAvailable);
+      renderSessions();
+    }
+
+    function renderSessions(){
+      $('session-notes-panel').classList.add('hidden');
+      $('session-list').classList.remove('hidden');
+      $('session-list').innerHTML=sessions.length?sessions.map(session=>`<article class="session">
+        <div><h2>${esc(session.invitee_name||session.invitee_email||'Tutoring session')}</h2>
+          <div class="session-date">${esc(fmt(session.scheduled_start))} · ${session.status==='in_progress'?'In progress':'Scheduled'}</div>
+          <div class="meta">${esc(session.invitee_email||'')}</div></div>
+        <button type="button" data-session="${esc(session.id)}">Open session notes</button>
+      </article>`).join(''):'<p class="meta">No upcoming or in-progress tutoring sessions.</p>';
+      $('session-list').querySelectorAll('[data-session]').forEach(button=>button.addEventListener('click',()=>openSession(button.dataset.session)));
+      $('session-list-status').textContent=sessions.length?`${sessions.length} upcoming or in-progress tutoring session${sessions.length===1?'':'s'}.`:'';
+    }
+
+    function openSession(id){
+      current=sessions.find(session=>session.id===id);
+      if(!current)return;
+      notesDirty=false;
+      $('session-title').textContent=current.invitee_name||'Tutoring session';
+      $('session-meta').textContent=[current.invitee_email,fmt(current.scheduled_start),current.status.replace('_',' ')].filter(Boolean).join(' · ');
+      $('session-notes').value=current.template?.session_notes||'';
+      $('session-notes-status').textContent='';
+      $('session-notes-status').classList.remove('error');
+      $('session-list').classList.add('hidden');
+      $('session-list-status').textContent='';
+      $('session-notes-panel').classList.remove('hidden');
+    }
+
+    async function saveNotes(){
+      if(!current)return false;
+      const button=$('save-session-notes'),status=$('session-notes-status');
+      if(!isAvailable(current)){
+        status.classList.add('error');
+        status.textContent='This session is no longer upcoming or in progress, so the notes were not saved.';
+        return false;
+      }
+      button.disabled=true;status.classList.remove('error');status.textContent='Saving…';
+      const template={...(current.template||{}),session_notes:$('session-notes').value};
+      const {data,error}=await db.from('consultations').update({template})
+        .eq('id',current.id).eq('consult_type','tutoring_session').eq('status',current.status)
+        .select('id').maybeSingle();
+      button.disabled=false;
+      if(error||!data){
+        status.classList.add('error');
+        status.textContent=error?.message||'This session changed status, so the notes were not saved. Return to the list and reopen it.';
+        return false;
+      }
+      current.template=template;notesDirty=false;status.textContent='Session notes saved.';
+      return true;
+    }
+
+    async function closeSession(){
+      if(notesDirty&&!(await saveNotes()))return;
+      current=null;
+      await loadSessions();
+    }
+
+    window.addEventListener('beforeunload',event=>{if(notesDirty){event.preventDefault();event.returnValue=''}});
+    init();
+  </script>
+</body>
+</html>
