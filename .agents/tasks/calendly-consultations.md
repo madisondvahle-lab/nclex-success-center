@@ -26,6 +26,13 @@ Never commit these values.
 - Strategy template (reports reviewed, patterns, checklist, recommendation, package credit within 7 days) is a first draft based on the public page bullets; adjust as Madison prefers.
 - Public site price/length updated in study-with-madison-site PR 19 ($40, 45 min).
 
+## Admin appointment calendar and tutoring sessions (in progress)
+- `madison-admin.html` now has a monthly Calendly appointments grid, with initial consults, strategy sessions, and tutoring sessions distinguished by type. Each day opens an agenda; linked students open their progress profile, while unlinked prospects open their consultation record.
+- The student dashboard calendar is now directly below the shared portal header, before either NCLEX or nursing dashboard content. The student-safe RPC excludes initial free consultations.
+- `supabase-admin-appointment-calendar-migration.sql` must be applied after the strategy-session and student-calendar migrations. It allows `tutoring_session` and updates the RPC while preserving its authenticated, student-scoped return fields.
+- The webhook accepts tutoring bookings when `CALENDLY_TUTORING_EVENT_TYPE_URI` exactly matches the event URI or the verified Calendly event name is exactly `60-Min Single Tutoring Session` / `Legacy Student | 60-Min Tutoring`. `NCLEX Strategy Consult Session` is also mapped by exact event name; `Free Consultation` matches the existing constrained free-consult name fallback. These precise name mappings avoid needing to retrieve the internal URIs for the displayed event types.
+- Existing Calendly subscriptions must include `invitee.created` and `invitee.canceled` for the tutoring event type. Existing bookings are not backfilled automatically.
+
 ## Automatic Strategy Session follow-ups (added)
 - Migration `supabase-strategy-followup-migration.sql` (applied): `followup_settings` (mode off/preview/live, preview email, private package links), credit columns on `consultations`, and service-role-only `claim_followup` / `release_followup` (atomic claim prevents double sends).
 - `supabase-strategy-followup-cron.sql` (applied): pg_cron every 15 min calls the `send-strategy-followups` Edge Function with `x-cron-secret` read from Vault (`followup_cron_secret`, matches the `CRON_SECRET` function secret).

@@ -3,8 +3,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 // Receives Calendly webhooks. Authenticity comes from Calendly's HMAC signature,
 // so this function is deployed with --no-verify-jwt. Secrets live only in
 // Supabase function secrets: CALENDLY_WEBHOOK_SIGNING_KEY (required),
-// CALENDLY_CONSULT_EVENT_TYPE_URI (free consultation) and
-// CALENDLY_STRATEGY_EVENT_TYPE_URI (paid NCLEX Strategy Session).
+// CALENDLY_CONSULT_EVENT_TYPE_URI (free consultation),
+// CALENDLY_STRATEGY_EVENT_TYPE_URI (paid NCLEX Strategy Session) and
+// CALENDLY_TUTORING_EVENT_TYPE_URI (one-hour tutoring session).
 
 const encoder = new TextEncoder();
 const TOLERANCE_SECONDS = 180;
@@ -74,10 +75,17 @@ Deno.serve(async (request) => {
   const scheduled = payload.scheduled_event ?? {};
   const freeType = Deno.env.get("CALENDLY_CONSULT_EVENT_TYPE_URI") ?? "";
   const strategyType = Deno.env.get("CALENDLY_STRATEGY_EVENT_TYPE_URI") ?? "";
+  const tutoringType = Deno.env.get("CALENDLY_TUTORING_EVENT_TYPE_URI") ?? "";
   const eventType = String(scheduled.event_type ?? "");
+  const eventName = String(scheduled.name ?? "").trim();
   let consultType = "";
   if (freeType && eventType === freeType) consultType = "free_consultation";
   else if (strategyType && eventType === strategyType) consultType = "strategy_session";
+  else if (tutoringType && eventType === tutoringType) consultType = "tutoring_session";
+  else if (eventName === "NCLEX Strategy Consult Session") consultType = "strategy_session";
+  else if (eventName === "60-Min Single Tutoring Session" || eventName === "Legacy Student | 60-Min Tutoring") {
+    consultType = "tutoring_session";
+  }
   else if (!freeType && /free.*consult|consult.*free|15.*consult/i.test(String(scheduled.name ?? ""))) {
     consultType = "free_consultation";
   }

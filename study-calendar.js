@@ -102,13 +102,16 @@
     }
 
     (options.consultations || []).forEach(consultation => {
+      if (consultation.consult_type === 'free_consultation') return;
       const start = new Date(consultation.scheduled_start);
       if (!Number.isFinite(start.getTime())) return;
       const date = isoDate(start);
       if (!dates.has(date)) return;
       addEvent(events, date, {
         type: 'consultation',
-        label: consultation.consult_type === 'strategy_session' ? 'Strategy session' : 'Tutoring session',
+        label: consultation.consult_type === 'strategy_session'
+          ? 'Strategy session'
+          : consultation.consult_type === 'tutoring_session' ? 'Tutoring session' : 'Calendly meeting',
         detail: start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
       });
     });
