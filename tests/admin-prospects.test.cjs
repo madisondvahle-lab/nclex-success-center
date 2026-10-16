@@ -109,6 +109,13 @@ test('hidden prospects leave the normal list but remain restorable and mergeable
   assert.match(render([], true, true).get('consult-intakes').innerHTML, /No hidden prospects/);
 });
 
+test('student directory offers login creation for existing profiles without portal accounts', () => {
+  assert.match(html, /select\('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at'\)/);
+  assert.match(html, /data-create-student-login="\$\{id\}"/);
+  assert.match(html, /createStudentLoginForProfile\(student\)/);
+  assert.match(html, /student_id:student\.id,password:tempCredential,send_email:true/);
+});
+
 test('hide and restore persist only the visibility timestamp', async () => {
   const item = { id: 'test-intake', full_name: 'Test follow-up', status: 'new_lead', email: 'test@example.test' };
   const writes = [];

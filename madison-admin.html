@@ -565,18 +565,21 @@
     }
     async function createStudentLogin(id){
       const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
-      const email=item.email?.trim().toLowerCase()||'';
+      await createStudentLoginForProfile({id:item.student_id,name:item.full_name,email:item.email,phone:item.phone});
+    }
+    async function createStudentLoginForProfile(student){
+      const email=student.email?.trim().toLowerCase()||'';
       if(!email||!window.confirm('Confirm this exact student email before creating access:\n\n'+email))return;
-      const phoneDigits=(item.phone||'').replace(/\D/g,''),suggested=phoneDigits.length>=4?'Swm-'+phoneDigits.slice(-4):'';
-      const tempCredential=window.prompt('Temporary portal password for '+(item.full_name||'this student')+(suggested?' (suggested: Swm- plus the last 4 of their phone). Edit if you like.':'. Use at least 8 characters; do not use the profile PIN.'),suggested);
+      const phoneDigits=(student.phone||'').replace(/\D/g,''),suggested=phoneDigits.length>=4?'Swm-'+phoneDigits.slice(-4):'';
+      const tempCredential=window.prompt('Temporary portal password for '+(student.name||'this student')+(suggested?' (suggested: Swm- plus the last 4 of their phone). Edit if you like.':'. Use at least 8 characters; do not use the profile PIN.'),suggested);
       if(tempCredential===null)return;
       if(tempCredential.length<8){$('intake-action-status').textContent='Use a temporary portal password with at least 8 characters.';return}
       $('intake-action-status').textContent='Creating secure portal access…';
-      const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:item.student_id,password:tempCredential,send_email:true}});
+      const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:student.id,password:tempCredential,send_email:true}});
       if(error||!data?.ok){$('intake-action-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.';return}
       showInviteDetails(data.email||email,tempCredential);
       if(data.emailed)$('intake-action-status').firstChild.textContent='Login created and emailed to '+(data.email||email)+'. Invite details are available below. ';
-      await loadProspectData();
+      await Promise.all([loadProspectData(),loadRoster()]);
     }
     async function switchToAssessmentOnly(id){
       const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
@@ -634,11 +637,11 @@
     async function loadRoster(){
       rosterAvailable=false;
       lifecycleAvailable=true;
-      let currentResult=await db.from('students').select('id,name,email,portal_stage,student_type,status,archived_at').is('archived_at',null).order('name');
-      let archivedResult=await db.from('students').select('id,name,email,portal_stage,student_type,status,archived_at').not('archived_at','is',null).order('archived_at',{ascending:false});
+      let currentResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at').is('archived_at',null).order('name');
+      let archivedResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at').not('archived_at','is',null).order('archived_at',{ascending:false});
       if(currentResult.error&&/status|archived_at/i.test(currentResult.error.message||'')){
         lifecycleAvailable=false;
-        currentResult=await db.from('students').select('id,name,email,portal_stage,student_type').order('name');
+        currentResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type').order('name');
         archivedResult={data:[],error:null};
       }
       if(currentResult.error||archivedResult.error){
@@ -695,11 +698,15 @@
         ?`<button type="button" data-restore="${id}" ${lifecycleAvailable?'':'disabled'}>Restore</button>`
         :`<select aria-label="Change status for ${esc(name)}" data-status="${id}" ${lifecycleAvailable?'':'disabled'}>${['active','paused','completed'].map(value=>`<option value="${value}" ${student.status===value?'selected':''}>${value[0].toUpperCase()+value.slice(1)}</option>`).join('')}</select><button class="archive" type="button" data-archive="${id}" ${lifecycleAvailable?'':'disabled'}>Archive</button>`;
       const portalStageControl=archived?'':`<select aria-label="Change portal access for ${esc(name)}" data-portal-stage="${id}"><option value="assessment" ${student.portal_stage==='assessment'?'selected':''}>Assessment only</option><option value="active" ${student.portal_stage!=='assessment'?'selected':''}>Regular portal</option></select>`;
-      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${portalStageControl}${statusControl}</div></td></tr>`;
+      const loginControl=!archived&&!student.auth_user_id
+        ?`<button type="button" data-create-student-login="${id}" ${student.email?'':'disabled'}>Create login &amp; email invite</button>`
+        :'';
+      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${loginControl}${portalStageControl}${statusControl}</div></td></tr>`;
     }
     function bindLifecycleControls(root){
       root.querySelectorAll('[data-status]').forEach(select=>select.addEventListener('change',()=>changeStatus(select.dataset.status,select.value,select)));
       root.querySelectorAll('[data-portal-stage]').forEach(select=>select.addEventListener('change',()=>changePortalStage(select.dataset.portalStage,select.value,select)));
+      root.querySelectorAll('[data-create-student-login]').forEach(button=>button.addEventListener('click',()=>{const student=currentStudents.find(item=>item.id===button.dataset.createStudentLogin);if(student)createStudentLoginForProfile(student)}));
       root.querySelectorAll('[data-archive]').forEach(button=>button.addEventListener('click',()=>archiveStudent(button.dataset.archive,button)));
       root.querySelectorAll('[data-restore]').forEach(button=>button.addEventListener('click',()=>restoreStudent(button.dataset.restore,button)));
       root.querySelectorAll('[data-open-url]').forEach(row=>{
