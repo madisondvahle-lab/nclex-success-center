@@ -68,8 +68,13 @@ test('both roles render visible empty/error states, escape assignment content, a
   assert.match(html, /event\.persisted/);
   assert.match(html, /if \(!document\.hidden\) refreshAssignmentReminders/);
   let output = '', queryStudent, response = { data: [], error: null };
+  const hostClasses = new Set();
   const host = {
     set innerHTML(value) { output = value; }, get innerHTML() { return output; },
+    classList: {
+      toggle(name, force) { if (force) hostClasses.add(name); else hostClasses.delete(name); },
+      contains(name) { return hostClasses.has(name); }
+    },
     querySelector: () => ({ addEventListener() {} }), querySelectorAll: () => []
   };
   const context = {
@@ -86,17 +91,21 @@ test('both roles render visible empty/error states, escape assignment content, a
   for (const role of ['nclex', 'nursing']) {
     vm.runInContext(`assignmentState = { role: '${role}', student: { id: 'own-student' }, resources: [], busy: false }; renderAssignmentReminders();`, context);
     assert.match(output, /No dated practice or CAT assignments/);
+    assert.equal(host.classList.contains('is-quiet'), true);
     response = { data: [row('done', '2026-10-14', 'practice', 'saved')], error: null };
     await context.refreshAssignmentReminders();
     assert.equal(queryStudent, 'own-student');
     assert.match(output, /All assigned practice and CATs are marked complete/);
+    assert.equal(host.classList.contains('is-quiet'), true);
     response = { data: null, error: { message: 'Unavailable' } };
     await context.refreshAssignmentReminders();
     assert.match(output, /Could not load assignment reminders/);
+    assert.equal(host.classList.contains('is-quiet'), false);
     assert.doesNotMatch(output, /All assigned practice/);
     response = { data: [{ ...row('unsafe', '2020-01-01'), title: '<img src=x onerror=bad>', url: 'javascript:bad()' }], error: null };
     await context.refreshAssignmentReminders();
     assert.match(output, /&lt;img/);
+    assert.equal(host.classList.contains('is-quiet'), false);
     assert.doesNotMatch(output, /href="javascript:/);
     assert.match(output, /Assignment link unavailable/);
     response = { data: [], error: null };
