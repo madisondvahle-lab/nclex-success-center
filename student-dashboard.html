@@ -423,6 +423,34 @@
     </header>
     <p id="preview-banner" style="display:none;padding:12px 14px;background:#fff0e8;border-left:3px solid var(--rose);font-size:.82rem;font-weight:800"><span id="preview-label"></span> <a id="preview-back" href="shared-progress.html">Return to student progress</a></p>
 
+    <section class="study-calendar" id="study-calendar" aria-labelledby="study-calendar-title" hidden>
+      <div class="study-calendar-heading">
+        <div><p class="eyebrow">Your month at a glance</p><h2 id="study-calendar-title">Study calendar</h2></div>
+        <div class="study-calendar-nav" aria-label="Calendar navigation">
+          <button type="button" id="calendar-previous" aria-label="Previous month">‹</button>
+          <span class="study-calendar-month" id="calendar-month" aria-live="polite"></span>
+          <button type="button" id="calendar-next" aria-label="Next month">›</button>
+          <button type="button" id="calendar-today">Today</button>
+        </div>
+      </div>
+      <p class="card-desc" id="study-calendar-intro">Your exam dates, plan, assignments, and scheduled tutoring sessions in one place.</p>
+      <form id="calendar-nclex-date-form" class="class-schedule-form" hidden>
+        <label>Next NCLEX attempt date<input id="calendar-nclex-date" type="date" required></label>
+        <button type="submit">Save NCLEX date</button><span id="calendar-nclex-date-status" class="class-schedule-message" role="status"></span>
+      </form>
+      <p id="calendar-nursing-date-hint" class="card-desc" hidden>Set or update class exam dates in <a href="#class-schedule-card">Class schedule</a>.</p>
+      <div class="study-calendar-legend" aria-label="Calendar event key">
+        <span><i class="study-calendar-dot exam"></i>Exam date</span>
+        <span><i class="study-calendar-dot plan"></i>Weekly plan</span>
+        <span><i class="study-calendar-dot assignment"></i>Assigned work</span>
+        <span><i class="study-calendar-dot consultation"></i>Tutoring session</span>
+      </div>
+      <div class="study-calendar-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div class="study-calendar-grid" id="study-calendar-grid" role="grid" aria-label="Monthly study calendar"></div>
+      <p class="study-calendar-status" id="study-calendar-status" role="status" aria-live="polite"></p>
+      <div class="study-calendar-agenda" id="study-calendar-agenda" aria-live="polite"></div>
+    </section>
+
     <!-- ═══════════════════════════════════════════════════════════════
          NCLEX STUDENT PORTAL
     ═══════════════════════════════════════════════════════════════ -->
@@ -499,34 +527,6 @@
         </article>
       </section>
     </div>
-
-    <section class="study-calendar" id="study-calendar" aria-labelledby="study-calendar-title" hidden>
-      <div class="study-calendar-heading">
-        <div><p class="eyebrow">Your month at a glance</p><h2 id="study-calendar-title">Study calendar</h2></div>
-        <div class="study-calendar-nav" aria-label="Calendar navigation">
-          <button type="button" id="calendar-previous" aria-label="Previous month">‹</button>
-          <span class="study-calendar-month" id="calendar-month" aria-live="polite"></span>
-          <button type="button" id="calendar-next" aria-label="Next month">›</button>
-          <button type="button" id="calendar-today">Today</button>
-        </div>
-      </div>
-      <p class="card-desc" id="study-calendar-intro">Your exam dates, plan, assignments, and scheduled tutoring sessions in one place.</p>
-      <form id="calendar-nclex-date-form" class="class-schedule-form" hidden>
-        <label>Next NCLEX attempt date<input id="calendar-nclex-date" type="date" required></label>
-        <button type="submit">Save NCLEX date</button><span id="calendar-nclex-date-status" class="class-schedule-message" role="status"></span>
-      </form>
-      <p id="calendar-nursing-date-hint" class="card-desc" hidden>Set or update class exam dates in <a href="#class-schedule-card">Class schedule</a>.</p>
-      <div class="study-calendar-legend" aria-label="Calendar event key">
-        <span><i class="study-calendar-dot exam"></i>Exam date</span>
-        <span><i class="study-calendar-dot plan"></i>Weekly plan</span>
-        <span><i class="study-calendar-dot assignment"></i>Assigned work</span>
-        <span><i class="study-calendar-dot consultation"></i>Tutoring session</span>
-      </div>
-      <div class="study-calendar-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-      <div class="study-calendar-grid" id="study-calendar-grid" role="grid" aria-label="Monthly study calendar"></div>
-      <p class="study-calendar-status" id="study-calendar-status" role="status" aria-live="polite"></p>
-      <div class="study-calendar-agenda" id="study-calendar-agenda" aria-live="polite"></div>
-    </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
          NURSING STUDENT PORTAL

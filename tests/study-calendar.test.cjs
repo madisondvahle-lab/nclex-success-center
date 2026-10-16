@@ -66,6 +66,19 @@ test('nursing calendar uses class-specific exams and assigned work without NCLEX
   assert.equal([...result.events.values()].flat().some(item => item.type === 'plan'), false);
 });
 
+test('student calendar excludes initial consults and labels tutoring appointments explicitly', () => {
+  const calendar = loadCalendar();
+  const result = calendar.buildEvents({
+    month: '2026-10', today: new Date(2026, 9, 1),
+    consultations: [
+      { scheduled_start: '2026-10-12T16:00:00Z', consult_type: 'free_consultation' },
+      { scheduled_start: '2026-10-13T16:00:00Z', consult_type: 'tutoring_session' }
+    ]
+  });
+  assert.equal(result.events.get('2026-10-12'), undefined);
+  assert.equal(result.events.get('2026-10-13')[0].label, 'Tutoring session');
+});
+
 test('student consultation endpoint is authenticated and returns only calendar-safe fields', () => {
   const sql = read('supabase-student-calendar-consultations-migration.sql');
   assert.match(sql, /SECURITY DEFINER/);
@@ -77,11 +90,39 @@ test('student consultation endpoint is authenticated and returns only calendar-s
   assert.doesNotMatch(sql, /invitee_email|invitee_name|calendly_answers/);
 });
 
+test('student appointment migration excludes initial consults without exposing invitee details', () => {
+  const sql = read('supabase-admin-appointment-calendar-migration.sql');
+  assert.match(sql, /'free_consultation', 'strategy_session', 'tutoring_session'/);
+  assert.match(sql, /c\.consult_type <> 'free_consultation'/);
+  assert.match(sql, /s\.auth_user_id = auth\.uid\(\)/);
+  assert.match(sql, /REVOKE ALL ON FUNCTION .* FROM PUBLIC, anon, authenticated/);
+  assert.match(sql, /GRANT EXECUTE ON FUNCTION .* TO authenticated/);
+  assert.doesNotMatch(sql, /invitee_email|invitee_name|calendly_answers/);
+});
+
 test('dashboard wires NCLEX date entry, nursing schedule link, and calendar query safely', () => {
   const html = read('student-dashboard.html');
+  assert.ok(html.indexOf('id="study-calendar"') < html.indexOf('id="portal-nclex"'));
+  assert.ok(html.indexOf('id="study-calendar"') < html.indexOf('id="portal-nursing"'));
   assert.match(html, /<script src="study-calendar\.js"><\/script>/);
   assert.match(html, /Next NCLEX attempt date/);
   assert.match(html, /class exam dates in <a href="#class-schedule-card">Class schedule/);
   assert.match(html, /get_my_scheduled_consultations/);
+  for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
+});
+
+test('admin appointment calendar uses the existing shared month-grid helpers and recognizes tutoring bookings', () => {
+  const html = read('madison-admin.html');
+  const webhook = read('supabase/functions/calendly-webhook/index.ts');
+  assert.match(html, /<script src="study-calendar\.js"><\/script>/);
+  assert.ok(html.indexOf('id="appointment-calendar"') < html.indexOf('id="directory"'));
+  assert.match(html, /id="appointments-grid"/);
+  assert.match(html, /tutoring_session:'Tutoring session'/);
+  assert.match(webhook, /CALENDLY_TUTORING_EVENT_TYPE_URI/);
+  assert.match(webhook, /eventType === tutoringType\) consultType = "tutoring_session"/);
+  assert.match(webhook, /eventName === "60-Min Single Tutoring Session"/);
+  assert.match(webhook, /eventName === "Legacy Student \| 60-Min Tutoring"/);
+  assert.match(webhook, /eventName === "NCLEX Strategy Consult Session"/);
+  assert.match(webhook, /free\.\*consult\|consult\.\*free\|15\.\*consult/i);
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
