@@ -951,8 +951,8 @@
       if (state.assignmentError) messages.push('Assigned work could not be loaded.');
       if (state.sessionError) messages.push('Scheduled tutoring sessions are unavailable.');
       const status = messages.length ? messages.join(' ') + ' Other calendar dates are still shown.'
-        : state.isPreview ? 'Staff preview does not show private student sessions.'
-          : state.loading ? 'Loading scheduled tutoring sessions…'
+        : state.loading ? 'Loading scheduled tutoring sessions…'
+          : state.isPreview ? 'Staff preview includes this student’s scheduled sessions.'
             : state.isNursing ? 'Your saved class exam dates, assigned work, and scheduled sessions appear here.'
               : state.student.nclex_target_date
                 ? 'Your weekly plan repeats on its saved days through your NCLEX date. Dated assignments replace matching plan reminders.'
@@ -972,7 +972,7 @@
       studyCalendarState = {
         student, isNursing, plan, resources: resources || [], schedules: schedules || [],
         consultations: [], month, selectedDate: StudyCalendar.monthGrid(month).find(day => day === StudyCalendar.isoDate(now)) || `${month}-01`,
-        loading: !isPreview, sessionError: false, isPreview, assignmentError: Boolean(assignmentError), sessionRequest: 0
+        loading: true, sessionError: false, isPreview, assignmentError: Boolean(assignmentError), sessionRequest: 0
       };
       document.getElementById('calendar-previous').onclick = () => shiftStudyCalendarMonth(-1);
       document.getElementById('calendar-next').onclick = () => shiftStudyCalendarMonth(1);
@@ -997,7 +997,6 @@
         } finally { button.disabled = false; }
       };
       renderStudyCalendar();
-      if (isPreview) return;
       await refreshStudyCalendar();
     }
     function shiftStudyCalendarMonth(amount) {
@@ -1012,14 +1011,29 @@
       if (!state) return;
       const range = StudyCalendar.visibleRange(state.month);
       const requestId = ++state.sessionRequest;
-      state.loading = !state.isPreview;
+      state.loading = true;
       state.sessionError = false;
       renderStudyCalendar();
-      if (state.isPreview) return;
       const start = new Date(`${range.start}T00:00:00`).toISOString();
       const end = new Date(`${range.end}T00:00:00`).toISOString();
       try {
-        const { data, error } = await db.rpc('get_my_scheduled_consultations', { p_start: start, p_end: end });
+        let data, error;
+        if (state.isPreview) {
+          const intakes = await db.from('consult_intakes').select('id').eq('student_id', state.student.id);
+          if (intakes.error) throw intakes.error;
+          let query = db.from('consultations')
+            .select('id,scheduled_start,scheduled_end,consult_type')
+            .eq('status', 'scheduled')
+            .gte('scheduled_start', start)
+            .lt('scheduled_start', end);
+          const intakeIds = (intakes.data || []).map(intake => intake.id);
+          query = intakeIds.length
+            ? query.or(`student_id.eq.${state.student.id},consult_intake_id.in.(${intakeIds.join(',')})`)
+            : query.eq('student_id', state.student.id);
+          ({ data, error } = await query.order('scheduled_start', { ascending: true }));
+        } else {
+          ({ data, error } = await db.rpc('get_my_scheduled_consultations', { p_start: start, p_end: end }));
+        }
         if (error) throw error;
         if (requestId !== state.sessionRequest) return;
         state.consultations = data || [];
