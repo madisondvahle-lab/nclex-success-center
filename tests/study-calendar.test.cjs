@@ -129,3 +129,20 @@ test('admin appointment calendar uses the existing shared month-grid helpers and
   assert.match(webhook, /free\.\*consult\|consult\.\*free\|15\.\*consult/i);
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
+
+test('Calendly backfill is admin-only, bounded, and imports only known event types', () => {
+  const html = read('madison-admin.html');
+  const importer = read('supabase/functions/import-calendly-appointments/index.ts');
+  assert.match(html, /appointments-import/);
+  assert.match(html, /functions\.invoke\('import-calendly-appointments'/);
+  assert.match(importer, /SUPABASE_ANON_KEY/);
+  assert.match(importer, /caller\.auth\.getUser\(\)/);
+  assert.match(importer, /\.from\("app_admins"\)/);
+  assert.match(importer, /CALENDLY_API_TOKEN/);
+  assert.match(importer, /62 \* DAY_MS/);
+  assert.match(importer, /"Free Consultation": "free_consultation"/);
+  assert.match(importer, /"NCLEX Strategy Consult Session": "strategy_session"/);
+  assert.match(importer, /"60-Min Single Tutoring Session": "tutoring_session"/);
+  assert.match(importer, /process_calendly_event/);
+  assert.match(importer, /https:\/\/api\.calendly\.com/);
+});

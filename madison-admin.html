@@ -59,6 +59,7 @@
     .admin-calendar[hidden]{display:none}
     .admin-calendar-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
     .admin-calendar-tools button{min-height:34px;padding:0 10px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:750 .7rem Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+    .admin-calendar-tools button:disabled{opacity:.55;cursor:wait}
     .admin-calendar-month{min-width:128px;text-align:center;font-size:.77rem;font-weight:800}
     .admin-calendar-legend{display:flex;gap:12px;flex-wrap:wrap;padding:10px 16px;color:var(--admin-muted);font-size:.67rem}
     .admin-calendar-legend span{display:inline-flex;align-items:center;gap:6px}
@@ -246,6 +247,7 @@
               <span class="admin-calendar-month" id="appointments-month" aria-live="polite"></span>
               <button type="button" id="appointments-next" aria-label="Next month">›</button>
               <button type="button" id="appointments-today">Today</button>
+              <button type="button" id="appointments-import">Import upcoming meetings</button>
               <a class="panel-link" href="madison-consultations.html">View consultations</a>
             </div>
           </div>
@@ -257,6 +259,7 @@
           <div class="admin-calendar-weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
           <div class="admin-calendar-grid" id="appointments-grid" role="grid" aria-label="Monthly appointment calendar"></div>
           <p class="admin-calendar-status" id="appointments-status" role="status" aria-live="polite">Loading Calendly appointments…</p>
+          <p class="admin-calendar-status" id="appointments-import-status" role="status" aria-live="polite"></p>
           <div class="admin-calendar-agenda" id="appointments-agenda" aria-live="polite"></div>
         </section>
         <div class="admin-workspace">
@@ -446,12 +449,31 @@
     }
     $('appointments-previous').addEventListener('click',()=>changeAppointmentMonth(-1));
     $('appointments-next').addEventListener('click',()=>changeAppointmentMonth(1));
+    $('appointments-import').addEventListener('click',importUpcomingAppointments);
     $('appointments-today').addEventListener('click',()=>{
       appointmentSelectedDate=StudyCalendar.isoDate(new Date());
       appointmentMonth=StudyCalendar.monthKey(appointmentSelectedDate);
       $('appointments-status').textContent='Loading Calendly appointments…';
       loadAppointmentCalendar();
     });
+    async function importUpcomingAppointments(){
+      const button=$('appointments-import'),status=$('appointments-import-status');
+      button.disabled=true;
+      status.textContent='Checking Calendly for upcoming meetings…';
+      try{
+        const {data,error}=await db.functions.invoke('import-calendly-appointments',{body:{}});
+        if(error)throw error;
+        if(!data?.ok)throw new Error(data?.error||'Calendly appointments could not be imported.');
+        status.textContent=`Import complete: ${data.imported} added, ${data.skipped} already recorded or not a supported event type.`;
+        await loadAppointmentCalendar();
+        await loadDashboardData();
+      }catch(error){
+        status.textContent=error?.message||'Calendly import failed. Check the Calendly import setup and try again.';
+        console.error('Calendly appointment import failed',error);
+      }finally{
+        button.disabled=false;
+      }
+    }
     async function loadDashboardData(){
       const activeIds=lifecycleAvailable?currentStudents.filter(student=>student.status==='active').map(student=>student.id):[];
       const now=new Date().toISOString();
