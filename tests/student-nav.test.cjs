@@ -98,23 +98,35 @@ test('inline student scripts remain valid JavaScript', () => {
   }
 });
 
-test('NCLEX assigned work shows practice sets as well as study resources', () => {
+test('NCLEX dashboard separates assigned question sets from learning resources', () => {
   const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   const renderer = html.slice(html.indexOf('function renderResources('), html.indexOf('function studentResourceText('));
-  const container = { innerHTML: '', querySelectorAll: () => [] };
+  const work = { innerHTML: '', querySelectorAll: () => [] };
+  const library = { innerHTML: '', hidden: true };
   const context = {
-    document: { getElementById: () => container },
+    document: { getElementById: id => id === 'work' ? work : library },
     text: String,
-    studentResourceText: String
+    studentResourceText: String,
+    bindWeeklyCompletion: () => {}
   };
   vm.runInNewContext(renderer, context);
-  context.renderResources([
+  const resources = [
     { title: 'Assigned practice', resource_type: 'practice_set', url: 'supplemental-practice.html?set=assigned' },
+    { title: 'Weekly questions', assignment_kind: 'practice', resource_type: 'practice_set', assignment_week: '2026-10-12' },
+    { title: 'Weekly CAT', assignment_kind: 'cat', resource_type: 'practice_set', assignment_week: '2026-10-12', url: 'diagnostic.html?mode=mock' },
     { title: 'Assigned guide', resource_type: 'study_guide', url: 'module1-guide.html' },
+    { title: 'CAT results', resource_type: 'cat_results' },
     { title: 'Private upload', resource_type: 'student_upload', url: 'student/file.pdf' }
-  ], 'resources-nclex');
-  assert.match(container.innerHTML, /Assigned practice/);
-  assert.match(container.innerHTML, /Open assigned set/);
-  assert.match(container.innerHTML, /Assigned guide/);
-  assert.doesNotMatch(container.innerHTML, /Private upload/);
+  ];
+  context.renderResources(resources, 'work');
+  context.renderLibraryResources(resources, 'library');
+  assert.match(work.innerHTML, /Assigned practice/);
+  assert.match(work.innerHTML, /Weekly questions/);
+  assert.match(work.innerHTML, /Weekly CAT/);
+  assert.match(work.innerHTML, /Open assigned set/);
+  assert.match(work.innerHTML, /Open assigned CAT/);
+  assert.doesNotMatch(work.innerHTML, /Assigned guide|CAT results|Private upload/);
+  assert.match(library.innerHTML, /Assigned guide/);
+  assert.doesNotMatch(library.innerHTML, /Assigned practice|Weekly questions|Weekly CAT|CAT results|Private upload/);
+  assert.equal(library.hidden, false);
 });
