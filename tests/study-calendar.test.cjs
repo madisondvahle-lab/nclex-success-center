@@ -114,6 +114,23 @@ test('dashboard wires NCLEX date entry, nursing schedule link, and calendar quer
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
 
+test('nursing dashboard supports class-specific tutor notes and class-labeled uploads', () => {
+  const html = read('student-dashboard.html');
+  const migration = read('supabase-nursing-class-notes-uploads-migration.sql');
+  assert.match(html, /db\.from\('student_class_notes'\)\.upsert/);
+  assert.match(html, /Note from Madison/);
+  assert.match(html, /class_code: uploadClass/);
+  assert.match(html, /Choose a class before uploading materials/);
+  assert.match(html, /Uploads without a class/);
+  assert.match(migration, /ADD COLUMN IF NOT EXISTS class_code text/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.student_class_notes/);
+  assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
+  assert.match(migration, /s\.auth_user_id = auth\.uid\(\)/);
+  assert.match(migration, /Admins manage class notes[\s\S]*?USING \(public\.is_app_admin\(\)\)[\s\S]*?WITH CHECK \(public\.is_app_admin\(\)\)/);
+  assert.doesNotMatch(migration, /Students .* FOR (?:INSERT|UPDATE|ALL)/);
+  for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
+});
+
 test('admin appointment calendar uses the existing shared month-grid helpers and recognizes tutoring bookings', () => {
   const html = read('madison-admin.html');
   const webhook = read('supabase/functions/calendly-webhook/index.ts');

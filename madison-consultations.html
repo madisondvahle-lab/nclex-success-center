@@ -137,10 +137,10 @@
     }
 
     async function loadList(){
-      const {data,error}=await db.from('consultations').select('*').order('scheduled_start',{ascending:false});
       const status=document.getElementById('list-status');
+      const {data,error}=await db.from('consultations').select('*').order('scheduled_start',{ascending:false});
       if(error){status.textContent='Consultations could not load. Run supabase-calendly-consultations-migration.sql first. '+error.message;return}
-      consults=data||[];
+      consults=excludeStudentConsultations(data||[]);
       const names=await profileNames(consults);
       const list=document.getElementById('list');
       const upcoming=consults.filter(c=>c.status==='scheduled'||c.status==='in_progress');
@@ -155,6 +155,10 @@
         +(history.length?`<details class="history-group"><summary>Past and cancelled consultations (${history.length})</summary>${renderRows(history)}</details>`:'');
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
       list.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openConsult(b.dataset.open)));
+    }
+
+    function excludeStudentConsultations(items){
+      return items.filter(c=>!c.student_id);
     }
 
     async function profileNames(items){
