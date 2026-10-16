@@ -318,6 +318,7 @@
   <script src="assessment-import.js"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
+  <script src="practice-review-data.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -1107,7 +1108,7 @@
           total:item.total_questions,
           categories:item.category_scores,
           missed:item.missed_question_ids,
-          answerDetails:item.answer_details,
+          answerDetails:PracticeReviewData.normalize(item.answer_details),
           isAssessment:false,
           raw:item
         }))
