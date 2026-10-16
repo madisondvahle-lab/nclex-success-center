@@ -207,6 +207,7 @@ test('tutor chart combines mixed-case sources, retains categories and supports p
   const before = JSON.stringify({ uploads, cats });
   const draw = () => context.renderCatCard(uploads, cats, [], tables.student_supplemental_practice_results);
   draw();
+  assert.equal($('cat-card').style.display, 'block');
   const body = $('cat-body');
   const chips = body.querySelectorAll('[data-catplat]');
   assert.deepEqual(chips.map(b => b.dataset.catplat).sort(), ['all', 'platform:archer', 'platform:uworld']);
