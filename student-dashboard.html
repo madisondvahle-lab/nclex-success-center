@@ -1210,6 +1210,7 @@
 
     // ── NCLEX portal ─────────────────────────────────────────────────
     function renderNclex(student, plans, resources, catalog, access) {
+      document.getElementById('portal-nclex').classList.remove('hidden');
       document.getElementById('welcome-nclex').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       if (student.nclex_target_date) {
         const days = Math.ceil((new Date(`${student.nclex_target_date}T12:00:00`) - new Date()) / 86400000);
@@ -1252,7 +1253,6 @@
       initLogCat(student);
       initGraphics();
       renderCatTrend(student);
-      document.getElementById('portal-nclex').classList.remove('hidden');
     }
 
     // Student logs a CAT: read the report, confirm the numbers, save into the trend data.
@@ -1536,6 +1536,7 @@
       render();
     }
     function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError) {
+      document.getElementById('portal-nursing').classList.remove('hidden');
       initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
@@ -1653,7 +1654,6 @@
 
       // Class modules
       renderModulesInto('modules-nursing', catalog, access);
-      document.getElementById('portal-nursing').classList.remove('hidden');
     }
 
     // ── Should we show onboarding? ────────────────────────────────────
