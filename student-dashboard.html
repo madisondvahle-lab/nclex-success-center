@@ -15,25 +15,25 @@
     .brand{font:700 1.2rem Georgia,serif;letter-spacing:-.04em}
     .brand small{font:600 .62em Inter,sans-serif}
     .sign-out{border:0;background:transparent;color:var(--ink);font:800 .8rem Inter,sans-serif;cursor:pointer;border-bottom:1px solid currentColor;padding:0 0 3px}
-    .hero{padding:32px 0 24px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+    .hero{padding:24px 0 16px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
     .eyebrow{margin:0 0 14px;color:var(--rose);font-size:.7rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
     h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.045em}
     h1{margin:0;font-size:2rem;line-height:1.15;letter-spacing:-.03em;overflow-wrap:anywhere}
-    .hero p:not(.eyebrow){max-width:620px;margin:12px 0 0;color:var(--muted);line-height:1.55}
-    .practice-start{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0 28px;margin-bottom:24px;border-bottom:1px solid var(--line)}
-    .practice-start h2{margin:0;font-size:1.5rem;letter-spacing:-.03em}
-    .practice-start p{margin:8px 0 0;max-width:60ch;color:var(--muted);font-size:.9rem;line-height:1.55}
+    .hero p:not(.eyebrow){max-width:620px;margin:8px 0 0;color:var(--muted);line-height:1.5}
+    .practice-start{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0 20px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+    .practice-start h2{margin:0;font-size:1.4rem;letter-spacing:-.03em}
+    .practice-start p{margin:5px 0 0;max-width:60ch;color:var(--muted);font-size:.88rem;line-height:1.45}
     .practice-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;flex-shrink:0}
     .practice-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 20px;background:var(--teal);color:#fff;text-decoration:none;font-size:.88rem;font-weight:800;border-radius:4px}
     .practice-primary:hover{background:#236b5f}
     .practice-secondary{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-size:.82rem;font-weight:700;text-underline-offset:4px}
     .practice-actions a:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
     .card[id]{scroll-margin-top:72px}
-    .countdown{min-width:170px;padding:20px 22px;background:var(--plum);color:#fff}
-    .countdown strong{display:block;font:400 2rem Georgia,serif}
-    .countdown span{display:block;margin-top:5px;color:#eedce5;font-size:.75rem;line-height:1.35}
-    .countdown.nursing{background:var(--teal)}
-    .countdown.nursing span{color:#b8e0da}
+    .countdown{min-width:0;padding:0 0 0 18px;border-left:1px solid var(--line);background:transparent;color:var(--ink);text-align:right}
+    .countdown[hidden]{display:none}
+    .countdown strong{display:block;font:400 1.65rem Georgia,serif;color:var(--plum)}
+    .countdown span{display:block;margin-top:3px;color:var(--muted);font-size:.75rem;line-height:1.35}
+    .countdown.nursing strong{color:var(--teal)}
     .grid{display:grid;grid-template-columns:1.12fr .88fr;gap:20px;padding-bottom:68px}
     .card{padding:30px;background:var(--paper);border:1px solid #e5e9e4}
     .card h2{margin:0;font-size:1.85rem;line-height:1.1}
@@ -85,7 +85,10 @@
     [data-weekly-complete]:disabled{opacity:.65;cursor:wait}
     [data-weekly-complete]:focus-visible,.weekly-assignment-link:focus-visible{outline:3px solid currentColor;outline-offset:3px}
     .weekly-assignment-link{display:inline-flex;align-items:center;min-height:44px;color:#fff;font-size:.82rem;font-weight:800;text-underline-offset:3px}
-    .assignment-reminders{margin:0 0 24px;padding:24px;background:var(--paper);border:1px solid var(--line)}
+    .assignment-reminders{margin:0 0 18px;padding:20px;background:var(--paper);border:1px solid var(--line)}
+    .assignment-reminders.is-quiet{padding:12px 0;background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .assignment-reminders.is-quiet .reminder-heading h2{font-size:1.05rem}
+    .assignment-reminders.is-quiet .reminder-message{margin-top:3px}
     .reminder-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
     .reminder-heading h2{margin:0;font-size:1.5rem}
     .reminder-heading button{min-height:44px;cursor:pointer;font-family:inherit}
@@ -252,7 +255,7 @@
 
     @media(max-width:800px){
       .hero{grid-template-columns:1fr;align-items:start}
-      .countdown{display:flex;align-items:center;gap:12px;min-width:0;padding:12px 16px}
+      .countdown{display:flex;align-items:center;gap:12px;min-width:0;padding:0;border:0;text-align:left}
       .countdown strong{font-size:1.25rem;flex-shrink:0}
       .countdown span{margin:0}
       .grid{grid-template-columns:1fr}
@@ -260,8 +263,8 @@
       .resource-list,.module-list,.progress-grid{grid-template-columns:1fr}
       .exam-summary,.practice-list{grid-template-columns:1fr}
       .shell{width:min(100% - 28px,1160px)}
-      .hero{padding:28px 0 18px}
-      .practice-start{align-items:flex-start;flex-direction:column;gap:16px;padding:16px 0 24px}
+      .hero{padding:22px 0 14px}
+      .practice-start{align-items:flex-start;flex-direction:column;gap:12px;padding:14px 0 20px}
       .practice-actions{width:100%}
       .card{padding:24px 20px}
       .card-head{flex-wrap:wrap}
@@ -429,13 +432,13 @@
           <h1 id="welcome-nclex">Welcome back.</h1>
           <p>Practice questions, work on your assigned review, and follow your study plan.</p>
         </div>
-        <aside class="countdown" id="countdown-nclex"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
+        <aside class="countdown" id="countdown-nclex" hidden><strong></strong><span></span></aside>
       </section>
       <section class="assignment-reminders" id="assignment-reminders-nclex" aria-labelledby="reminder-title-nclex"></section>
       <section class="practice-start" aria-labelledby="practice-title-nclex">
         <div>
-          <h2 id="practice-title-nclex">Make time for practice.</h2>
-          <p>Choose your topics and question count in the Question Bank, or continue a set Madison assigned.</p>
+          <h2 id="practice-title-nclex">Ready to practice?</h2>
+          <p>Choose topics and question count in the Question Bank.</p>
         </div>
         <div class="practice-actions">
           <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
@@ -535,13 +538,13 @@
           <h1 id="welcome-nursing">Welcome back.</h1>
           <p id="hero-course-line">Your private place for class resources, exam prep, and the next steps Madison has selected for you.</p>
         </div>
-        <aside class="countdown nursing" id="countdown-nursing"><strong>My plan</strong><span>Your next priorities are below.</span></aside>
+        <aside class="countdown nursing" id="countdown-nursing" hidden><strong></strong><span></span></aside>
       </section>
       <section class="assignment-reminders" id="assignment-reminders-nursing" aria-labelledby="reminder-title-nursing"></section>
       <section class="practice-start" aria-labelledby="practice-title-nursing">
         <div>
           <h2 id="practice-title-nursing">Prepare for your next exam.</h2>
-          <p>Open Exam Prep to find your assigned question sets by class and exam. Your class resources are below.</p>
+          <p>Find your assigned question sets in Exam Prep; class resources are below.</p>
         </div>
         <div class="practice-actions">
           <a class="practice-primary" href="supplemental-practice.html">Start practice</a>
@@ -1050,6 +1053,7 @@
       }
       const host = document.getElementById('assignment-reminders-' + state.role);
       const summary = WeeklyAssignments.reminders(state.resources);
+      host.classList.toggle('is-quiet', !state.error && !summary.items.length);
       const message = state.error ? 'Could not load assignment reminders. Refresh to try again; completion and due dates could not be checked.'
         : !summary.count ? 'No dated practice or CAT assignments yet. Your saved weekly plan is not an assignment.'
         : !summary.pending ? 'All assigned practice and CATs are marked complete. No reminders right now.'
@@ -1176,9 +1180,10 @@
       if (student.nclex_target_date) {
         const days = Math.ceil((new Date(`${student.nclex_target_date}T12:00:00`) - new Date()) / 86400000);
         const box  = document.getElementById('countdown-nclex');
+        box.hidden = false;
         box.innerHTML = days >= 0
           ? `<strong>${days} days</strong><span>until your target NCLEX date</span>`
-          : `<strong>My plan</strong><span>Your next priorities are below.</span>`;
+          : `<strong>Target date passed</strong><span>Update your test date in your study calendar</span>`;
       }
       const daily = renderRoadmapInto(document.getElementById('roadmap-nclex'), document.getElementById('plan-title-nclex'), plans[0]);
       if (daily.length) {
@@ -1537,7 +1542,9 @@
         document.querySelectorAll('#practice-shortcut-nursing .practice-group, #resources-nursing .resource-group').forEach(group => {
           group.hidden = !group.dataset.class || group.dataset.class !== classCode;
         });
-        document.getElementById('countdown-nursing').innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
+        const countdown = document.getElementById('countdown-nursing');
+        countdown.hidden = false;
+        countdown.innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
       renderClassSchedule(student, schedules, isPreview, activateClass);
 
