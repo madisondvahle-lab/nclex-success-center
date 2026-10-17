@@ -93,29 +93,6 @@
           </div>
         </header>
 
-        <section class="metric-grid" aria-label="CPR tracker overview">
-          <article class="metric">
-            <strong>Candidate Reports</strong>
-            <span>Official NCLEX CPR</span>
-            <small>Above, Near, or Below Passing Standard</small>
-          </article>
-          <article class="metric">
-            <strong>Adaptive Weights</strong>
-            <span>Client Needs Blueprint</span>
-            <small>8 NCLEX test-plan categories</small>
-          </article>
-          <article class="metric">
-            <strong>Multi-Attempt Trend</strong>
-            <span>Shift Over Time</span>
-            <small>Track domain movements between tests</small>
-          </article>
-          <article class="metric">
-            <strong>Document OCR</strong>
-            <span>Auto-fill Reader</span>
-            <small>Reads PDF &amp; screenshot score reports</small>
-          </article>
-        </section>
-
         <!-- Person selector panel -->
         <section class="dashboard-panel">
           <div class="panel-heading">
@@ -145,6 +122,27 @@
 
         <div id="detail" class="hidden">
           <p class="meta" id="link-box" style="margin-bottom:14px"></p>
+          <section class="metric-grid" aria-label="Selected person's CPR summary">
+            <article class="metric">
+              <strong id="metric-cpr-count">0</strong>
+              <span>CPR attempts</span>
+              <small>Candidate Performance Reports recorded</small>
+            </article>
+            <article class="metric">
+              <strong id="metric-latest-date">—</strong>
+              <span>Most recent report</span>
+              <small id="metric-latest-note">No CPR recorded</small>
+            </article>
+            <article class="metric">
+              <strong id="metric-focus-count">—</strong>
+              <span>Focus categories</span>
+              <small id="metric-focus-note">No CPR data yet</small>
+            </article>
+          </section>
+          <nav class="quick-actions" aria-label="CPR actions">
+            <button class="button primary" id="add-top" type="button">+ Add CPR</button>
+            <a class="button secondary" href="#trend-panel">View trend ↓</a>
+          </nav>
           <section class="dashboard-panel" id="trend-panel"></section>
           
           <section class="dashboard-panel">
@@ -226,7 +224,7 @@
       };
       $('person').onchange=()=>loadAttempts();
       $('new-person').onclick=()=>$('person-form').classList.toggle('hidden');$('pcancel').onclick=()=>$('person-form').classList.add('hidden');
-      $('person-form').onsubmit=addPerson;$('add').onclick=()=>openForm(null);$('cancel').onclick=()=>$('form-panel').classList.add('hidden');$('form').onsubmit=saveAttempt;
+      $('person-form').onsubmit=addPerson;$('add').onclick=()=>openForm(null);$('add-top').onclick=()=>openForm(null);$('cancel').onclick=()=>$('form-panel').classList.add('hidden');$('form').onsubmit=saveAttempt;
       await loadPeople(new URLSearchParams(location.search).get('person'));
     }
     async function loadPeople(select){
@@ -277,13 +275,24 @@
     }
     const ratings=a=>{const m={};(a.nclex_cpr_results||[]).forEach(x=>m[NCLEXCats.canon(x.domain)]=x.rating);return m};
     function render(){
-      if(!attempts.length){$('trend-panel').innerHTML='<h2>Trend</h2><p class="meta">No CPRs entered yet.</p>';$('attempts').innerHTML='';return}
-      const R=attempts.map(ratings),last=R[R.length-1];
+      $('metric-cpr-count').textContent=String(attempts.length);
+      if(!attempts.length){
+        $('metric-latest-date').textContent='—';$('metric-latest-note').textContent='No CPR recorded';
+        $('metric-focus-count').textContent='—';$('metric-focus-note').textContent='No CPR data yet';
+        $('trend-panel').innerHTML='<h2>Trend</h2><p class="meta">No CPRs entered yet.</p>';$('attempts').innerHTML='';return
+      }
+      const R=attempts.map(ratings);
+      const latest=attempts.reduce((best,a)=>!best||(a.test_date&&(!best.test_date||a.test_date>best.test_date))||((a.test_date||'')===(best.test_date||'')&&a.attempt_number>best.attempt_number)?a:best,null);
+      const latestRatings=ratings(latest),latestDate=latest.test_date?fmtD(latest.test_date):'Date not set';
+      const below=DOMAINS.filter(d=>latestRatings[d]==='below_passing'),near=DOMAINS.filter(d=>latestRatings[d]==='near_passing');
+      $('metric-latest-date').textContent=latestDate;
+      $('metric-latest-note').textContent=(latest.question_count?latest.question_count+' items · ':'')+'Attempt '+latest.attempt_number;
+      $('metric-focus-count').textContent=String(below.length+near.length);
+      $('metric-focus-note').textContent=below.length+' below · '+near.length+' near passing';
       const head='<tr><th>Category</th>'+attempts.map((a,i)=>'<th>#'+(i+1)+'<br><span style="font-weight:400;text-transform:none;letter-spacing:0">'+esc(fmtD(a.test_date))+(a.question_count?' · '+a.question_count+' items':'')+'</span></th>').join('')+'</tr>';
       const body=DOMAINS.map(d=>'<tr><td>'+esc(d)+'</td>'+R.map((m,i)=>{
         let arrow='';if(i){const a=(RATE[R[i-1][d]]||[])[2],b=(RATE[m[d]]||[])[2];if(a!=null&&b!=null&&a!==b)arrow=b>a?' <span class="up" title="Improved">▲</span>':' <span class="dn" title="Declined">▼</span>'}
         return '<td>'+chip(m[d])+arrow+'</td>'}).join('')+'</tr>').join('');
-      const below=DOMAINS.filter(d=>last[d]==='below_passing'),near=DOMAINS.filter(d=>last[d]==='near_passing');
       $('trend-panel').innerHTML='<h2>Trend across attempts</h2><div class="scroll"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
         +'<h3>Focus from the latest CPR</h3>'+(below.length||near.length?'<ul class="focus">'+below.map(d=>'<li>'+chip('below_passing')+' '+esc(d)+'</li>').join('')+near.map(d=>'<li>'+chip('near_passing')+' '+esc(d)+'</li>').join('')+'</ul>':'<p class="meta">No categories below or near the passing standard on the latest CPR.</p>');
       $('attempts').innerHTML=attempts.slice().reverse().map(a=>{const m=ratings(a),n=attempts.indexOf(a)+1;
