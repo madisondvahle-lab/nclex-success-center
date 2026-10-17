@@ -31,7 +31,7 @@
       'core-medication-calculations':'supplemental-practice.html?set=med-procedure-01',
       'core-lifespan-reproductive':'supplemental-practice.html?set=ob-newborn-01',
       'core-acute-systems':'supplemental-practice.html?set=ngn-acute-01',
-      'core-psych-judgment':'diagnostic.html?mode=practice'
+      'core-psych-judgment':'supplemental-practice.html?mixed=20&area=Mental%20Health'
     };
     const modules=window.NCLEX_CORE_BLUEPRINT.learningPathway;
     const requestedKey=new URLSearchParams(window.location.search).get('module');
@@ -47,7 +47,7 @@
       document.getElementById('pathway-notice').textContent='Review the topics in this module, then open its related practice questions.';
       document.getElementById('modules').innerHTML=`<article class="module focused"><span class="number">Topics in this module</span><ul>${selected.requiredTopics.map(topic=>`<li>${text(names[topic]||topic.replace(/-/g,' '))}</li>`).join('')}</ul><a href="${text(links[selected.key])}">Practice questions</a></article>`;
     }else{
-      document.getElementById('modules').innerHTML=modules.map((item,index)=>`<article class="module ${index===4?'full':''}"><span class="number">Core module ${index+1}</span><h2>${text(item.emoji)} ${text(item.label)}</h2><p>${text(item.description)}</p><ul>${item.requiredTopics.slice(0,5).map(topic=>`<li>${text(names[topic]||topic.replace(/-/g,' '))}</li>`).join('')}</ul><a href="core-rn-pathway.html?module=${encodeURIComponent(item.key)}">Explore module</a></article>`).join('');
+      document.getElementById('modules').innerHTML=modules.map((item,index)=>`<article class="module ${index===4?'full':''}"><span class="number">Core module ${index+1}</span><h2>${text(item.emoji)} ${text(item.label)}</h2><p>${text(item.description)}</p><ul>${item.requiredTopics.slice(0,5).map(topic=>`<li>${text(names[topic]||topic.replace(/-/g,' '))}</li>`).join('')}</ul><a href="core-rn-pathway.html?module=${encodeURIComponent(item.key)}">Open module</a></article>`).join('');
     }
   </script>
 </body>

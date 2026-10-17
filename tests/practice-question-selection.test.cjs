@@ -276,8 +276,8 @@ test('available pathway practice sets do not require per-student module access',
   const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   assert.match(dashboard, /catalog\.filter\(i => showAvailableCatalog \? i\.is_available : enabled\.has\(i\.module_key\)\)/);
   assert.match(dashboard, /renderModulesInto\('modules-nclex', catalog, access, true\)/);
-  assert.match(dashboard, /m\.quiz_url && m\.quiz_url !== m\.guide_url/);
-  assert.match(dashboard, /Practice questions<\/a>/);
+  assert.match(dashboard, /m\.guide_url \? `<a href="\$\{text\(m\.guide_url\)\}"[^>]*>Open module<\/a>`/);
+  assert.doesNotMatch(dashboard, /m\.quiz_url && m\.quiz_url !== m\.guide_url/);
   assert.doesNotMatch(dashboard, /Open general practice/);
   assert.match(dashboard, /\.module a\{[^}]*background:var\(--ink\)[^}]*color:#fff/);
 });
