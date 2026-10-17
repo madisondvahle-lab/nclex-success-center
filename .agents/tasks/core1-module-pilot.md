@@ -28,8 +28,11 @@ authorization for a library-wide migration.
 - Module cards and the short practice set open in the current tab, including
   in the app's side browser. Browser Back returns from practice to the module.
   Do not claim comprehensive topic coverage or mastery.
-- A responsive precautions comparison and expandable letter-by-letter memory
-  aid are implemented. New clinical examples still require Madison's approval.
+- A responsive precautions comparison and matching expandable letter-by-letter
+  MTV and SPIDERMAN memory aids are implemented. MTV reuses the approved
+  airborne examples and preserves the Varicella Contact reminder. The renderer
+  accepts a `mnemonics` list as well as the original single `mnemonic`.
+  New clinical examples still require Madison's approval.
 
 ## Private artifacts
 
@@ -71,8 +74,10 @@ denied, and unavailable-module read denied. Anonymous authenticated-object and
 public-object HTTP URLs also returned errors, not lesson content.
 The availability test rolled back; Core 1 remains available.
 
-Actual signed-in browser verification has not been performed with a real student
-session. Local renderer tests cover the signed-in UI and auth/sign-out behavior.
+Actual signed-in browser verification confirmed the full private Core 1 lesson
+renders. Module cards requesting a new tab did not navigate the app side browser;
+the current-tab fix was merged in PR #224. Local renderer tests also cover the
+signed-in UI and auth/sign-out behavior.
 Frontend release was merged and published through GitHub Pages on October 17,
 2026 (merge commit `9f0508c1c84494a144a0b98e208ffed84ed213eb`,
 Pages run `39005946502`). The deployed script hash matches the local release.
@@ -80,9 +85,7 @@ A live signed-out browser visit redirected to `student-login.html`.
 The private uploaded file was downloaded through the authorized CLI and matched
 the approved local payload byte-for-byte. No additional SQL/upload is needed.
 
-Next: Madison should open Core 1 while signed in and confirm the live lesson,
-precautions graphic, and practice link before applying the pattern to another
-module. Do not expand to Core 2 without confirming the next module's scope.
+Do not expand to Core 2 without confirming the next module's scope.
 
 ## Release procedure
 
@@ -97,7 +100,7 @@ module. Do not expand to Core 2 without confirming the next module's scope.
    `0` where supported. Do not make the bucket public. Completed for Core 1.
 4. Verify live anonymous download denial, authenticated download/rendering,
    unavailable-module denial, and sign-out behavior. Live role checks passed;
-   real student browser verification remains outstanding.
+   signed-in live lesson rendering has also been verified.
 5. Merge/deploy the integration only after provisioning and upload. Without
    the file, Core 1 deliberately shows an explicit unavailable state.
 

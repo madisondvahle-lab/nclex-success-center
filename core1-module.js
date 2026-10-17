@@ -11,6 +11,12 @@
     return typeof value === 'string' && value.trim().length > 0 && value.length <= 5000;
   }
 
+  function isMnemonic(value) {
+    return value && isText(value.title) && isText(value.caution) &&
+      Array.isArray(value.entries) && value.entries.length > 0 &&
+      value.entries.every(entry => entry && isText(entry.letter) && isText(entry.text));
+  }
+
   function validate(content) {
     if (!content || content.version !== 1 || content.moduleKey !== moduleKey ||
         !isText(content.intro) || !Array.isArray(content.lessons) || content.lessons.length !== topicKeys.length) {
@@ -28,9 +34,8 @@
           (lesson.precautions && (!Array.isArray(lesson.precautions) || !lesson.precautions.length || !lesson.precautions.every(row =>
             row && ['name', 'protection', 'examples'].every(key => isText(row[key]))))) ||
           (lesson.memory && !isText(lesson.memory)) ||
-          (lesson.mnemonic && (!isText(lesson.mnemonic.title) || !isText(lesson.mnemonic.caution) ||
-            !Array.isArray(lesson.mnemonic.entries) || !lesson.mnemonic.entries.length ||
-            !lesson.mnemonic.entries.every(entry => entry && isText(entry.letter) && isText(entry.text))))) {
+          (lesson.mnemonics && (!Array.isArray(lesson.mnemonics) || !lesson.mnemonics.length || !lesson.mnemonics.every(isMnemonic))) ||
+          (lesson.mnemonic && !isMnemonic(lesson.mnemonic))) {
         throw new Error('Core 1 lesson file is incomplete. Contact Madison for help.');
       }
     }
@@ -140,16 +145,16 @@
         section.append(comparison);
       }
       if (lesson.memory) section.append(el('p', 'memory', lesson.memory));
-      if (lesson.mnemonic) {
+      for (const mnemonic of [...(lesson.mnemonics || []), ...(lesson.mnemonic ? [lesson.mnemonic] : [])]) {
         const details = el('details', 'mnemonic');
-        details.append(el('summary', '', lesson.mnemonic.title));
+        details.append(el('summary', '', mnemonic.title));
         const entries = el('ul', 'mnemonic-entries');
-        for (const entry of lesson.mnemonic.entries) {
+        for (const entry of mnemonic.entries) {
           const item = el('li');
           item.append(el('strong', 'mnemonic-letter', entry.letter), el('span', '', entry.text));
           entries.append(item);
         }
-        details.append(entries, el('p', 'trap', lesson.mnemonic.caution));
+        details.append(entries, el('p', 'trap', mnemonic.caution));
         section.append(details);
       }
       const actions = el('div', 'actions');
