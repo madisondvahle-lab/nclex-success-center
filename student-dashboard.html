@@ -1205,7 +1205,7 @@
         <strong>${text(m.emoji || '📚')} ${text(m.name)}</strong>
         <span>${text(m.description || 'Available learning module')}</span>
         <div class="module-actions">
-          ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open module</a>` : ''}
+          ${m.guide_url ? `<a href="${text(m.guide_url)}">Open module</a>` : ''}
         </div>
       </article>`;
       document.getElementById(containerId).innerHTML =

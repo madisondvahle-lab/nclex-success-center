@@ -25,8 +25,9 @@ authorization for a library-wide migration.
 - Signed-out users go to `student-login.html`. Failures show explicit retry/help,
   not public fallback lessons. Sign-out clears lessons and invalidates pending
   responses; back/forward-cache restoration revalidates sign-in.
-- The existing short practice set opens in a new tab so the module remains
-  available. Do not claim comprehensive topic coverage or mastery.
+- Module cards and the short practice set open in the current tab, including
+  in the app's side browser. Browser Back returns from practice to the module.
+  Do not claim comprehensive topic coverage or mastery.
 - A responsive precautions comparison and expandable letter-by-letter memory
   aid are implemented. New clinical examples still require Madison's approval.
 
@@ -72,7 +73,16 @@ The availability test rolled back; Core 1 remains available.
 
 Actual signed-in browser verification has not been performed with a real student
 session. Local renderer tests cover the signed-in UI and auth/sign-out behavior.
-Frontend PR/merge and GitHub Pages publication are the remaining release steps.
+Frontend release was merged and published through GitHub Pages on October 17,
+2026 (merge commit `9f0508c1c84494a144a0b98e208ffed84ed213eb`,
+Pages run `39005946502`). The deployed script hash matches the local release.
+A live signed-out browser visit redirected to `student-login.html`.
+The private uploaded file was downloaded through the authorized CLI and matched
+the approved local payload byte-for-byte. No additional SQL/upload is needed.
+
+Next: Madison should open Core 1 while signed in and confirm the live lesson,
+precautions graphic, and practice link before applying the pattern to another
+module. Do not expand to Core 2 without confirming the next module's scope.
 
 ## Release procedure
 

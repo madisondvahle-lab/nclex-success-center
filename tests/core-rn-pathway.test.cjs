@@ -118,7 +118,7 @@ test('module catalog links Module 3 and Core 5 to their current learning experie
 
 test('available Learning Library cards open their guide as a single module entry', () => {
   const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
-  assert.match(dashboard, /m\.guide_url \? `<a href="\$\{text\(m\.guide_url\)\}"[^>]*>Open module<\/a>`/);
+  assert.match(dashboard, /m\.guide_url \? `<a href="\$\{text\(m\.guide_url\)\}">Open module<\/a>`/);
   assert.doesNotMatch(dashboard, /m\.quiz_url && m\.quiz_url !== m\.guide_url/);
   for (const [key, guide] of [
     ['m1', 'module1-newborn.html'],

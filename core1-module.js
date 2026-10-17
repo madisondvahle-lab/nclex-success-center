@@ -185,11 +185,8 @@
     practice.id = 'knowledge-check';
     practice.append(el('h2', '', 'A little practice. A clearer next step.'),
       el('p', '', "Try the existing 5-question safety check. Read the rationales, then revisit the topic you couldn't confidently explain."),
-      link('Open knowledge check ↗', practiceUrl, 'button'),
-      el('small', '', 'Opens in a new tab. Covers selected priorities, delegation, falls, bleeding, and fire safety—not every topic in this module.'));
-    const practiceLink = practice.querySelector('a');
-    practiceLink.target = '_blank';
-    practiceLink.rel = 'noopener';
+      link('Open knowledge check →', practiceUrl, 'button'),
+      el('small', '', 'Use Back to return to this module. Covers selected priorities, delegation, falls, bleeding, and fire safety—not every topic in this module.'));
     lessons.append(practice);
     const review = el('section', 'lesson');
     review.id = 'review';
