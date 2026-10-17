@@ -882,6 +882,7 @@
   <iframe id="legacy-source" src="question-bank.html" style="display:none" aria-hidden="true"></iframe>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1185,6 +1186,14 @@
       render();renderManage();
       alert(done+' done'+(skipped?', '+skipped+' skipped (need manual conversion)':'')+(fail?'. Stopped: '+(fail.message||fail):'.'));
     }
+    function categorySelect(current){
+      const select=document.createElement('select');
+      select.id='e-cat';
+      const categories=['',...NCLEXCats.NAMES];
+      if(current&&!categories.includes(current))categories.push(current);
+      select.innerHTML=categories.map(category=>`<option value="${esc(category)}"${category===current?' selected':''}>${esc(category||'Not specified')}</option>`).join('');
+      return select;
+    }
     function openEdit(id,values){
       const q=values||live.find(x=>x.id===id);if(!q)return;
       const type=q.item_type||'mcq',data=q.item_data||null;
@@ -1194,6 +1203,7 @@
       else if(type==='sata'&&data&&data.options){opts=`<label>Answer options (tick every correct one)</label>${data.options.map((o,i)=>`<div class="opt"><input type="checkbox" class="e-sata" data-i="${i}" ${(data.correct||[]).includes(i)?'checked':''} aria-label="Correct option ${i+1}"><input type="text" class="e-sopt" value="${esc(o)}" required></div>`).join('')}`}
       else{opts=`<p class="notice" style="margin-top:14px">This is a ${esc(TYPE_NAME[type]||type)} item. Its layout and answer key are managed as a unit, so you can edit the wording and tags here but not the structure.</p>`}
       $('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;
+      $('e-cat').replaceWith(categorySelect(q.nclex_category||''));
       $('ed').classList.remove('hidden');
       $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
       $('ed-form').onsubmit=async ev=>{

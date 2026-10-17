@@ -160,3 +160,25 @@ test('double submits do not send a second write', async () => {
 test('question bank inline JavaScript parses', () => {
   for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(match[1]);
 });
+
+test('category dropdown uses shared names and preserves blank, standard, and nonstandard saved values', () => {
+  const context = {
+    window: {},
+    document: { createElement: tag => ({ tag }) },
+    esc: value => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
+  };
+  vm.runInNewContext(readFileSync(join(__dirname, '..', 'category-names.js'), 'utf8'), context);
+  context.NCLEXCats = context.window.NCLEXCats;
+  vm.runInNewContext(html.slice(html.indexOf('function categorySelect('), html.indexOf('function openEdit(')), context);
+  for (const current of ['', ...context.NCLEXCats.NAMES, 'Legacy & "custom" <category>']) {
+    const select = context.categorySelect(current);
+    assert.equal(select.tag, 'select');
+    assert.equal(select.id, 'e-cat');
+    for (const name of context.NCLEXCats.NAMES) assert.ok(select.innerHTML.includes(`value="${name}"`));
+    assert.equal((select.innerHTML.match(/ selected/g) || []).length, 1);
+    assert.ok(select.innerHTML.includes(`value="${context.esc(current)}" selected`));
+    assert.equal((select.innerHTML.match(/<option /g) || []).length, current && !context.NCLEXCats.NAMES.includes(current) ? 10 : 9);
+  }
+  assert.match(html, /<script src="category-names\.js"><\/script>/);
+  assert.match(html, /\$\('e-cat'\)\.replaceWith\(categorySelect\(q\.nclex_category\|\|''\)\)/);
+});
