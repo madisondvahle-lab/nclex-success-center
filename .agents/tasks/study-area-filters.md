@@ -33,3 +33,11 @@ The user reports running the Study Area migration. The result has not been indep
 - `node --test tests/practice-question-selection.test.cjs`: 9 passed, including mapping coverage/type/count checks and inline-script parsing.
 - `git diff --check`: passed.
 - Impeccable detector reported a low-confidence page-level `flat-type-hierarchy` warning at `madison-assignments.html:13`. The new Study Area text was aligned to the existing 14px scale; the broader pre-existing type hierarchy was left unchanged to avoid unrelated admin-page redesign.
+
+## Practice builder follow-up (pending deployment)
+
+- `supplemental-practice.html` now has an original, UWorld-inspired student test builder using the portal's existing visual language. It offers Tutor or Timed mode, question count, Traditional (MCQ) or Next Gen (SATA), question-history modes, and two focus views: Study Areas and NCLEX Client Needs. It does not add a Systems taxonomy or expose difficulty selection.
+- Timed mode uses the existing elapsed-time clock, does not auto-submit, and delays answer feedback until the set is complete. Tutor mode keeps immediate feedback.
+- New bank-practice sessions prioritize questions with no saved practice attempt; previously practiced eligible items fill the set only after unused items run short. Latest attempt state powers Correct, Incorrect, Omitted, and Marked filters. Mark-for-review state is saved in the existing `answer_details` JSON; no schema change is required.
+- A new set is offered only when detailed practice history saves successfully, so a failed save cannot silently make the next set repeat the same questions.
+- Validation: `node --test tests/practice-question-selection.test.cjs`; `git diff --check`.

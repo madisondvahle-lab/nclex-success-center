@@ -18,7 +18,7 @@ function selection() {
   return context.window.PracticeQuestionSelection;
 }
 
-test('medium and hard is the builder default, with selectable alternatives', () => {
+test('the custom builder does not expose a difficulty selector', () => {
   const api = selection();
   const questions = [
     { id: 'easy', difficulty: 'easy' },
@@ -27,8 +27,59 @@ test('medium and hard is the builder default, with selectable alternatives', () 
   ];
   assert.deepEqual(api.filter(questions, { difficulty: 'medium-hard' }).map(item => item.id), ['medium', 'hard']);
   assert.deepEqual(api.filter(questions, { difficulty: 'all' }).map(item => item.id), ['easy', 'medium', 'hard']);
-  assert.deepEqual(api.filter(questions, { difficulty: 'easy' }).map(item => item.id), ['easy']);
-  assert.match(page, /<option value="medium-hard" selected>Medium \+ Hard<\/option>/);
+  assert.deepEqual(api.filter(questions, {}).map(item => item.id), ['easy', 'medium', 'hard']);
+  assert.doesNotMatch(page, /id="custom-difficulty"/);
+  assert.match(page, /data-practice-mode="tutor"/);
+  assert.match(page, /data-practice-mode="timed"/);
+});
+
+test('UWorld-inspired filters use existing Study Areas and Client Needs with supported item types', () => {
+  const api = selection();
+  const questions = [
+    { id: 'mcq', itemType: 'mcq', nclexCategory: 'Management of Care', studyArea: 'Leadership & Professional Practice' },
+    { id: 'sata', itemType: 'sata', nclexCategory: 'Management of Care', studyArea: 'Leadership & Professional Practice' },
+    { id: 'other-category', itemType: 'mcq', nclexCategory: 'Psychosocial Integrity', studyArea: 'Mental Health' }
+  ];
+  assert.deepEqual(api.filter(questions, {
+    itemTypes: ['sata'],
+    studyAreas: ['Leadership & Professional Practice'],
+    categories: ['Management of Care']
+  }).map(item => item.id), ['sata']);
+  assert.match(page, /data-category-tab="study-areas">Study Areas/);
+  assert.match(page, /data-category-tab="client-needs">Client Needs/);
+  assert.match(page, /value="mcq" checked><span>Traditional/);
+  assert.match(page, /value="sata" checked><span>Next Gen/);
+  assert.doesNotMatch(page, /Systems\s*\(/);
+  assert.match(page, /marked_for_review:\!\!activeSet\.sessionMarked/);
+  assert.match(page, /instant:activeSet\.testMode==='timed'\?false/);
+  assert.match(page, /Questions you have not practiced will be selected first/);
+});
+
+test('question history modes use the latest attempt, and unused questions are distinguishable', () => {
+  const api = selection();
+  const history = api.summarizeLatestAttempts([
+    { answer_details: [
+      { question_id: 'correct', selected_answer: 0, correct: true, marked_for_review: false },
+      { question_id: 'marked', selected_answer: 1, correct: false, marked_for_review: true },
+      { question_id: 'omitted', selected_answer: null, correct: false, marked_for_review: false }
+    ] },
+    { answer_details: [{ question_id: 'correct', selected_answer: 2, correct: false, marked_for_review: false }] }
+  ]);
+  const questions = ['unused', 'correct', 'marked', 'omitted', 'incorrect'].map(id => ({ id }));
+  assert.deepEqual(questions.map(question => api.questionMode(question, history)), ['unused', 'correct', 'marked', 'omitted', 'unused']);
+  assert.deepEqual(
+    api.filterByModes(questions, ['unused', 'correct'], history).map(question => question.id),
+    ['unused', 'correct', 'incorrect']
+  );
+  const prioritized = api.selectByUsage(questions, 3, history);
+  assert.deepEqual(
+    Array.from(prioritized.slice(0, 2), question => api.questionMode(question, history)),
+    ['unused', 'unused']
+  );
+  assert.notEqual(api.questionMode(prioritized[2], history), 'unused');
+  assert.equal(new Set(prioritized.map(question => question.id)).size, prioritized.length);
+  assert.equal(api.questionMode({ id: 'older-correct' }, history), 'unused');
+  assert.equal(api.questionMode({ id: 'newest-wrong' }, new Map([['newest-wrong', { selected_answer: 1, correct_answer: 0 }]])), 'incorrect');
 });
 
 test('active bank SATA items map to array-based answers for ExamUI practice', () => {
@@ -69,7 +120,7 @@ test('category and topic filters intersect instead of widening the selected pool
   );
 });
 
-test('Study Areas intersect with category, topic, and difficulty filters', () => {
+test('Study Areas intersect with Client Needs and topic filters across all difficulties', () => {
   const api = selection();
   const questions = [
     { id: 'match', studyArea: 'Maternal & Newborn', nclexCategory: 'physiological', topic: 'Fetal Monitoring', difficulty: 'hard' },
@@ -83,9 +134,8 @@ test('Study Areas intersect with category, topic, and difficulty filters', () =>
       studyAreas: ['Maternal & Newborn'],
       categories: ['physiological'],
       topics: ['Fetal Monitoring'],
-      difficulty: 'medium-hard'
     }).map(item => item.id),
-    ['match']
+    ['match', 'wrong-difficulty']
   );
 });
 
