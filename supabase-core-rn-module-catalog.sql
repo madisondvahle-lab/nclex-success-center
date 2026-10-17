@@ -9,7 +9,7 @@ VALUES
   ('core-medication-calculations', 102, 'Core 2 · Medication, Fluids & Calculations', '💊', 'High-alert medication safety, electrolytes, ABGs, and medication calculations.', 'core-rn-pathway.html?module=core-medication-calculations', 'supplemental-practice.html?set=med-procedure-01', true),
   ('core-lifespan-reproductive', 103, 'Core 3 · OB, Newborn & Pediatric Safety', '👶', 'Preeclampsia, fetal monitoring, postpartum, newborn, and pediatric safety.', 'core-rn-pathway.html?module=core-lifespan-reproductive', 'supplemental-practice.html?set=ob-newborn-01', true),
   ('core-acute-systems', 104, 'Core 4 · Acute Care, Systems & Procedures', '🫁', 'Airway, sepsis, shock, fluids, postoperative complications, and acute systems care.', 'core-rn-pathway.html?module=core-acute-systems', 'supplemental-practice.html?set=ngn-acute-01', true),
-  ('core-psych-judgment', 105, 'Core 5 · Psych, Clinical Judgment & Integration', '🧠', 'Psych safety, neuroleptic malignant syndrome, therapeutic communication, and the clinical-judgment process.', 'core-rn-pathway.html?module=core-psych-judgment', 'diagnostic.html?mode=practice', true)
+  ('core-psych-judgment', 105, 'Core 5 · Psych, Clinical Judgment & Integration', '🧠', 'Psych safety, neuroleptic malignant syndrome, therapeutic communication, and the clinical-judgment process.', 'core-rn-pathway.html?module=core-psych-judgment', 'supplemental-practice.html?mixed=20&area=Mental%20Health', true)
 ON CONFLICT (module_key) DO UPDATE SET
   name = EXCLUDED.name,
   emoji = EXCLUDED.emoji,
