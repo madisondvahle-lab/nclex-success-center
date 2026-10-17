@@ -151,6 +151,7 @@
     .module strong{display:block;font-size:.88rem}
     .module span{display:block;margin-top:6px;color:var(--muted);font-size:.75rem;line-height:1.35}
     .module a{display:inline-block;margin-top:12px;color:var(--ink);font-size:.75rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
+    .module-actions{display:flex;gap:12px;flex-wrap:wrap}
     .progress-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
     .progress-item{padding:16px;background:var(--soft)}
     .progress-item strong{display:block;font-size:1.5rem;font-family:Georgia,serif;letter-spacing:-.04em;margin-bottom:3px}
@@ -1192,16 +1193,19 @@
         .replace(/\bJack(?:'s)?\s+(?=OB Study Guide\b)/gi, ''));
     }
 
-    function renderModulesInto(containerId, catalog, access) {
+    function renderModulesInto(containerId, catalog, access, showAvailableCatalog = false) {
       const enabled  = new Set(access.filter(i => i.enabled).map(i => i.module_key));
-      const modules  = catalog.filter(i => enabled.has(i.module_key));
+      const modules  = catalog.filter(i => showAvailableCatalog ? i.is_available : enabled.has(i.module_key));
       if (!modules.length) return;
       const core     = modules.filter(i =>  String(i.module_key || '').startsWith('core-'));
       const deepDive = modules.filter(i => !String(i.module_key || '').startsWith('core-'));
       const card     = m => `<article class="module">
         <strong>${text(m.emoji || '📚')} ${text(m.name)}</strong>
-        <span>${text(m.description || 'Assigned learning module')}</span>
-        ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open module →</a>` : ''}
+        <span>${text(m.description || 'Available learning module')}</span>
+        <div class="module-actions">
+          ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open guide →</a>` : ''}
+          ${m.quiz_url && m.quiz_url !== m.guide_url ? `<a href="${text(m.quiz_url)}" target="_blank" rel="noopener">${m.quiz_url === 'diagnostic.html?mode=practice' ? 'Open general practice' : 'Open practice'} →</a>` : ''}
+        </div>
       </article>`;
       document.getElementById(containerId).innerHTML =
         (core.length     ? `<div class="module-group"><p class="module-group-label">Core RN Safety Pathway</p><div class="module-list">${core.map(card).join('')}</div></div>` : '') +
@@ -1222,7 +1226,7 @@
       }
       renderWeeklyPlan(plans[0]);
       renderLibraryResources(resources, 'learning-resources-nclex');
-      renderModulesInto('modules-nclex', catalog, access);
+      renderModulesInto('modules-nclex', catalog, access, true);
 
       // Render CAT results if present
       const catResource = resources.find(r => r.resource_type === 'cat_results');
