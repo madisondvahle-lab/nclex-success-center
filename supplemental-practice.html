@@ -1704,8 +1704,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     ]},
     ];
     sets.push({id:'nur215-foundations-practice',title:'NUR 215 Foundations Practice',tag:'NUR 215 · Foundations of Professional Practice',description:'60 mixed application and clinical-judgment questions on communication, ethics, law, consent, patient rights, leadership, conflict, change, and delegation.',questionCount:60,questionSource:'question-bank'});
-    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],enabledModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopics=[],questionCategories=[],questionTopicsError='',questionHistoryError='',questionHistoryById=new Map();
-    const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ngn-acute-01':'core-acute-systems'};
+    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],availableModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopics=[],questionCategories=[],questionTopicsError='',questionHistoryError='',questionHistoryById=new Map();
+    const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ob-newborn-01':'core-lifespan-reproductive','ngn-acute-01':'core-acute-systems'};
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     function cleanPersonalLabel(value){
       let text=String(value||'');
@@ -1725,10 +1725,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       }catch{return ''}
     }
     function urlForSet(id){return `supplemental-practice.html?set=${encodeURIComponent(id)}`}
-    function assignedSet(id){
+    function canOpenSet(id){
       const target=normalizedUrl(urlForSet(id));
       return assignedResources.some(resource=>setFromUrl(resource.url)===id&&normalizedUrl(resource.url)===target)||
-        (modulePracticeSets[id]&&enabledModules.has(modulePracticeSets[id]));
+        (modulePracticeSets[id]&&availableModules.has(modulePracticeSets[id]));
     }
     function assignedMixedReview(){
       return assignedResources.some(resource=>{
@@ -1902,9 +1902,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
     function renderNclexLibrary(){
       $('page-title').textContent='Your NCLEX review.';
-      $('page-summary').textContent='Choose an assigned set below, or build a custom practice session from the active Question Bank.';
+      $('page-summary').textContent='Choose a pathway set available through your Learning Library, an assigned set, or build a custom practice session from the active Question Bank.';
       const moduleResources=Object.entries(modulePracticeSets)
-        .filter(([,moduleKey])=>enabledModules.has(moduleKey))
+        .filter(([,moduleKey])=>availableModules.has(moduleKey))
         .map(([setId])=>({title:sets.find(set=>set.id===setId)?.title||'Assigned review',resource_type:'practice_set',url:urlForSet(setId)}));
       const resources=[...assignedResources,...moduleResources].filter((resource,index,all)=>all.findIndex(other=>normalizedUrl(other.url)===normalizedUrl(resource.url))===index);
       const target=$('sets');
@@ -2044,8 +2044,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     async function startSet(id,count){
       const set=sets.find(item=>item.id===id);
       if(!set)return;
-      if(!assignedSet(id)){
-        $('library-status').textContent='This question set is not assigned to your account. Return to your dashboard to view your assigned work.';
+      if(!canOpenSet(id)){
+        $('library-status').textContent='This question set is not available for your account. Return to your dashboard to view your Learning Library and assigned work.';
         $('library-status').classList.remove('hidden');
         return;
       }
@@ -2492,16 +2492,16 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           StudentNav.init({ active: 'practice' });
           StudentNav.updateStudent(student, admin);
         }
-        const [{data:resources,error:resourcesError},{data:access,error:accessError},{data:schedules,error:schedulesError}]=await Promise.all([
+        const [{data:resources,error:resourcesError},{data:modules,error:modulesError},{data:schedules,error:schedulesError}]=await Promise.all([
           db.from('student_resources').select('title,url,note,resource_type,due_on').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
-          db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),
+          db.from('modules').select('module_key,is_available'),
           db.from('student_class_schedules').select('class_code,class_name,next_exam_date').eq('student_id',student.id).order('class_code')
         ]);
         if(resourcesError)throw resourcesError;
-        if(accessError)throw accessError;
+        if(modulesError)throw modulesError;
         if(schedulesError)throw schedulesError;
         assignedResources=resources||[];
-        enabledModules=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
+        availableModules=new Set((modules||[]).filter(item=>item.is_available).map(item=>item.module_key));
         classSchedules=schedules||[];
         if(student.student_type!=='nursing_student'){
           try{
@@ -2527,9 +2527,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         }else if([10,20,30,40,50,60,75,100].includes(mixedCount)){
           await buildMixedReview(mixedCount,params.get('cat'),null,null,'all',requestedStudyAreas);
         }else if(sets.some(set=>set.id===requestedSet)){
-          if(!assignedSet(requestedSet)){
+          if(!canOpenSet(requestedSet)){
             renderLibrary();
-            $('library-status').textContent='This question set is not assigned to your account. Return to your dashboard to view your assigned work.';
+            $('library-status').textContent='This question set is not available for your account. Return to your dashboard to view your Learning Library and assigned work.';
             $('library-status').classList.remove('hidden');
           }else startSet(requestedSet);
         }else{

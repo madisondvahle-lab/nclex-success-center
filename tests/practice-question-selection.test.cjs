@@ -223,6 +223,18 @@ test('assigned legacy practice sets load their questions from the master bank', 
   }
 });
 
+test('available pathway practice sets do not require per-student module access', () => {
+  assert.match(page, /db\.from\('modules'\)\.select\('module_key,is_available'\)/);
+  assert.match(page, /availableModules=new Set\(\(modules\|\|\[\]\)\.filter\(item=>item\.is_available\)\.map\(item=>item\.module_key\)\)/);
+  assert.match(page, /'ob-newborn-01':'core-lifespan-reproductive'/);
+  assert.match(page, /modulePracticeSets\[id\]&&availableModules\.has\(modulePracticeSets\[id\]\)/);
+  assert.match(page, /\.filter\(\(\[,moduleKey\]\)=>availableModules\.has\(moduleKey\)\)/);
+
+  const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  assert.match(dashboard, /catalog\.filter\(i => showAvailableCatalog \? i\.is_available : enabled\.has\(i\.module_key\)\)/);
+  assert.match(dashboard, /renderModulesInto\('modules-nclex', catalog, access, true\)/);
+});
+
 test('question-bank migration preserves all four legacy sets and supported item types', () => {
   const match = migration.match(/\$legacy_questions\$\n([\s\S]*?)\n\$legacy_questions\$::jsonb/);
   assert.ok(match, 'migration includes its JSON question payload');
