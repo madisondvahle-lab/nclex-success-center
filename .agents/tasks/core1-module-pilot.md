@@ -40,8 +40,8 @@ session artifacts under:
 Files:
 
 - `core-safety-priority.json`: actual lesson payload, including the new
-  precautions comparison and qualified mnemonic examples; pending clinical
-  approval.
+  precautions comparison and qualified mnemonic examples; deployment authorized
+  by Madison after preview review.
 - `review-notes.md`: original content draft, clinical source references, and
   review limitations.
 - `index.html`: original visual prototype.
@@ -57,26 +57,41 @@ Do not commit lesson payloads, content-review notes, or self-contained teaching
 prototypes as public assets. Keep a private backup when transferring this work
 to another session.
 
-## Required release steps: NOT done
+## Release status: October 17, 2026
+
+Madison authorized deployment after reviewing the updated preview. The private
+storage migration has been applied to project `pmjwwktwlsqpetwfvolb`, and the
+lesson payload uploaded with `application/json` and private/no-store cache
+control. No clinical payload has been committed to static assets.
+
+Live, rolled-back role tests verified: private bucket, object present,
+anonymous read denied, authenticated non-admin read allowed, non-admin update
+denied, and unavailable-module read denied. Anonymous authenticated-object and
+public-object HTTP URLs also returned errors, not lesson content.
+The availability test rolled back; Core 1 remains available.
+
+Actual signed-in browser verification has not been performed with a real student
+session. Local renderer tests cover the signed-in UI and auth/sign-out behavior.
+Frontend PR/merge and GitHub Pages publication are the remaining release steps.
+
+## Release procedure
 
 1. Madison reviews the rendered clinical content and mnemonic qualifications.
-   The user approved the visual/refresher direction; do not infer approval of
-   subsequently added clinical teaching.
+   Madison subsequently authorized deployment of the rendered preview.
 2. Run `supabase-core1-private-lessons.sql` in Supabase after the module catalog
    and `is_app_admin()` prerequisites. It creates a private `module-lessons`
    bucket. Authenticated users may read only `core-safety-priority.json` while
    the module is available; admins manage files via `is_app_admin()`.
 3. Upload the approved `core-safety-priority.json` to that bucket's root with
    exactly that filename, content type `application/json`, and cache control
-   `0` where supported. Do not make the bucket public.
+   `0` where supported. Do not make the bucket public. Completed for Core 1.
 4. Verify live anonymous download denial, authenticated download/rendering,
-   unavailable-module denial, and sign-out behavior. This session has NOT
-   applied the migration or uploaded/tested live Storage.
+   unavailable-module denial, and sign-out behavior. Live role checks passed;
+   real student browser verification remains outstanding.
 5. Merge/deploy the integration only after provisioning and upload. Without
    the file, Core 1 deliberately shows an explicit unavailable state.
 
-No deployment or merge has been performed for this pilot. Existing older
-educational pages have not been migrated or certified as protected.
+Existing older educational pages have not been migrated or certified as protected.
 
 ## Validation
 
