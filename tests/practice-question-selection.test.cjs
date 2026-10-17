@@ -7,7 +7,10 @@ const vm = require('node:vm');
 const root = join(__dirname, '..');
 const helper = readFileSync(join(root, 'question-bank-selection.js'), 'utf8');
 const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
+const assignmentsPage = readFileSync(join(root, 'madison-assignments.html'), 'utf8');
 const migration = readFileSync(join(root, 'supabase-legacy-practice-sets-qbank-migration.sql'), 'utf8');
+const studyAreaMigration = readFileSync(join(root, 'supabase-question-study-areas-migration.sql'), 'utf8');
+const studyAreaNames = readFileSync(join(root, 'study-area-names.js'), 'utf8');
 
 function selection() {
   const context = { window: {} };
@@ -46,10 +49,94 @@ test('category and topic filters intersect instead of widening the selected pool
   );
 });
 
+test('Study Areas intersect with category, topic, and difficulty filters', () => {
+  const api = selection();
+  const questions = [
+    { id: 'match', studyArea: 'Maternal & Newborn', nclexCategory: 'physiological', topic: 'Fetal Monitoring', difficulty: 'hard' },
+    { id: 'wrong-area', studyArea: 'Adult Health / Medical-Surgical', nclexCategory: 'physiological', topic: 'Fetal Monitoring', difficulty: 'hard' },
+    { id: 'wrong-topic', studyArea: 'Maternal & Newborn', nclexCategory: 'physiological', topic: 'Postpartum', difficulty: 'hard' },
+    { id: 'wrong-category', studyArea: 'Maternal & Newborn', nclexCategory: 'psychosocial', topic: 'Fetal Monitoring', difficulty: 'hard' },
+    { id: 'wrong-difficulty', studyArea: 'Maternal & Newborn', nclexCategory: 'physiological', topic: 'Fetal Monitoring', difficulty: 'easy' }
+  ];
+  assert.deepEqual(
+    api.filter(questions, {
+      studyAreas: ['Maternal & Newborn'],
+      categories: ['physiological'],
+      topics: ['Fetal Monitoring'],
+      difficulty: 'medium-hard'
+    }).map(item => item.id),
+    ['match']
+  );
+});
+
+test('Study Area names are canonical and tutor mixed-review URLs preserve optional focus', () => {
+  const context = { window: {} };
+  vm.runInNewContext(studyAreaNames, context);
+  const areas = Array.from(context.window.NCLEXStudyAreas.NAMES);
+  assert.equal(areas.length, 8);
+  assert.ok(context.window.NCLEXStudyAreas.isKnown('Mental Health'));
+  assert.ok(!context.window.NCLEXStudyAreas.isKnown('Accelerations'));
+
+  const urlSource = assignmentsPage.match(/function mixedPracticeUrl\(count,areas\)\{[\s\S]*?\n    \}/);
+  assert.ok(urlSource, 'tutor page defines the mixed-review URL builder');
+  const buildUrl = vm.runInNewContext(`(${urlSource[0]})`, { URLSearchParams });
+  assert.equal(buildUrl(20, []), 'supplemental-practice.html?mixed=20');
+  assert.equal(
+    buildUrl(50, ['Maternal & Newborn', 'Pediatrics']),
+    'supplemental-practice.html?mixed=50&area=Maternal+%26+Newborn&area=Pediatrics'
+  );
+  assert.match(assignmentsPage, /mixedParams\.getAll\('area'\)/);
+  assert.match(page, /params\.getAll\('area'\)/);
+});
+
+test('Study Area migration validates and maps all 441 approved questions', () => {
+  const mappings = Array.from(
+    studyAreaMigration.matchAll(/^\s*\((\d+), '(mcq|sata)', '([^']+)'\)(?:,|;)\s*$/gm),
+    match => ({
+      questionNo: Number(match[1]),
+      itemType: match[2],
+      studyArea: match[3]
+    })
+  );
+  const areaCounts = mappings.reduce((counts, mapping) => {
+    counts[mapping.studyArea] = (counts[mapping.studyArea] || 0) + 1;
+    return counts;
+  }, {});
+  const byNumber = new Map(mappings.map(mapping => [mapping.questionNo, mapping]));
+
+  assert.equal(mappings.length, 441);
+  assert.equal(new Set(mappings.map(mapping => mapping.questionNo)).size, 441);
+  assert.equal(mappings.filter(mapping => mapping.itemType === 'mcq').length, 432);
+  assert.equal(mappings.filter(mapping => mapping.itemType === 'sata').length, 9);
+  assert.deepEqual(areaCounts, {
+    'Leadership & Professional Practice': 82,
+    'Pharmacology & Medication Safety': 47,
+    'Fundamentals, Safety & Infection Control': 25,
+    'Pediatrics': 11,
+    'Maternal & Newborn': 172,
+    'Adult Health / Medical-Surgical': 64,
+    'Mental Health': 29,
+    'Health Promotion & Maintenance': 11
+  });
+  assert.equal(byNumber.get(93).studyArea, 'Mental Health');
+  assert.equal(byNumber.get(988).studyArea, 'Fundamentals, Safety & Infection Control');
+  assert.equal(byNumber.get(1001).studyArea, 'Adult Health / Medical-Surgical');
+  assert.equal(byNumber.get(40).studyArea, 'Mental Health');
+  assert.match(studyAreaMigration, /ADD COLUMN IF NOT EXISTS study_area text/);
+  assert.match(studyAreaMigration, /question\.active IS DISTINCT FROM TRUE/);
+  assert.match(studyAreaMigration, /question\.item_type IS DISTINCT FROM mapping\.expected_item_type/);
+  assert.match(studyAreaMigration, /question\.study_area IS NOT NULL AND question\.study_area IS DISTINCT FROM mapping\.study_area/);
+  assert.match(studyAreaMigration, /UPDATE public\.questions AS question[\s\S]*?SET study_area = mapping\.study_area/);
+  assert.doesNotMatch(studyAreaMigration, /SET\s+(?:nclex_category|topic|stem|rationale|correct_answer)\s*=/i);
+});
+
 test('student builder inventory and question query are limited to active MCQs', () => {
   assert.match(page, /loadQuestionCatalog[\s\S]*?\.eq\('active',true\)\.eq\('item_type','mcq'\)/);
   assert.match(page, /\.eq\('active',true\)\s*\.eq\('item_type','mcq'\)/);
   for (const script of page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
+    new vm.Script(script[1]);
+  }
+  for (const script of assignmentsPage.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new vm.Script(script[1]);
   }
 });
