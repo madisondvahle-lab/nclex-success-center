@@ -189,6 +189,12 @@ Auditing does NOT automatically require rewriting.
 
 A successful audit may result in zero revisions.
 
+Before performing question-bank quality audits, read and follow
+`.agents/tasks/question-bank-audit.md`.
+
+This protocol governs screening, targeted revisions, duplicate
+prevention, approval, and audit reporting.
+
 ### Screening Classification
 
 Classify each evaluated question as:
