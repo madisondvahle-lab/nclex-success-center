@@ -186,6 +186,9 @@ test('available pathway practice sets do not require per-student module access',
   assert.match(dashboard, /catalog\.filter\(i => showAvailableCatalog \? i\.is_available : enabled\.has\(i\.module_key\)\)/);
   assert.match(dashboard, /renderModulesInto\('modules-nclex', catalog, access, true\)/);
   assert.match(dashboard, /m\.quiz_url && m\.quiz_url !== m\.guide_url/);
+  assert.match(dashboard, /Practice questions<\/a>/);
+  assert.doesNotMatch(dashboard, /Open general practice/);
+  assert.match(dashboard, /\.module a\{[^}]*background:var\(--ink\)[^}]*color:#fff/);
 });
 
 test('question-bank migration preserves all four legacy sets and supported item types', () => {

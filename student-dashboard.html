@@ -150,8 +150,10 @@
     .module{padding:18px;background:#f2f5f2}
     .module strong{display:block;font-size:.88rem}
     .module span{display:block;margin-top:6px;color:var(--muted);font-size:.75rem;line-height:1.35}
-    .module a{display:inline-block;margin-top:12px;color:var(--ink);font-size:.75rem;font-weight:900;text-decoration:none;border-bottom:1px solid currentColor}
-    .module-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .module-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+    .module a{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:9px 12px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:.75rem;font-weight:800;line-height:1.2;text-align:center;text-decoration:none}
+    .module a:hover{background:#294d68;border-color:#294d68}
+    .module a:focus-visible{outline:3px solid #a94f67;outline-offset:3px}
     .progress-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
     .progress-item{padding:16px;background:var(--soft)}
     .progress-item strong{display:block;font-size:1.5rem;font-family:Georgia,serif;letter-spacing:-.04em;margin-bottom:3px}
@@ -1203,8 +1205,8 @@
         <strong>${text(m.emoji || '📚')} ${text(m.name)}</strong>
         <span>${text(m.description || 'Available learning module')}</span>
         <div class="module-actions">
-          ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open guide →</a>` : ''}
-          ${m.quiz_url && m.quiz_url !== m.guide_url ? `<a href="${text(m.quiz_url)}" target="_blank" rel="noopener">${m.quiz_url === 'diagnostic.html?mode=practice' ? 'Open general practice' : 'Open practice'} →</a>` : ''}
+          ${m.guide_url ? `<a href="${text(m.guide_url)}" target="_blank" rel="noopener">Open guide</a>` : ''}
+          ${m.quiz_url && m.quiz_url !== m.guide_url ? `<a href="${text(m.quiz_url)}" target="_blank" rel="noopener">Practice questions</a>` : ''}
         </div>
       </article>`;
       document.getElementById(containerId).innerHTML =
