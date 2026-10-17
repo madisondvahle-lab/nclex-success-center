@@ -739,6 +739,7 @@
               <button class="button danger" data-mbulk="delete" type="button">Delete forever</button>
             </div>
 
+            <div id="bulk-batch-actions"></div>
             <div id="m-list" class="question-stream"></div>
             <div class="pagination-bar">
               <button class="button secondary" id="m-more" type="button" hidden>Load 100 more</button>
@@ -827,11 +828,12 @@
                 <div class="toolbar">
                   <input id="bulk-file" type="file" accept=".json,application/json" aria-label="Choose a JSON question batch">
                   <button class="button secondary" id="bulk-preview" type="button">Validate and preview</button>
+                  <button class="button secondary" id="bulk-review-clear" type="button" disabled>Mark no-overlap items reviewed</button>
                   <button class="button" id="bulk-save" type="button" disabled>Save reviewed items as inactive drafts</button>
                 </div>
                 <label for="bulk-json" style="display:block;margin:12px 0 6px;font-size:.78rem;font-weight:750">Or paste a JSON batch</label>
                 <textarea id="bulk-json" rows="8" style="display:block;width:100%;padding:12px;border:1px solid var(--admin-line);background:#fff;font:.82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
-                <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 25–50 uniquely identified questions. Clinical content must be independently reviewed before upload.</p>
+                <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 25–50 uniquely identified questions. Review overlaps individually; clear items can be marked reviewed together.</p>
                 <div class="quality-grid" id="bulk-preview-list"></div>
               </div>
             </section>
@@ -988,6 +990,11 @@
     }
 
     const BULK_TYPES=new Set(['mcq','sata','bowtie','matrix','cloze','highlight','case','fill']);
+    const BULK_STUDY_AREAS=new Set([
+      'Adult Health / Medical-Surgical','Maternal & Newborn','Pediatrics','Mental Health',
+      'Pharmacology & Medication Safety','Fundamentals, Safety & Infection Control',
+      'Leadership & Professional Practice','Health Promotion & Maintenance'
+    ]);
     function validateBatchItems(items){
       if(!Array.isArray(items))throw new Error('The JSON file must contain an "items" array.');
       const ids=new Set(),previous=[];
@@ -1002,6 +1009,7 @@
         if(!BULK_TYPES.has(type))errors.push('item_type must be mcq, sata, bowtie, matrix, cloze, highlight, case, or fill.');
         if(!['easy','medium','hard'].includes(item.difficulty))errors.push('difficulty must be easy, medium, or hard.');
         if(typeof item.nclex_category!=='string'||!item.nclex_category.trim())errors.push('nclex_category is required as text.');
+        if(item.study_area!=null&&!BULK_STUDY_AREAS.has(item.study_area))errors.push('study_area must be one of the eight approved Study Areas.');
         if(typeof item.topic!=='string'||!item.topic.trim())errors.push('topic is required as text.');
         if(typeof item.clinical_judgment_skill!=='string'||!item.clinical_judgment_skill.trim())errors.push('clinical_judgment_skill is required as text.');
         if(typeof item.rationale!=='string'||!item.rationale.trim())errors.push('A full rationale is required as text.');
@@ -1032,11 +1040,19 @@
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
     function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function reviewClearBulkItems(){
+      if(!bulkImportReady)return;
+      stagedBatch.forEach(entry=>{if(!entry.errors.length&&!entry.match)entry.reviewed=true});
+      renderBulkPreview();
+    }
     function renderBulkPreview(){
-      const list=$('bulk-preview-list'),save=$('bulk-save');
-      if(!stagedBatch.length){list.innerHTML='';save.disabled=true;return}
+      const list=$('bulk-preview-list'),save=$('bulk-save'),reviewClear=$('bulk-review-clear');
+      if(!stagedBatch.length){list.innerHTML='';save.disabled=true;reviewClear.disabled=true;reviewClear.textContent='Mark no-overlap items reviewed';return}
       const valid=stagedBatch.filter(entry=>!entry.errors.length).length,duplicates=stagedBatch.filter(entry=>entry.match).length;
-      $('bulk-status').textContent=`${stagedBatch.length} items · ${valid} structurally valid · ${duplicates} possible/exact overlap${duplicates===1?'':'s'}. ${!bulkImportReady?'Run supabase-question-bulk-import.sql before importing.':stagedCanSave()?'All items reviewed; ready to save as inactive drafts.':'Resolve every validation issue and review each item before saving.'}`;
+      const clearToReview=stagedBatch.filter(entry=>!entry.errors.length&&!entry.match&&!entry.reviewed).length;
+      $('bulk-status').textContent=`${stagedBatch.length} items · ${valid} structurally valid · ${duplicates} possible/exact overlap${duplicates===1?'':'s'}. ${!bulkImportReady?'Run supabase-question-bulk-import.sql before importing.':stagedCanSave()?'All items reviewed; ready to save as inactive drafts.':clearToReview?`${clearToReview} clear items can be marked reviewed together. Review flagged overlaps individually.`:'Resolve validation issues and flagged overlaps before saving.'}`;
+      reviewClear.disabled=!bulkImportReady||clearToReview===0;
+      reviewClear.textContent=clearToReview?`Mark ${clearToReview} no-overlap items reviewed`:'No-overlap items reviewed';
       list.innerHTML=stagedBatch.map((entry,index)=>{
         const item=entry.item||{},match=entry.match;
         const matchText=match?(match.batchId?`Possible batch duplicate of ${esc(match.batchId)} (${Math.round(match.score*100)}% wording overlap).`:`${match.exact?'Exact':'Possible'} match in bank${match.question?.question_no?' Q-'+String(match.question.question_no).padStart(4,'0'):''}: ${esc(match.question?.stem||'')}`):'No likely stem match found.';
@@ -1044,7 +1060,7 @@
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
         const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)}</a></li>`).join(''):'';
-        return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I reviewed the match and confirmed this is a distinct item.':'I reviewed this item and its answer/rationales.'}</span></label></article>`;
+        return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I reviewed the match and confirmed this is a distinct item.':'I reviewed this item and its answer/rationales.'}</span></label></article>`;
       }).join('');
       document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
       save.disabled=!stagedCanSave();
@@ -1057,7 +1073,7 @@
         const parsed=JSON.parse(raw),items=Array.isArray(parsed)?parsed:parsed&&typeof parsed==='object'?parsed.items:null;
         if(!Array.isArray(items)||items.length<25||items.length>50)throw new Error(`A batch must contain 25–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
         stagedBatch=validateBatchItems(items);
-        $('bulk-status').textContent=`Validated ${items.length} items. Review each item and every flagged overlap below.`;
+        $('bulk-status').textContent=`Validated ${items.length} items. Review flagged overlaps individually; clear items can be marked reviewed together.`;
         renderBulkPreview();
       }catch(error){stagedBatch=[];renderBulkPreview();$('bulk-status').textContent=error.message||'Could not read this JSON batch.'}
     }
@@ -1069,7 +1085,8 @@
           const batchId=crypto.randomUUID(),rows=stagedBatch.map(({item})=>{
             const type=String(item.item_type).toLowerCase(),row={
               stem:item.stem.trim(),rationale:item.rationale.trim(),module_key:item.module_key||null,
-              nclex_category:item.nclex_category.trim(),nclex_sub:item.nclex_sub||null,topic:item.topic.trim(),
+              nclex_category:item.nclex_category.trim(),nclex_sub:item.nclex_sub||null,
+              study_area:item.study_area||null,topic:item.topic.trim(),
               difficulty:item.difficulty,is_ngn:type!=='mcq',active:false,
               source_key:`qbank-bulk-${batchId}-${item.id}`,item_type:type,
               item_data:type==='mcq'?(item.item_data||null):item.item_data,
@@ -1079,7 +1096,7 @@
             if(type==='mcq'){row.option_a=item.options[0].trim();row.option_b=item.options[1].trim();row.option_c=item.options[2].trim();row.option_d=item.options[3].trim();row.correct_answer=String(item.correct_answer).toLowerCase()}
             return row;
           });
-          const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
+          const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
           if(inserted.error)throw inserted.error;
           const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
           pendingBulkTracking={questions:inserted.data,records};
@@ -1090,7 +1107,7 @@
         const {questions,records}=pendingBulkTracking,tracked=await db.from('question_import_reviews').upsert(records);
         if(tracked.error)throw tracked.error;
         records.forEach(record=>reviews.set(record.source_key,record));pendingBulkTracking=null;
-        $('bulk-status').textContent=`Saved ${questions.length} inactive drafts. Review each draft in the bank, choose Approve, then Publish in the separate step.`;
+        $('bulk-status').textContent=`Saved ${questions.length} inactive drafts. In Manage questions, approve the batch in one action; publishing remains a separate step.`;
         stagedBatch=[];$('bulk-json').value='';$('bulk-file').value='';renderBulkPreview();render();
       }catch(error){$('bulk-status').textContent=`Import did not finish: ${error.message||error}. If drafts were inserted, retry tracking; the current page will not insert them a second time.`}
       finally{save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
@@ -1420,6 +1437,51 @@
       }
       renderRevisionDrafts();render();renderManage();
     }
+    function getBulkBatches(){
+      const batches=new Map();
+      live.forEach(question=>{
+        const match=question.source_key?.match(/^qbank-bulk-([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})-/i);
+        if(!match)return;
+        if(!batches.has(match[1]))batches.set(match[1],[]);
+        batches.get(match[1]).push(question);
+      });
+      return batches;
+    }
+    function renderBulkBatchActions(){
+      const container=$('bulk-batch-actions');
+      if(!container)return;
+      const batches=[...getBulkBatches()].filter(([,questions])=>questions.some(question=>!question.active));
+      container.innerHTML=batches.length?`<div style="border-top:1px solid var(--admin-line);margin-top:14px"><div class="panel-heading"><div><h2>Imported batches</h2><p>Approve an audited batch together. Approval keeps questions inactive; publish them to students in a separate action.</p></div></div><div class="question-stream">${batches.map(([id,questions])=>{
+        const statusOf=question=>reviews.get(question.source_key)?.status||'draft';
+        const awaiting=questions.filter(question=>!['approved','published'].includes(statusOf(question))).length;
+        const publishable=questions.filter(question=>!question.active&&['approved','published'].includes(statusOf(question))).length;
+        const published=questions.filter(question=>question.active).length;
+        const trackingPending=!!pendingBulkTracking&&questions.some(question=>pendingBulkTracking.questions.some(pending=>pending.id===question.id));
+        const actions=trackingPending?'<span class="count">Finish import tracking in the Import tab first.</span>':awaiting?`<button class="button" data-batch-approve="${esc(id)}" type="button">Approve batch (${awaiting})</button>`:publishable?`<button class="button" data-batch-publish="${esc(id)}" type="button">Publish batch to students (${publishable})</button>`:'';
+        return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>Batch ${esc(id.slice(0,8))} · ${questions.length} questions</p><div class="meta"><span class="tag">${awaiting} awaiting approval</span><span class="tag ${publishable?'warn':'good'}">${publishable} approved and inactive</span><span class="tag good">${published} published</span></div></div><div class="buttons" style="margin:0">${actions}</div></div>`;
+      }).join('')}</div></div>`:'';
+      document.querySelectorAll('[data-batch-approve]').forEach(button=>button.addEventListener('click',()=>approveBulkBatch(button.dataset.batchApprove)));
+      document.querySelectorAll('[data-batch-publish]').forEach(button=>button.addEventListener('click',()=>publishBulkBatch(button.dataset.batchPublish)));
+    }
+    async function approveBulkBatch(batchId){
+      const questions=getBulkBatches().get(batchId)||[];
+      if(pendingBulkTracking&&questions.some(question=>pendingBulkTracking.questions.some(pending=>pending.id===question.id))){alert('Finish import tracking before approving this batch.');return}
+      const pending=questions.filter(question=>!['approved','published'].includes(reviews.get(question.source_key)?.status||'draft'));
+      if(!pending.length)return;
+      if(!confirm(`Approve ${pending.length} reviewed draft${pending.length===1?'':'s'} in batch ${batchId.slice(0,8)}? They will remain inactive until separately published.`))return;
+      const now=new Date().toISOString(),records=pending.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'approved',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
+      const result=await db.from('question_import_reviews').upsert(records);
+      if(result.error){alert(`Could not approve this batch: ${result.error.message}`);return}
+      records.forEach(record=>reviews.set(record.source_key,record));
+      renderManage();
+    }
+    async function publishBulkBatch(batchId){
+      const questions=getBulkBatches().get(batchId)||[];
+      if(pendingBulkTracking&&questions.some(question=>pendingBulkTracking.questions.some(pending=>pending.id===question.id))){alert('Finish import tracking before publishing this batch.');return}
+      if(questions.some(question=>!['approved','published'].includes(reviews.get(question.source_key)?.status||'draft'))){alert('Approve every draft in this batch before publishing it.');return}
+      const ids=questions.filter(question=>!question.active&&['approved','published'].includes(reviews.get(question.source_key)?.status)).map(question=>question.id);
+      if(ids.length)await mApply('publish',ids);
+    }
     function renderManage(){
       const filtered=mFiltered();
       mShown=filtered.slice(0,mVisible);
@@ -1428,8 +1490,9 @@
         const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null;
         const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
         const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'):'Draft: review required';
-        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
+        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.study_area?`<span class="tag">${esc(q.study_area)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
       }).join(''):'<p class="empty" style="margin:18px">No questions match this view.</p>';
+      renderBulkBatchActions();
       document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
       document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));
       document.querySelectorAll('[data-bulk-stage]').forEach(b=>b.addEventListener('click',()=>stageBulkQuestion(b.dataset.bulkStage)));
@@ -1485,8 +1548,8 @@
       else{live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'})}
       render();renderManage();
     }
-    const QUESTION_COLUMNS='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
-    const QUESTION_COLUMNS_WITHOUT_BULK='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
+    const QUESTION_COLUMNS='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
+    const QUESTION_COLUMNS_WITHOUT_BULK='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
     const QUESTION_COLUMNS_LEGACY='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
     async function loadAllQuestions(){
       const rows=[],pageSize=500;let columns=QUESTION_COLUMNS,metadata=true;
@@ -1588,7 +1651,7 @@
       $('l-all').addEventListener('change',e=>{legacyShown.filter(canPick).forEach(i=>e.target.checked?legSel.add(i.id):legSel.delete(i.id));render()});
       document.querySelectorAll('[data-mbulk]').forEach(b=>b.addEventListener('click',()=>mApply(b.dataset.mbulk,[...mSel])));
       document.querySelectorAll('[data-lbulk]').forEach(b=>b.addEventListener('click',()=>legBulk(b.dataset.lbulk)));
-      $('bulk-preview').addEventListener('click',previewBulk);$('bulk-save').addEventListener('click',saveBulkDrafts);
+      $('bulk-preview').addEventListener('click',previewBulk);$('bulk-review-clear').addEventListener('click',reviewClearBulkItems);$('bulk-save').addEventListener('click',saveBulkDrafts);
       $('bulk-file').addEventListener('change',async event=>{
         if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before loading another batch.';event.target.value='';return}
         const file=event.target.files?.[0];if(!file)return;
