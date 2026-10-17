@@ -25,8 +25,9 @@ authorization for a library-wide migration.
 - Signed-out users go to `student-login.html`. Failures show explicit retry/help,
   not public fallback lessons. Sign-out clears lessons and invalidates pending
   responses; back/forward-cache restoration revalidates sign-in.
-- The existing short practice set opens in a new tab so the module remains
-  available. Do not claim comprehensive topic coverage or mastery.
+- Module cards and the short practice set open in the current tab, including
+  in the app's side browser. Browser Back returns from practice to the module.
+  Do not claim comprehensive topic coverage or mastery.
 - A responsive precautions comparison and expandable letter-by-letter memory
   aid are implemented. New clinical examples still require Madison's approval.
 

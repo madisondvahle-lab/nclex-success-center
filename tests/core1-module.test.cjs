@@ -128,8 +128,7 @@ test('verified users receive all five lessons and the existing practice destinat
   assert.ok(env.root.querySelector('.mnemonic'));
   const practiceLink = env.root.querySelector('#knowledge-check').querySelector('a');
   assert.equal(practiceLink.href, 'supplemental-practice.html?set=safety-priority-01');
-  assert.equal(practiceLink.target, '_blank');
-  assert.equal(practiceLink.rel, 'noopener');
+  assert.equal(practiceLink.target, undefined);
   for (const anchor of env.root.querySelectorAll('a').filter(node => node.href.startsWith('#'))) {
     assert.ok(env.root.querySelector(anchor.href), `anchor ${anchor.href} resolves`);
   }
