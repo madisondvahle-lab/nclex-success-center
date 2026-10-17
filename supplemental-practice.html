@@ -1902,12 +1902,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
     function renderNclexLibrary(){
       $('page-title').textContent='Your NCLEX review.';
-      $('page-summary').textContent='Open a tutor-assigned set below, or build a custom practice session from the active Question Bank. Module-specific practice is on your Learning Library cards.';
-      const moduleSetIds=new Set(Object.keys(modulePracticeSets));
-      const resources=assignedResources.filter(resource=>!moduleSetIds.has(setFromUrl(resource.url)));
+      $('page-summary').textContent='Choose your question types, practice mode, and focus to build a custom session from the active Question Bank.';
       const target=$('sets');
       target.className='nclex-review';
-      const rows=assignedRows(resources);
       const studyAreaOptions=questionStudyAreas.map(area=>`<label class="builder-choice"><input type="checkbox" data-study-area-choice value="${escapeHtml(area.name)}"><span>${escapeHtml(area.name)}</span><small>${area.count}</small></label>`).join('');
       const topicOptions=questionTopics.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-choice value="${escapeHtml(topic.name)}"><span>${escapeHtml(topic.name)} <small>(${topic.count})</small></span></label>`).join('');
       const categoryOptions=questionCategories.map(category=>`<label class="builder-choice"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)}</span><small>${category.count}</small></label>`).join('');
@@ -1937,7 +1934,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             </div>
           </section>
           <section class="builder-section">
-            <div class="builder-section-head"><h3>Question history</h3><small>Select which previous question states to include</small></div>
+            <div class="builder-section-head"><h3>Question history</h3><small>Counts reflect the selected question type and focus</small></div>
             <div class="builder-choices">
               <label class="builder-choice"><input type="checkbox" data-question-mode-choice value="unused" checked><span>Unused</span><small data-mode-count="unused"></small></label>
               <label class="builder-choice"><input type="checkbox" data-question-mode-choice value="incorrect" checked><span>Incorrect</span><small data-mode-count="incorrect"></small></label>
@@ -1971,9 +1968,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         </div>
         <button class="assignment-action" id="start-custom-review" type="button">Start practice</button>
         <p class="custom-builder-status" id="custom-review-status" role="status" aria-live="polite"></p>
-      </section>
-      <div class="review-heading"><h2>Tutor-assigned sets & materials</h2><span class="review-count">${resources.length} available ${resources.length===1?'item':'items'}</span></div><p class="review-summary">These are resources your tutor has selected for you. Module-specific practice is available from the Learning Library.</p><div class="review-list">${rows||'<div class="workspace-empty"><h3>No tutor-assigned sets or materials yet</h3><p>Module practice is available from the Learning Library.</p></div>'}</div>`;
-      target.querySelectorAll('[data-open-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.openSet)));
+      </section>`;
       const topicSearch=target.querySelector('#custom-topic-search');
       topicSearch?.addEventListener('input',()=>{
         const query=topicSearch.value.trim().toLowerCase();
@@ -2002,11 +1997,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const filtered=PracticeQuestionSelection.filter(questionCatalog,{studyAreas,categories,topics,itemTypes});
         const matching=questionHistoryError?filtered:PracticeQuestionSelection.filterByModes(filtered,modes,questionHistoryById);
         const unused=questionHistoryError?0:matching.filter(question=>PracticeQuestionSelection.questionMode(question,questionHistoryById)==='unused').length;
+        const modeCounts=questionHistoryError?null:PracticeQuestionSelection.countByMode(filtered,questionHistoryById);
         target.querySelector('[data-type-count="mcq"]').textContent=questionCatalog.filter(question=>question.itemType==='mcq').length;
         target.querySelector('[data-type-count="sata"]').textContent=questionCatalog.filter(question=>question.itemType==='sata').length;
         target.querySelectorAll('[data-mode-count]').forEach(label=>{
           const mode=label.dataset.modeCount;
-          label.textContent=questionHistoryError?'—':questionCatalog.filter(question=>PracticeQuestionSelection.questionMode(question,questionHistoryById)===mode).length;
+          label.textContent=modeCounts?modeCounts[mode]:'Unavailable';
         });
         target.querySelector('#custom-review-status').textContent=matching.length
           ?questionHistoryError

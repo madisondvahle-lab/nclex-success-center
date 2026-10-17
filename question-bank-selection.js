@@ -61,6 +61,12 @@
     return (questions||[]).filter(question=>selected.has(questionMode(question,latestAttempts)));
   }
 
+  function countByMode(questions, latestAttempts){
+    const counts={unused:0,incorrect:0,marked:0,omitted:0,correct:0};
+    (questions||[]).forEach(question=>{counts[questionMode(question,latestAttempts)]++});
+    return counts;
+  }
+
   function splitByUsage(questions, latestAttempts){
     const unused=[],practiced=[];
     (questions||[]).forEach(question=>{
@@ -112,6 +118,7 @@
   window.PracticeQuestionSelection={
     filter:filter,
     filterByModes:filterByModes,
+    countByMode:countByMode,
     matchesDifficulty:matchesDifficulty,
     questionMode:questionMode,
     summarizeLatestAttempts:summarizeLatestAttempts,

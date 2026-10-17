@@ -71,6 +71,26 @@ test('question history modes use the latest attempt, and unused questions are di
     api.filterByModes(questions, ['unused', 'correct'], history).map(question => question.id),
     ['unused', 'correct', 'incorrect']
   );
+  assert.deepEqual({ ...api.countByMode(questions, history) }, {
+    unused: 2,
+    incorrect: 0,
+    marked: 1,
+    omitted: 1,
+    correct: 1
+  });
+  const scopedQuestions = api.filter([
+    { id: 'scoped-unused', itemType: 'mcq', studyArea: 'Adult Health' },
+    { id: 'scoped-correct', itemType: 'mcq', studyArea: 'Adult Health' },
+    { id: 'other-type', itemType: 'sata', studyArea: 'Adult Health' }
+  ], { itemTypes: ['mcq'], studyAreas: ['Adult Health'] });
+  const scopedHistory = new Map([['scoped-correct', { selected_answer: 0, correct: true }]]);
+  assert.deepEqual({ ...api.countByMode(scopedQuestions, scopedHistory) }, {
+    unused: 1,
+    incorrect: 0,
+    marked: 0,
+    omitted: 0,
+    correct: 1
+  });
   const prioritized = api.selectByUsage(questions, 3, history);
   assert.deepEqual(
     Array.from(prioritized.slice(0, 2), question => api.questionMode(question, history)),
@@ -217,7 +237,8 @@ test('assigned legacy practice sets load their questions from the master bank', 
   }
   assert.match(page, /id:'nur215-foundations-practice'.*questionSource:'question-bank'/);
   assert.match(page, /db\.from\('question_set_items'\)[\s\S]*?question:questions!inner/);
-  assert.match(page, /Tutor-assigned sets & materials/);
+  assert.match(page, /Build a practice set/);
+  assert.doesNotMatch(page, /Tutor-assigned sets & materials/);
   for (const legacyId of ['sp01-q01', 'mp01-q01', 'ng01-q01', 'nur215-001']) {
     assert.doesNotMatch(page, new RegExp(legacyId));
   }
@@ -228,9 +249,10 @@ test('available pathway practice sets do not require per-student module access',
   assert.match(page, /availableModules=new Set\(\(modules\|\|\[\]\)\.filter\(item=>item\.is_available\)\.map\(item=>item\.module_key\)\)/);
   assert.match(page, /'ob-newborn-01':'core-lifespan-reproductive'/);
   assert.match(page, /modulePracticeSets\[id\]&&availableModules\.has\(modulePracticeSets\[id\]\)/);
-  assert.match(page, /const moduleSetIds=new Set\(Object\.keys\(modulePracticeSets\)\);\s*const resources=assignedResources\.filter\(resource=>!moduleSetIds\.has\(setFromUrl\(resource\.url\)\)\)/);
-  assert.match(page, /Module-specific practice is on your Learning Library cards/);
-  assert.match(page, /<h2>Tutor-assigned sets & materials<\/h2>/);
+  assert.doesNotMatch(page, /const moduleResources=/);
+  assert.doesNotMatch(page, /Tutor-assigned sets & materials/);
+  assert.match(page, /PracticeQuestionSelection\.countByMode\(filtered,questionHistoryById\)/);
+  assert.match(page, /label\.textContent=modeCounts\?modeCounts\[mode\]:'Unavailable'/);
 
   const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   assert.match(dashboard, /catalog\.filter\(i => showAvailableCatalog \? i\.is_available : enabled\.has\(i\.module_key\)\)/);
