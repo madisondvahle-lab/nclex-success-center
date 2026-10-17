@@ -173,14 +173,14 @@
       this.tab = {}; this.notes = ''; this.elapsed = 0; this.fs = 1;
       this.remaining = opts.seconds || null; this.done = false;
       this.build(); this.show(0);
-      this.timer = setInterval(() => this.tick(), 1000);
+      this.timer = this.o.showTimer === false ? null : setInterval(() => this.tick(), 1000);
     }
 
     build() {
       const r = this.root;
       r.innerHTML = `<div class="ex-app" data-fs="1" role="application" aria-label="Practice assessment">
         <header class="ex-header"><span class="ex-title">${esc(this.o.title)}</span><span class="ex-qid"></span>
-          <span class="ex-meta"><div>${this.remaining === null ? 'Time Elapsed' : 'Time Remaining'}<b class="ex-time">--:--</b></div><div>Question<b class="ex-qn"></b></div></span></header>
+          <span class="ex-meta">${this.o.showTimer === false ? '' : `<div>${this.remaining === null ? 'Time Elapsed' : 'Time Remaining'}<b class="ex-time">--:--</b></div>`}<div>Question<b class="ex-qn"></b></div></span></header>
         <div class="ex-toolbar"><div class="ex-tools">
           <button class="ex-tb" data-a="notes">${ICON.notes}<span><span class="u">N</span>otes</span></button>
           <button class="ex-tb" data-a="calc">${ICON.calc}<span>Calc<span class="u">u</span>lator</span></button>
@@ -219,7 +219,8 @@
     paintClock() {
       const sec = this.remaining === null ? this.elapsed : Math.max(0, this.remaining - this.elapsed);
       const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
-      this.root.querySelector('.ex-time').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const clock=this.root.querySelector('.ex-time');
+      if(clock)clock.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
     show(i) {

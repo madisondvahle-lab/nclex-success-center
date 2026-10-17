@@ -130,10 +130,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .builder-section h3{margin:0;font:750 .8rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em}
     .builder-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
     .builder-section-head small{color:var(--muted);font-size:.72rem}
-    .builder-switch{display:flex;flex-wrap:wrap;gap:8px}
-    .builder-switch button{min-height:40px;padding:0 14px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font-weight:700}
-    .builder-switch button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
-    .builder-switch button:focus-visible,.builder-tab:focus-visible,.builder-choice:focus-within{outline:3px solid var(--rose);outline-offset:2px}
+    .builder-tab:focus-visible,.builder-choice:focus-within{outline:3px solid var(--rose);outline-offset:2px}
     .builder-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px 18px}
     .builder-choice{display:flex;align-items:center;gap:9px;min-height:38px;padding:5px 8px;font-size:.82rem!important;font-weight:650!important}
     .builder-choice input{accent-color:var(--ink)}
@@ -1915,12 +1912,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         ${questionHistoryError?`<p class="custom-topic-note custom-topic-error" role="status">Saved practice history could not be counted: ${escapeHtml(questionHistoryError)} It will be checked again before questions are selected.</p>`:''}
         <div class="custom-builder-controls">
           <section class="builder-section builder-mode-section">
-            <div class="builder-section-head"><h3>Practice mode</h3></div>
-            <div class="builder-switch" role="group" aria-label="Practice mode">
-              <button type="button" data-practice-mode="tutor" aria-pressed="true">Tutor</button>
-              <button type="button" data-practice-mode="timed" aria-pressed="false">Timed</button>
+            <div class="builder-section-head"><h3>Practice options</h3></div>
+            <div class="builder-choices">
+              <label class="builder-choice"><input type="checkbox" id="tutor-mode-choice" checked><span>Tutor mode</span><small>Rationales after each answer</small></label>
+              <label class="builder-choice"><input type="checkbox" id="timed-mode-choice"><span>Timed</span><small>Show elapsed time</small></label>
             </div>
-            <p class="builder-note" id="practice-mode-note">Tutor mode shows feedback after each answer.</p>
+            <p class="builder-note" id="practice-mode-note"></p>
           </section>
           <div class="builder-count">
             <label for="custom-count">Questions per set</label>
@@ -1974,14 +1971,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const query=topicSearch.value.trim().toLowerCase();
         target.querySelectorAll('#custom-topic-list .custom-topic-option').forEach(option=>{option.hidden=!option.textContent.toLowerCase().includes(query)});
       });
-      let practiceMode='tutor';
-      target.querySelectorAll('[data-practice-mode]').forEach(button=>button.addEventListener('click',()=>{
-        practiceMode=button.dataset.practiceMode;
-        target.querySelectorAll('[data-practice-mode]').forEach(choice=>choice.setAttribute('aria-pressed',String(choice===button)));
-        target.querySelector('#practice-mode-note').textContent=practiceMode==='timed'
-          ?'Timed mode tracks elapsed time and saves feedback for after the set; it will not stop you when time passes.'
-          :'Tutor mode shows feedback after each answer.';
-      }));
+      const updatePracticeOptions=()=>{
+        const tutorMode=target.querySelector('#tutor-mode-choice').checked;
+        const timedMode=target.querySelector('#timed-mode-choice').checked;
+        target.querySelector('#practice-mode-note').textContent=
+          `${tutorMode?'Rationales appear after each submitted answer.':'Rationales appear after the set is complete.'} ${timedMode?'Elapsed time is shown; the set will not auto-submit.':'No timer is shown.'}`;
+      };
+      target.querySelectorAll('#tutor-mode-choice,#timed-mode-choice').forEach(input=>input.addEventListener('change',updatePracticeOptions));
+      updatePracticeOptions();
       target.querySelectorAll('[data-category-tab]').forEach(button=>button.addEventListener('click',()=>{
         const selected=button.dataset.categoryTab;
         target.querySelectorAll('[data-category-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
@@ -2024,7 +2021,11 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           target.querySelector('#custom-review-status').textContent='Choose a question count from 10 to 100.';
           return;
         }
-        buildMixedReview(count,null,topics,categories,'all',studyAreas,itemTypes,modes,practiceMode);
+        const practiceOptions={
+          tutorMode:target.querySelector('#tutor-mode-choice').checked,
+          timedMode:target.querySelector('#timed-mode-choice').checked
+        };
+        buildMixedReview(count,null,topics,categories,'all',studyAreas,itemTypes,modes,practiceOptions);
       });
     }
     function renderLibrary(){
@@ -2076,7 +2077,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const items=ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
-      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:activeSet.testMode==='timed'?false:!activeSet.assignmentId,noFeedback:true,
+      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:activeSet.tutorMode??!activeSet.assignmentId,showTimer:activeSet.timedMode,noFeedback:true,
         onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,kind:f.kind||'report',note:f.note||null});return !r.error}:null,
         onFinish:res=>{
           host.remove();
@@ -2188,7 +2189,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const score=answers.reduce((total,answer,questionIndex)=>total+(answersMatch(activeSet.questions[questionIndex],answer)?1:0),0);
       const percent=Math.round(score/activeSet.questions.length*100);
       const canBuildAnother=!!activeSet.reviewAfterFinish;
-      const modeLabel=activeSet.testMode?`${activeSet.testMode==='timed'?'Timed':'Tutor'} practice · `:'';
+      const modeLabels=[];
+      if(activeSet.reviewAfterFinish){
+        if(activeSet.timedMode)modeLabels.push('Timed');
+        modeLabels.push(activeSet.tutorMode?'Tutor feedback':'Rationales at end');
+      }
+      const modeLabel=modeLabels.length?`${modeLabels.join(' · ')} · `:'';
       $('quiz').innerHTML=`<section class="study-session study-results"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>${modeLabel}Session complete</span></div></header><div class="study-session-body"><p class="question-number">Set complete</p><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep building on this momentum.':percent>=60?'Review the rationales, then return to your practice.':'Review the rationales and related learning material before your next set.'}</p><p class="status" id="save-status" role="status" aria-live="polite">Saving your result…</p><div class="result-actions">${canBuildAnother?'<button class="secondary" id="new-set" type="button">Build another set</button>':'<button class="secondary" id="retry" type="button">Retake this set</button>'}<button class="primary" id="return" type="button">Back to assignments</button></div></div></section>`;
       const saveMessage=await saveResult(score);
       $('save-status').textContent=saveMessage;
@@ -2269,7 +2275,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       }
     }
 
-    async function buildMixedReview(count,focusCat,focusTopics,focusCategories,difficultyFilter,focusStudyAreas,requestedItemTypes,requestedModes,practiceMode){
+    async function buildMixedReview(count,focusCat,focusTopics,focusCategories,difficultyFilter,focusStudyAreas,requestedItemTypes,requestedModes,practiceOptions){
       const isCustom=Array.isArray(focusTopics);
       const requestedStudyAreas=Array.isArray(focusStudyAreas)?focusStudyAreas.map(area=>String(area||'').trim()):[];
       if(requestedStudyAreas.some(area=>!NCLEXStudyAreas.isKnown(area))){
@@ -2282,7 +2288,6 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const categories=new Set((focusCategories||[]).map(category=>String(category||'').trim()));
       const itemTypes=Array.isArray(requestedItemTypes)&&requestedItemTypes.length?requestedItemTypes:['mcq','sata'];
       const modes=Array.isArray(requestedModes)?requestedModes:['unused','incorrect','marked','omitted','correct'];
-      const testMode=practiceMode==='timed'?'timed':'tutor';
       if(![10,20,30,40,50,60,75,100].includes(count)){
         $('library-status').textContent='Choose a question count from 10 to 100.';
         $('library-status').classList.remove('hidden');
@@ -2394,7 +2399,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           topics.size||categories.size?'Practice questions selected from your chosen Client Needs and topics.':'Mixed NCLEX-style review across the active question bank.',
         questions:shuffled(chosen).slice(0,count),
         reviewAfterFinish:isCustom,
-        testMode:isCustom?testMode:null,
+        ...(isCustom?{
+          tutorMode:practiceOptions?.tutorMode!==false,
+          timedMode:practiceOptions?.timedMode===true
+        }:{}),
         sessionMarked:null
       };
 
