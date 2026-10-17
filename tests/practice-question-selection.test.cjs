@@ -7,7 +7,9 @@ const vm = require('node:vm');
 const root = join(__dirname, '..');
 const helper = readFileSync(join(root, 'question-bank-selection.js'), 'utf8');
 const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
+const examUi = readFileSync(join(root, 'exam-ui.js'), 'utf8');
 const assignmentsPage = readFileSync(join(root, 'madison-assignments.html'), 'utf8');
+const diagnostic = readFileSync(join(root, 'diagnostic.html'), 'utf8');
 const migration = readFileSync(join(root, 'supabase-legacy-practice-sets-qbank-migration.sql'), 'utf8');
 const studyAreaMigration = readFileSync(join(root, 'supabase-question-study-areas-migration.sql'), 'utf8');
 const studyAreaNames = readFileSync(join(root, 'study-area-names.js'), 'utf8');
@@ -29,8 +31,16 @@ test('the custom builder does not expose a difficulty selector', () => {
   assert.deepEqual(api.filter(questions, { difficulty: 'all' }).map(item => item.id), ['easy', 'medium', 'hard']);
   assert.deepEqual(api.filter(questions, {}).map(item => item.id), ['easy', 'medium', 'hard']);
   assert.doesNotMatch(page, /id="custom-difficulty"/);
-  assert.match(page, /data-practice-mode="tutor"/);
-  assert.match(page, /data-practice-mode="timed"/);
+  assert.match(page, /id="tutor-mode-choice" checked/);
+  assert.match(page, /id="timed-mode-choice"/);
+  assert.match(page, /tutorMode:target\.querySelector\('#tutor-mode-choice'\)\.checked/);
+  assert.match(page, /timedMode:target\.querySelector\('#timed-mode-choice'\)\.checked/);
+  assert.match(page, /tutorMode:practiceOptions\?\.tutorMode!==false/);
+  assert.match(page, /timedMode:practiceOptions\?\.timedMode===true/);
+  assert.match(page, /instant:activeSet\.tutorMode\?\?!activeSet\.assignmentId/);
+  assert.match(page, /showTimer:activeSet\.timedMode/);
+  assert.match(examUi, /this\.o\.showTimer === false \? null : setInterval/);
+  assert.match(examUi, /this\.o\.showTimer === false \? '' : `.*Time Elapsed/);
 });
 
 test('UWorld-inspired filters use existing Study Areas and Client Needs with supported item types', () => {
@@ -51,8 +61,17 @@ test('UWorld-inspired filters use existing Study Areas and Client Needs with sup
   assert.match(page, /value="sata" checked><span>Next Gen/);
   assert.doesNotMatch(page, /Systems\s*\(/);
   assert.match(page, /marked_for_review:\!\!activeSet\.sessionMarked/);
-  assert.match(page, /instant:activeSet\.testMode==='timed'\?false/);
   assert.match(page, /Questions you have not practiced will be selected first/);
+});
+
+test('Core-Safe CAT and SWM-CAT withhold rationales until results review', () => {
+  assert.match(diagnostic, /const isCAT = isNCLEX \|\| isMock/);
+  for (const component of ['MCQQuestion', 'SATAQuestion', 'BowTieQuestion', 'CaseStudyQuestion']) {
+    assert.match(diagnostic, new RegExp(`<${component}[^>]*examMode=\\{isCAT\\}`));
+  }
+  assert.match(diagnostic, /submitted&&isCAT&&<div[^>]*>Response recorded\. Item feedback will be available after the exam\./);
+  assert.match(diagnostic, /submitted&&!isCAT&&q\.type!=="casestudy"/);
+  assert.match(diagnostic, /\(isMock\|\|isNCLEX\) && sections\.length>0 && <details/);
 });
 
 test('question history modes use the latest attempt, and unused questions are distinguishable', () => {

@@ -36,8 +36,9 @@ The user reports running the Study Area migration. The result has not been indep
 
 ## Practice builder follow-up (pending deployment)
 
-- `supplemental-practice.html` now has an original, UWorld-inspired student test builder using the portal's existing visual language. It offers Tutor or Timed mode, question count, Traditional (MCQ) or Next Gen (SATA), question-history modes, and two focus views: Study Areas and NCLEX Client Needs. It does not add a Systems taxonomy or expose difficulty selection.
-- Timed mode uses the existing elapsed-time clock, does not auto-submit, and delays answer feedback until the set is complete. Tutor mode keeps immediate feedback.
+- `supplemental-practice.html` now has an original, UWorld-inspired student test builder using the portal's existing visual language. It offers independent Tutor feedback and elapsed-time controls, question count, Traditional (MCQ) or Next Gen (SATA), question-history modes, and two focus views: Study Areas and NCLEX Client Needs. It does not add a Systems taxonomy or expose difficulty selection.
+- Tutor mode can reveal rationales after each answer or defer them to the end of the set; elapsed time can be displayed independently and never auto-submits the set. Core-Safe CAT and SWM-CAT withhold per-question rationales until the end-of-CAT review.
 - New bank-practice sessions prioritize questions with no saved practice attempt; previously practiced eligible items fill the set only after unused items run short. Latest attempt state powers Correct, Incorrect, Omitted, and Marked filters. Mark-for-review state is saved in the existing `answer_details` JSON; no schema change is required.
 - A new set is offered only when detailed practice history saves successfully, so a failed save cannot silently make the next set repeat the same questions.
-- Validation: `node --test tests/practice-question-selection.test.cjs`; `git diff --check`.
+- Validation: `node --test tests/practice-question-selection.test.cjs tests/practice-review-data.test.cjs` (17 passing); `git diff --check`.
+- UI detector found no issues in the practice builder. Its CAT-page scan surfaced pre-existing typography, accent-border, and transition warnings unrelated to rationale visibility; those styles were left untouched.

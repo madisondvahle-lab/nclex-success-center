@@ -833,7 +833,7 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
                 </div>
                 <span style={{ color:h.correct?"#166534":"#b91c1c", fontWeight:700, fontSize:15, marginLeft:12 }}>{h.correct?"✓":"✗"}</span>
               </div>
-              {isMock && sections.length>0 && <details style={{ padding:"8px 14px 12px", background:"#fff", border:"1px solid #e2e8f0", borderTop:0, borderRadius:"0 0 8px 8px", color:"#334155" }}>
+              {(isMock||isNCLEX) && sections.length>0 && <details style={{ padding:"8px 14px 12px", background:"#fff", border:"1px solid #e2e8f0", borderTop:0, borderRadius:"0 0 8px 8px", color:"#334155" }}>
                 <summary style={{ cursor:"pointer", fontSize:12, fontWeight:700 }}>View rationale</summary>
                 <div style={{ display:"grid", gap:10, marginTop:10 }}>
                   {answerText && <p style={{ margin:0, fontSize:13, lineHeight:1.6 }}><strong>Correct response:</strong> {answerText}</p>}
@@ -892,6 +892,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
   const timerDeadline = useRef(Date.now() + initialRemainingMs);
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
+  const isCAT = isNCLEX || isMock;
   const [attempt, setAttempt] = useState(profile.resumeAttempt ? {
     id:profile.resumeAttempt.id,
     sessionKey:profile.resumeAttempt.session_key,
@@ -1182,14 +1183,14 @@ function QuizScreen({ profile, onFinish, onPause }) {
         <div className="question-stem" style={{ marginBottom:18 }}>{q.stem}</div>
 
         {/* Question */}
-        {q.type==="mcq"&&<MCQQuestion q={feedbackQuestion} submitted={submitted} examMode={isTimedFullMock} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
-        {q.type==="sata"&&<SATAQuestion q={feedbackQuestion} submitted={submitted} examMode={isTimedFullMock} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
-        {q.type==="bowtie"&&<BowTieQuestion q={feedbackQuestion} submitted={submitted} examMode={isTimedFullMock} btState={btState} onBTSelect={(col,arr)=>setBtState(s=>({...s,[col]:arr}))} />}
-        {q.type==="casestudy"&&<CaseStudyQuestion q={feedbackQuestion} submitted={submitted} examMode={isTimedFullMock} showQuestionCount={questionCountVisible} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
+        {q.type==="mcq"&&<MCQQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
+        {q.type==="sata"&&<SATAQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
+        {q.type==="bowtie"&&<BowTieQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} btState={btState} onBTSelect={(col,arr)=>setBtState(s=>({...s,[col]:arr}))} />}
+        {q.type==="casestudy"&&<CaseStudyQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} showQuestionCount={questionCountVisible} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
 
         {/* Rationale */}
-        {submitted&&isTimedFullMock&&<div role="status" style={{ marginBottom:18, color:"#475569", fontSize:13 }}>Response recorded. Item feedback will be available after the exam.</div>}
-        {submitted&&!isTimedFullMock&&q.type!=="casestudy"&&(
+        {submitted&&isCAT&&<div role="status" style={{ marginBottom:18, color:"#475569", fontSize:13 }}>Response recorded. Item feedback will be available after the exam.</div>}
+        {submitted&&!isCAT&&q.type!=="casestudy"&&(
           <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:12, padding:"18px 20px", marginBottom:20 }}>
             <div style={{ fontWeight:700, fontSize:13, color:"#0f172a", marginBottom:10, letterSpacing:0.5 }}>📋 RATIONALE</div>
             {feedbackQuestion.type==="bowtie" ? (
