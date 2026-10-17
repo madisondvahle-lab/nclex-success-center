@@ -1902,11 +1902,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
     function renderNclexLibrary(){
       $('page-title').textContent='Your NCLEX review.';
-      $('page-summary').textContent='Choose a pathway set available through your Learning Library, an assigned set, or build a custom practice session from the active Question Bank.';
-      const moduleResources=Object.entries(modulePracticeSets)
-        .filter(([,moduleKey])=>availableModules.has(moduleKey))
-        .map(([setId])=>({title:sets.find(set=>set.id===setId)?.title||'Assigned review',resource_type:'practice_set',url:urlForSet(setId)}));
-      const resources=[...assignedResources,...moduleResources].filter((resource,index,all)=>all.findIndex(other=>normalizedUrl(other.url)===normalizedUrl(resource.url))===index);
+      $('page-summary').textContent='Open a tutor-assigned set below, or build a custom practice session from the active Question Bank. Module-specific practice is on your Learning Library cards.';
+      const moduleSetIds=new Set(Object.keys(modulePracticeSets));
+      const resources=assignedResources.filter(resource=>!moduleSetIds.has(setFromUrl(resource.url)));
       const target=$('sets');
       target.className='nclex-review';
       const rows=assignedRows(resources);
@@ -1974,7 +1972,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         <button class="assignment-action" id="start-custom-review" type="button">Start practice</button>
         <p class="custom-builder-status" id="custom-review-status" role="status" aria-live="polite"></p>
       </section>
-      <div class="review-heading"><h2>Assigned sets & materials</h2><span class="review-count">${resources.length} available ${resources.length===1?'item':'items'}</span></div><p class="review-summary">These are resources assigned by your tutor or available through your unlocked modules. Open a question set to start practicing.</p><div class="review-list">${rows||'<div class="workspace-empty"><h3>No assigned sets or materials yet</h3><p>Tutor-assigned resources and module practice sets will appear here when available.</p></div>'}</div>`;
+      <div class="review-heading"><h2>Tutor-assigned sets & materials</h2><span class="review-count">${resources.length} available ${resources.length===1?'item':'items'}</span></div><p class="review-summary">These are resources your tutor has selected for you. Module-specific practice is available from the Learning Library.</p><div class="review-list">${rows||'<div class="workspace-empty"><h3>No tutor-assigned sets or materials yet</h3><p>Module practice is available from the Learning Library.</p></div>'}</div>`;
       target.querySelectorAll('[data-open-set]').forEach(button=>button.addEventListener('click',()=>startSet(button.dataset.openSet)));
       const topicSearch=target.querySelector('#custom-topic-search');
       topicSearch?.addEventListener('input',()=>{

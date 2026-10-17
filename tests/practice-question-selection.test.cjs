@@ -217,7 +217,7 @@ test('assigned legacy practice sets load their questions from the master bank', 
   }
   assert.match(page, /id:'nur215-foundations-practice'.*questionSource:'question-bank'/);
   assert.match(page, /db\.from\('question_set_items'\)[\s\S]*?question:questions!inner/);
-  assert.match(page, /Assigned sets & materials/);
+  assert.match(page, /Tutor-assigned sets & materials/);
   for (const legacyId of ['sp01-q01', 'mp01-q01', 'ng01-q01', 'nur215-001']) {
     assert.doesNotMatch(page, new RegExp(legacyId));
   }
@@ -228,11 +228,17 @@ test('available pathway practice sets do not require per-student module access',
   assert.match(page, /availableModules=new Set\(\(modules\|\|\[\]\)\.filter\(item=>item\.is_available\)\.map\(item=>item\.module_key\)\)/);
   assert.match(page, /'ob-newborn-01':'core-lifespan-reproductive'/);
   assert.match(page, /modulePracticeSets\[id\]&&availableModules\.has\(modulePracticeSets\[id\]\)/);
-  assert.match(page, /\.filter\(\(\[,moduleKey\]\)=>availableModules\.has\(moduleKey\)\)/);
+  assert.match(page, /const moduleSetIds=new Set\(Object\.keys\(modulePracticeSets\)\);\s*const resources=assignedResources\.filter\(resource=>!moduleSetIds\.has\(setFromUrl\(resource\.url\)\)\)/);
+  assert.match(page, /Module-specific practice is on your Learning Library cards/);
+  assert.match(page, /<h2>Tutor-assigned sets & materials<\/h2>/);
 
   const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   assert.match(dashboard, /catalog\.filter\(i => showAvailableCatalog \? i\.is_available : enabled\.has\(i\.module_key\)\)/);
   assert.match(dashboard, /renderModulesInto\('modules-nclex', catalog, access, true\)/);
+  assert.match(dashboard, /m\.quiz_url && m\.quiz_url !== m\.guide_url/);
+  assert.match(dashboard, /Practice questions<\/a>/);
+  assert.doesNotMatch(dashboard, /Open general practice/);
+  assert.match(dashboard, /\.module a\{[^}]*background:var\(--ink\)[^}]*color:#fff/);
 });
 
 test('question-bank migration preserves all four legacy sets and supported item types', () => {
