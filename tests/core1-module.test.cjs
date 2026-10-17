@@ -118,6 +118,11 @@ test('verified users receive all five lessons and the existing practice destinat
   const content = fixture();
   content.lessons[3].precautions = [{ name: 'Synthetic category', protection: 'Synthetic protection', examples: 'Synthetic example' }];
   content.lessons[3].mnemonic = { title: 'Synthetic memory aid', entries: [{ letter: 'A', text: 'Synthetic entry' }], caution: 'Synthetic exception' };
+  content.lessons[3].mnemonics = [{ title: 'Second synthetic aid', entries: [
+    { letter: 'X', text: 'First synthetic entry' },
+    { letter: 'Y', text: 'Second synthetic entry' },
+    { letter: 'Z', text: 'Third synthetic entry' }
+  ], caution: 'Second synthetic exception' }];
   content.lessons[0].example = { prompt: 'Synthetic question?', reasoning: 'Synthetic reasoning.' };
   const env = setup({ content, hash: '#delegation' });
   await env.api.mount(env.root);
@@ -125,7 +130,11 @@ test('verified users receive all five lessons and the existing practice destinat
   assert.equal(env.root.querySelectorAll('.lesson').length, 6);
   assert.ok(env.root.querySelector('#delegation').scrolled);
   assert.equal(env.root.querySelector('table').querySelectorAll('tbody').length, 1);
-  assert.ok(env.root.querySelector('.mnemonic'));
+  const mnemonics = env.root.querySelectorAll('.mnemonic');
+  assert.equal(mnemonics.length, 2);
+  assert.equal(mnemonics[0].querySelector('summary').textContent, 'Second synthetic aid');
+  assert.equal(mnemonics[0].querySelectorAll('.mnemonic-letter').length, 3);
+  assert.equal(mnemonics[1].querySelector('summary').textContent, 'Synthetic memory aid');
   const practiceLink = env.root.querySelector('#knowledge-check').querySelector('a');
   assert.equal(practiceLink.href, 'supplemental-practice.html?set=safety-priority-01');
   assert.equal(practiceLink.target, undefined);
@@ -219,7 +228,9 @@ test('schema rejects missing, reordered, or malformed lesson sections', () => {
     data => { data.lessons[0].diagram.type = 'unknown'; },
     data => { data.lessons[0].body = []; },
     data => { data.lessons[3].precautions = [{ name: 'Missing fields' }]; },
-    data => { data.lessons[3].mnemonic = { title: 'Missing entries' }; }
+    data => { data.lessons[3].mnemonic = { title: 'Missing entries' }; },
+    data => { data.lessons[3].mnemonics = [{ title: 'Missing entries' }]; },
+    data => { data.lessons[3].mnemonics = []; }
   ]) {
     const content = fixture();
     mutate(content);
