@@ -1,0 +1,677 @@
+[
+  {
+    "draft_id": "NEW-20261012-056",
+    "stem": "A patient taking sertraline started linezolid yesterday. Now the patient is agitated and diaphoretic with temperature 39°C, diarrhea, hyperreflexia, and inducible ankle clonus. Which action is priority?",
+    "option_a": "Administer the next sertraline dose to avoid withdrawal",
+    "option_b": "Hold serotonergic medication and arrange emergency evaluation for suspected serotonin toxicity",
+    "option_c": "Give loperamide and reassess in two hours",
+    "option_d": "Document symptoms as expected anxiety during infection",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Another serotonergic dose may worsen toxicity. B: Clonus, hyperreflexia, hyperthermia and a medication interaction point to a potentially life-threatening serotonergic toxidrome. C: Treating diarrhea alone dangerously delays recognition and treatment. D: These neuromuscular and autonomic abnormalities are not simply anxiety.",
+    "option_rationales": {
+      "a": "Another serotonergic dose may worsen toxicity.",
+      "b": "Clonus, hyperreflexia, hyperthermia and a medication interaction point to a potentially life-threatening serotonergic toxidrome.",
+      "c": "Treating diarrhea alone dangerously delays recognition and treatment.",
+      "d": "These neuromuscular and autonomic abnormalities are not simply anxiety."
+    },
+    "topic": "Psychosocial Integrity / Clinical Judgment",
+    "nclex_category": "psychosocial",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.fda.gov/drugs/drug-safety-and-availability/fda-drug-safety-communication-updated-information-about-drug-interaction-between-linezolid-zyvox-and"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-057",
+    "stem": "A patient with schizophrenia taking clozapine reports a sore throat and chills. Temperature is 38.5°C. Which action should the nurse prioritize?",
+    "option_a": "Recommend acetaminophen and the next scheduled dose without evaluation",
+    "option_b": "Arrange urgent assessment and a CBC with absolute neutrophil count while alerting the prescriber",
+    "option_c": "Advise the patient to discontinue all psychiatric care permanently",
+    "option_d": "Suggest routine follow-up in three weeks if symptoms persist",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Fever may indicate neutropenia-related infection and cannot be treated as routine discomfort. B: Clozapine is associated with severe neutropenia, making prompt infection assessment and ANC evaluation important. C: Future treatment decisions require clinical assessment, not abandonment of psychiatric care. D: Delaying evaluation may miss serious infection.",
+    "option_rationales": {
+      "a": "Fever may indicate neutropenia-related infection and cannot be treated as routine discomfort.",
+      "b": "Clozapine is associated with severe neutropenia, making prompt infection assessment and ANC evaluation important.",
+      "c": "Future treatment decisions require clinical assessment, not abandonment of psychiatric care.",
+      "d": "Delaying evaluation may miss serious infection."
+    },
+    "topic": "Psychosocial Integrity / Clinical Judgment",
+    "nclex_category": "psychosocial",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/019758s101lbl.pdf"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-058",
+    "stem": "A patient with alcohol use disorder is admitted 12 hours after their last drink. They are tremulous, sweating, anxious, and have a pulse of 116/min. Which nursing action is most appropriate?",
+    "option_a": "Initiate a validated withdrawal assessment and report findings for protocol-based treatment",
+    "option_b": "Reassure the patient that symptoms always resolve without intervention",
+    "option_c": "Restrict all fluids until tremors stop",
+    "option_d": "Offer caffeine to improve alertness",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Early withdrawal can progress to seizures and delirium; structured assessment guides timely treatment. B: Untreated withdrawal can be life-threatening. C: Fluid management should reflect clinical assessment, not blanket restriction. D: Stimulants can aggravate autonomic symptoms.",
+    "option_rationales": {
+      "a": "Early withdrawal can progress to seizures and delirium; structured assessment guides timely treatment.",
+      "b": "Untreated withdrawal can be life-threatening.",
+      "c": "Fluid management should reflect clinical assessment, not blanket restriction.",
+      "d": "Stimulants can aggravate autonomic symptoms."
+    },
+    "topic": "Psychosocial Integrity / Clinical Judgment",
+    "nclex_category": "psychosocial",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.asam.org/quality-care/clinical-guidelines/alcohol-withdrawal-management"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-059",
+    "stem": "During a private visit, a patient with a history of self-injury says, 'I cut yesterday to stop feeling numb, but I did not want to die.' Which response best reflects appropriate clinical judgment?",
+    "option_a": "Conclude there is no suicide risk because the behavior was nonsuicidal",
+    "option_b": "Assess wound care needs, suicidal thoughts, intent, current triggers, and coping resources without judgment",
+    "option_c": "Tell the patient the behavior is attention seeking",
+    "option_d": "Promise to keep any future self-harm secret from the healthcare team",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Nonsuicidal intent does not eliminate concurrent or future suicide risk. B: A nonjudgmental assessment distinguishes functions of self-injury while addressing injury and safety. C: Pejorative labeling undermines therapeutic engagement. D: Absolute secrecy conflicts with safety responsibilities.",
+    "option_rationales": {
+      "a": "Nonsuicidal intent does not eliminate concurrent or future suicide risk.",
+      "b": "A nonjudgmental assessment distinguishes functions of self-injury while addressing injury and safety.",
+      "c": "Pejorative labeling undermines therapeutic engagement.",
+      "d": "Absolute secrecy conflicts with safety responsibilities."
+    },
+    "topic": "Psychosocial Integrity / Clinical Judgment",
+    "nclex_category": "psychosocial",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.nimh.nih.gov/health/topics/suicide-prevention"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-060",
+    "stem": "A patient with PTSD becomes visibly distressed when a nurse approaches from behind to place a blood-pressure cuff. Which response is most trauma-informed?",
+    "option_a": "Continue quickly to avoid prolonging the patient's anxiety",
+    "option_b": "Explain what is needed, ask permission, and offer choices about timing and positioning",
+    "option_c": "Tell the patient that refusing care is irrational",
+    "option_d": "Have several staff hold the patient's arm still",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Proceeding without consent may intensify trauma responses. B: Transparency, permission and meaningful choice support safety and control. C: Judgmental language impairs trust. D: Unnecessary coercion can retraumatize and is not justified for a routine vital sign.",
+    "option_rationales": {
+      "a": "Proceeding without consent may intensify trauma responses.",
+      "b": "Transparency, permission and meaningful choice support safety and control.",
+      "c": "Judgmental language impairs trust.",
+      "d": "Unnecessary coercion can retraumatize and is not justified for a routine vital sign."
+    },
+    "topic": "Psychosocial Integrity / Clinical Judgment",
+    "nclex_category": "psychosocial",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.samhsa.gov/resource/dbhis/samhsas-concept-trauma-guidance-trauma-informed-approach"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-061",
+    "stem": "A patient taking warfarin begins trimethoprim-sulfamethoxazole. Three days later they report gum bleeding and dark stools. What is the nurse's priority?",
+    "option_a": "Suggest taking warfarin with food and continuing both drugs",
+    "option_b": "Assess for active bleeding and urgently notify the clinician for INR and management",
+    "option_c": "Advise doubling vitamin K-rich foods as the only intervention",
+    "option_d": "Reassure that stool color is unrelated to anticoagulation",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Changing administration timing does not address potential major bleeding. B: An interacting antibiotic can increase warfarin effect; bleeding symptoms require prompt assessment and escalation. C: Dietary changes alone cannot safely manage suspected over-anticoagulation. D: Melena may signify gastrointestinal hemorrhage.",
+    "option_rationales": {
+      "a": "Changing administration timing does not address potential major bleeding.",
+      "b": "An interacting antibiotic can increase warfarin effect; bleeding symptoms require prompt assessment and escalation.",
+      "c": "Dietary changes alone cannot safely manage suspected over-anticoagulation.",
+      "d": "Melena may signify gastrointestinal hemorrhage."
+    },
+    "topic": "Pharmacology / Clinical Judgment",
+    "nclex_category": "pharmacological",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a682277.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-062",
+    "stem": "A patient prescribed digoxin has nausea, poor appetite, yellow-green visual halos, and a heart rate of 48/min. Which action should the nurse take?",
+    "option_a": "Administer the scheduled dose because bradycardia is expected",
+    "option_b": "Hold digoxin and notify the clinician while preparing ordered ECG, level, renal-function and electrolyte assessment",
+    "option_c": "Give a potassium supplement without reviewing laboratory results",
+    "option_d": "Offer an antacid and reassess in one week",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Symptomatic bradycardia and visual changes suggest potential toxicity. B: Holding the drug and evaluating rhythm, renal clearance and electrolytes addresses a potentially dangerous digoxin reaction. C: Potassium treatment depends on measured values and the clinical setting. D: Symptoms cannot safely be attributed to simple dyspepsia.",
+    "option_rationales": {
+      "a": "Symptomatic bradycardia and visual changes suggest potential toxicity.",
+      "b": "Holding the drug and evaluating rhythm, renal clearance and electrolytes addresses a potentially dangerous digoxin reaction.",
+      "c": "Potassium treatment depends on measured values and the clinical setting.",
+      "d": "Symptoms cannot safely be attributed to simple dyspepsia."
+    },
+    "topic": "Pharmacology / Clinical Judgment",
+    "nclex_category": "pharmacological",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://medlineplus.gov/druginfo/meds/a682301.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-063",
+    "stem": "A patient receiving heparin has a platelet decrease from 260,000/mm³ to 108,000/mm³ on day 6 and develops unilateral leg swelling. Which action takes priority?",
+    "option_a": "Continue heparin until platelet count drops below 50,000/mm³",
+    "option_b": "Suspect immune heparin-induced thrombocytopenia, stop heparin exposure, and urgently notify the clinician",
+    "option_c": "Give a prophylactic platelet transfusion before assessment",
+    "option_d": "Apply a heating pad to the swollen calf",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: A greater than 50% decline plus possible thrombosis is concerning even above 50,000. B: HIT is prothrombotic; all heparin exposure must be stopped and alternative anticoagulation considered by the team. C: Routine platelet transfusions are generally avoided in HIT unless indicated by bleeding or another compelling reason. D: The symptom may represent thrombosis requiring urgent evaluation.",
+    "option_rationales": {
+      "a": "A greater than 50% decline plus possible thrombosis is concerning even above 50,000.",
+      "b": "HIT is prothrombotic; all heparin exposure must be stopped and alternative anticoagulation considered by the team.",
+      "c": "Routine platelet transfusions are generally avoided in HIT unless indicated by bleeding or another compelling reason.",
+      "d": "The symptom may represent thrombosis requiring urgent evaluation."
+    },
+    "topic": "Pharmacology / Clinical Judgment",
+    "nclex_category": "pharmacological",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.hematology.org/education/clinicians/guidelines-and-quality-care/quick-reference"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-064",
+    "stem": "A patient receives IV vancomycin and develops flushing and itching of the face and upper chest during a rapid infusion, without wheezing or hypotension. What should the nurse do first?",
+    "option_a": "Stop the infusion and assess for a severe allergic reaction; notify the team about possible vancomycin infusion reaction",
+    "option_b": "Document anaphylaxis and permanently label all glycopeptides contraindicated without evaluation",
+    "option_c": "Increase the infusion rate to finish before symptoms worsen",
+    "option_d": "Give the next dose as an IV push",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Pausing exposure and assessing airway and circulation distinguishes infusion reaction from anaphylaxis. B: Flushing alone during rapid infusion does not automatically establish IgE-mediated allergy. C: Faster infusion can worsen histamine-mediated reactions. D: IV push increases risk and is not appropriate administration.",
+    "option_rationales": {
+      "a": "Pausing exposure and assessing airway and circulation distinguishes infusion reaction from anaphylaxis.",
+      "b": "Flushing alone during rapid infusion does not automatically establish IgE-mediated allergy.",
+      "c": "Faster infusion can worsen histamine-mediated reactions.",
+      "d": "IV push increases risk and is not appropriate administration."
+    },
+    "topic": "Pharmacology / Clinical Judgment",
+    "nclex_category": "pharmacological",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK482506/"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-065",
+    "stem": "A patient with type 2 diabetes taking an SGLT2 inhibitor has abdominal pain, vomiting, deep respirations, glucose 186 mg/dL, bicarbonate 12 mEq/L and positive serum ketones. What should the nurse suspect?",
+    "option_a": "Uncomplicated viral gastritis because glucose is under 250 mg/dL",
+    "option_b": "Euglycemic diabetic ketoacidosis requiring urgent evaluation",
+    "option_c": "Hyperosmolar hyperglycemic state without ketosis",
+    "option_d": "Normal medication adjustment because ketones are expected",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Modest glucose elevation does not exclude dangerous ketoacidosis in patients taking SGLT2 inhibitors. B: Ketonemia with metabolic acidosis and symptoms suggests euglycemic DKA. C: HHS is marked by hyperosmolality and typically lacks significant ketoacidosis. D: Ketones plus acidosis and deep respirations are not benign.",
+    "option_rationales": {
+      "a": "Modest glucose elevation does not exclude dangerous ketoacidosis in patients taking SGLT2 inhibitors.",
+      "b": "Ketonemia with metabolic acidosis and symptoms suggests euglycemic DKA.",
+      "c": "HHS is marked by hyperosmolality and typically lacks significant ketoacidosis.",
+      "d": "Ketones plus acidosis and deep respirations are not benign."
+    },
+    "topic": "Pharmacology / Clinical Judgment",
+    "nclex_category": "pharmacological",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://doi.org/10.2337/dci24-0032"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-066",
+    "stem": "A laboring patient receiving oxytocin has contractions every 60–70 seconds with minimal resting tone and recurrent late decelerations. Which intervention should the nurse implement first?",
+    "option_a": "Increase the oxytocin dose to shorten labor",
+    "option_b": "Stop the oxytocin infusion, reposition the patient, and initiate intrauterine resuscitation measures",
+    "option_c": "Encourage pushing before complete dilation",
+    "option_d": "Delay reassessment until the next scheduled cervical examination",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: More oxytocin can worsen tachysystole and fetal hypoxia. B: Stopping the uterotonic and improving maternal-fetal perfusion are immediate measures. C: Pushing when not indicated does not correct fetal intolerance. D: Recurrent late decelerations with tachysystole require prompt response.",
+    "option_rationales": {
+      "a": "More oxytocin can worsen tachysystole and fetal hypoxia.",
+      "b": "Stopping the uterotonic and improving maternal-fetal perfusion are immediate measures.",
+      "c": "Pushing when not indicated does not correct fetal intolerance.",
+      "d": "Recurrent late decelerations with tachysystole require prompt response."
+    },
+    "topic": "Maternal and Newborn Clinical Judgment",
+    "nclex_category": "maternal_newborn",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.acog.org/clinical"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-067",
+    "stem": "Twenty minutes after delivery, a patient has heavy vaginal bleeding and a boggy fundus despite an emptied bladder. Which intervention should the nurse prioritize?",
+    "option_a": "Massage the fundus and summon assistance while preparing prescribed uterotonics",
+    "option_b": "Arrange routine postpartum teaching before intervening",
+    "option_c": "Place the patient in Trendelenburg and wait for spontaneous uterine contraction",
+    "option_d": "Encourage ambulation to improve uterine tone",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: A boggy uterus with hemorrhage suggests atony; fundal massage, immediate escalation and uterotonic treatment are priorities. B: Teaching must not delay hemorrhage control. C: Position changes alone do not reverse uterine atony. D: Ambulation is unsafe during active hemorrhage.",
+    "option_rationales": {
+      "a": "A boggy uterus with hemorrhage suggests atony; fundal massage, immediate escalation and uterotonic treatment are priorities.",
+      "b": "Teaching must not delay hemorrhage control.",
+      "c": "Position changes alone do not reverse uterine atony.",
+      "d": "Ambulation is unsafe during active hemorrhage."
+    },
+    "topic": "Maternal and Newborn Clinical Judgment",
+    "nclex_category": "maternal_newborn",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.acog.org/womens-health/faqs/postpartum-hemorrhage"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-068",
+    "stem": "A pregnant patient at 33 weeks has headache, visual spots, right upper quadrant pain and BP 172/112 mm Hg. Which action takes priority?",
+    "option_a": "Advise home rest and blood-pressure recheck next week",
+    "option_b": "Initiate urgent evaluation for preeclampsia with severe features and institute seizure precautions",
+    "option_c": "Give a routine oral iron supplement before assessment",
+    "option_d": "Encourage vigorous walking to reduce stress",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Severe-range pressure and neurologic/abdominal symptoms demand prompt assessment and treatment. B: This presentation risks seizure, stroke and organ injury; rapid escalation is required. C: Iron does not treat hypertensive emergency. D: Exercise is inappropriate during suspected severe preeclampsia.",
+    "option_rationales": {
+      "a": "Severe-range pressure and neurologic/abdominal symptoms demand prompt assessment and treatment.",
+      "b": "This presentation risks seizure, stroke and organ injury; rapid escalation is required.",
+      "c": "Iron does not treat hypertensive emergency.",
+      "d": "Exercise is inappropriate during suspected severe preeclampsia."
+    },
+    "topic": "Maternal and Newborn Clinical Judgment",
+    "nclex_category": "maternal_newborn",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.acog.org/womens-health/faqs/preeclampsia-and-high-blood-pressure-during-pregnancy"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-069",
+    "stem": "A newborn of a parent with diabetes is jittery 90 minutes after birth. Bedside glucose is 28 mg/dL and the newborn has poor feeding. What should the nurse do?",
+    "option_a": "Wait until the four-hour routine feeding interval",
+    "option_b": "Urgently notify the neonatal team and initiate symptomatic hypoglycemia treatment per protocol",
+    "option_c": "Give water to reduce metabolic demand",
+    "option_d": "Place the newborn alone under a radiant warmer and repeat glucose tomorrow",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Symptomatic severe hypoglycemia may cause neurologic injury if treatment is delayed. B: Poor feeding plus low glucose calls for rapid treatment, often IV dextrose according to protocol. C: Water supplies no glucose and may be unsafe. D: Thermal support is useful but does not replace glucose correction.",
+    "option_rationales": {
+      "a": "Symptomatic severe hypoglycemia may cause neurologic injury if treatment is delayed.",
+      "b": "Poor feeding plus low glucose calls for rapid treatment, often IV dextrose according to protocol.",
+      "c": "Water supplies no glucose and may be unsafe.",
+      "d": "Thermal support is useful but does not replace glucose correction."
+    },
+    "topic": "Maternal and Newborn Clinical Judgment",
+    "nclex_category": "maternal_newborn",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.aap.org/en/patient-care/newborn-and-infant-nutrition/"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-070",
+    "stem": "A postpartum patient reports intrusive images of accidentally dropping their infant. They say the thoughts frighten them, they do not want to act on them, and they seek reassurance. What is the best initial nursing response?",
+    "option_a": "Assume postpartum psychosis because any unwanted thought requires involuntary admission",
+    "option_b": "Assess thought content, distress, insight, intention and safety, and arrange timely mental-health evaluation",
+    "option_c": "Tell the patient to conceal the thoughts to avoid losing custody",
+    "option_d": "Conclude that the symptoms are harmless without further assessment",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Ego-dystonic intrusive thoughts with insight differ from delusions but still require individualized assessment. B: Assessment clarifies OCD-like intrusive thoughts versus psychosis or imminent risk and guides support. C: Shame and concealment can prevent timely care. D: Risk cannot be dismissed without assessing intent and functioning.",
+    "option_rationales": {
+      "a": "Ego-dystonic intrusive thoughts with insight differ from delusions but still require individualized assessment.",
+      "b": "Assessment clarifies OCD-like intrusive thoughts versus psychosis or imminent risk and guides support.",
+      "c": "Shame and concealment can prevent timely care.",
+      "d": "Risk cannot be dismissed without assessing intent and functioning."
+    },
+    "topic": "Maternal and Newborn Clinical Judgment",
+    "nclex_category": "maternal_newborn",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.acog.org/programs/perinatal-mental-health"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-071",
+    "stem": "A 2-year-old has barking cough, inspiratory stridor at rest, and moderate retractions. Which action best addresses the immediate concern?",
+    "option_a": "Keep the child calm, assess airway continuously, and prepare prescribed nebulized epinephrine and dexamethasone",
+    "option_b": "Perform a forceful throat examination using a tongue depressor",
+    "option_c": "Encourage running to loosen airway secretions",
+    "option_d": "Give an antitussive and discharge without observation",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Stridor at rest suggests moderate to severe croup; minimizing distress and providing indicated therapy are important. B: Agitating an already obstructed airway can worsen distress. C: Exertion increases oxygen demand. D: Cough suppression does not address upper-airway edema.",
+    "option_rationales": {
+      "a": "Stridor at rest suggests moderate to severe croup; minimizing distress and providing indicated therapy are important.",
+      "b": "Agitating an already obstructed airway can worsen distress.",
+      "c": "Exertion increases oxygen demand.",
+      "d": "Cough suppression does not address upper-airway edema."
+    },
+    "topic": "Pediatric Clinical Judgment",
+    "nclex_category": "pediatric",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.rch.org.au/clinicalguide/guideline_index/Croup_Laryngotracheobronchitis/"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-072",
+    "stem": "A 6-month-old with bronchiolitis has nasal flaring, subcostal retractions, respiratory rate 68/min, and takes less than half of usual feeds. Which assessment most warrants escalation?",
+    "option_a": "Intermittent cough during examination",
+    "option_b": "Apneic pause accompanied by cyanosis",
+    "option_c": "Mild rhinorrhea",
+    "option_d": "Occasional sneezing after suctioning",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Cough is common in bronchiolitis. B: Apnea with cyanosis indicates critical ventilatory compromise requiring immediate intervention. C: Rhinorrhea alone is not the most urgent change. D: Sneezing does not indicate respiratory arrest.",
+    "option_rationales": {
+      "a": "Cough is common in bronchiolitis.",
+      "b": "Apnea with cyanosis indicates critical ventilatory compromise requiring immediate intervention.",
+      "c": "Rhinorrhea alone is not the most urgent change.",
+      "d": "Sneezing does not indicate respiratory arrest."
+    },
+    "topic": "Pediatric Clinical Judgment",
+    "nclex_category": "pediatric",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.nice.org.uk/guidance/ng9"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-073",
+    "stem": "A 4-year-old treated for dehydration becomes lethargic with capillary refill 5 seconds, weak pulses, and systolic BP 70 mm Hg. What should the nurse do first?",
+    "option_a": "Offer oral rehydration and reassess in an hour",
+    "option_b": "Activate emergency response and prepare prescribed isotonic fluid resuscitation",
+    "option_c": "Teach the caregiver signs of mild dehydration",
+    "option_d": "Wait for weight confirmation before obtaining IV access",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Oral replacement is inappropriate for shock and impaired consciousness. B: These signs suggest decompensated shock and require rapid circulation support. C: Education follows stabilization. D: Resuscitation should not wait for nonessential measurements.",
+    "option_rationales": {
+      "a": "Oral replacement is inappropriate for shock and impaired consciousness.",
+      "b": "These signs suggest decompensated shock and require rapid circulation support.",
+      "c": "Education follows stabilization.",
+      "d": "Resuscitation should not wait for nonessential measurements."
+    },
+    "topic": "Pediatric Clinical Judgment",
+    "nclex_category": "pediatric",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.who.int/publications/i/item/9789241548373"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-074",
+    "stem": "A child with sickle cell disease has fever 38.8°C, appears well between episodes, and has no obvious infection source. What is the priority?",
+    "option_a": "Reassure that fever is usually caused by vaso-occlusive pain",
+    "option_b": "Arrange immediate medical assessment and prescribed cultures and empiric antibiotics",
+    "option_c": "Give aspirin and send the child home",
+    "option_d": "Delay evaluation until the child develops chest pain",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Functional asplenia increases risk of rapidly progressive bacterial infection. B: Fever in sickle cell disease requires prompt evaluation and treatment even if appearance is initially reassuring. C: Aspirin and discharge do not address invasive infection risk. D: Waiting for other symptoms can be dangerous.",
+    "option_rationales": {
+      "a": "Functional asplenia increases risk of rapidly progressive bacterial infection.",
+      "b": "Fever in sickle cell disease requires prompt evaluation and treatment even if appearance is initially reassuring.",
+      "c": "Aspirin and discharge do not address invasive infection risk.",
+      "d": "Waiting for other symptoms can be dangerous."
+    },
+    "topic": "Pediatric Clinical Judgment",
+    "nclex_category": "pediatric",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.cdc.gov/sickle-cell/complications/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-075",
+    "stem": "A toddler with suspected epiglottitis sits leaning forward, drools, and has muffled voice and stridor. Which nursing response is safest?",
+    "option_a": "Place the child supine for an aggressive oral examination",
+    "option_b": "Keep the child calm in the preferred position and summon emergency airway experts",
+    "option_c": "Attempt a throat swab before alerting the team",
+    "option_d": "Offer oral fluids to check swallowing",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Forced positioning and throat manipulation can precipitate airway obstruction. B: Avoid agitation and secure expert airway readiness in a potentially unstable upper-airway emergency. C: Routine throat manipulation is unsafe before airway control. D: Oral intake creates aspiration and obstruction risks.",
+    "option_rationales": {
+      "a": "Forced positioning and throat manipulation can precipitate airway obstruction.",
+      "b": "Avoid agitation and secure expert airway readiness in a potentially unstable upper-airway emergency.",
+      "c": "Routine throat manipulation is unsafe before airway control.",
+      "d": "Oral intake creates aspiration and obstruction risks."
+    },
+    "topic": "Pediatric Clinical Judgment",
+    "nclex_category": "pediatric",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.merckmanuals.com/professional/ear-nose-and-throat-disorders/laryngeal-disorders/epiglottitis"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-076",
+    "stem": "A nurse preparing to administer cefazolin sees the chart lists 'penicillin allergy: rash' from 20 years ago. What is the safest next step?",
+    "option_a": "Automatically substitute vancomycin without notifying the prescriber",
+    "option_b": "Clarify the reaction history, severity, timing and any prior beta-lactam tolerance before administering and coordinate with the prescriber",
+    "option_c": "Ignore the allergy because cefazolin is not a penicillin",
+    "option_d": "Administer a test dose independently without an order",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Unnecessary substitutions can compromise antimicrobial stewardship. B: A specific allergy history helps distinguish low-risk nonspecific rashes from severe immediate or delayed reactions and supports appropriate selection. C: Cross-reactivity is low for many agents but a severe allergy history cannot simply be ignored. D: Unordered medication challenge is outside routine nursing judgment.",
+    "option_rationales": {
+      "a": "Unnecessary substitutions can compromise antimicrobial stewardship.",
+      "b": "A specific allergy history helps distinguish low-risk nonspecific rashes from severe immediate or delayed reactions and supports appropriate selection.",
+      "c": "Cross-reactivity is low for many agents but a severe allergy history cannot simply be ignored.",
+      "d": "Unordered medication challenge is outside routine nursing judgment."
+    },
+    "topic": "Safety and Care Management",
+    "nclex_category": "safe_effective_care",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.cdc.gov/antibiotic-use/hcp/clinical-signs/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-077",
+    "stem": "A nurse discovers a patient received 10 units of rapid-acting insulin instead of the prescribed 4 units. The patient is awake and asymptomatic. What should the nurse do first?",
+    "option_a": "Change the medication administration record to match the dose given",
+    "option_b": "Assess glucose immediately, notify the prescriber and follow hypoglycemia-monitoring protocol",
+    "option_c": "Wait for the next scheduled glucose check because symptoms are absent",
+    "option_d": "Ask the patient to sign a statement that no harm occurred",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Altering documentation conceals an error and undermines safety. B: Rapid insulin can cause delayed hypoglycemia; prompt clinical assessment and escalation are essential. C: Absence of symptoms does not guarantee safety. D: Documentation and disclosure occur after urgent patient assessment.",
+    "option_rationales": {
+      "a": "Altering documentation conceals an error and undermines safety.",
+      "b": "Rapid insulin can cause delayed hypoglycemia; prompt clinical assessment and escalation are essential.",
+      "c": "Absence of symptoms does not guarantee safety.",
+      "d": "Documentation and disclosure occur after urgent patient assessment."
+    },
+    "topic": "Safety and Care Management",
+    "nclex_category": "safe_effective_care",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.ismp.org/resources"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-078",
+    "stem": "An RN delegates ambulation of a stable postoperative patient to assistive personnel. The assistant reports new dizziness and blood pressure 82/48 mm Hg on standing. Which RN action is best?",
+    "option_a": "Ask the assistant to finish the walk slowly",
+    "option_b": "Assess the patient promptly, assist to safety and reevaluate orthostatic symptoms and perfusion",
+    "option_c": "Have the assistant administer an IV bolus under standing orders independently",
+    "option_d": "Document the event at shift end without assessment",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Continuing ambulation risks a fall or collapse. B: New instability requires RN reassessment and prompt safety interventions. C: Assistive personnel do not independently prescribe or administer IV fluids. D: Deferred documentation cannot replace assessment.",
+    "option_rationales": {
+      "a": "Continuing ambulation risks a fall or collapse.",
+      "b": "New instability requires RN reassessment and prompt safety interventions.",
+      "c": "Assistive personnel do not independently prescribe or administer IV fluids.",
+      "d": "Deferred documentation cannot replace assessment."
+    },
+    "topic": "Safety and Care Management",
+    "nclex_category": "safe_effective_care",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.ncsbn.org/nursing-regulation/practice/delegation.page"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-079",
+    "stem": "A patient with newly diagnosed tuberculosis is starting a four-drug regimen. Which statement requires immediate follow-up?",
+    "option_a": "'I will report yellowing of my eyes or dark urine.'",
+    "option_b": "'My urine may turn orange while taking rifampin.'",
+    "option_c": "'I'll stop all my medicines once the cough improves.'",
+    "option_d": "'I should ask about interactions between rifampin and my usual medicines.'",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Jaundice or dark urine may signal hepatotoxicity and should be reported. B: Orange body fluids are expected with rifampin. C: Stopping TB therapy early increases relapse and drug resistance risk. D: Rifampin has major drug interactions that require review.",
+    "option_rationales": {
+      "a": "Jaundice or dark urine may signal hepatotoxicity and should be reported.",
+      "b": "Orange body fluids are expected with rifampin.",
+      "c": "Stopping TB therapy early increases relapse and drug resistance risk.",
+      "d": "Rifampin has major drug interactions that require review."
+    },
+    "topic": "Health Promotion and Maintenance",
+    "nclex_category": "health_promotion",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.cdc.gov/tb/hcp/treatment/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  },
+  {
+    "draft_id": "NEW-20261012-080",
+    "stem": "A parent says their child missed routine vaccines because of chemotherapy treatment and asks whether to restart every vaccine series. Which response is most appropriate?",
+    "option_a": "Restart all series without reviewing records",
+    "option_b": "Review the treatment history, vaccination record, immune status, and specialist guidance to determine catch-up timing",
+    "option_c": "Administer live vaccines immediately regardless of immune suppression",
+    "option_d": "Wait until adulthood to consider any vaccines",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Previously valid doses do not generally require indiscriminate restarting. B: Catch-up plans after immune suppression depend on treatment, immune recovery and previous doses. C: Live vaccines can be contraindicated during substantial immune suppression. D: Deferring all vaccines for years needlessly prolongs preventable infection risk.",
+    "option_rationales": {
+      "a": "Previously valid doses do not generally require indiscriminate restarting.",
+      "b": "Catch-up plans after immune suppression depend on treatment, immune recovery and previous doses.",
+      "c": "Live vaccines can be contraindicated during substantial immune suppression.",
+      "d": "Deferring all vaccines for years needlessly prolongs preventable infection risk."
+    },
+    "topic": "Health Promotion and Maintenance",
+    "nclex_category": "health_promotion",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "item_type": "mcq",
+    "reference_urls": [
+      "https://www.cdc.gov/vaccines/hcp/imz-schedules/index.html"
+    ],
+    "editorial_status": "draft_pending_clinical_signoff"
+  }
+]
