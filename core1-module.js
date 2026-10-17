@@ -19,7 +19,7 @@
 
   function validate(content) {
     if (!content || content.version !== 1 || content.moduleKey !== moduleKey ||
-        !isText(content.intro) || !Array.isArray(content.lessons) || content.lessons.length !== topicKeys.length) {
+        !isText(content.intro) || !Array.isArray(content.lessons) || ![4, 5].includes(content.lessons.length)) {
       throw new Error('Core 1 lesson file is invalid. Contact Madison for help.');
     }
     for (const [index, lesson] of content.lessons.entries()) {
@@ -73,6 +73,8 @@
   }
 
   function render(content, root) {
+    // Accept cached five-topic payloads without restoring the removed lesson.
+    content = { ...content, lessons: content.lessons.filter(lesson => lesson.key !== 'procedure-safety') };
     root.querySelector('#core1-state').remove();
     const main = el('div', 'core1-content');
     main.append(link('Skip to lessons', '#priority-frameworks', 'skip'));

@@ -7,8 +7,12 @@ Preserve the existing cream/navy/rose identity and use purposeful premium
 teaching graphics. Topics follow must-know content, recognition, action, and
 common mistakes, with brief application examples where useful.
 
-Core 1 is the only implementation scope. Preserve the five existing topic keys,
-module numbering, existing questions/answers/rationales, and assignments.
+Core 1 is the only implementation scope. Madison explicitly requested removing
+the procedure-safety lesson on October 17: it was too basic for this refresher.
+The module now has four lessons; its outline, next-topic navigation, and review
+links omit that section. Cached five-topic payloads remain readable but the
+removed lesson is not rendered. Preserve module numbering, existing
+questions/answers/rationales, assignments, and diagnostic topic mappings.
 Madison also requested a clearly named Precautions section with visual memory
 aids and signed-in-only access as modules are built. Do not interpret this as
 authorization for a library-wide migration.

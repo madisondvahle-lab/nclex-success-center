@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const source = readFileSync(join(__dirname, '..', 'core1-module.js'), 'utf8');
 const migration = readFileSync(join(__dirname, '..', 'supabase-core1-private-lessons.sql'), 'utf8');
-const keys = ['priority-frameworks', 'delegation', 'blood-administration', 'infection-prevention', 'procedure-safety'];
+const keys = ['priority-frameworks', 'delegation', 'blood-administration', 'infection-prevention'];
 
 function fixture() {
   return {
@@ -114,7 +114,7 @@ test('signed-out visitors redirect before a protected file is requested', async 
   assert.equal(env.root.querySelector('.core1-content'), null);
 });
 
-test('verified users receive all five lessons and the existing practice destination', async () => {
+test('verified users receive four lessons and the existing practice destination', async () => {
   const content = fixture();
   content.lessons[3].precautions = [{ name: 'Synthetic category', protection: 'Synthetic protection', examples: 'Synthetic example' }];
   content.lessons[3].mnemonic = { title: 'Synthetic memory aid', entries: [{ letter: 'A', text: 'Synthetic entry' }], caution: 'Synthetic exception' };
@@ -127,7 +127,9 @@ test('verified users receive all five lessons and the existing practice destinat
   const env = setup({ content, hash: '#delegation' });
   await env.api.mount(env.root);
   assert.deepEqual(env.calls, ['session', 'user', 'download']);
-  assert.equal(env.root.querySelectorAll('.lesson').length, 6);
+  assert.equal(env.root.querySelectorAll('.lesson').length, 5);
+  assert.equal(env.root.querySelector('#procedure-safety'), null);
+  assert.equal(env.root.querySelector('#infection-prevention').querySelectorAll('a').at(-1).href, '#knowledge-check');
   assert.ok(env.root.querySelector('#delegation').scrolled);
   assert.equal(env.root.querySelector('table').querySelectorAll('tbody').length, 1);
   const mnemonics = env.root.querySelectorAll('.mnemonic');
@@ -141,6 +143,19 @@ test('verified users receive all five lessons and the existing practice destinat
   for (const anchor of env.root.querySelectorAll('a').filter(node => node.href.startsWith('#'))) {
     assert.ok(env.root.querySelector(anchor.href), `anchor ${anchor.href} resolves`);
   }
+});
+
+test('cached five-topic payloads do not restore the removed lesson or its links', async () => {
+  const content = fixture();
+  content.lessons.push({
+    ...content.lessons[0], key: 'procedure-safety', nav: 'Removed topic',
+    diagram: { ...content.lessons[0].diagram, type: 'checkpoint', items: content.lessons[0].diagram.items.slice(0, 1) }
+  });
+  const env = setup({ content });
+  await env.api.mount(env.root);
+  assert.equal(env.root.querySelectorAll('.lesson').length, 5);
+  assert.equal(env.root.querySelector('#procedure-safety'), null);
+  assert.ok(env.root.querySelectorAll('a').every(anchor => anchor.href !== '#procedure-safety'));
 });
 
 test('lesson content is rendered as text, never interpreted as markup', async () => {
