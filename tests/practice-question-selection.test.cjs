@@ -31,6 +31,26 @@ test('medium and hard is the builder default, with selectable alternatives', () 
   assert.match(page, /<option value="medium-hard" selected>Medium \+ Hard<\/option>/);
 });
 
+test('active bank SATA items map to array-based answers for ExamUI practice', () => {
+  const api = selection();
+  const sata = api.fromBankRow({
+    item_type: 'sata',
+    item_data: { options: ['A', 'B', 'C', 'D', 'E'], correct: [0, 2, 4] }
+  });
+  assert.equal(sata.itemType, 'sata');
+  assert.deepEqual(Array.from(sata.answer), [0, 2, 4]);
+  assert.equal(sata.options.length, 5);
+  assert.equal(api.fromBankRow({
+    item_type: 'sata',
+    item_data: { options: ['A', 'B', 'C', 'D'], correct: [1, 1] }
+  }), null);
+  assert.equal(api.fromBankRow({
+    item_type: 'sata',
+    item_data: { options: ['A', 'B', 'C'], correct: [0] }
+  }), null);
+  assert.match(page, /\.in\('item_type',\['mcq','sata'\]\)/);
+});
+
 test('category and topic filters intersect instead of widening the selected pool', () => {
   const api = selection();
   const questions = [
@@ -130,9 +150,9 @@ test('Study Area migration validates and maps all 441 approved questions', () =>
   assert.doesNotMatch(studyAreaMigration, /SET\s+(?:nclex_category|topic|stem|rationale|correct_answer)\s*=/i);
 });
 
-test('student builder inventory and question query are limited to active MCQs', () => {
-  assert.match(page, /loadQuestionCatalog[\s\S]*?\.eq\('active',true\)\.eq\('item_type','mcq'\)/);
-  assert.match(page, /\.eq\('active',true\)\s*\.eq\('item_type','mcq'\)/);
+test('student builder inventory and question query include active MCQ and SATA items', () => {
+  assert.match(page, /loadQuestionCatalog[\s\S]*?\.eq\('active',true\)\.in\('item_type',\['mcq','sata'\]\)/);
+  assert.match(page, /\.eq\('active',true\)\s*\.in\('item_type',\['mcq','sata'\]\)/);
   for (const script of page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new vm.Script(script[1]);
   }

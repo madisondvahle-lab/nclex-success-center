@@ -1,4 +1,22 @@
 (function(){
+  function fromBankRow(question){
+    const itemType=question.item_type||'mcq';
+    let options,answer;
+    if(itemType==='mcq'){
+      options=[question.option_a,question.option_b,question.option_c,question.option_d];
+      answer=['a','b','c','d'].indexOf(String(question.correct_answer||'').toLowerCase());
+      if(!Number.isInteger(answer)||answer<0||options.some(option=>!String(option||'').trim()))return null;
+    }else if(itemType==='sata'){
+      options=question.item_data?.options;
+      answer=question.item_data?.correct;
+      if(!Array.isArray(options)||options.length<4||options.some(option=>!String(option||'').trim())||
+        !Array.isArray(answer)||!answer.length||
+        answer.some(index=>!Number.isInteger(index)||index<0||index>=options.length)||
+        new Set(answer).size!==answer.length)return null;
+    }else return null;
+    return {itemType,options,answer};
+  }
+
   function matchesDifficulty(question, difficulty){
     if(!difficulty||difficulty==='all')return true;
     const value=String(question.difficulty||'medium').trim().toLowerCase();
@@ -21,5 +39,5 @@
     });
   }
 
-  window.PracticeQuestionSelection={filter:filter,matchesDifficulty:matchesDifficulty};
+  window.PracticeQuestionSelection={filter:filter,matchesDifficulty:matchesDifficulty,fromBankRow:fromBankRow};
 })();

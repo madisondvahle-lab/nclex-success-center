@@ -1715,7 +1715,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     async function loadQuestionCatalog(){
       const rows=[],pageSize=500;
       for(let start=0;;start+=pageSize){
-        const page=await db.from('questions').select('topic,nclex_category,difficulty,study_area').eq('active',true).eq('item_type','mcq').order('id').range(start,start+pageSize-1);
+        const page=await db.from('questions').select('topic,nclex_category,difficulty,study_area').eq('active',true).in('item_type',['mcq','sata']).order('id').range(start,start+pageSize-1);
         if(page.error)throw page.error;
         rows.push(...(page.data||[]));
         if((page.data||[]).length<pageSize)break;
@@ -2208,9 +2208,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         try{
           for(let start=0;;start+=pageSize){
             const page=await db.from('questions')
-              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area')
+              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,item_type,item_data')
               .eq('active',true)
-              .eq('item_type','mcq')
+              .in('item_type',['mcq','sata'])
               .order('created_at')
               .order('id')
               .range(start,start+pageSize-1);
@@ -2246,19 +2246,22 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         (result.missed_question_ids||[]).forEach(id=>missed.add(String(id)));
       });
 
-      const normalized=(bank||[]).map(q=>({
-        id:String(q.id),
-        qno:q.question_no||null,dbId:q.id,
-        stem:q.stem,
-        options:[q.option_a,q.option_b,q.option_c,q.option_d],
-        answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
-        rationale:q.rationale||'Review the underlying nursing principle for this item.',
-        category:mixedCategory(q),
-        studyArea:String(q.study_area||'').trim(),
-        nclexCategory:String(q.nclex_category||'').trim(),
-        topic:String(q.topic||'').trim(),
-        difficulty:q.difficulty||'medium'
-      })).filter(q=>q.answer>=0&&q.options.every(option=>String(option||'').trim()));
+      const normalized=(bank||[]).map(q=>{
+        const bankItem=PracticeQuestionSelection.fromBankRow(q);
+        if(!bankItem)return null;
+        return {
+          id:String(q.id),
+          qno:q.question_no||null,dbId:q.id,
+          stem:q.stem,
+          ...bankItem,
+          rationale:q.rationale||'Review the underlying nursing principle for this item.',
+          category:mixedCategory(q),
+          studyArea:String(q.study_area||'').trim(),
+          nclexCategory:String(q.nclex_category||'').trim(),
+          topic:String(q.topic||'').trim(),
+          difficulty:q.difficulty||'medium'
+        };
+      }).filter(Boolean);
 
       const weights={
         'Priority & Clinical Judgment':.40,
