@@ -14,13 +14,15 @@ const inlineScript = [...page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>
   .find(script => script.includes('const requestedKey='));
 
 function render(search) {
+  const mounts = [];
   const elements = Object.fromEntries(
     ['pathway-back', 'pathway-eyebrow', 'pathway-title', 'pathway-intro', 'pathway-notice', 'modules']
       .map(id => [id, { textContent: '', innerHTML: '', href: '' }])
   );
   const document = {
     title: '',
-    getElementById: id => elements[id]
+    getElementById: id => elements[id],
+    querySelector: () => elements.modules
   };
   const blueprint = {
     learningPathway: [
@@ -62,16 +64,15 @@ function render(search) {
     ]
   };
   vm.runInNewContext(inlineScript, {
-    window: { NCLEX_CORE_BLUEPRINT: blueprint, location: { search } },
+    window: { NCLEX_CORE_BLUEPRINT: blueprint, location: { search }, Core1Module: { mount: root => mounts.push(root) } },
     document,
     URLSearchParams
   });
-  return { document, elements };
+  return { document, elements, mounts };
 }
 
 test('module links open a focused module with all its topics and related practice', () => {
   const moduleLinks = {
-    'core-safety-priority': 'supplemental-practice.html?set=safety-priority-01',
     'core-medication-calculations': 'supplemental-practice.html?set=med-procedure-01',
     'core-lifespan-reproductive': 'supplemental-practice.html?set=ob-newborn-01',
     'core-acute-systems': 'supplemental-practice.html?set=ngn-acute-01',
@@ -89,11 +90,10 @@ test('module links open a focused module with all its topics and related practic
     assert.doesNotMatch(elements.modules.innerHTML, /Explore module/);
   }
 
-  const { elements } = render('?module=core-safety-priority');
-  assert.equal(elements['pathway-title'].textContent, 'Safe Care, Priorities & Delegation');
-  assert.match(elements.modules.innerHTML, /procedure safety/);
-  assert.match(elements.modules.innerHTML, /supplemental-practice\.html\?set=safety-priority-01/);
-  assert.doesNotMatch(elements.modules.innerHTML, /Medication, Fluids &amp; Calculations/);
+  const { document, elements, mounts } = render('?module=core-safety-priority');
+  assert.equal(document.title, 'Safe Care, Priorities & Delegation · Core RN Safety Pathway');
+  assert.deepEqual(mounts, [elements.modules]);
+  assert.equal(elements.modules.innerHTML, '');
 });
 
 test('pathway without a module selection remains an overview linking to focused pages', () => {
