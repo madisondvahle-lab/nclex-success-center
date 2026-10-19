@@ -113,6 +113,16 @@ The repository contains an adaptive NCLEX-style readiness/CAT system with a larg
 
 It is an educational readiness tool, not the official NCLEX CAT.
 
+CAT selection (`nclex`, `mock`, and readiness `assessment` modes) now reads
+the authenticated student's saved item responses across prior attempts.
+Case-study child IDs map to their selectable parent using the item-key table.
+Unused items take priority only within the existing selection score tolerance,
+after required-topic, category, and difficulty ranking; previously answered
+items remain eligible when needed. Current-attempt duplicates remain excluded.
+This requires deployment of the `diagnostic-assessment` Edge Function, including
+its shared history helper; no schema migration or historical-data update is
+needed. A branch or pull request alone does not update the live CAT.
+
 ### Admin
 
 Admin functionality is distributed across secure tools for assignments, assessment history, shared progress, student management, and question-bank review.

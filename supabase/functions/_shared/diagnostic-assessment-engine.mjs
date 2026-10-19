@@ -139,7 +139,7 @@ export function shouldStopMock(history, ability, requirements, minimumQuestions 
   return null;
 }
 
-export function pickNextQuestion(bank, history, profile, ability, requirements, maximumMockQuestions = 150) {
+export function pickNextQuestion(bank, history, profile, ability, requirements, maximumMockQuestions = 150, previouslyAnsweredIds = new Set()) {
   const usedIds = new Set(history.map(item => item.sourceId || item.id));
   const isMock = profile?.mode === 'mock' || profile?.mode === 'assessment';
   const available = bank.filter(item => {
@@ -199,7 +199,9 @@ export function pickNextQuestion(bank, history, profile, ability, requirements, 
     })
     .sort((a, b) => a.score - b.score);
   const bestScore = ranked[0].score;
-  const shortlist = ranked.filter(entry => entry.score <= bestScore + 0.04).slice(0, 3);
+  const appropriate = ranked.filter(entry => entry.score <= bestScore + 0.04);
+  const unused = appropriate.filter(entry => !previouslyAnsweredIds.has(entry.item.item_id || entry.item.id));
+  const shortlist = (unused.length ? unused : appropriate).slice(0, 3);
   return shortlist[Math.floor(Math.random() * shortlist.length)].item;
 }
 

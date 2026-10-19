@@ -5,6 +5,7 @@ import {
   shouldStopMock,
   updateAbility,
 } from '../_shared/diagnostic-assessment-engine.mjs';
+import { previouslyAnsweredItemIds } from '../_shared/diagnostic-assessment-history.mjs';
 
 const allowedOrigins = new Set([
   'https://portal.studywithmadison.com',
@@ -101,7 +102,9 @@ async function createContext(request: Request) {
   return { user, student, isAdmin: isAdmin === true, service };
 }
 
-async function attemptForStudent(service: ReturnType<typeof createClient>, attemptId: string, studentId: string) {
+type AssessmentService = Awaited<ReturnType<typeof createContext>>['service'];
+
+async function attemptForStudent(service: AssessmentService, attemptId: string, studentId: string) {
   const { data, error } = await service
     .from('in_house_assessment_attempts')
     .select('id,student_id,session_key,assessment_key,assessment_title,assessment_version,mode,status,result,ability_estimate,target_questions,total_questions,correct_questions,checkpoint,checkpoint_revision,qa_mode,started_at,updated_at,completed_at')
@@ -113,7 +116,7 @@ async function attemptForStudent(service: ReturnType<typeof createClient>, attem
   return data;
 }
 
-async function itemKeys(service: ReturnType<typeof createClient>, scope: string) {
+async function itemKeys(service: AssessmentService, scope: string) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('bank_scope,item_id,item_source,parent_item_id,selectable,item_type,difficulty,blueprint,category,nclex_category,topic,cognitive_level,core_tags,correct_response,rationale,sequence_order,case_length')
@@ -128,7 +131,7 @@ function keyForItem(keys: Array<Record<string, any>>, id: string) {
   return item;
 }
 
-async function responseRows(service: ReturnType<typeof createClient>, attemptId: string) {
+async function responseRows(service: AssessmentService, attemptId: string) {
   const { data, error } = await service
     .from('in_house_assessment_item_responses')
     .select('item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
@@ -207,7 +210,7 @@ function attemptSummary(attempt: Record<string, any>) {
   };
 }
 
-async function stateForAttempt(service: ReturnType<typeof createClient>, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
+async function stateForAttempt(service: AssessmentService, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
   const rows = await responseRows(service, attempt.id);
   const reveal = attempt.status === 'completed' || attempt.checkpoint?.mode !== 'mock';
   return {
@@ -265,7 +268,10 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   if (existing) return await stateForAttempt(context.service, existing, keys);
 
   const requirements = await coreRequirements(context.service);
-  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions);
+  const previouslyAnsweredIds = ['nclex', 'mock', 'assessment'].includes(mode)
+    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys)
+    : new Set<string>();
+  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions, previouslyAnsweredIds);
   if (!firstItem) throw new HttpError(503, 'No assessment items are available for this mode.');
   const now = new Date().toISOString();
   const examTimer = mode === 'mock'
@@ -321,7 +327,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   return { attempt: attemptSummary(attempt), responses: [], currentItemId: firstItem.item_id };
 }
 
-async function coreRequirements(service: ReturnType<typeof createClient>) {
+async function coreRequirements(service: AssessmentService) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('item_id,core_tags')
@@ -473,6 +479,9 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     : mode === 'nclex' || mode === 'mock'
       ? Boolean(result)
       : newHistory.length >= attempt.target_questions;
+  const previouslyAnsweredIds = !reachedTarget && ['nclex', 'mock', 'assessment'].includes(mode)
+    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys, attempt.id)
+    : new Set<string>();
   const next = reachedTarget ? null : pickNextQuestion(
     keys.filter(row => row.selectable),
     newHistory,
@@ -480,6 +489,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     ability,
     requirements,
     attempt.target_questions,
+    previouslyAnsweredIds,
   );
   const complete = reachedTarget || !next;
   if (complete && (mode === 'nclex' || mode === 'mock')) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
