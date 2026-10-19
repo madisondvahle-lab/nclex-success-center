@@ -4,37 +4,45 @@ Read this file before making changes.
 
 ## Project Purpose
 
-This repository contains the private NCLEX Success Center used for
-student assessment, individualized remediation, learning modules,
-practice questions, CAT/readiness testing, progress tracking,
-and tutor administration.
+This repository contains the private NCLEX Success Center used for:
+- Student assessment
+- Individualized remediation
+- Learning modules
+- Practice questions
+- CAT and readiness testing
+- Student progress tracking
+- Tutor administration
 
 This is NOT the public Study With Madison marketing website.
 
 Public website, blog, services, SEO, marketing content, and
 public-facing business pages belong in the separate repository:
-`madisondvahle-lab/study-with-madison-site`.
+
+`madisondvahle-lab/study-with-madison-site`
 
 ## Before Working
 
-1. Read `.agents/STATUS.md` for current project status.
+1. Read `.agents/STATUS.md` when current project status is relevant.
 2. Read `.agents/PROJECT.md` when architecture is relevant.
 3. Read `.agents/CLINICAL-STANDARDS.md` before changing clinical
    or NCLEX content.
 4. Check `.agents/tasks/` for an active handoff when continuing
-   prior work.
+   previous work.
 5. Inspect current files before relying on historical commits.
 
-Only load additional documentation relevant to the current task.
+Only load documentation relevant to the current task.
+
 Avoid repeatedly reading unchanged files without a specific reason.
+
+Do not conduct a broad repository investigation when a targeted
+search will answer the question.
 
 ## Critical Project Rules
 
 - Do not renumber, rename, or reorganize curriculum modules
   without explicit approval.
 - Do not alter clinical wording, answers, rationales, clinical
-  facts, or question IDs unless the task specifically authorizes
-  clinical-content changes.
+  facts, or question IDs unless specifically authorized.
 - Technical, UI, security, and refactoring tasks do not authorize
   clinical-content changes.
 - Do not treat an empty GitHub code-search result as proof that
@@ -62,16 +70,20 @@ not a software developer.
 Communicate in clear, practical language without assuming
 programming knowledge.
 
-The owner's conversational communication style should not be
+The owner's conversational communication style must not be
 interpreted as unlimited authorization to perform additional work.
 
-The goal is to maintain a high-quality, clinically accurate,
-secure, functional platform while minimizing unnecessary
-AI processing, development costs, and manual administrative work.
+The goal is to maintain a clinically accurate, secure, functional,
+high-quality platform while minimizing unnecessary AI processing,
+development costs, and manual administrative work.
+
+Prioritize completed, verified outcomes over lengthy explanations
+of what could be done.
 
 ## Discussion vs. Execution
 
-Always distinguish between discussion and authorization.
+Always distinguish discussion, investigation, planning,
+and implementation.
 
 ### Discussion Mode
 
@@ -91,15 +103,31 @@ During discussion:
 
 - Explain practical options.
 - Recommend the most efficient approach.
-- Identify potential consequences or limitations.
+- Identify meaningful consequences or limitations.
 - Do not modify code, files, or database records.
 - Do not initiate extensive repository searches.
 - Do not automatically begin implementation.
-- Do not create unnecessary plans, files, or documentation.
-- Keep responses concise and actionable.
+- Do not create unnecessary plans or documentation.
+- Keep responses concise, specific, and actionable.
 
-If the user asks for an assessment that requires inspection,
-perform only the necessary read-only checks.
+### Read-Only Investigation
+
+When asked whether a feature exists, how something currently
+works, or why an issue occurs:
+
+- Investigate only the relevant implementation.
+- Do not treat investigation as authorization to modify code.
+- Begin with targeted searches for relevant functions and files.
+- Inspect only the files needed to answer the question.
+- Do not run unrelated tests, builds, or database operations.
+- Do not launch subagents.
+- Report verified findings with file references.
+- Distinguish confirmed behavior from assumptions.
+- Identify what remains unverified.
+- Stop once the investigation answers the question.
+
+Do not automatically begin fixing issues discovered
+during an investigation.
 
 ### Execution Mode
 
@@ -120,40 +148,56 @@ During execution:
 
 - Identify the exact scope.
 - Use existing project architecture.
-- Limit changes to the authorized files or records.
+- Limit changes to authorized files or records.
 - Avoid unrelated modifications.
 - Reuse existing utilities and workflows.
 - Perform necessary validation.
 - Report what was actually completed.
 - Stop when the task is finished.
 
-An explicit request to proceed authorizes the previously agreed
-scope only. It does not authorize additional batches, publication,
-deployment, or unrelated changes.
+An explicit request to proceed authorizes the previously
+agreed scope only.
+
+It does not automatically authorize additional batches,
+publication, deployment, or unrelated changes.
 
 Do not repeatedly request confirmation for clearly authorized,
 low-risk actions.
 
-Require explicit authorization for destructive operations,
-clinical publishing, substantial database changes, or changes
-outside the agreed scope.
+Require explicit authorization for:
+
+- Destructive operations
+- Clinical publishing
+- Substantial database changes
+- Production deployment when not previously authorized
+- Changes outside the agreed scope
+- Additional paid services or credit-consuming workflows
 
 ## AI Cost Efficiency
 
-AI processing is a limited resource.
+AI processing, premium requests, tokens, and development
+credits are limited resources.
 
-Before starting substantial work:
+Cost efficiency is a primary project requirement.
+
+### Before Starting Substantial Work
 
 1. Identify the requested outcome.
 2. Determine whether existing functionality already accomplishes it.
-3. Prefer deterministic scripts, SQL, or existing automation
+3. Identify the smallest relevant scope.
+4. Prefer deterministic scripts, SQL, or existing automation
    for repetitive operations.
-4. Use AI reasoning only where it adds meaningful value.
-5. Keep investigations focused on the relevant files and records.
+5. Use AI reasoning only where it provides meaningful value.
+6. Avoid expensive investigations when simpler verification
+   is sufficient.
 
 ### Efficiency Rules
 
+- Minimize unnecessary AI credit and token consumption.
 - Prefer targeted searches over repository-wide investigations.
+- Do not inspect unrelated files or subsystems.
+- Do not launch subagents unless explicitly authorized.
+- Do not perform broad audits unless explicitly requested.
 - Avoid repeatedly reading unchanged documentation.
 - Reuse previously approved work.
 - Do not regenerate completed content unnecessarily.
@@ -161,12 +205,12 @@ Before starting substantial work:
 - Avoid repeated tool calls without a clear purpose.
 - Prefer targeted database queries with appropriate limits.
 - Do not retrieve entire tables when a smaller query is sufficient.
-- Avoid creating temporary files that serve no useful purpose.
-- Do not perform broad audits unless specifically authorized.
+- Avoid creating temporary files without a useful purpose.
 - Do not reopen completed tasks without an identified reason.
-- Do not automatically begin additional batches.
+- Do not automatically begin additional tasks or batches.
 - Avoid unnecessarily large outputs.
-- Stop once the requested outcome is achieved.
+- Prefer the smallest safe implementation.
+- Stop when the requested outcome is achieved.
 
 For large operations, assess whether a smaller screening step
 could eliminate unnecessary work.
@@ -175,10 +219,59 @@ If the scope expands substantially beyond the original request,
 explain the additional work before proceeding.
 
 Never compromise clinical accuracy, data integrity, security,
-or required testing to reduce AI costs.
+or necessary testing merely to reduce AI costs.
 
-These instructions guide efficiency but do not guarantee
+These instructions guide efficient behavior but do not guarantee
 a specific AI-credit cost.
+
+### Agent and Tool Usage
+
+- Do not automatically delegate work to additional agents.
+- Do not launch parallel investigations unless explicitly requested.
+- Do not use expensive models or premium tools unnecessarily.
+- Do not repeatedly retry failed tool calls without identifying
+  the cause of failure.
+- Do not perform unrelated background investigations.
+- Do not automatically continue after completing the requested work.
+- Avoid tool calls whose results are unlikely to affect the outcome.
+- Prefer existing project scripts over AI-generated repetitive work.
+
+When a task can be accomplished without an AI agent,
+prefer the simpler method.
+
+### Conversation Context Management
+
+Long AI conversations can increase context consumption
+and trigger automatic compaction.
+
+To reduce unnecessary processing:
+
+- Prefer a fresh conversation for each distinct development task.
+- Use project documentation to preserve continuity.
+- Avoid carrying unrelated conversation history into new tasks.
+- Do not repeatedly summarize or manually compact conversations
+  when a new session would be more efficient.
+- Do not invoke manual compaction without a clear need.
+- Keep handoffs concise and limited to verified information.
+- Avoid attaching entire repositories or large files when
+  targeted excerpts are sufficient.
+- Do not repeatedly load large documentation files without
+  a specific reason.
+- Preserve essential decisions in existing project documentation.
+- Avoid generating lengthy progress reports after routine actions.
+
+When approaching a context limit, prioritize preserving:
+
+1. Current task and authorized scope
+2. Verified findings
+3. Files or records changed
+4. Remaining work
+5. Important blockers or risks
+
+Do not preserve unnecessary conversation history.
+
+Do not assume these instructions can disable automatic
+compaction or override a provider's internal billing behavior.
 
 ## Question Bank Auditing
 
@@ -189,31 +282,37 @@ Auditing does NOT automatically require rewriting.
 
 A successful audit may result in zero revisions.
 
-Before performing question-bank quality audits, read and follow
-`.agents/tasks/question-bank-audit.md`.
+Before performing question-bank quality audits, read and follow:
 
-This protocol governs screening, targeted revisions, duplicate
-prevention, approval, and audit reporting.
+`.agents/tasks/question-bank-audit.md`
+
+This protocol governs screening, targeted revisions,
+duplicate prevention, approval, and audit reporting.
 
 ### Screening Classification
 
 Classify each evaluated question as:
 
-PASS:
-Clinically accurate, appropriately challenging, with
-reasonable distractors and a defensible answer key.
+**PASS**
+
+Clinically accurate, appropriately challenging, with reasonable
+distractors and a defensible answer key.
+
 No revision necessary.
 
-MINOR:
+**MINOR**
+
 Small wording, formatting, metadata, classification,
 or clarity issue requiring limited correction.
 
-MAJOR:
+**MAJOR**
+
 Clinically inaccurate information, incorrect answer key,
 unsafe recommendations, significant ambiguity, weak
 distractors, or substantial rationale deficiencies.
 
-RETIRE:
+**RETIRE**
+
 Fundamentally unsuitable, irreparably flawed,
 or unnecessarily redundant with existing content.
 
@@ -225,8 +324,8 @@ or unnecessarily redundant with existing content.
 - Do not create correction drafts for passing questions.
 - Explain the specific deficiency before proposing changes.
 - Preserve appropriate conceptual reinforcement across the bank.
-- Distinguish intentional concept reinforcement from unnecessary
-  duplication.
+- Distinguish intentional concept reinforcement from
+  unnecessary duplication.
 - Check existing revision drafts before generating new ones.
 - Avoid reviewing the same question repeatedly without reason.
 - Preserve correct clinical information and learning objectives.
@@ -297,6 +396,24 @@ or private student information.
 
 Maintain Supabase authentication, RLS, and existing security controls.
 
+### Student Question History
+
+When working with practice questions, CAT functionality,
+or adaptive question selection:
+
+- Preserve existing student attempt history.
+- Do not overwrite historical question results.
+- Do not assume that session-level tracking persists
+  across separate tests.
+- Distinguish question exposure from completed attempts.
+- Verify how previously answered questions are identified
+  before modifying question-selection logic.
+- Do not change repeat-question behavior without authorization.
+- Preserve intentional reassessment and remediation functionality.
+
+Do not introduce new tracking tables or competing history
+systems without first inspecting existing functionality.
+
 ## Existing Administrative Tools
 
 Before proposing new administrative functionality,
@@ -328,8 +445,8 @@ without explaining their purpose and expected ongoing costs.
 numbering and implementation status.
 
 Historical commits may contain recoverable content but are
-NOT authoritative for current curriculum numbering or security
-architecture.
+NOT authoritative for current curriculum numbering or
+security architecture.
 
 Use existing project documentation to maintain continuity
 between AI conversations.
@@ -338,7 +455,7 @@ Avoid relying on long conversation histories as the sole
 source of project decisions.
 
 For substantial unfinished work, create or update the
-appropriate file in `.agents/tasks/`.
+appropriate file in `.agents/tasks/` when authorized.
 
 Handoff documentation should contain:
 
@@ -354,27 +471,45 @@ Keep handoffs concise.
 Do not create additional documentation when existing files
 already provide the necessary information.
 
+Do not repeatedly rewrite project status files without
+meaningful changes.
+
 ## Deployment Source of Truth
 
 - The live portal domain is `portal.studywithmadison.com`.
-- DNS and response headers currently identify GitHub Pages
+- DNS and response headers previously identified GitHub Pages
   (`madisondvahle-lab.github.io`, `server: GitHub.com`).
-- GitHub Pages deploys from the repository `main` branch
-  and repository root.
-- Netlify and Cloudflare Pages are not the active web host
-  for this portal.
-- Do not recommend purging their caches unless hosting
-  configuration is intentionally changed and verified.
+- The documented deployment source is the repository
+  `main` branch and repository root.
+- Netlify and Cloudflare Pages are not the documented active
+  web host for this portal.
+- Verify current hosting configuration when deployment
+  troubleshooting requires it.
+- Do not recommend purging unrelated hosting caches.
 - Use a cache-busting query parameter only to verify
   newly published source.
-- Cache-busting does not replace committing and pushing
-  the fix to `main`.
+- Cache-busting does not replace committing and merging
+  the fix into `main`.
 
 Do not assume that modifying local files or preparing a
 pull request automatically updates the live website.
 
-Clearly distinguish local changes, committed changes,
-merged changes, and deployed changes.
+Clearly distinguish:
+
+1. Local changes
+2. Committed changes
+3. Pushed branch changes
+4. Pull request created
+5. Merged into main
+6. Deployed to production
+
+Repository rules may require pull requests before changes
+can be merged into `main`.
+
+Do not bypass repository security rules merely for convenience.
+
+Never claim a deployment succeeded without verifying
+the relevant deployment result.
 
 ## Multi-Assistant Workflow
 
@@ -383,7 +518,7 @@ GitHub Copilot, and other development assistants.
 
 - Before changing deployment or authentication, read
   this file and `.agents/PROJECT.md`.
-- Preserve deployment facts in future handoffs.
+- Preserve verified deployment facts in future handoffs.
 - Do not infer hosting configuration from outdated conversations.
 - Use repository documentation as the shared source of truth.
 - Do not assume another assistant's proposed changes
@@ -394,6 +529,19 @@ GitHub Copilot, and other development assistants.
 
 ## Communication and Task Completion
 
+Communicate clearly and efficiently.
+
+Avoid unnecessary technical explanations when a simpler
+explanation will accomplish the same goal.
+
+For technical tasks, distinguish between:
+
+- What was requested
+- What was investigated
+- What was changed
+- What was tested
+- What remains unfinished
+
 At the end of completed work, briefly report:
 
 1. What was completed.
@@ -401,17 +549,22 @@ At the end of completed work, briefly report:
 3. What remains pending.
 4. Whether database records were modified.
 5. Whether anything was published or deployed.
-6. Any important validation results or unresolved concerns.
-
-Distinguish completed work from recommendations.
+6. Important validation results or unresolved concerns.
 
 Do not claim success without verification.
 
 Avoid lengthy summaries of routine tool operations.
 
+Do not repeatedly ask the owner to choose between options
+when one approach is clearly preferable.
+
 Do not automatically begin the next task or batch.
 
-The owner's time, AI credits, and clinical review capacity
-should be treated as limited resources.
+Do not promise future work that has not been scheduled
+or cannot actually be performed.
 
-Prioritize meaningful improvements over unnecessary activity.
+The owner's time, AI credits, and clinical review capacity
+must be treated as limited resources.
+
+Prioritize meaningful, verified improvements over
+unnecessary activity.
