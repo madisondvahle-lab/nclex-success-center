@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import {
   AUDIT_CRITERIA_VERSION,
   LETTERS,
+  PRICES,
   autoFixContent,
   compareVerification,
   contentHash,
@@ -58,14 +59,31 @@ type Meter = { input: number; output: number; cost: number; models: Set<string>;
 
 class BudgetError extends Error {}
 
+class AuditServiceError extends Error {
+  code: string;
+  httpStatus: number;
+  constructor(message: string, code: string, httpStatus: number) {
+    super(message);
+    this.code = code;
+    this.httpStatus = httpStatus;
+  }
+}
+
 async function chat(meter: Meter, model: string, system: string, user: string, temperature = 0) {
   if (meter.cost >= meter.maxCost) throw new BudgetError("Per-question spending limit reached.");
   const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not configured for this project.");
+  if (!apiKey) throw new AuditServiceError("OPENAI_API_KEY is not configured in Supabase. Configure it before retrying.", "ai_configuration", 503);
+  const messages = [{ role: "system", content: system }, { role: "user", content: user }];
+  // A UTF-8 byte bound deliberately overestimates prompt tokens to reserve the request's maximum cost.
+  const inputBound = new TextEncoder().encode(JSON.stringify(messages)).length + 256;
+  const outputPrice = (PRICES[model] || PRICES["gpt-4.1"])[1];
+  const outputLimit = Math.min(4096, Math.floor((meter.maxCost - meter.cost - estimateCost(model, inputBound, 0)) * 1e6 / outputPrice));
+  if (outputLimit < 128) throw new BudgetError("Insufficient remaining audit budget for another AI request. No additional request was sent.");
   const body: Record<string, unknown> = {
     model,
     response_format: { type: "json_object" },
-    messages: [{ role: "system", content: system }, { role: "user", content: user }],
+    messages,
+    max_completion_tokens: outputLimit,
   };
   if (!/^(o\d|gpt-5)/.test(model)) body.temperature = temperature;
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -74,7 +92,23 @@ async function chat(meter: Meter, model: string, system: string, user: string, t
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(55_000),
   });
-  if (!response.ok) throw new Error(`AI service error ${response.status}: ${(await response.text()).slice(0, 300)}`);
+  if (!response.ok) {
+    const detail = await response.text();
+    let providerCode = "";
+    try {
+      const parsed = JSON.parse(detail);
+      providerCode = String(parsed.error?.code || parsed.error?.type || "");
+    } catch {
+      // Non-JSON provider errors still have an actionable HTTP status.
+    }
+    if (/credit_balance_exhausted|insufficient_quota/.test(providerCode) || /insufficient_quota/.test(detail)) {
+      throw new AuditServiceError("OpenAI API credits are exhausted. Add API credits to the project associated with OPENAI_API_KEY, then retry. ChatGPT subscriptions do not include API credits.", "ai_quota_exhausted", 503);
+    }
+    if (response.status === 401 || response.status === 403) {
+      throw new AuditServiceError("OpenAI rejected the configured API key or project permissions. Check OPENAI_API_KEY in Supabase before retrying.", "ai_configuration", 503);
+    }
+    throw new AuditServiceError(`OpenAI request failed (HTTP ${response.status}${providerCode ? `, ${providerCode}` : ""}). The batch has stopped; retry after the service is available.`, "ai_service_error", 503);
+  }
   const data = await response.json();
   const input = data.usage?.prompt_tokens ?? 0;
   const output = data.usage?.completion_tokens ?? 0;
@@ -196,26 +230,44 @@ Deno.serve(async (request) => {
   const hash = contentHash(original);
   const cached = await db.from("question_audits").select("*").eq("question_id", questionId).eq("content_hash", hash)
     .eq("criteria_version", AUDIT_CRITERIA_VERSION).neq("audit_status", "error").maybeSingle();
+  if (cached.error) return json(request, { error: `Could not check previous audits: ${cached.error.message}` }, 500);
   if (cached.data) return json(request, { status: "cached", audit: cached.data, cost_usd: 0 });
 
+  const failed = await db.from("question_audits").select("*").eq("question_id", questionId).eq("content_hash", hash)
+    .eq("criteria_version", AUDIT_CRITERIA_VERSION).eq("audit_status", "error")
+    .order("audited_at", { ascending: false }).limit(1).maybeSingle();
+  if (failed.error) return json(request, { error: `Could not check failed audits: ${failed.error.message}` }, 500);
+  const previous = failed.data;
   const structural = validateContent(original).filter((i: any) => i.severity === "error");
   const deterministic = screenDeterministic(original);
-  const findings: Record<string, unknown> = { structural, signals: deterministic.signals };
+  const findings: Record<string, unknown> = {
+    structural, signals: deterministic.signals,
+    ...(previous ? { previous_errors: [...(previous.findings?.previous_errors || []), {
+      note: previous.note, audited_at: previous.audited_at, failure: previous.findings?.failure ?? null,
+    }] } : {}),
+  };
   const record: Record<string, unknown> = {
     question_id: questionId, content_hash: hash, criteria_version: AUDIT_CRITERIA_VERSION,
     priority: payload.priority ?? null, priority_reason: payload.priority_reason ?? null, audited_by: userData.user.id,
+    note: null, screening_class: null, clinical_risk: null, verification: null, revision_id: null,
   };
 
-  const finish = async (fields: Record<string, unknown>, extra: Record<string, unknown> = {}) => {
-    const saved = await db.from("question_audits").insert({
+  const finish = async (fields: Record<string, unknown>, extra: Record<string, unknown> = {}, httpStatus = 200) => {
+    const row = {
       ...record, findings, ...fields,
-      models: Object.fromEntries([...meter.models].map((m) => [m, true])),
-      input_tokens: meter.input, output_tokens: meter.output, est_cost_usd: Number(meter.cost.toFixed(4)),
-    }).select("*").single();
+      models: { ...previous?.models, ...Object.fromEntries([...meter.models].map((m) => [m, true])) },
+      input_tokens: (previous?.input_tokens || 0) + meter.input,
+      output_tokens: (previous?.output_tokens || 0) + meter.output,
+      est_cost_usd: Number((Number(previous?.est_cost_usd || 0) + meter.cost).toFixed(4)),
+      audited_at: new Date().toISOString(),
+    };
+    const saved = await (previous
+      ? db.from("question_audits").update(row).eq("id", previous.id).eq("audit_status", "error")
+      : db.from("question_audits").insert(row)).select("*").single();
     if (saved.error) {
-      return json(request, { error: `Could not record the audit: ${saved.error.message}`, cost_usd: Number(meter.cost.toFixed(4)) }, 500);
+      return json(request, { error: `Could not record the audit: ${saved.error.message}`, cost_usd: meter.cost }, 500);
     }
-    return json(request, { status: saved.data.audit_status, audit: saved.data, cost_usd: Number(meter.cost.toFixed(4)), ...extra });
+    return json(request, { status: saved.data.audit_status, audit: saved.data, cost_usd: meter.cost, ...extra }, httpStatus);
   };
 
   const createDraft = (proposed: unknown, summary: string) =>
@@ -302,6 +354,11 @@ Deno.serve(async (request) => {
   } catch (error) {
     // Errors are recorded so spend stays visible, but they remain retryable.
     const message = error instanceof Error ? error.message : String(error);
-    return await finish({ audit_status: "error", note: message.slice(0, 500), attempts: 0 });
+    const code = error instanceof AuditServiceError ? error.code : error instanceof BudgetError ? "audit_budget" : "audit_failed";
+    findings.failure = { code, stop_batch: true };
+    console.error(JSON.stringify({ event: "question_audit_failed", question_id: questionId, code, message }));
+    return await finish({ audit_status: "error", note: message.slice(0, 500), attempts: 0 }, {
+      error_code: code, stop_batch: true,
+    }, error instanceof AuditServiceError ? error.httpStatus : error instanceof BudgetError ? 409 : 500);
   }
 });
