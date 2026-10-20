@@ -1,4 +1,4 @@
-// Deterministic (no-AI) question-bank audit helpers, shared by the admin dashboard
+// Deterministic (no-AI) question-bank audit helpers, shared by the dashboard and function
 // and the question-audit Edge Function. Nothing here calls the network.
 
 export const AUDIT_CRITERIA_VERSION = 'qa-2026-10-v1';

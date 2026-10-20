@@ -12,6 +12,8 @@ test('review page loads the audit panel inside Review & Flags', () => {
   assert.match(page, /id="qa-audit-mount"/);
   assert.match(page, /globalThis\.QAAudit\?\.init\(/);
   assert.match(page, /QAAudit\.core\.validateContent\(proposed\)/);
+  assert.match(read('question-audit-panel.js'), /supabase\/functions\/shared\/question-audit-core\.mjs/);
+  assert.match(read('supabase/functions/question-audit/index.ts'), /"\.\.\/shared\/question-audit-core\.mjs"/);
 });
 
 test('audit migration is additive and admin-only', () => {

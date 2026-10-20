@@ -1,7 +1,7 @@
 // Automated quality-audit panel for question-bank-review.html.
 // Reuses the page's correction-draft workflow; it only proposes drafts and never applies or publishes.
 (function () {
-  const CORE_URL = './supabase/functions/_shared/question-audit-core.mjs';
+  const CORE_URL = './supabase/functions/shared/question-audit-core.mjs';
   const STATUS_LABEL = { pass: 'Pass', auto_fix: 'Auto-fix', revised: 'Revised', quarantine: 'Quarantine', released: 'Released', error: 'Error' };
   const STATUS_CLASS = { pass: 'good', auto_fix: 'good', revised: 'warn', quarantine: 'bad', released: '', error: 'bad' };
   const MAX_BATCH = 25;

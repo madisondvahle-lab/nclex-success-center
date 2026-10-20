@@ -11,7 +11,7 @@ import {
   snapshotContent,
   syncScoring,
   validateContent,
-} from "../_shared/question-audit-core.mjs";
+} from "../shared/question-audit-core.mjs";
 
 const allowedOrigins = new Set([
   "https://portal.studywithmadison.com",
