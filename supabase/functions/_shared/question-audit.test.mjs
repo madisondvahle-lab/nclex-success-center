@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import {
   autoFixContent, compareVerification, contentHash, prioritize, screenDeterministic,
   snapshotContent, syncScoring, validateContent,
-} from './question-audit-core.mjs';
+} from '../shared/question-audit-core.mjs';
 
 const mcq = (overrides = {}) => snapshotContent({
   stem: 'A client receiving heparin has new epistaxis and bruising. Which action should the nurse take first?',
