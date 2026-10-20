@@ -772,6 +772,8 @@
               <div id="flag-list" class="panel-content"></div>
             </section>
 
+            <div id="qa-audit-mount"></div>
+
             <section class="dashboard-panel" id="clinical-revisions">
               <div class="panel-heading">
                 <div>
@@ -882,6 +884,7 @@
   <iframe id="legacy-source" src="question-bank.html" style="display:none" aria-hidden="true"></iframe>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="question-audit-panel.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1253,12 +1256,12 @@
         if(!$('e-rat').value.trim()){alert('A correction must include its full rationale.');return}
         let optionRationales,references,itemData=editable.item_data?JSON.parse(JSON.stringify(editable.item_data)):null;
         try{
-          optionRationales=JSON.parse($('e-option-rationales').value);
-          references=JSON.parse($('e-reference-list').value);
+          try{optionRationales=JSON.parse($('e-option-rationales').value)}catch(parseError){throw new Error(`Option rationales: ${parseError.message}`)}
+          try{references=JSON.parse($('e-reference-list').value)}catch(parseError){throw new Error(`References: ${parseError.message}`)}
           if(!optionRationales||typeof optionRationales!=='object'||Array.isArray(optionRationales))throw new Error('Option rationales must be a JSON object.');
           if(!Array.isArray(references)||references.some(ref=>!ref||typeof ref.title!=='string'||!ref.title.trim()||typeof ref.url!=='string'||!/^https?:\/\//i.test(ref.url)))throw new Error('References must be a JSON array of objects with a title and http(s) URL.');
           if(type!=='mcq'){
-            itemData=JSON.parse($('e-item-data').value);
+            try{itemData=JSON.parse($('e-item-data').value)}catch(parseError){throw new Error(`NGN interaction/scoring data: ${parseError.message}`)}
             if(!itemData||typeof itemData!=='object'||Array.isArray(itemData)||!Object.keys(itemData).length)throw new Error('NGN interaction data must be a non-empty JSON object.');
           }
         }catch(error){alert(error.message||'Check the metadata JSON.');return}
@@ -1284,6 +1287,12 @@
           itemData.correct=checks.map((check,index)=>check.checked?index:-1).filter(index=>index>=0);
         }
         if(itemData){itemData.stem=proposed.stem;itemData.rationale=proposed.rationale;if(type==='case')itemData.title=proposed.stem}
+        if(globalThis.QAAudit?.core&&['mcq','sata'].includes(type)){
+          // Re-sync scoring metadata with the visible options, then report any remaining field-level problems.
+          Object.assign(proposed,QAAudit.core.syncScoring(proposed));
+          const problems=QAAudit.core.validateContent(proposed).filter(issue=>issue.severity==='error');
+          if(problems.length){alert(`Fix these fields before saving:\n\n${problems.map(issue=>`• ${issue.field}: ${issue.message}`).join('\n')}`);return}
+        }
         const base={
           stem:question.stem,option_a:question.option_a??null,option_b:question.option_b??null,
           option_c:question.option_c??null,option_d:question.option_d??null,
@@ -1414,7 +1423,7 @@
       $('revision-list').innerHTML=open.length?open.map(revision=>{
         const question=live.find(item=>item.id===revision.question_id),status=revision.status;
         const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}" type="button">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}" type="button">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject approved correction</button>`;
-        return `<article class="candidate"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span><span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${question?`<button class="button secondary" data-revision-edit="${esc(question.id)}" type="button">Edit correction draft</button>`:''}${action}</div></article>`;
+        return `<article class="candidate" id="rev-${esc(revision.id)}"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span>${globalThis.QAAudit?.badge?QAAudit.badge(revision.id):''}<span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${question?`<button class="button secondary" data-revision-edit="${esc(question.id)}" type="button">Edit correction draft</button>`:''}${action}</div></article>`;
       }).join(''):'<p class="empty">No correction drafts are awaiting review. Existing question edits will appear here as proposals.</p>';
       document.querySelectorAll('[data-revision-action]').forEach(button=>button.addEventListener('click',()=>handleRevisionAction(button.dataset.revisionAction,button.dataset.revisionId)));
       document.querySelectorAll('[data-revision-edit]').forEach(button=>button.addEventListener('click',()=>openManagedEdit(button.dataset.revisionEdit)));
@@ -1661,6 +1670,10 @@
       });
       $('bulk-json').addEventListener('input',()=>{if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before changing the batch.';return}stagedBatch=[];renderBulkPreview();$('bulk-status').textContent='Batch changed. Validate and preview it again.'});
       render();renderManage();renderRevisionDrafts();
+      globalThis.QAAudit?.init({db,esc,qlabel,getLive:()=>live,getFlags:()=>flags,getDrafts:()=>revisionDrafts,
+        reloadDrafts:async()=>{revisionDrafts=await loadAllRevisionDrafts();renderRevisionDrafts();render()},
+        rerender:()=>{render();renderManage();updateBankOverview()},
+        showDraft:id=>{switchTab('review');const card=$('rev-'+id);if(card){card.scrollIntoView({behavior:'smooth',block:'start'});const details=card.querySelector('details');if(details)details.open=true}}});
       db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags();updateBankOverview()});renderFlags();updateBankOverview()}});
       if(!bulkImportReady)$('bulk-status').textContent='Run supabase-question-bulk-import.sql before using bulk import.';
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
