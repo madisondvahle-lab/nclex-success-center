@@ -1,6 +1,6 @@
 # Question-Bank QA Automation (pilot)
 
-Status: pilot built; no audits run yet; nothing applied or published.
+Status: pilot dashboard published through PRs #230 and #231. First 10-question pilot failed; no live question changes or correction drafts resulted. Failure-handling Edge Function fix deployed; dashboard fix awaiting PR publication.
 Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-STANDARDS.md`.
 
 ## What exists
@@ -25,6 +25,23 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Student response data uses text item IDs (100 rows) and cannot be tied to questions; not used as a signal.
 
 ## Remaining
-1. Commit/push the front-end (panel JS + page hooks) to `main` so the live dashboard shows the panel (GitHub Pages).
-2. Run the 10-question pilot from the dashboard, review drafts and cost, evaluate reliability before enlarging batches.
+1. Publish the tested dashboard failure-handling fix through the protected-branch PR workflow.
+2. Owner will restore OpenAI API credits later. Successful authenticated AI processing and live result persistence remain unverified until funding and an admin session are available. Verify one controlled question first; do not automatically run another 10-question batch.
 3. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
+
+## First pilot failure: verified diagnosis
+- All 10 saved error records contain OpenAI HTTP 429, `insufficient_quota` / `credit_balance_exhausted`. Zero tokens and estimated cost; the configured API project has no remaining credits. ChatGPT subscription billing is separate.
+- Historical deployed request logs show browser function POST 200, auth user lookup 200, `is_app_admin` 200, question/draft/cache reads 200, audit inserts 201, and dashboard refreshes 200. Callers match `app_admins`. Authentication, browser connectivity, and audit-table write permissions were not the cause.
+- The old function returned provider failures as HTTP-200 error results. The dashboard counted those as finished and continued all 10 questions.
+- Owner explicitly chose "I will restore credits later; fix the software first." Do not change secrets or claim successful real AI validation.
+- Read-only baseline during investigation: 1,133 questions, 490 active, 120 correction drafts, 10 error audits for 10 questions. The earlier 491 active count changed outside this task.
+
+## Failure-handling fix
+- Actionable provider quota/configuration errors, non-2xx responses, and structured sanitized failure logs.
+- Dashboard stops on the first failure, distinguishes completed/failed/skipped, and keeps failed questions selectable for a manual retry. Refresh failures stay visible.
+- Retries update the matching failed audit UUID and preserve earlier error notes and cumulative usage/cost. Successful retries clear stale failure state. Existing successful-cache and open-draft checks prevent repeat audits/drafts.
+- Dashboard cap defaults to and cannot exceed $2; remaining budget is forwarded to each request. AI completion limits reserve estimated prompt/output cost before calls. Costs remain estimates based on configured model prices.
+- No schema changes; no automatic apply, approval, publication, or quarantine actions.
+- Tests include mocked backend persistence/retry/provider failures and dashboard first-error stop, manual resume, $2 cap, remaining-budget forwarding, refresh failures, and run/build guards. Mocked authentication is not a successful real authenticated audit.
+- Validation: 58 focused tests pass (audit core, Edge Function, panel behavior/wiring, correction editor, student navigation). Live read-only counts still match the investigation baseline: 1,133 questions, 490 active, 120 drafts, 10 error audits, $0 audit cost.
+- Updated Edge Function deployed with `supabase functions deploy question-audit --project-ref pmjwwktwlsqpetwfvolb --use-api`. No database migration or live records were changed.

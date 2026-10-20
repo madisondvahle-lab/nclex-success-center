@@ -25,11 +25,20 @@ globalThis.__createClient = () => ({
     const builder = {
       select: () => builder,
       insert: row => { state.op = 'insert'; state.row = row; return builder; },
+      update: row => { state.op = 'update'; state.row = row; return builder; },
+      order: () => builder,
+      limit: () => builder,
       eq: (col, val) => { state.filters.push({ op: 'eq', col, val }); return builder; },
       neq: (col, val) => { state.filters.push({ op: 'neq', col, val }); return builder; },
       in: (col, vals) => { state.filters.push({ op: 'in', col, vals }); return builder; },
       maybeSingle: async () => ({ data: (tables[table] || []).find(r => matches(r, state.filters)) ?? null, error: null }),
       single: async () => {
+        if (state.op === 'update') {
+          const row = (tables[table] || []).find(r => matches(r, state.filters));
+          if (!row) return { data: null, error: { message: 'Audit changed during retry.' } };
+          Object.assign(row, state.row);
+          return { data: row, error: null };
+        }
         if (state.op === 'insert') {
           const row = { id: `${table}-${(tables[table] ||= []).length + 1}`, ...state.row };
           if (table === 'question_audits' && tables[table].some(r => r.question_id === row.question_id && r.content_hash === row.content_hash && r.audit_status !== 'error' && row.audit_status !== 'error')) {
@@ -172,6 +181,113 @@ test('AI failures are recorded as retryable errors', async () => {
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'error');
   assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('exhausted API credits return a recorded actionable failure, not success', async () => {
+  reset();
+  let requests = 0;
+  globalThis.fetch = async () => {
+    requests++;
+    return new Response(JSON.stringify({ error: { type: 'insufficient_quota', code: 'credit_balance_exhausted' } }), { status: 429 });
+  };
+  const response = await call({ question_id: QID });
+  const body = await response.json();
+  assert.equal(response.status, 503);
+  assert.equal(body.status, 'error');
+  assert.equal(body.error_code, 'ai_quota_exhausted');
+  assert.equal(body.stop_batch, true);
+  assert.match(body.audit.note, /credits are exhausted/);
+  assert.equal(body.cost_usd, 0);
+  assert.equal(requests, 1);
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  assert.deepEqual(tables.questions, [question()]);
+});
+
+test('repeated failed retries update the same record and preserve the failure history', async () => {
+  reset();
+  globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 'credit_balance_exhausted' } }), { status: 429 });
+  await call({ question_id: QID });
+  const originalId = tables.question_audits[0].id;
+  await call({ question_id: QID });
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(tables.question_audits[0].id, originalId);
+  assert.equal(tables.question_audits[0].findings.previous_errors.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('a funded retry succeeds in place, then future attempts use the cache', async () => {
+  reset();
+  globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 'credit_balance_exhausted' } }), { status: 429 });
+  await call({ question_id: QID });
+  const originalId = tables.question_audits[0].id;
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  const response = await call({ question_id: QID });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, 'pass');
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(body.audit.id, originalId);
+  assert.equal(body.audit.findings.previous_errors.length, 1);
+  assert.equal(body.audit.note, null);
+  assert.equal(body.audit.findings.failure, undefined);
+  const calls = scriptAi([]);
+  assert.equal((await (await call({ question_id: QID })).json()).status, 'cached');
+  assert.equal(calls.length, 0);
+  assert.deepEqual(tables.questions, [question()]);
+});
+
+test('a retry that creates a correction is skipped on repetition without another draft', async () => {
+  reset();
+  globalThis.fetch = async () => new Response('unavailable', { status: 503 });
+  await call({ question_id: QID });
+  scriptAi([
+    { classification: 'MAJOR', clinical_risk: 'medium', issues: [], revise_scope: ['options'] },
+    revision(),
+    { answer: [1], multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true },
+  ]);
+  assert.equal((await (await call({ question_id: QID })).json()).status, 'revised');
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 1);
+  const calls = scriptAi([]);
+  assert.equal((await (await call({ question_id: QID })).json()).status, 'skipped');
+  assert.equal(calls.length, 0);
+  assert.equal(tables.question_revision_drafts.length, 1);
+});
+
+test('invalid API configuration and rate limiting stop the batch with distinct errors', async () => {
+  for (const [status, code] of [[401, 'ai_configuration'], [403, 'ai_configuration'], [429, 'ai_service_error']]) {
+    reset();
+    globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 'rate_limit_exceeded' } }), { status });
+    const body = await (await call({ question_id: QID })).json();
+    assert.equal(body.error_code, code);
+    assert.equal(body.stop_batch, true);
+  }
+});
+
+test('a missing API key is an explicit configuration error without an AI call', async () => {
+  reset();
+  delete env.OPENAI_API_KEY;
+  try {
+    const calls = scriptAi([]);
+    const body = await (await call({ question_id: QID })).json();
+    assert.equal(body.error_code, 'ai_configuration');
+    assert.equal(calls.length, 0);
+  } finally {
+    env.OPENAI_API_KEY = 'test-key';
+  }
+});
+
+test('AI requests reserve prompt cost and limit completion tokens within the supplied budget', async () => {
+  reset();
+  const calls = scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  await call({ question_id: QID, max_cost_usd: 0.01 });
+  assert.equal(calls.length, 1);
+  const request = calls[0];
+  assert.ok(Number.isInteger(request.max_completion_tokens));
+  assert.ok(request.max_completion_tokens >= 128);
+  const bound = new TextEncoder().encode(JSON.stringify(request.messages)).length + 256;
+  assert.ok((bound * 0.4 + request.max_completion_tokens * 1.6) / 1e6 <= 0.01);
 });
 
 test('SATA revisions keep item_data options and correct positions in sync', async () => {

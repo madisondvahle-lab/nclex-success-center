@@ -7,6 +7,7 @@
   const MAX_BATCH = 25;
   let ctx, core, audits = [], latest = new Map(), batch = [], processed = new Map();
   let running = false, pauseRequested = false, sessionCost = 0, approveSel = new Set(), root;
+  const failedIds = new Set();
   const $ = id => document.getElementById(id);
 
   const style = document.createElement('style');
@@ -70,19 +71,20 @@
     list.innerHTML = batch.map(item => {
       const state = processed.get(item.question.id);
       const flagged = flagInfo(item.question.id);
-      return `<label class="qa-row"><input type="checkbox" data-qa-pick="${esc(item.question.id)}" ${item.picked !== false ? 'checked' : ''} ${state ? 'disabled' : ''}><span><strong>${esc(ctx.qlabel(item.question))}</strong> · ${esc(item.question.topic || 'Uncategorized')} <span class="tag ${item.priority === 1 ? 'warn' : ''}">P${item.priority}</span> <span class="tag">${item.question.active ? 'Published' : 'Inactive'}</span>${flagged.any ? '<span class="tag warn">Flagged</span>' : ''}<br><span class="count">${esc(item.reason)}${item.structural ? ' · scoring/structure problem' : ''} · ${item.score} quality signal${item.score === 1 ? '' : 's'}</span>${state ? `<br><strong>${esc(state)}</strong>` : ''}</span></label>`;
+      return `<label class="qa-row"><input type="checkbox" data-qa-pick="${esc(item.question.id)}" ${item.picked !== false ? 'checked' : ''} ${running || (state && !failedIds.has(item.question.id)) ? 'disabled' : ''}><span><strong>${esc(ctx.qlabel(item.question))}</strong> · ${esc(item.question.topic || 'Uncategorized')} <span class="tag ${item.priority === 1 ? 'warn' : ''}">P${item.priority}</span> <span class="tag">${item.question.active ? 'Published' : 'Inactive'}</span>${flagged.any ? '<span class="tag warn">Flagged</span>' : ''}<br><span class="count">${esc(item.reason)}${item.structural ? ' · scoring/structure problem' : ''} · ${item.score} quality signal${item.score === 1 ? '' : 's'}</span>${state ? `<br><strong>${esc(state)}</strong>` : ''}</span></label>`;
     }).join('');
     list.querySelectorAll('[data-qa-pick]').forEach(box => box.addEventListener('change', () => {
       const item = batch.find(entry => entry.question.id === box.dataset.qaPick); if (item) item.picked = box.checked; updateRunButton();
     }));
     updateRunButton();
   }
-  const pending = () => batch.filter(item => item.picked !== false && !processed.has(item.question.id));
+  const pending = () => batch.filter(item => item.picked !== false && (!processed.has(item.question.id) || failedIds.has(item.question.id)));
   function updateRunButton() {
     const n = pending().length;
     $('qa-run').disabled = running || !n;
     $('qa-run').textContent = processed.size ? `Resume audit (${n} remaining)` : `Run audit on ${n} selected`;
     $('qa-pause').disabled = !running;
+    $('qa-build').disabled = running;
   }
 
   async function reloadAudits() {
@@ -98,11 +100,16 @@
     rows.forEach(row => { if (!latest.has(row.question_id)) latest.set(row.question_id, row); });
   }
 
-  async function auditOne(item) {
-    const result = await ctx.db.functions.invoke('question-audit', { body: { question_id: item.question.id, max_cost_usd: 0.25, priority: item.priority, priority_reason: item.reason } });
+  async function auditOne(item, remainingBudget) {
+    const result = await ctx.db.functions.invoke('question-audit', { body: { question_id: item.question.id, max_cost_usd: Math.min(0.25, remainingBudget), priority: item.priority, priority_reason: item.reason } });
     if (result.error) {
       let message = result.error.message;
-      try { const body = await result.error.context.json(); message = body.error || message; } catch (_) { /* keep generic message */ }
+      if (result.error.context instanceof Response) {
+        const body = await result.error.context.json();
+        if (body.status === 'error') return body;
+        message = body.error || message;
+        return { status: 'error', error: message, cost_usd: body.cost_usd || 0 };
+      }
       throw new Error(message);
     }
     return result.data;
@@ -110,38 +117,53 @@
 
   async function runBatch() {
     if (running) return;
-    const cap = Math.max(0.1, Math.min(5, Number($('qa-cap').value) || 2));
+    const cap = Math.max(0.1, Math.min(2, Number($('qa-cap').value) || 2));
     running = true; pauseRequested = false; updateRunButton();
     const status = $('qa-progress');
     const queue = pending();
-    let done = 0;
+    let done = 0, failed = 0, skipped = 0, stopReason = '';
     for (const item of queue) {
       if (pauseRequested) break;
-      if (sessionCost >= cap) { status.textContent = `Spending cap of ${money(cap)} reached after ${done} audit${done === 1 ? '' : 's'}. Raise the cap to continue.`; break; }
-      status.textContent = `Auditing ${ctx.qlabel(item.question)} (${done + 1} of ${queue.length}) · spent ${money(sessionCost)} of ${money(cap)}…`;
+      if (cap - sessionCost < 0.01) { stopReason = `Spending cap of ${money(cap)} reached; no further question was started.`; break; }
+      status.textContent = `Auditing ${ctx.qlabel(item.question)} (${done + skipped + failed + 1} of ${queue.length}) · spent ${money(sessionCost)} of ${money(cap)}…`;
       try {
-        const data = await auditOne(item);
+        const data = await auditOne(item, cap - sessionCost);
         sessionCost += Number(data.cost_usd || 0);
-        if (data.status === 'skipped') processed.set(item.question.id, `Skipped: ${data.reason}`);
-        else if (data.status === 'cached') processed.set(item.question.id, 'Already audited (cached, no cost)');
-        else processed.set(item.question.id, `Result: ${STATUS_LABEL[data.status] || data.status}`);
+        if (data.status === 'error' || data.error) {
+          failed++;
+          failedIds.add(item.question.id);
+          stopReason = data.audit?.note || data.error || 'The audit failed. Review its error record before retrying.';
+          processed.set(item.question.id, `Not completed: ${stopReason}`);
+          break;
+        }
+        failedIds.delete(item.question.id);
+        if (data.status === 'skipped') { skipped++; processed.set(item.question.id, `Skipped: ${data.reason}`); }
+        else if (data.status === 'cached') { skipped++; processed.set(item.question.id, 'Already audited (cached, no cost)'); }
+        else if (['pass', 'auto_fix', 'revised', 'quarantine'].includes(data.status)) {
+          done++; processed.set(item.question.id, `Result: ${STATUS_LABEL[data.status]}`);
+        } else throw new Error('The audit service returned an unrecognized response. No further questions were started.');
       } catch (error) {
+        failed++; failedIds.add(item.question.id);
         processed.set(item.question.id, `Not completed: ${error.message}. It can be retried.`);
-        if (/session|sign in|Only Madison/i.test(error.message)) { status.textContent = error.message; break; }
+        stopReason = error.message;
+        break;
       }
-      done++;
       renderBatch();
     }
-    await refresh();
+    const refreshError = await refresh();
     running = false;
-    status.textContent = pauseRequested ? `Paused after ${done} audit${done === 1 ? '' : 's'}. Resume continues with the remaining questions.` : `Finished ${done} audit${done === 1 ? '' : 's'} this run. Spent ${money(sessionCost)} so far this session. No question has been changed or published.`;
-    updateRunButton();
+    status.textContent = `${stopReason ? `Stopped: ${stopReason} ` : pauseRequested ? 'Paused. ' : ''}${done} completed, ${failed} failed, ${skipped} skipped; ${pending().length} remaining. Spent ${money(sessionCost)} of ${money(cap)}. No live question was changed or published.${refreshError ? ` ${refreshError}` : ''}`;
+    renderBatch();
   }
 
   async function refresh() {
-    try { await reloadAudits(); } catch (error) { $('qa-progress').textContent = `Could not reload audit results: ${error.message || error}`; }
-    try { await ctx.reloadDrafts(); } catch (_) { /* drafts list shows its own error */ }
+    const errors = [];
+    try { await reloadAudits(); } catch (error) { errors.push(`Could not reload audit results: ${error.message || error}`); }
+    try { await ctx.reloadDrafts(); } catch (error) { errors.push(`Could not reload correction drafts: ${error.message || error}`); }
     renderSummary(); renderResults(); renderBatch();
+    const message = errors.join(' ');
+    if (message) $('qa-progress').textContent = message;
+    return message;
   }
 
   function categories() { return [...new Set(ctx.getLive().map(question => question.nclex_category).filter(Boolean))].sort(); }
@@ -243,8 +265,10 @@
   }
 
   function retry(questionId) {
+    if (running) return;
     const question = ctx.getLive().find(item => item.id === questionId); if (!question) return;
     processed.delete(questionId);
+    failedIds.delete(questionId);
     batch = batch.filter(item => item.question.id !== questionId);
     batch.unshift({ question, priority: 1, reason: 'Retry after an error', score: 0, structural: 0 });
     renderBatch();
@@ -252,8 +276,10 @@
   }
 
   function buildBatch() {
+    if (running) return;
     const size = Math.max(1, Math.min(MAX_BATCH, Number($('qa-size').value) || 10));
     processed = new Map();
+    failedIds.clear();
     batch = candidateList($('qa-source').value, size);
     $('qa-progress').textContent = batch.length ? `${batch.length} question${batch.length === 1 ? '' : 's'} selected. Questions with open correction drafts, unchanged audited questions, and quarantined questions are excluded automatically.` : 'Nothing eligible for this source. Everything matching it is already audited, has an open correction draft, or is quarantined.';
     renderBatch();
@@ -262,7 +288,7 @@
   function mount() {
     root.innerHTML = `<section class="dashboard-panel" id="qa-audit"><div class="panel-heading"><div><h2>Automated quality audit</h2><p>Screens questions for clinical, distractor, answer-clue, scoring and rationale problems, then saves any proposed revision as a pending correction draft below. Nothing is applied or published automatically.</p></div></div><div class="panel-content">
       <div class="qa-grid" id="qa-summary"></div><p class="count" id="qa-usage" style="margin:0 0 14px;font-size:.78rem;color:var(--admin-muted)"></p>
-      <div class="toolbar"><label>Batch source <select id="qa-source"><option value="flagged_risk">Flagged, then highest-risk published</option><option value="unaudited">Other published, not yet audited</option><option value="inactive">Inactive drafts</option></select></label><label>Size <input id="qa-size" type="number" min="1" max="${MAX_BATCH}" value="10" style="width:70px"></label><label>Spend cap ($) <input id="qa-cap" type="number" min="0.1" max="5" step="0.1" value="2" style="width:80px"></label><button class="button secondary" type="button" id="qa-build">Build batch</button></div>
+      <div class="toolbar"><label>Batch source <select id="qa-source"><option value="flagged_risk">Flagged, then highest-risk published</option><option value="unaudited">Other published, not yet audited</option><option value="inactive">Inactive drafts</option></select></label><label>Size <input id="qa-size" type="number" min="1" max="${MAX_BATCH}" value="10" style="width:70px"></label><label>Spend cap ($) <input id="qa-cap" type="number" min="0.1" max="2" step="0.1" value="2" style="width:80px"></label><button class="button secondary" type="button" id="qa-build">Build batch</button></div>
       <div id="qa-batch-list" class="quality-grid"></div>
       <div class="buttons"><button class="button" type="button" id="qa-run" disabled>Run audit</button><button class="button secondary" type="button" id="qa-pause" disabled>Pause</button></div>
       <p class="count" id="qa-progress" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">Build a batch to begin. Each question costs roughly 1–5 cents; the spend cap stops the run.</p>
