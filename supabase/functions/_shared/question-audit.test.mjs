@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  autoFixContent, compareVerification, contentHash, prioritize, screenDeterministic,
+  autoFixContent, assessItemQuality, compareVerification, contentHash, optionQualityProblems, prioritize, revisionImprovementProblems, screenDeterministic,
   snapshotContent, syncScoring, validateContent,
 } from '../shared/question-audit-core.mjs';
+import { goodQuality, goodVerdict, goodImprovement, q0024, q0024PoorProposal } from '../../../tests/fixtures/question-audit-quality.mjs';
 
 const mcq = (overrides = {}) => snapshotContent({
   stem: 'A client receiving heparin has new epistaxis and bruising. Which action should the nurse take first?',
@@ -122,9 +123,92 @@ test('prioritization follows the requested order', () => {
 
 test('verification must match the key and raise no concerns', () => {
   const content = mcq();
-  assert.equal(compareVerification(content, { answer: [0], multiple_defensible: false }).agrees, true);
+  assert.equal(compareVerification(content, { ...goodVerdict(), answer: [0] }).agrees, true);
   assert.equal(compareVerification(content, { answer: [1] }).agrees, false);
   assert.equal(compareVerification(content, { answer: [0], multiple_defensible: true }).agrees, false);
-  assert.equal(compareVerification(sata(), { answer: [2, 0] }).agrees, true);
+  assert.equal(compareVerification(sata(), { ...goodVerdict(), answer: [2, 0] }).agrees, true);
   assert.equal(compareVerification(sata(), { answer: [0] }).agrees, false);
+});
+
+test('Q-0024 original and saved proposal both flag all three neglect-of-care distractors', () => {
+  for (const content of [q0024, q0024PoorProposal]) {
+    assert.equal(optionQualityProblems(content).filter(issue => issue.code === 'obvious_neglect').length, 3);
+    assert.ok(assessItemQuality(content, goodQuality(content.difficulty)).length >= 3, 'a falsely positive model report cannot clear these patterns');
+  }
+});
+
+test('Q-0024-style hard label fails without multi-cue reasoning and competing priorities', () => {
+  const report = goodQuality('hard');
+  report.difficulty.multiple_cues_required = false;
+  report.difficulty.competing_priorities = false;
+  assert.ok(assessItemQuality(q0024, report).some(issue => issue.code === 'difficulty'));
+  assert.ok(assessItemQuality(q0024, goodQuality('easy')).some(issue => issue.code === 'difficulty'));
+});
+
+test('each distractor needs a complete, individually justified plausibility decision', () => {
+  for (const options of [
+    goodQuality().options.slice(1),
+    [...goodQuality().options.slice(1), goodQuality().options[1]],
+    goodQuality().options.map(row => ({ ...row, reason: '' })),
+  ]) assert.ok(assessItemQuality(mcq({ difficulty: 'easy' }), { ...goodQuality(), options }).some(issue => issue.code === 'quality_report'));
+  const report = goodQuality();
+  report.options[1].plausible = false;
+  assert.ok(assessItemQuality(mcq({ difficulty: 'easy' }), report).some(issue => issue.code === 'distractors'));
+});
+
+test('each cueing dimension, difficulty mismatch, missing quality, and overall rejection blocks quality', () => {
+  const content = mcq({ difficulty: 'easy' });
+  assert.deepEqual(assessItemQuality(content, goodQuality()), []);
+  for (const code of Object.keys(goodQuality().cueing)) {
+    const report = goodQuality(); report.cueing[code] = true;
+    assert.ok(assessItemQuality(content, report).some(issue => issue.code === code));
+  }
+  assert.ok(assessItemQuality(content, undefined).length);
+  assert.ok(assessItemQuality(content, { ...goodQuality(), acceptable: false }).length);
+  assert.ok(assessItemQuality(content, goodQuality('hard')).some(issue => issue.code === 'difficulty'));
+});
+
+test('correct answer agreement cannot clear implausible distractors, cues, concerns, or incomplete flags', () => {
+  for (const change of [
+    { implausible_distractors: [2] }, { answer_clues: ['Only one option addresses breathing'] },
+    { concerns: ['Unsafe item'] }, { sufficient_information: undefined }, { answer: [0, 'invalid'] },
+  ]) assert.equal(compareVerification(mcq(), { ...goodVerdict(), answer: [0], ...change }).agrees, false);
+});
+
+test('permutation, rationale expansion, and cosmetic paraphrase cannot pass the improvement gate', () => {
+  const original = snapshotContent(q0024);
+  const swapped = { ...original, option_a: original.option_c, option_c: original.option_a, correct_answer: 'a', rationale: 'An expanded explanation.' };
+  assert.ok(revisionImprovementProblems(original, swapped, ['distractors'], goodImprovement()).some(message => /order changed/.test(message)));
+  assert.ok(revisionImprovementProblems(original, q0024PoorProposal, ['distractors'], { ...goodImprovement(), cosmetic_only: true }).length);
+  assert.ok(revisionImprovementProblems(original, q0024PoorProposal, ['distractors', 'difficulty'], goodImprovement()).some(message => /difficulty/.test(message)));
+  assert.ok(revisionImprovementProblems(original, q0024PoorProposal, ['distractors'], undefined).length);
+});
+
+test('rationale-only and difficulty-only repairs remain allowed when they are the sole weaknesses', () => {
+  const original = mcq();
+  assert.deepEqual(revisionImprovementProblems(original, { ...original, rationale: 'Improved explanation.' }, ['rationale'], goodImprovement(['rationale'])), []);
+  assert.deepEqual(revisionImprovementProblems(original, { ...original, difficulty: 'easy' }, ['difficulty'], goodImprovement(['difficulty'])), []);
+  assert.deepEqual(revisionImprovementProblems(original, { ...original, correct_answer: 'b' }, ['clinical_accuracy'], goodImprovement(['clinical_accuracy'])), [], 'a genuinely corrected clinical key is not mere option rearrangement');
+  assert.ok(revisionImprovementProblems(original, original, ['difficulty'], goodImprovement(['difficulty'])).length);
+});
+
+test('replacement needs a genuinely new scenario, same category, and a documented reason', () => {
+  const replacement = { ...q0024, stem: 'A different clinical scenario for a related objective.' };
+  const report = goodImprovement(['distractors'], 'replacement');
+  assert.deepEqual(revisionImprovementProblems(q0024, replacement, ['distractors'], report), []);
+  assert.ok(revisionImprovementProblems(q0024, q0024, ['distractors'], report).length);
+  assert.ok(revisionImprovementProblems(q0024, { ...replacement, nclex_category: 'Unrelated' }, ['distractors'], report).length);
+  assert.ok(revisionImprovementProblems(q0024, replacement, ['distractors'], { ...report, replacement_reason: '' }).length);
+});
+
+test('explanations in answer choices fail for both MCQ and SATA without changing scoring', () => {
+  for (const content of [
+    mcq({ option_b: 'Apply oxygen to prevent hypoxemia' }),
+    sata({ item_data: { correct: [0, 2], options: ['One', 'Act because the value is high', 'Three', 'Four'] } }),
+  ]) {
+    const before = structuredClone(content);
+    assert.ok(optionQualityProblems(content).some(issue => issue.code === 'rationale_in_options'));
+    assert.deepEqual(content, before);
+  }
+  assert.deepEqual(optionQualityProblems(mcq({ option_a: 'Assess breathing and call neonatal assistance' })), [], 'parallel actions alone are not explanations');
 });

@@ -1,12 +1,12 @@
 # Question-Bank QA Automation (pilot)
 
-Status: pilot dashboard published through PRs #230 and #231. First 10-question pilot failed; no live question changes or correction drafts resulted. Failure-handling fix tracked in PR #232; updated Edge Function deployed. Successful live AI validation is blocked on API funding.
+Status: dashboard and failure-handling fixes published through PRs #230, #231, and #232. After funding, one authenticated Q-0024 retry succeeded, but its proposed correction failed educational-quality review. Pilot expansion is paused. Criteria v2 quality gates implemented and tested; deployment follows the protected-branch PR workflow.
 Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-STANDARDS.md`.
 
 ## What exists
 - `supabase-question-audit.sql` (APPLIED to live DB 2026-10-19): table `question_audits` (one row per audit; cached by question + content hash + criteria version) and admin-only RPC `set_question_quarantine(question_id, quarantine, reason)`. Rollback: drop function, drop table.
 - `supabase/functions/shared/question-audit-core.mjs`: free deterministic checks (content hash, SATA/MCQ scoring sync, field-level validation, answer-clue signals, whitespace auto-fix, priority). Used by the function AND the dashboard; stored outside Jekyll's ignored `_shared` folder so GitHub Pages can serve it.
-- `supabase/functions/question-audit/index.ts` (DEPLOYED): admin-only, one question per call. Screen (gpt-4.1-mini) -> revise (gpt-4.1) -> blind verify (gpt-4o), max 2 revision attempts, $0.25 per-question cap. Models are overridable via function secrets `AUDIT_SCREEN_MODEL`, `AUDIT_REVISE_MODEL`, `AUDIT_VERIFY_MODEL`. Uses the existing `OPENAI_API_KEY` secret. Writes only `question_audits` and `question_revision_drafts` (status `pending_review`) using the admin's own session (RLS applies).
+- `supabase/functions/question-audit/index.ts`: admin-only, one question per call. Screen (gpt-4.1-mini) -> revise (gpt-4.1) -> blind answer/quality review (gpt-4o) -> separate original-versus-revised improvement comparison (gpt-4o), max 2 revision attempts, $0.25 standard per-question budget. Models are overridable via function secrets `AUDIT_SCREEN_MODEL`, `AUDIT_REVISE_MODEL`, `AUDIT_VERIFY_MODEL`. Uses the existing `OPENAI_API_KEY` secret. Writes only `question_audits` and `question_revision_drafts` (status `pending_review`) using the admin's own session (RLS applies).
 - `question-audit-panel.js` + small hooks in `question-bank-review.html` (Review & Flags tab): batch builder, run/pause/resume, spend cap, results with filters, batch approve (approve only), quarantine/release. Correction editor now syncs scoring JSON and shows field-specific errors.
 - Tests: `supabase/functions/_shared/question-audit.test.mjs`, `supabase/functions/question-audit/question-audit.test.mjs` (mocked DB/AI), `tests/question-audit-wiring.test.cjs`.
 
@@ -25,8 +25,8 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Student response data uses text item IDs (100 rows) and cannot be tied to questions; not used as a signal.
 
 ## Remaining
-1. Dashboard publication follows PR #232 to `main` and GitHub Pages, not Netlify. Verify the deployed panel matches the merged source.
-2. Owner will restore OpenAI API credits later. Successful authenticated AI processing and live result persistence remain unverified until funding and an admin session are available. Verify one controlled question first; do not automatically run another 10-question batch.
+1. Publish criteria v2 code through `main` and GitHub Pages, and deploy the Edge Function. Do not run additional paid audits without explicit authorization.
+2. Keep Q-0024's existing pending draft untouched and unpublished. It has not passed the new gates. The live original remains hard; the saved legacy draft was medium, not hard.
 3. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
 
 ## First pilot failure: verified diagnosis
@@ -45,3 +45,16 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Tests include mocked backend persistence/retry/provider failures and dashboard first-error stop, manual resume, $2 cap, remaining-budget forwarding, refresh failures, and run/build guards. Mocked authentication is not a successful real authenticated audit.
 - Validation: 60 focused tests cover the audit core, Edge Function, panel behavior/wiring, correction editor, and student navigation, including pre-request budget rejection and cumulative paid-retry usage. Live read-only counts still match the investigation baseline: 1,133 questions, 490 active, 120 drafts, 10 error audits, $0 audit cost.
 - Updated Edge Function deployed with `supabase functions deploy question-audit --project-ref pmjwwktwlsqpetwfvolb --use-api`. No database migration or live records were changed.
+
+## Criteria v2 quality gates
+- Work resumed from the existing uncommitted implementation, without restarting or adding features.
+- Screening and blind review require a complete, individually justified plausibility assessment for every option, four explicit cueing checks, overall acceptability, and a justified difficulty rating. Missing assessments block acceptance. Hard requires multi-cue reasoning and competing priorities.
+- Deterministic checks reject Q-0024's original and paraphrased parent-notification, glucose-wait, and routine-recheck distractors, and explanation phrases inside answer choices.
+- Blind review remains isolated from the key, rationales, original item, and screening findings. Key agreement alone cannot pass quality concerns.
+- A separate comparison must document material improvement for every identified weakness. Option shuffling, unchanged items, cosmetic paraphrase, and rationale expansion that leaves weak choices intact are rejected.
+- Clinically related replacement scenarios are permitted within the same category/topic and preserved identifiers/module/type. Both writer and independent comparison must agree on replacement and justify it; existing draft protections remain first.
+- All gates must pass before saving a pending draft. At most two attempts; budget and deadline checks still apply to every AI call. No automatic approval, application, or publication.
+- Dashboard distinguishes legacy key-only checks from new quality-gated results and displays rejection evidence, including when later work hits a budget error.
+- Validation: 83 focused tests pass, including exact Q-0024 regression wording, poor-quality rejection despite key agreement, cosmetic-change rejection, difficulty, replacement constraints, scoring, retries/drafts, budget, editor, and navigation. AI/database responses are mocked; no paid audit was run to validate v2.
+- Pre-deployment read-only baseline: 1,133 questions, 490 active, 121 drafts, 10 audit records. Full-row question fingerprint `d8971cf2a48c65fa403cacdaa4872b92`; draft fingerprint `3b738057f2dd106427d609949571d264`.
+- Remaining limitation: semantic plausibility and improvement still rely on AI judgment plus tutor review; automated tests do not prove future generated corrections meet clinical/educational standards.

@@ -194,10 +194,16 @@
   }
 
   function verificationText(audit) {
-    const attempts = audit.verification?.attempts || [];
+    const attempts = audit.verification?.attempts || audit.findings?.quality_attempts || [];
     if (!attempts.length) return '';
     const last = attempts[attempts.length - 1];
-    const lines = attempts.map(a => `Attempt ${a.attempt}: ${a.outcome === 'verified' ? 'independent reviewer agreed with the key' : a.outcome === 'disagreed' ? `reviewer disagreed — ${(a.problems || []).join(' ')}` : `structure check failed — ${(a.problems || []).map(p => p.message).join(' ')}`}`);
+    const lines = attempts.map(a => {
+      const result = a.outcome === 'verified'
+        ? (audit.verification?.quality_passed && audit.verification?.improvement_passed ? 'answer, option quality, difficulty, and material-improvement gates passed' : 'independent reviewer agreed with the key (legacy check; quality not separately verified)')
+        : ({ disagreed: 'reviewer disagreed', validation_failed: 'structure check failed', quality_rejected: 'item quality rejected', improvement_rejected: 'material improvement rejected' }[a.outcome] || 'review failed');
+      const problems = (a.problems || []).map(p => typeof p === 'string' ? p : p.message).join(' ');
+      return `Attempt ${a.attempt}: ${result}${problems ? ` — ${problems}` : ''}`;
+    });
     return `<p class="qa-detail"><strong>Independent verification</strong> (${attempts.length} attempt${attempts.length === 1 ? '' : 's'}; blind review is a safeguard, not clinical validation)</p><ul class="qa-detail">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>${last.remaining_signals?.length ? `<p class="qa-detail">Remaining automated signals: ${esc(last.remaining_signals.join(', '))}</p>` : ''}`;
   }
 
@@ -317,7 +323,7 @@
     auditFor(revisionId) { return audits.find(audit => audit.revision_id === revisionId) || null; },
     badge(revisionId) {
       const audit = this.auditFor(revisionId); if (!audit) return '';
-      const verified = audit.verification?.agreed ? ' · blind-reviewed' : '';
+      const verified = audit.verification?.quality_passed && audit.verification?.improvement_passed ? ' · quality-gated' : audit.verification?.agreed ? ' · legacy key check only' : '';
       return `<span class="tag warn">Automated audit${esc(verified)}</span>${audit.clinical_risk ? `<span class="tag ${audit.clinical_risk === 'high' ? 'bad' : ''}">${esc(audit.clinical_risk)} risk</span>` : ''}`;
     },
     refresh,

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { register } from 'node:module';
 import { test } from 'node:test';
+import { goodQuality, goodVerdict, goodImprovement, q0024, q0024PoorProposal } from '../../../tests/fixtures/question-audit-quality.mjs';
 
 register('data:text/javascript,' + encodeURIComponent(`
 export async function resolve(specifier, context, next) {
@@ -65,6 +66,7 @@ const question = (overrides = {}) => ({
   item_data: null, clinical_judgment_skill: 'Analyze cues', option_rationales: { a: 'a', b: 'b', c: 'c', d: 'd' }, reference_list: [], ...overrides,
 });
 const revision = (overrides = {}) => ({
+  mode: 'targeted',
   stem: 'A client receiving a heparin infusion reports nosebleeds and new bruising. Which action should the nurse take first?',
   options: ['Review the latest aPTT and notify the provider', 'Apply a cold pack to the nose bridge', 'Reduce the client\'s activity to bed rest', 'Administer the scheduled aspirin'],
   correct: [1], rationale: 'New bleeding on heparin may signal over-anticoagulation, so the nurse checks the aPTT and reports.',
@@ -92,7 +94,7 @@ test('rejects callers who are not app admins', async () => {
 });
 
 test('PASS records an audit and spends only the screening call', async () => {
-  reset(); const calls = scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  reset(); const calls = scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'pass');
   assert.equal(calls.length, 1);
@@ -102,7 +104,7 @@ test('PASS records an audit and spends only the screening call', async () => {
 });
 
 test('repeating an unchanged question is served from the cache with no AI spend', async () => {
-  reset(); scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  reset(); scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   await call({ question_id: QID });
   const calls = scriptAi([]);
   const body = await (await call({ question_id: QID })).json();
@@ -122,15 +124,18 @@ test('an existing pending or approved draft is never touched or audited', async 
 test('MAJOR revision that the blind reviewer agrees with becomes a pending draft', async () => {
   reset();
   const calls = scriptAi([
-    { classification: 'MAJOR', clinical_risk: 'medium', issues: [{ category: 'distractors', detail: 'Weak distractors.' }], revise_scope: ['options'] },
+    { classification: 'MAJOR', clinical_risk: 'medium', issues: [{ category: 'distractors', detail: 'Weak distractors.' }], revise_scope: ['options'], quality: goodQuality() },
     revision(),
-    { answer: [1], multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true },
+    goodVerdict(),
+    goodImprovement(),
   ]);
   const body = await (await call({ question_id: QID, priority: 1, priority_reason: 'Open tutoring flag' })).json();
   assert.equal(body.status, 'revised', JSON.stringify(body.audit?.note ?? body));
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 4);
   const verifierPrompt = JSON.stringify(calls[2].messages);
   assert.doesNotMatch(verifierPrompt, /Keyed correct|Main rationale|Rationale for option/);
+  assert.doesNotMatch(verifierPrompt, /ORIGINAL:|Required weakness|Stored difficulty/);
+  assert.match(JSON.stringify(calls[3].messages), /ORIGINAL:.*PROPOSED:/s);
   const [draft] = tables.question_revision_drafts;
   assert.equal(draft.status, 'pending_review');
   assert.equal(draft.proposed_by, 'admin-1');
@@ -144,9 +149,9 @@ test('MAJOR revision that the blind reviewer agrees with becomes a pending draft
 
 test('a disagreeing reviewer triggers one retry, then quarantine without saving a draft', async () => {
   reset();
-  const disagree = { answer: [1], multiple_defensible: true, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true };
+  const disagree = { ...goodVerdict(), multiple_defensible: true };
   const calls = scriptAi([
-    { classification: 'MAJOR', clinical_risk: 'high', issues: [], revise_scope: [] }, revision(), disagree, revision(), disagree,
+    { classification: 'MAJOR', clinical_risk: 'high', issues: [{ category: 'distractors', detail: 'Weak choices' }], revise_scope: [], quality: goodQuality() }, revision(), disagree, revision(), disagree,
   ]);
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'quarantine');
@@ -159,7 +164,7 @@ test('a disagreeing reviewer triggers one retry, then quarantine without saving 
 test('invalid scoring in a revision is caught before any verification spend', async () => {
   reset();
   const calls = scriptAi([
-    { classification: 'MAJOR', clinical_risk: 'low', issues: [], revise_scope: [] },
+    { classification: 'MAJOR', clinical_risk: 'low', issues: [{ category: 'scoring', detail: 'Scoring concern' }], revise_scope: [], quality: goodQuality() },
     revision({ correct: [9] }), revision({ options: ['same', 'same', 'x', 'y'] }),
   ]);
   const body = await (await call({ question_id: QID })).json();
@@ -169,7 +174,7 @@ test('invalid scoring in a revision is caught before any verification spend', as
 
 test('PASS with stray whitespace creates a whitespace-only auto-fix draft', async () => {
   reset(question({ stem: '  A client receiving heparin has new epistaxis and  bruising. Which action should the nurse take first? ' }));
-  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'auto_fix');
   assert.equal(tables.question_revision_drafts[0].proposed_content.stem, 'A client receiving heparin has new epistaxis and bruising. Which action should the nurse take first?');
@@ -221,7 +226,7 @@ test('a funded retry succeeds in place, then future attempts use the cache', asy
   globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 'credit_balance_exhausted' } }), { status: 429 });
   await call({ question_id: QID });
   const originalId = tables.question_audits[0].id;
-  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   const response = await call({ question_id: QID });
   assert.equal(response.status, 200);
   const body = await response.json();
@@ -242,9 +247,10 @@ test('a retry that creates a correction is skipped on repetition without another
   globalThis.fetch = async () => new Response('unavailable', { status: 503 });
   await call({ question_id: QID });
   scriptAi([
-    { classification: 'MAJOR', clinical_risk: 'medium', issues: [], revise_scope: ['options'] },
+    { classification: 'MAJOR', clinical_risk: 'medium', issues: [{ category: 'distractors', detail: 'Weak distractors.' }], revise_scope: ['options'], quality: goodQuality() },
     revision(),
-    { answer: [1], multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true },
+    goodVerdict(),
+    goodImprovement(),
   ]);
   assert.equal((await (await call({ question_id: QID })).json()).status, 'revised');
   assert.equal(tables.question_audits.length, 1);
@@ -280,7 +286,7 @@ test('a missing API key is an explicit configuration error without an AI call', 
 
 test('AI requests reserve prompt cost and limit completion tokens within the supplied budget', async () => {
   reset();
-  const calls = scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  const calls = scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   await call({ question_id: QID, max_cost_usd: 0.01 });
   assert.equal(calls.length, 1);
   const request = calls[0];
@@ -304,7 +310,7 @@ test('an oversized prompt is stopped before any AI request exceeds the budget', 
 
 test('retry preserves previous paid usage but returns only the current attempt cost', async () => {
   reset();
-  const fetches = scriptAi([{ classification: 'MAJOR', clinical_risk: 'medium', issues: [] }]);
+  const fetches = scriptAi([{ classification: 'MAJOR', clinical_risk: 'medium', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() }]);
   const successfulFetch = globalThis.fetch;
   globalThis.fetch = async (...args) => fetches.length
     ? new Response('unavailable', { status: 503 })
@@ -312,7 +318,7 @@ test('retry preserves previous paid usage but returns only the current attempt c
   const failed = await (await call({ question_id: QID })).json();
   assert.equal(failed.status, 'error');
   assert.ok(failed.cost_usd > 0);
-  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
   const retry = await (await call({ question_id: QID })).json();
   assert.equal(retry.status, 'pass');
   assert.equal(tables.question_audits.length, 1);
@@ -329,13 +335,166 @@ test('SATA revisions keep item_data options and correct positions in sync', asyn
   });
   reset(sata);
   scriptAi([
-    { classification: 'MINOR', clinical_risk: 'low', issues: [], revise_scope: ['options'] },
-    { stem: sata.stem, options: ['One', 'Two b', 'Three', 'Four', 'Five', 'Six'], correct: [4, 2], rationale: 'Because of the pathophysiology involved here.', option_rationales: ['a', 'b', 'c', 'd', 'e', 'f'], difficulty: 'hard', clinical_judgment_skill: 'x', change_summary: 'Added an option.' },
-    { answer: [2, 4], multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true },
+    { classification: 'MAJOR', clinical_risk: 'low', issues: [{ category: 'distractors', detail: 'Improve option decisions.' }], revise_scope: ['options'], quality: goodQuality('easy', 5) },
+    { mode: 'targeted', stem: sata.stem, options: ['One', 'Two b', 'Three', 'Four', 'Five'], correct: [4, 2], rationale: 'Because of the pathophysiology involved here.', option_rationales: ['a', 'b', 'c', 'd', 'e'], difficulty: 'hard', clinical_judgment_skill: 'x', change_summary: 'Improved an option.' },
+    { ...goodVerdict('hard', 5), answer: [2, 4] },
+    goodImprovement(),
   ]);
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'revised', JSON.stringify(body.audit?.note ?? body));
   const proposed = tables.question_revision_drafts[0].proposed_content;
-  assert.deepEqual(proposed.item_data, { correct: [1, 3], options: ['One', 'Two b', 'Three', 'Four', 'Five', 'Six'] });
-  assert.deepEqual(Object.keys(proposed.option_rationales), ['0', '1', '2', '3', '4', '5']);
+  assert.deepEqual(proposed.item_data, { correct: [1, 3], options: ['One', 'Two b', 'Three', 'Four', 'Five'] });
+  assert.deepEqual(Object.keys(proposed.option_rationales), ['0', '1', '2', '3', '4']);
+});
+
+test('Q-0024 poor correction is rejected twice even when screening falsely says PASS', async () => {
+  reset(question(q0024));
+  const poor = revision({
+    stem: q0024PoorProposal.stem,
+    options: ['a', 'b', 'c', 'd'].map(key => q0024PoorProposal[`option_${key}`]),
+    correct: [1], difficulty: 'medium',
+  });
+  const calls = scriptAi([
+    { classification: 'PASS', clinical_risk: 'high', issues: [], quality: goodQuality('hard') },
+    poor, poor,
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.equal(calls.length, 3, 'no blind/comparison spend for known bad choices');
+  assert.equal(tables.question_revision_drafts.length, 0);
+  assert.equal(body.audit.findings.quality_attempts.length, 2);
+  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /delay of care/);
+  assert.deepEqual(tables.questions, [question(q0024)]);
+});
+
+test('key agreement with failed option quality never reaches comparison or saves a draft', async () => {
+  reset();
+  const quality = goodQuality('medium'); quality.options[1].plausible = false;
+  const bad = { ...goodVerdict(), quality };
+  const calls = scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() },
+    revision(), bad, revision(), bad,
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.equal(calls.length, 5);
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('cosmetic improvement and unresolved weaknesses are rejected after blind key and quality agreement', async () => {
+  reset();
+  const calls = scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() },
+    revision(), goodVerdict(), { ...goodImprovement(), cosmetic_only: true },
+    revision(), goodVerdict(), goodImprovement([]),
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.equal(calls.length, 7);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  assert.deepEqual(body.audit.findings.quality_attempts.map(log => log.outcome), ['improvement_rejected', 'improvement_rejected']);
+});
+
+test('missing screening quality fails explicitly rather than generating an unassessed correction', async () => {
+  reset();
+  const calls = scriptAi([{ classification: 'PASS', issues: [] }]);
+  const response = await call({ question_id: QID });
+  const body = await response.json();
+  assert.equal(response.status, 500);
+  assert.match(body.audit.note, /incomplete option-quality/);
+  assert.equal(calls.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('missing independent quality rejects even with a defensible answer', async () => {
+  reset();
+  const bad = { ...goodVerdict(), quality: undefined };
+  scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() },
+    revision(), bad, revision(), bad,
+  ]);
+  assert.equal((await (await call({ question_id: QID })).json()).status, 'quarantine');
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('a difficulty mismatch blocks a revision even when the key is agreed', async () => {
+  reset();
+  scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'difficulty', detail: 'Overclassified' }], quality: goodQuality() },
+    revision({ difficulty: 'hard' }), goodVerdict('easy'),
+    revision({ difficulty: 'hard' }), goodVerdict('easy'),
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /Stored difficulty hard/);
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('same-category replacement passes both reviews and remains a pending draft only', async () => {
+  reset();
+  const calls = scriptAi([
+    { classification: 'RETIRE', issues: [{ category: 'distractors', detail: 'Concept cannot support useful competing actions' }], quality: goodQuality(), replacement_needed: true, replacement_reason: 'New related scenario needed' },
+    revision({ mode: 'replacement', replacement_reason: 'Original scenario cannot support realistic alternatives.' }),
+    goodVerdict(), goodImprovement(['distractors'], 'replacement'),
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'revised');
+  assert.equal(calls.length, 4);
+  assert.equal(body.audit.verification.quality_passed, true);
+  assert.equal(body.audit.verification.improvement_passed, true);
+  const saved = tables.question_revision_drafts[0];
+  assert.match(saved.change_summary, /REPLACEMENT/);
+  assert.equal(saved.proposed_content.nclex_category, question().nclex_category);
+  assert.equal(saved.proposed_content.module_key, question().module_key);
+  assert.equal(saved.status, 'pending_review');
+  assert.deepEqual(tables.questions, [question()]);
+});
+
+test('new criteria never overwrite an existing Q-0024 pending draft or incur AI spend', async () => {
+  reset(question(q0024));
+  const existing = { id: 'existing-q0024', question_id: QID, status: 'pending_review', proposed_content: q0024PoorProposal };
+  tables.question_revision_drafts.push(structuredClone(existing));
+  const calls = scriptAi([]);
+  assert.equal((await (await call({ question_id: QID })).json()).status, 'skipped');
+  assert.deepEqual(tables.question_revision_drafts, [existing]);
+  assert.equal(calls.length, 0);
+});
+
+test('budget rejection before another quality stage never saves an unverified correction', async () => {
+  reset();
+  const calls = scriptAi([{
+    classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality(),
+  }]);
+  const response = await call({ question_id: QID, max_cost_usd: 0.01 });
+  const body = await response.json();
+  assert.equal(response.status, 409);
+  assert.equal(body.error_code, 'audit_budget');
+  assert.equal(calls.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  assert.ok(body.cost_usd > 0 && body.cost_usd <= 0.01);
+});
+
+test('a non-PASS label with no identified deficiency does not generate unnecessary corrections', async () => {
+  reset();
+  const calls = scriptAi([{ classification: 'MAJOR', issues: [], quality: goodQuality() }]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.match(body.audit.note, /specific weakness/);
+  assert.equal(calls.length, 1);
+  assert.equal(tables.question_revision_drafts.length, 0);
+});
+
+test('MCQ extra options and multiple keys are rejected before truncation or verification', async () => {
+  reset();
+  const calls = scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'scoring', detail: 'Invalid scoring' }], quality: goodQuality() },
+    revision({ options: ['One', 'Two', 'Three', 'Four', 'Five'] }),
+    revision({ correct: [1, 2] }),
+  ]);
+  const body = await (await call({ question_id: QID })).json();
+  assert.equal(body.status, 'quarantine');
+  assert.equal(calls.length, 3);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /option count/);
+  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /exactly one correct/);
 });
