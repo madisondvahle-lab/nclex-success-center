@@ -8,7 +8,7 @@ const test = require('node:test');
 const root = join(__dirname, '..');
 const source = readFileSync(join(root, 'question-audit-panel.js'), 'utf8');
 
-async function harness(invoke, { count = 10, reloadError = false } = {}) {
+async function harness(invoke, { count = 10, reloadError = false, audits = [] } = {}) {
   const elements = new Map();
   class Element {
     constructor() { this.value = ''; this.textContent = ''; this.html = ''; this.events = {}; this.disabled = false; }
@@ -55,7 +55,7 @@ async function harness(invoke, { count = 10, reloadError = false } = {}) {
     reloadDrafts: async () => {}, rerender() {},
     db: {
       from: () => ({ select: () => ({ order: () => ({ range: async () => ({
-        data: [], error: reloading && reloadError ? { message: 'Database unavailable' } : null,
+        data: audits, error: reloading && reloadError ? { message: 'Database unavailable' } : null,
       }) }) }) }),
       functions: { invoke: async (_, options) => { calls.push(options.body); reloading = true; return invoke(options.body, calls.length); } },
     },
@@ -144,4 +144,36 @@ test('building a batch during a pending request cannot mutate the running batch'
   assert.equal(h.calls.length, 1);
   assert.equal(h.get('qa-run').disabled, true);
   assert.equal(h.get('qa-build').disabled, false);
+});
+
+test('legacy drafts are not labeled as passing the new quality gates', async () => {
+  const h = await harness(async () => {}, { audits: [{
+    question_id: 'q0', revision_id: 'd0', audit_status: 'revised',
+    verification: { agreed: true, attempts: [{ attempt: 1, outcome: 'verified' }] },
+  }] });
+  assert.match(h.get('qa-results').innerHTML, /legacy check; quality not separately verified/);
+  assert.match(h.api.badge('d0'), /legacy key check only/);
+  assert.doesNotMatch(h.api.badge('d0'), /quality-gated/);
+});
+
+test('new quality successes and rejections show their actual gate outcomes', async () => {
+  const h = await harness(async () => {}, { audits: [{
+    question_id: 'q0', revision_id: 'd0', audit_status: 'revised',
+    verification: { agreed: true, quality_passed: true, improvement_passed: true, attempts: [
+      { attempt: 1, outcome: 'improvement_rejected', problems: ['Only paraphrased distractors'] },
+      { attempt: 2, outcome: 'verified' },
+    ] },
+  }] });
+  assert.match(h.get('qa-results').innerHTML, /material improvement rejected.*Only paraphrased distractors/);
+  assert.match(h.get('qa-results').innerHTML, /answer, option quality, difficulty, and material-improvement gates passed/);
+  assert.match(h.api.badge('d0'), /quality-gated/);
+});
+
+test('quality rejection evidence remains visible if later work hits a budget error', async () => {
+  const h = await harness(async () => {}, { audits: [{
+    question_id: 'q0', audit_status: 'error', findings: { quality_attempts: [
+      { attempt: 1, outcome: 'quality_rejected', problems: ['Delay-of-care distractor'] },
+    ] },
+  }] });
+  assert.match(h.get('qa-results').innerHTML, /item quality rejected.*Delay-of-care distractor/);
 });

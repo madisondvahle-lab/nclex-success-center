@@ -1,7 +1,7 @@
 // Deterministic (no-AI) question-bank audit helpers, shared by the dashboard and function
 // and the question-audit Edge Function. Nothing here calls the network.
 
-export const AUDIT_CRITERIA_VERSION = 'qa-2026-10-v1';
+export const AUDIT_CRITERIA_VERSION = 'qa-2026-10-v2';
 export const LETTERS = ['a', 'b', 'c', 'd'];
 
 const DIFFICULTIES = new Set(['easy', 'medium', 'hard']);
@@ -270,13 +270,99 @@ export function estimateCost(model, inputTokens, outputTokens) {
 // Compares the blind verifier's answer with the proposed key.
 export function compareVerification(content, verdict) {
   const { correct } = optionsOf(content);
-  const picked = Array.isArray(verdict?.answer) ? verdict.answer.filter(Number.isInteger) : [];
+  const picked = Array.isArray(verdict?.answer) ? verdict.answer : [];
   const same = picked.length === correct.length && correct.every(i => picked.includes(i));
   const problems = [];
+  if (picked.some(i => !Number.isInteger(i) || i < 0 || i >= optionsOf(content).options.length) || new Set(picked).size !== picked.length) problems.push('The independent reviewer returned invalid answer positions.');
   if (!same) problems.push('The independent reviewer chose a different answer than the proposed key.');
   if (verdict?.multiple_defensible) problems.push('The independent reviewer found more than one defensible option.');
   if (verdict?.clinical_accuracy_concern) problems.push('The independent reviewer raised a clinical accuracy concern.');
   if (verdict?.sufficient_information === false) problems.push('The independent reviewer found the stem lacks needed information.');
   if (verdict?.entry_level_appropriate === false) problems.push('The independent reviewer judged the item outside entry-level scope.');
+  for (const [field, expected] of Object.entries({ multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true })) {
+    if (verdict?.[field] !== expected) problems.push(`Independent review did not explicitly clear ${field}.`);
+  }
+  if (!Array.isArray(verdict?.answer_clues) || verdict.answer_clues.length) problems.push('Independent review found answer clues or did not assess them.');
+  if (!Array.isArray(verdict?.implausible_distractors) || verdict.implausible_distractors.length) problems.push('Independent review found implausible distractors or did not assess them.');
+  if (!Array.isArray(verdict?.concerns) || verdict.concerns.length) problems.push('Independent review has unresolved concerns or did not assess them.');
   return { agrees: problems.length === 0, problems };
+}
+
+// Narrow red flags, not a substitute for clinical review. No key or rationale is needed.
+export function optionQualityProblems(content) {
+  const problems = [];
+  const options = optionsOf(content).options;
+  const add = (code, message) => problems.push({ code, message });
+  const respiratoryCrisis = /\b(grunting|retractions|cyanosis|hypoxemia|respiratory distress)\b/i.test(text(content.stem));
+  options.forEach((option, i) => {
+    const value = text(option);
+    if (/\b(because|in order to|so that|to prevent|to ensure|to avoid|which (prevents|reduces|improves))\b/i.test(value)) {
+      add('rationale_in_options', `Option ${i + 1} includes an explanation; store it in the rationale fields instead.`);
+    }
+    if (respiratoryCrisis && (
+      /\b(call|notify|contact)\b.*\bparents\b.*\bbefore\b/i.test(value) ||
+      /\b(wait|delay|defer)\b.*\b(glucose|respiratory care)\b/i.test(value) ||
+      /\b(document|record)\b.*\b(reassess|check|vital).*\b(routine|30 minutes|next)\b/i.test(value)
+    )) add('obvious_neglect', `Option ${i + 1} uses a Q-0024-style delay of care rather than a plausible competing nursing action.`);
+  });
+  return problems;
+}
+
+// Screen and blind reviewer must supply the same complete, option-by-option quality report.
+export function assessItemQuality(content, report) {
+  const problems = [...optionQualityProblems(content)];
+  const add = (code, message) => problems.push({ code, message });
+  const { options, correct } = optionsOf(content);
+  const rows = Array.isArray(report?.options) ? report.options : [];
+  const explained = value => typeof value === 'string' && value.trim().length > 0;
+  if (rows.length !== options.length || rows.some(row => !row || !Number.isInteger(row.option) || row.option < 1 || row.option > options.length) ||
+      new Set(rows.map(row => row?.option)).size !== options.length) {
+    add('quality_report', 'Quality review must evaluate every option exactly once using 1-based positions.');
+  }
+  rows.forEach(row => {
+    if (!row || typeof row.plausible !== 'boolean' || !explained(row.reason)) add('quality_report', 'Each option needs an explicit plausibility decision and clinical reasoning.');
+    else if (!row.plausible) add(correct.includes(row.option - 1) ? 'clinical_accuracy' : 'distractors', `Option ${row.option} is not a plausible nursing decision: ${row.reason}`);
+  });
+  for (const code of ['only_one_addresses_problem', 'correct_more_comprehensive', 'answer_apparent_without_knowledge', 'rationale_in_options']) {
+    if (typeof report?.cueing?.[code] !== 'boolean') add('quality_report', `Quality review omitted cueing assessment: ${code}.`);
+    else if (report.cueing[code]) add(code, `Quality review did not clear answer-choice cueing: ${code}.`);
+  }
+  const difficulty = report?.difficulty;
+  if (!DIFFICULTIES.has(difficulty?.rating) || !explained(difficulty?.reason) ||
+      typeof difficulty?.multiple_cues_required !== 'boolean' || typeof difficulty?.competing_priorities !== 'boolean') {
+    add('quality_report', 'Difficulty requires a rating and an explanation of the reasoning and competing priorities.');
+  } else {
+    if (difficulty.rating !== content.difficulty) add('difficulty', `Stored difficulty ${content.difficulty} does not match independently assessed ${difficulty.rating}: ${difficulty.reason}`);
+    if (content.difficulty === 'hard' && (!difficulty.multiple_cues_required || !difficulty.competing_priorities)) add('difficulty', 'Hard requires integration of multiple cues and genuinely competing priorities, not an obvious emergency among neglectful options.');
+  }
+  if (typeof report?.acceptable !== 'boolean') add('quality_report', 'Quality review must explicitly assess overall acceptability.');
+  else if (!report.acceptable) add('item_quality', 'The reviewer did not judge overall item quality acceptable.');
+  return problems;
+}
+
+export function revisionImprovementProblems(original, proposed, weaknesses, comparison) {
+  const problems = [];
+  const add = message => problems.push(message);
+  const normalize = value => text(value).toLowerCase().replace(/\s+/g, ' ').trim();
+  const optionSet = content => optionsOf(content).options.map(normalize).sort().join('\n');
+  const sameItem = normalize(original.stem) === normalize(proposed.stem) && optionSet(original) === optionSet(proposed);
+  const keyText = content => {
+    const { options, correct } = optionsOf(content);
+    return correct.map(i => normalize(options[i])).sort().join('\n');
+  };
+  const reasoningWeakness = weaknesses.some(code => !['difficulty', 'rationale', 'scoring', 'quality_report'].includes(code) &&
+    !(code === 'clinical_accuracy' && keyText(original) !== keyText(proposed)));
+  if (sameItem && reasoningWeakness) add('Only rationales, metadata, or option order changed; the identified item-quality weaknesses remain.');
+  if (contentHash(original) === contentHash(proposed)) add('The proposed content is unchanged.');
+  if (weaknesses.includes('difficulty') && original.difficulty === proposed.difficulty) add('The identified difficulty mismatch was not corrected.');
+  if (comparison?.materially_improved !== true || comparison?.cosmetic_only !== false) add('Independent comparison did not confirm a noncosmetic, material improvement.');
+  if (comparison?.same_category !== true || original.nclex_category !== proposed.nclex_category) add('Replacement/revision must stay in the original NCLEX category.');
+  if (!['targeted', 'replacement'].includes(comparison?.mode)) add('Comparison must identify targeted revision or replacement.');
+  if (comparison?.mode === 'replacement' && (normalize(original.stem) === normalize(proposed.stem) || !text(comparison.replacement_reason).trim())) add('A replacement requires a new clinical scenario and a reason the original concept could not support plausible alternatives.');
+  const resolved = Array.isArray(comparison?.weaknesses) ? comparison.weaknesses : [];
+  for (const code of weaknesses) {
+    const rows = resolved.filter(row => row?.code === code);
+    if (rows.length !== 1 || rows[0].resolved !== true || !text(rows[0].evidence).trim()) add(`Independent comparison must explain how the revision resolves ${code}.`);
+  }
+  return problems;
 }

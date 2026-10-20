@@ -4,10 +4,13 @@ import {
   LETTERS,
   PRICES,
   autoFixContent,
+  assessItemQuality,
   compareVerification,
   contentHash,
   estimateCost,
   optionsOf,
+  optionQualityProblems,
+  revisionImprovementProblems,
   screenDeterministic,
   snapshotContent,
   syncScoring,
@@ -47,15 +50,24 @@ Standards:
 - Difficulty rubric: easy = foundational knowledge; medium = interpreting findings, differentiating plausible interventions, basic prioritization; hard = multiple cues and competing priorities. Long scenarios or obscure facts are not "hard".
 - Rationales must teach: why the key is right, which findings or principles support it, and why each other option is wrong. No generic text ("This is not the best answer").`;
 
-const SCREEN_SCHEMA = `Return JSON: {"classification":"PASS|MINOR|MAJOR|RETIRE","clinical_risk":"low|medium|high","answer_key_concern":boolean,"clinical_uncertainty":boolean,"difficulty_assessment":"easy|medium|hard","issues":[{"category":"clinical_accuracy|distractors|answer_clues|difficulty|rationale|relevance|scoring","detail":"specific problem"}],"revise_scope":["stem"|"options"|"rationale"|"difficulty"]}
+const QUALITY_SCHEMA = `Include "quality":{"acceptable":boolean,"options":[{"option":1-based number,"plausible":boolean,"reason":"specific realistic nursing decision, misconception, or competing priority; for an incorrect option explain why a learner might select it AND why it is less appropriate here"}],"cueing":{"only_one_addresses_problem":boolean,"correct_more_comprehensive":boolean,"answer_apparent_without_knowledge":boolean,"rationale_in_options":boolean},"difficulty":{"rating":"easy|medium|hard","reason":"clinical reasoning actually required","multiple_cues_required":boolean,"competing_priorities":boolean}}.
+Evaluate EVERY option individually. Correct does not mean high quality. Incorrect options that just neglect obvious respiratory compromise (notify parents first, wait for glucose, record and recheck later) are not plausible competing actions. Paraphrasing them does not help. Check whether only one choice addresses the clinical problem or bundles all useful care while the rest do nothing useful. A straightforward emergency-recognition item is not hard. Hard requires multiple cues AND genuinely competing priorities. Options must contain actions/findings only, never their explanations; keep teaching in rationale fields.`;
+
+const SCREEN_SCHEMA = `Return JSON: {"classification":"PASS|MINOR|MAJOR|RETIRE","clinical_risk":"low|medium|high","answer_key_concern":boolean,"clinical_uncertainty":boolean,"difficulty_assessment":"easy|medium|hard","issues":[{"category":"clinical_accuracy|distractors|answer_clues|difficulty|rationale|relevance|scoring","detail":"specific problem"}],"revise_scope":["stem"|"options"|"rationale"|"difficulty"],"replacement_needed":boolean,"replacement_reason":string}
+${QUALITY_SCHEMA}
 PASS = accurate, entry-level appropriate, defensible key, reasonable distractors, no clues, meaningful rationale (leave unchanged). MINOR = small wording/clarity/rationale issue. MAJOR = clinical inaccuracy, wrong/ambiguous key, weak or implausible distractors, answer-choice clues, or inadequate rationale. RETIRE = fundamentally unsuitable. Do not mark an item down for being simple if it is clinically important and well written. clinical_risk reflects harm if a student learns this item incorrectly (medication doses, safety, priority actions = higher).`;
 
 const VERIFY_PROMPT = `You are an independent NCLEX-RN item reviewer. You are NOT given the answer key. Answer the item yourself first.
 Return JSON: {"answer":[option numbers you believe are correct, 1-based],"multiple_defensible":boolean,"clinical_accuracy_concern":boolean,"sufficient_information":boolean,"entry_level_appropriate":boolean,"apparent_difficulty":"easy|medium|hard","implausible_distractors":["option numbers"],"answer_clues":["description"],"concerns":["short statements"]}
+${QUALITY_SCHEMA}
 For multiple-choice items give exactly one number. multiple_defensible = true if a second option could reasonably be argued correct. Flag any clinical statement you are not confident is current, accepted practice.`;
 
+const COMPARISON_PROMPT = `You are a separate quality-gate reviewer, not the revision writer. Compare ORIGINAL and PROPOSED, including their keys and rationales. Agreement with the answer key alone is NOT sufficient. Reject option shuffling, paraphrasing the same implausible distractors, and rationale expansion that leaves identified weaknesses intact. Require a specific substantive improvement for EACH listed weakness. A difficulty-only or rationale-only correction is acceptable only when that was the actual deficiency and the item was otherwise sound.
+If the original concept cannot support realistic alternatives, a clinically related replacement within the SAME NCLEX category is allowed. A replacement needs a genuinely new scenario and a defensible clinical reason; do not force artificial difficulty or unrelated learning content. Independently confirm category alignment.
+Return JSON: {"materially_improved":boolean,"cosmetic_only":boolean,"same_category":boolean,"mode":"targeted|replacement","replacement_reason":string,"weaknesses":[{"code":"each supplied weakness code exactly once","resolved":boolean,"evidence":"cite the original and proposed wording and explain the actual improvement"}]}. Do not accept the writer's claims without comparing actual content.`;
+
 type Content = ReturnType<typeof snapshotContent>;
-type Meter = { input: number; output: number; cost: number; models: Set<string>; maxCost: number };
+type Meter = { input: number; output: number; cost: number; models: Set<string>; maxCost: number; deadline: number };
 
 class BudgetError extends Error {}
 
@@ -70,6 +82,8 @@ class AuditServiceError extends Error {
 }
 
 async function chat(meter: Meter, model: string, system: string, user: string, temperature = 0) {
+  const remainingTime = meter.deadline - Date.now();
+  if (remainingTime <= 0) throw new Error("Audit timed out; no additional AI request was sent.");
   if (meter.cost >= meter.maxCost) throw new BudgetError("Per-question spending limit reached.");
   const apiKey = Deno.env.get("OPENAI_API_KEY");
   if (!apiKey) throw new AuditServiceError("OPENAI_API_KEY is not configured in Supabase. Configure it before retrying.", "ai_configuration", 503);
@@ -90,7 +104,7 @@ async function chat(meter: Meter, model: string, system: string, user: string, t
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(55_000),
+    signal: AbortSignal.timeout(Math.min(55_000, remainingTime)),
   });
   if (!response.ok) {
     const detail = await response.text();
@@ -176,7 +190,7 @@ function assembleRevision(original: Content, draft: any): Content {
   return syncScoring(next);
 }
 
-function reviseInstruction(original: Content, screen: any, deterministic: any, structural: any[], feedback: string[]) {
+function reviseInstruction(original: Content, screen: any, deterministic: any, structural: any[], weaknesses: string[], feedback: string[]) {
   const optionCount = optionsOf(original).options.length;
   return `${describe(original, true)}
 
@@ -184,9 +198,13 @@ Screening findings:
 ${(screen.issues ?? []).map((i: any) => `- [${i.category}] ${i.detail}`).join("\n") || "- (none)"}
 Automated signals: ${deterministic.signals.map((s: any) => s.message).join(" | ") || "none"}
 Structural problems: ${structural.map((s) => `${s.field}: ${s.message}`).join(" | ") || "none"}
+Required quality weaknesses to resolve: ${weaknesses.join(", ")}
+Original option-by-option quality assessment: ${JSON.stringify(screen.quality)}
 ${feedback.length ? `\nProblems found in your previous attempt (fix them):\n${feedback.map((f) => `- ${f}`).join("\n")}\n` : ""}
-Make the SMALLEST clinically appropriate revision that fixes these findings. Keep a good stem; change only what is deficient (${(screen.revise_scope ?? []).join(", ") || "as needed"}). Keep the same learning objective and number of options (${optionCount}). Keep the keyed answer unless the screening found the key clinically wrong; if you change it, set answer_key_changed true and explain. Place the correct option(s) in varied positions and keep correct and incorrect options similar in length and detail. Do not add reasoning phrases inside options. Write a rationale that teaches, plus one specific rationale per option (why right or why wrong). Do not invent references.
-Return JSON: {"stem":string,"options":[string...],"correct":[1-based option numbers],"rationale":string,"option_rationales":[string per option, same order],"difficulty":"easy|medium|hard","clinical_judgment_skill":string,"answer_key_changed":boolean,"clinical_uncertainty":boolean,"change_summary":"what changed and why, one or two sentences"}`;
+Make the smallest SUBSTANTIVE correction that resolves these findings (${(screen.revise_scope ?? []).join(", ") || "as needed"}). Do not shuffle answers as an improvement, paraphrase neglectful distractors, or expand explanations while leaving weak choices intact. Every incorrect option must be a realistic nursing decision, common misconception, or competing priority. Keep choices similar in scope and detail. Keep explanations OUT of options and in their separate rationale fields.
+Prefer the same learning objective. If it cannot support a strong item with plausible alternatives, you MAY replace the scenario with a clinically related item within the SAME NCLEX category (${original.nclex_category}) and topic (${original.topic}); explain why replacement is necessary. Screening replacement recommendation: ${screen.replacement_needed === true ? screen.replacement_reason : "none; judge whether targeted repair is feasible"}. Preserve module, category, item type and ${optionCount} options. Preserve the clinical key unless wrong; if changing what is clinically keyed, report it explicitly. Set difficulty based on reasoning actually required, not the old label; do not inflate complexity.
+Write a teaching rationale and a specific rationale for each option. Do not invent references.
+Return JSON: {"mode":"targeted|replacement","replacement_reason":string,"stem":string,"options":[string...],"correct":[1-based option numbers],"rationale":string,"option_rationales":[string per option, same order],"difficulty":"easy|medium|hard","clinical_judgment_skill":string,"answer_key_changed":boolean,"clinical_uncertainty":boolean,"change_summary":"what changed and why, one or two sentences"}`;
 }
 
 Deno.serve(async (request) => {
@@ -213,6 +231,7 @@ Deno.serve(async (request) => {
   const meter: Meter = {
     input: 0, output: 0, cost: 0, models: new Set(),
     maxCost: Math.min(Math.max(Number(payload.max_cost_usd) || DEFAULT_MAX_COST_USD, 0.01), 1),
+    deadline: Date.now() + DEADLINE_MS,
   };
   const started = Date.now();
 
@@ -282,12 +301,26 @@ Deno.serve(async (request) => {
       meter, MODELS.screen, `${STANDARDS}\n${SCREEN_SCHEMA}`,
       `${describe(original, true)}\n\nAutomated signals: ${deterministic.signals.map((s: any) => s.message).join(" | ") || "none"}\nStructural problems: ${structural.map((s: any) => `${s.field}: ${s.message}`).join(" | ") || "none"}`,
     );
+    const originalQuality = assessItemQuality(original, screen.quality);
+    if (originalQuality.some((issue) => issue.code === "quality_report")) throw new Error("Screening returned an incomplete option-quality or difficulty assessment. No correction was generated.");
+    const weaknesses = [...new Set([
+      ...originalQuality.map((issue) => issue.code),
+      ...(Array.isArray(screen.issues) ? screen.issues.map((issue: { category: string }) => issue.category) : []),
+      ...(structural.length ? ["scoring"] : []),
+      ...(screen.answer_key_concern === true ? ["clinical_accuracy"] : []),
+      ...(screen.clinical_uncertainty === true ? ["clinical_accuracy"] : []),
+    ])];
     let classification = ["PASS", "MINOR", "MAJOR", "RETIRE"].includes(screen.classification) ? screen.classification : "MAJOR";
-    if (structural.length && (classification === "PASS" || classification === "MINOR")) classification = "MAJOR";
+    if (weaknesses.length && (classification === "PASS" || classification === "MINOR")) classification = "MAJOR";
     const risk = ["low", "medium", "high"].includes(screen.clinical_risk) ? screen.clinical_risk : "medium";
     findings.screen = screen;
+    findings.original_quality_problems = originalQuality;
+    findings.required_improvements = weaknesses;
     record.screening_class = classification;
     record.clinical_risk = screen.answer_key_concern ? "high" : risk;
+    if (screen.clinical_uncertainty === true) return await finish({
+      audit_status: "quarantine", note: "Screening raised clinical uncertainty; authoritative clinical review is required before generating a correction.", attempts: 0,
+    });
 
     if (classification === "PASS") {
       const fix = autoFixContent(original);
@@ -299,24 +332,37 @@ Deno.serve(async (request) => {
       return await finish({ audit_status: "pass", attempts: 0 });
     }
 
-    if (classification === "RETIRE") {
+    if (classification === "RETIRE" && screen.replacement_needed !== true) {
       return await finish({ audit_status: "quarantine", attempts: 0, note: "Screening recommends retirement or replacement. No changes were made." });
     }
+    if (!weaknesses.length) return await finish({
+      audit_status: "quarantine", attempts: 0, note: "Screening did not identify a specific weakness to correct. No revision was generated; manual review is required.",
+    });
 
-    // Stages B and C: targeted revision, then blind verification, with a small retry budget.
+    // The blind solve stays isolated from the later, separate original-versus-revision review.
     let feedback: string[] = [];
     let lastProposed: Content | null = null;
-    const attemptLog: unknown[] = [];
+    const attemptLog: Record<string, unknown>[] = [];
+    findings.quality_attempts = attemptLog;
     for (let attempt = 1; attempt <= MAX_REVISION_ATTEMPTS; attempt++) {
       if (Date.now() - started > DEADLINE_MS) throw new Error("Audit timed out; try this question again.");
-      const draft = await chat(meter, MODELS.revise, STANDARDS, reviseInstruction(original, screen, deterministic, structural, feedback), 0.2);
+      const draft = await chat(meter, MODELS.revise, STANDARDS, reviseInstruction(original, screen, deterministic, structural, weaknesses, feedback), 0.2);
       const proposed = autoFixContent(assembleRevision(original, draft)).content;
       lastProposed = proposed;
 
       const problems = validateContent(proposed, { requireRationales: true }).filter((i: any) => i.severity === "error");
+      if (!Array.isArray(draft.options) || draft.options.length !== optionsOf(original).options.length) problems.push({ field: "options", message: "Revision must preserve the option count.", severity: "error" });
+      if (original.item_type === "mcq" && (!Array.isArray(draft.correct) || draft.correct.length !== 1)) problems.push({ field: "correct", message: "MCQ revisions need exactly one correct position.", severity: "error" });
+      if (!["easy", "medium", "hard"].includes(draft.difficulty)) problems.push({ field: "difficulty", message: "Revision must supply a valid difficulty.", severity: "error" });
       if (problems.length) {
         feedback = problems.map((p: any) => `${p.field}: ${p.message}`);
         attemptLog.push({ attempt, outcome: "validation_failed", problems });
+        continue;
+      }
+      const optionProblems = optionQualityProblems(proposed);
+      if (optionProblems.length) {
+        feedback = optionProblems.map((issue) => issue.message);
+        attemptLog.push({ attempt, outcome: "quality_rejected", problems: feedback });
         continue;
       }
 
@@ -326,22 +372,37 @@ Deno.serve(async (request) => {
       const comparison = compareVerification(proposed, {
         ...verdict, answer: Array.isArray(verdict.answer) ? verdict.answer.map((n: unknown) => Number(n) - 1) : [],
       });
-      attemptLog.push({ attempt, outcome: comparison.agrees ? "verified" : "disagreed", problems: comparison.problems, verdict, remaining_signals: remaining, key_changed: keyChanged });
+      const qualityProblems = assessItemQuality(proposed, verdict.quality);
+      const rejectionReasons = [
+        ...comparison.problems, ...qualityProblems.map((issue) => issue.message),
+        ...(draft.clinical_uncertainty === true ? ["The writer reported clinical uncertainty."] : []),
+      ];
+      const log: Record<string, unknown> = { attempt, outcome: "quality_rejected", problems: rejectionReasons, verdict, remaining_signals: remaining, key_changed: keyChanged };
+      attemptLog.push(log);
 
-      if (!comparison.agrees || draft.clinical_uncertainty === true) {
-        feedback = [
-          ...comparison.problems, ...(verdict.concerns ?? []),
-          ...(draft.clinical_uncertainty ? ["You reported clinical uncertainty; resolve it or keep the original wording."] : []),
-          ...(verdict.answer_clues?.length ? [`Answer clues noticed: ${verdict.answer_clues.join("; ")}`] : []),
-        ];
+      if (rejectionReasons.length) {
+        feedback = rejectionReasons;
         continue;
       }
 
-      const summary = `[Automated audit ${AUDIT_CRITERIA_VERSION}] ${String(draft.change_summary ?? "Targeted revision.").slice(0, 600)}${keyChanged ? " ANSWER KEY CHANGED — review carefully." : ""} Independent blind review agreed with the key; clinical review still required.`;
+      const improvement = await chat(meter, MODELS.verify, COMPARISON_PROMPT,
+        `ORIGINAL:\n${describe(original, true)}\n\nPROPOSED:\n${describe(proposed, true)}\n\nRequired weakness codes: ${JSON.stringify(weaknesses)}\nOriginal screening evidence: ${JSON.stringify(screen)}\nOriginal deterministic findings: ${JSON.stringify(originalQuality)}`);
+      const improvementProblems = revisionImprovementProblems(original, proposed, weaknesses, improvement);
+      if (!["targeted", "replacement"].includes(draft.mode) || improvement.mode !== draft.mode) improvementProblems.push("Writer and independent reviewer must explicitly agree on targeted revision versus replacement.");
+      if (draft.mode === "replacement" && !String(draft.replacement_reason ?? "").trim()) improvementProblems.push("Writer must explain why replacement is necessary.");
+      log.improvement = improvement;
+      log.problems = improvementProblems;
+      if (improvementProblems.length) {
+        log.outcome = "improvement_rejected";
+        feedback = improvementProblems;
+        continue;
+      }
+      log.outcome = "verified";
+      const summary = `[Automated audit ${AUDIT_CRITERIA_VERSION}${draft.mode === "replacement" ? " REPLACEMENT" : ""}] ${String(draft.change_summary ?? "Targeted revision.").slice(0, 600)}${keyChanged ? " ANSWER KEY CHANGED — review carefully." : ""} Blind answer/quality review and separate material-improvement comparison passed; clinical review still required.`;
       const saved = await createDraft(proposed, summary);
       if (saved.error) throw new Error(`Could not save the correction draft: ${saved.error.message}`);
       return await finish({
-        audit_status: "revised", revision_id: saved.data.id, attempts: attempt, verification: { agreed: true, attempts: attemptLog },
+        audit_status: "revised", revision_id: saved.data.id, attempts: attempt, verification: { agreed: true, quality_passed: true, improvement_passed: true, attempts: attemptLog },
         clinical_risk: keyChanged ? "high" : record.clinical_risk,
       }, { draft_id: saved.data.id });
     }
