@@ -1,6 +1,6 @@
 # Question-Bank QA Automation (pilot)
 
-Status: pilot dashboard published through PRs #230 and #231. First 10-question pilot failed; no live question changes or correction drafts resulted. Failure-handling Edge Function fix deployed; dashboard fix awaiting PR publication.
+Status: pilot dashboard published through PRs #230 and #231. First 10-question pilot failed; no live question changes or correction drafts resulted. Failure-handling fix tracked in PR #232; updated Edge Function deployed. Successful live AI validation is blocked on API funding.
 Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-STANDARDS.md`.
 
 ## What exists
@@ -25,7 +25,7 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Student response data uses text item IDs (100 rows) and cannot be tied to questions; not used as a signal.
 
 ## Remaining
-1. Publish the tested dashboard failure-handling fix through the protected-branch PR workflow.
+1. Dashboard publication follows PR #232 to `main` and GitHub Pages, not Netlify. Verify the deployed panel matches the merged source.
 2. Owner will restore OpenAI API credits later. Successful authenticated AI processing and live result persistence remain unverified until funding and an admin session are available. Verify one controlled question first; do not automatically run another 10-question batch.
 3. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
 
@@ -43,5 +43,5 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Dashboard cap defaults to and cannot exceed $2; remaining budget is forwarded to each request. AI completion limits reserve estimated prompt/output cost before calls. Costs remain estimates based on configured model prices.
 - No schema changes; no automatic apply, approval, publication, or quarantine actions.
 - Tests include mocked backend persistence/retry/provider failures and dashboard first-error stop, manual resume, $2 cap, remaining-budget forwarding, refresh failures, and run/build guards. Mocked authentication is not a successful real authenticated audit.
-- Validation: 58 focused tests pass (audit core, Edge Function, panel behavior/wiring, correction editor, student navigation). Live read-only counts still match the investigation baseline: 1,133 questions, 490 active, 120 drafts, 10 error audits, $0 audit cost.
+- Validation: 60 focused tests cover the audit core, Edge Function, panel behavior/wiring, correction editor, and student navigation, including pre-request budget rejection and cumulative paid-retry usage. Live read-only counts still match the investigation baseline: 1,133 questions, 490 active, 120 drafts, 10 error audits, $0 audit cost.
 - Updated Edge Function deployed with `supabase functions deploy question-audit --project-ref pmjwwktwlsqpetwfvolb --use-api`. No database migration or live records were changed.

@@ -290,6 +290,38 @@ test('AI requests reserve prompt cost and limit completion tokens within the sup
   assert.ok((bound * 0.4 + request.max_completion_tokens * 1.6) / 1e6 <= 0.01);
 });
 
+test('an oversized prompt is stopped before any AI request exceeds the budget', async () => {
+  reset(question({ stem: 'Long input '.repeat(10000) }));
+  const calls = scriptAi([]);
+  const response = await call({ question_id: QID, max_cost_usd: 0.01 });
+  const body = await response.json();
+  assert.equal(response.status, 409);
+  assert.equal(body.error_code, 'audit_budget');
+  assert.equal(calls.length, 0);
+  assert.equal(body.cost_usd, 0);
+  assert.equal(tables.question_audits[0].audit_status, 'error');
+});
+
+test('retry preserves previous paid usage but returns only the current attempt cost', async () => {
+  reset();
+  const fetches = scriptAi([{ classification: 'MAJOR', clinical_risk: 'medium', issues: [] }]);
+  const successfulFetch = globalThis.fetch;
+  globalThis.fetch = async (...args) => fetches.length
+    ? new Response('unavailable', { status: 503 })
+    : successfulFetch(...args);
+  const failed = await (await call({ question_id: QID })).json();
+  assert.equal(failed.status, 'error');
+  assert.ok(failed.cost_usd > 0);
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [] }]);
+  const retry = await (await call({ question_id: QID })).json();
+  assert.equal(retry.status, 'pass');
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(retry.audit.input_tokens, 2000);
+  assert.equal(retry.audit.output_tokens, 1000);
+  assert.equal(retry.audit.est_cost_usd, Number((failed.cost_usd + retry.cost_usd).toFixed(4)));
+  assert.ok(retry.audit.est_cost_usd > retry.cost_usd);
+});
+
 test('SATA revisions keep item_data options and correct positions in sync', async () => {
   const sata = question({
     item_type: 'sata', is_ngn: true, option_a: null, option_b: null, option_c: null, option_d: null, correct_answer: null,
