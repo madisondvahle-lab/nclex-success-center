@@ -234,7 +234,7 @@ Deno.serve(async (request) => {
   const isAdmin = await db.rpc("is_app_admin");
   if (isAdmin.error || isAdmin.data !== true) return json(request, { error: "Only Madison's admin account can run audits." }, 403);
 
-  let payload: { question_id?: string; max_cost_usd?: number; priority?: number; priority_reason?: string };
+  let payload: { question_id?: string; max_cost_usd?: number; priority?: number; priority_reason?: string; reaudit_id?: string };
   try { payload = await request.json(); } catch { return json(request, { error: "Send a question_id." }, 400); }
   const questionId = String(payload.question_id ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(questionId)) return json(request, { error: "Send a valid question_id." }, 400);
@@ -257,23 +257,46 @@ Deno.serve(async (request) => {
 
   const original = snapshotContent(question);
   const hash = contentHash(original);
+  let manualPrevious = null;
+  if (payload.reaudit_id !== undefined) {
+    if (typeof payload.reaudit_id !== "string" || !/^[0-9a-f-]{36}$/i.test(payload.reaudit_id)) {
+      return json(request, { error: "Send a valid quarantined audit ID." }, 400);
+    }
+    const target = await db.from("question_audits").select("*").eq("id", payload.reaudit_id)
+      .eq("question_id", questionId).eq("audit_status", "quarantine").maybeSingle();
+    if (target.error) return json(request, { error: `Could not check the quarantined audit: ${target.error.message}` }, 500);
+    if (!target.data || target.data.released_at) {
+      return json(request, { error: "This audit is no longer quarantined. Refresh the dashboard." }, 409);
+    }
+    manualPrevious = target.data;
+  }
   const cached = await db.from("question_audits").select("*").eq("question_id", questionId).eq("content_hash", hash)
     .eq("criteria_version", AUDIT_CRITERIA_VERSION).neq("audit_status", "error").maybeSingle();
   if (cached.error) return json(request, { error: `Could not check previous audits: ${cached.error.message}` }, 500);
-  if (cached.data) return json(request, { status: "cached", audit: cached.data, cost_usd: 0 });
+  if (cached.data && !manualPrevious) return json(request, { status: "cached", audit: cached.data, cost_usd: 0 });
+  if (cached.data && cached.data.id !== manualPrevious?.id) {
+    return json(request, { error: "Another audit already exists for the current content and criteria. Refresh the dashboard before re-auditing." }, 409);
+  }
 
   const failed = await db.from("question_audits").select("*").eq("question_id", questionId).eq("content_hash", hash)
     .eq("criteria_version", AUDIT_CRITERIA_VERSION).eq("audit_status", "error")
     .order("audited_at", { ascending: false }).limit(1).maybeSingle();
   if (failed.error) return json(request, { error: `Could not check failed audits: ${failed.error.message}` }, 500);
-  const previous = failed.data;
+  const previous = manualPrevious ?? failed.data;
   const structural = validateContent(original).filter((i: any) => i.severity === "error");
   const deterministic = screenDeterministic(original);
   const findings: Record<string, unknown> = {
     structural, signals: deterministic.signals,
-    ...(previous ? { previous_errors: [...(previous.findings?.previous_errors || []), {
+    ...(previous?.findings?.audit_history ? { audit_history: previous.findings.audit_history } : {}),
+    ...(manualPrevious ? {
+      audit_history: [...(manualPrevious.findings?.audit_history || []), {
+        ...manualPrevious,
+        findings: Object.fromEntries(Object.entries(manualPrevious.findings ?? {}).filter(([key]) => key !== "audit_history")),
+      }],
+    } : {}),
+    ...(previous ? { previous_errors: [...(previous.findings?.previous_errors || []), ...(previous.audit_status === "error" ? [{
       note: previous.note, audited_at: previous.audited_at, failure: previous.findings?.failure ?? null,
-    }] } : {}),
+    }] : [])] } : {}),
   };
   const record: Record<string, unknown> = {
     question_id: questionId, content_hash: hash, criteria_version: AUDIT_CRITERIA_VERSION,
@@ -282,8 +305,10 @@ Deno.serve(async (request) => {
   };
 
   const finish = async (fields: Record<string, unknown>, extra: Record<string, unknown> = {}, httpStatus = 200) => {
+    if (manualPrevious) findings.current_audit_outcome = fields.audit_status;
     const row = {
       ...record, findings, ...fields,
+      ...(manualPrevious ? { audit_status: "quarantine" } : {}),
       models: { ...previous?.models, ...Object.fromEntries([...meter.models].map((m) => [m, true])) },
       input_tokens: (previous?.input_tokens || 0) + meter.input,
       output_tokens: (previous?.output_tokens || 0) + meter.output,
@@ -291,12 +316,13 @@ Deno.serve(async (request) => {
       audited_at: new Date().toISOString(),
     };
     const saved = await (previous
-      ? db.from("question_audits").update(row).eq("id", previous.id).eq("audit_status", "error")
+      ? db.from("question_audits").update(row).eq("id", previous.id).eq("audit_status", previous.audit_status)
+        .eq("audited_at", previous.audited_at)
       : db.from("question_audits").insert(row)).select("*").single();
     if (saved.error) {
       return json(request, { error: `Could not record the audit: ${saved.error.message}`, cost_usd: meter.cost }, 500);
     }
-    return json(request, { status: saved.data.audit_status, audit: saved.data, cost_usd: meter.cost, ...extra }, httpStatus);
+    return json(request, { status: fields.audit_status, audit: saved.data, cost_usd: meter.cost, ...extra }, httpStatus);
   };
 
   const createDraft = (proposed: unknown, summary: string) =>

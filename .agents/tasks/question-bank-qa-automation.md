@@ -28,6 +28,12 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 1. Keep Q-0024's existing pending draft untouched and unpublished. It has not passed the new gates. The live original remains hard; the saved legacy draft was medium, not hard.
 2. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
 
+## Manual quarantine re-audit
+- Quarantine results offer **Re-audit with current criteria**. Confirming queues only that question; the owner must then click **Run audit**. Normal batch building still excludes quarantined questions.
+- Admin-only requests send the quarantined audit UUID, reuse that record under the current criteria, and archive the previous complete findings, verification, outcomes, and cumulative usage/cost in `findings.audit_history`. The new outcome is stored separately in `findings.current_audit_outcome`; the row remains quarantined until explicitly released. Question activation and quarantine timestamps are untouched.
+- Both dashboard and function block pending/approved correction drafts. Existing unique-open-draft protection, scoring validation, two-attempt limit, per-request budget, and $2 dashboard cap remain in effect. No schema change, paid audit, live question update, or correction publication is part of this change.
+- Validation: 98 focused audit, dashboard, editor, wiring, and navigation tests pass, including cross-version and same-version manual re-audits, full history/cumulative usage, failed-run retries, draft/admin guards, scoring, and spending limits.
+
 ## First pilot failure: verified diagnosis
 - All 10 saved error records contain OpenAI HTTP 429, `insufficient_quota` / `credit_balance_exhausted`. Zero tokens and estimated cost; the configured API project has no remaining credits. ChatGPT subscription billing is separate.
 - Historical deployed request logs show browser function POST 200, auth user lookup 200, `is_app_admin` 200, question/draft/cache reads 200, audit inserts 201, and dashboard refreshes 200. Callers match `app_admins`. Authentication, browser connectivity, and audit-table write permissions were not the cause.

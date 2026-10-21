@@ -58,6 +58,7 @@ globalThis.__createClient = () => ({
 await import('./index.ts');
 
 const QID = '11111111-1111-1111-1111-111111111111';
+const AUDIT_ID = '22222222-2222-2222-2222-222222222222';
 const question = (overrides = {}) => ({
   id: QID, stem: 'A client receiving heparin has new epistaxis and bruising. Which action should the nurse take first?',
   option_a: 'Review the most recent aPTT result', option_b: 'Apply ice to the forehead', option_c: 'Increase the infusion rate', option_d: 'Encourage fluids',
@@ -105,6 +106,140 @@ test('PASS records an audit and spends only the screening call', async () => {
   assert.equal(tables.question_revision_drafts.length, 0);
   assert.equal(tables.question_audits.length, 1);
   assert.ok(body.cost_usd > 0);
+});
+
+async function quarantinedAudit(overrides = {}) {
+  reset();
+  scriptAi([{ classification: 'PASS', clinical_risk: 'low', issues: [], quality: goodQuality() }]);
+  await call({ question_id: QID });
+  Object.assign(tables.question_audits[0], {
+    id: AUDIT_ID, audit_status: 'quarantine', criteria_version: 'old-criteria',
+    findings: { screen: { issues: [{ category: 'distractors', detail: 'Historical finding' }] } },
+    verification: { attempts: [{ attempt: 1, outcome: 'quality_rejected', problems: ['Original failure'] }] },
+    note: 'Original rejection', quarantined_at: '2026-10-20T00:00:00Z', quarantined_prev_active: true,
+    released_at: null, ...overrides,
+  });
+  tables.questions[0].active = false;
+  return structuredClone(tables.question_audits[0]);
+}
+
+test('manual re-audit under latest criteria reuses the quarantined record and preserves full history and cumulative spend', async () => {
+  const old = await quarantinedAudit();
+  const calls = scriptAi([{ classification: 'PASS', issues: [], quality: goodQuality() }]);
+  const body = await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json();
+  assert.equal(body.status, 'pass');
+  assert.equal(calls.length, 1);
+  assert.equal(tables.question_audits.length, 1);
+  const saved = tables.question_audits[0];
+  assert.equal(saved.id, AUDIT_ID);
+  assert.notEqual(saved.criteria_version, old.criteria_version);
+  assert.equal(saved.audit_status, 'quarantine');
+  assert.equal(saved.findings.current_audit_outcome, 'pass');
+  assert.deepEqual(saved.findings.audit_history, [old]);
+  assert.equal(saved.quarantined_at, old.quarantined_at);
+  assert.equal(saved.quarantined_prev_active, true);
+  assert.equal(saved.released_at, null);
+  assert.equal(saved.input_tokens, old.input_tokens + 1000);
+  assert.equal(saved.output_tokens, old.output_tokens + 500);
+  assert.ok(Math.abs(saved.est_cost_usd - old.est_cost_usd - body.cost_usd) < 0.0001);
+  assert.equal(tables.questions[0].active, false);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  const again = scriptAi([{ classification: 'PASS', issues: [], quality: goodQuality() }]);
+  await call({ question_id: QID, reaudit_id: AUDIT_ID });
+  assert.equal(again.length, 1, 'explicit same-criteria re-audit bypasses cache');
+  assert.equal(saved.findings.audit_history.length, 2);
+  assert.equal(saved.findings.audit_history[1].findings.audit_history, undefined, 'history is not recursively duplicated');
+});
+
+test('quarantine re-audit failures preserve history and can retry the same record without leaving quarantine', async () => {
+  const old = await quarantinedAudit();
+  globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 'credit_balance_exhausted' } }), { status: 429 });
+  const failed = await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json();
+  assert.equal(failed.status, 'error');
+  assert.equal(failed.audit.audit_status, 'quarantine');
+  const failure = structuredClone(tables.question_audits[0]);
+  scriptAi([{ classification: 'PASS', issues: [], quality: goodQuality() }]);
+  await call({ question_id: QID, reaudit_id: AUDIT_ID });
+  assert.equal(tables.question_audits.length, 1);
+  assert.deepEqual(tables.question_audits[0].findings.audit_history[0], old);
+  assert.equal(tables.question_audits[0].findings.audit_history[1].findings.failure.code, failure.findings.failure.code);
+  assert.equal(tables.questions[0].active, false);
+});
+
+test('manual re-audit permits only quarantined records, respects admin and open-draft protections, and creates at most one pending draft', async () => {
+  for (const status of ['pending_review', 'approved']) {
+    const old = await quarantinedAudit();
+    tables.question_revision_drafts.push({ question_id: QID, status });
+    const calls = scriptAi([]);
+    assert.equal((await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json()).status, 'skipped');
+    assert.deepEqual(tables.question_audits[0], old);
+    assert.equal(calls.length, 0);
+  }
+  for (const overrides of [{ audit_status: 'pass' }, { released_at: '2026-10-21T00:00:00Z' }, { question_id: 'other' }]) {
+    await quarantinedAudit(overrides);
+    const calls = scriptAi([]);
+    assert.equal((await call({ question_id: QID, reaudit_id: AUDIT_ID })).status, 409);
+    assert.equal(calls.length, 0);
+  }
+  await quarantinedAudit();
+  isAdmin = false;
+  assert.equal((await call({ question_id: QID, reaudit_id: AUDIT_ID })).status, 403);
+  isAdmin = true;
+  scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() },
+    revision(), goodVerdict(), goodImprovement(),
+  ]);
+  assert.equal((await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json()).status, 'revised');
+  const noCalls = scriptAi([]);
+  assert.equal((await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json()).status, 'skipped');
+  assert.equal(noCalls.length, 0);
+  assert.equal(tables.question_revision_drafts.length, 1);
+  assert.equal(tables.question_revision_drafts[0].status, 'pending_review');
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(tables.question_audits[0].audit_status, 'quarantine');
+  assert.equal(tables.questions[0].active, false);
+});
+
+test('quarantine re-audit retains scoring validation, two-attempt limit, and per-request budget', async () => {
+  await quarantinedAudit();
+  const calls = scriptAi([
+    { classification: 'MAJOR', issues: [{ category: 'scoring', detail: 'Invalid scoring' }], quality: goodQuality() },
+    revision({ correct: [9] }), revision({ correct: [1, 2] }),
+  ]);
+  const rejected = await (await call({ question_id: QID, reaudit_id: AUDIT_ID })).json();
+  assert.equal(rejected.status, 'quarantine');
+  assert.equal(calls.length, 3);
+  assert.equal(rejected.audit.attempts, 2);
+  assert.equal(tables.question_revision_drafts.length, 0);
+  const budgetCalls = scriptAi([{
+    classification: 'MAJOR', issues: [{ category: 'scoring', detail: 'Invalid scoring' }], quality: goodQuality(),
+  }]);
+  const response = await call({ question_id: QID, reaudit_id: AUDIT_ID, max_cost_usd: 0.01 });
+  const limited = await response.json();
+  assert.equal(response.status, 409);
+  assert.equal(limited.error_code, 'audit_budget');
+  assert.equal(budgetCalls.length, 1);
+  assert.ok(limited.cost_usd > 0 && limited.cost_usd <= 0.01);
+  assert.equal(tables.question_audits.length, 1);
+  assert.equal(tables.question_audits[0].audit_status, 'quarantine');
+  assert.equal(tables.question_audits[0].findings.audit_history.length, 2);
+  assert.equal(tables.questions[0].active, false);
+});
+
+test('manual re-audit rejects invalid IDs and a conflicting current-criteria record before any AI call', async () => {
+  await quarantinedAudit();
+  const calls = scriptAi([]);
+  assert.equal((await call({ question_id: QID, reaudit_id: 'invalid' })).status, 400);
+  const { AUDIT_CRITERIA_VERSION } = await import('../shared/question-audit-core.mjs');
+  tables.question_audits.push({
+    ...structuredClone(tables.question_audits[0]), id: 'another-audit', criteria_version: AUDIT_CRITERIA_VERSION,
+  });
+  const before = structuredClone(tables.question_audits);
+  const response = await call({ question_id: QID, reaudit_id: AUDIT_ID });
+  assert.equal(response.status, 409);
+  assert.match((await response.json()).error, /Another audit already exists/);
+  assert.equal(calls.length, 0);
+  assert.deepEqual(tables.question_audits, before);
 });
 
 test('repeating an unchanged question is served from the cache with no AI spend', async () => {
