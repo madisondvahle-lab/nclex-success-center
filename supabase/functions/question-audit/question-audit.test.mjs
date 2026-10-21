@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { register } from 'node:module';
 import { test } from 'node:test';
-import { goodQuality, goodVerdict, goodImprovement, q0024, q0024PoorProposal } from '../../../tests/fixtures/question-audit-quality.mjs';
+import { goodQuality, goodVerdict, goodImprovement, q0024, q0024PoorProposal, q0024LowerPriorityReview, q0024PoorDesign, buildDesignPlan } from '../../../tests/fixtures/question-audit-quality.mjs';
 
 register('data:text/javascript,' + encodeURIComponent(`
 export async function resolve(specifier, context, next) {
@@ -65,14 +65,18 @@ const question = (overrides = {}) => ({
   module_key: null, nclex_category: 'Pharmacological Therapies', nclex_sub: null, topic: 'Anticoagulants', difficulty: 'easy', is_ngn: false, item_type: 'mcq',
   item_data: null, clinical_judgment_skill: 'Analyze cues', option_rationales: { a: 'a', b: 'b', c: 'c', d: 'd' }, reference_list: [], ...overrides,
 });
-const revision = (overrides = {}) => ({
+const revision = (overrides = {}) => {
+  const result = {
   mode: 'targeted',
   stem: 'A client receiving a heparin infusion reports nosebleeds and new bruising. Which action should the nurse take first?',
   options: ['Review the latest aPTT and notify the provider', 'Apply a cold pack to the nose bridge', 'Reduce the client\'s activity to bed rest', 'Administer the scheduled aspirin'],
   correct: [1], rationale: 'New bleeding on heparin may signal over-anticoagulation, so the nurse checks the aPTT and reports.',
   option_rationales: ['Correct.', 'Cold alone does not address systemic anticoagulation.', 'Rest does not address the cause.', 'Aspirin adds bleeding risk.'],
   difficulty: 'medium', clinical_judgment_skill: 'Analyze cues', answer_key_changed: false, clinical_uncertainty: false, change_summary: 'Strengthened distractors.', ...overrides,
-});
+  };
+  result.design_plan ||= buildDesignPlan(result.options, result.correct);
+  return result;
+};
 
 function scriptAi(replies) {
   const calls = [];
@@ -335,9 +339,9 @@ test('SATA revisions keep item_data options and correct positions in sync', asyn
   });
   reset(sata);
   scriptAi([
-    { classification: 'MAJOR', clinical_risk: 'low', issues: [{ category: 'distractors', detail: 'Improve option decisions.' }], revise_scope: ['options'], quality: goodQuality('easy', 5) },
-    { mode: 'targeted', stem: sata.stem, options: ['One', 'Two b', 'Three', 'Four', 'Five'], correct: [4, 2], rationale: 'Because of the pathophysiology involved here.', option_rationales: ['a', 'b', 'c', 'd', 'e'], difficulty: 'hard', clinical_judgment_skill: 'x', change_summary: 'Improved an option.' },
-    { ...goodVerdict('hard', 5), answer: [2, 4] },
+    { classification: 'MAJOR', clinical_risk: 'low', issues: [{ category: 'distractors', detail: 'Improve option decisions.' }], revise_scope: ['options'], quality: goodQuality('easy', 5, [0, 2]) },
+    { ...revision({ stem: sata.stem, options: ['One', 'Two b', 'Three', 'Four', 'Five'], correct: [4, 2], rationale: 'Because of the pathophysiology involved here.', option_rationales: ['a', 'b', 'c', 'd', 'e'], difficulty: 'hard', clinical_judgment_skill: 'x', change_summary: 'Improved an option.' }), design_plan: buildDesignPlan(['One', 'Two b', 'Three', 'Four', 'Five'], [4, 2]) },
+    { ...goodVerdict('hard', 5, [1, 3]), answer: [2, 4] },
     goodImprovement(),
   ]);
   const body = await (await call({ question_id: QID })).json();
@@ -355,21 +359,21 @@ test('Q-0024 poor correction is rejected twice even when screening falsely says 
     correct: [1], difficulty: 'medium',
   });
   const calls = scriptAi([
-    { classification: 'PASS', clinical_risk: 'high', issues: [], quality: goodQuality('hard') },
-    poor, poor,
+    { classification: 'PASS', clinical_risk: 'high', issues: [], quality: q0024LowerPriorityReview },
+    { ...poor, design_plan: q0024PoorDesign }, { ...poor, design_plan: q0024PoorDesign },
   ]);
   const body = await (await call({ question_id: QID })).json();
   assert.equal(body.status, 'quarantine');
   assert.equal(calls.length, 3, 'no blind/comparison spend for known bad choices');
   assert.equal(tables.question_revision_drafts.length, 0);
   assert.equal(body.audit.findings.quality_attempts.length, 2);
-  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /delay of care/);
+  assert.match(JSON.stringify(body.audit.findings.quality_attempts), /clinically_implausible/);
   assert.deepEqual(tables.questions, [question(q0024)]);
 });
 
 test('key agreement with failed option quality never reaches comparison or saves a draft', async () => {
   reset();
-  const quality = goodQuality('medium'); quality.options[1].plausible = false;
+  const quality = goodQuality('medium'); quality.options[1].category = 'clinically_implausible';
   const bad = { ...goodVerdict(), quality };
   const calls = scriptAi([
     { classification: 'MAJOR', issues: [{ category: 'distractors', detail: 'Weak choices' }], quality: goodQuality() },
@@ -401,7 +405,7 @@ test('missing screening quality fails explicitly rather than generating an unass
   const response = await call({ question_id: QID });
   const body = await response.json();
   assert.equal(response.status, 500);
-  assert.match(body.audit.note, /incomplete option-quality/);
+  assert.match(body.audit.note, /incomplete quality assessment/);
   assert.equal(calls.length, 1);
   assert.equal(tables.question_revision_drafts.length, 0);
 });
