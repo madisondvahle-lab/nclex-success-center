@@ -1,6 +1,6 @@
 # Question-Bank QA Automation (pilot)
 
-Status: dashboard and failure-handling fixes published through PRs #230, #231, and #232. After funding, one authenticated Q-0024 retry succeeded, but its proposed correction failed educational-quality review. Pilot expansion is paused. Criteria v2 is deployed; criteria v3 historical-regression improvements are implemented and tested locally, pending protected-branch deployment.
+Status: dashboard and failure-handling fixes published through PRs #230, #231, and #232. After funding, one authenticated Q-0024 retry succeeded, but its proposed correction failed educational-quality review. Pilot expansion remains paused. Criteria v3 historical-regression improvements were merged in #234, deployed to the Edge Function, and verified on GitHub Pages.
 Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-STANDARDS.md`.
 
 ## What exists
@@ -25,9 +25,8 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Student response data uses text item IDs (100 rows) and cannot be tied to questions; not used as a signal.
 
 ## Remaining
-1. Publish criteria v3 changes through the protected-branch PR workflow, then deploy the Edge Function. Do not run additional paid audits without explicit authorization.
-2. Keep Q-0024's existing pending draft untouched and unpublished. It has not passed the new gates. The live original remains hard; the saved legacy draft was medium, not hard.
-3. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
+1. Keep Q-0024's existing pending draft untouched and unpublished. It has not passed the new gates. The live original remains hard; the saved legacy draft was medium, not hard.
+2. Not yet built: sampling-based QA of passed items, taxonomy standardization, defect-propagation flags, audit of duplicates.
 
 ## First pilot failure: verified diagnosis
 - All 10 saved error records contain OpenAI HTTP 429, `insufficient_quota` / `credit_balance_exhausted`. Zero tokens and estimated cost; the configured API project has no remaining credits. ChatGPT subscription billing is separate.
@@ -64,4 +63,5 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - Screening and blind review now distinguish appropriate lower-priority interventions, plausible misconceptions, clinically implausible options, and ambiguity. Each distractor needs learner appeal and stem-based distinction; four independent cueing dimensions and actual difficulty are assessed. A correct key does not imply item quality.
 - Writer planning captures the assessed objective and distractor rationale privately. A blind reviewer evaluates the revised item without key/rationales/original; a separate comparison checks objective/category preservation, clinical and rationale accuracy, NCLEX relevance, and evidence that each named weakness was materially resolved. Retries use specific findings and preserve accepted content. Only verified drafts can be saved.
 - Regression fixtures cover the historical examples, including Q-0024's weak choices and hard label; Q-0394/Q-0396 examples test that valid lower-priority actions remain plausible while bundled-answer cueing and unsafe actions are flagged. Choices remain rationale-free; scoring, two-attempt/cost limits, open-draft checks, and nonpublication safeguards remain in place.
-- No live questions, correction drafts, or audit records were changed; no paid audit or publication was performed. Criteria version is v3. Deployment and post-deployment record verification remain pending.
+- Validation: 89 focused audit, editor, wiring, and navigation tests pass; syntax and diff checks pass. Criteria v3 was merged through PR #234 (`aa64e5d`), deployed as Edge Function `question-audit` v7, and verified from the portal with a cache-busted request.
+- No audit request, paid AI call, migration, live question/draft update, approval, or publication was performed during this work. No post-deployment database query was run; deployment uploaded function code only.
