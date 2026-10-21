@@ -9,8 +9,10 @@ import {
   contentHash,
   estimateCost,
   optionsOf,
+  objectiveAssessmentProblems,
   optionQualityProblems,
   revisionImprovementProblems,
+  revisionDesignProblems,
   screenDeterministic,
   snapshotContent,
   syncScoring,
@@ -50,21 +52,25 @@ Standards:
 - Difficulty rubric: easy = foundational knowledge; medium = interpreting findings, differentiating plausible interventions, basic prioritization; hard = multiple cues and competing priorities. Long scenarios or obscure facts are not "hard".
 - Rationales must teach: why the key is right, which findings or principles support it, and why each other option is wrong. No generic text ("This is not the best answer").`;
 
-const QUALITY_SCHEMA = `Include "quality":{"acceptable":boolean,"options":[{"option":1-based number,"plausible":boolean,"reason":"specific realistic nursing decision, misconception, or competing priority; for an incorrect option explain why a learner might select it AND why it is less appropriate here"}],"cueing":{"only_one_addresses_problem":boolean,"correct_more_comprehensive":boolean,"answer_apparent_without_knowledge":boolean,"rationale_in_options":boolean},"difficulty":{"rating":"easy|medium|hard","reason":"clinical reasoning actually required","multiple_cues_required":boolean,"competing_priorities":boolean}}.
-Evaluate EVERY option individually. Correct does not mean high quality. Incorrect options that just neglect obvious respiratory compromise (notify parents first, wait for glucose, record and recheck later) are not plausible competing actions. Paraphrasing them does not help. Check whether only one choice addresses the clinical problem or bundles all useful care while the rest do nothing useful. A straightforward emergency-recognition item is not hard. Hard requires multiple cues AND genuinely competing priorities. Options must contain actions/findings only, never their explanations; keep teaching in rationale fields.`;
+const QUALITY_SCHEMA = `Include "quality":{"acceptable":boolean,"objective":{"concept":"specific concept being tested","clinical_decision":"decision the learner must make","knowledge_required":"knowledge needed to answer","minimum_data":"minimum case facts establishing one best answer"},"options":[{"option":1-based number,"category":"best_answer|keyed_correct|appropriate_lower_priority|plausible_misconception|clinically_implausible|ambiguous","clinical_reasoning":"clinical reason for this category","why_student_might_choose":"realistic appeal to a learner, required for incorrect options","distinguishing_knowledge":"why less appropriate here, required for incorrect options","stem_supports_exclusion":boolean}],"cueing":{"only_one_addresses_problem":boolean,"correct_more_comprehensive":boolean,"answer_apparent_without_knowledge":boolean,"rationale_in_options":boolean},"difficulty":{"rating":"easy|medium|hard","reason":"clinical reasoning actually required","multiple_cues_required":boolean,"competing_priorities":boolean}}.
+Classify each option explicitly. For SATA, use "keyed_correct" for each keyed response and include it among allowed categories. A valid nursing intervention can be appropriate but lower priority; do NOT call it implausible just because another action is first. Examples include alarm/contain/extinguish steps in RACE and timely assessment, oxygen, provider escalation, cultures, diagnostics, or treatment at the right stage. Explain why a lower-priority action is appealing and what stem fact makes it not best now. A plausible misconception also requires a realistic learner rationale and a clear distinguishing principle. Use "clinically_implausible" only for absurd, irrelevant, unsafe, or non-nursing actions that a competent learner would not reasonably consider. Use "ambiguous" when the stem cannot distinguish an alternative. A question can have a correct answer and still fail quality.
+Set only_one_addresses_problem=true when the keyed option alone engages the actual clinical problem and other choices are irrelevant or negligent, NOT merely because it is the best priority. correct_more_comprehensive=true when the key bundles multiple suitable actions while alternatives are single steps and that construction clues the response. Flag answer hints independent of clinical knowledge.
+For single-answer items, classify the independently supported key as exactly one best_answer. For SATA, all keyed options are keyed_correct. Every other option must be appropriate_lower_priority or plausible_misconception and the stem must establish the distinction. Never accept ambiguous or clinically_implausible distractors. A straightforward emergency-recognition item is not hard; hard requires multiple cues AND genuinely competing priorities. Options contain actions/findings only, never rationales.`;
 
 const SCREEN_SCHEMA = `Return JSON: {"classification":"PASS|MINOR|MAJOR|RETIRE","clinical_risk":"low|medium|high","answer_key_concern":boolean,"clinical_uncertainty":boolean,"difficulty_assessment":"easy|medium|hard","issues":[{"category":"clinical_accuracy|distractors|answer_clues|difficulty|rationale|relevance|scoring","detail":"specific problem"}],"revise_scope":["stem"|"options"|"rationale"|"difficulty"],"replacement_needed":boolean,"replacement_reason":string}
 ${QUALITY_SCHEMA}
 PASS = accurate, entry-level appropriate, defensible key, reasonable distractors, no clues, meaningful rationale (leave unchanged). MINOR = small wording/clarity/rationale issue. MAJOR = clinical inaccuracy, wrong/ambiguous key, weak or implausible distractors, answer-choice clues, or inadequate rationale. RETIRE = fundamentally unsuitable. Do not mark an item down for being simple if it is clinically important and well written. clinical_risk reflects harm if a student learns this item incorrectly (medication doses, safety, priority actions = higher).`;
 
-const VERIFY_PROMPT = `You are an independent NCLEX-RN item reviewer. You are NOT given the answer key. Answer the item yourself first.
-Return JSON: {"answer":[option numbers you believe are correct, 1-based],"multiple_defensible":boolean,"clinical_accuracy_concern":boolean,"sufficient_information":boolean,"entry_level_appropriate":boolean,"apparent_difficulty":"easy|medium|hard","implausible_distractors":["option numbers"],"answer_clues":["description"],"concerns":["short statements"]}
+const VERIFY_PROMPT = `You are an independent NCLEX-RN item reviewer. You are NOT given the answer key, rationales, original question, screening report, or writer's design. First answer from the item alone. Then assess quality separately and classify EVERY option.
+Return JSON: {"answer":[option numbers you believe are correct, 1-based],"multiple_defensible":boolean,"clinical_accuracy_concern":boolean,"sufficient_information":boolean,"entry_level_appropriate":boolean,"concerns":["specific unresolved clinical/item concerns"]}
 ${QUALITY_SCHEMA}
-For multiple-choice items give exactly one number. multiple_defensible = true if a second option could reasonably be argued correct. Flag any clinical statement you are not confident is current, accepted practice.`;
+For MCQ give exactly one number; for SATA give all correct positions. A true lower-priority intervention remains plausible when the stem makes its timing/priority distinction clear. Do not reject it merely for not being first. Explain your reasoning for every implausible/ambiguous classification. Flag any clinical statement you are not confident is current, accepted practice.`;
 
-const COMPARISON_PROMPT = `You are a separate quality-gate reviewer, not the revision writer. Compare ORIGINAL and PROPOSED, including their keys and rationales. Agreement with the answer key alone is NOT sufficient. Reject option shuffling, paraphrasing the same implausible distractors, and rationale expansion that leaves identified weaknesses intact. Require a specific substantive improvement for EACH listed weakness. A difficulty-only or rationale-only correction is acceptable only when that was the actual deficiency and the item was otherwise sound.
-If the original concept cannot support realistic alternatives, a clinically related replacement within the SAME NCLEX category is allowed. A replacement needs a genuinely new scenario and a defensible clinical reason; do not force artificial difficulty or unrelated learning content. Independently confirm category alignment.
-Return JSON: {"materially_improved":boolean,"cosmetic_only":boolean,"same_category":boolean,"mode":"targeted|replacement","replacement_reason":string,"weaknesses":[{"code":"each supplied weakness code exactly once","resolved":boolean,"evidence":"cite the original and proposed wording and explain the actual improvement"}]}. Do not accept the writer's claims without comparing actual content.`;
+const COMPARISON_PROMPT = `You are a separate NCLEX item-quality reviewer, not the revision writer. Independently compare ORIGINAL and PROPOSED and the original learning objective, module, NCLEX category, options, key, and rationales. Agreement with the answer key is necessary but never sufficient.
+Assess clinical accuracy, whether the rationale and each option rationale explain accepted practice, NCLEX relevance, single-best-answer defensibility, distractor categories (implausible vs plausible misconception vs valid lower priority), cueing, difficulty, and preservation of the exact original learning objective. Do not reject a valid lower-priority action just because it is not first. A lower-priority distractor is acceptable only when the stem supports why it is not best now.
+Reject shuffling, cosmetic paraphrase, or rationale expansion without improved student-facing item quality. Require specific evidence that EACH original weakness is fixed. Preserve all already-good content. Only the failing stem/options/rationale/metadata should be changed.
+Default to preserving the original concept and module objective. Whole-objective replacement is allowed only when the original objective is clinically inaccurate, outdated, redundant, or unsuitable for the bank; explain evidence and preserve module compatibility/category. A different scenario that tests the same objective is a targeted repair, not permission to change the objective. Keep category exactly the same.
+Return JSON: {"materially_improved":boolean,"cosmetic_only":boolean,"same_category":boolean,"mode":"targeted|replacement","replacement_reason":string,"learning_objective_preserved":boolean,"objective_evidence":"specific comparison to original objective","objective_change_reason":"none|clinically_inaccurate|outdated|redundant|unsuitable","objective_change_evidence":"required if changed","rationale_accuracy":{"accurate":boolean,"issues":["specific factual or reasoning error, including mismatched per-option rationale"]},"nclex_relevance":{"relevant":boolean,"evidence":"entry-level RN relevance"},"weaknesses":[{"code":"each supplied weakness code exactly once","resolved":boolean,"evidence":"cite original and proposed wording and explain substantive improvement"}]}. Do not accept writer claims without comparing actual content.`;
 
 type Content = ReturnType<typeof snapshotContent>;
 type Meter = { input: number; output: number; cost: number; models: Set<string>; maxCost: number; deadline: number };
@@ -187,10 +193,11 @@ function assembleRevision(original: Content, draft: any): Content {
     next.item_data = { ...(original.item_data ?? {}), options, correct };
     next.option_rationales = Object.fromEntries(options.map((_: string, i: number) => [String(i), rationaleList[i] ?? ""]));
   }
+  if (typeof draft.topic === "string" && draft.topic.trim()) next.topic = draft.topic.trim();
   return syncScoring(next);
 }
 
-function reviseInstruction(original: Content, screen: any, deterministic: any, structural: any[], weaknesses: string[], feedback: string[]) {
+function reviseInstruction(original: Content, screen: any, deterministic: any, structural: any[], weaknesses: string[], feedback: string[], priorProposed: Content | null) {
   const optionCount = optionsOf(original).options.length;
   return `${describe(original, true)}
 
@@ -200,11 +207,14 @@ Automated signals: ${deterministic.signals.map((s: any) => s.message).join(" | "
 Structural problems: ${structural.map((s) => `${s.field}: ${s.message}`).join(" | ") || "none"}
 Required quality weaknesses to resolve: ${weaknesses.join(", ")}
 Original option-by-option quality assessment: ${JSON.stringify(screen.quality)}
-${feedback.length ? `\nProblems found in your previous attempt (fix them):\n${feedback.map((f) => `- ${f}`).join("\n")}\n` : ""}
-Make the smallest SUBSTANTIVE correction that resolves these findings (${(screen.revise_scope ?? []).join(", ") || "as needed"}). Do not shuffle answers as an improvement, paraphrase neglectful distractors, or expand explanations while leaving weak choices intact. Every incorrect option must be a realistic nursing decision, common misconception, or competing priority. Keep choices similar in scope and detail. Keep explanations OUT of options and in their separate rationale fields.
-Prefer the same learning objective. If it cannot support a strong item with plausible alternatives, you MAY replace the scenario with a clinically related item within the SAME NCLEX category (${original.nclex_category}) and topic (${original.topic}); explain why replacement is necessary. Screening replacement recommendation: ${screen.replacement_needed === true ? screen.replacement_reason : "none; judge whether targeted repair is feasible"}. Preserve module, category, item type and ${optionCount} options. Preserve the clinical key unless wrong; if changing what is clinically keyed, report it explicitly. Set difficulty based on reasoning actually required, not the old label; do not inflate complexity.
-Write a teaching rationale and a specific rationale for each option. Do not invent references.
-Return JSON: {"mode":"targeted|replacement","replacement_reason":string,"stem":string,"options":[string...],"correct":[1-based option numbers],"rationale":string,"option_rationales":[string per option, same order],"difficulty":"easy|medium|hard","clinical_judgment_skill":string,"answer_key_changed":boolean,"clinical_uncertainty":boolean,"change_summary":"what changed and why, one or two sentences"}`;
+${feedback.length ? `\nPrecise findings from the previous attempt (fix only these; preserve accepted fields):\n${feedback.map((f) => `- ${f}`).join("\n")}\n` : ""}
+${priorProposed ? `\nPrevious proposal to repair selectively:\n${describe(priorProposed, true)}\n` : ""}
+Before drafting, internally specify: the exact assessed concept; the clinical decision; required knowledge; common misconceptions or clinically appropriate competing priorities; and minimum case data needed for one best answer. For EACH incorrect option, internally identify why a student might choose it, what knowledge distinguishes it, why the stem makes it less appropriate, and whether it clues the key. Return this private design analysis separately from student-facing fields. Do not put these explanations in options.
+Make the smallest SUBSTANTIVE correction that resolves the findings. On retry, change only fields implicated by precise feedback and preserve acceptable content from the prior proposal. Do not shuffle answers as improvement, paraphrase implausible distractors, or expand rationales while leaving weak choices intact. Lower-priority but valid assessment, diagnosis, notification, oxygen, treatment, and RACE actions may be excellent distractors when the stem supports timing/priority. Every wrong option must be relevant and either a plausible misconception or a valid lower-priority action. No absurd/unrelated choice or ambiguity.
+Preserve the original learning objective ${JSON.stringify(screen.quality.objective)} and module ${original.module_key}. Use an accurate stem with only relevant data and do not state the diagnosis if recognition is tested. Avoid bundling multiple correct actions in one keyed option while distractors offer one action. Keep options parallel in scope and detail. Keep explanations OUT of student choices and in rationale fields.
+Only replace the objective if the original is clinically inaccurate, outdated, redundant, or unsuitable; explain which. A new scenario that tests the same objective is targeted repair. Preserve same NCLEX category (${original.nclex_category}), module, item type and ${optionCount} options. Topic may be adjusted to accurately describe the same objective. Preserve the key unless clinically wrong and report any justified change. Set difficulty to actual cognitive demand.
+Write a clinically accurate teaching rationale and one specific, matching rationale per option. Preserve accurate references; do not invent citations.
+Return JSON: {"mode":"targeted|replacement","replacement_reason":string,"design_plan":{"concept":string,"clinical_decision":string,"knowledge_required":string,"minimum_data":string,"distractors":[{"option":1-based number,"category":"appropriate_lower_priority|plausible_misconception","why_student_might_choose":string,"distinguishing_knowledge":string,"stem_supports_exclusion":boolean}]},"stem":string,"topic":string,"options":[string...],"correct":[1-based option numbers],"rationale":string,"option_rationales":[string per option, same order],"difficulty":"easy|medium|hard","clinical_judgment_skill":string,"answer_key_changed":boolean,"clinical_uncertainty":boolean,"change_summary":"what changed and why, one or two sentences"}`;
 }
 
 Deno.serve(async (request) => {
@@ -302,7 +312,10 @@ Deno.serve(async (request) => {
       `${describe(original, true)}\n\nAutomated signals: ${deterministic.signals.map((s: any) => s.message).join(" | ") || "none"}\nStructural problems: ${structural.map((s: any) => `${s.field}: ${s.message}`).join(" | ") || "none"}`,
     );
     const originalQuality = assessItemQuality(original, screen.quality);
-    if (originalQuality.some((issue) => issue.code === "quality_report")) throw new Error("Screening returned an incomplete option-quality or difficulty assessment. No correction was generated.");
+    const originalObjective = objectiveAssessmentProblems(screen.quality?.objective);
+    if (originalQuality.some((issue) => issue.code === "quality_report") || originalObjective.length) {
+      throw new Error(`Screening returned an incomplete quality assessment. No correction was generated. ${[...originalQuality, ...originalObjective.map(message => ({ message }))].map(issue => issue.message).join(" ")}`);
+    }
     const weaknesses = [...new Set([
       ...originalQuality.map((issue) => issue.code),
       ...(Array.isArray(screen.issues) ? screen.issues.map((issue: { category: string }) => issue.category) : []),
@@ -311,10 +324,13 @@ Deno.serve(async (request) => {
       ...(screen.clinical_uncertainty === true ? ["clinical_accuracy"] : []),
     ])];
     let classification = ["PASS", "MINOR", "MAJOR", "RETIRE"].includes(screen.classification) ? screen.classification : "MAJOR";
+    if (deterministic.signals.some((signal: { code: string }) => signal.code === "potential_delay_of_care") &&
+        !weaknesses.includes("distractors")) weaknesses.push("distractors");
     if (weaknesses.length && (classification === "PASS" || classification === "MINOR")) classification = "MAJOR";
     const risk = ["low", "medium", "high"].includes(screen.clinical_risk) ? screen.clinical_risk : "medium";
     findings.screen = screen;
     findings.original_quality_problems = originalQuality;
+    findings.original_learning_objective = screen.quality.objective;
     findings.required_improvements = weaknesses;
     record.screening_class = classification;
     record.clinical_risk = screen.answer_key_concern ? "high" : risk;
@@ -346,7 +362,7 @@ Deno.serve(async (request) => {
     findings.quality_attempts = attemptLog;
     for (let attempt = 1; attempt <= MAX_REVISION_ATTEMPTS; attempt++) {
       if (Date.now() - started > DEADLINE_MS) throw new Error("Audit timed out; try this question again.");
-      const draft = await chat(meter, MODELS.revise, STANDARDS, reviseInstruction(original, screen, deterministic, structural, weaknesses, feedback), 0.2);
+      const draft = await chat(meter, MODELS.revise, STANDARDS, reviseInstruction(original, screen, deterministic, structural, weaknesses, feedback, lastProposed), 0.2);
       const proposed = autoFixContent(assembleRevision(original, draft)).content;
       lastProposed = proposed;
 
@@ -359,10 +375,11 @@ Deno.serve(async (request) => {
         attemptLog.push({ attempt, outcome: "validation_failed", problems });
         continue;
       }
+      const designProblems = revisionDesignProblems(proposed, draft.design_plan, screen.quality.objective);
       const optionProblems = optionQualityProblems(proposed);
-      if (optionProblems.length) {
-        feedback = optionProblems.map((issue) => issue.message);
-        attemptLog.push({ attempt, outcome: "quality_rejected", problems: feedback });
+      if (designProblems.length || optionProblems.length) {
+        feedback = [...designProblems, ...optionProblems.map((issue) => issue.message)];
+        attemptLog.push({ attempt, outcome: "quality_rejected", problems: feedback, design_plan: draft.design_plan });
         continue;
       }
 
@@ -372,7 +389,8 @@ Deno.serve(async (request) => {
       const comparison = compareVerification(proposed, {
         ...verdict, answer: Array.isArray(verdict.answer) ? verdict.answer.map((n: unknown) => Number(n) - 1) : [],
       });
-      const qualityProblems = assessItemQuality(proposed, verdict.quality);
+      const blindAnswer = Array.isArray(verdict.answer) ? verdict.answer.map((n: unknown) => Number(n) - 1) : [];
+      const qualityProblems = assessItemQuality(proposed, verdict.quality, blindAnswer);
       const rejectionReasons = [
         ...comparison.problems, ...qualityProblems.map((issue) => issue.message),
         ...(draft.clinical_uncertainty === true ? ["The writer reported clinical uncertainty."] : []),
@@ -386,8 +404,8 @@ Deno.serve(async (request) => {
       }
 
       const improvement = await chat(meter, MODELS.verify, COMPARISON_PROMPT,
-        `ORIGINAL:\n${describe(original, true)}\n\nPROPOSED:\n${describe(proposed, true)}\n\nRequired weakness codes: ${JSON.stringify(weaknesses)}\nOriginal screening evidence: ${JSON.stringify(screen)}\nOriginal deterministic findings: ${JSON.stringify(originalQuality)}`);
-      const improvementProblems = revisionImprovementProblems(original, proposed, weaknesses, improvement);
+        `ORIGINAL:\n${describe(original, true)}\n\nPROPOSED:\n${describe(proposed, true)}\n\nRequired weakness codes: ${JSON.stringify(weaknesses)}\nOriginal learning objective: ${JSON.stringify(screen.quality.objective)}\nWriter's private design analysis (claims to independently verify against the actual item): ${JSON.stringify(draft.design_plan)}\nOriginal screening evidence: ${JSON.stringify(screen)}\nOriginal deterministic findings: ${JSON.stringify(originalQuality)}`);
+      const improvementProblems = revisionImprovementProblems(original, proposed, weaknesses, improvement, screen.quality.objective);
       if (!["targeted", "replacement"].includes(draft.mode) || improvement.mode !== draft.mode) improvementProblems.push("Writer and independent reviewer must explicitly agree on targeted revision versus replacement.");
       if (draft.mode === "replacement" && !String(draft.replacement_reason ?? "").trim()) improvementProblems.push("Writer must explain why replacement is necessary.");
       log.improvement = improvement;

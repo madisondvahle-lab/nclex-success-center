@@ -1,7 +1,7 @@
 // Deterministic (no-AI) question-bank audit helpers, shared by the dashboard and function
 // and the question-audit Edge Function. Nothing here calls the network.
 
-export const AUDIT_CRITERIA_VERSION = 'qa-2026-10-v2';
+export const AUDIT_CRITERIA_VERSION = 'qa-2026-10-v3';
 export const LETTERS = ['a', 'b', 'c', 'd'];
 
 const DIFFICULTIES = new Set(['easy', 'medium', 'hard']);
@@ -233,6 +233,10 @@ export function screenDeterministic(content) {
   const rightText = options.filter((_, i) => keyed.has(i));
   if (wrong.filter(o => ABSOLUTE.test(text(o))).length && !rightText.some(o => ABSOLUTE.test(text(o)))) add('absolute_distractors', 'Only distractors contain absolute wording (always, never, only, all, none).', 1);
   if (options.some(o => GENERIC.test(text(o)))) add('generic_option', 'An option uses generic wording such as "reassure the client" or "document and reassess".', 1);
+  const emergencyStem = /\b(grunting|retractions|cyanosis|hypoxemia|respiratory distress|hypotension|new confusion|smoke|fire)\b/i.test(text(content.stem));
+  if (emergencyStem && wrong.some(o => /\b(document|record|wait|delay|defer|routine|next (shift|check|appointment)|before (assess|interven|treat|stabili))\b/i.test(text(o)))) {
+    add('potential_delay_of_care', 'Review whether a distractor delays urgent care; some lower-priority actions can still be clinically appropriate.', 1);
+  }
   if (options.some(o => COACHING.some(rx => rx.test(text(o))))) add('coaching_phrase', 'An option contains wording that explains its own clinical reasoning.', 2);
   if (options.some((_, i) => lengths[i] < 10)) add('very_short_option', 'An option is extremely short and may be an implausible distractor.', 1);
 
@@ -270,10 +274,11 @@ export function estimateCost(model, inputTokens, outputTokens) {
 // Compares the blind verifier's answer with the proposed key.
 export function compareVerification(content, verdict) {
   const { correct } = optionsOf(content);
+  const optionCount = optionsOf(content).options.length;
   const picked = Array.isArray(verdict?.answer) ? verdict.answer : [];
   const same = picked.length === correct.length && correct.every(i => picked.includes(i));
   const problems = [];
-  if (picked.some(i => !Number.isInteger(i) || i < 0 || i >= optionsOf(content).options.length) || new Set(picked).size !== picked.length) problems.push('The independent reviewer returned invalid answer positions.');
+  if (picked.some(i => !Number.isInteger(i) || i < 0 || i >= optionCount) || new Set(picked).size !== picked.length) problems.push('The independent reviewer returned invalid answer positions.');
   if (!same) problems.push('The independent reviewer chose a different answer than the proposed key.');
   if (verdict?.multiple_defensible) problems.push('The independent reviewer found more than one defensible option.');
   if (verdict?.clinical_accuracy_concern) problems.push('The independent reviewer raised a clinical accuracy concern.');
@@ -282,8 +287,6 @@ export function compareVerification(content, verdict) {
   for (const [field, expected] of Object.entries({ multiple_defensible: false, clinical_accuracy_concern: false, sufficient_information: true, entry_level_appropriate: true })) {
     if (verdict?.[field] !== expected) problems.push(`Independent review did not explicitly clear ${field}.`);
   }
-  if (!Array.isArray(verdict?.answer_clues) || verdict.answer_clues.length) problems.push('Independent review found answer clues or did not assess them.');
-  if (!Array.isArray(verdict?.implausible_distractors) || verdict.implausible_distractors.length) problems.push('Independent review found implausible distractors or did not assess them.');
   if (!Array.isArray(verdict?.concerns) || verdict.concerns.length) problems.push('Independent review has unresolved concerns or did not assess them.');
   return { agrees: problems.length === 0, problems };
 }
@@ -293,26 +296,23 @@ export function optionQualityProblems(content) {
   const problems = [];
   const options = optionsOf(content).options;
   const add = (code, message) => problems.push({ code, message });
-  const respiratoryCrisis = /\b(grunting|retractions|cyanosis|hypoxemia|respiratory distress)\b/i.test(text(content.stem));
   options.forEach((option, i) => {
     const value = text(option);
     if (/\b(because|in order to|so that|to prevent|to ensure|to avoid|which (prevents|reduces|improves))\b/i.test(value)) {
       add('rationale_in_options', `Option ${i + 1} includes an explanation; store it in the rationale fields instead.`);
     }
-    if (respiratoryCrisis && (
-      /\b(call|notify|contact)\b.*\bparents\b.*\bbefore\b/i.test(value) ||
-      /\b(wait|delay|defer)\b.*\b(glucose|respiratory care)\b/i.test(value) ||
-      /\b(document|record)\b.*\b(reassess|check|vital).*\b(routine|30 minutes|next)\b/i.test(value)
-    )) add('obvious_neglect', `Option ${i + 1} uses a Q-0024-style delay of care rather than a plausible competing nursing action.`);
   });
   return problems;
 }
 
-// Screen and blind reviewer must supply the same complete, option-by-option quality report.
-export function assessItemQuality(content, report) {
+const OPTION_CATEGORIES = new Set(['best_answer', 'keyed_correct', 'appropriate_lower_priority', 'plausible_misconception', 'clinically_implausible', 'ambiguous']);
+
+// Screen and blind reviewer categorize each option independently; lower priority is not synonymous with implausible.
+export function assessItemQuality(content, report, expectedAnswer = optionsOf(content).correct) {
   const problems = [...optionQualityProblems(content)];
   const add = (code, message) => problems.push({ code, message });
-  const { options, correct } = optionsOf(content);
+  const { options } = optionsOf(content);
+  const expected = Array.isArray(expectedAnswer) ? expectedAnswer : [];
   const rows = Array.isArray(report?.options) ? report.options : [];
   const explained = value => typeof value === 'string' && value.trim().length > 0;
   if (rows.length !== options.length || rows.some(row => !row || !Number.isInteger(row.option) || row.option < 1 || row.option > options.length) ||
@@ -320,9 +320,29 @@ export function assessItemQuality(content, report) {
     add('quality_report', 'Quality review must evaluate every option exactly once using 1-based positions.');
   }
   rows.forEach(row => {
-    if (!row || typeof row.plausible !== 'boolean' || !explained(row.reason)) add('quality_report', 'Each option needs an explicit plausibility decision and clinical reasoning.');
-    else if (!row.plausible) add(correct.includes(row.option - 1) ? 'clinical_accuracy' : 'distractors', `Option ${row.option} is not a plausible nursing decision: ${row.reason}`);
+    if (!row || !OPTION_CATEGORIES.has(row.category) || !explained(row.clinical_reasoning) ||
+        typeof row.stem_supports_exclusion !== 'boolean') {
+      add('quality_report', `Option ${row?.option ?? '?'} needs a clinical category, reasoning, and an explicit assessment of whether the stem distinguishes it.`);
+      return;
+    }
+    const keyed = expected.includes(row.option - 1);
+    const correctCategory = expected.length > 1 ? 'keyed_correct' : 'best_answer';
+    if (keyed !== ['best_answer', 'keyed_correct'].includes(row.category)) add('answer_key', `Option ${row.option} classification does not match its independent answer selection.`);
+    if (keyed && row.category !== correctCategory) add('answer_key', `Option ${row.option} must be classified ${correctCategory}.`);
+    if (keyed && row.stem_supports_exclusion !== true) add('answer_key', `The stem does not sufficiently support option ${row.option} as a correct response.`);
+    if (row.category === 'clinically_implausible') add('distractors', `Option ${row.option} is clinically implausible: ${row.clinical_reasoning}`);
+    if (row.category === 'ambiguous') add('ambiguity', `Option ${row.option} may also be defensible; stem support is inadequate: ${row.clinical_reasoning}`);
+    if (!keyed && (!explained(row.why_student_might_choose) || !explained(row.distinguishing_knowledge))) {
+      add('quality_report', `Option ${row.option} needs the likely student rationale and knowledge that distinguishes it.`);
+    }
+    if (!keyed && ['appropriate_lower_priority', 'plausible_misconception'].includes(row.category) && row.stem_supports_exclusion !== true) {
+      add('ambiguity', `Option ${row.option} is reasonable but the stem does not establish why it is less appropriate.`);
+    }
   });
+  const best = rows.filter(row => ['best_answer', 'keyed_correct'].includes(row?.category)).map(row => row.option - 1);
+  if (best.length !== expected.length || best.some(i => !expected.includes(i)) || expected.some(i => !best.includes(i))) {
+    add('answer_key', 'Option-by-option review must identify exactly the independently supported answer position(s).');
+  }
   for (const code of ['only_one_addresses_problem', 'correct_more_comprehensive', 'answer_apparent_without_knowledge', 'rationale_in_options']) {
     if (typeof report?.cueing?.[code] !== 'boolean') add('quality_report', `Quality review omitted cueing assessment: ${code}.`);
     else if (report.cueing[code]) add(code, `Quality review did not clear answer-choice cueing: ${code}.`);
@@ -340,7 +360,13 @@ export function assessItemQuality(content, report) {
   return problems;
 }
 
-export function revisionImprovementProblems(original, proposed, weaknesses, comparison) {
+export function objectiveAssessmentProblems(objective) {
+  return ['concept', 'clinical_decision', 'knowledge_required', 'minimum_data']
+    .filter(key => !explainedObjective(objective?.[key]))
+    .map(key => `Screening must specify the assessed ${key}.`);
+}
+
+export function revisionImprovementProblems(original, proposed, weaknesses, comparison, objective = null) {
   const problems = [];
   const add = message => problems.push(message);
   const normalize = value => text(value).toLowerCase().replace(/\s+/g, ' ').trim();
@@ -359,10 +385,50 @@ export function revisionImprovementProblems(original, proposed, weaknesses, comp
   if (comparison?.same_category !== true || original.nclex_category !== proposed.nclex_category) add('Replacement/revision must stay in the original NCLEX category.');
   if (!['targeted', 'replacement'].includes(comparison?.mode)) add('Comparison must identify targeted revision or replacement.');
   if (comparison?.mode === 'replacement' && (normalize(original.stem) === normalize(proposed.stem) || !text(comparison.replacement_reason).trim())) add('A replacement requires a new clinical scenario and a reason the original concept could not support plausible alternatives.');
+  if (objective && !['concept', 'clinical_decision', 'knowledge_required', 'minimum_data'].every(key => explainedObjective(objective[key]))) add('The original learning objective assessment is incomplete.');
+  if (comparison?.learning_objective_preserved !== true) {
+    if (comparison?.mode !== 'replacement' || !['clinically_inaccurate', 'outdated', 'redundant', 'unsuitable'].includes(comparison?.objective_change_reason) ||
+        !explainedObjective(comparison?.objective_change_evidence)) {
+      add('Changing the learning objective requires a justified clinically inaccurate, outdated, redundant, or unsuitable original objective.');
+    }
+  } else if (comparison?.objective_change_reason !== 'none' || !explainedObjective(comparison?.objective_evidence)) {
+    add('Comparison must explicitly support preservation of the original learning objective.');
+  }
+  if (comparison?.rationale_accuracy?.accurate !== true || !Array.isArray(comparison.rationale_accuracy.issues) || comparison.rationale_accuracy.issues.length) {
+    add('Separate reviewer found rationale errors or did not explicitly assess rationale accuracy.');
+  }
+  if (comparison?.nclex_relevance?.relevant !== true || !explainedObjective(comparison?.nclex_relevance?.evidence)) {
+    add('Separate reviewer did not confirm entry-level NCLEX relevance.');
+  }
   const resolved = Array.isArray(comparison?.weaknesses) ? comparison.weaknesses : [];
   for (const code of weaknesses) {
     const rows = resolved.filter(row => row?.code === code);
     if (rows.length !== 1 || rows[0].resolved !== true || !text(rows[0].evidence).trim()) add(`Independent comparison must explain how the revision resolves ${code}.`);
   }
+  return problems;
+}
+
+const explainedObjective = value => typeof value === 'string' && value.trim().length > 0;
+
+export function revisionDesignProblems(content, design, objective) {
+  const problems = [];
+  const add = message => problems.push(message);
+  const options = optionsOf(content).options;
+  for (const key of ['concept', 'clinical_decision', 'knowledge_required', 'minimum_data']) {
+    if (!explainedObjective(objective?.[key]) || !explainedObjective(design?.[key])) add(`Generation plan must preserve/identify ${key}.`);
+  }
+  const rows = Array.isArray(design?.distractors) ? design.distractors : [];
+  const correctPositions = new Set(optionsOf(content).correct);
+  const wrongPositions = new Set(options.map((_, i) => i).filter(i => !correctPositions.has(i)));
+  if (rows.length !== wrongPositions.size || rows.some(row => !Number.isInteger(row?.option) || !wrongPositions.has(row.option - 1)) ||
+      new Set(rows.map(row => row?.option)).size !== wrongPositions.size) add('Generation plan must assess every incorrect option exactly once.');
+  rows.forEach(row => {
+    if (!OPTION_CATEGORIES.has(row?.category) || row.category === 'best_answer' ||
+        !explainedObjective(row.why_student_might_choose) || !explainedObjective(row.distinguishing_knowledge) ||
+        typeof row.stem_supports_exclusion !== 'boolean') add(`Distractor design for option ${row?.option ?? '?'} is incomplete.`);
+    else if (['clinically_implausible', 'ambiguous'].includes(row.category) || !row.stem_supports_exclusion) {
+      add(`Generated option ${row.option} is ${row.category} or the stem does not distinguish it.`);
+    }
+  });
   return problems;
 }
