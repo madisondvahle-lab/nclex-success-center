@@ -101,7 +101,7 @@
   }
 
   async function auditOne(item, remainingBudget) {
-    const result = await ctx.db.functions.invoke('question-audit', { body: { question_id: item.question.id, max_cost_usd: Math.min(0.25, remainingBudget), priority: item.priority, priority_reason: item.reason } });
+    const result = await ctx.db.functions.invoke('question-audit', { body: { question_id: item.question.id, max_cost_usd: Math.min(0.25, remainingBudget), priority: item.priority, priority_reason: item.reason, ...(item.reauditId ? { reaudit_id: item.reauditId } : {}) } });
     if (result.error) {
       let message = result.error.message;
       if (result.error.context instanceof Response) {
@@ -194,6 +194,10 @@
   }
 
   function verificationText(audit) {
+    return verificationDetailText(audit) + auditHistoryText(audit);
+  }
+
+  function verificationDetailText(audit) {
     const attempts = audit.verification?.attempts || audit.findings?.quality_attempts || [];
     if (!attempts.length) return '';
     const last = attempts[attempts.length - 1];
@@ -207,11 +211,18 @@
     return `<p class="qa-detail"><strong>Independent verification</strong> (${attempts.length} attempt${attempts.length === 1 ? '' : 's'}; blind review is a safeguard, not clinical validation)</p><ul class="qa-detail">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>${last.remaining_signals?.length ? `<p class="qa-detail">Remaining automated signals: ${esc(last.remaining_signals.join(', '))}</p>` : ''}`;
   }
 
+  function auditHistoryText(audit) {
+    const history = audit.findings?.audit_history || [];
+    const outcome = audit.findings?.current_audit_outcome;
+    return `${outcome ? `<p class="qa-detail">Latest re-audit: ${esc(STATUS_LABEL[outcome] || outcome)} (${esc(audit.criteria_version)}). Quarantine remains in place.</p>` : ''}${history.length ? `<details><summary>Audit history (${history.length})</summary>${history.map(entry => `<section class="qa-detail"><strong>${esc(entry.criteria_version)} · ${esc(entry.findings?.current_audit_outcome || entry.audit_status)} · ${esc(entry.audited_at)} · cumulative cost ${money(entry.est_cost_usd)}</strong>${entry.note ? `<p>${esc(entry.note)}</p>` : ''}<ul>${findingList(entry).map(issue => `<li>${esc(issue)}</li>`).join('')}</ul>${verificationDetailText(entry)}</section>`).join('')}</details>` : ''}`;
+  }
+
   function renderResults() {
     const rows = filtered();
     const limit = 50;
     $('qa-results-status').textContent = rows.length ? `${rows.length} result${rows.length === 1 ? '' : 's'}${rows.length > limit ? `; showing the first ${limit}` : ''}.` : 'No audit results match these filters yet.';
     const drafts = new Map(ctx.getDrafts().map(draft => [draft.id, draft]));
+    const blocked = openDraftIds();
     $('qa-results').innerHTML = rows.slice(0, limit).map(({ audit, question }) => {
       const draft = audit.revision_id ? drafts.get(audit.revision_id) : null;
       const awaiting = draft && draft.status === 'pending_review';
@@ -221,6 +232,8 @@
       if (draft && ['pending_review', 'approved'].includes(draft.status)) actions.push(`<button class="button secondary" type="button" data-qa-open="${esc(draft.id)}">Review side by side</button>`);
       if (isQuarantined(audit)) {
         actions.push(removed ? `<button class="button secondary" type="button" data-qa-release="${esc(question.id)}">Release back to students</button>` : `<button class="button danger" type="button" data-qa-quarantine="${esc(question.id)}">Remove from student assessments (reversible)</button><button class="button secondary" type="button" data-qa-release="${esc(question.id)}">Dismiss quarantine</button>`);
+        actions.push(`<button class="button secondary" type="button" data-qa-reaudit="${esc(question.id)}" ${running || blocked.has(question.id) ? 'disabled' : ''}>Re-audit with current criteria</button>`);
+        if (blocked.has(question.id)) actions.push('<span class="qa-detail">Re-audit blocked: a pending or approved correction draft already exists.</span>');
       }
       if (audit.audit_status === 'error') actions.push(`<button class="button secondary" type="button" data-qa-retry="${esc(question.id)}">Retry audit</button>`);
       return `<article class="candidate"><div class="qa-row">${awaiting ? `<input type="checkbox" data-qa-approve="${esc(draft.id)}" ${approveSel.has(draft.id) ? 'checked' : ''} aria-label="Select correction for batch approval">` : ''}<div style="flex:1"><div class="meta"><span class="tag ${STATUS_CLASS[audit.audit_status] || ''}">${esc(STATUS_LABEL[audit.audit_status] || audit.audit_status)}</span>${audit.screening_class ? `<span class="tag">${esc(audit.screening_class)}</span>` : ''}${audit.clinical_risk ? `<span class="tag ${audit.clinical_risk === 'high' ? 'bad' : audit.clinical_risk === 'medium' ? 'warn' : ''}">${esc(audit.clinical_risk)} risk</span>` : ''}<span class="tag">${esc(ctx.qlabel(question))}</span><span class="tag">${question.active ? 'Published' : 'Inactive'}</span>${draft ? `<span class="tag ${draft.status === 'approved' ? 'good' : 'warn'}">Draft: ${esc(draft.status.replace('_', ' '))}</span>` : ''}${removed ? '<span class="tag bad">Removed from assessments</span>' : ''}<span class="tag">${money(audit.est_cost_usd)}</span></div><h3>${esc(question.topic || 'Uncategorized')} · ${esc(question.difficulty || '')}</h3><p class="rationale">${esc(question.stem || '')}</p>${audit.note ? `<p class="qa-detail"><strong>Note:</strong> ${esc(audit.note)}</p>` : ''}${issues.length ? `<details><summary>Findings (${issues.length})</summary><ul class="qa-detail">${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul></details>` : ''}${verificationText(audit)}<div class="buttons">${actions.join('')}</div></div></div></article>`;
@@ -231,6 +244,7 @@
     sel.querySelectorAll('[data-qa-quarantine]').forEach(button => button.addEventListener('click', () => setQuarantine(button.dataset.qaQuarantine, true)));
     sel.querySelectorAll('[data-qa-release]').forEach(button => button.addEventListener('click', () => setQuarantine(button.dataset.qaRelease, false)));
     sel.querySelectorAll('[data-qa-retry]').forEach(button => button.addEventListener('click', () => retry(button.dataset.qaRetry)));
+    sel.querySelectorAll('[data-qa-reaudit]').forEach(button => button.addEventListener('click', () => retry(button.dataset.qaReaudit, true)));
     updateApprove();
   }
 
@@ -270,13 +284,23 @@
     ctx.rerender();
   }
 
-  function retry(questionId) {
+  function retry(questionId, reaudit = false) {
     if (running) return;
     const question = ctx.getLive().find(item => item.id === questionId); if (!question) return;
+    const audit = latest.get(questionId);
+    if (reaudit) {
+      if (!isQuarantined(audit)) { $('qa-progress').textContent = 'This question is no longer quarantined. Refresh the results.'; return; }
+      if (openDraftIds().has(questionId)) { $('qa-progress').textContent = 'Re-audit blocked: a pending or approved correction draft already exists.'; return; }
+      if (!confirm(`Queue only ${ctx.qlabel(question)} for re-audit with ${core.AUDIT_CRITERIA_VERSION}? History and quarantine will be preserved. The audit uses the current spending cap and starts only when you click Run audit.`)) return;
+      batch = [];
+      processed.clear();
+      failedIds.clear();
+    }
     processed.delete(questionId);
     failedIds.delete(questionId);
     batch = batch.filter(item => item.question.id !== questionId);
-    batch.unshift({ question, priority: 1, reason: 'Retry after an error', score: 0, structural: 0 });
+    batch.unshift({ question, priority: 1, reason: reaudit ? 'Manual re-audit; quarantine retained' : 'Retry after an error', score: 0, structural: 0, ...(reaudit ? { reauditId: audit.id } : {}) });
+    if (reaudit) $('qa-progress').textContent = `${ctx.qlabel(question)} queued alone for re-audit. Click Run audit to start. Quarantine will remain in place.`;
     renderBatch();
     $('qa-batch-list').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }

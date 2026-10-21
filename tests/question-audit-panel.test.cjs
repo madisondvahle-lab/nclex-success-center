@@ -8,8 +8,9 @@ const test = require('node:test');
 const root = join(__dirname, '..');
 const source = readFileSync(join(root, 'question-audit-panel.js'), 'utf8');
 
-async function harness(invoke, { count = 10, reloadError = false, audits = [] } = {}) {
+async function harness(invoke, { count = 10, reloadError = false, audits = [], drafts = [], confirmResult = true } = {}) {
   const elements = new Map();
+  const buttons = new Map();
   class Element {
     constructor() { this.value = ''; this.textContent = ''; this.html = ''; this.events = {}; this.disabled = false; }
     set innerHTML(html) {
@@ -30,6 +31,7 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [] } 
         const el = new Element();
         el.dataset = { [key]: match[1] };
         el.checked = true;
+        buttons.set(`${attr}:${match[1]}`, el);
         return el;
       });
     }
@@ -39,6 +41,7 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [] } 
   const sandbox = {
     document: { head: new Element(), createElement: () => new Element(), getElementById: get },
     Response, __core: core,
+    confirm: () => confirmResult,
   };
   sandbox.window = sandbox;
   vm.runInNewContext(source.replace('import(CORE_URL)', 'Promise.resolve(__core)'), sandbox);
@@ -51,7 +54,7 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [] } 
   let reloading = false;
   await sandbox.QAAudit.init({
     esc: value => String(value ?? ''), qlabel: q => q.id,
-    getFlags: () => live.map(q => ({ question_id: q.id, status: 'open' })), getDrafts: () => [], getLive: () => live,
+    getFlags: () => live.map(q => ({ question_id: q.id, status: 'open' })), getDrafts: () => drafts, getLive: () => live,
     reloadDrafts: async () => {}, rerender() {},
     db: {
       from: () => ({ select: () => ({ order: () => ({ range: async () => ({
@@ -64,8 +67,74 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [] } 
   get('qa-size').value = String(count);
   get('qa-cap').value = '2';
   await get('qa-build').events.click();
-  return { get, calls, api: sandbox.QAAudit, run: () => get('qa-run').events.click() };
+  return { get, calls, buttons, live, api: sandbox.QAAudit, run: () => get('qa-run').events.click() };
 }
+
+test('quarantined Q-0059 is manually queued alone with current criteria and no automatic request or release', async () => {
+  const h = await harness(async () => ({ data: { status: 'pass', cost_usd: 0.01 } }), { audits: [{
+    id: 'audit-59', question_id: 'q0', audit_status: 'quarantine', criteria_version: 'old',
+  }] });
+  assert.doesNotMatch(h.get('qa-batch-list').innerHTML, /data-qa-pick="q0"/);
+  assert.match(h.get('qa-results').innerHTML, /Re-audit with current criteria/);
+  h.live[0].active = false;
+  h.buttons.get('data-qa-reaudit:q0').events.click();
+  assert.equal(h.calls.length, 0);
+  assert.equal((h.get('qa-batch-list').innerHTML.match(/data-qa-pick=/g) || []).length, 1);
+  assert.match(h.get('qa-progress').textContent, /queued alone/);
+  await h.run();
+  assert.equal(h.calls.length, 1);
+  assert.equal(h.calls[0].reaudit_id, 'audit-59');
+  assert.equal(h.calls[0].question_id, 'q0');
+  assert.equal(h.calls[0].max_cost_usd, 0.25);
+  assert.equal(h.live[0].active, false);
+});
+
+test('quarantine re-audit is blocked for pending or approved drafts and confirmation can be cancelled', async () => {
+  for (const status of ['pending_review', 'approved']) {
+    const h = await harness(async () => {}, { count: 1, audits: [{
+      id: 'a0', question_id: 'q0', audit_status: 'quarantine',
+    }], drafts: [{ question_id: 'q0', status }] });
+    assert.match(h.get('qa-results').innerHTML, /data-qa-reaudit="q0" disabled/);
+    h.buttons.get('data-qa-reaudit:q0').events.click();
+    assert.match(h.get('qa-progress').textContent, /Re-audit blocked/);
+    assert.equal(h.calls.length, 0);
+  }
+  const h = await harness(async () => {}, { count: 1, confirmResult: false, audits: [{
+    id: 'a0', question_id: 'q0', audit_status: 'quarantine',
+  }] });
+  h.buttons.get('data-qa-reaudit:q0').events.click();
+  assert.equal(h.calls.length, 0);
+  assert.equal(h.get('qa-run').disabled, true);
+});
+
+test('quarantine re-audit displays preserved history and latest outcome separately', async () => {
+  const h = await harness(async () => {}, { count: 1, audits: [{
+    question_id: 'q0', audit_status: 'quarantine', criteria_version: 'current',
+    findings: { current_audit_outcome: 'pass', audit_history: [{
+      criteria_version: 'old', audit_status: 'quarantine', est_cost_usd: 0.02, note: 'Original rejection',
+      findings: { screen: { issues: [{ category: 'distractors', detail: 'Historical finding' }] } },
+      verification: { attempts: [{ attempt: 1, outcome: 'quality_rejected', problems: ['Original verification failure'] }] },
+    }] },
+  }] });
+  const html = h.get('qa-results').innerHTML;
+  for (const text of ['Latest re-audit: Pass', 'Quarantine remains in place', 'Audit history (1)', 'Original rejection', 'Historical finding', 'Original verification failure', '$0.020']) assert.ok(html.includes(text), text);
+});
+
+test('manual quarantine re-audit uses remaining session budget and retains its target on error resume', async () => {
+  const h = await harness(async (_, n) => n === 1
+    ? { data: { status: 'error', cost_usd: 0.19, audit: { note: 'Temporary failure' } } }
+    : { data: { status: 'pass', cost_usd: 0.01 } }, { count: 1, audits: [{
+      id: 'a0', question_id: 'q0', audit_status: 'quarantine',
+    }] });
+  h.get('qa-cap').value = '0.2';
+  h.buttons.get('data-qa-reaudit:q0').events.click();
+  await h.run();
+  await h.run();
+  assert.equal(h.calls.length, 2);
+  assert.equal(h.calls[0].reaudit_id, 'a0');
+  assert.equal(h.calls[1].reaudit_id, 'a0');
+  assert.ok(h.calls[1].max_cost_usd <= 0.010001);
+});
 
 test('billing failure stops ten selected questions after one request and keeps failures retryable', async () => {
   const h = await harness(async () => ({
