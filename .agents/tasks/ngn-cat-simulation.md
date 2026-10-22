@@ -461,3 +461,40 @@ keyboard highlight selection, checked feedback, narrow-screen navigation, and
 the real author/editor preview and inactive-draft save using a mock database.
 No authenticated Supabase write, clinical publication, or deployment was
 performed; live authoring and database permissions remain deployment checks.
+
+### Production-based question-counter release preparation (October 22, 2026)
+
+Phase 1 is deployed through PR #237 at `b062d2c`. Authenticated production
+verification subsequently confirmed admin access to an unsaved authoring
+preview and a nonadmin redirect to the student dashboard; no question or
+assessment writes were performed. Earlier pending Phase 1 checks above are
+historical.
+
+The owner authorized preparing and committing the counter correction, not
+pushing or deploying it. `release/cat-question-counter` starts at the deployed
+`b062d2c` revision and adapts the validated `598fd42` display-only change.
+The displayed item number now subtracts the still-displayed submitted response
+count (one standalone item or every child in a legacy grouped case), then
+advances when navigation changes the item. Final feedback retains the final
+item number/range rather than displaying a nonexistent next question.
+
+Only the counter expression/order in `diagnostic.html`, a dedicated regression
+test, and this handoff change. Server scoring, selection, stopping, response
+saves, timers, completion, clinical content, and assessment history are
+unchanged. No Phase 2 integration, simulator, SQL correction, or migration is
+included.
+
+Validation: 54 Node tests pass, including five dedicated regressions for
+traditional MCQ/SATA/bow-tie, grouped legacy cases, final feedback, the actual
+submission handler retaining the current item while saving complete history,
+and server-driven assessment completion. Existing selection, coverage,
+ability, history, chart/authoring, and course-persistence regressions also pass.
+Command:
+
+```sh
+node --test tests/diagnostic-question-counter.test.cjs tests/ngn-interactions.test.cjs tests/question-revision-edit.test.cjs tests/question-audit-wiring.test.cjs tests/parallel-practice.test.cjs supabase/functions/_shared/diagnostic-assessment.test.mjs
+```
+
+The test discovery tool did not recognize these Node tests, so the existing
+Node runner was used. No live CAT submission was performed. This branch remains
+local pending review and separate release authorization.
