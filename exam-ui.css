@@ -64,6 +64,13 @@
 .ex-hl .seg{cursor:pointer;border-radius:2px;padding:1px 0}
 .ex-hl .seg:hover{background:#fff7a8}
 .ex-hl .seg.on{background:#ffff00}
+.ex-app .seg{font:inherit;color:inherit;text-align:left;white-space:pre-wrap}
+.ex-app button.seg{border:1px dashed #777;background:transparent;border-radius:3px;padding:3px 5px;cursor:pointer}
+.ex-app button.seg.on{background:#ffff00;border-style:solid}
+.ex-app button.seg:focus-visible{outline:3px solid var(--ex-dark);outline-offset:2px}
+.ex-app button.seg:disabled{cursor:default;opacity:1}
+.ex-chart{overflow-x:auto}
+.ex-chart time{white-space:nowrap;font-variant-numeric:tabular-nums}
 .ex-fill{display:flex;align-items:center;gap:10px;margin:20px 0 0 38px}
 .ex-fill input{font:inherit;width:9em;padding:10px 12px;border:1px solid #333;border-radius:3px}
 .ex-footer{background:var(--ex-dark);color:#fff;display:flex;align-items:stretch;justify-content:space-between;border-top:2px solid #5a9fd0;font-size:.8em}
@@ -97,6 +104,19 @@
   .ex-main.split .ex-left{border-right:0;border-bottom:1px solid var(--ex-line)}
   .ex-pane{padding:18px}
   .ex-header{flex-direction:column;align-items:flex-start;gap:4px}
+}
+@media (max-width:600px){
+  .ex-toolbar{flex-wrap:wrap;padding:0 4px}
+  .ex-toolbar .ex-tools{flex-wrap:wrap;gap:0}
+  .ex-tb{padding:8px 6px}
+  .ex-footer{flex-wrap:wrap}
+  .ex-footer .grp:last-child{flex:1}
+  .ex-fb{padding:10px 6px;justify-content:center;min-width:0}
+  .ex-footer .grp:last-child .ex-fb{flex:1}
+  .ex-tabs{gap:4px}
+  .ex-tab{padding:10px}
+  .ex-tab[aria-selected=true]{padding-bottom:11px}
+  .ex-tabpanel{padding:10px}
 }
 @media print{.ex-app{display:none}}
 

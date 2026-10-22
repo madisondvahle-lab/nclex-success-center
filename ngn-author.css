@@ -1,0 +1,8 @@
+.ngn-author fieldset{border:1px solid #c9ced3;padding:12px;margin:12px 0;min-width:0}
+.ngn-author legend{font-weight:700;padding:0 5px}
+.ngn-author label{display:block;margin:10px 0}
+.ngn-author input:not([type=checkbox]),.ngn-author textarea,.ngn-author select{display:block;width:100%;padding:8px;font:inherit}
+.ngn-author input[type=checkbox]{margin-left:10px}
+.ngn-author textarea{min-height:75px}
+.ngn-author button{margin:6px}
+.ngn-author [role=alert]{color:#a32222}
