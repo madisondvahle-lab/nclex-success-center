@@ -1005,3 +1005,133 @@ candidate is ready for owner review and separate deployment/activation
 approval, not already deployed. Production-hosted verification/monitoring
 remains part of the approved rollout. Simulator and clinical publishing
 remain on hold; no production student data or historical scoring was changed.
+
+### Actual-hosted baseline reconciliation (October 22, 2026)
+
+This section supersedes the prior claim that testing repository `10518df`
+established compatibility with the installed server. The staged deployment
+was stopped at preflight before any function-code deployment, branch push,
+PR, merge or frontend publication.
+
+#### Actual baseline and revised scope
+
+- Downloaded the installed `diagnostic-assessment` source again via the
+  Management API. It exactly matches the earlier archived hosted download,
+  not the repository's server source. Hosted metadata: version **7**, JWT
+  verification enabled, bundle SHA-256
+  `7e08c8527da4704d5e73253ca223f9fbe0e29fcb69c8913bc7261c9e61f1cc90`.
+  The metadata version increased during the previously authorized admission-
+  secret update; the hosted source bundle did not change.
+- Exact source snapshots are retained in `tests/fixtures/cat-hosted-baseline/`
+  for reproducible differential tests, not runtime deployment. Handler SHA-256:
+  `90d01bf586b909e0979e2f1843239fc214e6958838139babddb2f7e31b532da0`;
+  adaptive engine SHA-256:
+  `25f80bc6f0938d701187a6efc9934573cdd1bc3e9b5d7ecc91792bb0f1969c8d`.
+  Fixtures contain server source only, no student data, clinical question bank,
+  credentials, or production connection settings.
+- Removed the cross-attempt history query/import and the history-based
+  shortlist preference from the Phase 2 runtime, including NGN-model starts.
+  Selection now uses the hosted server's original best-score tolerance and
+  three-item random shortlist. Current-attempt repeat prevention remains
+  unchanged; deferring cross-attempt preference does not remove that safeguard.
+- The history-awareness implementation and its 15 dedicated tests are
+  preserved on local `hold/cat-prior-question-awareness` at `bd24976`.
+  A checked, four-file `deferred-history-enhancement.patch` in the session's
+  `files/ngn-phase2-reconciliation/` package isolates only the helper, its
+  call sites, shortlist change and original tests. Patch SHA-256:
+  `3671b9b94eb298df74c0a3e6df80f7d8f6ff7d196848c86afb0807e4ef3a1206`.
+  `git apply --check` passes against the reconciled source. Do not merge the
+  entire held snapshot or apply this patch as part of Phase 2. A future release
+  needs separate behavioral review/approval and must update baseline-parity
+  tests explicitly rather than weaken them silently.
+- Relative to `bd24976`, no frontend, scorer, NGN snapshot/progression,
+  adaptive-safety or question-counter code changed. The reconciliation changes
+  only the deferred history implementation, associated tests, new hosted-
+  baseline regression fixtures/tests and this handoff. Simulator and all SQL
+  operations remain excluded.
+
+#### Complete server-difference classification
+
+The downloaded handler/engine were compared in full against the candidate.
+No additional unrelated selection/scoring/persistence difference was found.
+Do not describe their wire responses or all error statuses as byte-identical:
+the following previously approved NGN/compatibility differences are intentional.
+
+| Area | Remaining difference / legacy guarantee |
+| --- | --- |
+| Selection | Original shortlist, difficulty ranking, safety/category/blueprint priority and current-attempt repeat rules match hosted legacy behavior; no prior-attempt lookup or preference |
+| NGN inventory and model | Reviewed interaction inventory and versioned model only for supported clients with admissions enabled; existing attempts always retain their stored model |
+| Adaptive scoring and stopping | NGN-only partial credit, grouped evidence and insufficient-evidence rules remain; legacy binary updates, thresholds, cap/exhaustion results and readiness fixed length match hosted behavior |
+| Case sizing | Additional remaining-length check applies only to the NGN model; hosted traditional mock/readiness case-fit logic unchanged |
+| Persistence | Same atomic RPC arguments and row/checkpoint contents for legacy workflows; NGN snapshots/drafts/credit are confined to the new model |
+| Public responses | Additive model metadata and null interaction/completion fields for legacy clients; original fields and reveal behavior remain unchanged |
+| Compatibility errors | Explicit protocol checks protect existing NGN attempts and reviews; missing top-level mode accepts legacy `profile.mode`; no silent downgrade or progress reset |
+| Concurrency errors | The approved safeguard maps the RPC conflict to HTTP 409 and rejects an empty commit result rather than implying success; no failed save mutates progress/history |
+| Authentication/access | Same bearer validation, student linkage, admin checks, CORS, ownership checks, and completed-review restriction |
+| Technical-only changes | Inferred service-client type, private snapshot sanitization, model-gated registry reads, pre-abandon read to enforce capability, and existing/new-attempt inventory ordering; no schema or permissions change |
+
+#### Reconciled validation results
+
+- **234 tests passed, zero failures**, with the full existing Node runner;
+  Edge Function Deno type-check and whitespace checks passed. Count changed
+  from 244 because 15 history-enhancement tests were held separately and five
+  actual-hosted regression tests were added. Existing NGN/client/counter tests
+  remain, not replaced by a smaller proxy suite.
+- Engine differential regression performs **11,328 exact comparisons** against
+  the downloaded engine: multiple random choices, abilities and difficulties;
+  lengths 0/1/29/30/44/45/84/85/149/150; core coverage present/missing; all five
+  modes and case-size limits. Legacy ability, stopping and selection match.
+- Handler differential regression runs correct/incorrect/mixed workflows in
+  traditional CAT, mock, readiness, practice and remediation modes against
+  the actual hosted handler. Both cached and capable clients match all
+  original response fields and **exact saved tables**, including seeded prior
+  histories, pause/checkpoint/resume, replay rejection, completion and review.
+  A separate grouped-case/abandon comparison also matches. Additive NGN
+  metadata/null interaction fields are asserted before normalization. A test
+  rejects any deferred cross-attempt history query.
+- Authenticated real local Supabase runs of the revised candidate passed the
+  complete mixed 16/45/85/150-response NGN suite: all types and exact partial
+  scores, progressive six-stage cases, grouped ability/confidence, SQL
+  concurrency/replay protection, draft/tab/timer persistence, fresh sign-in,
+  ownership/RLS/admin controls and completed student/tutor reviews.
+- Real local compatibility tests passed: cached clients start only the old
+  model; incompatible clients cannot mutate NGN progress; admissions-off
+  restart resumes a partial case through completion and exact score/rationale
+  review; new attempts remain traditional. Paginated snapshots confirmed
+  **31 prior completed synthetic attempts and 1,247 response rows** unchanged.
+- Additional authenticated contract tests ran both the actual downloaded
+  handler and the revised candidate on the disposable stack. For cached and
+  capable clients, traditional CAT stopped at 30, mock at 85, and readiness at
+  its fixed 85 in these synthetic mixed-answer runs, exactly as the actual
+  hosted engine calculated. Every selected item belonged to the hosted
+  shortlist; every binary score, difficulty/ability update, stop decision,
+  checkpoint/resume, replay response, persisted completion and rationale
+  review matched. Each run preserved its prior 155-response synthetic history.
+  The revised candidate additionally passed a real grouped legacy case with
+  preserved child arrays, binary keys and original per-child adaptive updates.
+- The **actual downloaded production source**, not repository `10518df`, was
+  served locally for authenticated new-client start/checkpoint/resume/answer/
+  completion/review compatibility. That passed and retained the historical
+  snapshots above. Frontend assets are unchanged from the browser-validated
+  `bd24976`; dependency/version and missing-module protections remain covered.
+
+Only loopback Supabase was used for authenticated writes; synthetic inventory
+was reset only there. Local helpers and the disposable stack are stopped at
+completion. Production source/metadata and secret-digest checks were read-only;
+the admission switch remains explicitly **false**. No production test attempt,
+submission, question activation/publication, student/history change, function
+deployment, SQL operation, configuration change, Git push or merge occurred.
+
+#### Next release gate
+
+No remaining local legacy-baseline or NGN compatibility blocker was found.
+The revised candidate needs owner review/approval before restarting rollout.
+Do not deploy the superseded `bd24976` as-is. At the next approved rollout,
+recheck the actual hosted bundle and admission-secret digest before server
+deployment, then follow the admissions-off server-first sequence above and
+the normal protected frontend workflow. Hosted packaging/live verification,
+read-only eligible inventory review, production error-log monitoring and any
+separately authorized production functional test remain rollout checks.
+New NGN starts require separate activation approval. Rollback remains
+admissions-off with compatible NGN resume/review retained, never a wholesale
+revert to the legacy server once versioned attempts exist.

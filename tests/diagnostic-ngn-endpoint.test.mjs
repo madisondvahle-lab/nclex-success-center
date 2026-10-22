@@ -27,7 +27,10 @@ const clone = v => structuredClone(v);
 const state = { tables: {}, token: 'student-token', failCommit: false };
 class Query {
   constructor(table) { this.table = table; this.filters = []; this.start = 0; this.end = Infinity; }
-  select() { return this; }
+  select(columns) {
+    assert.ok(!columns?.includes('in_house_assessment_attempts!inner'), 'Deferred cross-attempt history lookup must not run in this release');
+    return this;
+  }
   eq(key, value) { this.filters.push(row => {
     if (key === 'item_data->>schemaVersion') return String(row.item_data?.schemaVersion) === value;
     if (key === 'in_house_assessment_attempts.student_id') return state.tables.in_house_assessment_attempts.some(a => a.id === row.attempt_id && a.student_id === value);
@@ -82,10 +85,15 @@ globalThis.__ngnTestCreateClient = (_url, key, options) => key === 'service' ? s
 let enableNewAttempts = 'true';
 globalThis.Deno = { env: { get: key => ({ SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'anon', SUPABASE_SERVICE_ROLE_KEY: 'service',
   NGN_CAT_NEW_ATTEMPTS_ENABLED: enableNewAttempts })[key] } };
-let source = readFileSync(new URL('../supabase/functions/diagnostic-assessment/index.ts', import.meta.url), 'utf8');
-source = source.replace("import { createClient } from 'npm:@supabase/supabase-js@2';", 'const createClient = globalThis.__ngnTestCreateClient;');
-source = source.replaceAll(/from '(\.\.\/_shared\/[^']+)'/g, (_, path) => `from '${new URL(path, new URL('../supabase/functions/diagnostic-assessment/index.ts', import.meta.url)).href}'`);
-const { default: handler } = await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source, { mode: 'transform' })).toString('base64')}`);
+async function loadHandler(path) {
+  const url = new URL(path, import.meta.url);
+  let source = readFileSync(url, 'utf8');
+  source = source.replace("import { createClient } from 'npm:@supabase/supabase-js@2';", 'const createClient = globalThis.__ngnTestCreateClient;');
+  source = source.replaceAll(/from '(\.\.\/_shared\/[^']+)'/g, (_, dependency) => `from '${new URL(dependency, url).href}'`);
+  return (await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source, { mode: 'transform' })).toString('base64')}`)).default;
+}
+const handler = await loadHandler('../supabase/functions/diagnostic-assessment/index.ts');
+const hostedHandler = await loadHandler('./fixtures/cat-hosted-baseline/diagnostic-assessment/index.ts');
 function reset() {
   enableNewAttempts = 'true';
   state.failCommit = false;
@@ -95,12 +103,147 @@ function reset() {
     in_house_diagnostic_item_keys: [], in_house_assessment_attempts: [], in_house_assessment_item_responses: [],
   };
 }
-async function request(body, token = 'student-token', clientProtocol = 'ngn-cat-v1') {
-  const response = await handler.fetch(new Request('https://example.test/assessment', {
+async function request(body, token = 'student-token', clientProtocol = 'ngn-cat-v1', endpoint = handler) {
+  const response = await endpoint.fetch(new Request('https://example.test/assessment', {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Origin: 'https://portal.studywithmadison.com' }, body: JSON.stringify({ ...body, clientProtocol }),
   }));
   return { status: response.status, data: await response.json() };
 }
+
+function legacyContract(value) {
+  if (Array.isArray(value)) return value.map(legacyContract);
+  if (!value || typeof value !== 'object') return value;
+  const result = { ...value };
+  for (const key of ['scoringModel', 'currentItem', 'nextItem', 'completionReason']) {
+    if (key in result) {
+      assert.ok(result[key] === null || (key === 'scoringModel' && result[key] === 'in-house-core-v1'));
+      delete result[key];
+    }
+  }
+  return Object.fromEntries(Object.entries(result).map(([key, child]) => [key, legacyContract(child)]));
+}
+
+test('actual hosted legacy handler and revised candidate have identical selection, saved rows, adaptation, stopping and review', async t => {
+  t.mock.method(Math, 'random', () => 0);
+  t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-10-22T06:00:00Z').getTime() });
+  for (const mode of ['nclex', 'mock', 'assessment', 'practice', 'remediation']) {
+    for (const outcome of ['correct', 'incorrect', 'mixed']) {
+      reset();
+      enableNewAttempts = 'false';
+      state.tables.students[0].portal_stage = mode === 'assessment' ? 'assessment' : 'active';
+      delete state.tables.questions;
+      delete state.tables.question_import_reviews;
+      const bank = Array.from({ length: 160 }, (_, i) => ({
+        ...traditionalKey(`static-${i}`, i % 2 ? 'sata' : 'mcq', i % 3 + 1, i % 8),
+        bank_scope: mode === 'remediation' ? 'remediation' : 'diagnostic',
+      }));
+      state.tables.in_house_diagnostic_item_keys = bank;
+      state.tables.in_house_assessment_attempts.push({
+        id: 'completed-history', student_id: 'student', assessment_key: 'diagnostic-mock',
+        status: 'completed', assessment_version: 'in-house-core-v1', checkpoint: { original: 'preserved' },
+      });
+      state.tables.in_house_assessment_item_responses = bank.slice(0, 155).map((key, i) => ({
+        id: `history-${i}`, attempt_id: 'completed-history', item_id: key.item_id,
+        question_type: key.item_type, selected_answer: 0, is_correct: true,
+      }));
+      const initial = clone(state.tables);
+      async function run(endpoint, protocol) {
+        state.tables = clone(initial);
+        const trace = [];
+        const send = async body => {
+          const result = await request(body, 'student-token', protocol, endpoint);
+          trace.push(legacyContract(result));
+          return result;
+        };
+        let started = await send({ action: 'start', mode, sessionKey: 'differential', profile: {
+          mode, qCount: 5, weakAreas: ['Physiological Adaptation'],
+          externalCategoryWeights: { 'Management of Care': 1.4 },
+          examTimerSettings: { multiplier: 1.5, showTimer: false },
+        } });
+        assert.equal(started.status, 200);
+        const attemptId = started.data.attempt.id;
+        let current = started.data.currentItemId, revision = 0, count = 0, final;
+        const snapshotBeforeInvalid = clone(state.tables);
+        assert.equal((await send({ action: 'answer', attemptId, expectedRevision: -1, itemId: current, answer: 0 })).status, 409);
+        assert.deepEqual(state.tables, snapshotBeforeInvalid);
+        while (current) {
+          const key = bank.find(row => row.item_id === current);
+          const correct = outcome === 'correct' || (outcome === 'mixed' && count % 2 === 0);
+          const answer = key.item_type === 'sata' ? (correct ? [0, 1] : [0]) : correct ? 0 : 1;
+          if (count === 2) {
+            const saved = await send({ action: 'checkpoint', attemptId, expectedRevision: revision, checkpoint: {
+              draft: { selected: [0], btState: { left: [0], center: [], right: [] }, csAnswers: {} },
+              examTimer: { remainingMs: 123456, multiplier: 1.5, showTimer: false },
+            } });
+            assert.equal(saved.status, 200);
+            revision = saved.data.checkpointRevision;
+            const key = mode === 'assessment' ? 'readiness-assessment' : `diagnostic-${mode}`;
+            assert.equal((await send({ action: 'resume', assessmentKey: key })).status, 200);
+            const restarted = await send({ action: 'start', mode, sessionKey: 'resume-existing', profile: { qCount: 5 } });
+            assert.equal(restarted.status, 200, `${mode}/${outcome}: ${JSON.stringify(restarted)}`);
+          }
+          final = await send({ action: 'answer', attemptId, expectedRevision: revision, itemId: current, answer });
+          assert.equal(final.status, 200, `${mode}/${outcome}: ${JSON.stringify(final)}`);
+          revision = final.data.checkpointRevision;
+          current = final.data.nextItemId;
+          assert.ok(++count <= 150);
+        }
+        assert.equal(final.data.completed, true);
+        assert.equal((await send({ action: 'review', attemptId })).status, 200);
+        const replayBefore = clone(state.tables);
+        assert.equal((await send({ action: 'answer', attemptId, expectedRevision: revision, itemId: 'static-0', answer: 0 })).status, 409);
+        assert.deepEqual(state.tables, replayBefore);
+        return { trace, tables: clone(state.tables) };
+      }
+      const expected = await run(hostedHandler, null);
+      for (const protocol of [null, 'ngn-cat-v1']) {
+        const actual = await run(handler, protocol);
+        assert.deepEqual(actual, expected, `${mode}/${outcome}/${protocol || 'cached'}`);
+      }
+    }
+  }
+});
+
+test('actual hosted legacy grouped-case and abandon behavior matches candidate without changing saved child answers', async t => {
+  t.mock.method(Math, 'random', () => 0);
+  t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-10-22T06:00:00Z').getTime() });
+  reset();
+  enableNewAttempts = 'false';
+  state.tables.in_house_diagnostic_item_keys = [
+    { ...traditionalKey('legacy-group'), item_type: 'casestudy', case_length: 2 },
+    ...['a', 'b'].map((id, i) => ({
+      ...traditionalKey(`legacy-group:${id}`), parent_item_id: 'legacy-group',
+      selectable: false, sequence_order: i + 1,
+    })),
+  ];
+  const initial = clone(state.tables);
+  async function run(endpoint) {
+    state.tables = clone(initial);
+    const trace = [];
+    const send = async body => {
+      const response = await request(body, 'student-token', null, endpoint);
+      trace.push(legacyContract(response));
+      return response;
+    };
+    const start = await send({ action: 'start', mode: 'mock', sessionKey: 'grouped' });
+    assert.equal(start.status, 200);
+    const id = start.data.attempt.id;
+    const invalidBefore = clone(state.tables);
+    assert.equal((await send({ action: 'answer', attemptId: id, expectedRevision: 0, itemId: 'legacy-group', caseAnswers: {} })).status, 400);
+    assert.deepEqual(state.tables, invalidBefore);
+    const final = await send({ action: 'answer', attemptId: id, expectedRevision: 0, itemId: 'legacy-group',
+      caseAnswers: { a: [0], b: [1] } });
+    assert.equal(final.status, 200);
+    assert.equal(final.data.completed, true);
+    await send({ action: 'review', attemptId: id });
+    await send({ action: 'abandon', attemptId: 'missing' });
+    const again = await send({ action: 'start', mode: 'mock', sessionKey: 'abandon-test' });
+    await send({ action: 'abandon', attemptId: again.data.attempt.id });
+    await send({ action: 'abandon', attemptId: again.data.attempt.id });
+    return { trace, tables: clone(state.tables) };
+  }
+  assert.deepEqual(await run(handler), await run(hostedHandler));
+});
 test('legacy/cached clients never start a versioned attempt or receive reviewed NGN items', async () => {
   for (const protocol of [null, 'unknown-future-protocol']) {
     reset();

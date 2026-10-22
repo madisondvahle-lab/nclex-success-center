@@ -7,7 +7,6 @@ import {
   updateNGNAbility,
   shouldStopNGN,
 } from '../_shared/diagnostic-assessment-engine.mjs';
-import { previouslyAnsweredItemIds } from '../_shared/diagnostic-assessment-history.mjs';
 import {
   MODEL, registryEntry, currentInteraction, publicInteraction, publicCheckpoint,
   selectCurrent, validateDraft, scoreCurrent, recordCredit, responseDetail,
@@ -328,10 +327,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   if (ngnEnabled) Object.assign(profile, { scoringModel: MODEL });
 
   const requirements = await coreRequirements(context.service);
-  const previouslyAnsweredIds = ['nclex', 'mock', 'assessment'].includes(mode)
-    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys)
-    : new Set<string>();
-  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions, previouslyAnsweredIds);
+  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions);
   if (!firstItem) throw new HttpError(503, 'No assessment items are available for this mode.');
   const now = new Date().toISOString();
   const examTimer = mode === 'mock'
@@ -580,9 +576,6 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     : mode === 'nclex' || mode === 'mock'
       ? Boolean(result) || (versioned && newHistory.length >= attempt.target_questions)
       : newHistory.length >= attempt.target_questions);
-  const previouslyAnsweredIds = !reachedTarget && ['nclex', 'mock', 'assessment'].includes(mode)
-    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys, attempt.id)
-    : new Set<string>();
   const next = continuingCase ? item : reachedTarget ? null : pickNextQuestion(
     keys.filter(row => row.selectable),
     newHistory,
@@ -590,7 +583,6 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     ability,
     requirements,
     attempt.target_questions,
-    previouslyAnsweredIds,
   );
   const complete = reachedTarget || !next;
   if (complete && !versioned && (mode === 'nclex' || mode === 'mock')) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
