@@ -1184,9 +1184,9 @@ function QuizScreen({ profile, onFinish, onPause }) {
     setSubmissionResult(null);
   }
 
-  const qNum = history.length+1;
-  const correctSoFar = history.filter(h=>h.correct).length;
   const caseItemCount = q.type==="casestudy" ? q.questions.length : 1;
+  const qNum = history.length + 1 - (submitted ? caseItemCount : 0);
+  const correctSoFar = history.filter(h=>h.correct).length;
   const progressPct = isNCLEX ? Math.min(100,(qNum/MAX_Q)*100) : isMock ? Math.min(100,(qNum/FULL_MOCK_MAX_Q)*100) : isAssessment ? Math.min(100,(qNum/FULL_MOCK_MIN_Q)*100) : (qNum/profile.qCount)*100;
   const feedbackQuestion = withFeedback(q, submissionResult?.outcomes);
 

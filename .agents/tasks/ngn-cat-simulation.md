@@ -766,3 +766,61 @@ the CAT Edge Function Deno type-check passed, and whitespace checks passed.
 All runtime/test files were compared against `73f85cd` with no differences;
 the database SQL remains identical to deployed `b062d2c`. The test count
 excludes the deliberately omitted simulator and separately held corrections.
+### Production-based question-counter release preparation (October 22, 2026)
+
+Phase 1 is deployed through PR #237 at `b062d2c`. Authenticated production
+verification subsequently confirmed admin access to an unsaved authoring
+preview and a nonadmin redirect to the student dashboard; no question or
+assessment writes were performed. Earlier pending Phase 1 checks above are
+historical.
+
+The owner authorized preparing and committing the counter correction, not
+pushing or deploying it. `release/cat-question-counter` starts at the deployed
+`b062d2c` revision and adapts the validated `598fd42` display-only change.
+The displayed item number now subtracts the still-displayed submitted response
+count (one standalone item or every child in a legacy grouped case), then
+advances when navigation changes the item. Final feedback retains the final
+item number/range rather than displaying a nonexistent next question.
+
+Only the counter expression/order in `diagnostic.html`, a dedicated regression
+test, and this handoff change. Server scoring, selection, stopping, response
+saves, timers, completion, clinical content, and assessment history are
+unchanged. No Phase 2 integration, simulator, SQL correction, or migration is
+included.
+
+Validation: 54 Node tests pass, including five dedicated regressions for
+traditional MCQ/SATA/bow-tie, grouped legacy cases, final feedback, the actual
+submission handler retaining the current item while saving complete history,
+and server-driven assessment completion. Existing selection, coverage,
+ability, history, chart/authoring, and course-persistence regressions also pass.
+Command:
+
+```sh
+node --test tests/diagnostic-question-counter.test.cjs tests/ngn-interactions.test.cjs tests/question-revision-edit.test.cjs tests/question-audit-wiring.test.cjs tests/parallel-practice.test.cjs supabase/functions/_shared/diagnostic-assessment.test.mjs
+```
+
+The test discovery tool did not recognize these Node tests, so the existing
+Node runner was used. No live CAT submission was performed. This branch remains
+local pending review and separate release authorization.
+
+### Counter carry-forward into held Phase 2 candidate
+
+PR #238 merged the isolated counter fix as `10518df`. The Phase 2 branch now
+merges that deployed ancestor rather than copying or reverting the production
+page. Only this handoff had an append conflict; both relevant sections were
+retained. The CAT source merged the counter expression cleanly, and the same
+dedicated counter regressions now run against the integrated implementation.
+The database correction and simulator remain excluded. This merge is local;
+Phase 2 deployment remains unauthorized.
+
+Validation after carry-forward: **93 tests passed**, including the same five
+counter/handler regressions against the integrated CAT source. Deno type-check
+and whitespace checks passed. The private database SQL still matches deployed
+production, and the simulator remains absent. PR #238's production Pages build
+succeeded at `10518df`; its published CAT source exactly matches the counter
+release. All five dedicated regressions also passed using that fetched live
+source with synthetic in-memory state, including submitted/final feedback,
+legacy case ranges, navigation, response saving, and completion. Browser
+execution of the published counter expression independently confirmed 1 on
+first feedback, 2 after navigation, 5 for case items 5-7, and 150 on final
+feedback. No production attempt or data write was made.
