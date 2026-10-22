@@ -879,3 +879,129 @@ Release-compatibility preparation identified these remaining gates:
 
 Only preparation and documentation were performed after the approved narrow
 RPC operation. No Phase 2 code or simulator was pushed or deployed.
+
+### Phase 2 cached-client safeguards and isolated release validation (October 22, 2026)
+
+The compatibility gates above are now implemented and tested on the isolated
+`release/ngn-cat-phase2` branch. This reuses the validated Phase 2 implementation;
+it does not add the simulator or change the scoring rules, adaptive formulas,
+student exam lengths, clinical content, SQL, or deployed counter correction.
+
+#### Compatibility contract
+
+- The new CAT page declares `ngn-cat-v1` in its metadata. Persistence advertises
+  that protocol only when the page declares it and the loaded renderer and
+  scorer match `ngn-cat-v1` and `ngn-v1`. The page also checks the persistence
+  version before loading assessment history. Missing/mismatched modules show
+  an error and prevent starting/resuming rather than falling back to a different
+  scoring implementation.
+- New NGN-model attempts require **both** this explicit client capability and
+  server setting `NGN_CAT_NEW_ATTEMPTS_ENABLED=true` (exact lowercase value).
+  Absent/false settings disable new NGN admissions. Cached/older clients and
+  unknown protocols start only traditional `in-house-core-v1` attempts from
+  the existing private static-bank inventory. Legacy scoring/stopping remains
+  unchanged. The server accepts the legacy `profile.mode` request shape when
+  top-level `mode` is absent.
+- Existing attempts retain their stored model irrespective of the admission
+  setting. A client without the supported protocol cannot restart/resume,
+  checkpoint, answer, abandon, or review an NGN attempt. It receives HTTP 409
+  with a refresh/resume explanation before any write or interaction delivery.
+  Progress is never silently reset or downgraded. Current persistence preserves
+  that server explanation through Supabase HTTP errors; a fully cached older
+  helper may still show its older generic error and need a page refresh.
+- Tutor review advertises capability only with matching modules and shows an
+  explicit module-load error instead of an incomplete NGN review.
+- Upgraded pages use `exam-ui-ngn.js` and `ngn-author-ngn.js`, with matching
+  `?v=ngn-cat-v1` dependency URLs. The unversioned `exam-ui.js` and `ngn-author.js`
+  are byte-identical to production `10518df`, so cached Phase 1 HTML cannot
+  accidentally load the scorer-dependent upgraded engine/author. This is
+  deliberate legacy-asset retention, not a second scoring implementation:
+  upgraded assets reuse the existing Phase 2 source and shared scorer. Keep
+  this release's versioned asset contract stable; a later incompatible release
+  needs a new capability/asset version and corresponding compatibility tests.
+- All six shared-engine entry pages are wired consistently: diagnostic,
+  shared progress, question-bank review, supplemental practice, Bianca NUR215,
+  and Madison diagnostic. Shared CSS additions are scoped to embedded exams.
+
+#### Final isolated validation
+
+- **244 Node tests passed, zero failures**, using
+  `node --test tests/*.test.cjs tests/*.test.mjs supabase/functions/_shared/*.test.mjs`.
+  The Edge Function Deno type-check and whitespace checks passed. Tests include
+  missing/mismatched modules, preserved legacy asset hashes, old-client/new-
+  server requests, disabled/default admissions, no-write rejection of
+  incompatible clients, case completion/review during rollback, unchanged
+  idempotent legacy abandon behavior, and the deployed counter regressions.
+- Real authenticated disposable local Supabase tests passed for the final
+  capability/review contract: mixed 16-response coverage of every interaction
+  type, six-stage progressive disclosure, exact persisted answers/points,
+  case-grouped adaptation, real re-sign-in/pause/resume with draft/tab/timer,
+  SQL concurrency (one success and one revision conflict), replay protection,
+  JWT/RLS/ownership/admin restrictions, and completed student/tutor review.
+  Mixed 150/45/85-response workflows and legacy binary scoring also passed;
+  insufficient evidence remained unclassified rather than producing PASS/FAIL.
+- New-client requests were authenticated against the **actual deployed
+  `10518df` handler and adaptive engine**, installed only in the disposable
+  environment: traditional start, checkpoint, resume, answer, completion and
+  review all passed with the additional protocol field.
+- The final version-aware server was restarted locally with new admissions
+  disabled. A saved partially answered case resumed after a fresh sign-in and
+  completed sequentially with its exact partial points, answers, rationales and
+  INCONCLUSIVE result. Incompatible completed-review requests were rejected.
+  New capable-client starts used the traditional model. Paginated snapshots
+  verified **23 prior completed synthetic attempts and 940 prior response rows**
+  unchanged. Earlier tests also verified incompatible requests left both the
+  current attempt and response rows identical.
+- Actual candidate browser assets loaded with the expected versions. A local
+  traditional MCQ plus a six-child case exercised highlight, cloze, both matrix
+  modes, bow-tie and SATA. Tab navigation and save/exit/resume retained the
+  selected finding. The final-feedback counter stayed at question 7; completed
+  review displayed all seven responses/rationales, each interaction's rule, and
+  **10/15 points across six NGN responses**, with an INCONCLUSIVE classification.
+  Omitting scorer, renderer or persistence separately produced a clear error,
+  disabled Start, and made **zero assessment requests**.
+- Browser Supabase traffic was proxied exclusively to `127.0.0.1:54321`, with
+  `connect-src 'self'` and zero production database requests. All API harnesses
+  asserted that same local origin. Only synthetic local accounts, fixtures,
+  attempts and responses were written. No production function/table/content
+  operation, migration, inactive-question activation, push or deployment occurred.
+  Existing browser warnings about in-browser Babel/multiple SDK clients remain;
+  no new functional blocker was observed.
+
+#### Guarded release and rollback sequence (approval still required)
+
+1. Review the isolated candidate against deployed `10518df`, retaining the
+   counter fix and excluding simulator/SQL operations. No database migration,
+   seed, backfill, conversion or regrading is required.
+2. Deploy the version-aware Edge Function with new NGN admissions **disabled**
+   (setting absent or false). Legacy clients remain supported. Verify hosted
+   packaging includes the shared scorer and helpers; local runtime packaging
+   passed, but hosted publication cannot be verified before an approved deploy.
+3. Publish the compatible static pages and new asset paths through the normal
+   protected GitHub workflow. Verify published commit/asset bytes, module
+   readiness, access restrictions and safe unsaved previews. Preserve the
+   unversioned legacy assets.
+4. Before enabling new NGN admissions, confirm existing eligible inventory
+   read-only and obtain approval for activation of the setting. Do not activate
+   inactive questions as part of release. Only active, reviewed, supported
+   versioned content is eligible; an insufficient pool stays INCONCLUSIVE.
+   A production functional test that creates an attempt needs explicit test-
+   record authorization; isolated tests do not grant permission to write there.
+5. Enable `NGN_CAT_NEW_ATTEMPTS_ENABLED=true` only for the approved rollout.
+   Monitor hosted Edge/Postgres error logs and assessment availability.
+   Dashboard log review is still required; those production log streams were
+   not available through the CLI in the prior database review.
+6. Operational rollback is **admissions off, compatibility retained**: set the
+   flag false, keep this version-aware server and the NGN-capable assessment/
+   review pages and assets available. New starts use traditional scoring while
+   existing NGN cases finish/review with their original model. Never revert
+   wholesale to the pre-NGN backend or remove the NGN client assets once
+   NGN attempts exist. If a frontend defect requires intervention, retain/fix
+   the compatible resume/review path rather than downgrading saved attempts.
+   Keep the independent production RPC ambiguity correction installed.
+
+**Readiness:** no remaining local compatibility blocker was found. The
+candidate is ready for owner review and separate deployment/activation
+approval, not already deployed. Production-hosted verification/monitoring
+remains part of the approved rollout. Simulator and clinical publishing
+remain on hold; no production student data or historical scoring was changed.

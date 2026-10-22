@@ -10,10 +10,11 @@
   <script src="diagnostic-question-bank.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
   <script src="assessment-personalization.js"></script>
-  <script src="assessment-persistence.js"></script>
+  <meta name="nclex-cat-protocol" content="ngn-cat-v1">
+  <script src="assessment-persistence.js?v=ngn-cat-v1"></script>
   <link rel="stylesheet" href="exam-ui.css">
-  <script src="ngn-scoring.js"></script>
-  <script src="exam-ui.js"></script>
+  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1306,6 +1307,10 @@ function App() {
   useEffect(() => {
     let active = true;
     async function loadAssessmentHistory() {
+      if (window.NCLEX_ASSESSMENT_PERSISTENCE?.CLIENT_PROTOCOL !== "ngn-cat-v1" ||
+          window.ExamUI?.CLIENT_PROTOCOL !== "ngn-cat-v1" || window.NGNScoring?.VERSION !== "ngn-v1") {
+        throw new Error("The updated CAT modules could not load. Refresh the portal; your saved progress is unchanged.");
+      }
       if (!window.supabase || !ASSESSMENT_PERSONALIZATION) throw new Error("The assessment service is unavailable. Please refresh or contact Madison.");
       const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
       const { data: { session }, error: sessionError } = await db.auth.getSession();

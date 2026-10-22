@@ -66,24 +66,53 @@
   }
 
   function emptyAnswer(it) {
-    if (!window.NGNScoring) throw new Error('The scoring module could not load. Refresh and try again.');
-    return window.NGNScoring.emptyAnswer(it);
+    if (it.type === 'mcq') return null;
+    if (it.type === 'fill') return '';
+    if (it.type === 'cloze') return it.dropdowns.map(() => null);
+    if (it.type === 'bowtie') return [null, null, null, null, null];
+    return [];
+  }
+
+  function setScore(chosen, correct) {
+    chosen = [...new Set(chosen)];
+    if (!correct.length) throw new Error('This interaction has no correct answers configured.');
+    const hits = chosen.filter(x => correct.includes(x)).length;
+    const wrong = chosen.length - hits;
+    const score = Math.max(0, (hits - wrong) / correct.length);
+    return { score, full: hits === correct.length && wrong === 0 };
   }
 
   // Returns { score: 0..1, full: bool } for one item.
   function score(it, a) {
-    if (!window.NGNScoring) throw new Error('The scoring module could not load. Refresh and try again.');
-    return window.NGNScoring.score(it, a);
+    if (it.scoring === 'zero-one') {
+      const result = score(Object.assign({}, it, { scoring: undefined }), a);
+      return { score: result.full ? 1 : 0, full: result.full };
+    }
+    switch (it.type) {
+      case 'mcq': { const ok = a !== null && it.correct[0] === a; return { score: ok ? 1 : 0, full: ok }; }
+      case 'sata': return setScore(a, it.correct);
+      case 'fill': {
+        const n = parseFloat(String(a).replace(/,/g, ''));
+        const ok = !isNaN(n) && Math.abs(n - it.correct) <= (it.tolerance || 0);
+        return { score: ok ? 1 : 0, full: ok };
+      }
+      case 'matrix': return setScore(a, it.correct);
+      case 'highlight': return setScore(a, it.segments.filter(s => s.id && s.correct).map(s => s.id));
+      case 'bowtie': {
+        // a = [action, action, condition, complication, complication]; the two actions and the two complications may be placed in either slot.
+        const c = it.correct, uniq = x => [...new Set(x.filter(v => v !== null))];
+        const n = uniq([a[0], a[1]]).filter(v => c.actions.includes(v)).length + (a[2] === c.condition ? 1 : 0) + uniq([a[3], a[4]]).filter(v => c.complications.includes(v)).length;
+        return { score: n / 5, full: n === 5 };
+      }
+      case 'cloze': {
+        const n = it.dropdowns.filter((d, i) => a[i] === d.correct).length;
+        return { score: n / it.dropdowns.length, full: n === it.dropdowns.length };
+      }
+    }
+    return { score: 0, full: false };
   }
 
   function isAnswered(it, a) {
-    if (it.scoringVersion === 'ngn-v1') {
-      try { window.NGNScoring.validateAnswer(it, a); return true; }
-      catch (error) {
-        if (error instanceof Error && error.message === 'The response does not match this interaction.') return false;
-        throw error;
-      }
-    }
     if (it.type === 'mcq') return a !== null;
     if (it.type === 'fill') return String(a).trim() !== '';
     if (it.type === 'cloze') return a.every(x => x !== null);
@@ -141,14 +170,14 @@
   class Exam {
     constructor(root, opts) {
       this.root = root; this.o = opts; this.items = opts.items; this.i = 0;
-      this.ans = this.items.map((it, i) => i === 0 && opts.answer !== undefined ? opts.answer : emptyAnswer(it));
+      this.ans = this.items.map(emptyAnswer);
       this.struck = this.items.map(() => new Set());
       this.marked = this.items.map(() => false);
       this.time = this.items.map(() => 0);
       this.changes = this.items.map(() => 0);
       this.fb = this.items.map(() => '');
       this.checked = this.items.map(() => false);
-      this.tab = opts.tabState || {}; this.notes = ''; this.elapsed = 0; this.fs = 1;
+      this.tab = {}; this.notes = ''; this.elapsed = 0; this.fs = 1;
       this.remaining = opts.seconds || null; this.done = false;
       this.build(); this.show(0);
       this.timer = this.o.showTimer === false ? null : setInterval(() => this.tick(), 1000);
@@ -156,7 +185,7 @@
 
     build() {
       const r = this.root;
-      r.innerHTML = `<div class="ex-app${this.o.embedded ? ' ex-embedded' : ''}" data-fs="1" role="application" aria-label="${this.o.embedded ? 'Clinical record and response' : 'Practice assessment'}">
+      r.innerHTML = `<div class="ex-app" data-fs="1" role="application" aria-label="Practice assessment">
         <header class="ex-header"><span class="ex-title">${esc(this.o.title)}</span><span class="ex-qid"></span>
           <span class="ex-meta">${this.o.showTimer === false ? '' : `<div>${this.remaining === null ? 'Time Elapsed' : 'Time Remaining'}<b class="ex-time">--:--</b></div>`}<div>Question<b class="ex-qn"></b></div></span></header>
         <div class="ex-toolbar"><div class="ex-tools">
@@ -219,7 +248,7 @@
       const body = it.case || it.tabs?.length || it.type === 'bowtie' ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
       this.main.innerHTML = body; this.main.scrollTop = 0;
       this.main.classList.toggle('locked', !!this.checked[i]);
-      if (this.checked[i] || this.o.readOnly) this.main.querySelectorAll('input, select, [data-h], [data-slot], [data-choice]').forEach(el => { el.disabled = true; });
+      if (this.checked[i]) this.main.querySelectorAll('input, select, [data-h], [data-slot], [data-choice]').forEach(el => { el.disabled = true; });
       if (this.checked[i]) this.main.querySelector('.ex-pane:last-child').insertAdjacentHTML('beforeend', this.feedbackHtml(it, i));
       this.main.querySelectorAll('.ex-pane').forEach(p => p.scrollTop = 0);
     }
@@ -241,7 +270,7 @@
       const selectable = this.it.type === 'highlight' && this.it.segments.some(s => s.id === cell.id && cell.id);
       if (!selectable) return esc(cell.t);
       const selected = this.ans[this.i].includes(cell.id);
-      return `<button type="button" class="seg${selected ? ' on' : ''}" data-h="${esc(cell.id)}" aria-pressed="${selected}"${this.checked[this.i] || this.o?.readOnly ? ' disabled' : ''}>${esc(cell.t)}</button>`;
+      return `<button type="button" class="seg${selected ? ' on' : ''}" data-h="${esc(cell.id)}" aria-pressed="${selected}"${this.checked[this.i] ? ' disabled' : ''}>${esc(cell.t)}</button>`;
     }
 
     chartHtml(tab, n) {
@@ -310,7 +339,7 @@
     }
 
     toggleStrike(i) {
-      if (this.checked[this.i] || this.o.readOnly) return;
+      if (this.checked[this.i]) return;
       const it = this.it; if (!(it.type === 'mcq' || it.type === 'sata')) return;
       const s = this.struck[this.i];
       if (s.has(i)) s.delete(i); else {
@@ -319,12 +348,11 @@
         if (it.type === 'sata' && this.ans[this.i].includes(i)) { this.ans[this.i] = this.ans[this.i].filter(x => x !== i); this.changes[this.i]++; }
       }
       this.show(this.i);
-      this.notifyAnswer();
     }
 
     onChange(e) {
       const t = e.target, it = this.it, k = this.i;
-      if (this.checked[k] || this.o.readOnly) return;
+      if (this.checked[k]) return;
       if (t.name === 'opt') {
         const v = +t.value; this.struck[k].delete(v);
         if (it.type === 'mcq') { if (this.ans[k] !== null && this.ans[k] !== v) this.changes[k]++; this.ans[k] = v; }
@@ -340,18 +368,14 @@
         if (prev !== null && prev !== v) this.changes[k]++;
         this.ans[k][+t.dataset.d] = v;
       }
-      this.notifyAnswer();
     }
 
-    notifyAnswer() { this.o?.onAnswer?.(this.ans[this.i]); }
-
-    onInput(e) { if (!this.checked[this.i] && !this.o.readOnly && this.it.type === 'fill' && e.target.matches('.ex-fill input')) { this.ans[this.i] = e.target.value; this.notifyAnswer(); } }
+    onInput(e) { if (!this.checked[this.i] && this.it.type === 'fill' && e.target.matches('.ex-fill input')) this.ans[this.i] = e.target.value; }
 
     onClick(e) {
       const tab = e.target.closest('[data-tab]');
       if (tab) {
         this.tab[this.it.case?.id || this.it.id || this.it.qid] = tab.dataset.tab;
-        this.o.onTab?.(tab.dataset.tab);
         const left = this.main.querySelector('.ex-left'), scroll = left.scrollTop;
         left.outerHTML = this.leftPane(this.it);
         const pane = this.main.querySelector('.ex-left');
@@ -361,23 +385,22 @@
       }
       const slotEl = e.target.closest('[data-slot]'), chEl = e.target.closest('[data-choice]');
       if (slotEl || chEl) {
-        if (this.checked[this.i] || this.o.readOnly) return;
+        if (this.checked[this.i]) return;
         const a = this.ans[this.i], cols = { actions: [0, 1], conditions: [2], complications: [3, 4] };
-        if (slotEl) { const k = +slotEl.dataset.slot; if (a[k] !== null) { a[k] = null; this.changes[this.i]++; this.notifyAnswer(); this.show(this.i); } return; }
+        if (slotEl) { const k = +slotEl.dataset.slot; if (a[k] !== null) { a[k] = null; this.changes[this.i]++; this.show(this.i); } return; }
         const [col, idx] = chEl.dataset.choice.split(':'), n = +idx;
         if (cols[col].some(k => a[k] === n)) return;
         const free = cols[col].find(k => a[k] === null);
         if (free === undefined) return;
-        a[free] = n; this.notifyAnswer(); this.show(this.i); return;
+        a[free] = n; this.show(this.i); return;
       }
       const hl = e.target.closest('[data-h]');
       if (hl) {
         const dragged = this.highlightStart && Math.hypot(e.clientX - this.highlightStart.x, e.clientY - this.highlightStart.y) > 4;
-        if (this.checked[this.i] || this.o.readOnly || (e.detail && dragged && window.getSelection?.().toString())) return;
+        if (this.checked[this.i] || (e.detail && dragged && window.getSelection?.().toString())) return;
         const id = hl.dataset.h, set = new Set(this.ans[this.i]);
         if (set.has(id)) { set.delete(id); this.changes[this.i]++; } else set.add(id);
         this.ans[this.i] = [...set];
-        this.notifyAnswer();
         this.main.querySelectorAll('[data-h]').forEach(el => {
           const selected = set.has(el.dataset.h);
           el.classList.toggle('on', selected); el.setAttribute('aria-pressed', selected);
@@ -389,7 +412,7 @@
         prev: () => this.i > 0 && this.show(this.i - 1),
         next: () => {
           if (this.o.instant && !this.checked[this.i]) {
-            if (!isAnswered(this.it, this.ans[this.i])) { this.modal('Complete your response', '<p>Complete a valid response before checking it.</p>', [['OK']]); return; }
+            if (!isAnswered(this.it, this.ans[this.i])) { this.modal('Select an answer', '<p>Choose an answer before checking it.</p>', [['OK']]); return; }
             this.checked[this.i] = true; this.show(this.i); this.main.querySelectorAll('.ex-pane').forEach(p => { p.scrollTop = p.scrollHeight; }); return;
           }
           this.i < this.items.length - 1 ? this.show(this.i + 1) : this.confirmFinish();
@@ -477,10 +500,8 @@
 
     destroy() {
       this.done = true; clearInterval(this.timer); document.removeEventListener('keydown', this.keyHandler); this.root.innerHTML = '';
-      if (!this.o.embedded) {
-        document.querySelectorAll('.ex-modal-bg').forEach(m => m.remove());
-        if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
-      }
+      document.querySelectorAll('.ex-modal-bg').forEach(m => m.remove());
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
     }
 
     finish(timedOut) {

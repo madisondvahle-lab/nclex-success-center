@@ -1,12 +1,30 @@
 /* Shared persistence for portal-generated diagnostic assessment attempts. */
 (function (global) {
+  const CLIENT_PROTOCOL = 'ngn-cat-v1';
+  function clientProtocol() {
+    const requested = global.document?.querySelector('meta[name="nclex-cat-protocol"]')?.content;
+    if (requested !== CLIENT_PROTOCOL) return undefined;
+    if (global.NGNScoring?.VERSION !== 'ngn-v1' || global.ExamUI?.CLIENT_PROTOCOL !== CLIENT_PROTOCOL) {
+      throw new Error('The updated CAT modules could not load. Refresh the portal before starting or resuming; your saved progress is unchanged.');
+    }
+    return CLIENT_PROTOCOL;
+  }
   async function invokeAssessment(supabase, body) {
+    const protocol = clientProtocol();
     if (!supabase) throw new Error('Supabase client is unavailable');
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
     if (!session) throw new Error('Your session has expired. Sign in again to continue.');
-    const { data, error } = await supabase.functions.invoke('diagnostic-assessment', { body });
-    if (error) throw error;
+    const { data, error } = await supabase.functions.invoke('diagnostic-assessment', {
+      body: { ...body, ...(protocol ? { clientProtocol: protocol } : {}) }
+    });
+    if (error) {
+      if (error.context?.status === 409 && typeof error.context.json === 'function') {
+        const failure = await error.context.json();
+        if (typeof failure?.error === 'string') throw new Error(failure.error);
+      }
+      throw error;
+    }
     if (data?.error) throw new Error(data.error);
     return data;
   }
@@ -76,6 +94,7 @@
   }
 
   global.NCLEX_ASSESSMENT_PERSISTENCE = {
+    CLIENT_PROTOCOL,
     createAttempt,
     checkpointAttempt,
     recordResponse,

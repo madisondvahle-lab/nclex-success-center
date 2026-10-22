@@ -79,12 +79,15 @@ globalThis.__ngnTestCreateClient = (_url, key, options) => key === 'service' ? s
   auth: { getUser: async () => ({ data: { user: options?.global?.headers?.Authorization === 'Bearer student-token' ? { id: 'user' } : options?.global?.headers?.Authorization === 'Bearer admin-token' ? { id: 'admin' } : null }, error: null }) },
   rpc: async name => { assert.equal(name, 'is_app_admin'); return { data: options?.global?.headers?.Authorization === 'Bearer admin-token', error: null }; },
 };
-globalThis.Deno = { env: { get: key => ({ SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'anon', SUPABASE_SERVICE_ROLE_KEY: 'service' })[key] } };
+let enableNewAttempts = 'true';
+globalThis.Deno = { env: { get: key => ({ SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'anon', SUPABASE_SERVICE_ROLE_KEY: 'service',
+  NGN_CAT_NEW_ATTEMPTS_ENABLED: enableNewAttempts })[key] } };
 let source = readFileSync(new URL('../supabase/functions/diagnostic-assessment/index.ts', import.meta.url), 'utf8');
 source = source.replace("import { createClient } from 'npm:@supabase/supabase-js@2';", 'const createClient = globalThis.__ngnTestCreateClient;');
 source = source.replaceAll(/from '(\.\.\/_shared\/[^']+)'/g, (_, path) => `from '${new URL(path, new URL('../supabase/functions/diagnostic-assessment/index.ts', import.meta.url)).href}'`);
 const { default: handler } = await import(`data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(source, { mode: 'transform' })).toString('base64')}`);
 function reset() {
+  enableNewAttempts = 'true';
   state.failCommit = false;
   state.tables = {
     students: [{ id: 'student', auth_user_id: 'user', portal_stage: 'active' }],
@@ -92,12 +95,109 @@ function reset() {
     in_house_diagnostic_item_keys: [], in_house_assessment_attempts: [], in_house_assessment_item_responses: [],
   };
 }
-async function request(body, token = 'student-token') {
+async function request(body, token = 'student-token', clientProtocol = 'ngn-cat-v1') {
   const response = await handler.fetch(new Request('https://example.test/assessment', {
-    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Origin: 'https://portal.studywithmadison.com' }, body: JSON.stringify(body),
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Origin: 'https://portal.studywithmadison.com' }, body: JSON.stringify({ ...body, clientProtocol }),
   }));
   return { status: response.status, data: await response.json() };
 }
+test('legacy/cached clients never start a versioned attempt or receive reviewed NGN items', async () => {
+  for (const protocol of [null, 'unknown-future-protocol']) {
+    reset();
+    state.tables.in_house_diagnostic_item_keys.push(traditionalKey('legacy-static'));
+    const started = await request({ action: 'start', profile: { mode: 'mock' }, sessionKey: 'cached' }, 'student-token', protocol);
+    assert.equal(started.status, 200);
+    assert.equal(started.data.attempt.assessment_version, 'in-house-core-v1');
+    assert.equal(started.data.currentItemId, 'legacy-static');
+    assert.equal(started.data.currentItem, null);
+    const answered = await request({ action: 'answer', attemptId: started.data.attempt.id, expectedRevision: 0,
+      itemId: 'legacy-static', answer: 0 }, 'student-token', protocol);
+    assert.equal(answered.status, 200);
+    assert.equal(answered.data.completed, true);
+    assert.equal(answered.data.responses[0].scoringModel, 'in-house-core-v1');
+  }
+});
+
+test('missing or disabled activation creates only legacy attempts even for capable clients', async () => {
+  for (const flag of [undefined, 'false', 'TRUE', '']) {
+    reset();
+    enableNewAttempts = flag;
+    state.tables.in_house_diagnostic_item_keys.push(traditionalKey('legacy-static'));
+    const started = await request({ action: 'start', mode: 'mock', sessionKey: 'disabled' });
+    assert.equal(started.status, 200);
+    assert.equal(started.data.attempt.assessment_version, 'in-house-core-v1');
+    assert.equal(started.data.currentItemId, 'legacy-static');
+  }
+});
+
+test('incompatible clients cannot resume, answer, checkpoint or abandon an existing NGN attempt', async () => {
+  reset();
+  const started = await request({ action: 'start', mode: 'mock', sessionKey: 'capable' });
+  const attemptId = started.data.attempt.id;
+  const before = clone(state.tables);
+  for (const body of [
+    { action: 'start', mode: 'mock', sessionKey: 'cached' },
+    { action: 'resume', assessmentKey: 'diagnostic-mock' },
+    { action: 'answer', attemptId, expectedRevision: 0, itemId: started.data.currentItemId, answer: ['finding-a'] },
+    { action: 'checkpoint', attemptId, expectedRevision: 0, checkpoint: {} },
+    { action: 'abandon', attemptId },
+  ]) {
+    const result = await request(body, 'student-token', null);
+    assert.equal(result.status, 409);
+    assert.match(result.data.error, /Refresh.*progress is unchanged/);
+    assert.equal(result.data.currentItem, undefined);
+    assert.deepEqual(state.tables, before);
+  }
+});
+
+test('legacy abandon retains its existing idempotent and ownership behavior', async () => {
+  reset();
+  state.tables.in_house_diagnostic_item_keys.push(traditionalKey('legacy-static'));
+  const started = await request({ action: 'start', mode: 'mock', sessionKey: 'legacy' }, 'student-token', null);
+  const missing = await request({ action: 'abandon', attemptId: 'missing' }, 'student-token', null);
+  assert.equal(missing.status, 200);
+  assert.equal(missing.data.abandoned, false);
+  for (const expected of [true, false]) {
+    const result = await request({ action: 'abandon', attemptId: started.data.attempt.id }, 'student-token', null);
+    assert.equal(result.status, 200);
+    assert.equal(result.data.abandoned, expected);
+  }
+});
+
+test('rollback activation switch stops new NGN attempts but existing cases still resume and complete unchanged', async () => {
+  reset();
+  const started = await request({ action: 'start', mode: 'mock', sessionKey: 'before-rollback' });
+  enableNewAttempts = 'false';
+  const resumed = await request({ action: 'resume', assessmentKey: 'diagnostic-mock' });
+  assert.equal(resumed.status, 200);
+  assert.equal(resumed.data.attempt.assessment_version, MODEL);
+  let id = resumed.data.currentItemId;
+  const answers = [['finding-a'], [0, 0], ['0:0', '1:0']];
+  let final;
+  for (const [expectedRevision, answer] of answers.entries()) {
+    final = await request({ action: 'answer', attemptId: started.data.attempt.id, expectedRevision, itemId: id, answer });
+    assert.equal(final.status, 200);
+    id = final.data.nextItemId;
+  }
+  assert.equal(final.data.completed, true);
+  assert.deepEqual(final.data.responses.map(r => [r.credit.earned, r.credit.max]), [[1, 1], [1, 2], [1, 2]]);
+  const history = clone(state.tables.in_house_assessment_item_responses);
+  state.tables.in_house_diagnostic_item_keys.push(traditionalKey('after-rollback'));
+  const next = await request({ action: 'start', mode: 'mock', sessionKey: 'after-rollback' });
+  assert.equal(next.status, 200);
+  assert.equal(next.data.attempt.assessment_version, 'in-house-core-v1');
+  assert.deepEqual(state.tables.in_house_assessment_item_responses, history);
+  const review = await request({ action: 'review', attemptId: started.data.attempt.id });
+  assert.equal(review.status, 200);
+  assert.deepEqual(review.data.responses.map(r => r.credit), final.data.responses.map(r => r.credit));
+  const beforeReview = clone(state.tables);
+  const outdatedReview = await request({ action: 'review', attemptId: started.data.attempt.id }, 'student-token', null);
+  assert.equal(outdatedReview.status, 409);
+  assert.match(outdatedReview.data.error, /requires the updated CAT page/);
+  assert.equal(outdatedReview.data.responses, undefined);
+  assert.deepEqual(state.tables, beforeReview);
+});
+
 test('authenticated endpoint: start, checkpoint/resume, staged answers, grouped ability, completion and authorized review', async () => {
   reset();
   const started = await request({ action: 'start', mode: 'mock', sessionKey: 'synthetic' });

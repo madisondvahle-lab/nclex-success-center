@@ -11,7 +11,7 @@
   };
   const id = () => crypto.randomUUID();
   function blank(type) {
-    const item = { id: id(), type, stem: '', rationale: '', schemaVersion: 1, textFormat: 'plain', scoringVersion: 'ngn-v1' };
+    const item = { id: id(), type, stem: '', rationale: '', schemaVersion: 1, textFormat: 'plain' };
     if (type === 'mcq' || type === 'sata') Object.assign(item, { options: ['', ''], correct: [0] });
     if (type === 'matrix') Object.assign(item, { rows: [''], cols: ['', ''], correct: [] });
     if (type === 'cloze') Object.assign(item, { template: '{{0}}', dropdowns: [{ options: ['', ''], correct: 0 }] });
@@ -125,20 +125,13 @@
       chartTabs = item.tabs;
     }
     if (child) field(parent, 'Rationale', item.rationale, v => { item.rationale = v; }, 'textarea');
-    select(parent, 'Scoring version (requires review before CAT eligibility)', item.scoringVersion || 'legacy',
-      [['legacy', 'Legacy shared practice scoring'], ['ngn-v1', 'NGN v1: type-specific points and server-scored CAT']], value => {
-        if (value === 'legacy') delete item.scoringVersion;
-        else item.scoringVersion = value;
-      });
-    const scoring = type === 'mcq' || type === 'fill' ? 'All or nothing' : type === 'matrix' && item.scoringVersion ? 'Per-row zero/one (single) or plus/minus (multiple)' : type === 'sata' || type === 'highlight' || type === 'matrix' ? 'Plus/minus partial credit' : 'Per-choice zero/one partial credit';
+    const scoring = type === 'mcq' || type === 'fill' ? 'All or nothing' : type === 'sata' || type === 'highlight' || type === 'matrix' ? 'Existing plus/minus partial credit' : 'Existing per-choice partial credit';
     select(parent, 'Scoring rule', item.scoring || 'legacy', [['legacy', scoring], ['zero-one', 'All or nothing for this item']], v => {
       if (v === 'legacy') delete item.scoring; else item.scoring = v;
     });
     if (type === 'mcq' || type === 'sata') answers(parent, item, type === 'mcq');
     if (type === 'matrix') {
       select(parent, 'Selections per matrix row', item.responseMode || 'multiple', [['multiple', 'Multiple selections'], ['single', 'One selection']], v => { item.responseMode = v; });
-      select(parent, 'Multiple-response scoring groups (NGN v1 only)', item.scoringAxis || 'column',
-        [['column', 'Independent columns (Matrix MR)'], ['row', 'Independent rows (Response grouping)']], v => { item.scoringAxis = v; });
       const removeAxis = (axis, removed) => {
         item.correct = item.correct.map(k => k.split(':').map(Number)).filter(pair => pair[axis] !== removed).map(pair => {
           if (pair[axis] > removed) pair[axis]--;
@@ -164,7 +157,6 @@
       drawGrid();
     }
     if (type === 'cloze') {
-      node('p', 'Each drop-down is scored independently. Linked rationale pairs and triads require a different scoring format and are not supported here.', parent);
       field(parent, 'Sentence with drop-down markers {{0}}, {{1}}, etc.', item.template, v => { item.template = v; }, 'textarea');
       list(parent, 'Drop-down', item.dropdowns, () => ({ options: ['', ''], correct: 0 }), (row, d, i) => {
         node('p', `Place {{${i}}} in the sentence.`, row);
@@ -252,7 +244,6 @@
     } else if (item.type === 'matrix') {
       if (!options(item.rows) || !options(item.cols) || !item.correct.length || new Set(item.correct).size !== item.correct.length || item.correct.some(k => !/^\d+:\d+$/.test(k) || +k.split(':')[0] >= item.rows.length || +k.split(':')[1] >= item.cols.length)) fail('Enter matrix rows, columns, and valid correct cell coordinates.');
       if (item.responseMode === 'single' && item.rows.some((_, i) => item.correct.filter(k => k.startsWith(`${i}:`)).length !== 1)) fail('A single-selection matrix needs exactly one correct cell in each row.');
-      if (item.scoringAxis && !['row', 'column'].includes(item.scoringAxis)) fail('Matrix scoring groups must be rows or columns.');
     } else if (item.type === 'cloze') {
       const markers = [...item.template.matchAll(/\{\{(\d+)\}\}/g)].map(m => +m[1]);
       if (!item.dropdowns.length || markers.length !== item.dropdowns.length || item.dropdowns.some((d, i) => !markers.includes(i) || !options(d.options) || !indices([d.correct], d.options.length))) fail('Each drop-down needs choices, a correct choice, and one matching sentence marker.');

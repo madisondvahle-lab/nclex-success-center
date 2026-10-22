@@ -5,6 +5,71 @@ const test = require('node:test');
 const vm = require('node:vm');
 const read = name => readFileSync(join(__dirname, '..', name), 'utf8');
 
+test('capability is advertised only by the updated page with matching loaded modules, on every request', async () => {
+  for (const meta of [undefined, 'ngn-cat-v1']) {
+    const calls = [];
+    const window = {
+      document: { querySelector: () => meta ? { content: meta } : null },
+      NGNScoring: { VERSION: 'ngn-v1' }, ExamUI: { CLIENT_PROTOCOL: 'ngn-cat-v1' },
+    };
+    vm.runInNewContext(read('assessment-persistence.js'), { window });
+    const supabase = {
+      auth: { getSession: async () => ({ data: { session: { user: { id: 'test' } } } }) },
+      functions: { invoke: async (_name, { body }) => {
+        calls.push(body);
+        return { data: { attempt: null, abandoned: true } };
+      } },
+    };
+    await window.NCLEX_ASSESSMENT_PERSISTENCE.resumeAttempt({ supabase, assessmentKey: 'diagnostic-mock' });
+    await window.NCLEX_ASSESSMENT_PERSISTENCE.abandonAttempt({ supabase, attemptId: 'test' });
+    assert.deepEqual(calls.map(body => body.clientProtocol), [meta, meta]);
+  }
+});
+
+test('missing or mismatched scoring/renderer assets block persistence before authentication or writes', async () => {
+  for (const modules of [
+    {},
+    { NGNScoring: { VERSION: 'old' }, ExamUI: { CLIENT_PROTOCOL: 'ngn-cat-v1' } },
+    { NGNScoring: { VERSION: 'ngn-v1' }, ExamUI: {} },
+    { NGNScoring: { VERSION: 'ngn-v1' }, ExamUI: { CLIENT_PROTOCOL: 'future' } },
+  ]) {
+    const window = { document: { querySelector: () => ({ content: 'ngn-cat-v1' }) }, ...modules };
+    vm.runInNewContext(read('assessment-persistence.js'), { window });
+    const supabase = { auth: { getSession() { throw new Error('must not request a session'); } } };
+    await assert.rejects(window.NCLEX_ASSESSMENT_PERSISTENCE.createAttempt({
+      supabase, profile: { mode: 'mock' }, sessionKey: 'blocked',
+    }), /updated CAT modules could not load/);
+  }
+});
+
+test('unversioned legacy renderer and author remain byte-identical to production for cached HTML', () => {
+  for (const name of ['exam-ui.js', 'ngn-author.js']) {
+    // SHA-256 of the deployed 10518df assets, not a dependency on local Git history.
+    const hash = require('node:crypto').createHash('sha256').update(read(name)).digest('hex');
+    const expected = {
+      'exam-ui.js': '338ede74a07577ebd5a8eccb3f8af8bdb5c7fa457ffd92a89edeb4ef479856b8',
+      'ngn-author.js': 'ccc71fab39fa5362b7ee77b35e12129d600cb1b410c506b80d3dd66c0af46955',
+    };
+    assert.equal(hash, expected[name]);
+  }
+});
+
+test('the server update-required message survives Supabase HTTP error transport', async () => {
+  const window = {};
+  vm.runInNewContext(read('assessment-persistence.js'), { window });
+  const message = 'Refresh the portal and resume; your progress is unchanged.';
+  const supabase = {
+    auth: { getSession: async () => ({ data: { session: { user: { id: 'test' } } } }) },
+    functions: { invoke: async () => ({ error: {
+      message: 'Edge Function returned a non-2xx status code',
+      context: { status: 409, json: async () => ({ error: message }) },
+    } }) },
+  };
+  await assert.rejects(window.NCLEX_ASSESSMENT_PERSISTENCE.resumeAttempt({
+    supabase, assessmentKey: 'diagnostic-mock',
+  }), { message });
+});
+
 test('persistence sends the mode and preserves server-provided interactions on start and resume', async () => {
   const window = {}, calls = [];
   vm.runInNewContext(read('assessment-persistence.js'), { window });
@@ -60,7 +125,7 @@ test('tutor review renders stored NGN response details without a legacy-bank loo
   const context = { window };
   vm.runInNewContext(read('ngn-scoring.js'), context);
   window.NGNScoring = context.NGNScoring;
-  vm.runInNewContext(read('exam-ui.js'), context);
+  vm.runInNewContext(read('exam-ui-ngn.js'), context);
   const html = read('shared-progress.html');
   const source = html.slice(html.indexOf('function renderAttemptReviewHtml('), html.indexOf('async function loadAndRenderPracticeReview('));
   const responses = [{
@@ -85,6 +150,19 @@ test('tutor review renders stored NGN response details without a legacy-bank loo
   assert.match(container.innerHTML, /Synthetic rationale/);
   assert.match(container.innerHTML, /Content version: hash/);
   assert.match(container.innerHTML, /in-house-ngn-v1/);
+  delete window.ExamUI;
+  context.renderAttemptReviewHtml('attempt', container);
+  assert.match(container.innerHTML, /updated question-review modules could not load/);
+  assert.doesNotMatch(container.innerHTML, /1\/1 points/);
+});
+
+test('new renderer refuses unavailable or mismatched scoring instead of silently changing scoring rules', () => {
+  for (const scorer of [undefined, { VERSION: 'old' }]) {
+    const window = { NGNScoring: scorer };
+    vm.runInNewContext(read('exam-ui-ngn.js'), { window });
+    assert.throws(() => window.ExamUI.score({ type: 'mcq', correct: 0 }, 0), /scoring module could not load/);
+    assert.throws(() => window.ExamUI.isAnswered({ scoringVersion: 'ngn-v1' }, []), /scoring module could not load/);
+  }
 });
 
 test('changed non-JSX HTML scripts parse and every shared renderer page loads the scoring dependency first', () => {
@@ -93,6 +171,7 @@ test('changed non-JSX HTML scripts parse and every shared renderer page loads th
   }
   for (const name of ['diagnostic.html', 'shared-progress.html', 'question-bank-review.html', 'supplemental-practice.html', 'bianca-nur215.html', 'madison-diagnostic.html']) {
     const html = read(name);
-    assert.ok(html.indexOf('src="ngn-scoring.js"') < html.indexOf('src="exam-ui.js"'), name);
+    const scorer = html.indexOf('src="ngn-scoring.js?v=ngn-cat-v1"');
+    assert.ok(scorer >= 0 && scorer < html.indexOf('src="exam-ui-ngn.js?v=ngn-cat-v1"'), name);
   }
 });

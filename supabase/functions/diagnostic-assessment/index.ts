@@ -278,9 +278,17 @@ function targetFor(mode: string, requested: unknown) {
   return count;
 }
 
+const CLIENT_PROTOCOL = 'ngn-cat-v1';
+
+function requireCompatibleClient(attempt: Record<string, any>, body: Record<string, any>) {
+  if (attempt.checkpoint?.scoringModel === MODEL && body.clientProtocol !== CLIENT_PROTOCOL) {
+    throw new HttpError(409, 'This saved assessment requires the updated CAT page. Refresh the portal and resume; your progress is unchanged.');
+  }
+}
+
 async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
-  const mode = requiredString(body.mode, 'Assessment mode');
+  const mode = requiredString(body.mode ?? body.profile?.mode, 'Assessment mode');
   if (!['practice', 'nclex', 'mock', 'remediation', 'assessment'].includes(mode)) {
     throw new HttpError(400, 'Assessment mode is not supported.');
   }
@@ -290,7 +298,8 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   const sessionKey = requiredString(body.sessionKey, 'Assessment session key');
   const assessmentKey = mode === 'assessment' ? 'readiness-assessment' : `diagnostic-${mode}`;
   const scope = mode === 'remediation' ? 'remediation' : 'diagnostic';
-  const ngnEnabled = ['nclex', 'mock', 'assessment'].includes(mode);
+  const ngnEnabled = Deno.env.get('NGN_CAT_NEW_ATTEMPTS_ENABLED') === 'true' &&
+    body.clientProtocol === CLIENT_PROTOCOL && ['nclex', 'mock', 'assessment'].includes(mode);
   const profile = {
     mode,
     weakAreas: Array.isArray(body.profile?.weakAreas) ? body.profile.weakAreas.filter((value: unknown) => typeof value === 'string').slice(0, 8) : [],
@@ -311,6 +320,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     .maybeSingle();
   if (existingError) throw existingError;
   if (existing) {
+    requireCompatibleClient(existing, body);
     const existingKeys = await itemKeys(context.service, scope, existing.checkpoint?.scoringModel === MODEL);
     return await stateForAttempt(context.service, existing, existingKeys);
   }
@@ -410,6 +420,7 @@ async function resumeAttempt(context: Awaited<ReturnType<typeof createContext>>,
     .maybeSingle();
   if (error) throw error;
   if (!attempt) return null;
+  requireCompatibleClient(attempt, body);
   const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic', attempt.checkpoint?.scoringModel === MODEL);
   return await stateForAttempt(context.service, attempt, keys);
 }
@@ -420,6 +431,7 @@ async function checkpointAttempt(context: Awaited<ReturnType<typeof createContex
   const revision = Number(body.expectedRevision);
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Checkpoint revision is invalid.');
   const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  requireCompatibleClient(attempt, body);
   if (attempt.status !== 'in_progress' || attempt.checkpoint_revision !== revision) {
     throw new HttpError(409, 'This assessment changed in another session. Reload and resume it.');
   }
@@ -472,6 +484,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   const itemId = requiredString(body.itemId, 'Item ID');
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Assessment revision is invalid.');
   const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  requireCompatibleClient(attempt, body);
   if (attempt.status !== 'in_progress') throw new HttpError(409, 'This assessment is no longer active.');
   if (attempt.checkpoint_revision !== revision || attempt.checkpoint?.currentItemId !== itemId) {
     throw new HttpError(409, 'This response no longer matches the current assessment item. Reload and resume.');
@@ -673,6 +686,15 @@ function score(item: Record<string, any>, submitted: unknown, answeredAt: string
 async function abandonAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
   const attemptId = requiredString(body.attemptId, 'Attempt ID');
+  const { data: attempt, error: readError } = await context.service
+    .from('in_house_assessment_attempts')
+    .select('checkpoint')
+    .eq('id', attemptId)
+    .eq('student_id', context.student.id)
+    .maybeSingle();
+  if (readError) throw readError;
+  if (!attempt) return { abandoned: false };
+  requireCompatibleClient(attempt, body);
   const { data, error } = await context.service
     .from('in_house_assessment_attempts')
     .update({ status: 'abandoned', updated_at: new Date().toISOString() })
@@ -698,6 +720,7 @@ async function reviewAttempt(context: Awaited<ReturnType<typeof createContext>>,
     throw new HttpError(403, 'You cannot view this assessment review.');
   }
   if (attempt.status !== 'completed') throw new HttpError(403, 'Question review is available after the assessment is complete.');
+  requireCompatibleClient(attempt, body);
   const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic');
   const rows = await responseRows(context.service, attempt.id);
   return { responses: historyFor(rows, keys, true, attempt.checkpoint), scoringModel: attempt.checkpoint?.scoringModel || 'in-house-core-v1' };

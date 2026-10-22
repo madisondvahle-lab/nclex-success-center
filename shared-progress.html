@@ -320,8 +320,8 @@
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script src="practice-review-data.js"></script>
-  <script src="ngn-scoring.js"></script>
-  <script src="exam-ui.js"></script>
+  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -860,13 +860,18 @@
       if(!attemptId||!container)return;
       container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
       const {data,error}=await db.functions.invoke('diagnostic-assessment',{
-        body:{action:'review',attemptId}
+        body:{action:'review',attemptId,
+          ...(window.ExamUI?.CLIENT_PROTOCOL==='ngn-cat-v1' && window.NGNScoring?.VERSION==='ngn-v1'
+            ? {clientProtocol:'ngn-cat-v1'} : {})}
       });
       const responses=data?.responses||null;
 
       if(error){
+        const message=error.context?.status===409
+          ? 'This review requires the updated CAT modules. Refresh the portal; assessment history is unchanged.'
+          : error.message||String(error);
         container.innerHTML=`<div style="color:#b4443c;padding:6px 0;">
-          <strong>Item responses could not be loaded:</strong> ${esc(error.message||String(error))}
+          <strong>Item responses could not be loaded:</strong> ${esc(message)}
           <br><button class="button secondary" type="button" style="margin-top:8px;padding:6px 10px;font-size:.75rem;" onclick="retryAttemptReview('${esc(attemptId)}')">Retry loading</button>
         </div>`;
         return;
@@ -889,6 +894,11 @@
       const cached=attemptResponsesCache.get(attemptId);
       if(!cached)return;
       const {responses,filter,isSwmCat}=cached;
+      if(responses.some(r=>r.interaction) &&
+         (window.ExamUI?.CLIENT_PROTOCOL!=='ngn-cat-v1' || window.NGNScoring?.VERSION!=='ngn-v1')){
+        container.innerHTML='<p class="muted">The updated question-review modules could not load. Refresh the portal to view the saved responses and rationales. Assessment history is unchanged.</p>';
+        return;
+      }
       const missedCount=responses.filter(r=>!r.is_correct).length;
       const totalCount=responses.length;
       const shownResponses=filter==='missed'?responses.filter(r=>!r.is_correct):responses;

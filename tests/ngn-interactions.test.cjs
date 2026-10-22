@@ -8,7 +8,7 @@ const vm = require('node:vm');
 const context = { window: {}, crypto: { randomUUID }, console };
 vm.runInNewContext(readFileSync(join(__dirname, '..', 'ngn-scoring.js'), 'utf8'), context);
 context.window.NGNScoring = context.NGNScoring;
-for (const file of ['exam-ui.js', 'ngn-author.js']) {
+for (const file of ['exam-ui-ngn.js', 'ngn-author-ngn.js']) {
   vm.runInNewContext(readFileSync(join(__dirname, '..', file), 'utf8'), context);
 }
 const { Exam, prepare, score, reviewHtml } = context.window.ExamUI;
