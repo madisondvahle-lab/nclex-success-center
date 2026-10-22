@@ -245,6 +245,15 @@ test('saved history includes all pages beyond the Supabase default row limit', a
   ]);
 });
 
+test('reviewed NGN child exposure maps to its parent without changing saved response IDs', async () => {
+  const parent = 'qbank:00000000-0000-4000-8000-000000000001';
+  const rows = [savedResponse('1', `${parent}:first`), savedResponse('2', `${parent}:second`)];
+  const keys = [selectionItem(parent, { item_type: 'casestudy', ngn_entry: { kind: 'case', items: [{ id: 'first' }, { id: 'second' }] } })];
+  const original = structuredClone(rows);
+  assert.deepEqual(await previouslyAnsweredItemIds(historyService(rows), 'student-a', keys), new Set([parent]));
+  assert.deepEqual(rows, original);
+});
+
 test('a new student with no saved answers retains an empty history', async () => {
   assert.deepEqual(await previouslyAnsweredItemIds(historyService([]), 'student-a', []), new Set());
 });

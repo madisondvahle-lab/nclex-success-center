@@ -17,10 +17,14 @@ question-bank architecture; do not create a competing assessment system.
 - Use a five-hour default exam time. Support 1.5x and 2x time accommodations
   (7.5 and 10 hours), selectable by the student at exam start, while keeping
   timer visibility independently hideable.
-- No clinical question, answer, rationale, or scoring changes have been
-  authorized yet.
+- Clinical wording, keys, and rationales remain locked. The owner subsequently
+  authorized the versioned Phase 2 scoring model below for new attempts only;
+  historical attempts must retain their original scoring.
 
-## Current implementation findings
+## Original implementation baseline
+
+These findings describe the earlier baseline. See **Phase 2 implementation**
+below for the locally implemented integration and remaining release gates.
 
 - `diagnostic.html` contains the student-facing readiness/CAT and full mock
   flow. The full mock uses an 85-item minimum and 150-item maximum, blueprint
@@ -461,3 +465,304 @@ keyboard highlight selection, checked feedback, narrow-screen navigation, and
 the real author/editor preview and inactive-draft save using a mock database.
 No authenticated Supabase write, clinical publication, or deployment was
 performed; live authoring and database permissions remain deployment checks.
+
+### Phase 2 implementation (local; not deployed)
+
+Phase 1 was committed locally as `3e2df02`. Phase 2 now integrates the shared
+interactions into the existing CAT, rather than introducing another engine.
+Following owner review, Phase 2 was committed locally as `e025f82`. Nothing
+has been pushed or deployed.
+
+#### Delivery, selection, and private state
+
+- `diagnostic.html` embeds the existing `ExamUI.Exam` for server-provided NGN
+  items. MCQ, unrestricted SATA, highlight notes/chart cells, single- and
+  multiple-response matrices, independent drop-down cloze, five-target
+  bow-tie, numeric responses, and sequential cases use the shared renderer.
+  Submitted answers lock; clinical tabs remain available without changing
+  answers. No practice navigation, immediate feedback, automatic abnormality
+  markers, or AI calls are added to CAT delivery.
+- `supabase/functions/_shared/diagnostic-ngn.mjs` validates and loads active
+  `qbank-bulk-*` questions with schema version 1, existing approved/published
+  review status, recognized category/difficulty, and explicit
+  `scoringVersion: 'ngn-v1'` on every delivered item. Existing published
+  versionless content is not silently converted. Eligibility does not publish
+  an item or approve a scoring change.
+- Stable server aliases use `qbank:<existing UUID>` and
+  `qbank:<existing UUID>:<existing child ID>`. Stored UUIDs and child IDs are
+  unchanged. Existing blueprint, difficulty, exposure, and current-attempt
+  duplicate rules still apply. Case selection reserves room for all children;
+  CAT cannot stop midway through a selected case.
+- Private checkpoint schema 4 stores the current immutable case snapshot,
+  stage, each individual answer/score, scoring version, and SHA-256 content
+  version. Current cases and completed NGN review retain their original keys
+  and content despite subsequent author edits or unpublishing.
+- Only display/response fields and records released through the current stage
+  reach the student. Future entries, keys, rationales, scoring metadata, and
+  private snapshots are withheld during active adaptive attempts. The server,
+  not the browser, controls stage advancement.
+- Existing authenticated endpoints, RLS, protected tables, revision checks,
+  and `commit_in_house_diagnostic_answer` persist each answer and checkpoint
+  atomically. No schema migration, table, new RPC, data backfill, or historical
+  recalculation is introduced. Incomplete answers, tabs, timers, version
+  metadata, and response history survive save/exit and resume. Invalid answers,
+  replayed IDs, ownership violations, and concurrent writes are rejected.
+
+#### Versioned scoring and authoring
+
+`ngn-scoring.js` is the common browser/server scorer; all pages using the shared
+renderer load it first. The Edge Function imports the same implementation.
+`ngn-author.js` exposes legacy/versioned scoring and matrix scoring groups
+through ordinary forms; preview uses this same scorer.
+
+| Interaction | New `ngn-v1` rule |
+| --- | --- |
+| MCQ / numeric | One point for a correct response, otherwise zero |
+| Unrestricted SATA / highlight | Correct selections minus incorrect selections, floored at zero |
+| Matrix single response | Independent zero/one per row |
+| Matrix multiple response | Plus/minus independently per column, with each negative column floored at zero; explicit `scoringAxis: 'row'` uses independent row grouping instead |
+| Independent cloze | Zero/one per drop-down |
+| Bow-tie | Zero/one for each of five targets; action and monitoring order within their pairs does not matter |
+
+For matrices, omitted `scoringAxis` means column grouping only under the new
+version. Legacy matrices retain their original whole-set formula. Duplicate
+selections, invalid coordinates/IDs, multiple single-row selections, repeated
+bow-tie tokens, incomplete required slots, and invalid numeric input are
+rejected. Authors can explicitly opt into educational whole-item
+`scoring: 'zero-one'`; this is exact all-or-nothing, not a substitute for a
+native rationale-scored format.
+
+The [NCSBN scoring-model FAQ](https://ncsbn.zendesk.com/hc/en-us/articles/14690447982359-What-are-the-current-scoring-models)
+was read directly to verify the zero/one, plus/minus, independent matrix
+column/row floors, and rationale-model distinctions. This implementation does
+not claim support for every official NGN subtype: Select N, linked
+rationale pairs/triads, and drop-down tables have no dedicated authoring/scoring
+variant here. In particular, dependent rationale blanks must not be authored
+as ordinary independently scored cloze; the authoring form warns about this.
+Clinical/scoring review and explicit publication remain required.
+
+#### Adaptive evidence and historical compatibility
+
+- New `nclex`, `mock`, and readiness `assessment` attempts use
+  `in-house-ngn-v1`; existing attempts retain `in-house-core-v1`, including
+  binary scoring, grouped legacy-case submission, and original stopping rules.
+  Legacy resume does not depend on loading the new question-bank registry.
+  Practice/remediation remain on their existing model.
+- Earned/max points and rule identifiers are stored separately from ability.
+  A standalone normalized score updates ability once. A completed dependent
+  case updates ability once using the mean of its individual normalized scores
+  (equal question weighting, not total-point weighting). Every child response,
+  score, rationale, position, and version remains individually reviewable.
+- Partial-credit responses affect the educational ability estimate but add
+  **no early-stop confidence**. A case is at most one independent evidence
+  unit; incomplete, fractional, or mixed-credit groups supply no confidence
+  units. Only wholly correct or wholly zero-credit completed groups qualify.
+  A partial response or mixed case cannot itself trigger an early stop, even
+  if earlier responses already meet the independent-evidence minimum.
+- Early stopping requires at least 30 independent eligible units in the short
+  CAT or 85 in the full mock, plus existing coverage constraints and a modeled
+  confidence boundary. At an item limit or exhausted pool without that
+  evidence, the new model returns no classification. The UI shows
+  **INCONCLUSIVE**, never a percentage-derived PASS/FAIL fallback. Completion
+  reason is saved for traceability.
+- This deliberately conservative educational model is not psychometrically
+  calibrated to official NCLEX outcomes. It may produce more inconclusive
+  attempts, especially with many cases or partial responses; no official
+  passing prediction is claimed. The existing difficulty/ability scale is
+  retained rather than presented as empirically calibrated.
+- Student and tutor completed review use immutable NGN snapshots and show
+  individual earned/max points, rule, scoring/content version, and rationale.
+  Category percentages explicitly count fully correct questions, not earned
+  points. Group counts for adaptive evidence are distinct from question counts.
+
+#### Validation and remaining release gates
+
+Automated regression command:
+
+```sh
+node --test tests/diagnostic-cat-ui.test.cjs tests/diagnostic-ngn-endpoint.test.mjs tests/ngn-interactions.test.cjs tests/question-revision-edit.test.cjs tests/question-audit-wiring.test.cjs tests/parallel-practice.test.cjs tests/weekly-plan.test.cjs supabase/functions/_shared/diagnostic-ngn.test.mjs supabase/functions/_shared/diagnostic-assessment.test.mjs
+npm exec --yes --package=deno -- deno check supabase/functions/diagnostic-assessment/index.ts
+git diff --check
+```
+
+The final run passed **83 tests**, with no failures; Deno type-check and
+whitespace validation passed. Endpoint tests execute the actual handler against
+an in-memory service, covering authentication/ownership, all response formats,
+sequential disclosure, immutable keys, legacy start/resume/scoring, replay,
+failed commits, and concurrent writes. Additional regressions cover independent
+matrix floors, grouped confidence, partial-trigger stopping prevention,
+new-child exposure mapping, pause-version preservation, authoring, and existing
+course/question-review workflows. These are synthetic integration tests, not
+live authenticated Supabase tests.
+
+Local browser checks used actual React CAT components, persistence helpers,
+and shared renderer with a synthetic service stub: chart/tab preservation,
+highlight and cloze answers, progressive timestamps, locked submitted answers
+with usable tabs, save/exit/resume, matrix submission, completed review/points,
+and inconclusive display. The final updated JSX compiled in-browser; the
+scoring/version fixes were checked there, and no browser errors were recorded.
+
+Live authenticated validation remains **pending**. The live sign-in page had
+no stored signed-in session. The linked Supabase CLI project is not an
+authenticated student session; Docker/Podman were unavailable for a local
+Supabase instance. The new function cannot be tested against the live endpoint
+without deploying it, which is not authorized. No live student records were
+read or modified for this implementation.
+
+Before release: owner reviews the implementation/results and scoring policy;
+obtain explicit authorization for an appropriate staging/pilot deployment,
+then validate real student/tutor authentication, existing private checkpoint/RPC
+behavior, case completion/resume, historical review, and content eligibility
+against that environment. Clinical review/publication and production
+deployment require separate authorization. No new question has been approved
+or published, no live database record has been changed, and nothing has been
+pushed or deployed.
+
+### Final predeployment validation (October 21, 2026)
+
+The owner authorized a local Phase 2 commit and further validation, not
+deployment, publication, production changes, or database migrations.
+Additional regression tests extend the existing endpoint test file; no runtime
+or clinical-content changes were needed during this validation pass.
+
+#### Verified locally
+
+- **Full mixed CAT:** the actual Edge Function handler completed a synthetic
+  150-response mock containing 45 traditional MCQ/SATA questions, 45 standalone
+  NGN questions, and ten six-question NGN cases. Fixtures span all eight Client
+  Needs categories and all three difficulty levels. All clinical text is
+  synthetic, not new or revised clinical content.
+- **Every supported response shape:** MCQ, SATA, note/chart highlighting,
+  single-response matrix, multiple-response matrix with independent column
+  floors and explicit row grouping, independent cloze, bow-tie, and numeric
+  answers were scored and saved with exact expected points and answer shapes.
+  Completed student and tutor review returned those same answers, points,
+  rationale snapshots, and scoring/content versions.
+- **Case sequencing:** six children stayed contiguous and in authored order.
+  Each stage exposed the intended records and no future records. Earlier
+  findings remained available. Each of the ten cases was paused/resumed after
+  its first response, preserving the draft answer, selected tab, version,
+  submitted response history, and timer/accommodation settings.
+- **Adaptive changes:** exact expected ability values were asserted after each
+  of the 150 responses, with no change inside incomplete cases and one
+  mean-credit update at case completion. A separate test verified that correct
+  traditional answers select a harder NGN item, incorrect traditional answers
+  select an easier NGN item, and subsequent partial credit uses the bounded
+  update rather than binary correctness.
+- **Confidence and stopping:** the full mixed test had only 55 eligible
+  independent evidence units despite 150 saved responses; partial cases added
+  none. It reached the limit with a null classification, not PASS/FAIL.
+  Existing tests also verify that even wholly correct dependent cases count
+  once, and partial/mixed responses cannot trigger a stop after the independent
+  evidence minimum. Additional mixed 45-question CAT and 85-question readiness
+  runs completed all case children within their limits and returned no invented
+  readiness classification. Exhausted small traditional-only banks in all
+  three new-attempt modes also remained unclassified.
+- **Historical behavior:** historical MCQ, SATA, bow-tie, and legacy grouped
+  cases retain binary scoring, the original ability updates, original response
+  shapes, and `in-house-core-v1`, even with the new registry unavailable.
+  Synthetic unrelated student/history rows remained byte-for-byte unchanged.
+- **Actual UI:** a local browser run used current React CAT components,
+  persistence helpers, and shared chart controls with a synthetic service
+  stub. It completed a traditional MCQ followed by a three-question case
+  (highlight, cloze, single-response matrix). It verified selected findings,
+  tab/answer preservation, save/exit/resume, progressive chart timestamps,
+  locked responses with usable tabs, completed INCONCLUSIVE display, traditional
+  rationale review, and all three NGN answer/rationale reviews. Partial-credit
+  results were 1/2, 1/2, and 1/1, totaling 3/5. No browser errors were recorded.
+  The visible matrix label was used for pointer interaction; its visually
+  hidden native radio is not the pointer target.
+
+The combined regression command above now passes **88 tests, zero failures**.
+The Edge Function Deno type-check and `git diff --check` pass. The VS Code test
+discovery tool does not recognize these Node test files, so the repository's
+existing `node --test` runner was used. Endpoint authentication in these tests
+is mocked: this is not a real JWT/Supabase/RLS validation.
+
+#### Authenticated Supabase blocker and exact unverified scope
+
+Read-only environment checks found:
+
+- `supabase status` could not inspect a local stack because neither Docker nor
+  Podman is installed/available on PATH.
+- No standard local container socket was available.
+- No isolated Supabase/database/staging test configuration variable names or
+  repository Supabase config file were present.
+- The CLI-linked project is the existing NCLEX Success Center project, **not
+  proof of an isolated test project or student authentication**. It was not
+  used to read/write student data. A PostgreSQL client alone cannot validate
+  Supabase Auth, PostgREST, RLS, and Edge Function behavior.
+
+No isolated stack was created, migrations initiated, remote Edge Function
+invoked, test accounts created remotely, or production data accessed/changed.
+Do not interpret successful in-memory tests as confirmation of deployed grants,
+schema versions, SQL locking behavior, real JWT authorization, or deployment
+packaging.
+
+| Still unverified | Required isolated environment/access |
+| --- | --- |
+| Real student/admin JWTs, expired-token handling, `students.auth_user_id` linkage, and `is_app_admin` roles | Dedicated test student, second test student, and tutor/admin identities in a confirmed nonproduction Supabase project/stack |
+| Real query/filter behavior for reviewed NGN inventory, active/review gates, and all response types | Test-only bank fixtures and the existing production-equivalent schema/RLS/grants, without production student data |
+| SQL atomic commit, actual PostgreSQL row locks/concurrent requests, JSON response/checkpoint durability, and revision conflicts | Existing `commit_in_house_diagnostic_answer` and protected assessment tables in that isolated database |
+| Private checkpoint/key access and student/tutor cross-account review restrictions through real API grants/RLS | Test JWTs plus server-only test-project configuration, provided through secure environment settings, never committed |
+| Edge Function packaging/runtime imports, JWT gateway, CORS, and real client-to-function transport | Current function running locally or at an explicitly approved staging endpoint; compatible frontend origin/proxy configuration |
+| Browser reload/new-session resume, persisted completion/history, and student/tutor review backed by real storage | Isolated frontend connected only to the test project, with approved synthetic test writes and repeatable test fixture cleanup |
+| Exact installed database schema/RPC compatibility | Read-only inspection of the isolated schema/grants, followed by the mixed workflow; no assumptions from migration files alone |
+
+Ways to unblock (require owner approval before any provisioning/deployment or
+migrations): provide access to an already prepared isolated Supabase staging
+project with the current function and existing schema installed; or authorize
+preparing a disposable local Supabase stack after Docker/Podman is available.
+Provisioning a stack, applying existing migrations, installing/deploying a
+function, and creating test fixtures are separate operations, not covered by
+this validation authorization. Do not request production service credentials
+or real student records as a substitute.
+
+**Release decision:** local regression checks pass, but authenticated isolated
+integration remains a release blocker. Leave production deployment and clinical
+publishing on hold pending the owner's review and explicit next authorization.
+
+### Clean Phase 2 release branch preparation (October 22, 2026)
+
+Phase 1 is now deployed via PR #237 at `b062d2c`. Its authenticated production
+admin unsaved-preview and nonadmin redirect checks passed without question or
+assessment writes. Earlier deployment/login blockers above are historical.
+
+`release/ngn-cat-phase2` starts at that exact deployed revision and reuses
+validated implementation `e025f82` plus expanded endpoint regressions
+`73f85cd`. Its runtime/test files match that validated snapshot; the handoff
+adds this current release status. No implementation was regenerated.
+
+Excluded: simulator commit `5422517`, database correction `ec4d1c2`,
+question-counter correction `598fd42`, and unrelated changes. The separate
+production-based counter branch is `release/cat-question-counter`; when its
+release is approved, carry that correction forward into the Phase 2 candidate
+without reintroducing the old counter.
+
+The isolated Phase 2 branch is a preparation artifact, not an independently
+deployable release approval. Production still has the ambiguous locking SELECT
+in `commit_in_house_diagnostic_answer`; the narrow function correction must be
+separately approved and applied before Phase 2 server release. Do not execute
+the historical private migration or its question seeds. No new schema, seed,
+backfill, regrading, content publication, or student-data conversion is included.
+
+Previously completed real local Supabase validation covered all response types,
+case sequencing, pause/resume, complete saved responses, concurrency, legacy
+history, and mixed 45/85/150-response runs, after applying the SQL correction
+only in the disposable environment. That result does not establish production
+RPC readiness or frontend/server mixed-version deployment compatibility.
+
+Before any Phase 2 deployment: revalidate the final candidate with the counter
+fix and corrected local RPC; check hosted function packaging and coordinated
+frontend/server compatibility; define rollback/resume handling for new-model
+attempts; obtain separate production authorization. Existing historical
+attempts retain their original model. New attempts deliberately use the
+versioned NGN model and insufficient-evidence safeguards documented above.
+No branch has been pushed, no PR opened, and no production data/function
+change or deployment is part of this preparation.
+
+Fresh validation of this isolated extraction: **88 tests passed, zero failed**,
+the CAT Edge Function Deno type-check passed, and whitespace checks passed.
+All runtime/test files were compared against `73f85cd` with no differences;
+the database SQL remains identical to deployed `b062d2c`. The test count
+excludes the deliberately omitted simulator and separately held corrections.

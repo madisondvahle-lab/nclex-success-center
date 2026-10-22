@@ -60,13 +60,54 @@ export function updateAbility(ability, correct, difficulty) {
   return clamp(ability + 0.18 * ((correct ? 1 : 0) - expected), 0.05, 0.95);
 }
 
-function standardError(history, ability) {
+export function updateNGNAbility(ability, evidenceScore, difficulty) {
+  if (!Number.isFinite(evidenceScore) || evidenceScore < 0 || evidenceScore > 1) throw new Error('Invalid adaptive evidence.');
+  const expected = itemProbability(ability, difficulty);
+  return clamp(ability + 0.18 * (evidenceScore - expected), 0.05, 0.95);
+}
+
+export function standardError(history, ability) {
   if (!history.length) return Infinity;
+  const groups = new Set();
   const information = history.reduce((total, item) => {
+    if (item.evidenceGroup) {
+      if (groups.has(item.evidenceGroup) || item.evidenceComplete === false) return total;
+      groups.add(item.evidenceGroup);
+    }
+
     const probability = itemProbability(ability, item.difficulty);
     return total + 36 * probability * (1 - probability);
   }, 0);
   return information > 0 ? 1 / Math.sqrt(information) : Infinity;
+}
+
+export function ngnEvidence(history) {
+  const groups = new Map();
+  history.forEach(item => {
+    const id = item.evidenceGroup || item.sourceId || item.id;
+    if (!groups.has(id)) groups.set(id, []);
+    groups.get(id).push(item);
+  });
+  return [...groups.entries()].flatMap(([id, items]) => {
+    if (items.some(it => it.evidenceComplete === false)) return [];
+    const values = items.map(it => it.evidenceCredit ?? (it.correct ? 1 : 0));
+    // Partial-credit rules have no calibrated information parameters. They
+    // affect ability, but cannot manufacture confidence for an early stop.
+    if (!(values.every(v => v === 0) || values.every(v => v === 1))) return [];
+    return [{ ...items[0], id, evidenceGroup: id, evidenceComplete: true }];
+  });
+}
+
+export function shouldStopNGN(history, ability, requirements, mode) {
+  const evidence = ngnEvidence(history);
+  const minimum = mode === 'mock' ? 85 : 30;
+  if (evidence.length < minimum) return null;
+  const latest = history.at(-1);
+  const latestGroup = latest?.evidenceGroup || latest?.sourceId || latest?.id;
+  if (!evidence.some(item => item.evidenceGroup === latestGroup)) return null;
+  return mode === 'mock'
+    ? shouldStopMock(history, ability, requirements, 85, Infinity, evidence)
+    : shouldStop(history, ability, requirements, 30, Infinity, evidence);
 }
 
 function missingCoreRequirements(history, requirements) {
@@ -85,10 +126,10 @@ function hasBlueprintCoverage(history) {
   return Object.entries(BLUEPRINT_MINIMUMS).every(([blueprint, minimum]) => (counts[blueprint] || 0) >= minimum);
 }
 
-export function shouldStop(history, ability, requirements, minimumQuestions = 30, maximumQuestions = 45) {
+export function shouldStop(history, ability, requirements, minimumQuestions = 30, maximumQuestions = 45, evidence = history) {
   if (history.length < minimumQuestions || !hasBlueprintCoverage(history) ||
       missingCoreRequirements(history, requirements).length) return null;
-  const error = standardError(history, ability);
+  const error = standardError(evidence, ability);
   if (ability - CONFIDENCE_Z * error > PASS_THRESHOLD) return 'PASS';
   if (ability + CONFIDENCE_Z * error < PASS_THRESHOLD) return 'FAIL';
   if (history.length >= maximumQuestions) return ability >= PASS_THRESHOLD ? 'PASS' : 'FAIL';
@@ -129,10 +170,10 @@ function mockPriorityCategory(counts, profile) {
   }).sort((a, b) => a.coverage - b.coverage || a.count - b.count)[0]?.category || null;
 }
 
-export function shouldStopMock(history, ability, requirements, minimumQuestions = 85, maximumQuestions = 150) {
+export function shouldStopMock(history, ability, requirements, minimumQuestions = 85, maximumQuestions = 150, evidence = history) {
   if (history.length < minimumQuestions || missingCoreRequirements(history, requirements).length ||
       !mockCategoryCoverage(history)) return null;
-  const error = standardError(history, ability);
+  const error = standardError(evidence, ability);
   if (ability - CONFIDENCE_Z * error > PASS_THRESHOLD) return 'PASS';
   if (ability + CONFIDENCE_Z * error < PASS_THRESHOLD) return 'FAIL';
   if (history.length >= maximumQuestions) return ability >= PASS_THRESHOLD ? 'PASS' : 'FAIL';
@@ -144,7 +185,7 @@ export function pickNextQuestion(bank, history, profile, ability, requirements, 
   const isMock = profile?.mode === 'mock' || profile?.mode === 'assessment';
   const available = bank.filter(item => {
     if (usedIds.has(item.item_id || item.id)) return false;
-    if (isMock && item.item_type === 'casestudy' && history.length + (item.case_length || 0) > maximumMockQuestions) return false;
+    if ((isMock || profile?.scoringModel === 'in-house-ngn-v1') && item.item_type === 'casestudy' && history.length + (item.case_length || 0) > maximumMockQuestions) return false;
     return true;
   });
   if (!available.length) return null;

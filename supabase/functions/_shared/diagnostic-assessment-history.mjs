@@ -1,6 +1,9 @@
 // Use only on the server, with the student ID resolved from the authenticated user.
 export async function previouslyAnsweredItemIds(service, studentId, keys, currentAttemptId = null) {
   const byId = new Map(keys.map(item => [item.item_id, item]));
+  keys.filter(item => item.ngn_entry?.kind === 'case').forEach(item => {
+    item.ngn_entry.items.forEach(child => byId.set(`${item.item_id}:${child.id}`, { parent_item_id: item.item_id }));
+  });
   const answeredIds = new Set();
   const pageSize = 500;
   for (let offset = 0; ; offset += pageSize) {

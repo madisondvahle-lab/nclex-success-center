@@ -15,6 +15,7 @@
     if (!sessionKey) throw new Error('Assessment session key is required');
     const data = await invokeAssessment(supabase, {
       action: 'start',
+      mode: profile.mode,
       sessionKey,
       profile
     });
@@ -24,6 +25,7 @@
     return {
       ...data.attempt,
       currentItemId: data.currentItemId,
+      currentItem: data.currentItem || null,
       responses: data.responses || []
     };
   }
@@ -63,6 +65,7 @@
     return {
       ...data.attempt,
       currentItemId: data.currentItemId,
+      currentItem: data.currentItem || null,
       responses: data.responses || []
     };
   }

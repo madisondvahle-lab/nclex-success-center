@@ -320,6 +320,8 @@
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script src="practice-review-data.js"></script>
+  <script src="ngn-scoring.js"></script>
+  <script src="exam-ui.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -916,7 +918,7 @@
         </section>`;
       const breakdownHtml=isSwmCat?`
         <div style="display:grid;gap:16px;margin-bottom:18px;padding:14px;background:var(--soft)">
-          <div><strong>SWM-CAT section breakdown</strong><p class="muted" style="margin:4px 0 0">Percent correct by section. Small samples are less stable.</p></div>
+          <div><strong>SWM-CAT section breakdown</strong><p class="muted" style="margin:4px 0 0">Percent fully correct by section, not percentage of NGN points earned. Small samples are less stable.</p></div>
           ${breakdownGroup('Client Needs',clientNeeds,NCLEXCats.NAMES)}
           ${breakdownGroup('Blueprint areas',blueprints)}
         </div>`:'';
@@ -926,35 +928,37 @@
         itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this attempt).</p>';
       }else{
         itemsHtml=shownResponses.map(r=>{
-          const bankItem=findAuthoritativeItem(r.item_id);
+          const bankItem=r.interaction||findAuthoritativeItem(r.item_id);
           const isCorrect=Boolean(r.is_correct);
           const qNum=responses.indexOf(r)+1;
           const category=r.nclex_category||r.blueprint||bankItem?.category||bankItem?.blueprint||'';
           const topic=r.topic||bankItem?.topic||'';
           const diff=r.difficulty||bankItem?.difficulty||'';
           const qType=r.question_type||bankItem?.type||'';
-          const stem=bankItem?.stem||null;
+          const stem=bankItem?.prompt||bankItem?.stem||null;
           const rationale=getRationaleText(r.rationale);
-          const optionsHtml=bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
+          const optionsHtml=r.interaction?ExamUI.reviewHtml(r.interaction,r.selected_answer):bankItem?renderOptionsList(bankItem,r.selected_answer,r.correct_answer):'';
 
           return `<article class="review-item ${isCorrect?'item-correct':'item-missed'}">
             <div class="review-item-header">
               <div class="review-item-title">
                 <span class="review-item-num">Q${qNum}</span>
-                <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${isCorrect?'✓ Correct':'✗ Missed'}</span>
+                <span class="review-badge ${isCorrect?'badge-correct':'badge-missed'}">${r.credit?`${r.credit.earned}/${r.credit.max} points`:isCorrect?'✓ Correct':'✗ Missed'}</span>
                 <strong>${esc(r.item_id)}</strong>
                 ${qType?`<span class="focus-pill">${esc(String(qType).toUpperCase())}</span>`:''}
                 ${diff?`<span class="focus-pill">Diff: ${esc(diff)}</span>`:''}
               </div>
               ${category?`<div class="review-item-meta">${esc(category)}${topic?` · ${esc(topic)}`:''}</div>`:''}
             </div>
-            <div class="review-answers">
+            ${r.credit?`<p>Scoring: ${esc(r.credit.rule)} · ${esc(r.scoringVersion)}${r.caseLength>1?` · Case item ${r.caseIndex+1} of ${r.caseLength}`:''}. Points are separate from the educational adaptive estimate; dependent case questions form one evidence unit.</p>`:''}
+            ${r.interaction?'':`<div class="review-answers">
               ${!isCorrect?`<div class="review-ans ans-selected"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)}</div>`:''}
               <div class="review-ans ans-correct"><strong>Correct answer:</strong> ${formatAnswerDisplay(r.correct_answer,bankItem)}</div>
               ${isCorrect&&r.selected_answer!==null&&r.selected_answer!==undefined?`<div class="review-ans ans-selected-correct"><strong>Student selected:</strong> ${formatAnswerDisplay(r.selected_answer,bankItem)} (Correct)</div>`:''}
-            </div>
+            </div>`}
             ${stem?`<div class="review-stem"><strong>Question:</strong> ${esc(stem)}</div>`:'<p class="muted review-constraint-note">Question stem not indexed in connected bank. Stored response metadata shown above.</p>'}
             ${optionsHtml}
+            ${r.contentVersion?`<p class="muted">Content version: ${esc(r.contentVersion)}</p>`:''}
             ${rationale?`<div class="review-rationale"><strong>Rationale:</strong> ${esc(rationale)}</div>`:'<p class="muted review-constraint-note">Clinical rationale not indexed in connected bank. Stored response metadata shown above.</p>'}
           </article>`;
         }).join('');
@@ -962,6 +966,7 @@
 
       container.innerHTML=`
         ${breakdownHtml}
+        ${responses.some(r=>r.scoringModel==='in-house-ngn-v1')?`<p><strong>Educational scoring model: in-house-ngn-v1.</strong> NGN points: ${responses.reduce((s,r)=>s+(r.credit?.earned||0),0)} / ${responses.reduce((s,r)=>s+(r.credit?.max||0),0)}. Points are separate from ability; a case is one dependent evidence group, and partial credit cannot create early-stop confidence. This is not an official NCLEX prediction.</p>`:''}
         <div class="review-toolbar">
           <button type="button" class="review-filter-btn ${filter==='missed'?'active':''}" data-attempt-filter="missed" data-attempt-id="${esc(attemptId)}">Missed only (${missedCount})</button>
           <button type="button" class="review-filter-btn ${filter==='all'?'active':''}" data-attempt-filter="all" data-attempt-id="${esc(attemptId)}">All questions (${totalCount})</button>

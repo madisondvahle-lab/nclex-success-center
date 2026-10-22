@@ -6,13 +6,15 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const context = { window: {}, crypto: { randomUUID }, console };
+vm.runInNewContext(readFileSync(join(__dirname, '..', 'ngn-scoring.js'), 'utf8'), context);
+context.window.NGNScoring = context.NGNScoring;
 for (const file of ['exam-ui.js', 'ngn-author.js']) {
   vm.runInNewContext(readFileSync(join(__dirname, '..', file), 'utf8'), context);
 }
 const { Exam, prepare, score, reviewHtml } = context.window.ExamUI;
 const { validate, blank } = context.window.NGNAuthor;
 const plain = value => JSON.parse(JSON.stringify(value));
-const item = (type, extra = {}) => ({ ...plain(blank(type)), stem: 'Test prompt', rationale: 'Test explanation', ...extra });
+const item = (type, extra = {}) => ({ ...plain(blank(type)), scoringVersion: undefined, stem: 'Test prompt', rationale: 'Test explanation', ...extra });
 const tabs = [
   { id: 'notes', label: 'Notes', columns: ['Finding'], entries: [
     { at: '2026-10-21T10:00', fromItem: 2, cells: [{ id: 'later', t: 'Later finding' }] },
@@ -154,6 +156,7 @@ test('author rejects invalid keys, duplicate IDs, missing rationale, and hidden 
 });
 test('single-selection matrix replaces the response in its row without disturbing other rows', () => {
   const e = engine(item('matrix', { responseMode: 'single' }), ['0:0', '1:0']);
+  e.o = {};
   e.onChange({ target: { dataset: { r: '0', c: '1' }, checked: true } });
   assert.deepEqual(plain(e.ans[0]), ['1:0', '0:1']);
 });
@@ -163,6 +166,7 @@ test('locked answers and ordinary browser text selection cannot alter recorded h
   e.onClick({ target, detail: 1 });
   assert.deepEqual(e.ans[0], ['early']);
   e.checked[0] = false;
+  e.o = {};
   e.highlightStart = { x: 0, y: 0 };
   context.window.getSelection = () => ({ toString: () => 'ordinary selection' });
   e.onClick({ target, detail: 1, clientX: 20, clientY: 0 });
@@ -195,7 +199,7 @@ test('all form editors mount, preserve structured charts, and validate without a
   }
   const root = new Element('div');
   const ready = { ...highlight, tabs: [{ ...plain(tabs[0]), entries: [plain(tabs[0].entries[1])] }] };
-  assert.deepEqual(plain(context.window.NGNAuthor.mount(root, ready).read()), ready);
+  assert.deepEqual(plain(context.window.NGNAuthor.mount(root, ready).read()), plain(ready));
   const choices = new Element('div');
   const choiceEditor = context.window.NGNAuthor.mount(choices, item('sata', { options: ['A', 'B', 'C'], correct: [2] }));
   const firstOption = walk(choices).find(el => el.tag === 'fieldset' && el.children.some(c => c.tag === 'legend' && c.textContent === 'Answer option 1'));
@@ -207,4 +211,10 @@ test('all form editors mount, preserve structured charts, and validate without a
   firstRow.children.find(el => el.tag === 'button' && el.textContent === 'Remove').onclick();
   assert.deepEqual(plain(matrixEditor.read().correct), ['0:1']);
   delete context.document;
+});
+test('versioned previews require a complete valid interaction before checking it', () => {
+  const it = { ...plain(blank('bowtie')), stem: 'Test', rationale: 'Test' };
+  assert.equal(context.window.ExamUI.isAnswered(it, [0, null, 0, null, null]), false);
+  assert.equal(context.window.ExamUI.isAnswered(it, [0, 1, 0, 0, 1]), true);
+  assert.equal(context.window.ExamUI.isAnswered({ ...plain(blank('fill')), correct: 2 }, '2junk'), false);
 });
