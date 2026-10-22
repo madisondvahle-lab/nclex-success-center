@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Question Bank Review · Study With Madison</title>
+  <link rel="stylesheet" href="exam-ui.css">
+  <link rel="stylesheet" href="ngn-author.css">
   <style>
     :root{
       --admin-navy:#17344f;
@@ -817,6 +819,10 @@
         <div class="tab-pane" id="pane-import" role="tabpanel" aria-labelledby="tab-btn-import">
           <div class="import-stack">
             <div class="notice">“Import as draft” stores a copy privately in the master bank but does not make it available to students. Use this for items you want to edit or quality-check before publishing.</div>
+            <section class="dashboard-panel">
+              <div class="panel-heading"><div><h2>Create an interactive question</h2><p>Build an NGN question or unfolding case with forms and a student preview. Saving creates an inactive draft only; review and publishing are separate actions.</p></div></div>
+              <div class="panel-content"><label for="ngn-new-type">Question type</label><select id="ngn-new-type"><option value="sata">Multiple response / SATA</option><option value="highlight">Highlight findings</option><option value="matrix">Matrix / grid</option><option value="cloze">Drop-down cloze</option><option value="bowtie">Bow-tie</option><option value="case">Unfolding case</option><option value="fill">Numeric response</option></select> <button type="button" class="button" id="ngn-new">Create private draft</button></div>
+            </section>
 
             <!-- Controlled Intake -->
             <section class="dashboard-panel" id="bulk-import">
@@ -885,6 +891,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="question-audit-panel.js"></script>
+  <script src="exam-ui.js"></script>
+  <script src="ngn-author.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1194,26 +1202,49 @@
       const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';
       let opts='';
       if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}
-      else if(type==='sata'&&data&&data.options){opts=`<label>Answer options (tick every correct one)</label>${data.options.map((o,i)=>`<div class="opt"><input type="checkbox" class="e-sata" data-i="${i}" ${(data.correct||[]).includes(i)?'checked':''} aria-label="Correct option ${i+1}"><input type="text" class="e-sopt" value="${esc(o)}" required></div>`).join('')}`}
-      else{opts=`<p class="notice" style="margin-top:14px">This is a ${esc(TYPE_NAME[type]||type)} item. Its layout and answer key are managed as a unit, so you can edit the wording and tags here but not the structure.</p>`}
+      else{opts='<div id="e-ngn"></div>'}
       $('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;
       $('ed').classList.remove('hidden');
+      const form=$('ed-form');
+      form.ngnAuthor=null;form.ngnMetadata=null;
+      if(type!=='mcq'){
+        try{
+          if(!data)throw new Error('This existing question is missing its interaction data. Its answer key cannot be reconstructed automatically.');
+          const source={...data,stem:q.stem||'',rationale:q.rationale||''};
+          form.ngnAuthor=NGNAuthor.mount($('e-ngn'),source,()=>({stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim(),...(type==='case'?{title:$('e-stem').value.trim()}:{})}));
+        }catch(error){
+          $('e-ngn').textContent=`Cannot edit this interaction safely: ${error.message||error}`;
+          form.querySelector('button[type="submit"]').disabled=true;
+        }
+      }
       $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
       $('ed-form').onsubmit=async ev=>{
         ev.preventDefault();
         const row={stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim()||null,topic:$('e-topic').value.trim()||null,nclex_category:$('e-cat').value.trim()||null,difficulty:$('e-dif').value};
         if(type==='mcq'){L.forEach(l=>row['option_'+l]=$('e-'+l).value.trim());row.correct_answer=document.querySelector('[name=e-ans]:checked').value}
         let nd=data?JSON.parse(JSON.stringify(data)):null;
-        if(type==='sata'&&nd){
-          const boxes=[...document.querySelectorAll('.e-sata')];
-          if(!boxes.some(b=>b.checked)){alert('Tick at least one correct option.');return}
-          nd.options=[...document.querySelectorAll('.e-sopt')].map(i=>i.value.trim());
-          nd.correct=boxes.map((b,i)=>b.checked?i:-1).filter(i=>i>=0);
-        }
+        try{if(form.ngnAuthor)nd=form.ngnAuthor.read();if(form.ngnMetadata)Object.assign(row,form.ngnMetadata.read())}catch(error){alert(error.message);return}
         if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;row.item_data=nd}
-        const r=await db.from('questions').update(row).eq('id',id);
-        if(r.error){alert(r.error.message);return}
-        Object.assign(q,row);
+        const save=form.querySelector('button[type="submit"]');if(save.disabled)return;
+        save.disabled=true;
+        try{
+          if(id){
+            const r=await db.from('questions').update(row).eq('id',id);
+            if(r.error)throw r.error;
+            Object.assign(q,row);
+          }else{
+            if(!row.stem||!row.rationale||!row.topic||!row.nclex_category||!row.clinical_judgment_skill)throw new Error('Add question text, rationale, topic, NCLEX category, and clinical judgment skill before saving.');
+            if(exactMatch(row))throw new Error('A question with the same wording already exists. Open the existing question or correction draft instead of creating a duplicate.');
+            const sourceKey=`qbank-bulk-${crypto.randomUUID()}-authored`;
+            const r=await db.from('questions').insert({...row,active:false,is_ngn:true,item_type:type,source_key:sourceKey}).select(QUESTION_COLUMNS).single();
+            if(r.error)throw r.error;
+            live.unshift(r.data);
+            // Retain the inserted ID before tracking so retrying cannot create a duplicate draft.
+            id=r.data.id;Object.assign(q,r.data);
+            try{await saveReview(sourceKey,'draft',id)}catch(error){alert(`The inactive draft was saved, but review tracking failed: ${error.message||error}. Do not create it again; reopen it from Manage questions.`)}
+          }
+        }catch(error){alert(error.message||'Could not save the question. Your edits remain open.');return}
+        finally{save.disabled=false}
         $('ed').classList.add('hidden');
         render();renderManage();
       }
@@ -1229,7 +1260,7 @@
         openEdit(id);
         if(question.source_key?.startsWith('qbank-bulk-')&&reviews.get(question.source_key)?.status==='approved'){
           const save=$('ed-form').onsubmit;
-          $('ed-form').onsubmit=async event=>{try{await saveReview(question.source_key,'draft',question.id)}catch(error){alert(`Could not reset approval: ${error.message||error}`);return}await save(event)};
+          $('ed-form').onsubmit=async event=>{event.preventDefault();try{await saveReview(question.source_key,'draft',question.id)}catch(error){alert(`Could not reset approval: ${error.message||error}`);return}await save(event)};
         }
       }
     }
@@ -1248,6 +1279,11 @@
       form.querySelector('button[type="submit"]').textContent='Save correction draft';
       const fields=document.createElement('div');
       fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(editable.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(editable.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(editable.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(editable.item_data||{},null,2))}</textarea>`}`;
+      if(globalThis.NGNAuthor){
+        fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea>`;
+        const metadata=document.createElement('div');fields.appendChild(metadata);
+        form.ngnMetadata=NGNAuthor.metadata(metadata,editable);
+      }
       form.querySelector('.buttons').before(fields);
       form.onsubmit=async event=>{
         event.preventDefault();
@@ -1256,6 +1292,11 @@
         if(!$('e-rat').value.trim()){alert('A correction must include its full rationale.');return}
         let optionRationales,references,itemData=editable.item_data?JSON.parse(JSON.stringify(editable.item_data)):null;
         try{
+          if(form.ngnMetadata){
+            const metadata=form.ngnMetadata.read();
+            optionRationales=metadata.option_rationales;references=metadata.reference_list;
+            if(form.ngnAuthor)itemData=form.ngnAuthor.read();
+          }else{
           try{optionRationales=JSON.parse($('e-option-rationales').value)}catch(parseError){throw new Error(`Option rationales: ${parseError.message}`)}
           try{references=JSON.parse($('e-reference-list').value)}catch(parseError){throw new Error(`References: ${parseError.message}`)}
           if(!optionRationales||typeof optionRationales!=='object'||Array.isArray(optionRationales))throw new Error('Option rationales must be a JSON object.');
@@ -1263,6 +1304,7 @@
           if(type!=='mcq'){
             try{itemData=JSON.parse($('e-item-data').value)}catch(parseError){throw new Error(`NGN interaction/scoring data: ${parseError.message}`)}
             if(!itemData||typeof itemData!=='object'||Array.isArray(itemData)||!Object.keys(itemData).length)throw new Error('NGN interaction data must be a non-empty JSON object.');
+          }
           }
         }catch(error){alert(error.message||'Check the metadata JSON.');return}
         const proposed={
@@ -1272,7 +1314,7 @@
           module_key:editable.module_key??null,nclex_category:$('e-cat').value.trim()||null,
           nclex_sub:editable.nclex_sub??null,topic:$('e-topic').value.trim()||null,
           difficulty:$('e-dif').value,is_ngn:editable.is_ngn??type!=='mcq',item_type:type,
-          item_data:itemData,clinical_judgment_skill:$('e-cj').value.trim()||null,
+          item_data:itemData,clinical_judgment_skill:form.ngnMetadata?form.ngnMetadata.read().clinical_judgment_skill:$('e-cj').value.trim()||null,
           option_rationales:optionRationales,reference_list:references
         };
         if(type==='mcq'){
@@ -1280,7 +1322,7 @@
           const correct=form.querySelector('[name="e-ans"]:checked');
           if(!correct){alert('Select the correct answer.');return}
           proposed.correct_answer=correct.value;
-        }else if(type==='sata'&&itemData?.options){
+        }else if(type==='sata'&&itemData?.options&&!form.ngnAuthor){
           const checks=[...form.querySelectorAll('.e-sata')],answers=[...form.querySelectorAll('.e-sopt')];
           if(!checks.some(check=>check.checked)){alert('Select at least one correct option.');return}
           itemData.options=answers.map(input=>input.value.trim());
@@ -1625,6 +1667,18 @@
       });
       $('quick-btn-dup').addEventListener('click',()=>switchTab('duplicates'));
       $('quick-btn-review').addEventListener('click',()=>switchTab('review'));
+      $('ngn-new').addEventListener('click',()=>{
+        if(!bulkImportReady){alert('Run supabase-question-bulk-import.sql before creating NGN drafts.');return}
+        const type=$('ngn-new-type').value;
+        openEdit(null,{stem:'',rationale:'',item_type:type,item_data:NGNAuthor.blank(type),difficulty:'medium'});
+        const form=$('ed-form');
+        form.querySelector('h2').textContent='Create interactive question';
+        form.querySelector('.intro').textContent='Save as an inactive draft. Clinical review and publishing remain separate actions. Use the student preview to verify the chart, interactions, and scoring.';
+        form.querySelector('button[type="submit"]').textContent='Save inactive draft';
+        const metadata=document.createElement('div');
+        form.querySelector('.buttons').before(metadata);
+        form.ngnMetadata=NGNAuthor.metadata(metadata,{});
+      });
 
       // Metric card click-to-filter / tab handlers
       document.querySelectorAll('.metric').forEach(metric=>{

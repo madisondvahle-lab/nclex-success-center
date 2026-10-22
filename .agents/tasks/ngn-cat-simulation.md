@@ -248,8 +248,10 @@ official CAT decision. Keep this as an educational simulation.
 The timer/results increment is implemented. The answer-key protection work is
 implemented in the repository but is **not deployed or live-tested**. Apply the
 private SQL migration and deploy the Edge Function before relying on the new
-flow. Sequential six-item NGN case delivery and additional response formats
-remain future work. No clinical-content changes have been made.
+flow. Integration of sequential six-item NGN case delivery and additional
+response formats into the server-scored CAT remains required Phase 2 work.
+See the October 21 Phase 1 implementation below. No clinical-content changes
+have been made.
 
 ## Implementation progress
 
@@ -311,3 +313,151 @@ remain future work. No clinical-content changes have been made.
   `supabase/functions/diagnostic-assessment/` with the Supabase CLI. Do not
   commit answer keys into a published asset or infer successful deployment
   from local validation.
+
+## Interactive NGN: required two-phase delivery
+
+The owner confirmed on October 21, 2026 that CAT integration is an essential
+part of the project, not an optional enhancement. Phase 1 extends the shared
+exam engine and existing question-bank authoring only. Phase 2 must integrate
+the same interactions into the protected, server-scored CAT. Do not change CAT
+behavior or student records as part of Phase 1.
+
+### Phase 1 implementation
+
+- `exam-ui.js` / `exam-ui.css`: structured clinical record tabs for every
+  supported response type, chronological entries, per-entry case-stage
+  disclosure, and clickable chart findings linked to highlight responses.
+  Switching tabs replaces only the chart pane, leaving answer controls,
+  responses, and question progress intact. Earlier records remain available
+  at later case stages; future records are hidden at earlier stages.
+- Existing highlight notes, matrix, cloze, bow-tie, MCQ/SATA, numeric response,
+  and sequential case support are reused. Matrix questions can optionally
+  enforce one selection per row. Highlight findings are native buttons with
+  visible selection state and keyboard support; ordinary text selection is
+  not an answer. Checked responses are locked while chart tabs remain usable.
+- `ngn-author.js` / `ngn-author.css` extend the existing private
+  `question-bank-review.html` editor, not a separate administration system.
+  Interaction data, chart entries, selectable cells, keys, scoring choice,
+  references, and rationales use forms. Preview uses the actual shared engine,
+  with correctness and rationales appearing only after Check answer.
+- New items save as inactive drafts under the existing import-review workflow.
+  Existing published/numbered questions still use correction drafts and
+  separate approval/application. No automatic publication.
+- Legacy HTML charts and existing answer shapes remain supported. Existing
+  partial-credit calculations remain the default. Authors may explicitly
+  choose whole-item all-or-nothing scoring; no existing key or scoring setting
+  is automatically changed. Set-based responses are deduplicated before
+  scoring, and an empty answer key raises an error instead of producing NaN.
+- There are no new AI calls, services, dependencies, migrations, CAT edits,
+  or assessment-history updates. Student practice adapters that currently
+  accept only MCQ/SATA have not been expanded into a new NGN delivery path.
+  Phase 1 enables the shared renderer and author/student preview; it does not
+  make newly authored NGN items appear in the CAT.
+
+### Authoring workflow
+
+1. Open Question Bank Review, then Intake & Legacy, then **Create an interactive
+   question**. Choose its type. Existing questions use their existing Edit
+   button, including the correction-draft safeguards.
+2. Add chart tabs and headings, then timestamped entries. Each entry needs one
+   cell per heading. Use a full date/time and an **Available from item** number.
+   Standalone questions use item 1; case numbers refer to the child sequence.
+3. For chart highlighting, assign an ID with **Assign selectable finding ID**
+   on each eligible cell. In the highlight question, enable chart selection,
+   use **Choose a selectable chart cell**, and tick the correct findings.
+   Students only see cells linked to that particular question as selectable.
+   Both correct and incorrect eligible findings must be included; correctness
+   is never styled before the answer is checked. Separate highlight notes
+   use finding segments, with blank IDs for nonselectable text.
+4. Set answer keys and rationales. Matrix keys use a checkbox answer grid;
+   refresh it after editing row/column wording. Cloze uses numbered sentence
+   markers such as `{{0}}`, with ordinary form fields for choices. Bow-tie
+   keys use one-based choice numbers for two actions, one condition, and two
+   monitoring parameters. No JSON entry is required.
+5. Preview as student, select answers, switch tabs, advance case questions,
+   and check scoring/rationales. Then save the inactive draft. Review,
+   approval/application, and publication remain explicit existing actions.
+
+### Shared data contract for Phase 2 reuse
+
+Use the current `item_data` structures, not a second chart/question schema.
+Newly authored entries carry `schemaVersion: 1` and `textFormat: 'plain'`.
+Versionless legacy entries retain their existing rendering and meaning.
+
+- A standalone item has its existing `id`, `type`, `stem`, response-specific
+  fields and optional `tabs`. A case keeps `kind: 'case'`, its existing parent
+  `id`, `scenario`, shared `tabs`, and ordered `items` with stable child IDs.
+- A structured tab has `id`, `label`, optional `fromItem`, `columns: string[]`,
+  and `entries: [{ at, fromItem?, cells: [{ t, id? }] }]`. `at` is an ISO local
+  date/time for the fictional clinical record, not the student's clock.
+  `fromItem` is one-based and defaults to 1. Entries are shown chronologically
+  only when both tab and entry release stages are available. Legacy
+  `{ id, label, html, fromItem? }` tabs are preserved without conversion.
+- A highlight item keeps `segments: [{ id?, t, correct?, rationale? }]`.
+  `chartSelections: true` links segment IDs to chart-cell IDs instead of
+  rendering a second copy in the answer pane. IDs must be unique and match
+  available cell text at that stage. Unlinked cells are read-only.
+- Answers remain: MCQ index; SATA index array; matrix `"row:column"` array
+  (zero-based); cloze choice-index array with nulls; highlight finding-ID
+  array; bow-tie five-slot index/null array; numeric entry string.
+- Matrix `responseMode: 'single'` is optional; omission preserves multiple
+  selections. Optional `scoring: 'zero-one'` requests whole-item all-or-nothing;
+  omission preserves the existing type-specific partial-credit behavior.
+  This is an educational scoring contract, not a claim of official NCLEX
+  scoring equivalence. Clinically meaningful scoring/key changes require review.
+
+### Phase 2 requirements (required; not implemented in Phase 1)
+
+1. **Private bank and eligibility:** make reviewed NGN items available to the
+   existing server selection engine through its protected item/key inventory.
+   Respect active/review status, Client Needs/blueprint coverage, difficulty,
+   exposure history, and current-attempt duplicate prevention. Keep cases
+   whole, preserve parent/child IDs and order, and reserve their required item
+   counts. Do not generate or silently rewrite clinical content to fill gaps.
+2. **Sequential disclosure:** deliver only the current case item and records
+   released through its authorized stage. Do not send future entries in the
+   student payload and merely hide them with CSS. The server owns stage
+   advancement; submitted CAT answers cannot be revisited or changed.
+   Reuse the chart/answer renderer with a CAT navigation policy, not the
+   shared practice engine's Previous/Navigator/instant-feedback behavior.
+3. **Server scoring:** extract/reuse deterministic type-specific scoring in a
+   browser/server-compatible module; do not trust client correctness or
+   credit. Validate type, answer IDs/indexes, cardinality, duplicates, row
+   limits and allowed values against the private versioned item. Review which
+   official-style zero/one, plus/minus, and rationale/dependency rules each
+   approved format actually requires; current educational partial credit is
+   not automatic authorization for a new CAT scoring model.
+4. **Adaptive difficulty:** define how earned/max credit, case dependence,
+   and item difficulty update the existing ability estimate, stopping rules,
+   and category reporting. Preserve current binary-item behavior through
+   regression tests. Do not treat six dependent case questions as calibrated,
+   independent items or imply official CAT equivalence. Document any new
+   model and obtain approval before changing assessment behavior.
+5. **Responses and resume:** use the existing authenticated answer/checkpoint
+   endpoint and atomic persistence. Save original response shape, stable item
+   and case identifiers, content/scoring version, authorized stage, and
+   earned/max credit without replacing original response data. Resume must
+   restore incomplete responses, disclosure stage, timer/accommodation state
+   and applicable tab state without exposing future records or answer keys.
+   Reject stale/replayed submissions and invalid case advancement.
+6. **History and review:** add compatible item-format/partial-credit rendering
+   to completed student and tutor reviews and existing assessment summaries.
+   Preserve historical scores, attempts, assignments, UUIDs, and answer keys.
+   Define reporting denominators and case counts explicitly. No backfills,
+   historical recalculation, or schema changes without separate approval.
+7. **Safety and release gates:** preserve Auth/RLS/private key storage and
+   withhold correct answers, rationales, abnormality cues and future entries
+   until authorized review. Do not send author-only metadata in active CAT
+   payloads. Add shared scoring fixtures, malicious/invalid answer tests,
+   selection/blueprint/case-boundary tests, resume/replay tests, and
+   authenticated student/tutor end-to-end tests. Verify legacy attempts
+   unchanged. Pilot reviewed content before broad availability; deployment
+   and clinical publishing require separate authorization.
+
+Phase 1 validation includes focused Node tests for scoring, disclosure,
+legacy compatibility, form mounting/validation and existing correction drafts.
+Local browser checks cover tab/answer preservation, chronological unfolding,
+keyboard highlight selection, checked feedback, narrow-screen navigation, and
+the real author/editor preview and inactive-draft save using a mock database.
+No authenticated Supabase write, clinical publication, or deployment was
+performed; live authoring and database permissions remain deployment checks.

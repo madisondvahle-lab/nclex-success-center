@@ -53,7 +53,7 @@
     bank.forEach(entry => {
       if (entry.kind === 'case') {
         const total = entry.items.length;
-        const cs = { id: entry.id, title: entry.title, scenario: entry.scenario, tabs: entry.tabs, banner: entry.banner, total };
+        const cs = { id: entry.id, title: entry.title, scenario: entry.scenario, textFormat: entry.textFormat, tabs: entry.tabs, banner: entry.banner, total };
         entry.items.forEach((it, idx) => {
           out.push(Object.assign({ category: entry.category, topic: entry.topic, difficulty: entry.difficulty, ngn: true }, it, { qid: it.id, case: cs, caseIndex: idx }));
         });
@@ -74,6 +74,8 @@
   }
 
   function setScore(chosen, correct) {
+    chosen = [...new Set(chosen)];
+    if (!correct.length) throw new Error('This interaction has no correct answers configured.');
     const hits = chosen.filter(x => correct.includes(x)).length;
     const wrong = chosen.length - hits;
     const score = Math.max(0, (hits - wrong) / correct.length);
@@ -82,6 +84,10 @@
 
   // Returns { score: 0..1, full: bool } for one item.
   function score(it, a) {
+    if (it.scoring === 'zero-one') {
+      const result = score(Object.assign({}, it, { scoring: undefined }), a);
+      return { score: result.full ? 1 : 0, full: result.full };
+    }
     switch (it.type) {
       case 'mcq': { const ok = a !== null && it.correct[0] === a; return { score: ok ? 1 : 0, full: ok }; }
       case 'sata': return setScore(a, it.correct);
@@ -91,7 +97,7 @@
         return { score: ok ? 1 : 0, full: ok };
       }
       case 'matrix': return setScore(a, it.correct);
-      case 'highlight': return setScore(a, it.segments.filter(s => s.correct).map(s => s.id));
+      case 'highlight': return setScore(a, it.segments.filter(s => s.id && s.correct).map(s => s.id));
       case 'bowtie': {
         // a = [action, action, condition, complication, complication]; the two actions and the two complications may be placed in either slot.
         const c = it.correct, uniq = x => [...new Set(x.filter(v => v !== null))];
@@ -152,9 +158,10 @@
     }
     if (it.type === 'highlight') return '<ul class="ex-rv">' + it.segments.filter(s => s.id).map(s => {
       const isC = !!s.correct, isS = a.includes(s.id);
-      if (isC && isS) return li('good', '✓', esc(s.t));
-      if (isC) return li('miss', '○', esc(s.t) + ' <em>(missed)</em>');
-      if (isS) return li('bad', '✗', esc(s.t) + ' <em>(highlighted, not an indicator)</em>');
+      const rationale = s.rationale ? ' — ' + esc(s.rationale) : '';
+      if (isC && isS) return li('good', '✓', esc(s.t) + rationale);
+      if (isC) return li('miss', '○', esc(s.t) + ' <em>(missed)</em>' + rationale);
+      if (isS) return li('bad', '✗', esc(s.t) + ' <em>(highlighted, not an indicator)</em>' + rationale);
       return '';
     }).join('') + '</ul>';
     return '';
@@ -196,9 +203,15 @@
       this.app.addEventListener('click', e => this.onClick(e));
       this.app.addEventListener('change', e => this.onChange(e));
       this.app.addEventListener('input', e => this.onInput(e));
+      this.app.addEventListener('keydown', e => {
+        if (e.target.matches('[data-h]') && (e.key === ' ' || e.key === 'Enter')) {
+          e.preventDefault(); e.target.click();
+        }
+      });
       this.app.addEventListener('contextmenu', e => { const row = e.target.closest('.ex-opt[data-i]'); if (row && !row.closest('.ex-matrix')) { e.preventDefault(); this.toggleStrike(+row.dataset.i); } });
       let pressTimer = null;
       this.app.addEventListener('pointerdown', e => {
+        this.highlightStart = e.target.closest('[data-h]') ? { x: e.clientX, y: e.clientY } : null;
         const row = e.target.closest('.ex-opt[data-i]');
         if (row && e.pointerType === 'touch') pressTimer = setTimeout(() => { this.toggleStrike(+row.dataset.i); pressTimer = null; }, 550);
       });
@@ -231,11 +244,11 @@
       const nx = this.root.querySelector('[data-a=next]'), last = i === this.items.length - 1;
       nx.innerHTML = this.o.instant && !this.checked[i] ? 'Check answer ▶' : last ? 'Finish ▶' : 'Next ▶';
       this.paintClock();
-      this.renderMark(); this.main.className = 'ex-main' + (it.case ? ' split' : '');
-      if (it.type === 'bowtie') this.btab = this.btab || {};
-      const body = it.type === 'bowtie' ? this.bowtieLeft(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : it.case ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
+      this.renderMark(); this.main.className = 'ex-main' + (it.case || it.tabs?.length || it.type === 'bowtie' ? ' split' : '');
+      const body = it.case || it.tabs?.length || it.type === 'bowtie' ? this.leftPane(it) + `<section class="ex-pane ex-right">${this.answerUi(it)}</section>` : `<section class="ex-pane">${this.answerUi(it)}</section>`;
       this.main.innerHTML = body; this.main.scrollTop = 0;
       this.main.classList.toggle('locked', !!this.checked[i]);
+      if (this.checked[i]) this.main.querySelectorAll('input, select, [data-h], [data-slot], [data-choice]').forEach(el => { el.disabled = true; });
       if (this.checked[i]) this.main.querySelector('.ex-pane:last-child').insertAdjacentHTML('beforeend', this.feedbackHtml(it, i));
       this.main.querySelectorAll('.ex-pane').forEach(p => p.scrollTop = 0);
     }
@@ -252,24 +265,32 @@
       b.querySelector('.ex-mark-l').textContent = this.marked[this.i] ? 'Marked' : 'Mark for Review';
     }
 
-    leftPane(it) {
-      const c = it.case, n = it.caseIndex + 1;
-      const tabs = c.tabs.filter(t => (t.fromItem || 1) <= n);
-      let active = this.tab[c.id]; if (!tabs.some(t => t.id === active)) active = tabs[0].id;
-      this.tab[c.id] = active;
-      return `<section class="ex-pane ex-left">
-        ${n === 1 ? `<div class="ex-banner">${c.banner || `The following scenario applies to the next <b>${c.total}</b> items.`}</div>` : ''}
-        <p class="ex-item-no">Item ${n} of ${c.total}</p><p class="ex-scenario">${c.scenario}</p>
-        <div class="ex-tabs" role="tablist">${tabs.map(t => `<button class="ex-tab" role="tab" data-tab="${t.id}" aria-selected="${t.id === active}">${esc(t.label)}</button>`).join('')}</div>
-        <div class="ex-tabpanel" role="tabpanel">${tabs.find(t => t.id === active).html}</div></section>`;
+    findingHtml(cell) {
+      if (typeof cell === 'string') return esc(cell);
+      const selectable = this.it.type === 'highlight' && this.it.segments.some(s => s.id === cell.id && cell.id);
+      if (!selectable) return esc(cell.t);
+      const selected = this.ans[this.i].includes(cell.id);
+      return `<button type="button" class="seg${selected ? ' on' : ''}" data-h="${esc(cell.id)}" aria-pressed="${selected}"${this.checked[this.i] ? ' disabled' : ''}>${esc(cell.t)}</button>`;
     }
 
-    bowtieLeft(it) {
-      const tabs = it.tabs || [{ id: 't', label: 'Notes', html: '' }];
-      let active = this.btab[it.qid]; if (!tabs.some(t => t.id === active)) active = tabs[0].id; this.btab[it.qid] = active;
-      return `<section class="ex-pane ex-left"><p class="ex-scenario">${it.stem}</p>
-        <div class="ex-tabs" role="tablist">${tabs.map(t => `<button class="ex-tab" role="tab" data-btab="${t.id}" aria-selected="${t.id === active}">${esc(t.label)}</button>`).join('')}</div>
-        <div class="ex-tabpanel" role="tabpanel">${tabs.find(t => t.id === active).html}</div></section>`;
+    chartHtml(tab, n) {
+      if (!tab.entries) return tab.html || '';
+      const entries = tab.entries.filter(e => (e.fromItem || 1) <= n)
+        .slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+      if (!entries.length) return '<p>No findings available at this stage.</p>';
+      return `<div class="ex-chart"><table class="ex-table"><thead><tr><th scope="col">Date / time</th>${tab.columns.map(c => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${entries.map(e => `<tr><th scope="row"><time datetime="${esc(e.at)}">${esc(e.at.replace('T', ' '))}</time></th>${e.cells.map(c => `<td>${this.findingHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    }
+
+    leftPane(it) {
+      const c = it.case || it, n = it.case ? it.caseIndex + 1 : 1, key = c.id || it.qid;
+      const tabs = (c.tabs || [{ id: 'notes', label: 'Notes', html: '' }]).filter(t => (t.fromItem || 1) <= n);
+      let active = this.tab[key]; if (!tabs.some(t => t.id === active)) active = tabs[0]?.id;
+      this.tab[key] = active;
+      return `<section class="ex-pane ex-left">
+        ${it.case && n === 1 ? `<div class="ex-banner">${c.banner || `The following scenario applies to the next <b>${c.total}</b> items.`}</div>` : ''}
+        ${it.case ? `<p class="ex-item-no">Item ${n} of ${c.total}</p>` : ''}<p class="ex-scenario">${c.textFormat === 'plain' ? esc(c.scenario || (it.type === 'bowtie' ? it.stem : '')) : c.scenario || (it.type === 'bowtie' ? it.stem : '')}</p>
+        <div class="ex-tabs" role="tablist" aria-label="Clinical record">${tabs.map((t, i) => `<button type="button" class="ex-tab" id="ex-tab-${this.i}-${i}" role="tab" data-tab="${esc(t.id)}" aria-controls="ex-chart-panel" aria-selected="${t.id === active}">${esc(t.label)}</button>`).join('')}</div>
+        <div class="ex-tabpanel" id="ex-chart-panel" role="tabpanel" ${active ? `aria-labelledby="ex-tab-${this.i}-${tabs.findIndex(t => t.id === active)}"` : ''}>${active ? this.chartHtml(tabs.find(t => t.id === active), n) : 'No clinical records available at this stage.'}</div></section>`;
     }
 
     bowtieUi(it, a) {
@@ -278,7 +299,7 @@
         return `<button type="button" class="bt-slot${v === null ? '' : ' on'}" data-slot="${idx}" aria-label="${esc(label)}${v === null ? ': empty' : ': ' + esc(b[col][v]) + ', tap to remove'}">${v === null ? `<span class="bt-ph">${esc(label)}</span>` : esc(b[col][v])}</button>`;
       };
       const bank = (col, title, idxs) => `<div class="bt-bank"><h4>${esc(title)}</h4>${b[col].map((t, i) => `<button type="button" class="bt-choice${idxs.includes(i) ? ' used' : ''}" data-choice="${col}:${i}"${idxs.includes(i) ? ' aria-disabled="true"' : ''}>${esc(t)}</button>`).join('')}</div>`;
-      return `<p class="ex-prompt first">${it.prompt}</p>
+      return `<p class="ex-prompt first">${it.textFormat === 'plain' ? esc(it.prompt || it.stem) : it.prompt || it.stem}</p>
         <div class="bt-diagram"><div class="bt-col">${slot(0, 'actions', 'Action to take')}${slot(1, 'actions', 'Action to take')}</div>
         <div class="bt-col mid">${slot(2, 'conditions', 'Condition most likely experiencing')}</div>
         <div class="bt-col">${slot(3, 'complications', 'Complication to monitor for')}${slot(4, 'complications', 'Complication to monitor for')}</div></div>
@@ -292,7 +313,8 @@
 
     answerUi(it) {
       const a = this.ans[this.i], ng = !!it.case;
-      const lead = ng ? `${it.intro ? `<p class="ex-prompt first">${it.intro}</p>` : ''}<p class="ex-prompt${it.intro ? '' : ' first'}"><span class="ex-chev">»</span>${it.prompt}</p>` : `<p class="ex-stem">${it.stem}</p>`;
+      const text = value => it.textFormat === 'plain' ? esc(value) : value;
+      const lead = ng ? `${it.intro ? `<p class="ex-prompt first">${text(it.intro)}</p>` : ''}<p class="ex-prompt${it.intro ? '' : ' first'}"><span class="ex-chev">»</span>${text(it.prompt || it.stem)}</p>` : `<p class="ex-stem">${text(it.stem)}</p>`;
       const hint = '<p class="ex-hint">Tip: right-click (or press and hold) an answer to cross it out.</p>';
       if (it.type === 'bowtie') return this.bowtieUi(it, a);
       if (it.type === 'mcq') return lead + '<div class="ex-opts" role="radiogroup">' + it.options.map((t, i) => this.optRow('r', i, t, a === i, this.struck[this.i].has(i))).join('') + '</div>' + hint;
@@ -300,23 +322,24 @@
       if (it.type === 'fill') return lead + `<div class="ex-fill"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer" value="${esc(a)}"><span>${esc(it.unit || '')}</span></div><p class="ex-hint">Use the Calculator in the toolbar. Round only at the end if the question asks you to.</p>`;
       if (it.type === 'matrix') {
         return lead + `<table class="ex-table ex-matrix"><thead><tr><th>${esc(it.rowLabel || 'Finding')}</th>${it.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>` +
-          it.rows.map((r, ri) => `<tr><td>${esc(r)}</td>${it.cols.map((c, ci) => `<td class="c"><label class="ex-opt" aria-label="${esc(r)}: ${esc(c)}"><input type="checkbox" data-r="${ri}" data-c="${ci}"${a.includes(ri + ':' + ci) ? ' checked' : ''}><span class="ex-ctl c"></span></label></td>`).join('')}</tr>`).join('') +
+          it.rows.map((r, ri) => `<tr><td>${esc(r)}</td>${it.cols.map((c, ci) => `<td class="c"><label class="ex-opt" aria-label="${esc(r)}: ${esc(c)}"><input type="${it.responseMode === 'single' ? 'radio' : 'checkbox'}" name="matrix-${ri}" data-r="${ri}" data-c="${ci}"${a.includes(ri + ':' + ci) ? ' checked' : ''}><span class="ex-ctl ${it.responseMode === 'single' ? 'r' : 'c'}"></span></label></td>`).join('')}</tr>`).join('') +
           `</tbody></table><p class="ex-note">${it.note || ''}</p>`;
       }
       if (it.type === 'cloze') {
-        const html = it.template.replace(/\{\{(\d+)\}\}/g, (m, n) => {
+        const html = text(it.template).replace(/\{\{(\d+)\}\}/g, (m, n) => {
           const d = it.dropdowns[+n];
           return `<select data-d="${n}" aria-label="Choice ${+n + 1}"><option value=""${a[+n] === null ? ' selected' : ''}>Select</option>${d.options.map((t, i) => `<option value="${i}"${a[+n] === i ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
         });
         return lead + `<div class="ex-cloze">${html}</div>`;
       }
       if (it.type === 'highlight') {
-        return lead + `<div class="ex-hl" role="group">${it.segments.map(s => s.id ? `<span class="seg${a.includes(s.id) ? ' on' : ''}" data-h="${s.id}" role="button" tabindex="0" aria-pressed="${a.includes(s.id)}">${esc(s.t)}</span>` : esc(s.t)).join('')}</div>`;
+        return lead + (it.chartSelections ? '<p class="ex-note">Click individual findings in the clinical record to select or deselect them. Ordinary text highlighting does not record an answer.</p>' : `<div class="ex-hl" role="group" aria-label="Selectable clinical findings">${it.segments.map(s => this.findingHtml(s)).join('')}</div>`);
       }
       return lead;
     }
 
     toggleStrike(i) {
+      if (this.checked[this.i]) return;
       const it = this.it; if (!(it.type === 'mcq' || it.type === 'sata')) return;
       const s = this.struck[this.i];
       if (s.has(i)) s.delete(i); else {
@@ -329,6 +352,7 @@
 
     onChange(e) {
       const t = e.target, it = this.it, k = this.i;
+      if (this.checked[k]) return;
       if (t.name === 'opt') {
         const v = +t.value; this.struck[k].delete(v);
         if (it.type === 'mcq') { if (this.ans[k] !== null && this.ans[k] !== v) this.changes[k]++; this.ans[k] = v; }
@@ -336,6 +360,7 @@
         this.main.querySelectorAll('.ex-opt[data-i]').forEach(r => r.classList.toggle('struck', this.struck[k].has(+r.dataset.i)));
       } else if (t.dataset.r !== undefined) {
         const key = t.dataset.r + ':' + t.dataset.c, set = new Set(this.ans[k]);
+        if (it.responseMode === 'single') [...set].filter(v => v.startsWith(t.dataset.r + ':')).forEach(v => set.delete(v));
         if (t.checked) set.add(key); else { set.delete(key); this.changes[k]++; }
         this.ans[k] = [...set];
       } else if (t.dataset.d !== undefined) {
@@ -345,15 +370,22 @@
       }
     }
 
-    onInput(e) { if (this.it.type === 'fill' && e.target.matches('.ex-fill input')) this.ans[this.i] = e.target.value; }
+    onInput(e) { if (!this.checked[this.i] && this.it.type === 'fill' && e.target.matches('.ex-fill input')) this.ans[this.i] = e.target.value; }
 
     onClick(e) {
       const tab = e.target.closest('[data-tab]');
-      if (tab) { this.tab[this.it.case.id] = tab.dataset.tab; this.show(this.i); return; }
-      const bt = e.target.closest('[data-btab]');
-      if (bt) { this.btab[this.it.qid] = bt.dataset.btab; this.show(this.i); return; }
+      if (tab) {
+        this.tab[this.it.case?.id || this.it.id || this.it.qid] = tab.dataset.tab;
+        const left = this.main.querySelector('.ex-left'), scroll = left.scrollTop;
+        left.outerHTML = this.leftPane(this.it);
+        const pane = this.main.querySelector('.ex-left');
+        pane.scrollTop = scroll;
+        [...pane.querySelectorAll('[data-tab]')].find(t => t.dataset.tab === tab.dataset.tab)?.focus();
+        return;
+      }
       const slotEl = e.target.closest('[data-slot]'), chEl = e.target.closest('[data-choice]');
       if (slotEl || chEl) {
+        if (this.checked[this.i]) return;
         const a = this.ans[this.i], cols = { actions: [0, 1], conditions: [2], complications: [3, 4] };
         if (slotEl) { const k = +slotEl.dataset.slot; if (a[k] !== null) { a[k] = null; this.changes[this.i]++; this.show(this.i); } return; }
         const [col, idx] = chEl.dataset.choice.split(':'), n = +idx;
@@ -364,9 +396,16 @@
       }
       const hl = e.target.closest('[data-h]');
       if (hl) {
+        const dragged = this.highlightStart && Math.hypot(e.clientX - this.highlightStart.x, e.clientY - this.highlightStart.y) > 4;
+        if (this.checked[this.i] || (e.detail && dragged && window.getSelection?.().toString())) return;
         const id = hl.dataset.h, set = new Set(this.ans[this.i]);
         if (set.has(id)) { set.delete(id); this.changes[this.i]++; } else set.add(id);
-        this.ans[this.i] = [...set]; hl.classList.toggle('on'); hl.setAttribute('aria-pressed', set.has(id)); return;
+        this.ans[this.i] = [...set];
+        this.main.querySelectorAll('[data-h]').forEach(el => {
+          const selected = set.has(el.dataset.h);
+          el.classList.toggle('on', selected); el.setAttribute('aria-pressed', selected);
+        });
+        return;
       }
       const b = e.target.closest('[data-a]'); if (!b) return;
       ({
