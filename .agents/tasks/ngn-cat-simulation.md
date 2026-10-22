@@ -824,3 +824,58 @@ legacy case ranges, navigation, response saving, and completion. Browser
 execution of the published counter expression independently confirmed 1 on
 first feedback, 2 after navigation, 5 for case items 5-7, and 150 on final
 feedback. No production attempt or data write was made.
+
+### Narrow production RPC correction verified; Phase 2 compatibility hold
+
+On October 22, the owner separately approved the exact guarded RPC replacement
+after its statement-terminator repair and disposable-local apply/rollback/
+reapply validation. The original production definition and permissions matched
+the approved capture immediately before installation. Quiet-window aggregate
+checks found no active CAT submissions/transactions, no in-progress CATs,
+no relevant locks, and no recent assessment activity in any mode.
+
+The approved correction to `commit_in_house_diagnostic_answer` was applied
+independently of Phase 2. Separate read-back confirmed the exact validated
+corrected definition SHA-256
+`53a7e5e58645c0bcb66eed412d58925e6635679a942bb2da08beac9024bfc386`,
+unchanged signature, postgres ownership, SECURITY DEFINER/search path, and
+service-role-only execution. Write counters for 94 observed tables did not
+change across installation; no assessment RPC, test record, seed, historical
+migration, regrading, or rollback was executed. Post-change aggregate checks
+showed no CAT lock waiters or assessment writes. Database/Edge error-log
+streams were not accessible through the available CLI; dashboard log review
+and any authorized production functional submission remain distinct checks.
+
+The held source SQL still predates the independently applied maintenance
+correction; it must not be executed to provision production or mistaken for
+the now-installed definition. No extra SQL operation is part of Phase 2.
+
+Release-compatibility preparation identified these remaining gates:
+
+- The old CAT frontend resolves selected/resumed items only from its static
+  bank. It cannot render newly delivered `qbank:` items. The new server enables
+  versioned NGN attempts for new CAT/readiness sessions and may select such
+  items; deploying it first with old/cached clients is therefore not safe.
+- The new frontend handles server-provided interactions but falls back to the
+  static bank for legacy responses. This supports a frontend-first strategy
+  in principle, not a completed compatibility certification. Test new-client/
+  old-server start, resume, submission, completion, and review with the actual
+  previous hosted function version in an isolated environment first.
+- The new shared renderer requires `ngn-scoring.js` before `exam-ui.js`.
+  Verify old/new cached asset combinations on every affected entry page.
+  A hard refresh is not a reliable compatibility control for all students.
+- Before switching the server, establish a reviewed way to handle cached old
+  clients and existing sessions. The current candidate has no explicit
+  negotiated client-capability gate; do not assume timing alone makes this
+  safe. Any necessary compatibility implementation needs scoped review and
+  regression validation before release approval.
+- Once NGN attempts exist, reverting to the pre-NGN server would strand their
+  snapshots/response shapes. Define a version-aware rollback/resume policy;
+  never erase or regrade attempts to make a rollback work.
+- Verify actual hosted packaging of the shared scorer import, legacy/new
+  coexistence, and all supported interactions against isolated authenticated
+  Supabase. Then obtain separate Phase 2 deployment approval. Keep simulator
+  code excluded and retain the deployed counter correction.
+
+Only preparation and documentation were performed after the approved narrow
+RPC operation. No Phase 2 code or simulator was pushed or deployed.
