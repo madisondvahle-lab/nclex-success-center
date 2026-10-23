@@ -1,9 +1,46 @@
 # Combined SATA presentation and Phase 2 CAT release candidate
 
+## Approved staged production rollout (October 23, 2026)
+
+The owner approved the staged release of `af7bd6c`, with NGN admissions kept
+disabled. Runtime code is unchanged from that candidate. Latest production
+main `2fec3b9` added only the PR #240 practice-day deployment documentation;
+it was preserved in the release branch without changing any runtime file.
+All individualized practice-day runtime files remain identical to main.
+
+Server-first checkpoint completed:
+
+- Hosted version 7 and frontend CAT hash matched the baseline below. The save
+  RPC still matched corrected SHA-256 `53a7e5e58645c0bcb66eed412d58925e6635679a942bb2da08beac9024bfc386`,
+  with the same owner, service-role-only grant, definer and search path.
+- Full latest-baseline regression rerun: 262 passed.
+- Deployed only `diagnostic-assessment`, now **version 8**, ACTIVE, JWT
+  verification **true**. NGN admission-secret digest still matches `false`.
+- Read back all six source modules using the Management API multipart response:
+  every source byte matches the approved candidate. The CLI source downloader
+  refuses root-level imported assets outside its extraction directory; no
+  extraction guard was bypassed. Comparison was performed in memory instead.
+  Handler SHA-256: `a4b839fce656c2e4f71d6ec46264b60ec7da0ed277a5fe59dc5ed6c8c3368026`.
+- Authenticated production nonadmin session: 20 non-persistent resume requests,
+  all five modes across legacy/SATA-only/NGN-only/combined capabilities, passed.
+  This session has no saved attempts to review; no start/submission was made.
+  Anonymous endpoint requests return 401.
+- Aggregate fingerprints for questions, reviews, private CAT keys, attempts,
+  responses, students and study plans are unchanged after installation.
+  Existing four attempts/100 responses remain; zero NGN/identity attempts.
+- Read-only schema-versioned reviewed NGN inventory: zero candidates.
+  No question eligibility or activation changed.
+- Frontend remained on `2fec3b9` during server verification; protected frontend
+  PR/Pages publication is the next authorized checkpoint.
+
+The pre-existing practice total-label issue is tracked separately in
+[#241](https://github.com/madisondvahle-lab/nclex-success-center/issues/241).
+It is not fixed or otherwise included in this release.
+
 ## Status and boundaries
 
-Prepared and tested locally on `release/ngn-sata-combined`. Not pushed, merged
-into `main`, deployed, or activated. This handoff supersedes the separate
+Prepared and tested on `release/ngn-sata-combined`. The staged rollout status
+above supersedes the original local-only status below. This handoff supersedes the separate
 SATA/Phase 2 deployment sequences, not their implementation records.
 
 - Original SATA `88ce6ccfb2b1247df0709ba8ab2757281094a301` and Phase 2
