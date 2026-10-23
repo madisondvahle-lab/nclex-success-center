@@ -65,8 +65,8 @@ Agreed 4-step plan:
 ### Step 4 follow-ups (not built)
 - Optional append-only plan/focus history (admin-only RLS) if Madison wants a record of past focus changes. (Step 5 adds this for per-day distribution and assignment retargeting only; plan-level focus changes are still not logged.)
 
-## Step 5 — per-day practice distribution & assignment retargeting (branch `agents/task-improve-individualized-nclex-practice-assig`, NOT merged, migration NOT applied)
-- **Migration:** `supabase-practice-day-distribution-migration.sql` must be applied **before** the page deploys (the admin page selects the new column). It is additive:
+## Step 5 — per-day practice distribution & assignment retargeting (DEPLOYED 2026-10-22: PR #239, merge commit `2464dcf`, migration applied)
+- **Migration:** `supabase-practice-day-distribution-migration.sql` was applied to production **before** the page deployed (the admin page selects the new column). It is additive:
   - adds a `student_study_plans.practice_day_assignments` jsonb column (default `{}`);
   - adds a new admin-only, append-only `student_assignment_revisions` table (RLS: admin SELECT/INSERT only);
   - adds private helper functions;
@@ -107,6 +107,15 @@ Agreed 4-step plan:
 - **Known limits:**
   - External platforms are instructional only.
   - Assignments due before today cannot be retargeted, and completed ones are locked.
+- **Production deployment (2026-10-22, approved by Madison):**
+  - Pre-change baseline matched the read-only check above; affected functions, their grants and all 8 plan rows were backed up (with a rollback script) outside the repo in the agent session folder.
+  - Migration applied without error. Verified: 8 plans unchanged (identical hash excluding the new column), all with `practice_day_assignments = {}`; revisions table RLS on with admin-only policies; helpers not executable by `authenticated`; `set_weekly_assignment_complete` unchanged; the REST API exposes the new column; anon cannot read revisions.
+  - Rolled-back smoke test against live functions (synthetic student, nothing persisted) passed: customized UWorld 35+15 day; default day unchanged; Portal 5 Management of Care + 5 mixed from general questions only; retarget to Archer 30+10+10 left other rows unchanged and logged a revision; stale edits, submitted-score assignments and student retargeting were refused; students cannot read revisions.
+  - PR #239 checks passed; merged as `2464dcf`; GitHub Pages built `2464dcf`.
+  - Live check (Madison signed in, nothing saved): the admin Edit plan custom-day editor validated 35+15 = 50 and flagged a 45-of-50 mismatch; the student dashboard staff preview plan card and calendar loaded without errors, default days unchanged, no overflow at 390px.
+  - After deployment: 8 plans unchanged, 0 customized days, 0 weekly assignments, 0 revisions. No student plans were edited and no assignments were generated.
+  - Not yet seen live: a real customized day on a student dashboard (none exists yet). Check the student preview after the first custom day is saved and a week is generated.
+  - Not included: PR #141, SATA answer-order work, Phase 2 NGN. General NCLEX question filtering for focus-based (non-customized) practice is a separate follow-up.
 
 ## Remaining work
 
