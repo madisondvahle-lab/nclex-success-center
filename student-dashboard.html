@@ -130,6 +130,9 @@
     .study-calendar-agenda li{padding:9px 10px;border-radius:3px;background:#edf4f8;margin-top:6px;font-size:.8rem;line-height:1.45}
     .study-calendar-agenda li.exam{background:#f9edef}.study-calendar-agenda li.consultation{background:#f2eef6}.study-calendar-agenda li.plan{background:#fbf4e9}
     .study-calendar-agenda small{display:block;color:var(--muted)}
+    .study-calendar-agenda ul.agenda-lines{list-style:disc;padding-left:18px;margin:4px 0}
+    .study-calendar-agenda ul.agenda-lines li{padding:0;margin:2px 0;background:none;font-weight:650}
+    .plan-line{display:block;font-size:.9em}
     .study-calendar-status{min-height:1.3em;margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .study-calendar-status.error{color:#9c3535}
     @media(max-width:600px){.study-calendar{padding:16px 10px}.study-calendar-day{min-height:70px;padding:4px 2px}.study-calendar-chip{padding:2px;font-size:.55rem}.study-calendar-weekdays{font-size:.62rem}.study-calendar-month{min-width:120px}}
@@ -926,7 +929,12 @@
       weeklyPlanState = plan;
       document.getElementById('weekly-plan-days').innerHTML = WeeklyPlan.week(p).map(d => {
         const parts = [];
-        if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
+        if (d.custom && !WeeklyPlan.distributionError(d.custom)) {
+          const info = WeeklyPlan.describe(d.custom);
+          parts.push(`${d.custom.total} questions · ${text(d.custom.platform)}`);
+          info.lines.forEach(line => parts.push(`<span class="plan-line">${text(line)}</span>`));
+          if (info.focus) parts.push(`<span class="plan-line"><b>Remediation Focus:</b> ${text(info.focus)}</span>`);
+        } else if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
         if (d.cat) {
           const cat = p.cat_assignments[d.day] || {};
           parts.push(`${text(cat.title || 'CAT exam')} · ${text(cat.platform || p.cat_platform)}`);
@@ -934,7 +942,7 @@
         }
         return `<li class="${d.cat ? 'cat' : d.practice ? 'practice' : ''}"><strong aria-label="${d.long}">${d.label}</strong><span>${parts.length ? parts.join('<br>') : 'Rest / review'}</span></li>`;
       }).join('');
-      document.getElementById('weekly-plan-total').textContent = `${p.practice_days.length * p.practice_questions_per_day} Qs + ${p.cat_days.length} CAT${p.cat_days.length === 1 ? '' : 's'} / week`;
+      document.getElementById('weekly-plan-total').textContent = `${WeeklyPlan.practiceTotal(p)} Qs + ${p.cat_days.length} CAT${p.cat_days.length === 1 ? '' : 's'} / week`;
       const chips = p.focus_categories.map(c => `<span class="plan-chip">${text(c)}</span>`).join('') + p.focus_topics.map(t => `<span class="plan-chip topic">${text(t)}</span>`).join('');
       document.getElementById('weekly-plan-focus').innerHTML =
         `<h3>Focus your practice on</h3>${chips || '<p class="empty" style="padding:0">Madison will add your focus categories after your next CAT review.</p>'}` +
@@ -1030,7 +1038,7 @@
       agenda.innerHTML = `<h3>${text(new Date(`${state.selectedDate}T12:00:00`).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}))}</h3>${dateEvents.length ? `<ul>${dateEvents.map(event => {
         const detail = [event.detail, event.completed ? 'Completed' : ''].filter(Boolean).join(' · ');
         const url = WeeklyAssignments.actionUrl(event.url, location.href);
-        return `<li class="${event.type}${event.milestone?' milestone':''}">${event.milestone?'<span class="exam-day-badge">BIG DAY</span>':''}<strong>${text(event.label)}</strong>${detail?`<small>${text(detail)}</small>`:''}${url?`<small><a href="${text(url)}">Open assignment</a></small>`:''}</li>`;
+        return `<li class="${event.type}${event.milestone?' milestone':''}">${event.milestone?'<span class="exam-day-badge">BIG DAY</span>':''}<strong>${text(event.label)}</strong>${detail?`<small>${text(detail)}</small>`:''}${event.lines?.length?`<ul class="agenda-lines">${event.lines.map(line=>`<li>${text(line)}</li>`).join('')}</ul>`:''}${event.focus?`<small><b>Remediation Focus:</b> ${text(event.focus)}</small>`:''}${event.setup?`<small>${text(event.setup)}</small>`:''}${url?`<small><a href="${text(url)}">Open assignment</a></small>`:''}</li>`;
       }).join('')}</ul>` : '<p class="empty">Nothing scheduled for this day.</p>'}`;
       const messages = [];
       if (state.assignmentError) messages.push('Assigned work could not be loaded.');
