@@ -118,6 +118,7 @@ BEGIN
       SELECT coalesce(array_agg(q.id), '{}') INTO batch FROM (
         SELECT b.id FROM public.questions b
         WHERE b.active = true AND b.item_type = 'mcq' AND lower(b.correct_answer) IN ('a','b','c','d')
+          AND b.course_key IS NULL AND b.exam_key IS NULL
           AND NOT (b.id = ANY(picked))
           AND CASE WHEN t->>'kind' = 'category'
             THEN public.weekly_question_category(replace(concat_ws(' ',b.nclex_category,b.nclex_sub),'_',' ')) = t->>'name'
@@ -136,6 +137,7 @@ BEGIN
     SELECT coalesce(array_agg(q.id), '{}') INTO batch FROM (
       SELECT b.id FROM public.questions b
       WHERE b.active = true AND b.item_type = 'mcq' AND lower(b.correct_answer) IN ('a','b','c','d')
+          AND b.course_key IS NULL AND b.exam_key IS NULL
         AND NOT (b.id = ANY(picked))
       ORDER BY random() LIMIT mixed
     ) q;
@@ -321,6 +323,11 @@ BEGIN
     RAISE EXCEPTION 'Active NCLEX student required.';
   END IF;
   IF r.completed_at IS NOT NULL THEN RAISE EXCEPTION 'Completed assignments are kept unchanged.'; END IF;
+  -- The portal saves a score with this key when a student finishes; keep that work even if completion was unmarked.
+  IF EXISTS (SELECT 1 FROM public.student_supplemental_practice_results x
+      WHERE x.student_id = r.student_id AND x.practice_key = 'weekly-' || r.id::text) THEN
+    RAISE EXCEPTION 'The student already submitted this assignment, so it is kept unchanged.';
+  END IF;
   -- One day of grace so an evening edit in US time zones is not blocked by the UTC date.
   IF r.due_on < current_date - 1 THEN RAISE EXCEPTION 'Past assignments are kept unchanged.'; END IF;
   IF p_expected_details IS DISTINCT FROM r.assignment_details THEN

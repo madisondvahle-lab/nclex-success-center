@@ -112,7 +112,7 @@
   }
   function distributionLines(item) {
     var lines = [];
-    if (item.mixed > 0) lines.push(item.mixed + ' Mixed NCLEX Questions (all client-needs categories)');
+    if (item.mixed > 0) lines.push(item.mixed + ' Mixed NCLEX Questions');
     item.targets.forEach(function (t) { lines.push(t.count + ' ' + t.name + ' Questions'); });
     return lines;
   }

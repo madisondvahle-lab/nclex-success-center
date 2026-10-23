@@ -18,6 +18,10 @@ BEGIN
     VALUES('Distribution other',gen_random_uuid()::text,'nclex') RETURNING id INTO other_id;
   INSERT INTO public.student_study_plans(student_id,focus_categories,plan_notes,practice_day_assignments)
     VALUES(sid,ARRAY['Physiological Adaptation'],'Keep a missed-question log.',wed);
+  -- Course-exam questions must never fill distribution slots.
+  INSERT INTO public.questions(stem,option_a,option_b,option_c,option_d,correct_answer,nclex_category,nclex_sub,topic,course_key,exam_key)
+    SELECT 'Course item '||g,'a','b','c','d','a','Safe and Effective Care Environment','Management of Care','Isolation','fixture-course','exam-1'
+    FROM generate_series(1,300) g;
 
   -- Validation mirrors the admin editor.
   ASSERT public.practice_distribution_error(wed->'wed') IS NULL;
@@ -61,6 +65,8 @@ BEGIN
   ASSERT cardinality(ids)=20 AND (SELECT count(DISTINCT x) FROM unnest(ids) x)=20, 'Twenty distinct frozen IDs';
   ASSERT (SELECT count(*) FROM public.questions WHERE id=ANY(ids[1:5]) AND nclex_sub='Management of Care')=5;
   ASSERT (SELECT count(*) FROM public.questions WHERE id=ANY(ids[6:10]) AND topic='Isolation')=5;
+  ASSERT (SELECT count(*) FROM public.questions WHERE id=ANY(ids) AND (course_key IS NOT NULL OR exam_key IS NOT NULL))=0,
+    'Only general NCLEX questions are assigned';
   ASSERT (SELECT url FROM public.student_resources WHERE id=rid)='supplemental-practice.html?assignment='||rid;
 
   -- Short portal pools and invalid saved days are reported, never broadened; other days still generate.
@@ -114,6 +120,17 @@ BEGIN
     PERFORM public.update_weekly_practice_assignment(done_id, retarget, (SELECT assignment_details FROM public.student_resources WHERE id=done_id), NULL);
     RAISE EXCEPTION 'completed edit accepted';
   EXCEPTION WHEN raise_exception THEN IF SQLERRM NOT LIKE 'Completed assignments%' THEN RAISE; END IF;
+  END;
+  RESET ROLE;
+  -- A submitted portal score blocks retargeting even if completion was later unmarked.
+  SELECT id INTO STRICT done_id FROM public.student_resources WHERE student_id=sid AND due_on='2099-03-11' AND assignment_kind='practice';
+  INSERT INTO public.student_supplemental_practice_results(student_id,practice_key,practice_title,score,total_questions)
+    VALUES(sid,'weekly-'||done_id,'Weekly practice',40,50);
+  SET LOCAL ROLE authenticated;
+  BEGIN
+    PERFORM public.update_weekly_practice_assignment(done_id, retarget, (SELECT assignment_details FROM public.student_resources WHERE id=done_id), NULL);
+    RAISE EXCEPTION 'submitted edit accepted';
+  EXCEPTION WHEN raise_exception THEN IF SQLERRM NOT LIKE 'The student already submitted%' THEN RAISE; END IF;
   END;
   RESET ROLE;
   INSERT INTO public.student_resources(student_id,title,resource_type,due_on,assignment_week,assignment_kind,assignment_details)

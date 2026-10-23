@@ -95,10 +95,16 @@ Agreed 4-step plan:
 - **Validation:**
   - `node --test tests/*.cjs` (new `tests/practice-day-distribution.test.cjs`).
   - `tests/practice-day-distribution-rls.sql`, plus regression runs of the weekly-assignments, weekly-cat-details and student-study-days SQL tests, all run only in a local PGlite stub of Supabase (not the live DB).
-  - Fixture-only browser check of the admin editor at 1366 and 390 widths.
-  - The student dashboard was not browser-checked (the calendar output is unit-tested).
+  - Fixture-only browser checks of the admin editor and the student dashboard plan card and calendar, at 1366 and 390 widths.
+- **Production read-only check (2026-10-22):**
+  - 0 weekly practice/CAT assignments and 0 `weekly-%` practice results; 8 study plans.
+  - The live `generate_weekly_assignments`, `update_my_study_days` and `set_weekly_assignment_complete` match the repo's prior migrations, so no migration of existing activity is needed.
+  - Students can currently read all active questions; open PR #141 would restrict course-specific questions.
+- **Retarget protection:** the RPC refuses completed, past and CAT rows, stale edits, and any assignment that already has a submitted `weekly-<id>` score.
+  - Portal sessions in progress are not stored server-side. Retargeting during one is harmless: the student finishes the old set and it still records.
+  - Distribution picks use general NCLEX questions only (`course_key`/`exam_key` NULL).
+  - The existing focus-based generator still uses the whole active bank, as live does today. If #141 is applied, course-specific IDs there could fail to load for students.
 - **Known limits:**
-  - Retargeting a Portal assignment a student has already started replaces its question set. Check the student hasn't begun first.
   - External platforms are instructional only.
   - Assignments due before today cannot be retargeted, and completed ones are locked.
 

@@ -59,7 +59,7 @@ test('student description lists mixed and targeted counts, the remediation focus
   const { WeeklyPlan: WP } = load();
   const info = WP.describe(WP.dayDistribution(SAFETY));
   assert.equal(info.heading, 'UWorld Practice, 50 Questions');
-  assert.deepEqual(plain(info.lines), ['35 Mixed NCLEX Questions (all client-needs categories)', '15 Safety and Infection Control Questions']);
+  assert.deepEqual(plain(info.lines), ['35 Mixed NCLEX Questions', '15 Safety and Infection Control Questions']);
   assert.equal(info.focus, 'Safety and Infection Control');
   assert.match(info.setup, /Set this up yourself in UWorld/);
   assert.match(info.setup, /does not create or configure tests in UWorld/);
@@ -89,7 +89,7 @@ test('calendar shows the custom day breakdown and assigned distributions while o
   assert.equal(monday.lines, undefined);
   const wed = result.events.get('2026-10-14').find(e => e.kind === 'practice');
   assert.equal(wed.detail, 'UWorld');
-  assert.deepEqual(plain(wed.lines), ['35 Mixed NCLEX Questions (all client-needs categories)', '15 Safety and Infection Control Questions']);
+  assert.deepEqual(plain(wed.lines), ['35 Mixed NCLEX Questions', '15 Safety and Infection Control Questions']);
   assert.equal(wed.focus, 'Safety and Infection Control');
   const fri = result.events.get('2026-10-16');
   assert.equal(fri.length, 1, 'The dated assignment replaces the recurring plan day');

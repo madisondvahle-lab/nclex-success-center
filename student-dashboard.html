@@ -132,7 +132,7 @@
     .study-calendar-agenda small{display:block;color:var(--muted)}
     .study-calendar-agenda ul.agenda-lines{list-style:disc;padding-left:18px;margin:4px 0}
     .study-calendar-agenda ul.agenda-lines li{padding:0;margin:2px 0;background:none;font-weight:650}
-    .plan-line{display:block;font-size:.9em}
+    .plan-line{display:block;font-size:.9em;margin-top:4px}
     .study-calendar-status{min-height:1.3em;margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .study-calendar-status.error{color:#9c3535}
     @media(max-width:600px){.study-calendar{padding:16px 10px}.study-calendar-day{min-height:70px;padding:4px 2px}.study-calendar-chip{padding:2px;font-size:.55rem}.study-calendar-weekdays{font-size:.62rem}.study-calendar-month{min-width:120px}}
@@ -931,9 +931,9 @@
         const parts = [];
         if (d.custom && !WeeklyPlan.distributionError(d.custom)) {
           const info = WeeklyPlan.describe(d.custom);
-          parts.push(`${d.custom.total} questions · ${text(d.custom.platform)}`);
-          info.lines.forEach(line => parts.push(`<span class="plan-line">${text(line)}</span>`));
-          if (info.focus) parts.push(`<span class="plan-line"><b>Remediation Focus:</b> ${text(info.focus)}</span>`);
+          parts.push(`${d.custom.total} questions · ${text(d.custom.platform)}` +
+            info.lines.map(line => `<span class="plan-line">${text(line)}</span>`).join('') +
+            (info.focus ? `<span class="plan-line"><b>Remediation Focus:</b> ${text(info.focus)}</span>` : ''));
         } else if (d.practice) parts.push(`${p.practice_questions_per_day} questions · ${text(p.practice_platform)}`);
         if (d.cat) {
           const cat = p.cat_assignments[d.day] || {};
