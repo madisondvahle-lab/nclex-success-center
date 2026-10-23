@@ -63,7 +63,50 @@ Agreed 4-step plan:
 - **Limits:** nursing students are review-only (no plan/generation); no persistent "reviewed" marker; completion is self-reported; external platform results appear only if logged/uploaded; no automatic retargeting, emails, or integrations.
 
 ### Step 4 follow-ups (not built)
-- Optional append-only plan/focus history (admin-only RLS) if Madison wants a record of past focus changes.
+- Optional append-only plan/focus history (admin-only RLS) if Madison wants a record of past focus changes. (Step 5 adds this for per-day distribution and assignment retargeting only; plan-level focus changes are still not logged.)
+
+## Step 5 — per-day practice distribution & assignment retargeting (branch `agents/task-improve-individualized-nclex-practice-assig`, NOT merged, migration NOT applied)
+- **Migration:** `supabase-practice-day-distribution-migration.sql` must be applied **before** the page deploys (the admin page selects the new column). It is additive:
+  - adds a `student_study_plans.practice_day_assignments` jsonb column (default `{}`);
+  - adds a new admin-only, append-only `student_assignment_revisions` table (RLS: admin SELECT/INSERT only);
+  - adds private helper functions;
+  - redefines `generate_weekly_assignments` and `update_my_study_days`;
+  - adds the admin RPC `update_weekly_practice_assignment`.
+- **Day config:** `{platform,total,mixed,targets:[{kind:'category'|'topic',name,count}]}`.
+  - Valid only when mixed + Σcounts = total.
+  - Limits: up to 8 targets, no duplicates, and categories must be the 8 NCLEX names.
+  - JS `WeeklyPlan.distributionError` mirrors SQL `practice_distribution_error`.
+  - Days without a config keep the old focus-based behavior unchanged.
+- **Generation:** a customized day creates "<Platform> Practice: N questions".
+  - `assignment_details.distribution` is set and `question_count` = total.
+  - The note contains the bullet breakdown, "Remediation focus", setup text saying the portal does not configure UWorld/Archer, and the original coach-note tail.
+  - Portal days freeze distinct active MCQs, picking the targeted areas first and then the mixed questions. Short pools are reported, never broadened.
+- **Admin UI (`madison-study-plans.html` Edit plan → "Customize individual practice days"):**
+  - Day chips (Default/Custom); platform, total and mixed fields; targeted rows (category or topic + count); a live "Total assigned X of Y" check.
+  - Reset day, and "Copy to" other practice days.
+  - An optional admin-only reason.
+  - Save is blocked while any custom day is invalid. Changed days are logged to `student_assignment_revisions` (scope `plan_day`).
+  - "Upcoming assigned practice" lists incomplete practice rows due today or later. Checked rows are retargeted one by one via the RPC, which:
+    - only accepts generated, incomplete, non-past practice rows for active NCLEX students;
+    - runs a stale check against `assignment_details`;
+    - logs a revision with scope `assignment`.
+  - Weekly review has a **Retarget practice days** button, and Details show the breakdown.
+- **Student display:** the plan card and calendar agenda show "<Platform> Practice, N Questions", the mixed/targeted lines, "Remediation Focus: …", and setup instructions. The reason text is never sent to students.
+- **Validation:**
+  - `node --test tests/*.cjs` (new `tests/practice-day-distribution.test.cjs`).
+  - `tests/practice-day-distribution-rls.sql`, plus regression runs of the weekly-assignments, weekly-cat-details and student-study-days SQL tests, all run only in a local PGlite stub of Supabase (not the live DB).
+  - Fixture-only browser checks of the admin editor and the student dashboard plan card and calendar, at 1366 and 390 widths.
+- **Production read-only check (2026-10-22):**
+  - 0 weekly practice/CAT assignments and 0 `weekly-%` practice results; 8 study plans.
+  - The live `generate_weekly_assignments`, `update_my_study_days` and `set_weekly_assignment_complete` match the repo's prior migrations, so no migration of existing activity is needed.
+  - Students can currently read all active questions; open PR #141 would restrict course-specific questions.
+- **Retarget protection:** the RPC refuses completed, past and CAT rows, stale edits, and any assignment that already has a submitted `weekly-<id>` score.
+  - Portal sessions in progress are not stored server-side. Retargeting during one is harmless: the student finishes the old set and it still records.
+  - Distribution picks use general NCLEX questions only (`course_key`/`exam_key` NULL).
+  - The existing focus-based generator still uses the whole active bank, as live does today. If #141 is applied, course-specific IDs there could fail to load for students.
+- **Known limits:**
+  - External platforms are instructional only.
+  - Assignments due before today cannot be retargeted, and completed ones are locked.
 
 ## Remaining work
 

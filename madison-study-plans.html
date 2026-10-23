@@ -68,13 +68,32 @@
     .row-msg{font-size:.78rem;margin-top:8px;font-weight:650;line-height:1.4;max-width:30ch;text-align:right}
     .row-msg.error{color:#9c382d}.row-msg.success{color:#0f5d42}.row-msg.warn{color:#7a4b00}.row-msg.info{color:var(--admin-muted)}
     .review td:last-child{min-width:190px}
+    .custom-days{border:1px solid var(--admin-line);padding:16px 18px;margin:0 0 18px;background:#fbfcfd;min-width:0}
+    .custom-days legend{padding:0 6px;margin:0}
+    .custom-days h3{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;margin:22px 0 8px;color:var(--admin-navy)}
+    .custom-chips{margin:10px 0 14px}
+    .custom-chips button{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:70px;min-height:48px;padding:4px 10px;border:1px solid var(--admin-line);background:#fff;font:750 .84rem Inter,sans-serif;color:var(--admin-navy);cursor:pointer}
+    .custom-chips button small{font-size:.66rem;font-weight:650;color:var(--admin-muted)}
+    .custom-chips button.is-custom small{color:#8a3a4c;font-weight:800}
+    .custom-chips button[aria-pressed="true"]{background:var(--admin-navy);color:#fff;border-color:var(--admin-navy)}
+    .custom-chips button[aria-pressed="true"] small{color:#fff}
+    .dist-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+    .target-row{display:grid;grid-template-columns:minmax(150px,1fr) 2fr minmax(90px,.7fr) auto;gap:10px;align-items:end;margin-top:10px}
+    .target-row .button{min-height:44px;padding:8px 12px}
+    .dist-status{font-weight:750;margin:12px 0 4px;font-size:.88rem}
+    .dist-status.ok{color:#0f5d42}.dist-status.bad{color:#9c382d}
+    .copy-row{margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .copy-row .field-label{margin:0}
+    .upcoming-list label{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--admin-line);font-size:.84rem;line-height:1.4;color:var(--admin-navy);cursor:pointer;min-height:44px;box-sizing:border-box}
+    .upcoming-list input{margin:3px 0 0;width:17px;height:17px;accent-color:var(--admin-navy);flex-shrink:0}
+    .upcoming-list small{display:block;color:var(--admin-muted)}
     @media(max-width:1100px){.review-tools{grid-template-columns:1fr 1fr}}
     @media(max-width:820px){
       .review-tools,.detail-grid{grid-template-columns:1fr}
       .review td[data-label]::before{content:attr(data-label);display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--admin-muted);margin-bottom:2px}
       .review td:last-child{min-width:0}
       .row-msg{text-align:left;max-width:none}
-      .editor-grid,.cats{grid-template-columns:1fr}
+      .editor-grid,.cats,.dist-grid,.target-row{grid-template-columns:1fr}
       table.roster thead{display:none}
       table.roster,table.roster tbody,table.roster tr,table.roster td{display:block;width:100%;box-sizing:border-box}
       table.roster tr{border:1px solid var(--admin-line);margin-bottom:12px;background:#fff}
@@ -202,6 +221,22 @@
                   </div>
                 </div>
               </div>
+              <fieldset class="custom-days" id="custom-days">
+                <legend class="field-label">Customize individual practice days (optional)</legend>
+                <p class="hint">Pick a practice day to split its questions into mixed and targeted areas. Days you don’t customize keep the questions per day, platform, and focus above. Saved day settings apply to assignments generated after you save.</p>
+                <div class="daypick custom-chips" id="custom-day-chips" role="group" aria-label="Practice day to customize"></div>
+                <div id="custom-day-body"></div>
+                <div class="field" style="margin-top:16px">
+                  <label class="field-label" for="custom-reason">Reason for this change (admin only, optional)</label>
+                  <input id="custom-reason" type="text" maxlength="500" placeholder="e.g. Test 22: Safety and Infection Control below target">
+                  <p class="hint">Kept in the change history with day and assignment changes. Students never see it.</p>
+                </div>
+                <h3 id="upcoming-title">Upcoming assigned practice</h3>
+                <p class="hint" style="margin-top:0">Already-generated practice days that aren’t complete. Check the ones to retarget, then apply the distribution shown above. Only those assignments change; completed work, CATs, and other days stay as they are. This does not save the recurring plan; use Save plan for that.</p>
+                <div id="upcoming-list" class="upcoming-list" aria-labelledby="upcoming-title"></div>
+                <div class="editor-actions"><button id="apply-upcoming" class="button secondary" type="button">Apply this distribution to checked assignments</button></div>
+                <div id="upcoming-notice" class="notice" role="status"></div>
+              </fieldset>
               <p id="summary-preview" class="muted" aria-live="polite"></p>
               <div class="editor-actions">
                 <button id="save" class="button primary" type="submit">Save plan</button>
@@ -269,8 +304,9 @@
     const WP=window.WeeklyPlan;
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const notice=(id,msg,type)=>{const b=$(id);b.textContent=msg||'';b.className='notice'+(msg?' '+type:'')};
-    const PLAN_COLS='student_id,practice_days,practice_questions_per_day,practice_platform,cat_days,cat_platform,cat_assignments,focus_categories,focus_topics,plan_notes,focus_updated_at,updated_at';
+    const PLAN_COLS='student_id,practice_days,practice_questions_per_day,practice_platform,practice_day_assignments,cat_days,cat_platform,cat_assignments,focus_categories,focus_topics,plan_notes,focus_updated_at,updated_at';
     let session=null,students=[],plans=new Map(),editing=null;
+    let dayCfg={},selDay=null,upcoming=[],upcomingSeq=0;
 
     function fmtDate(v){return v?new Date(v).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}
 
@@ -322,10 +358,131 @@
       return WP.normalize({
         practice_days:checked('pd'),practice_questions_per_day:Number($('qpd').value),practice_platform:$('practice-platform').value,
         cat_days:checked('cd'),cat_platform:$('cat-platform').value,cat_assignments,focus_categories:checked('fc'),
-        focus_topics:WP.topics($('focus-topics').value),plan_notes:$('plan-notes').value
+        focus_topics:WP.topics($('focus-topics').value),plan_notes:$('plan-notes').value,practice_day_assignments:dayCfg
       });
     }
-    function fillSchedule(p){setChecked('pd',p.practice_days);$('qpd').value=p.practice_questions_per_day;$('practice-platform').value=p.practice_platform;setChecked('cd',p.cat_days);$('cat-platform').value=p.cat_platform;catAssignmentInputs(p.cat_assignments)}
+    function fillSchedule(p){setChecked('pd',p.practice_days);$('qpd').value=p.practice_questions_per_day;$('practice-platform').value=p.practice_platform;setChecked('cd',p.cat_days);$('cat-platform').value=p.cat_platform;catAssignmentInputs(p.cat_assignments);dayCfg=structuredClone(p.practice_day_assignments||{});selDay=null;renderDayChips()}
+
+    /* Per-day practice distribution (mixed + targeted areas). dayCfg holds unsaved edits keyed by day. */
+    const num=v=>String(v).trim()===''?NaN:Number(v);
+    const countValue=n=>Number.isFinite(n)?n:'';
+    function platformOptions(sel){return (WP.PLATFORMS.includes(sel)?WP.PLATFORMS:WP.PLATFORMS.concat(sel)).map(p=>`<option value="${esc(p)}"${p===sel?' selected':''}>${esc(p)}</option>`).join('')}
+    function renderDayChips(){
+      const pd=checked('pd');
+      if(!pd.includes(selDay))selDay=pd.find(d=>dayCfg[d])||pd[0]||null;
+      $('custom-day-chips').innerHTML=pd.map(d=>`<button type="button" data-day="${d}" aria-pressed="${d===selDay}" class="${dayCfg[d]?'is-custom':''}" aria-label="${WP.LONG[d]}, ${dayCfg[d]?'customized':'plan default'}">${WP.LABELS[d]}<small>${dayCfg[d]?'Custom':'Default'}</small></button>`).join('')||'<p class="muted">Choose practice days above first.</p>';
+      renderDayBody();
+    }
+    function targetRow(t,i){
+      const cats=window.NCLEXCats?.NAMES||[];
+      const name=t.kind==='topic'
+        ?`<input id="t-name-${i}" data-t="name" data-i="${i}" type="text" maxlength="80" value="${esc(t.name)}" placeholder="e.g. Isolation precautions">`
+        :`<select id="t-name-${i}" data-t="name" data-i="${i}"><option value="">Choose a category</option>${cats.map(n=>`<option value="${esc(n)}"${n===t.name?' selected':''}>${esc(n)}</option>`).join('')}</select>`;
+      return `<div class="target-row"><div><label class="field-label" for="t-kind-${i}">Targeted area ${i+1}</label><select id="t-kind-${i}" data-t="kind" data-i="${i}"><option value="category"${t.kind!=='topic'?' selected':''}>NCLEX category</option><option value="topic"${t.kind==='topic'?' selected':''}>Specific topic</option></select></div>`+
+        `<div><label class="field-label" for="t-name-${i}">${t.kind==='topic'?'Topic':'Category'}</label>${name}</div>`+
+        `<div><label class="field-label" for="t-count-${i}">Questions</label><input id="t-count-${i}" data-t="count" data-i="${i}" type="number" min="1" max="300" step="1" inputmode="numeric" value="${countValue(t.count)}"></div>`+
+        `<button type="button" class="button secondary" data-act="remove" data-i="${i}" aria-label="Remove targeted area ${i+1}">Remove</button></div>`;
+    }
+    function renderDayBody(){
+      const host=$('custom-day-body'),d=selDay,c=d&&dayCfg[d];
+      if(!d){host.innerHTML='';return}
+      if(!c){
+        const qpd=Number($('qpd').value)||WP.DEFAULTS.practice_questions_per_day;
+        host.innerHTML=`<p class="hint" style="margin-top:0">${WP.LONG[d]} uses the plan default: ${esc(qpd)} ${esc($('practice-platform').value)} questions from the focus above.</p><div class="editor-actions"><button type="button" class="button secondary" data-act="customize">Customize ${WP.LONG[d]}</button></div>`;
+        return;
+      }
+      const others=checked('pd').filter(x=>x!==d);
+      host.innerHTML=`<div class="dist-grid"><div><label class="field-label" for="dist-platform">${WP.LONG[d]} platform</label><select id="dist-platform" data-f="platform">${platformOptions(c.platform)}</select></div>`+
+        `<div><label class="field-label" for="dist-total">Total questions</label><input id="dist-total" data-f="total" type="number" min="1" max="300" step="1" inputmode="numeric" value="${countValue(c.total)}"></div>`+
+        `<div><label class="field-label" for="dist-mixed">Mixed (all categories)</label><input id="dist-mixed" data-f="mixed" type="number" min="0" max="300" step="1" inputmode="numeric" value="${countValue(c.mixed)}"></div></div>`+
+        c.targets.map(targetRow).join('')+
+        `<p id="dist-status" class="dist-status" aria-live="polite"></p>`+
+        (c.platform===WP.PORTAL?'<p class="hint">Portal Question Bank picks active questions for each targeted area first, then mixed questions from all categories. Topics must match bank topic labels exactly.</p>':'<p class="hint">The student sets this up in '+esc(c.platform)+'; the portal shows the breakdown but does not create tests there.</p>')+
+        `<div class="editor-actions"><button type="button" class="button secondary" data-act="add"${c.targets.length>=WP.MAX_TARGETS?' disabled':''}>+ Add targeted area</button><button type="button" class="button secondary" data-act="reset">Reset ${WP.LONG[d]} to plan default</button></div>`+
+        (others.length?`<div class="copy-row"><span class="field-label" id="copy-label">Copy to</span><div class="daypick" role="group" aria-labelledby="copy-label">${others.map(x=>`<label title="${WP.LONG[x]}"><input type="checkbox" name="copyday" value="${x}" aria-label="${WP.LONG[x]}">${WP.LABELS[x]}</label>`).join('')}</div><button type="button" class="button secondary" data-act="copy">Copy to checked days</button></div><p id="copy-msg" class="hint" role="status"></p>`:'');
+      updateDistStatus();
+    }
+    function updateDistStatus(){
+      const s=$('dist-status'),c=dayCfg[selDay];if(!s||!c)return;
+      const item=WP.dayDistribution(c),err=WP.distributionError(item);
+      s.textContent=`Total assigned: ${WP.assigned(item)} of ${Number.isFinite(item.total)?item.total:'?'}`+(err?' — '+err:' ✓');
+      s.className='dist-status '+(err?'bad':'ok');
+    }
+    function onDistInput(e){
+      const c=dayCfg[selDay],el=e.target;if(!c)return;
+      if(el.dataset.f)c[el.dataset.f]=el.dataset.f==='platform'?el.value:num(el.value);
+      else if(el.dataset.t){
+        const i=Number(el.dataset.i),t=c.targets[i];if(!t)return;
+        if(el.dataset.t==='kind'){if(t.kind!==el.value){t.kind=el.value;t.name='';renderDayBody();$('t-kind-'+i)?.focus()}return}
+        t[el.dataset.t]=el.dataset.t==='count'?num(el.value):el.value;
+      }
+      if(el.dataset.f==='platform'){renderDayBody();$('dist-platform')?.focus()}else updateDistStatus();
+      renderChipsOnly();
+    }
+    function renderChipsOnly(){document.querySelectorAll('#custom-day-chips [data-day]').forEach(b=>{const d=b.dataset.day;b.classList.toggle('is-custom',!!dayCfg[d]);b.querySelector('small').textContent=dayCfg[d]?'Custom':'Default'})}
+    function onDistClick(e){
+      const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.day){selDay=b.dataset.day;renderDayChips();document.querySelector(`#custom-day-chips [data-day="${selDay}"]`)?.focus();return}
+      const act=b.dataset.act,c=dayCfg[selDay];
+      if(act==='customize'){
+        const qpd=Number($('qpd').value);
+        dayCfg[selDay]={platform:$('practice-platform').value,total:Number.isInteger(qpd)?qpd:WP.DEFAULTS.practice_questions_per_day,mixed:Number.isInteger(qpd)?qpd:WP.DEFAULTS.practice_questions_per_day,targets:[]};
+        renderDayChips();$('dist-mixed')?.focus();
+      }else if(act==='add'&&c){c.targets.push({kind:'category',name:'',count:NaN});renderDayBody();$('t-name-'+(c.targets.length-1))?.focus()}
+      else if(act==='remove'&&c){c.targets.splice(Number(b.dataset.i),1);renderDayBody();$('dist-mixed')?.focus()}
+      else if(act==='reset'){delete dayCfg[selDay];renderDayChips();document.querySelector(`#custom-day-chips [data-day="${selDay}"]`)?.focus()}
+      else if(act==='copy'&&c){
+        const days=checked('copyday'),err=WP.distributionError(WP.dayDistribution(c));
+        if(!days.length){$('copy-msg').textContent='Check the days to copy to.';return}
+        if(err){$('copy-msg').textContent='Fix this day first: '+err;return}
+        days.forEach(d=>{dayCfg[d]=structuredClone(c)});
+        renderDayChips();$('copy-msg').textContent=`Copied to ${days.map(d=>WP.LONG[d]).join(', ')}. Save plan to keep it.`;
+      }else return;
+      updatePreview();
+    }
+
+    async function loadUpcoming(id){
+      const seq=++upcomingSeq;upcoming=[];
+      $('upcoming-list').innerHTML='<p class="muted">Loading…</p>';$('apply-upcoming').disabled=true;notice('upcoming-notice','');
+      const {data,error}=await db.from('student_resources').select('id,title,due_on,assignment_details,completed_at')
+        .eq('student_id',id).eq('assignment_kind','practice').is('completed_at',null).gte('due_on',todayIso()).order('due_on').limit(40);
+      if(seq!==upcomingSeq)return;
+      if(error){$('upcoming-list').innerHTML='';return notice('upcoming-notice','Could not load upcoming assignments: '+error.message,'error')}
+      upcoming=data||[];renderUpcoming();
+    }
+    function upcomingText(r){
+      const d=WP.assignmentDistribution(r),a=r.assignment_details||{};
+      if(d)return `${d.platform} · ${d.total} Qs: ${WP.distributionShort(d)}`;
+      const focus=(a.categories||[]).concat(a.topics||[]);
+      return [a.platform,a.question_count?a.question_count+' Qs':'',focus.length?'Focus: '+focus.join(', '):''].filter(Boolean).join(' · ');
+    }
+    function renderUpcoming(){
+      $('upcoming-list').innerHTML=upcoming.map(r=>`<label><input type="checkbox" data-upcoming="${esc(r.id)}"><span><strong>${esc(fmtDay(r.due_on))}</strong> · ${esc(r.title)}<small>${esc(upcomingText(r))}</small></span></label>`).join('')||'<p class="muted">No incomplete practice assignments from today onward. Generate a week first, or customize plan days for future weeks.</p>';
+      $('apply-upcoming').disabled=!upcoming.length;
+    }
+    async function applyUpcoming(){
+      const btn=$('apply-upcoming'),id=editing;
+      const ids=[...document.querySelectorAll('[data-upcoming]:checked')].map(i=>i.dataset.upcoming);
+      if(!ids.length)return notice('upcoming-notice','Check at least one upcoming assignment.','error');
+      const c=dayCfg[selDay];
+      if(!c)return notice('upcoming-notice','Choose a practice day above and click Customize to build the distribution first.','error');
+      const item=WP.dayDistribution(c),err=WP.distributionError(item);
+      if(err)return notice('upcoming-notice','Fix the distribution first: '+err,'error');
+      const cfg={platform:item.platform,total:item.total,mixed:item.mixed,targets:item.targets};
+      const reason=$('custom-reason').value.trim()||null;
+      btn.disabled=true;notice('upcoming-notice',`Updating ${ids.length} assignment${ids.length===1?'':'s'}…`,'info');
+      const done=[],failed=[];
+      for(const rid of ids){
+        const r=upcoming.find(x=>x.id===rid);if(!r)continue;
+        const {data,error}=await db.rpc('update_weekly_practice_assignment',{p_resource:rid,p_config:cfg,p_expected_details:r.assignment_details,p_reason:reason});
+        if(error)failed.push(fmtDay(r.due_on)+': '+error.message);else{Object.assign(r,data);done.push(fmtDay(r.due_on))}
+      }
+      if(editing!==id)return;
+      renderUpcoming();btn.disabled=!upcoming.length;
+      const dirty=editorDirty(id)?' The recurring plan isn’t saved yet: Save plan to keep this day setting for future weeks, or reset the day if you only meant to change these assignments.':'';
+      notice('upcoming-notice',(done.length?`Updated ${done.join(', ')}. The student sees the new breakdown on their dashboard.`:'No assignments changed.')+(failed.length?' Not changed: '+failed.join(' '):'')+dirty,failed.length?(done.length?'warn':'error'):'success');
+      if(reviewWeek)loadReview();
+    }
     function ensureOption(sel,val){if(val&&![...sel.options].some(o=>o.value===val))sel.append(new Option(val,val))}
     function updatePreview(){
       const v=formValue(),overlap=v.practice_days.filter(d=>v.cat_days.includes(d));
@@ -348,8 +505,9 @@
       $('focus-topics').value=p.focus_topics.join(', ');$('plan-notes').value=p.plan_notes;
       $('editor-title').textContent=(plans.has(id)?'Edit plan · ':'New plan · ')+s.name;
       $('editor-sub').textContent=plans.has(id)?'Changes save to this student only.':'Starts from the default. Save to create this student’s plan.';
-      notice('editor-notice','');updatePreview();
+      notice('editor-notice','');$('custom-reason').value='';updatePreview();
       $('editor-panel').hidden=false;renderRoster();
+      loadUpcoming(id).catch(err=>notice('upcoming-notice','Could not load upcoming assignments: '+err.message,'error'));
       history.replaceState(null,'','?student='+encodeURIComponent(id));
       $('editor-panel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
       $('qpd').focus({preventScroll:true});
@@ -433,6 +591,7 @@
       const open=expanded.has(s.id),msg=rowMsg.get(s.id);
       const actions=`<div class="actions"><button class="button secondary" type="button" data-detail="${id}" aria-expanded="${open}" aria-controls="detail-${id}">${open?'Hide details':'Details'}</button>`+
         (r.nursing?'':`<button class="button ${r.plan?'secondary':'primary'}" type="button" data-edit="${id}" data-from-review="1">${r.plan?'Edit focus & plan':'Create plan'}</button>`)+
+        (r.plan&&!r.nursing?`<button class="button secondary" type="button" data-retarget="${id}">Retarget practice days</button>`:'')+
         (r.plan?`<button class="button primary" type="button" data-assign="${id}"${busy.has(s.id)?' disabled':''}>${busy.has(s.id)?'Assigning…':c.next?'Fill missing next-week days':'Assign next week'}</button>`:'')+
         `<a class="button secondary" href="shared-progress.html?student=${encodeURIComponent(s.id)}">Workspace</a></div>`+
         (r.nursing?'<small class="muted">Plan editing and next-week generation aren’t available for nursing students.</small>':'')+
@@ -443,7 +602,7 @@
     }
     function detail(r,n){
       const focus=n?n.focus_categories:[];
-      const work=r.work.length?r.work.map(a=>`<li><strong>${esc(fmtDay(a.due_on))}</strong> · ${a.assignment_kind==='cat'?'CAT':'Practice'} · ${a.completed_at?'Marked complete':(a.due_on<todayIso()?'<span class="warn-text">Overdue</span>':'Not complete')}<br>${esc(a.title)}${a.assignment_details?.platform?`<br><small class="muted">Platform: ${esc(a.assignment_details.platform)}</small>`:''}${a.assignment_details?.task_instructions?`<br><small class="muted">Instructions: ${esc(a.assignment_details.task_instructions)}</small>`:''}${a.assignment_details?.categories?.length?`<br><small class="muted">Assigned focus: ${esc(a.assignment_details.categories.join(', '))}</small>`:''}</li>`).join(''):'<li class="muted">No assignments generated for this week.</li>';
+      const work=r.work.length?r.work.map(a=>`<li><strong>${esc(fmtDay(a.due_on))}</strong> · ${a.assignment_kind==='cat'?'CAT':'Practice'} · ${a.completed_at?'Marked complete':(a.due_on<todayIso()?'<span class="warn-text">Overdue</span>':'Not complete')}<br>${esc(a.title)}${a.assignment_details?.platform?`<br><small class="muted">Platform: ${esc(a.assignment_details.platform)}</small>`:''}${a.assignment_details?.task_instructions?`<br><small class="muted">Instructions: ${esc(a.assignment_details.task_instructions)}</small>`:''}${WP.assignmentDistribution(a)?`<br><small class="muted">Breakdown: ${esc(WP.distributionShort(WP.assignmentDistribution(a)))}</small>`:''}${a.assignment_details?.categories?.length?`<br><small class="muted">Assigned focus: ${esc(a.assignment_details.categories.join(', '))}</small>`:''}</li>`).join(''):'<li class="muted">No assignments generated for this week.</li>';
       const res=r.resultsUnavailable?'<li class="warn-text">Some result sources failed to load. Refresh before deciding on focus changes.</li>':r.results.length?r.results.map(x=>`<li><strong>${esc(fmtDay(x.date))}</strong>${x.dateKnown?'':' <small class="muted">(test date not recorded; date logged)</small>'} · ${esc(x.source)}<br>${esc(resultText(x))}`+
         (x.categories.length?`<div class="cat-scores" aria-label="Category scores, lowest first">${x.categories.map(k=>`<span class="cat-score${focus.includes(k.name)?' focus':''}">${esc(k.name)} ${esc(pct(k.score))}${k.n!=null?` · ${esc(k.n)} q${k.n<5?' · low sample':''}`:''}${focus.includes(k.name)?' · current focus':''}</span>`).join('')}</div>`:'<br><small class="muted">No category scores recorded.</small>')+'</li>').join(''):'<li class="muted">No CAT, readiness, or practice results recorded for this week.</li>';
       return `<div class="detail-grid"><div><h3>Assignments this week</h3><ul class="detail-list">${work}</ul></div><div><h3>Recorded results this week</h3><ul class="detail-list">${res}</ul><p class="hint">Category scores are listed lowest first as recorded. You decide any focus change.</p></div></div>`;
@@ -514,13 +673,29 @@
       const qpd=Number($('qpd').value);
       if(!Number.isInteger(qpd)||qpd<1||qpd>300)return notice('editor-notice','Questions per day must be a whole number from 1 to 300.','error');
       if(!v.practice_days.length&&!v.cat_days.length)return notice('editor-notice','Choose at least one practice day or CAT day.','error');
+      for(const d of v.practice_days){
+        const err=v.practice_day_assignments[d]&&WP.distributionError(v.practice_day_assignments[d]);
+        if(err){selDay=d;renderDayChips();return notice('editor-notice',`${WP.LONG[d]}: ${err}`,'error')}
+      }
       const prev=plans.has(id)?WP.normalize(plans.get(id)):null;
       const focusChanged=!prev||prev.focus_categories.join('|')!==v.focus_categories.join('|')||prev.focus_topics.join('|')!==v.focus_topics.join('|');
       const now=new Date().toISOString();
       const row={student_id:id,...v,plan_notes:v.plan_notes||null,updated_at:now,updated_by:session.user.id};
       if(focusChanged&&(v.focus_categories.length||v.focus_topics.length||prev))row.focus_updated_at=now;
       btn.disabled=true;btn.textContent='Saving…';
-      try{await upsertPlans([row],false);notice('editor-notice',row.focus_updated_at?'Saved. The new focus applies to assignments generated from now on; already-generated assignments keep their saved focus. The student sees this plan on their dashboard.':'Saved. The student will see this plan on their dashboard.','success');$('editor-title').textContent='Edit plan · '+students.find(s=>s.id===id).name;$('editor-sub').textContent='Changes save to this student only.';renderRoster();renderReview()}
+      try{
+        await upsertPlans([row],false);
+        const prevDays=prev?prev.practice_day_assignments:{},changed=WP.DAYS.filter(d=>JSON.stringify(prevDays[d]||null)!==JSON.stringify(v.practice_day_assignments[d]||null));
+        let historyWarn='';
+        if(changed.length){
+          const reason=$('custom-reason').value.trim()||null;
+          const {error:revError}=await db.from('student_assignment_revisions').insert(changed.map(d=>({student_id:id,scope:'plan_day',practice_day:d,previous:prevDays[d]||null,updated:v.practice_day_assignments[d]||null,reason})));
+          if(revError)historyWarn=' The plan saved, but the day-change history could not be recorded: '+revError.message;
+        }
+        const custom=changed.length?` Day changes (${changed.map(d=>WP.LABELS[d]).join(', ')}) apply to weeks generated from now on; use Upcoming assigned practice to change days already assigned.`:'';
+        notice('editor-notice',(row.focus_updated_at?'Saved. The new focus applies to assignments generated from now on; already-generated assignments keep their saved focus. The student sees this plan on their dashboard.':'Saved. The student will see this plan on their dashboard.')+custom+historyWarn,historyWarn?'warn':'success');
+        $('editor-title').textContent='Edit plan · '+students.find(s=>s.id===id).name;$('editor-sub').textContent='Changes save to this student only.';renderRoster();renderReview();
+      }
       catch(err){notice('editor-notice','Could not save: '+err.message,'error')}
       finally{btn.disabled=false;btn.textContent='Save plan'}
     }
@@ -563,9 +738,13 @@
       $('focus-cats').innerHTML=(window.NCLEXCats?.NAMES||[]).map(n=>`<label><input type="checkbox" name="fc" value="${esc(n)}"><span>${esc(n)}</span></label>`).join('');
 
       $('editor').addEventListener('submit',save);
-      $('editor').addEventListener('input',updatePreview);
-      $('editor').addEventListener('change',e=>{if(e.target.matches('input[name="cd"]'))catAssignmentInputs(formValue().cat_assignments);updatePreview()});
+      $('editor').addEventListener('input',e=>{if(!dayCfg[selDay]&&!e.target.closest('#custom-days'))renderDayBody();updatePreview()});
+      $('editor').addEventListener('change',e=>{if(e.target.matches('input[name="cd"]'))catAssignmentInputs(formValue().cat_assignments);if(e.target.matches('input[name="pd"]'))renderDayChips();updatePreview()});
       $('reset-default').addEventListener('click',()=>{fillSchedule(WP.normalize(WP.DEFAULTS));updatePreview()});
+      $('custom-day-body').addEventListener('input',onDistInput);
+      $('custom-day-body').addEventListener('change',onDistInput);
+      $('custom-days').addEventListener('click',onDistClick);
+      $('apply-upcoming').addEventListener('click',()=>applyUpcoming().catch(err=>{notice('upcoming-notice','Could not update assignments: '+err.message,'error');$('apply-upcoming').disabled=false}));
       $('cancel').addEventListener('click',closeEditor);
       $('search').addEventListener('input',renderRoster);
       $('only-missing').addEventListener('change',renderRoster);
@@ -587,6 +766,7 @@
         const b=e.target.closest('button');if(!b)return;
         if(b.dataset.detail){const id=b.dataset.detail;expanded.has(id)?expanded.delete(id):expanded.add(id);renderReview();document.querySelector(`[data-detail="${CSS.escape(id)}"]`)?.focus()}
         else if(b.dataset.edit){returnRow=b.dataset.edit;openEditor(b.dataset.edit)}
+        else if(b.dataset.retarget){returnRow=b.dataset.retarget;openEditor(b.dataset.retarget);$('custom-days').scrollIntoView({block:'start'});document.querySelector('#custom-day-chips [aria-pressed="true"]')?.focus({preventScroll:true})}
         else if(b.dataset.assign)assignNext(b.dataset.assign);
       });
 

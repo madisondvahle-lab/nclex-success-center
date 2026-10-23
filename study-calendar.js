@@ -72,16 +72,21 @@
     }
 
     const assignments = options.resources || [];
+    const breakdown = item => {
+      const info = window.WeeklyPlan.describe(item);
+      return { lines: info.lines, focus: info.focus, setup: info.setup };
+    };
     assignments.forEach(resource => {
       if (!dates.has(resource.due_on)) return;
-      addEvent(events, resource.due_on, {
+      const dist = window.WeeklyPlan && window.WeeklyPlan.assignmentDistribution(resource);
+      addEvent(events, resource.due_on, Object.assign({
         type: 'assignment',
         kind: resource.assignment_kind || resource.resource_type || 'assignment',
-        label: resource.title || 'Assigned work',
-        detail: resource.assignment_details?.platform || resource.note || '',
+        label: dist ? window.WeeklyPlan.describe(dist).heading : resource.title || 'Assigned work',
+        detail: dist ? '' : resource.assignment_details?.platform || resource.note || '',
         completed: Boolean(resource.completed_at),
         url: resource.url || ''
-      });
+      }, dist ? breakdown(dist) : {}));
     });
 
     if (!options.isNursing && options.plan && typeof options.plan === 'object') {
@@ -92,11 +97,13 @@
         const day = weekdays[new Date(`${date}T12:00:00`).getDay()];
         const actualKinds = new Set(assignments.filter(item => item.due_on === date).map(item => item.assignment_kind));
         if (plan.practice_days.includes(day) && !actualKinds.has('practice')) {
-          addEvent(events, date, {
+          const custom = plan.practice_day_assignments[day];
+          const valid = custom && !window.WeeklyPlan.distributionError(custom);
+          addEvent(events, date, Object.assign({
             type: 'plan', kind: 'practice',
-            label: `${plan.practice_questions_per_day} practice questions`,
-            detail: [plan.practice_platform, ...plan.focus_categories].join(' · ')
-          });
+            label: `${valid ? custom.total : plan.practice_questions_per_day} practice questions`,
+            detail: valid ? custom.platform : [plan.practice_platform, ...plan.focus_categories].join(' · ')
+          }, valid ? breakdown(custom) : {}));
         }
         if (plan.cat_days.includes(day) && !actualKinds.has('cat')) {
           const cat = plan.cat_assignments[day] || {};

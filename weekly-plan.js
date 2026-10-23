@@ -54,13 +54,109 @@
     });
     return out;
   }
+  /* Per-day practice distribution: { platform, total, mixed, targets: [{ kind, name, count }] }.
+     Counts are kept as entered so validation can report mismatches instead of silently fixing them. */
+  var MAX_TARGETS = 8;
+  function count(value) {
+    var n = Number(value);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  function target(item) {
+    if (!item || typeof item !== 'object') return null;
+    var kind = item.kind === 'topic' ? 'topic' : 'category';
+    var name = String(item.name == null ? '' : item.name).trim().replace(/\s+/g, ' ').slice(0, 80);
+    if (kind === 'category' && window.NCLEXCats) name = window.NCLEXCats.canon(name, name);
+    return { kind: kind, name: name, count: count(item.count) };
+  }
+  function dayDistribution(item, fallbackPlatform) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
+    return {
+      platform: platform(item.platform, fallbackPlatform),
+      total: count(item.total),
+      mixed: count(item.mixed),
+      targets: (Array.isArray(item.targets) ? item.targets : []).map(target).filter(Boolean)
+    };
+  }
+  function practiceDayAssignments(value, practiceDays, fallbackPlatform) {
+    var out = {};
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+    practiceDays.forEach(function (day) {
+      var item = dayDistribution(value[day], fallbackPlatform);
+      if (item) out[day] = item;
+    });
+    return out;
+  }
+  function wholeCount(n, min) { return Number.isInteger(n) && n >= min && n <= 300; }
+  // Mirrors public.practice_distribution_error in supabase-practice-day-distribution-migration.sql.
+  function distributionError(item) {
+    if (!item) return 'Choose a practice day to customize.';
+    if (!wholeCount(item.total, 1)) return 'Total questions must be a whole number from 1 to 300.';
+    if (!wholeCount(item.mixed, 0)) return 'Mixed questions must be a whole number from 0 to 300.';
+    if (item.targets.length > MAX_TARGETS) return 'Use up to ' + MAX_TARGETS + ' targeted areas per day.';
+    var seen = {}, sum = item.mixed;
+    for (var i = 0; i < item.targets.length; i++) {
+      var t = item.targets[i];
+      if (!t.name) return 'Choose a category or enter a topic for each targeted row.';
+      if (t.kind === 'category' && window.NCLEXCats && window.NCLEXCats.NAMES.indexOf(t.name) < 0) return '“' + t.name + '” is not an NCLEX client-needs category.';
+      if (!wholeCount(t.count, 1)) return 'Each targeted area needs a whole-number count from 1 to 300.';
+      var key = t.kind + ':' + t.name.toLowerCase();
+      if (seen[key]) return '“' + t.name + '” is listed more than once.';
+      seen[key] = true;
+      sum += t.count;
+    }
+    if (sum !== item.total) return 'Mixed and targeted questions add up to ' + sum + ', but the day total is ' + item.total + '.';
+    return '';
+  }
+  function assigned(item) {
+    return (Number.isFinite(item.mixed) ? item.mixed : 0) + item.targets.reduce(function (n, t) { return n + (Number.isFinite(t.count) ? t.count : 0); }, 0);
+  }
+  function distributionLines(item) {
+    var lines = [];
+    if (item.mixed > 0) lines.push(item.mixed + ' Mixed NCLEX Questions');
+    item.targets.forEach(function (t) { lines.push(t.count + ' ' + t.name + ' Questions'); });
+    return lines;
+  }
+  function remediationFocus(item) {
+    return item.targets.map(function (t) { return t.name; }).join(', ');
+  }
+  function distributionShort(item) {
+    return [item.mixed > 0 ? item.mixed + ' mixed' : ''].concat(item.targets.map(function (t) { return t.count + ' ' + t.name; })).filter(Boolean).join(' + ');
+  }
+  function setupInstructions(item) {
+    if (item.platform === PORTAL) return 'Open the assignment in the portal; all ' + item.total + ' questions are included.';
+    var parts = [];
+    if (item.mixed > 0) parts.push(item.mixed + ' questions with all client-needs categories selected');
+    item.targets.forEach(function (t) { parts.push(t.count + ' questions with only ' + t.name + ' selected'); });
+    return 'Set this up yourself in ' + item.platform + ': create ' +
+      (parts.length > 1 ? 'separate practice tests — ' + parts.join('; ') : 'a practice test with ' + parts[0]) +
+      '. This portal does not create or configure tests in ' + item.platform + '.';
+  }
+  // Student-facing breakdown for a recurring plan day or a generated assignment's distribution snapshot.
+  function describe(item) {
+    return {
+      heading: item.platform + ' Practice, ' + item.total + ' Questions',
+      lines: distributionLines(item),
+      focus: remediationFocus(item),
+      setup: setupInstructions(item)
+    };
+  }
+  function assignmentDistribution(resource) {
+    var d = resource && resource.assignment_details;
+    if (!d || !d.distribution || typeof d.distribution !== 'object') return null;
+    var item = dayDistribution({ platform: d.platform, total: d.question_count, mixed: d.distribution.mixed, targets: d.distribution.targets }, d.platform || '');
+    return item && !distributionError(item) ? item : null;
+  }
+
   function normalize(row) {
     row = row || {};
     var n = Number(row.practice_questions_per_day);
+    var practiceDays = days(row.practice_days, DEFAULTS.practice_days);
+    var practicePlatform = platform(row.practice_platform, DEFAULTS.practice_platform);
     return {
-      practice_days: days(row.practice_days, DEFAULTS.practice_days),
+      practice_days: practiceDays,
       practice_questions_per_day: Number.isInteger(n) && n >= 1 && n <= 300 ? n : DEFAULTS.practice_questions_per_day,
-      practice_platform: platform(row.practice_platform, DEFAULTS.practice_platform),
+      practice_platform: practicePlatform,
+      practice_day_assignments: practiceDayAssignments(row.practice_day_assignments, practiceDays, practicePlatform),
       cat_days: days(row.cat_days, DEFAULTS.cat_days),
       cat_platform: platform(row.cat_platform, DEFAULTS.cat_platform),
       cat_assignments: catAssignments(row.cat_assignments, platform(row.cat_platform, DEFAULTS.cat_platform)),
@@ -104,28 +200,43 @@
     if (!catSpacingOk(catDays)) return 'Leave at least one day between CAT exams, including across weeks.';
     return '';
   }
+  function practiceTotal(p) {
+    return p.practice_days.reduce(function (n, d) {
+      var item = p.practice_day_assignments[d];
+      return n + (item && Number.isInteger(item.total) ? item.total : p.practice_questions_per_day);
+    }, 0);
+  }
   function week(plan) {
     var p = normalize(plan);
     return DAYS.map(function (d) {
-      return { day: d, label: LABELS[d], long: LONG[d], practice: p.practice_days.indexOf(d) >= 0, cat: p.cat_days.indexOf(d) >= 0 };
+      var practice = p.practice_days.indexOf(d) >= 0;
+      return { day: d, label: LABELS[d], long: LONG[d], practice: practice, cat: p.cat_days.indexOf(d) >= 0,
+        custom: practice && p.practice_day_assignments[d] ? p.practice_day_assignments[d] : null };
     });
   }
   function summary(plan) {
     var p = normalize(plan);
-    var total = p.practice_days.length * p.practice_questions_per_day;
+    var total = practiceTotal(p);
     var lbl = function (arr) { return arr.map(function (d) { return LABELS[d]; }).join('/') || 'none'; };
     var base = p.practice_days.length + '× ' + p.practice_questions_per_day + ' Qs (' + lbl(p.practice_days) + ', ' + p.practice_platform + ') · ' +
       p.cat_days.length + ' CAT' + (p.cat_days.length === 1 ? '' : 's') + ' (' + lbl(p.cat_days) + ', ' + p.cat_platform + ') · ' + total + ' Qs/week';
+    var custom = p.practice_days.filter(function (d) { return p.practice_day_assignments[d]; }).map(function (d) {
+      var item = p.practice_day_assignments[d];
+      return LABELS[d] + ': ' + item.total + ' Qs' + (item.platform !== p.practice_platform ? ' on ' + item.platform : '') + ' (' + distributionShort(item) + ')';
+    });
     var details = p.cat_days.map(function (day) {
       var item = p.cat_assignments[day];
       if (!item || (item.platform === p.cat_platform && !item.title && !item.instructions)) return '';
       return LABELS[day] + ': ' + item.platform + (item.title ? ' — ' + item.title : '') +
         (item.instructions ? ' (' + item.instructions + ')' : '');
     }).filter(Boolean);
-    return base + (details.length ? ' · CAT details: ' + details.join('; ') : '');
+    return base + (custom.length ? ' · Custom days: ' + custom.join('; ') : '') + (details.length ? ' · CAT details: ' + details.join('; ') : '');
   }
   window.WeeklyPlan = {
     DAYS: DAYS, LABELS: LABELS, LONG: LONG, PLATFORMS: PLATFORMS, PORTAL: PORTAL, DEFAULTS: DEFAULTS,
-    MIN_PRACTICE_DAYS: MIN_PRACTICE_DAYS, normalize: normalize, catSpacingOk: catSpacingOk, practiceOnlyDays: practiceOnlyDays, meetsPracticeMinimum: meetsPracticeMinimum, dayChangeError: dayChangeError, week: week, summary: summary, topics: list
+    MIN_PRACTICE_DAYS: MIN_PRACTICE_DAYS, normalize: normalize, catSpacingOk: catSpacingOk, practiceOnlyDays: practiceOnlyDays, meetsPracticeMinimum: meetsPracticeMinimum, dayChangeError: dayChangeError, week: week, summary: summary, topics: list,
+    MAX_TARGETS: MAX_TARGETS, dayDistribution: dayDistribution, distributionError: distributionError, assigned: assigned, practiceTotal: practiceTotal,
+    distributionLines: distributionLines, distributionShort: distributionShort, remediationFocus: remediationFocus, setupInstructions: setupInstructions,
+    describe: describe, assignmentDistribution: assignmentDistribution
   };
 })();
