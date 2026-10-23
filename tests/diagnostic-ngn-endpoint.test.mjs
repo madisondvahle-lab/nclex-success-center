@@ -119,9 +119,68 @@ function legacyContract(value) {
       assert.ok(result[key] === null || (key === 'scoringModel' && result[key] === 'in-house-core-v1'));
       delete result[key];
     }
+
   }
   return Object.fromEntries(Object.entries(result).map(([key, child]) => [key, legacyContract(child)]));
 }
+
+test('combined SATA NGN snapshots preserve identities, canonical scoring, rationales and admission-off resume', async () => {
+      reset();
+      const options = Array.from({ length: 6 }, (_, i) => `Synthetic SATA ${i}`);
+      const sata = n => prompt(`sata-${n}`, 'sata', { options, correct: options.slice(0, n).map((_, i) => i),
+        optionRationales: Object.fromEntries(options.map((_, i) => [i, `Synthetic explanation ${n}:${i}`])) });
+      state.tables.questions = [{ ...clone(question), item_data: { ...clone(entry), items: [sata(3), sata(4), sata(5)] } }];
+      const send = body => request({ ...body, optionProtocol: 'sata-order-v1' });
+      const started = await send({ action: 'start', mode: 'mock', sessionKey: 'combined' });
+      assert.equal(started.status, 200);
+      const id = started.data.attempt.id;
+      const cp = state.tables.in_house_assessment_attempts[0].checkpoint;
+      assert.equal(cp.optionProtocol, 'sata-order-v1');
+      const saved = clone(cp.ngnState.current.presentations);
+      assert.equal(Object.keys(saved).length, 3);
+      assert.equal(started.data.currentItem.presentation.version, 'sata-order-v1');
+      assert.doesNotMatch(JSON.stringify(started.data.currentItem), /correct|rationale|explanation/);
+      const encode = (it, indices) => ({ version: 'sata-order-v1', optionIds: indices.map(i => it.presentation.ids[i]) });
+      enableNewAttempts = 'false';
+      state.tables.questions[0].active = false;
+      state.tables.questions[0].item_data.items[0].correct = [5];
+      let item = started.data.currentItem, revision = 0, final;
+      for (let stage = 0; stage < 3; stage++) {
+        const before = clone(state.tables);
+        for (const clientProtocol of [null, 'ngn-cat-v1']) {
+          assert.equal((await request({ action: 'resume', assessmentKey: 'diagnostic-mock' }, 'student-token', clientProtocol)).status, 409);
+        }
+        assert.equal((await request({ action: 'resume', assessmentKey: 'diagnostic-mock', optionProtocol: 'sata-order-v1' }, 'student-token', null)).status, 409);
+        const canonical = Array.from({ length: stage + 3 }, (_, i) => i).slice(0, stage + 2);
+        assert.equal((await send({ action: 'answer', attemptId: id, expectedRevision: revision, itemId: item.id, answer: canonical })).status, 400);
+        assert.equal((await send({ action: 'answer', attemptId: id, expectedRevision: revision, itemId: item.id,
+          answer: { version: 'sata-order-v1', optionIds: [crypto.randomUUID()] } })).status, 400);
+        assert.deepEqual(state.tables, before);
+        const encoded = encode(item, canonical);
+        const paused = await send({ action: 'checkpoint', attemptId: id, expectedRevision: revision,
+          checkpoint: { draft: { ngn: { answer: encoded, tabId: 'notes' } } } });
+        assert.equal(paused.status, 200);
+        revision = paused.data.checkpointRevision;
+        const resumed = await send({ action: 'resume', assessmentKey: 'diagnostic-mock' });
+        assert.deepEqual(resumed.data.currentItem.presentation, item.presentation);
+        assert.deepEqual(resumed.data.attempt.checkpoint.draft.ngn.answer, canonical);
+        final = await send({ action: 'answer', attemptId: id, expectedRevision: revision, itemId: item.id, answer: encoded });
+        assert.equal(final.status, 200);
+        assert.equal((await send({ action: 'answer', attemptId: id, expectedRevision: revision, itemId: item.id, answer: encoded })).status, 409);
+        revision = final.data.checkpointRevision;
+        item = final.data.nextItem;
+      }
+      assert.equal(final.data.completed, true);
+      assert.deepEqual(final.data.responses.map(r => r.selected_answer), [[0, 1], [0, 1, 2], [0, 1, 2, 3]]);
+      assert.deepEqual(final.data.responses.map(r => r.credit.score), [2 / 3, 3 / 4, 4 / 5]);
+      assert.equal(final.data.abilityEstimate, Number(updateNGNAbility(0.5, (2 / 3 + 3 / 4 + 4 / 5) / 3, 2).toFixed(3)));
+      const review = await send({ action: 'review', attemptId: id });
+      for (const [i, r] of review.data.responses.entries()) {
+        assert.deepEqual(r.presentation, saved[r.item_id]);
+        assert.deepEqual(r.interaction.presentation, saved[r.item_id]);
+        assert.equal(r.interaction.optionRationales[0], `Synthetic explanation ${i + 3}:0`);
+      }
+});
 
 test('actual hosted legacy handler and revised candidate have identical selection, saved rows, adaptation, stopping and review', async t => {
   t.mock.method(Math, 'random', () => 0);

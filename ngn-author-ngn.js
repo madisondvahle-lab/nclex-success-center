@@ -296,7 +296,14 @@
     root.classList.add('ngn-author');
     itemEditor(root, item);
     const error = node('p', '', root); error.setAttribute('role', 'alert');
-    const read = () => validate(Object.assign(copy(item), getFields()));
+    const warning = node('p', '', root); warning.setAttribute('role', 'status');
+    const read = () => {
+      const value = validate(Object.assign(copy(item), getFields()));
+      warning.textContent = window.OptionPresentation?.warnings([value]).join(' ') || '';
+      return value;
+    };
+    root.addEventListener('change', () => { warning.textContent = window.OptionPresentation?.warnings([item]).join(' ') || ''; });
+    warning.textContent = window.OptionPresentation?.warnings([item]).join(' ') || '';
     button(root, 'Preview as student', () => {
       try {
         const entry = read(), host = node('div', undefined, document.body);

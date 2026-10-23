@@ -10,6 +10,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
   <meta name="robots" content="noindex,nofollow">
   <title>Class Exam Prep and NCLEX Review · Study With Madison RN</title>
   <style>
@@ -307,8 +308,15 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
   <script src="category-names.js"></script>
   <script src="study-area-names.js"></script>
   <script src="question-bank-selection.js"></script>
-  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script>
+    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1') {
+      window.ExamUI = undefined;
+      throw new Error('The assessment modules could not load. Refresh and try again.');
+    }
+  </script>
   <script src="exam-adapters.js"></script>
   <script src="student-nav.js"></script>
   <script>
@@ -1819,7 +1827,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
     async function loadQuestionBankSet(set){
       const {data,error}=await db.from('question_set_items')
-        .select('legacy_id,question:questions!inner(id,question_no,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,nclex_category,nclex_sub,topic,difficulty,item_type,item_data)')
+        .select('legacy_id,question:questions!inner(id,question_no,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,option_rationales,nclex_category,nclex_sub,topic,difficulty,item_type,item_data)')
         .eq('set_key',set.id)
         .order('position');
       if(error)throw error;
@@ -1840,7 +1848,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         }
         return {
           id:String(legacy_id),dbId:row.id,qno:row.question_no,stem:row.stem,options,
-          answer,rationale:row.rationale||'',
+          answer,rationale:row.rationale||'',optionRationales:row.option_rationales || {},
           category:row.nclex_category||row.nclex_sub||row.topic||set.title,
           topic:row.topic||'',difficulty:row.difficulty||'medium'
         };
@@ -2065,22 +2073,31 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         }
       }
       const questions=count&&count<setQuestions.length?[...setQuestions].sort(()=>Math.random()-.5).slice(0,count):setQuestions;
-      activeSet={...set,title:cleanPersonalLabel(set.title),tag:cleanPersonalLabel(set.tag),description:cleanPersonalLabel(set.description),questions};
+      activeSet={...set,title:cleanPersonalLabel(set.title),tag:cleanPersonalLabel(set.tag),description:cleanPersonalLabel(set.description),questions:questions.map(q=>{const question={...q};delete question.presentation;return question})};
       index=0;answers=[];revealed=false;
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');$('library-status').classList.add('hidden');
       beginPractice();
     }
-    // Runs the active set in the NCLEX-style exam interface; falls back to the classic view if it did not load.
-    function beginPractice(){
-      if(!window.ExamUI||!window.ExamAdapters){renderQuestion();return}
+    // The checkpoint includes the prepared items, so resuming never reshuffles answers.
+    function practiceStorageKey(){ return `sata-practice-v1:${student?.id || 'signed-out'}:${location.pathname}${location.search}`; }
+    function beginPractice(resume){
+      if(!window.ExamUI||!window.ExamAdapters||!window.OptionPresentation){throw new Error('The assessment assets could not load. Refresh before answering.')}
+      const stored=!resume&&sessionStorage.getItem(practiceStorageKey());
+      if(stored){
+        const saved=JSON.parse(stored);
+        if(saved.set?.id===activeSet.id){activeSet=saved.set;resume=saved.snapshot}
+      }
       const source=activeSet.questions;
       if(!source.some(q=>q.type!=='intro')){renderQuestion();return}
-      const items=ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
+      const items=resume?.items || ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
+      items.forEach(item=>{if(Number.isInteger(item.srcIndex))source[item.srcIndex].presentation=item.presentation});
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
-      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,instant:activeSet.tutorMode??!activeSet.assignmentId,showTimer:activeSet.timedMode,noFeedback:true,
+      new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,resume,instant:activeSet.tutorMode??!activeSet.assignmentId,showTimer:activeSet.timedMode,noFeedback:true,
+        onCheckpoint:snapshot=>sessionStorage.setItem(practiceStorageKey(),JSON.stringify({set:activeSet,snapshot})),
         onFlag:student?async(it,f)=>{const src=source[it.srcIndex]||{};const r=await db.from('question_flags').insert({question_id:it.dbId||null,question_no:it.qno||null,question_ref:String(it.qid||''),question_stem:String(src.stem||it.stem||it.prompt||'').replace(/<[^>]+>/g,'').slice(0,500),student_id:student.id,reason:f.reason,kind:f.kind||'report',note:f.note||null});return !r.error}:null,
         onFinish:res=>{
+          sessionStorage.removeItem(practiceStorageKey());
           host.remove();
           answers=ExamAdapters.toPracticeAnswers(source,res);
           activeSet.sessionMarked=new Array(source.length).fill(false);
@@ -2147,6 +2164,11 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         category:q.category||categoryForQuestion(q.id),
         selected_answer:answers[i],
         correct_answer:q.answer,
+        options:q.options,
+        stem:q.stem,
+        presentation:q.presentation,
+        rationale:q.rationale,
+        option_rationales:q.optionRationales || {},
         correct:answersMatch(q, answers[i]),
         marked_for_review:!!activeSet.sessionMarked?.[i]
       }));
@@ -2207,13 +2229,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const review=document.createElement('div');
         review.className='study-session-body';
         const answerText=(q,value)=>{const indexes=Array.isArray(value)?value:[value];return indexes.filter(Number.isInteger).map(optionIndex=>q.options[optionIndex]).filter(Boolean).map(escapeHtml).join('; ')||'Not answered'};
-        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}${activeSet.sessionMarked?.[i]?' · Marked':''}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${answerText(q,answers[i])}</p><p>Correct answer: ${answerText(q,q.answer)}</p><p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
+        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}${activeSet.sessionMarked?.[i]?' · Marked':''}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${answerText(q,answers[i])}</p><p>Correct answer: ${answerText(q,q.answer)}</p>${q.presentation?ExamUI.reviewHtml({type:'sata',options:q.options,correct:q.answer,presentation:q.presentation,optionRationales:q.optionRationales},answers[i]||[]):''}<p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
         $('quiz').appendChild(review);
       }
       const retry=$('retry');
       if(retry)retry.addEventListener('click',()=>{
         if(sets.some(set=>set.id===activeSet.id)){startSet(activeSet.id);return}
         index=0;answers=[];revealed=false;activeSet.sessionMarked=null;
+        activeSet.questions.forEach(question=>{delete question.presentation});
         $('quiz').classList.add('hidden');
         beginPractice();
       });
@@ -2315,7 +2338,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         try{
           for(let start=0;;start+=pageSize){
             const page=await db.from('questions')
-              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,item_type,item_data')
+              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,option_rationales,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,item_type,item_data')
               .eq('active',true)
               .in('item_type',['mcq','sata'])
               .order('created_at')
@@ -2495,6 +2518,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           StudentNav.init({ active: 'practice' });
           StudentNav.updateStudent(student, admin);
         }
+        const savedPractice=sessionStorage.getItem(practiceStorageKey());
+        if(savedPractice){
+          const saved=JSON.parse(savedPractice);
+          if(!Array.isArray(saved.set?.questions)||!saved.snapshot)throw new Error('Saved practice is incomplete and cannot be resumed. Keep this tab open and contact Madison.');
+          activeSet=saved.set;
+          beginPractice(saved.snapshot);
+          return;
+        }
         const [{data:resources,error:resourcesError},{data:modules,error:modulesError},{data:schedules,error:schedulesError}]=await Promise.all([
           db.from('student_resources').select('title,url,note,resource_type,due_on').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
           db.from('modules').select('module_key,is_available'),
@@ -2544,6 +2575,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       }
     }
     const handleSignOut = async () => {
+      sessionStorage.removeItem(practiceStorageKey());
       await db.auth.signOut();
       location.replace('student-login.html');
     };

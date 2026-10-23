@@ -10,7 +10,7 @@
     const flush = () => { if (group && group.items.length) entries.push(group.entry); group = null; };
     const item = (q, idx) => {
       const sata = Array.isArray(q.answer);
-      return { id: String(q.id), type: sata ? 'sata' : 'mcq', options: q.options.slice(), correct: sata ? q.answer.slice() : [q.answer], rationale: q.rationale || '', rationaleHtml: true, qno: q.qno || null, dbId: q.dbId || null, srcIndex: idx };
+      return { id: String(q.id), type: sata ? 'sata' : 'mcq', options: q.options.slice(), correct: sata ? q.answer.slice() : [q.answer], optionRationales: q.optionRationales || {}, presentation: q.presentation, rationale: q.rationale || '', rationaleHtml: true, qno: q.qno || null, dbId: q.dbId || null, srcIndex: idx };
     };
     questions.forEach((q, idx) => {
       if (q.type === 'intro') {

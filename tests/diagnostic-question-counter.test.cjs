@@ -7,7 +7,7 @@ const vm = require('node:vm');
 const html = readFileSync(join(__dirname, '..', 'diagnostic.html'), 'utf8');
 const counter = html.slice(html.indexOf('  const caseItemCount ='), html.indexOf('  const correctSoFar ='));
 const mcq = { id: 'synthetic-mcq', type: 'mcq' };
-const legacyCase = { id: 'synthetic-case', type: 'casestudy', questions: [{}, {}, {}] };
+const legacyCase = { id: 'synthetic-case', type: 'casestudy', questions: [{qid:'a'}, {qid:'b'}, {qid:'c'}] };
 const number = (total, submitted, q = mcq) =>
   vm.runInNewContext(`${counter}\nqNum;`, { history: Array(total), submitted, q });
 
@@ -40,6 +40,7 @@ test('successful submission saves the complete response history without advancin
     const calls = [];
     const context = {
       q, attempt: { id: 'attempt', revision: 2, checkpoint: {} },
+      OptionPresentation: { encode: (item, answer) => answer },
       persistenceState: { status: 'ready' }, selected: [0], btState: {}, csAnswers: {},
       sharedInteraction: false, ngnAnswer: undefined,
       isAnswered: () => true, assessmentDb: () => ({}), examTimerCheckpoint: () => null,

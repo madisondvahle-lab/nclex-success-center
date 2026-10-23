@@ -171,7 +171,9 @@ test('changed non-JSX HTML scripts parse and every shared renderer page loads th
   }
   for (const name of ['diagnostic.html', 'shared-progress.html', 'question-bank-review.html', 'supplemental-practice.html', 'bianca-nur215.html', 'madison-diagnostic.html']) {
     const html = read(name);
-    const scorer = html.indexOf('src="ngn-scoring.js?v=ngn-cat-v1"');
-    assert.ok(scorer >= 0 && scorer < html.indexOf('src="exam-ui-ngn.js?v=ngn-cat-v1"'), name);
+    const scorer = html.indexOf('src="ngn-scoring.js?v=ngn-sata-v1"');
+    assert.ok(scorer >= 0 && scorer < html.indexOf('src="exam-ui-ngn.js?v=ngn-sata-v1"'), name);
+    const options = html.indexOf('src="option-presentation.js?v=ngn-sata-v1"');
+    assert.ok(options >= 0 && options < html.indexOf('src="exam-ui-ngn.js?v=ngn-sata-v1"'), name);
   }
 });

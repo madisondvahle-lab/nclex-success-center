@@ -1,4 +1,5 @@
 import '../../../ngn-scoring.js';
+import { presentation, canonicalAnswer } from './sata-presentation.mjs';
 
 export const MODEL = 'in-house-ngn-v1';
 export const SCORING_VERSION = 'ngn-v1';
@@ -96,6 +97,9 @@ export async function registryEntry(question, review) {
   data.stem = question.stem;
   data.rationale = question.rationale || data.rationale;
   data.id = `qbank:${question.id}`;
+  if (data.kind !== 'case' && question.option_rationales && Object.keys(question.option_rationales).length) {
+    data.optionRationales = copy(question.option_rationales);
+  }
   if (question.item_type === 'case') {
     if (data.kind !== 'case') throw new Error('Reviewed case type does not match its interaction data.');
   } else if (data.type !== question.item_type) throw new Error('Reviewed item type does not match its interaction data.');
@@ -124,10 +128,12 @@ export function currentInteraction(checkpoint) {
   const entry = current.key.ngn_entry, stage = current.stage;
   const source = entry.kind === 'case' ? entry.items[stage] : entry;
   if (!source) throw new Error('The current NGN case stage is invalid.');
+  const id = entry.kind === 'case' ? `${current.key.item_id}:${source.id}` : current.key.item_id;
   return {
     ...copy(source),
     scoringVersion: SCORING_VERSION,
-    id: entry.kind === 'case' ? `${current.key.item_id}:${source.id}` : current.key.item_id,
+    id,
+    ...(current.presentations?.[id] ? { presentation: presentation.validate(current.presentations[id], source.options.length) } : {}),
     sourceItemId: source.id,
     ...(entry.kind === 'case' ? {
       caseIndex: stage,
@@ -154,6 +160,7 @@ export function publicInteraction(checkpoint) {
     if (it[key] !== undefined) result[key] = it[key];
   }
   if (it.options) result.options = [...it.options];
+  if (it.presentation) result.presentation = copy(it.presentation);
   if (it.rows) result.rows = [...it.rows];
   if (it.cols) result.cols = [...it.cols];
   if (it.dropdowns) result.dropdowns = it.dropdowns.map(d => ({ options: [...d.options] }));
@@ -173,16 +180,25 @@ export function publicInteraction(checkpoint) {
 }
 
 export function selectCurrent(checkpoint, key) {
+  let presentations;
+  if (checkpoint.optionProtocol === presentation.VERSION && key?.ngn_entry) {
+    const entry = key.ngn_entry;
+    presentations = Object.fromEntries((entry.kind === 'case' ? entry.items : [entry]).filter(it => it.type === 'sata').map(it => [
+      entry.kind === 'case' ? `${key.item_id}:${it.id}` : key.item_id, presentation.create(it.options.length),
+    ]));
+  }
   return {
     ...(checkpoint.ngnState || { responses: {} }),
-    current: key?.ngn_entry ? { key: copy(key), stage: 0 } : null,
+    current: key?.ngn_entry ? { key: copy(key), stage: 0, ...(presentations ? { presentations } : {}) } : null,
   };
 }
 
 export function validateDraft(checkpoint, draft) {
   const it = currentInteraction(checkpoint);
   if (!it) return null;
-  const answer = draft?.answer ?? scoring.emptyAnswer(it);
+  const submitted = draft?.answer;
+  const answer = submitted == null ? scoring.emptyAnswer(it) :
+    canonicalAnswer(checkpoint.ngnState.current.presentations, it.id, submitted, true);
   scoring.validateAnswer(it, answer, true);
   const display = publicInteraction(checkpoint);
   const tabs = display.case?.tabs || display.tabs || [];
@@ -229,5 +245,6 @@ export function responseDetail(checkpoint, itemId, reveal) {
     credit: detail.credit, contentVersion: detail.contentVersion,
     scoringVersion: SCORING_VERSION, caseIndex: detail.caseIndex, caseLength: detail.caseLength,
     interaction: detail.item, sourceId: detail.parentId,
+    ...(detail.item.presentation ? { presentation: copy(detail.item.presentation) } : {}),
   };
 }

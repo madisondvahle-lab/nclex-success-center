@@ -320,8 +320,10 @@
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script src="practice-review-data.js"></script>
-  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
+  <meta name="nclex-option-protocol" content="sata-order-v1">
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -748,7 +750,7 @@
         if(!val.length)return '<span class="muted">None selected</span>';
         return val.map(idx=>{
           if(typeof idx==='number'){
-            const letter=String.fromCharCode(65+idx);
+            const letter=String.fromCharCode(65+(bankItem?.presentation ? OptionPresentation.order(bankItem).indexOf(idx) : idx));
             const optText=bankItem?.options?.[idx];
             return optText?`<strong>Option ${letter}:</strong> ${esc(optText)}`:`Option ${letter}`;
           }
@@ -787,8 +789,9 @@
       const selectedIndices=toSet(selectedVal);
       const correctIndices=toSet(correctVal);
 
-      return '<div class="review-options-list">'+bankItem.options.map((opt,idx)=>{
-        const letter=String.fromCharCode(65+idx);
+      return '<div class="review-options-list">'+OptionPresentation.order(bankItem).map((idx,position)=>{
+        const opt=bankItem.options[idx];
+        const letter=String.fromCharCode(65+position);
         const isSel=selectedIndices.has(idx);
         const isCor=correctIndices.has(idx);
         let marker='',cls='review-option';
@@ -805,7 +808,8 @@
           cls+=' opt-wrong-choice';
           marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>';
         }
-        return `<div class="${cls}"><span class="opt-letter">${letter}.</span> <span class="opt-text">${esc(opt)}</span>${marker}</div>`;
+        const explanation=bankItem.optionRationales?.[idx] || bankItem.option_rationales?.[idx];
+        return `<div class="${cls}"><span class="opt-letter">${letter}.</span> <span class="opt-text">${esc(opt)}${explanation?` — ${esc(explanation)}`:''}</span>${marker}</div>`;
       }).join('')+'</div>';
     }
 
@@ -861,6 +865,8 @@
       container.innerHTML='<p class="muted" style="margin:4px 0;">Loading question responses…</p>';
       const {data,error}=await db.functions.invoke('diagnostic-assessment',{
         body:{action:'review',attemptId,
+          ...(window.ExamUI?.OPTION_PROTOCOL==='sata-order-v1' && window.OptionPresentation?.VERSION==='sata-order-v1'
+            ? {optionProtocol:'sata-order-v1'} : {}),
           ...(window.ExamUI?.CLIENT_PROTOCOL==='ngn-cat-v1' && window.NGNScoring?.VERSION==='ngn-v1'
             ? {clientProtocol:'ngn-cat-v1'} : {})}
       });
@@ -938,7 +944,8 @@
         itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this attempt).</p>';
       }else{
         itemsHtml=shownResponses.map(r=>{
-          const bankItem=r.interaction||findAuthoritativeItem(r.item_id);
+          const source=r.interaction||findAuthoritativeItem(r.item_id);
+          const bankItem=source?{...source,presentation:r.presentation||source.presentation}:null;
           const isCorrect=Boolean(r.is_correct);
           const qNum=responses.indexOf(r)+1;
           const category=r.nclex_category||r.blueprint||bankItem?.category||bankItem?.blueprint||'';
@@ -1025,7 +1032,8 @@
           itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this practice set).</p>';
         }else{
           itemsHtml=shown.map(d=>{
-            const bankItem=findAuthoritativeItem(d.id);
+            const source=findAuthoritativeItem(d.id);
+            const bankItem=Array.isArray(d.options)?{...source,stem:d.stem||source?.stem,options:d.options,rationale:d.rationale,presentation:d.presentation,optionRationales:d.option_rationales}:source;
             const isCorrect=Boolean(d.is_correct);
             const qNum=details.indexOf(d)+1;
             const stem=bankItem?.stem||null;

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
   <link rel="stylesheet" href="exam-ui.css">
   <title>NUR 215 Practice · Study With Madison, RN</title>
   <style>
@@ -25,8 +26,15 @@
     details{border:1px solid var(--line);background:#fff;margin:8px 0}summary{cursor:pointer;padding:12px 14px;font-weight:600}.in{padding:0 16px 16px;line-height:1.55;font-size:.92rem}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script>
+    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1') {
+      window.ExamUI = undefined;
+      throw new Error('The assessment modules could not load. Refresh and try again.');
+    }
+  </script>
 </head>
 <body>
 <div class="shell">
@@ -62,6 +70,7 @@
     return {id:q.id,type:q.type==='sata'?'sata':'mcq',stem:esc(q.stem),
       options:q.options.map(o=>o.text),
       correct:q.correct_answers.map(a=>ids.indexOf(a)),
+      optionRationales:Object.fromEntries(ids.map((id,i)=>[i,q.option_rationales[id]])),
       topic:q.category,category:q.category,difficulty:q.difficulty,concept:q.concept,
       rationaleHtml:true,
       rationale:esc(q.correct_rationale)+'<ul style="margin:10px 0 0;padding-left:18px">'+opts+'</ul><p><b>Exam strategy:</b> '+esc(q.exam_strategy)+'</p>'};
@@ -78,7 +87,7 @@
     const pool=filtered().sort(()=>Math.random()-.5).slice(0,+$('count').value);
     const items=pool.map(toItem);const tutor=$('mode').value==='tutor';
     $('app').classList.add('hidden');
-    new ExamUI.Exam($('exam-root'),{title:'NUR 215 PRACTICE',items,instant:tutor,
+    new ExamUI.Exam($('exam-root'),{title:'NUR 215 PRACTICE',items,instant:tutor,storageKey:'sata-nur215:'+student?.id,
       onFinish:r=>finish(r,tutor),onExit:()=>$('app').classList.remove('hidden')});
   }
   const pct=(a,b)=>b?Math.round(a/b*100):0,tone=p=>p>=80?'good':p>=60?'mid':'low';
@@ -99,7 +108,7 @@
   }
   async function save(rows,right){
     if(!student)return 'Sign in through the Success Center to save results to your dashboard.';
-    const details=rows.map(x=>({question_id:x.it.id,category:x.it.category,correct:!!x.full}));
+    const details=rows.map(x=>({question_id:x.it.id,category:x.it.category,correct:!!x.full,selected_answer:x.a,correct_answer:x.it.correct,options:x.it.options,presentation:x.it.presentation,option_rationales:x.it.optionRationales,stem:x.it.stem,rationale:x.it.rationale}));
     const cs={};details.forEach(d=>{const c=cs[d.category]||(cs[d.category]={correct:0,total:0});c.total++;if(d.correct)c.correct++});
     const res=await db.from('student_supplemental_practice_results').insert({student_id:student.id,practice_key:'bianca-nur215-100',practice_title:'NUR 215 Practice Questions',score:right,total_questions:rows.length,completed_at:new Date().toISOString(),answer_details:details,category_scores:cs,missed_question_ids:details.filter(d=>!d.correct).map(d=>d.question_id)});
     return res.error?'Your score is shown here, but it was not saved.':'Saved to your dashboard.';

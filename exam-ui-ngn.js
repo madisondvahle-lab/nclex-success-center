@@ -3,6 +3,13 @@
    Bank entries are either a standalone item or { kind:'case', ... items:[...] }. */
 (function () {
   'use strict';
+  // The same asset must preserve ordering and non-persistent behavior on older NGN-only pages.
+  const optionProtocol = typeof document !== 'undefined' && document.querySelector?.('meta[name="nclex-option-protocol"]')?.content === 'sata-order-v1';
+  const OptionPresentation = optionProtocol ? window.OptionPresentation : null;
+  if (optionProtocol && (OptionPresentation?.VERSION !== 'sata-order-v1' || typeof OptionPresentation.rationale !== 'function')) throw new Error('The answer presentation module could not load. Refresh and try again.');
+  const optionOrder = it => OptionPresentation && it.type === 'sata' ? OptionPresentation.order(it) : it.options.map((_, i) => i);
+  const withPresentation = it => OptionPresentation && it.type === 'sata'
+    ? Object.assign({}, it, { presentation: it.presentation ? OptionPresentation.validate(it.presentation, it.options.length) : OptionPresentation.create(it.options.length) }) : it;
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ico = p => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
   const ICON = {
@@ -55,10 +62,10 @@
         const total = entry.items.length;
         const cs = { id: entry.id, title: entry.title, scenario: entry.scenario, textFormat: entry.textFormat, tabs: entry.tabs, banner: entry.banner, total };
         entry.items.forEach((it, idx) => {
-          out.push(Object.assign({ category: entry.category, topic: entry.topic, difficulty: entry.difficulty, ngn: true }, it, { qid: it.id, case: cs, caseIndex: idx }));
+          out.push(withPresentation(Object.assign({ category: entry.category, topic: entry.topic, difficulty: entry.difficulty, ngn: true }, it, { qid: it.id, case: cs, caseIndex: idx })));
         });
       } else {
-        const it = o.shuffleOptions ? shuffleItemOptions(entry) : entry;
+        const it = OptionPresentation && entry.type === 'sata' ? withPresentation(entry) : o.shuffleOptions ? shuffleItemOptions(entry) : entry;
         out.push(Object.assign({}, it, { qid: it.id }));
       }
     });
@@ -99,12 +106,15 @@
     const li = (cls, mark, txt) => `<li class="${cls}"><span class="m">${mark}</span><span>${txt}</span></li>`;
     if (it.type === 'mcq' || it.type === 'sata') {
       const sel = it.type === 'mcq' ? (a === null ? [] : [a]) : a;
-      return '<ul class="ex-rv">' + it.options.map((t, i) => {
+      return '<ul class="ex-rv">' + optionOrder(it).map(i => {
+        const t = it.options[i];
+        const explanation = OptionPresentation && it.type === 'sata' && OptionPresentation.rationale(it, i);
+        const label = esc(t) + (explanation ? ' — ' + esc(explanation) : '');
         const isC = it.correct.includes(i), isS = sel.includes(i);
-        if (isC && isS) return li('good', '✓', esc(t));
-        if (isC) return li('miss', '○', esc(t) + ' <em>(correct answer)</em>');
-        if (isS) return li('bad', '✗', esc(t) + ' <em>(selected)</em>');
-        return li('', '', esc(t));
+        if (isC && isS) return li('good', '✓', label);
+        if (isC) return li('miss', '○', label + ' <em>(correct answer)</em>');
+        if (isS) return li('bad', '✗', label + ' <em>(selected)</em>');
+        return li('', '', label);
       }).join('') + '</ul>';
     }
     if (it.type === 'fill') return `<ul class="ex-rv">${li(score(it, a).full ? 'good' : 'bad', score(it, a).full ? '✓' : '✗', 'Entered: ' + esc(a || '(blank)'))}${li('', '', 'Correct: ' + esc(it.correct) + ' ' + esc(it.unit || ''))}</ul>`;
@@ -143,7 +153,17 @@
 
   class Exam {
     constructor(root, opts) {
-      this.root = root; this.o = opts; this.items = opts.items; this.i = 0;
+      opts = Object.assign({}, opts);
+      if (OptionPresentation && opts.storageKey) {
+        const stored = sessionStorage.getItem(opts.storageKey);
+        if (stored) { opts.resume = JSON.parse(stored); opts.items = opts.resume.items; }
+        const checkpoint = opts.onCheckpoint;
+        opts.onCheckpoint = state => {
+          sessionStorage.setItem(opts.storageKey, JSON.stringify(state));
+          checkpoint?.(state);
+        };
+      }
+      this.root = root; this.o = opts; this.items = opts.items.map(withPresentation); this.i = 0;
       this.ans = this.items.map((it, i) => i === 0 && opts.answer !== undefined ? opts.answer : emptyAnswer(it));
       this.struck = this.items.map(() => new Set());
       this.marked = this.items.map(() => false);
@@ -153,7 +173,23 @@
       this.checked = this.items.map(() => false);
       this.tab = opts.tabState || {}; this.notes = ''; this.elapsed = 0; this.fs = 1;
       this.remaining = opts.seconds || null; this.done = false;
-      this.build(); this.show(0);
+      if (OptionPresentation && opts.resume) {
+        const saved = opts.resume;
+        if (!Array.isArray(saved.items) || saved.items.length !== this.items.length || !Array.isArray(saved.ans) ||
+            saved.ans.length !== this.items.length || !Number.isInteger(saved.i) || saved.i < 0 || saved.i >= this.items.length) throw new Error('Saved practice does not match this assessment.');
+        for (const it of saved.items) if (it.type === 'sata') OptionPresentation.validate(it.presentation, it.options.length);
+        this.items = saved.items; this.ans = saved.ans; this.i = saved.i;
+        if (saved.settings) for (const key of ['instant', 'showTimer', 'noFeedback']) this.o[key] = saved.settings[key];
+        for (const key of ['marked', 'time', 'changes', 'fb', 'checked', 'tab', 'notes', 'elapsed', 'remaining']) this[key] = saved[key];
+        this.struck = saved.struck.map(values => new Set(values));
+      }
+      this.build(); this.show(this.i);
+      if (OptionPresentation) {
+        for (const event of ['click', 'change', 'input']) this.app.addEventListener(event, () => queueMicrotask(() => { if (!this.done) this.persist(); }));
+        this.persist();
+        this.pageHideHandler = () => { if (!this.done) this.persist(); };
+        window.addEventListener('pagehide', this.pageHideHandler);
+      }
       this.timer = this.o.showTimer === false ? null : setInterval(() => this.tick(), 1000);
     }
 
@@ -281,8 +317,9 @@
         <div class="bt-banks">${bank('actions', b.actionsTitle || 'Action to Take', [a[0], a[1]])}${bank('conditions', b.conditionsTitle || 'Condition Most Likely Experiencing', [a[2]])}${bank('complications', b.complicationsTitle || 'Complication', [a[3], a[4]])}</div>`;
     }
 
-    optRow(kind, i, text, checked, struck) {
-      return `<label class="ex-opt${struck ? ' struck' : ''}" data-i="${i}"><input type="${kind === 'r' ? 'radio' : 'checkbox'}" name="opt" value="${i}"${checked ? ' checked' : ''}><span class="ex-ctl ${kind}"></span><span class="ex-num">${i + 1}.</span><span class="ex-txt">${esc(text)}</span></label>`;
+    optRow(kind, i, text, checked, struck, position = i) {
+      const value = OptionPresentation && this.it.type === 'sata' ? this.it.presentation?.ids[i] || i : i;
+      return `<label class="ex-opt${struck ? ' struck' : ''}" data-i="${i}"><input type="${kind === 'r' ? 'radio' : 'checkbox'}" name="opt" value="${esc(value)}"${checked ? ' checked' : ''}><span class="ex-ctl ${kind}"></span><span class="ex-num">${position + 1}.</span><span class="ex-txt">${esc(text)}</span></label>`;
     }
 
     answerUi(it) {
@@ -292,7 +329,7 @@
       const hint = '<p class="ex-hint">Tip: right-click (or press and hold) an answer to cross it out.</p>';
       if (it.type === 'bowtie') return this.bowtieUi(it, a);
       if (it.type === 'mcq') return lead + '<div class="ex-opts" role="radiogroup">' + it.options.map((t, i) => this.optRow('r', i, t, a === i, this.struck[this.i].has(i))).join('') + '</div>' + hint;
-      if (it.type === 'sata') return lead + '<div class="ex-opts">' + it.options.map((t, i) => this.optRow('c', i, t, a.includes(i), this.struck[this.i].has(i))).join('') + '</div>' + hint;
+      if (it.type === 'sata') return lead + '<div class="ex-opts">' + optionOrder(it).map((i, position) => this.optRow('c', i, it.options[i], a.includes(i), this.struck[this.i].has(i), position)).join('') + '</div>' + hint;
       if (it.type === 'fill') return lead + `<div class="ex-fill"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer" value="${esc(a)}"><span>${esc(it.unit || '')}</span></div><p class="ex-hint">Use the Calculator in the toolbar. Round only at the end if the question asks you to.</p>`;
       if (it.type === 'matrix') {
         return lead + `<table class="ex-table ex-matrix"><thead><tr><th>${esc(it.rowLabel || 'Finding')}</th>${it.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>` +
@@ -329,7 +366,7 @@
       const t = e.target, it = this.it, k = this.i;
       if (this.checked[k] || this.o.readOnly) return;
       if (t.name === 'opt') {
-        const v = +t.value; this.struck[k].delete(v);
+        const v = OptionPresentation && it.type === 'sata' && it.presentation ? OptionPresentation.indexes(it.presentation, [t.value])[0] : +t.value; this.struck[k].delete(v);
         if (it.type === 'mcq') { if (this.ans[k] !== null && this.ans[k] !== v) this.changes[k]++; this.ans[k] = v; }
         else { const set = new Set(this.ans[k]); if (t.checked) set.add(v); else { set.delete(v); this.changes[k]++; } this.ans[k] = [...set].sort((a, b) => a - b); }
         this.main.querySelectorAll('.ex-opt[data-i]').forEach(r => r.classList.toggle('struck', this.struck[k].has(+r.dataset.i)));
@@ -402,7 +439,7 @@
         help: () => this.helpModal(),
         gear: () => { this.fs = (this.fs + 1) % 3; this.app.dataset.fs = this.fs; },
         expand: () => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => { }); },
-        exit: () => this.modal('Exit assessment', '<p>Leave this assessment? Your answers so far will not be scored.</p>', [['Keep working'], ['Exit', () => { this.destroy(); this.o.onExit && this.o.onExit(); }]])
+        exit: () => this.modal('Exit assessment', OptionPresentation && this.o.onCheckpoint ? '<p>Leave this assessment? Your answers are saved in this browser tab for resuming later.</p>' : '<p>Leave this assessment? Your answers so far will not be scored.</p>', [['Keep working'], ['Exit', () => { if (!this.persist()) return; this.destroy(); this.o.onExit && this.o.onExit(); }]])
       }[b.dataset.a] || (() => { }))();
     }
 
@@ -480,18 +517,35 @@
 
     destroy() {
       this.done = true; clearInterval(this.timer); document.removeEventListener('keydown', this.keyHandler); this.root.innerHTML = '';
+      if (this.pageHideHandler) window.removeEventListener('pagehide', this.pageHideHandler);
       if (!this.o.embedded) {
         document.querySelectorAll('.ex-modal-bg').forEach(m => m.remove());
         if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
       }
     }
 
+    persist() {
+      if (!OptionPresentation) return true;
+      try { this.o.onCheckpoint?.(this.snapshot()); return true; }
+      catch (error) {
+        let message = this.root.querySelector('.ex-save-error');
+        if (!message) { message = document.createElement('p'); message.className = 'ex-save-error'; message.setAttribute('role', 'alert'); this.root.prepend(message); }
+        message.textContent = 'Practice could not be saved in this tab. Keep it open to retain your answers: ' + error.message;
+        return false;
+      }
+    }
+
+    snapshot() {
+      return { items: this.items, ans: this.ans, i: this.i, struck: this.struck.map(s => [...s]), marked: this.marked, time: this.time, changes: this.changes, fb: this.fb, checked: this.checked, tab: this.tab, notes: this.notes, elapsed: this.elapsed, remaining: this.remaining, settings: { instant: this.o.instant, showTimer: this.o.showTimer, noFeedback: this.o.noFeedback } };
+    }
+
     finish(timedOut) {
       if (this.done) return;
       const res = { items: this.items, ans: this.ans, struck: this.struck.map(s => [...s]), marked: this.marked, time: this.time, changes: this.changes, fb: this.fb, notes: this.notes, elapsed: this.elapsed, timedOut: !!timedOut };
+      if (OptionPresentation && this.o.storageKey) sessionStorage.removeItem(this.o.storageKey);
       this.destroy(); this.o.onFinish && this.o.onFinish(res);
     }
   }
 
-  window.ExamUI = { Exam, prepare, score, isAnswered, reviewHtml, esc, CLIENT_PROTOCOL: 'ngn-cat-v1' };
+  window.ExamUI = { Exam, prepare, score, isAnswered, reviewHtml, esc, CLIENT_PROTOCOL: 'ngn-cat-v1', OPTION_PROTOCOL: 'sata-order-v1' };
 })();

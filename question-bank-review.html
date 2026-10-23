@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
   <title>Question Bank Review · Study With Madison</title>
   <link rel="stylesheet" href="exam-ui.css">
   <link rel="stylesheet" href="ngn-author.css">
@@ -891,9 +892,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="question-audit-panel.js"></script>
-  <script src="ngn-scoring.js?v=ngn-cat-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-cat-v1"></script>
-  <script src="ngn-author-ngn.js?v=ngn-cat-v1"></script>
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script src="ngn-author-ngn.js?v=ngn-sata-v1"></script>
+  <script>
+    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1') {
+      window.ExamUI = undefined;
+      throw new Error('The assessment modules could not load. Refresh and try again.');
+    }
+  </script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1009,6 +1017,9 @@
     ]);
     function validateBatchItems(items){
       if(!Array.isArray(items))throw new Error('The JSON file must contain an "items" array.');
+      let warnings=$('bulk-position-warnings');
+      if(!warnings){warnings=document.createElement('p');warnings.id='bulk-position-warnings';warnings.setAttribute('role','status');$('bulk-status').after(warnings)}
+      warnings.textContent=OptionPresentation.warnings(items).join(' ');
       const ids=new Set(),previous=[];
       return items.map((item,index)=>{
         const errors=[],number=index+1;

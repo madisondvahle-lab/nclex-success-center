@@ -14,7 +14,7 @@
         answer.some(index=>!Number.isInteger(index)||index<0||index>=options.length)||
         new Set(answer).size!==answer.length)return null;
     }else return null;
-    return {itemType,options,answer};
+    return {itemType,options,answer,optionRationales:question.option_rationales || {}};
   }
 
   function matchesDifficulty(question, difficulty){

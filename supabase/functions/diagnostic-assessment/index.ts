@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { presentation, newPresentations, canonicalAnswer } from '../_shared/sata-presentation.mjs';
 import {
   pickNextQuestion,
   shouldStop,
@@ -44,6 +45,19 @@ const requiredString = (value: unknown, name: string) => {
   if (typeof value !== 'string' || !value.trim()) throw new HttpError(400, `${name} is required.`);
   return value.trim();
 };
+
+function requirePresentationClient(attempt: Record<string, any>, body: Record<string, any>) {
+  if (attempt.checkpoint?.optionProtocol && body.optionProtocol !== presentation.VERSION) {
+    throw new HttpError(409, 'This assessment uses saved answer ordering. Refresh to the current assessment page to continue.');
+  }
+}
+
+function decodeAnswer(attempt: Record<string, any>, id: string, answer: unknown, draft = false) {
+  const checkpoint = attempt.checkpoint;
+  const saved = { ...checkpoint?.presentations, ...checkpoint?.ngnState?.current?.presentations };
+  try { return canonicalAnswer(saved, id, answer, draft); }
+  catch (error) { throw new HttpError(400, error instanceof Error ? error.message : 'Invalid answer identity.'); }
+}
 
 const canonicalize = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -107,9 +121,9 @@ async function createContext(request: Request) {
   return { user, student, isAdmin: isAdmin === true, service };
 }
 
-type AssessmentService = Awaited<ReturnType<typeof createContext>>['service'];
+type SupabaseClient = Awaited<ReturnType<typeof createContext>>['service'];
 
-async function attemptForStudent(service: AssessmentService, attemptId: string, studentId: string) {
+async function attemptForStudent(service: SupabaseClient, attemptId: string, studentId: string) {
   const { data, error } = await service
     .from('in_house_assessment_attempts')
     .select('id,student_id,session_key,assessment_key,assessment_title,assessment_version,mode,status,result,ability_estimate,target_questions,total_questions,correct_questions,checkpoint,checkpoint_revision,qa_mode,started_at,updated_at,completed_at')
@@ -121,7 +135,7 @@ async function attemptForStudent(service: AssessmentService, attemptId: string, 
   return data;
 }
 
-async function itemKeys(service: AssessmentService, scope: string, includeNGN = false) {
+async function itemKeys(service: SupabaseClient, scope: string, includeNGN = false) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('bank_scope,item_id,item_source,parent_item_id,selectable,item_type,difficulty,blueprint,category,nclex_category,topic,cognitive_level,core_tags,correct_response,rationale,sequence_order,case_length')
@@ -132,7 +146,7 @@ async function itemKeys(service: AssessmentService, scope: string, includeNGN = 
   const ngnKeys: Array<NonNullable<Awaited<ReturnType<typeof registryEntry>>>> = [];
   for (let offset = 0; ; offset += 100) {
     const { data: questions, error: questionError } = await service.from('questions')
-      .select('id,stem,rationale,active,source_key,item_type,item_data,difficulty,nclex_category,topic')
+      .select('id,stem,rationale,option_rationales,active,source_key,item_type,item_data,difficulty,nclex_category,topic')
       .eq('active', true).eq('item_data->>schemaVersion', '1')
       .like('source_key', 'qbank-bulk-%').order('id').range(offset, offset + 99);
     if (questionError) throw questionError;
@@ -155,7 +169,7 @@ function keyForItem(keys: Array<Record<string, any>>, id: string) {
   return item;
 }
 
-async function responseRows(service: AssessmentService, attemptId: string) {
+async function responseRows(service: SupabaseClient, attemptId: string) {
   const { data, error } = await service
     .from('in_house_assessment_item_responses')
     .select('item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
@@ -183,6 +197,7 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
       correct: reveal ? Boolean(row.is_correct) : null,
       selectedAnswer: row.selected_answer,
       scoringModel: checkpoint.scoringModel || 'in-house-core-v1',
+      ...(checkpoint.presentations?.[row.item_id] ? { presentation: checkpoint.presentations[row.item_id] } : {}),
     };
     if (reveal) {
       record.correctAnswer = row.correct_answer;
@@ -253,7 +268,7 @@ function attemptSummary(attempt: Record<string, any>) {
   };
 }
 
-async function stateForAttempt(service: AssessmentService, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
+async function stateForAttempt(service: SupabaseClient, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
   const rows = await responseRows(service, attempt.id);
   const reveal = canReveal(attempt);
   return {
@@ -280,6 +295,7 @@ function targetFor(mode: string, requested: unknown) {
 const CLIENT_PROTOCOL = 'ngn-cat-v1';
 
 function requireCompatibleClient(attempt: Record<string, any>, body: Record<string, any>) {
+  requirePresentationClient(attempt, body);
   if (attempt.checkpoint?.scoringModel === MODEL && body.clientProtocol !== CLIENT_PROTOCOL) {
     throw new HttpError(409, 'This saved assessment requires the updated CAT page. Refresh the portal and resume; your progress is unchanged.');
   }
@@ -347,7 +363,11 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   const checkpoint = {
     schemaVersion: ngnEnabled ? 4 : 3,
     assessmentVersion: ngnEnabled ? MODEL : 'in-house-core-v1',
-    ...(ngnEnabled ? { scoringModel: MODEL, ngnState: selectCurrent({}, firstItem) } : {}),
+    ...(ngnEnabled ? { scoringModel: MODEL, ngnState: selectCurrent({ optionProtocol: body.optionProtocol }, firstItem) } : {}),
+    ...(body.optionProtocol === presentation.VERSION ? {
+      optionProtocol: presentation.VERSION,
+      presentations: newPresentations(keys),
+    } : {}),
     mode,
     profile,
     currentItemId: firstItem.item_id,
@@ -385,7 +405,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   return await stateForAttempt(context.service, attempt, keys);
 }
 
-async function coreRequirements(service: AssessmentService) {
+async function coreRequirements(service: SupabaseClient) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('item_id,core_tags')
@@ -435,12 +455,21 @@ async function checkpointAttempt(context: Awaited<ReturnType<typeof createContex
   if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
     throw new HttpError(400, 'Checkpoint is invalid.');
   }
+  if (incoming.presentations && JSON.stringify(incoming.presentations) !== JSON.stringify(attempt.checkpoint?.presentations)) {
+    throw new HttpError(400, 'Saved answer mappings cannot be replaced by the client.');
+  }
+  const selected = currentInteraction(attempt.checkpoint) ? [] :
+    decodeAnswer(attempt, attempt.checkpoint.currentItemId, incoming.draft?.selected || [], true);
+  const csAnswers: Record<string, unknown> = {};
+  for (const [id, value] of Object.entries(incoming.draft?.csAnswers || {})) {
+    csAnswers[id] = decodeAnswer(attempt, `${attempt.checkpoint.currentItemId}:${id}`, value, true);
+  }
   const checkpoint = {
     ...attempt.checkpoint,
     draft: {
-      selected: Array.isArray(incoming.draft?.selected) ? incoming.draft.selected : [],
+      selected: Array.isArray(selected) ? selected : [],
       btState: incoming.draft?.btState || { left: [], center: [], right: [] },
-      csAnswers: incoming.draft?.csAnswers && typeof incoming.draft.csAnswers === 'object' ? incoming.draft.csAnswers : {},
+      csAnswers,
       submitted: false,
     },
     examTimer: cleanExamTimer(incoming.examTimer, attempt.checkpoint?.mode),
@@ -481,6 +510,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Assessment revision is invalid.');
   const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
   requireCompatibleClient(attempt, body);
+  if (body.presentations || body.presentation || body.optionOrder) throw new HttpError(400, 'Answer mappings are server-owned.');
   if (attempt.status !== 'in_progress') throw new HttpError(409, 'This assessment is no longer active.');
   if (attempt.checkpoint_revision !== revision || attempt.checkpoint?.currentItemId !== itemId) {
     throw new HttpError(409, 'This response no longer matches the current assessment item. Reload and resume.');
@@ -499,7 +529,8 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
 
   if (ngnItem) {
     let detail;
-    try { detail = scoreCurrent(attempt.checkpoint, body.answer); }
+    const canonical = decodeAnswer(attempt, itemId, body.answer);
+    try { detail = scoreCurrent(attempt.checkpoint, canonical); }
     catch (error) { throw new HttpError(400, error instanceof Error ? error.message : 'Invalid NGN response.'); }
     ngnResult = recordCredit(attempt.checkpoint, detail);
     const correct = ngnItem.type === 'highlight'
@@ -508,7 +539,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     const row = {
       item_id: ngnItem.id, item_source: item.item_source, blueprint: item.blueprint,
       nclex_category: item.nclex_category, topic: item.topic, difficulty: item.difficulty,
-      question_type: ngnItem.type, selected_answer: body.answer, correct_answer: correct,
+      question_type: ngnItem.type, selected_answer: canonical, correct_answer: correct,
       is_correct: detail.credit.full, answered_at: answeredAt,
     };
     outcomes.push({
@@ -528,14 +559,15 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     }
     for (const child of children) {
       const subId = child.item_id.slice(itemId.length + 1);
-      if (!Object.hasOwn(submitted, subId) || !Array.isArray(submitted[subId]) || !submitted[subId].length) {
+      const answer = decodeAnswer(attempt, child.item_id, submitted[subId]);
+      if (!Object.hasOwn(submitted, subId) || !Array.isArray(answer) || !answer.length) {
         throw new HttpError(400, 'Complete every item in the case study before submitting.');
       }
-      outcomes.push(score(child, submitted[subId], answeredAt));
+      outcomes.push(score(child, answer, answeredAt));
     }
   } else {
     if (body.answer === undefined || body.answer === null) throw new HttpError(400, 'A response is required.');
-    outcomes.push(score(item, body.answer, answeredAt));
+    outcomes.push(score(item, decodeAnswer(attempt, itemId, body.answer), answeredAt));
   }
 
   const priorRows = await responseRows(context.service, attempt.id);
