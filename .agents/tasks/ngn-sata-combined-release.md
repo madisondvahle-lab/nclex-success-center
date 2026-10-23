@@ -33,6 +33,38 @@ Server-first checkpoint completed:
 - Frontend remained on `2fec3b9` during server verification; protected frontend
   PR/Pages publication is the next authorized checkpoint.
 
+### Publication paused: required production monitoring not yet verified
+
+Frontend release [PR #242](https://github.com/madisondvahle-lab/nclex-success-center/pull/242)
+is prepared, not merged. No production frontend publication has occurred.
+PR checks passed or were explicitly skipped; main's ruleset requires a PR and
+does not prescribe additional required check names. Exact approved runtime,
+latest-main preservation and Deno checks passed before the pause.
+
+Post-installation error-log monitoring could not be established through the
+Management API: `logs.all` returns HTTP 410, while its documented replacement
+`logs` returns backend errors or rejects documented `source_name` fields.
+These are monitoring/query errors, not evidence of a CAT runtime regression.
+Do not equate successful resume probes with a clean production error log.
+Do not proceed with frontend merge until read-only monitoring is verified.
+
+Next checkpoint: inspect the Supabase dashboard for this project's
+`diagnostic-assessment` version 8 invocation/function logs and database error
+logs since its deployment (2026-10-23 05:11:59 UTC), or restore a working
+read-only log query. Check for boot/import errors, authentication failures,
+failed CAT requests and save-RPC errors. Investigate any error before further
+rollout. Recheck main, deployed sources, admissions and data preservation
+before resuming the protected PR/Pages sequence.
+
+Final paused-state reads reconfirmed version 8 ACTIVE/JWT true, admission
+digest `false`, unchanged corrected save RPC/permissions, and all seven
+application-table fingerprints identical to predeployment. No production CAT
+starts, submissions, student-record writes, SQL changes, question activations
+or rollback were performed. Retain the compatible server; never revert to an
+identity/NGN-incompatible legacy server. Live scoring, pause/resume with an
+actual saved attempt and completed review remain untested under the current
+no-test-record restriction; isolated end-to-end results below cover them.
+
 The pre-existing practice total-label issue is tracked separately in
 [#241](https://github.com/madisondvahle-lab/nclex-success-center/issues/241).
 It is not fixed or otherwise included in this release.
