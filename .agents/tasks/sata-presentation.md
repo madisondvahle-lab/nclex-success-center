@@ -1,5 +1,10 @@
 # Isolated SATA presentation correction
 
+The original isolated implementation remains preserved at `88ce6cc`.
+For the reconciled combined candidate and the only proposed deployment
+sequence, see [the combined release handoff](ngn-sata-combined-release.md).
+The standalone evidence below does not by itself approve a combined deployment.
+
 ## Scope and status
 
 Local-only implementation on `fix/sata-presentation`, based on deployed frontend

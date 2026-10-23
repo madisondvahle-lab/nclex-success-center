@@ -1,5 +1,10 @@
 # NGN-style full-length CAT simulation
 
+For the locally reconciled SATA + Phase 2 candidate and proposed coordinated
+server-first release, see [the combined release handoff](ngn-sata-combined-release.md).
+Original Phase 2 `5c42a56` remains unchanged and unreleased. Do not deploy that
+server independently over a newer SATA-capable server.
+
 ## Goal
 
 Build the existing student-facing NCLEX readiness/CAT into a full-length,
