@@ -68,8 +68,10 @@ synthetic-only NGN endpoint test.
 
 The parallel NUR 312 page requires the additive
 `supabase-nur312-parallel-persistence.sql` migration before its new RPC actions
-are available. That migration has only been applied and tested in the
-disposable local Supabase project; it has not been applied to production.
+are available. The reviewed migration was applied to production before the
+frontend publication and its function permissions, authenticated ownership and
+assignment checks, legacy and versioned actions, and unchanged assessment
+record counts were verified read-only afterward.
 
 ## Migration and rollback review
 
@@ -97,29 +99,47 @@ installed and use a forward fix; only remove the new UI after confirming there
 are no in-progress mapped attempts that need resuming. This is a forward-
 recovery plan, not a tested post-launch database downgrade.
 
-## Release status and sequence
+## Production release status
 
-Changes remain local on `fix/mcq-presentation`; no push, merge, production
-migration, or deployment has been performed. The original `fd094889` commit is
-unchanged.
+- PR #247 is merged. Production Pages commit:
+  `d8f600759c75f76fde3e9429a672431082d64c8f`.
+- Production CAT Edge Function is version 9, active, with JWT verification
+  enabled.
+- The additive NUR 312 RPC migration is installed. The function retains the
+  legacy actions alongside the versioned mapping actions.
+- Read-only production checks confirmed the MCQ protocol and shared assets
+  were published, the parallel NUR 312 page loads the updated persistence
+  helper, an unauthenticated CAT request is rejected with HTTP 401, and
+  production counts remained at 4 attempts and 100 responses during final
+  verification.
+- NGN admissions remain explicitly disabled.
 
-For a future approved release:
+## Remaining production validation
 
-1. Confirm the deployed CAT function revision and JWT verification, and confirm
-   NGN admissions are still disabled.
-2. Apply the NUR 312 function migration as a transaction. Before any new page
-   traffic, verify the function signature, grants, authenticated assignment
-   gate, and that the existing CAT tables/rows and diagnostic RPC grants are
-   unchanged. If this checkpoint fails, restore the predecessor function
-   definition before continuing.
-3. Deploy the compatible CAT Edge Function, retaining all current mode,
-   scoring, stopping, SATA, NGN-compatible, and legacy-client behavior. Verify
-   authenticated legacy and SATA clients before changing frontend assets.
-4. Publish the matching frontend and helper assets, including the NUR 312 page,
-   only after the server checkpoints pass.
-5. Verify MCQ/SATA mapping, canonical scoring, rationales, navigation,
-   pause/resume, history, cached-client compatibility, and the NUR 312 RPC
-   path. Keep NGN admissions disabled.
-6. After mapped attempts exist, do not restore the predecessor function or
-   scorer. Preserve the versioned RPC and recover with a forward-compatible
-   fix; remove the new UI only after confirming no mapped attempts are active.
+Production Function Runtime logs were unavailable during release verification,
+so no conclusion was made that CAT v9 has no runtime errors. Authenticated
+production scoring, answer-mapping behavior, rationale association, and
+assessment-history persistence have also not yet been verified end to end.
+
+At the next real student assessment completion, perform a read-only review of
+the completed attempt and available runtime logs. Verify the saved displayed
+option identity maps to the expected canonical answer, the score and
+answer-specific rationale correspond to that mapping, and the assessment
+history is intact. Do not create a synthetic production assessment, submit
+test answers, regrade history, or modify student data solely for this check.
+If runtime logs remain unavailable, record that limitation separately; missing
+logs are not evidence of successful execution.
+
+## Recovery and release state
+
+The published frontend and production RPC may persist identity-mapped
+responses. Never roll back to an older scorer or RPC that treats displayed
+positions as canonical answers. Preserve all mappings and assessment history;
+use a forward-compatible repair if an issue is found. Keep CAT v9 and the
+versioned NUR 312 RPC installed.
+
+The original candidate commit `fd094889b894f402278416b2ddf068cba3a899ce`
+remains preserved on `fix/mcq-presentation-original`. The production release
+is complete; only the real-student read-only scoring/history review and
+runtime-log verification remain outstanding. Do not enable NGN admissions
+without separate approval and the required dedicated validation.
