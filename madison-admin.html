@@ -280,6 +280,7 @@
                 <button type="button" data-filter="archived" aria-pressed="false">Archived</button>
               </div>
               <p id="roster-notice" class="table-empty hidden" role="status"></p>
+              <p id="activation-status" class="prospect-status" role="status" aria-live="polite"></p>
             </div>
             <div class="table-scroll">
               <table class="student-table">
@@ -560,7 +561,7 @@
       const [leadResult,intakeResult,studentsResult]=await Promise.all([
         db.from('diagnostic_leads').select('id,full_name,email,readiness_band,overall_score,nclex_target_date,created_at').order('created_at',{ascending:false}),
         db.from('consult_intakes').select('id,full_name,email,phone,nclex_exam,nclex_target_date,status,support_interest,student_id,created_at,prospect_hidden_at').order('created_at',{ascending:false}),
-        db.from('students').select('id,auth_user_id,portal_stage')
+        db.from('students').select('id,auth_user_id,portal_stage,portal_invite_sent_at')
       ]);
       if(leadResult.error){
         $('lead-summary').textContent='Readiness leads could not load. Refresh to try again.';
@@ -654,10 +655,11 @@
         let actions='';
         if(!studentAccessAvailable)actions='<span>Access status unavailable</span>';
         else if(!item.student_id)actions='<button class="primary" type="button" data-convert="'+esc(item.id)+'">Set up assessment</button><span>Creates a diagnostic-only profile.</span>';
-        else if(stage==='assessment'&&accessReady)actions='<span>Assessment ready</span><a href="assessment-dashboard.html">Open assessment view →</a><button type="button" data-promote="'+esc(item.id)+'">Convert to active student</button>';
-        else if(stage==='assessment')actions='<button class="primary" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><span>Creates a secure email-link sign-in.</span>';
+        else if(stage==='assessment'&&accessReady)actions='<span>Assessment ready</span><a href="assessment-dashboard.html">Open assessment view →</a>';
+        else if(stage==='assessment')actions='<button class="primary" type="button" data-create-login="'+esc(item.id)+'">Create diagnostic access</button><span>Creates a secure email and password login.</span>';
         else if(accessReady)actions='<span>Portal access ready</span><a href="shared-progress.html?student='+encodeURIComponent(item.student_id)+'">Open student workspace →</a><button type="button" data-switch-assessment="'+esc(item.id)+'">Switch to assessment-only</button>';
         else actions='<button class="primary" type="button" data-create-diagnostic="'+esc(item.id)+'">Create diagnostic access</button><span>Moves this pre-purchase client to the assessment-only portal.</span>';
+        if(studentAccessAvailable&&item.student_id)actions+='<button type="button" data-promote="'+esc(item.id)+'">Activate student &amp; prepare portal access</button>';
         actions+='<button type="button" data-prospect-visibility="'+esc(item.id)+'">'+(item.prospect_hidden_at?'Restore to Prospects':'Hide from Prospects')+'</button>';
         return `<article class="prospect-row"><div><div class="prospect-name">${esc(item.full_name)}</div><div class="prospect-meta"><a href="mailto:${esc(item.email||'')}">${esc(item.email||'No email on file')}</a>${item.phone?' · '+esc(item.phone):''}<br>${esc(item.nclex_exam||'Program not specified')}${item.nclex_target_date?' · Target '+esc(prospectDate(item.nclex_target_date)):''}<br>${esc((item.status||'new_lead').replaceAll('_',' '))} · Saved ${esc(prospectDate(item.created_at))}</div><label class="prospect-meta">Support type <select data-support="${esc(item.id)}">${['','One-time strategy session','Ongoing tutoring','Help deciding'].map(value=>`<option value="${esc(value)}"${(item.support_interest||'')===value?' selected':''}>${esc(value||'Not specified')}</option>`).join('')}</select></label></div><div class="prospect-actions">${actions}</div></article>`;
       }).join(''):(showHidden?'<p class="table-empty">No hidden prospects.</p>':'<p class="table-empty">No prospects to follow up with. Use New intake to add someone, or Show hidden prospects to restore a profile.</p>');
@@ -671,7 +673,7 @@
       $('consult-intakes').querySelectorAll('[data-convert]').forEach(button=>button.addEventListener('click',()=>convertToStudent(button.dataset.convert)));
       $('consult-intakes').querySelectorAll('[data-create-login]').forEach(button=>button.addEventListener('click',()=>createStudentLogin(button.dataset.createLogin)));
       $('consult-intakes').querySelectorAll('[data-create-diagnostic]').forEach(button=>button.addEventListener('click',()=>prepareDiagnosticAccess(button.dataset.createDiagnostic)));
-      $('consult-intakes').querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote)));
+      $('consult-intakes').querySelectorAll('[data-promote]').forEach(button=>button.addEventListener('click',()=>promoteToActiveStudent(button.dataset.promote,button)));
       $('consult-intakes').querySelectorAll('[data-switch-assessment]').forEach(button=>button.addEventListener('click',()=>switchToAssessmentOnly(button.dataset.switchAssessment)));
       $('consult-intakes').querySelectorAll('[data-prospect-visibility]').forEach(button=>button.addEventListener('click',()=>setProspectVisibility(button.dataset.prospectVisibility,button)));
     }
@@ -712,14 +714,14 @@
       $('intake-action-status').textContent='Student profile created. Create secure access from the intake row when ready.';
       await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
     }
-    function showInviteDetails(email,password){
-      const status=$('intake-action-status');
-      status.textContent='Portal access is ready. Confirm the email before sending. Invite details are available below.';
+    function showInviteDetails(email,password,statusId='intake-action-status'){
+      const status=$(statusId);
+      status.textContent='Secure login created. Invite details are available below; share only through a private channel.';
       const invite=document.createElement('div');invite.className='invite';
       invite.innerHTML='<strong>Invite details</strong><div>Portal: <code>https://portal.studywithmadison.com/student-login.html</code></div><div>Email: <code>'+esc(email)+'</code></div><div>Temporary password: <code>'+esc(password)+'</code></div><button class="invite-copy" type="button" id="copy-invite">Copy invite details</button>';
       status.appendChild(invite);
-      $('copy-invite').addEventListener('click',async()=>{
-        const button=$('copy-invite');
+      invite.querySelector('button').addEventListener('click',async()=>{
+        const button=invite.querySelector('button');
         try{await navigator.clipboard.writeText('NCLEX Success Center portal\n\nPortal: https://portal.studywithmadison.com/student-login.html\nEmail: '+email+'\nTemporary password: '+password);button.textContent='Copied — send through a private channel'}
         catch{button.textContent='Copy unavailable — select the details manually'}
       });
@@ -739,7 +741,9 @@
       const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:student.id,password:tempCredential,send_email:true}});
       if(error||!data?.ok){$('intake-action-status').textContent=data?.error||error?.message||'Portal access could not be created. Please try again.';return}
       showInviteDetails(data.email||email,tempCredential);
-      if(data.emailed)$('intake-action-status').firstChild.textContent='Login created and emailed to '+(data.email||email)+'. Invite details are available below. ';
+      $('intake-action-status').firstChild.textContent=data.invitation_error||
+        (data.emailed?'Login created. Invitation accepted by the email provider for '+(data.email||email)+'. Receipt and first sign-in are not verified. ':
+          'Login created, but the invitation was not sent. Share the details below privately. ');
       await Promise.all([loadProspectData(),loadRoster()]);
     }
     async function switchToAssessmentOnly(id){
@@ -756,12 +760,58 @@
       await loadProspectData();
       await createStudentLogin(id);
     }
-    async function promoteToActiveStudent(id){
+    async function promoteToActiveStudent(id,button){
       const item=consultIntakes.find(row=>row.id===id);if(!item?.student_id)return;
-      const {error}=await db.from('students').update({portal_stage:'active'}).eq('id',item.student_id);
-      if(error){$('intake-action-status').textContent='Could not activate the student portal. '+error.message;return}
-      $('intake-action-status').textContent=item.full_name+' is now an active student.';
-      await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
+      await activateStudent(item.student_id,button,'intake-action-status');
+    }
+    const activatingStudents=new Set();
+    async function activateStudent(id,button,statusId='activation-status'){
+      if(activatingStudents.has(id))return;
+      const status=$(statusId);
+      activatingStudents.add(id);
+      button.disabled=true;
+      try{
+        const {data:student,error:readError}=await db.from('students')
+          .select('id,name,email,auth_user_id,archived_at').eq('id',id).single();
+        if(readError)throw readError;
+        if(student.archived_at){status.textContent='Restore this archived student before activating portal access.';return}
+        if(!student.email&&!student.auth_user_id){status.textContent='Add the student email before preparing portal access.';return}
+        const details=student.auth_user_id
+          ?'Their existing login and password will be kept. No invitation will be resent.'
+          :'A secure login will be created and an invitation emailed to this address.';
+        if(!window.confirm('Activate regular portal access for '+student.name+'?\n\n'+(student.email||'No email on file')+'\n\n'+details+'\n\nLearning assignments will not change.'))return;
+        status.textContent='Activating student and preparing portal access…';
+        const {data,error}=await db.functions.invoke('create-student-login',{body:{student_id:id,activate:true,send_email:true}});
+        if(error||!data?.ok){
+          let message=data?.error||error?.message||'Activation could not be confirmed.';
+          if(error?.context&&typeof error.context.clone==='function'){
+            const body=await error.context.clone().json();
+            if(body?.error)message=body.error;
+          }
+          throw new Error(message);
+        }
+        const verified=await db.from('students').select('id,status,portal_stage,auth_user_id,portal_invite_sent_at').eq('id',id).single();
+        if(verified.error)throw new Error('The action returned, but access could not be verified. Refresh before retrying. '+verified.error.message);
+        if(verified.data.status!=='active'||verified.data.portal_stage!=='active'||!verified.data.auth_user_id){
+          throw new Error('Activation is incomplete. Refresh and check student status, portal access, and login before retrying.');
+        }
+        if(data.temporary_password)showInviteDetails(data.email,data.temporary_password,statusId);
+        const message=data.invitation_error
+          ?'Regular portal and secure login are ready. '+data.invitation_error
+          :data.reused_login
+            ?'Student active · Regular portal enabled · Existing login preserved. No new invitation sent. Receipt and first sign-in are not verified.'
+            :data.emailed
+              ?'Student active · Regular portal enabled · Secure login ready · Invitation accepted by the email provider. Receipt and first sign-in are not verified.'
+              :'Student active · Regular portal enabled · Secure login ready, but no invitation was sent. Use password recovery or share login details privately.';
+        if(data.temporary_password)status.firstChild.textContent=message+' ';
+        else status.textContent=message;
+        await Promise.all([loadProspectData(),loadRoster(),loadDashboardData()]);
+      }catch(error){
+        status.textContent='Portal setup needs attention: '+error.message+' No existing password was reset. Refresh the profile before retrying.';
+      }finally{
+        activatingStudents.delete(id);
+        button.disabled=false;
+      }
     }
     async function loadCatCheckin(){
       const target=$('cat-checkin');
@@ -798,16 +848,16 @@
     async function loadRoster(){
       rosterAvailable=false;
       lifecycleAvailable=true;
-      let currentResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at').is('archived_at',null).order('name');
-      let archivedResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at').not('archived_at','is',null).order('archived_at',{ascending:false});
-      if(currentResult.error&&/status|archived_at/i.test(currentResult.error.message||'')){
+      let currentResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at,portal_invite_sent_at').is('archived_at',null).order('name');
+      let archivedResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at,portal_invite_sent_at').not('archived_at','is',null).order('archived_at',{ascending:false});
+      if(currentResult.error&&!/portal_invite_sent_at/i.test(currentResult.error.message||'')&&/status|archived_at/i.test(currentResult.error.message||'')){
         lifecycleAvailable=false;
         currentResult=await db.from('students').select('id,name,email,auth_user_id,portal_stage,student_type').order('name');
         archivedResult={data:[],error:null};
       }
       if(currentResult.error||archivedResult.error){
         $('roster-summary').textContent='Student records could not be loaded.';
-        $('students').innerHTML='<tr><td class="table-empty" colspan="5">We could not load the student directory. Refresh the page to try again.</td></tr>';
+        $('students').innerHTML='<tr><td class="table-empty" colspan="5">We could not load the student directory. Check that the student invitation-status migration is applied, then refresh.</td></tr>';
         return;
       }
       rosterAvailable=true;
@@ -862,12 +912,15 @@
       const loginControl=!archived&&!student.auth_user_id
         ?`<button type="button" data-create-student-login="${id}" ${student.email?'':'disabled'}>Create login &amp; email invite</button>`
         :'';
-      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${loginControl}${portalStageControl}${statusControl}</div></td></tr>`;
+      const activationControl=!archived?`<button type="button" data-activate-student="${id}" ${lifecycleAvailable&&(student.email||student.auth_user_id)?'':'disabled'}>Activate student &amp; prepare portal access</button>`:'';
+      const readiness=`<span class="student-sub">Portal access: ${student.portal_stage==='active'?'Regular portal':student.portal_stage==='assessment'?'Assessment only':'Not set'}</span><span class="student-sub">Login: ${student.auth_user_id?'Ready':'Not created'}</span><span class="student-sub">Invitation: ${student.portal_invite_sent_at?'Sent '+esc(prospectDate(student.portal_invite_sent_at))+' (provider accepted)':'Not recorded'}</span><span class="student-sub">Student sign-in: not verified here</span>`;
+      return `<tr class="student-row" data-open-url="${esc(profile)}" tabindex="0" role="link" aria-label="Open ${esc(name)} profile"><td><a class="student-name" href="${esc(profile)}">${esc(name)}</a><span class="student-sub">${esc(student.email||'No email on file')}</span></td><td>${esc(branch(student))}<span class="student-sub">${esc(stage(student))}</span></td><td><span class="${statusTag}">${esc(status)}</span>${readiness}${archived?`<span class="student-sub">Archived ${esc(archiveDate(student))}</span>`:''}</td><td>${esc(activityLabel(student.id))}</td><td><div class="row-controls"><a class="panel-link" href="${esc(profile)}">Open profile</a><a class="panel-link" href="madison-assignments.html?student=${encodeURIComponent(student.id)}">Assign</a>${activationControl}${loginControl}${portalStageControl}${statusControl}</div></td></tr>`;
     }
     function bindLifecycleControls(root){
       root.querySelectorAll('[data-status]').forEach(select=>select.addEventListener('change',()=>changeStatus(select.dataset.status,select.value,select)));
       root.querySelectorAll('[data-portal-stage]').forEach(select=>select.addEventListener('change',()=>changePortalStage(select.dataset.portalStage,select.value,select)));
       root.querySelectorAll('[data-create-student-login]').forEach(button=>button.addEventListener('click',()=>{const student=currentStudents.find(item=>item.id===button.dataset.createStudentLogin);if(student)createStudentLoginForProfile(student)}));
+      root.querySelectorAll('[data-activate-student]').forEach(button=>button.addEventListener('click',()=>activateStudent(button.dataset.activateStudent,button)));
       root.querySelectorAll('[data-archive]').forEach(button=>button.addEventListener('click',()=>archiveStudent(button.dataset.archive,button)));
       root.querySelectorAll('[data-restore]').forEach(button=>button.addEventListener('click',()=>restoreStudent(button.dataset.restore,button)));
       root.querySelectorAll('[data-open-url]').forEach(row=>{

@@ -59,7 +59,7 @@ Deno.serve(async (request) => {
     return json(request, { error: "Only Madison's admin account can create student logins." }, 403);
   }
 
-  let payload: { student_id?: string; password?: string; send_email?: boolean };
+  let payload: { student_id?: string; password?: string; send_email?: boolean; activate?: boolean };
   try {
     payload = await request.json();
   } catch {
@@ -67,19 +67,16 @@ Deno.serve(async (request) => {
   }
 
   const studentId = String(payload.student_id ?? "").trim();
-  const password = String(payload.password ?? "");
+  const activate = payload.activate === true;
+  let password = String(payload.password ?? "");
 
   if (!studentId) {
     return json(request, { error: "Choose a student first." }, 400);
   }
 
-  if (password.length < 8) {
-    return json(request, { error: "Use a temporary password with at least 8 characters." }, 400);
-  }
-
   const { data: student, error: studentError } = await admin
     .from("students")
-    .select("id, name, email, auth_user_id")
+    .select("id, name, email, auth_user_id, archived_at, portal_invite_sent_at")
     .eq("id", studentId)
     .maybeSingle();
 
@@ -87,8 +84,43 @@ Deno.serve(async (request) => {
     return json(request, { error: "That student profile could not be found." }, 404);
   }
 
-  if (student.auth_user_id) {
+  if (student.archived_at) {
+    return json(request, { error: "Restore this archived student before preparing portal access." }, 409);
+  }
+
+  if (student.auth_user_id && !activate) {
     return json(request, { error: "This student already has portal access." }, 409);
+  }
+
+  if (student.auth_user_id) {
+    const { data: updated, error: updateError } = await admin.from("students")
+      .update({ status: "active", portal_stage: "active" })
+      .eq("id", student.id).eq("auth_user_id", student.auth_user_id).is("archived_at", null)
+      .select("id").maybeSingle();
+    if (updateError || !updated) {
+      return json(request, { error: "Portal activation could not be confirmed. Refresh the profile and try again." }, 409);
+    }
+    return json(request, {
+      ok: true, activated: true, reused_login: true, email: student.email,
+      emailed: false, portal_invite_sent_at: student.portal_invite_sent_at,
+      message: "Regular portal enabled. Existing login and password preserved; no new invitation sent.",
+    });
+  }
+
+  if (!student.email?.trim()) {
+    return json(request, { error: "Add the student's email before creating login access." }, 400);
+  }
+  if (activate && !password) {
+    password = "Swm!" + Array.from(crypto.getRandomValues(new Uint8Array(24)),
+      (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+  if (password.length < 8) {
+    return json(request, { error: "Use a temporary password with at least 8 characters." }, 400);
+  }
+  const sendEmail = activate || payload.send_email === true;
+  const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
+  if (activate && !resendKey) {
+    return json(request, { error: "Invitation email is not configured. No login or activation changes were made." }, 503);
   }
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
@@ -102,19 +134,28 @@ Deno.serve(async (request) => {
     return json(request, { error: createError?.message ?? "The login account could not be created." }, 400);
   }
 
-  const { error: linkError } = await admin
+  const { data: linked, error: linkError } = await admin
     .from("students")
-    .update({ auth_user_id: created.user.id })
-    .eq("id", student.id);
+    .update({
+      auth_user_id: created.user.id,
+      ...(activate ? { status: "active", portal_stage: "active" } : {}),
+    })
+    .eq("id", student.id).is("auth_user_id", null).is("archived_at", null)
+    .select("id").maybeSingle();
 
-  if (linkError) {
-    await admin.auth.admin.deleteUser(created.user.id);
-    return json(request, { error: "The account was not linked, so no login was created. Please try again." }, 500);
+  if (linkError || !linked) {
+    const { error: cleanupError } = await admin.auth.admin.deleteUser(created.user.id);
+    if (cleanupError) {
+      console.error("Unlinked student login cleanup failed", cleanupError.message);
+      return json(request, { error: "The login could not be linked or cleaned up. Contact the administrator before retrying." }, 500);
+    }
+    return json(request, { error: "The profile changed or the login could not be linked. No activation was applied. Refresh before retrying." }, 409);
   }
 
   let emailed = false;
-  const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
-  if (payload.send_email && resendKey) {
+  let inviteSentAt: string | null = null;
+  let invitationError: string | null = null;
+  if (sendEmail && resendKey) {
     const first = String(student.name ?? "").split(" ")[0] || "there";
     const text = `Hi ${first},\n\nYour NCLEX Success Center access is ready.\n\nSign in: https://portal.studywithmadison.com/student-login.html\nEmail: ${student.email}\nTemporary password: ${password}\n\nAfter you sign in, please use "Forgot password" on the login page to choose your own password.\n\nReply here if you have any trouble.\n\nMadison`;
     const html = text.split("\n").map((l) => `<p style="margin:0 0 10px">${l.replace(/&/g, "&amp;").replace(/</g, "&lt;") || "&nbsp;"}</p>`).join("");
@@ -132,15 +173,38 @@ Deno.serve(async (request) => {
         }),
       });
       emailed = res.ok;
-    } catch {
-      emailed = false;
+      if (!res.ok) {
+        console.error("Student invitation email rejected", res.status);
+        invitationError = "Login created, but the invitation email was rejected. Share the login details privately or use password recovery; do not create another account.";
+      }
+    } catch (error) {
+      console.error("Student invitation email request failed", error instanceof Error ? error.message : "Unknown error");
+      invitationError = "Login created, but invitation delivery could not be confirmed. Use password recovery or share details privately; do not create another account.";
     }
+    if (emailed) {
+      inviteSentAt = new Date().toISOString();
+      const { data: recorded, error: recordError } = await admin.from("students")
+        .update({ portal_invite_sent_at: inviteSentAt })
+        .eq("id", student.id).eq("auth_user_id", created.user.id).select("id").maybeSingle();
+      if (recordError || !recorded) {
+        console.error("Student invitation timestamp could not be saved", recordError?.message ?? "Student link changed");
+        inviteSentAt = null;
+        invitationError = "The email provider accepted the invitation, but its sent timestamp could not be saved. Refresh the profile; do not send another invitation automatically.";
+      }
+    }
+  } else if (sendEmail) {
+    invitationError = "Login created, but invitation email is not configured. Share the login details privately or use password recovery.";
   }
 
   return json(request, {
     ok: true,
-    message: "Login access is ready.",
+    activated: activate,
+    reused_login: false,
+    message: invitationError ?? "Login access is ready.",
     email: student.email,
     emailed,
+    portal_invite_sent_at: inviteSentAt,
+    invitation_error: invitationError,
+    ...(activate && !emailed ? { temporary_password: password } : {}),
   });
 });

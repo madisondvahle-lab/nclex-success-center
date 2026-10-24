@@ -110,7 +110,7 @@ test('hidden prospects leave the normal list but remain restorable and mergeable
 });
 
 test('student directory offers login creation for existing profiles without portal accounts', () => {
-  assert.match(html, /select\('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at'\)/);
+  assert.match(html, /select\('id,name,email,auth_user_id,portal_stage,student_type,status,archived_at,portal_invite_sent_at'\)/);
   assert.match(html, /data-create-student-login="\$\{id\}"/);
   assert.match(html, /createStudentLoginForProfile\(student\)/);
   assert.match(html, /student_id:student\.id,password:tempCredential,send_email:true/);
