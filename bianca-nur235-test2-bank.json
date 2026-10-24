@@ -1,0 +1,2626 @@
+{
+  "schema_version": "1.0.0",
+  "bank_id": "bianca-nur235-test2-100",
+  "title": "Bianca: NUR 235 Health and Physical Assessment, Test 2",
+  "version": "1.0.0",
+  "created_date": "2026-10-23",
+  "test_date": "2026-10-26",
+  "language": "en-US",
+  "description": "100 original, scenario-based formative practice questions for a nursing student. Includes single-select and select-all-that-apply items, exact-set scoring, detailed rationales, and topic/difficulty filters.",
+  "source_basis": "The five supplied NUR 235 lecture presentations: Assessment of the Eyes 2026; Assessment of the Head, Face 2026; Assessment of the Neck, Lymph and Thyroid, 2026; ENMT 2026; and Respiratory Assessment 2026. Ambiguous or inaccurate slide statements are qualified in the slide_review notes and are not used as keyed clinical facts.",
+  "difficulty_note": "Moderate and challenging are author estimates, not empirically calibrated. Most questions require application of assessment findings, selection of a technique, or interpretation in context.",
+  "scoring": {
+    "method": "exact_set",
+    "points_per_question": 1,
+    "sata_partial_credit": false,
+    "note": "All and only the keyed answers earn one point. This is a practice scoring choice."
+  },
+  "counts": {
+    "total": 100,
+    "by_type": {
+      "single_select": 70,
+      "sata": 30
+    },
+    "by_difficulty": {
+      "moderate": 25,
+      "challenging": 75
+    },
+    "by_category": {
+      "Eyes": 20,
+      "Head and Face": 20,
+      "Neck, Lymph, and Thyroid": 20,
+      "ENMT": 20,
+      "Respiratory Assessment": 20
+    }
+  },
+  "sources": {
+    "EYES": {
+      "title": "Assessment of the Eyes 2026",
+      "kind": "uploaded_lecture_presentation",
+      "file": "Assessment of the Eyes 2026.pptx"
+    },
+    "HEAD_FACE": {
+      "title": "Assessment of the Head, Face 2026",
+      "kind": "uploaded_lecture_presentation",
+      "file": "Assessment of the Head, Face 2026.pptx"
+    },
+    "NECK": {
+      "title": "Assessment of the Neck, Lymph and Thyroid, 2026",
+      "kind": "uploaded_lecture_presentation",
+      "file": "Assessment of the Neck, Lymph and Thyroid, 2026.pptx"
+    },
+    "ENMT": {
+      "title": "Ears, Nose, Mouth and Throat (ENMT) 2026",
+      "kind": "uploaded_lecture_presentation",
+      "file": "ENMT 2026 (1).ppt"
+    },
+    "RESP": {
+      "title": "Respiratory Assessment 2026",
+      "kind": "uploaded_lecture_presentation",
+      "file": "Respiratory Assessment 2026.pptx"
+    },
+    "MERCK_EYE": {
+      "title": "Merck Manual Professional Edition: Chalazion and Hordeolum (Stye)",
+      "url": "https://www.merckmanuals.com/professional/eye-disorders/eyelid-and-lacrimal-disorders/chalazion-and-hordeolum-stye"
+    },
+    "CDC_CONJ": {
+      "title": "CDC: Conjunctivitis Infection Control",
+      "url": "https://www.cdc.gov/infection-control/hcp/healthcare-personnel-epidemiology-control/conjunctivitis.html"
+    },
+    "OXFORD_RINNE_WEBER": {
+      "title": "Oxford Medical Education: Rinne and Weber Tuning-Fork Tests",
+      "url": "https://oxfordmedicaleducation.com/clinical-examinations/tuning-fork-rinnes-webers-test/"
+    },
+    "CDC_PNEUMONIA": {
+      "title": "CDC: Healthcare-Associated Pneumonia Prevention Guideline",
+      "url": "https://www.cdc.gov/infection-control/hcp/pneumonia-prevention/index.html"
+    },
+    "NHLBI_ASTHMA": {
+      "title": "NHLBI: Asthma Causes and Triggers",
+      "url": "https://www.nhlbi.nih.gov/health/asthma/causes"
+    },
+    "ACOG_HEADACHE": {
+      "title": "ACOG Clinical Practice Guideline: Headaches in Pregnancy and Postpartum",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/35576364/"
+    }
+  },
+  "slide_review": [
+    {
+      "source_id": "EYES",
+      "slide": 28,
+      "issue": "The slide describes a chalazion as an infection of the meibomian gland.",
+      "clarification": "A chalazion is usually a noninfectious obstructive inflammatory lesion; a hordeolum is an acute localized infection. The questions distinguish these findings.",
+      "reference_id": "MERCK_EYE"
+    },
+    {
+      "source_id": "EYES",
+      "slide": 27,
+      "issue": "The broad statement that conjunctivitis is highly contagious and that isolation practice is changing does not distinguish infectious from allergic causes or the care setting.",
+      "clarification": "Transmission precautions depend on likely cause, symptoms, and setting policy. The questions avoid treating all conjunctivitis as contagious or prescribing a universal isolation rule.",
+      "reference_id": "CDC_CONJ"
+    },
+    {
+      "source_id": "HEAD_FACE",
+      "slide": 7,
+      "issue": "The statement that first-trimester headaches are relieved when hormone levels stabilize can imply a predictable benign course.",
+      "clarification": "Headache patterns vary. A new, sudden, severe, persistent, or neurologically accompanied headache during pregnancy requires assessment rather than reassurance based only on trimester.",
+      "reference_id": "ACOG_HEADACHE"
+    },
+    {
+      "source_id": "ENMT",
+      "slide": 7,
+      "issue": "The ancestry-based statement linking European ancestry to small teeth and increased decay risk is unsupported and overgeneralized.",
+      "clarification": "It is not used as a clinical premise. Questions focus on the individual patient's oral findings, history, and access needs."
+    },
+    {
+      "source_id": "ENMT",
+      "slide": 13,
+      "issue": "The Rinne description gives a fixed 2:1 ratio in seconds, and the later slide equates any Weber lateralization with potential hearing loss without identifying the side or type.",
+      "clarification": "Rinne is interpreted qualitatively as air conduction greater than bone conduction in normal hearing, while Weber lateralization must be interpreted with the Rinne result and the clinical context.",
+      "reference_id": "OXFORD_RINNE_WEBER"
+    },
+    {
+      "source_id": "ENMT",
+      "slide": 23,
+      "issue": "The keyed response that right-sided Weber lateralization alone means potential hearing loss is nonspecific.",
+      "clarification": "Sound lateralizes toward the affected ear with conductive loss and toward the better ear with unilateral sensorineural loss; tuning-fork screening should be followed by appropriate hearing evaluation.",
+      "reference_id": "OXFORD_RINNE_WEBER"
+    },
+    {
+      "source_id": "RESP",
+      "slide": 4,
+      "issue": "The older-adult respiratory rate range of 12–25 may normalize tachypnea if treated as an age-based normal range.",
+      "clarification": "The questions use the adult resting reference range of 12–20 breaths/minute as a screening reference and emphasize the patient's baseline, effort, symptoms, and overall context."
+    },
+    {
+      "source_id": "RESP",
+      "slide": 20,
+      "issue": "Describing asthma as due to allergens is too narrow; allergens are only one possible trigger and asthma is not invariably allergic.",
+      "clarification": "Questions treat triggers as individualized and include nonallergic triggers rather than implying a single cause.",
+      "reference_id": "NHLBI_ASTHMA"
+    },
+    {
+      "source_id": "RESP",
+      "slide": 24,
+      "issue": "The slide lists mechanical ventilation as a cause of pneumonia.",
+      "clarification": "Mechanical ventilation increases risk for ventilator-associated pneumonia; it is not an infectious cause. Aspiration can cause aspiration-related lung injury or infection, depending on the clinical context.",
+      "reference_id": "CDC_PNEUMONIA"
+    },
+    {
+      "source_id": "RESP",
+      "slide": 9,
+      "issue": "The phrase that listed chest-wall variations require intervention is not qualified by severity or clinical effect.",
+      "clarification": "Questions require assessment of severity, symptoms, function, and change from baseline rather than assuming every structural variation needs intervention."
+    },
+    {
+      "source_id": "RESP",
+      "slide": 3,
+      "issue": "The slide's respiratory-rate values are presented for broad age groups without enough detail about exact age, activity, sleep, or distress.",
+      "clarification": "Questions use the finding in a clinical context and do not treat one broad age-band value as a universal threshold."
+    }
+  ],
+  "questions": [
+    {
+      "id": "NUR235-T2-001",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Distance visual acuity technique",
+      "difficulty": "moderate",
+      "stem": "A patient reports that vision in the right eye has become less clear. Which action best produces a valid distance-acuity comparison?",
+      "options": [
+        {"id": "A", "text": "Test both eyes together at 10 feet and document the result as a Snellen fraction."},
+        {"id": "B", "text": "With usual corrective lenses on, test each eye separately at the chart's prescribed distance and document each result."},
+        {"id": "C", "text": "Ask the patient to read a phone screen with one eye closed and estimate the distance."},
+        {"id": "D", "text": "Test the right eye first, then leave it uncovered while the patient reads with both eyes."}
+      ],
+      "correct_answers": ["B"],
+      "correct_rationale": "Distance acuity is compared eye by eye at the chart's specified distance, using the patient's usual correction and preventing the uncovered eye from assisting. Document the result for each eye and note whether correction was worn.",
+      "option_rationales": {
+        "A": "Testing both eyes together can mask unilateral reduction, and changing chart distance without the matching protocol makes the fraction invalid.",
+        "B": "Separate-eye testing with the intended correction and prescribed chart distance yields interpretable, comparable results.",
+        "C": "A phone screen is not a standardized distance-acuity chart and cannot support a Snellen fraction.",
+        "D": "The uncovered eye can compensate, so the result would not represent the occluded eye's acuity."
+      },
+      "exam_strategy": "Preserve standard distance, correction, and monocular testing before interpreting a change.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 15, 16], "relationship": "technique and interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-002",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Interpreting a Snellen fraction",
+      "difficulty": "moderate",
+      "stem": "A patient reads 20/50 with the left eye. Which interpretation is accurate?",
+      "options": [
+        {"id": "A", "text": "At 20 feet, the patient sees what a person with 20/20 vision can see at 50 feet."},
+        {"id": "B", "text": "The patient sees at 50 feet what a person with 20/20 vision sees at 20 feet."},
+        {"id": "C", "text": "The patient has normal near vision but impaired color vision."},
+        {"id": "D", "text": "The result proves that the left eye has a retinal disorder."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "The numerator is the testing distance; the denominator is the distance at which a person with standard acuity can read the same line. A 20/50 result indicates reduced distance acuity compared with 20/20, but does not identify its cause.",
+      "option_rationales": {
+        "A": "This correctly interprets the chart distance and comparative visual acuity.",
+        "B": "This reverses the numerator and denominator.",
+        "C": "A distance Snellen result does not independently test near vision or color vision.",
+        "D": "Reduced acuity needs follow-up, but a Snellen fraction alone cannot localize a retinal cause."
+      },
+      "exam_strategy": "Interpret the fraction first; do not diagnose an etiology from the acuity score alone.",
+      "source_refs": [{"source_id": "EYES", "slides": [15, 16], "relationship": "interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-003",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Extraocular movement assessment",
+      "difficulty": "moderate",
+      "stem": "During the six cardinal positions-of-gaze test, the patient's right eye fails to move laterally when looking toward the right. Which cranial nerve primarily supplies the muscle responsible for that movement?",
+      "options": [
+        {"id": "A", "text": "Cranial nerve II"},
+        {"id": "B", "text": "Cranial nerve III"},
+        {"id": "C", "text": "Cranial nerve IV"},
+        {"id": "D", "text": "Cranial nerve VI"}
+      ],
+      "correct_answers": ["D"],
+      "correct_rationale": "Abduction of the eye is performed by the lateral rectus, supplied by cranial nerve VI (abducens). A new movement deficit should be documented and interpreted with onset, diplopia, pupils, and other neurologic findings.",
+      "option_rationales": {
+        "A": "Cranial nerve II carries visual sensory information; it does not innervate an extraocular muscle.",
+        "B": "Cranial nerve III supplies most extraocular muscles, but not the lateral rectus.",
+        "C": "Cranial nerve IV supplies the superior oblique muscle, not the lateral rectus.",
+        "D": "Cranial nerve VI innervates the lateral rectus and produces abduction."
+      },
+      "exam_strategy": "Link the movement deficit to the muscle before mapping it to the cranial nerve.",
+      "source_refs": [{"source_id": "EYES", "slides": [17, 18, 19], "relationship": "assessment technique"}]
+    },
+    {
+      "id": "NUR235-T2-004",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Pupillary light and near responses",
+      "difficulty": "moderate",
+      "stem": "Which observations are expected when a patient with intact pupillary responses is assessed with a penlight and a near target? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "The illuminated pupil constricts."},
+        {"id": "B", "text": "The opposite pupil also constricts when light is directed into one eye."},
+        {"id": "C", "text": "The pupils constrict and the eyes converge when shifting focus from a distant target to a near target."},
+        {"id": "D", "text": "Both pupils dilate when light is directed into one eye."},
+        {"id": "E", "text": "Accommodation is demonstrated by equal pupil size while gaze stays fixed at distance."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "The direct and consensual light responses are constriction of the illuminated and opposite pupil. Near response includes convergence and pupillary constriction as the eyes shift focus from far to near.",
+      "option_rationales": {
+        "A": "Constriction of the illuminated pupil is the direct light response.",
+        "B": "Constriction of the opposite pupil is the consensual light response.",
+        "C": "Near focus normally involves convergence and pupillary constriction.",
+        "D": "Light normally causes constriction, not bilateral dilation.",
+        "E": "Accommodation requires a change in focus to a near target; unchanged pupils at distance do not demonstrate it."
+      },
+      "exam_strategy": "Separate the direct and consensual light responses from the near-response triad.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 20], "relationship": "technique and normal response"}]
+    },
+    {
+      "id": "NUR235-T2-005",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Corneal light reflex",
+      "difficulty": "moderate",
+      "stem": "A penlight is held at midline while the patient looks straight ahead. The reflected light appears in the same location on both corneas. What is the best interpretation?",
+      "options": [
+        {"id": "A", "text": "The corneal light reflex is symmetric, supporting aligned eye position at rest."},
+        {"id": "B", "text": "The patient has normal visual acuity in both eyes."},
+        {"id": "C", "text": "The patient has intact peripheral visual fields."},
+        {"id": "D", "text": "The finding proves that extraocular movements are intact in every direction."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A symmetric corneal light reflex supports ocular alignment in primary gaze. It does not replace tests of acuity, visual fields, or extraocular movements.",
+      "option_rationales": {
+        "A": "The equal reflection is the expected alignment finding in this screening maneuver.",
+        "B": "A corneal light reflex does not measure how well the patient sees letters or objects.",
+        "C": "Peripheral fields require a separate confrontation assessment.",
+        "D": "A resting alignment check cannot establish full movement through all gaze positions."
+      },
+      "exam_strategy": "Match the conclusion to what the maneuver actually measures.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 17, 18], "relationship": "assessment technique"}]
+    },
+    {
+      "id": "NUR235-T2-006",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Possible retinal detachment",
+      "difficulty": "challenging",
+      "stem": "A patient reports a sudden shower of new floaters, flashes of light, and a dark curtain moving across one visual field. What is the priority response?",
+      "options": [
+        {"id": "A", "text": "Arrange urgent same-day ophthalmic evaluation and document the onset and affected field."},
+        {"id": "B", "text": "Reassure the patient that floaters commonly accompany aging and schedule routine follow-up."},
+        {"id": "C", "text": "Repeat the Snellen test tomorrow to determine whether the curtain resolves."},
+        {"id": "D", "text": "Apply a warm compress and reassess after the patient rests."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "New flashes, floaters, and a curtain-like field defect can signal retinal detachment, a time-sensitive threat to vision. The priority is urgent eye evaluation, not delaying for routine testing or home treatment.",
+      "option_rationales": {
+        "A": "Prompt specialist assessment is appropriate for a new curtain or field defect with flashes/floaters.",
+        "B": "Age-related floaters do not safely explain this acute combination of symptoms.",
+        "C": "Waiting until tomorrow risks delaying treatment for a vision-threatening emergency.",
+        "D": "A compress does not address a possible retinal emergency."
+      },
+      "exam_strategy": "A sudden curtain or field loss is an urgent change, even when central acuity is not yet known.",
+      "source_refs": [{"source_id": "EYES", "slides": [13, 24, 30], "relationship": "abnormal-finding application"}]
+    },
+    {
+      "id": "NUR235-T2-007",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Acute painful red eye",
+      "difficulty": "challenging",
+      "stem": "A patient develops severe unilateral eye pain, blurred vision with colored halos, nausea, and a red eye. What is the priority response?",
+      "options": [
+        {"id": "A", "text": "Treat the combination as an urgent eye problem and arrange immediate evaluation."},
+        {"id": "B", "text": "Ask when symptoms began and whether vision changed suddenly."},
+        {"id": "C", "text": "Document the symptoms and relevant pupil/visual findings without delaying escalation."},
+        {"id": "D", "text": "Reassure the patient that halos are expected with uncomplicated conjunctivitis."},
+        {"id": "E", "text": "Wait for the next routine appointment if the patient can still perceive light."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A painful red eye with halos, reduced vision, and nausea is concerning for acute angle-closure glaucoma and requires emergency evaluation. Focused history and concise findings support escalation but should not delay it.",
+      "option_rationales": {
+        "A": "The combination can indicate rapidly elevated intraocular pressure and threatened vision.",
+        "B": "Onset and change in vision help characterize the acute event.",
+        "C": "Documenting focused findings is useful while arranging urgent care.",
+        "D": "Halos with severe pain and nausea are not safely explained by uncomplicated conjunctivitis.",
+        "E": "Light perception does not rule out a vision-threatening emergency or justify delay."
+      },
+      "exam_strategy": "Prioritize symptom clusters that threaten vision rather than treating one symptom in isolation.",
+      "source_refs": [{"source_id": "EYES", "slides": [24, 25, 27], "relationship": "urgent interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-008",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Macular degeneration pattern",
+      "difficulty": "challenging",
+      "stem": "An older adult says that straight lines look wavy and the center of a page is missing, but can still notice objects approaching from the side. Which visual pattern best fits the report?",
+      "options": [
+        {"id": "A", "text": "Central vision impairment, as can occur with macular degeneration."},
+        {"id": "B", "text": "Peripheral field loss typical of early chronic open-angle glaucoma."},
+        {"id": "C", "text": "A refractive error that can be confirmed from the symptom description alone."},
+        {"id": "D", "text": "Presbyopia, which characteristically creates a central scotoma."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Distortion and loss of central vision are characteristic concerns with macular disease. Preserved peripheral awareness does not exclude an ocular disorder; the patient needs appropriate eye evaluation.",
+      "option_rationales": {
+        "A": "Central distortion or a central blind area is consistent with macular involvement.",
+        "B": "Glaucoma classically threatens peripheral fields, not a new central distortion as described.",
+        "C": "Refraction can blur vision but does not safely explain a central scotoma or metamorphopsia.",
+        "D": "Presbyopia affects near focusing and does not produce a central field defect."
+      },
+      "exam_strategy": "Use the location and quality of the visual change to distinguish central from peripheral patterns.",
+      "source_refs": [{"source_id": "EYES", "slides": [12, 24, 30], "relationship": "abnormal-finding interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-009",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Early diabetic retinopathy",
+      "difficulty": "challenging",
+      "stem": "A patient with long-standing diabetes denies vision changes and asks whether an eye examination is still necessary. Which response is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Yes; retinal changes may be present before the patient notices a change in vision, so recommended dilated eye follow-up remains important."},
+        {"id": "B", "text": "No; normal reported vision rules out diabetic retinal disease."},
+        {"id": "C", "text": "Only if the patient develops eye pain, because retinopathy is usually painful first."},
+        {"id": "D", "text": "A normal pupil response confirms that the retina is unaffected."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Diabetic retinopathy can be asymptomatic early, so a symptom-free history does not replace recommended retinal screening. Pupillary responses assess a different function and cannot exclude retinal disease.",
+      "option_rationales": {
+        "A": "Routine eye follow-up can detect disease before noticeable visual symptoms.",
+        "B": "Absence of symptoms does not rule out early retinal changes.",
+        "C": "Retinopathy is not reliably preceded by pain; waiting for pain can miss disease.",
+        "D": "A normal pupillary response does not visualize or clear the retina."
+      },
+      "exam_strategy": "Do not use the absence of symptoms as proof that screening is unnecessary.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 23, 24, 29], "relationship": "screening and fundus context"}]
+    },
+    {
+      "id": "NUR235-T2-010",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Contact-lens wearer with red painful eye",
+      "difficulty": "challenging",
+      "stem": "A contact-lens wearer reports a painful red eye with photophobia and blurred vision. Which nursing assessment or response is appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Ask about onset, lens wear, discharge, injury, and change in visual acuity."},
+        {"id": "B", "text": "Arrange prompt eye-care evaluation because pain, photophobia, and blurred vision are red flags."},
+        {"id": "C", "text": "Advise the patient to stop wearing the lens in the affected eye until evaluated."},
+        {"id": "D", "text": "Recommend using another person's antibiotic eye drops before seeking care."},
+        {"id": "E", "text": "Assume the symptoms are allergic because the eye is red."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Pain, photophobia, and reduced vision in a contact-lens wearer warrant prompt evaluation because corneal infection or injury can threaten vision. Focused history supports triage; the patient should not continue lens wear or self-treat with another person's medication.",
+      "option_rationales": {
+        "A": "These details clarify exposure, onset, and severity without assuming the cause.",
+        "B": "Pain with photophobia or visual change is not routine uncomplicated irritation.",
+        "C": "Avoiding lens wear prevents continued mechanical exposure while the eye is assessed.",
+        "D": "Unprescribed or shared eye drops may be inappropriate, contaminated, or delay diagnosis.",
+        "E": "Redness alone does not establish allergy, and the pain and vision symptoms need evaluation."
+      },
+      "exam_strategy": "A red eye with pain or reduced vision needs more than a superficial label.",
+      "source_refs": [{"source_id": "EYES", "slides": [13, 24, 27], "relationship": "focused assessment and escalation"}]
+    },
+    {
+      "id": "NUR235-T2-011",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Cataract pattern",
+      "difficulty": "challenging",
+      "stem": "A patient describes months of painless, gradual blurring and increasing glare while driving at night. Which finding is most consistent with this course?",
+      "options": [
+        {"id": "A", "text": "Cataract-related lens opacity."},
+        {"id": "B", "text": "Acute angle-closure glaucoma."},
+        {"id": "C", "text": "Retinal detachment."},
+        {"id": "D", "text": "Acute bacterial conjunctivitis."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Cataracts commonly cause gradual, painless blurring and glare. The pattern warrants eye-care follow-up, while a sudden painful change or curtain-like defect would require urgent evaluation for another cause.",
+      "option_rationales": {
+        "A": "A slowly progressive, painless change with glare fits a cataract pattern.",
+        "B": "Acute angle closure is typically abrupt and painful, often with halos and systemic symptoms.",
+        "C": "Retinal detachment often presents with sudden flashes, floaters, or a field curtain rather than months of gradual blur.",
+        "D": "Conjunctivitis primarily causes surface redness/discharge or irritation and does not explain the chronic glare pattern."
+      },
+      "exam_strategy": "Compare onset and pain: gradual painless blur differs from acute painful or field-loss presentations.",
+      "source_refs": [{"source_id": "EYES", "slides": [12, 24, 26], "relationship": "abnormal-finding recognition"}]
+    },
+    {
+      "id": "NUR235-T2-012",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Conjunctivitis assessment and precautions",
+      "difficulty": "challenging",
+      "stem": "A patient has bilateral itchy, watery eyes after yard work and no pain or vision change. Which statements are accurate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "An allergic cause is possible, especially with itching and a relevant exposure."},
+        {"id": "B", "text": "Ask about discharge, sick contacts, exposures, and whether one or both eyes are affected."},
+        {"id": "C", "text": "Use hand hygiene and avoid sharing eye cosmetics or towels while the cause is being clarified."},
+        {"id": "D", "text": "All conjunctivitis is bacterial and requires antibiotic drops."},
+        {"id": "E", "text": "A viral or allergic cause can be ruled out from the presence of redness alone."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Itching and a clear exposure support, but do not prove, allergic conjunctivitis. History and symptoms help distinguish causes; hand hygiene and avoiding shared personal items are prudent while infection remains possible.",
+      "option_rationales": {
+        "A": "Itching after an allergen exposure is compatible with allergy, but assessment still matters.",
+        "B": "Laterality, type of discharge, exposures, and contacts help characterize the problem.",
+        "C": "These measures reduce avoidable spread or contamination without assuming a diagnosis.",
+        "D": "Conjunctivitis may be viral, bacterial, allergic, or irritant; antibiotic treatment is not universal.",
+        "E": "Redness is nonspecific and does not identify the cause."
+      },
+      "exam_strategy": "Do not equate conjunctival redness with one etiology or a universal isolation rule.",
+      "source_refs": [{"source_id": "EYES", "slides": [13, 24, 27], "relationship": "focused interview and differential context"}]
+    },
+    {
+      "id": "NUR235-T2-013",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Absent red reflex in a child",
+      "difficulty": "challenging",
+      "stem": "During a child's eye assessment, the red reflex is absent in the left eye but present in the right. What should the nurse do?",
+      "options": [
+        {"id": "A", "text": "Document the asymmetry and arrange prompt evaluation by the child's eye-care provider."},
+        {"id": "B", "text": "Record this as a normal age-related difference in iris color."},
+        {"id": "C", "text": "Repeat the test only when the child is old enough to read a Snellen chart."},
+        {"id": "D", "text": "Reassure the caregiver because red reflex screening is not useful in children."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A unilateral absent or markedly asymmetric red reflex is abnormal and requires timely evaluation for a potentially sight-threatening or otherwise important ocular abnormality. It should not be dismissed because of age or iris color.",
+      "option_rationales": {
+        "A": "Asymmetry warrants prompt assessment and follow-up rather than watchful waiting.",
+        "B": "Iris pigmentation does not account for a unilateral absent red reflex.",
+        "C": "Red reflex assessment is useful in young children who cannot complete letter acuity testing.",
+        "D": "The test can identify important abnormalities before a child can report visual symptoms."
+      },
+      "exam_strategy": "An absent or asymmetric pediatric red reflex is a referral finding, not a normal variation.",
+      "source_refs": [{"source_id": "EYES", "slides": [11, 14, 23], "relationship": "developmental assessment"}]
+    },
+    {
+      "id": "NUR235-T2-014",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Visual-field confrontation",
+      "difficulty": "challenging",
+      "stem": "A patient reports bumping into objects on the left. Which technique best screens for a peripheral visual-field deficit at the bedside?",
+      "options": [
+        {"id": "A", "text": "Compare the patient's detection of a moving target in each field with the examiner's field, testing one eye at a time."},
+        {"id": "B", "text": "Ask the patient to read the smallest line on a distance chart with both eyes open."},
+        {"id": "C", "text": "Shine a light into the pupil and compare direct constriction."},
+        {"id": "D", "text": "Ask the patient to follow a finger through the six cardinal gaze positions."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Confrontation testing compares the patient's peripheral-field detection with the examiner while each eye is tested separately. Acuity, pupillary response, and ocular movement tests examine different functions.",
+      "option_rationales": {
+        "A": "This is the bedside screening approach for peripheral visual fields.",
+        "B": "A distance chart assesses central visual acuity, not peripheral fields.",
+        "C": "The pupillary light reflex does not map the visual field.",
+        "D": "Following a target assesses extraocular movement rather than field detection."
+      },
+      "exam_strategy": "Select the technique that directly tests the function named in the complaint.",
+      "source_refs": [{"source_id": "EYES", "slides": [6, 14], "relationship": "visual-field technique"}]
+    },
+    {
+      "id": "NUR235-T2-015",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Relative afferent pupillary defect",
+      "difficulty": "challenging",
+      "stem": "During a swinging-flashlight assessment, both pupils constrict when light is directed into the right eye, but constrict less when the light is moved to the left eye. What does this asymmetry suggest?",
+      "options": [
+        {"id": "A", "text": "A possible left relative afferent pupillary defect requiring further assessment."},
+        {"id": "B", "text": "Normal accommodation because the pupils respond to light."},
+        {"id": "C", "text": "An isolated right oculomotor nerve palsy."},
+        {"id": "D", "text": "A normal response caused by alternating the light."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Reduced constriction when the light enters the left eye can indicate an afferent pathway problem on that side, often termed a relative afferent pupillary defect. This is a screening finding that needs clinical correlation and timely evaluation.",
+      "option_rationales": {
+        "A": "The weaker response when illuminating the left eye supports a possible left afferent defect.",
+        "B": "Accommodation is tested by shifting focus to a near target, not by swinging a light.",
+        "C": "An efferent motor problem would affect the pupil's output pattern and is not the best explanation for this relative afferent change.",
+        "D": "The response should remain comparably strong with illumination of either eye in a symmetric afferent system."
+      },
+      "exam_strategy": "Track which eye receives the light; compare the response as the stimulus moves between eyes.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 20], "relationship": "pupillary-response interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-016",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Progressive glaucoma pattern",
+      "difficulty": "challenging",
+      "stem": "A patient with gradually worsening peripheral awareness says central reading vision remains clear and there has been no sudden pain. Which statements are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Chronic open-angle glaucoma can progress with peripheral-field loss before central vision is affected."},
+        {"id": "B", "text": "The absence of severe pain does not rule out chronic glaucoma."},
+        {"id": "C", "text": "A formal eye examination is needed; the history alone cannot confirm glaucoma."},
+        {"id": "D", "text": "This pattern is diagnostic of cataract and needs no further assessment."},
+        {"id": "E", "text": "A normal Snellen score would rule out every peripheral-field problem."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Chronic open-angle glaucoma may be painless and threaten peripheral fields before central acuity. The symptom pattern warrants eye assessment, but history or a normal central-acuity score cannot establish or exclude the diagnosis.",
+      "option_rationales": {
+        "A": "Progressive peripheral loss is a recognized concern in chronic glaucoma.",
+        "B": "Chronic open-angle disease is often asymptomatic or painless early.",
+        "C": "Diagnosis requires appropriate eye examination, including assessment beyond the patient's report.",
+        "D": "The pattern is not diagnostic of cataract, and dismissing it would be unsafe.",
+        "E": "Snellen acuity measures central detail and can remain normal despite peripheral-field loss."
+      },
+      "exam_strategy": "A normal central acuity result does not clear a complaint about peripheral vision.",
+      "source_refs": [{"source_id": "EYES", "slides": [16, 24, 25], "relationship": "abnormal-finding interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-017",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Hordeolum versus chalazion",
+      "difficulty": "challenging",
+      "stem": "One patient has a tender, red bump at the eyelid margin; another has a firm, usually painless lump within the eyelid that has persisted for several weeks. Which interpretation is best?",
+      "options": [
+        {"id": "A", "text": "The tender margin lesion is more consistent with a hordeolum; the chronic painless lump is more consistent with a chalazion."},
+        {"id": "B", "text": "Both findings are necessarily bacterial conjunctivitis."},
+        {"id": "C", "text": "The painless chronic lump is an acute hordeolum and the tender lesion is a chalazion."},
+        {"id": "D", "text": "Either finding can be ignored because eyelid lesions never affect vision."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A hordeolum is typically an acute tender localized infection of an eyelid gland; a chalazion is generally a slower, often painless inflammatory lump related to gland obstruction. Persistent, recurrent, or vision-affecting lesions need evaluation.",
+      "option_rationales": {
+        "A": "The acuity, tenderness, and location distinguish the common patterns.",
+        "B": "These are localized eyelid findings, not automatically conjunctivitis.",
+        "C": "This reverses the usual clinical patterns.",
+        "D": "Persistent lesions or those affecting vision should not be dismissed."
+      },
+      "exam_strategy": "Use the lesion's location, tenderness, and time course, while avoiding the claim that every chalazion is infected.",
+      "source_refs": [{"source_id": "EYES", "slides": [24, 28], "relationship": "clinical clarification"}, {"source_id": "MERCK_EYE", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-018",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Funduscopic examination",
+      "difficulty": "challenging",
+      "stem": "A nurse is preparing to inspect a patient's fundus with an ophthalmoscope. Which actions improve the assessment? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Dim the room when appropriate to facilitate pupil observation."},
+        {"id": "B", "text": "Explain the brief close approach and ask the patient to fix the gaze on a distant point."},
+        {"id": "C", "text": "Use the examiner's right eye and hand for the patient's right eye, then the left eye and hand for the patient's left eye."},
+        {"id": "D", "text": "Ask the patient to follow the ophthalmoscope with the eyes throughout the examination."},
+        {"id": "E", "text": "Press firmly on the globe to steady the eye."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "A dim room, a steady distant fixation target, and matching the examiner's eye/hand to the patient's eye help obtain a safe, stable funduscopic view. Avoid pressure on the globe and unnecessary eye movement.",
+      "option_rationales": {
+        "A": "Reduced ambient light can make the pupil easier to view.",
+        "B": "Advance warning and distant fixation reduce surprise and help stabilize gaze.",
+        "C": "This positioning supports a close, aligned view while avoiding collision.",
+        "D": "Following the instrument moves the eye and makes a stable fundus view harder.",
+        "E": "Pressure on the globe is unsafe and is not needed for routine ophthalmoscopy."
+      },
+      "exam_strategy": "Prepare the patient and examiner position before bringing the instrument close.",
+      "source_refs": [{"source_id": "EYES", "slides": [14, 23], "relationship": "assessment technique"}]
+    },
+    {
+      "id": "NUR235-T2-019",
+      "type": "single_select",
+      "category": "Eyes",
+      "concept": "Arcus senilis",
+      "difficulty": "challenging",
+      "stem": "During an older adult's eye inspection, the nurse sees a gray-white ring at the corneal periphery. The patient denies pain and visual change. Which response is best?",
+      "options": [
+        {"id": "A", "text": "Document the peripheral ring and correlate it with age and the full eye history; do not assume it explains visual symptoms."},
+        {"id": "B", "text": "Diagnose acute glaucoma and arrange emergency treatment based on the ring alone."},
+        {"id": "C", "text": "Document a cataract because any white eye finding is lens opacity."},
+        {"id": "D", "text": "Ignore the finding in every patient because it is always harmless regardless of age or context."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A peripheral corneal arcus can be age-associated, but an isolated observation should be documented in context and not confused with a lens opacity or used to explain unrelated visual symptoms. Age and overall risk history matter.",
+      "option_rationales": {
+        "A": "This records the observation while avoiding diagnosis from appearance alone.",
+        "B": "A corneal peripheral ring by itself does not diagnose acute glaucoma.",
+        "C": "A cataract is lens opacity, not a peripheral corneal ring.",
+        "D": "A finding should be interpreted in context, including age and other risk factors."
+      },
+      "exam_strategy": "Describe the structure and location precisely before attaching a diagnostic label.",
+      "source_refs": [{"source_id": "EYES", "slides": [12, 24], "relationship": "normal/abnormal comparison"}]
+    },
+    {
+      "id": "NUR235-T2-020",
+      "type": "sata",
+      "category": "Eyes",
+      "concept": "Urgent visual changes",
+      "difficulty": "challenging",
+      "stem": "Which new eye complaints require urgent evaluation rather than routine follow-up? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Sudden loss of vision in one eye, even if it begins to improve."},
+        {"id": "B", "text": "A curtain-like shadow with new flashes and floaters."},
+        {"id": "C", "text": "Severe eye pain with halos, nausea, and blurred vision."},
+        {"id": "D", "text": "A slowly progressive need to hold reading material farther away without pain."},
+        {"id": "E", "text": "Long-standing mild bilateral dryness that improves with the patient's usual lubricating drops."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Sudden vision loss, a curtain-like field defect with flashes/floaters, and severe pain with halos and systemic symptoms can signal time-sensitive ocular emergencies. Gradual presbyopia or stable mild dryness generally follows a different, nonemergency pathway unless other concerning findings are present.",
+      "option_rationales": {
+        "A": "Transient or improving sudden monocular vision loss can still reflect a serious vascular or ocular problem.",
+        "B": "This symptom cluster can indicate retinal detachment and threatens vision.",
+        "C": "This pattern is concerning for acute angle closure and needs immediate assessment.",
+        "D": "Gradual near-focus difficulty without red flags is more consistent with presbyopia than an acute emergency.",
+        "E": "Stable mild dryness without pain or visual loss is not the same urgent presentation."
+      },
+      "exam_strategy": "Escalate sudden vision loss, field curtains, and painful red-eye clusters without waiting for a complete routine exam.",
+      "source_refs": [{"source_id": "EYES", "slides": [12, 24, 25, 30], "relationship": "triage application"}]
+    },
+    {
+      "id": "NUR235-T2-021",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Focused headache history",
+      "difficulty": "moderate",
+      "stem": "A patient reports a recurring headache. Which follow-up question best characterizes the symptom before the nurse interprets it?",
+      "options": [
+        {"id": "A", "text": "\"When did it start, where is it, what does it feel like, and what makes it better or worse?\""},
+        {"id": "B", "text": "\"You get migraines, correct?\""},
+        {"id": "C", "text": "\"You do not have any vision or neurologic problems, do you?\""},
+        {"id": "D", "text": "\"Would you like me to document that you have a tension headache?\""}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A focused symptom history explores onset, location, quality, duration, associated symptoms, and aggravating or relieving factors without supplying a diagnosis. New or severe associated findings can then guide urgency.",
+      "option_rationales": {
+        "A": "This open, structured question gathers useful characteristics without leading the patient.",
+        "B": "It suggests a diagnosis before the headache has been assessed.",
+        "C": "A leading yes/no question may miss associated symptoms and does not establish their absence.",
+        "D": "The nurse should not label the headache before obtaining assessment data."
+      },
+      "exam_strategy": "Characterize the symptom before assigning a cause.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 10], "relationship": "focused interview"}]
+    },
+    {
+      "id": "NUR235-T2-022",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Scalp palpation",
+      "difficulty": "moderate",
+      "stem": "During scalp palpation, the patient identifies a small tender area that was not visible on inspection. What should the nurse do next?",
+      "options": [
+        {"id": "A", "text": "Describe its location and characteristics, ask about onset or injury, and compare with nearby areas."},
+        {"id": "B", "text": "Press repeatedly until the patient reports no tenderness."},
+        {"id": "C", "text": "Document a benign cyst without additional assessment."},
+        {"id": "D", "text": "Stop all examination and assume an intracranial mass."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A focused follow-up should characterize the finding and obtain relevant history without causing unnecessary discomfort or prematurely labeling it. Escalation depends on associated symptoms, change, and the overall assessment.",
+      "option_rationales": {
+        "A": "Location, size, mobility, skin change, tenderness, and history help describe the finding accurately.",
+        "B": "Repeated pressure is uncomfortable and adds little useful information.",
+        "C": "The nurse should document observed findings rather than diagnose an unassessed lesion.",
+        "D": "A small scalp tenderness alone does not establish an intracranial cause."
+      },
+      "exam_strategy": "Describe and contextualize a finding before interpreting it.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 5], "relationship": "inspection and palpation"}]
+    },
+    {
+      "id": "NUR235-T2-023",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Trigeminal nerve assessment",
+      "difficulty": "moderate",
+      "stem": "Which bedside maneuver most directly assesses the motor component of cranial nerve V?",
+      "options": [
+        {"id": "A", "text": "Ask the patient to clench the jaw while the nurse palpates the masseter muscles."},
+        {"id": "B", "text": "Ask the patient to smile and raise both eyebrows."},
+        {"id": "C", "text": "Ask the patient to turn the head against resistance."},
+        {"id": "D", "text": "Ask the patient to protrude the tongue and move it side to side."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "The trigeminal nerve supplies the muscles of mastication; jaw clenching while palpating the masseters assesses that motor function. Facial expression, head turning, and tongue movement assess other cranial nerves.",
+      "option_rationales": {
+        "A": "The masseter muscles are innervated by the motor component of cranial nerve V.",
+        "B": "Facial expression is primarily assessed through cranial nerve VII.",
+        "C": "Head turning against resistance assesses cranial nerve XI.",
+        "D": "Tongue movement assesses cranial nerve XII."
+      },
+      "exam_strategy": "Match the requested nerve to its function and the maneuver used to test it.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 6], "relationship": "cranial nerve assessment"}]
+    },
+    {
+      "id": "NUR235-T2-024",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Facial nerve assessment",
+      "difficulty": "moderate",
+      "stem": "Which instructions assess symmetric facial movement mediated primarily by cranial nerve VII? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Ask the patient to smile and show the teeth."},
+        {"id": "B", "text": "Ask the patient to raise both eyebrows."},
+        {"id": "C", "text": "Ask the patient to close both eyes tightly while the nurse attempts gentle opening."},
+        {"id": "D", "text": "Ask the patient to identify light touch on each cheek."},
+        {"id": "E", "text": "Ask the patient to shrug both shoulders against resistance."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Smiling, raising the eyebrows, and forceful eye closure assess bilateral facial motor function. Facial sensation is primarily cranial nerve V, and shoulder shrug assesses cranial nerve XI.",
+      "option_rationales": {
+        "A": "Smiling tests lower facial motor movement.",
+        "B": "Raising the eyebrows tests upper facial motor movement.",
+        "C": "Tight eye closure assesses orbicularis oculi function.",
+        "D": "Cheek sensation assesses the sensory component of cranial nerve V.",
+        "E": "Shoulder shrug against resistance assesses cranial nerve XI."
+      },
+      "exam_strategy": "Separate facial motor symmetry from facial sensation and shoulder movement.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 6], "relationship": "cranial nerve assessment"}]
+    },
+    {
+      "id": "NUR235-T2-025",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Temporomandibular joint assessment",
+      "difficulty": "moderate",
+      "stem": "A patient reports jaw clicking and discomfort when chewing. Which assessment is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Observe and palpate the temporomandibular joints as the patient opens and closes the mouth, noting pain, range, and movement."},
+        {"id": "B", "text": "Force the jaw through its full range to determine the maximum opening."},
+        {"id": "C", "text": "Auscultate the carotid arteries and use the result to diagnose a joint disorder."},
+        {"id": "D", "text": "Assess visual acuity before asking about the jaw symptom."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "The TMJ is assessed by observing and gently palpating movement while the patient opens and closes the mouth, noting symmetry, range, tenderness, and clicking. Do not force a painful joint.",
+      "option_rationales": {
+        "A": "This directly assesses the joint and reproduces the reported movement in a controlled way.",
+        "B": "Forcing movement may worsen pain and is not a safe assessment technique.",
+        "C": "Carotid auscultation does not assess TMJ function.",
+        "D": "Visual acuity is not relevant to the stated jaw complaint."
+      },
+      "exam_strategy": "Reproduce the reported movement gently while observing and palpating the structure involved.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 6], "relationship": "TMJ technique"}]
+    },
+    {
+      "id": "NUR235-T2-026",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Acute facial weakness and stroke recognition",
+      "difficulty": "challenging",
+      "stem": "A patient's family reports that the patient's face suddenly became asymmetric 20 minutes ago. The nurse also observes new arm drift and slurred speech. What is the priority action?",
+      "options": [
+        {"id": "A", "text": "Activate the facility's emergency stroke response and establish the exact last-known-well time."},
+        {"id": "B", "text": "Document Bell's palsy and arrange a routine outpatient visit."},
+        {"id": "C", "text": "Ask the patient to rest and repeat the facial assessment in one hour."},
+        {"id": "D", "text": "Perform only a TMJ assessment because facial symmetry can change with jaw movement."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Sudden facial asymmetry with arm weakness and speech change is a time-critical stroke presentation. Activate the local stroke pathway and identify last-known-well; do not delay for a routine reassessment or attribute the findings to Bell's palsy.",
+      "option_rationales": {
+        "A": "The acute neurologic cluster requires immediate stroke evaluation and time documentation.",
+        "B": "Bell's palsy does not explain arm drift and speech changes; the nurse should not diagnose it.",
+        "C": "Waiting can delay time-sensitive treatment.",
+        "D": "TMJ movement does not account for the associated acute arm and speech findings."
+      },
+      "exam_strategy": "Acute facial weakness with additional focal neurologic findings is an emergency until assessed.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [10, 13], "relationship": "abnormal-finding application"}]
+    },
+    {
+      "id": "NUR235-T2-027",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Headache red flags",
+      "difficulty": "challenging",
+      "stem": "Which headache presentations warrant urgent clinical evaluation rather than routine self-care advice? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "A sudden, maximal-at-onset headache described as the worst ever."},
+        {"id": "B", "text": "A new headache with fever and neck stiffness."},
+        {"id": "C", "text": "A headache accompanied by new weakness, confusion, or visual loss."},
+        {"id": "D", "text": "A familiar mild headache that resolves with the patient's usual plan and has no new features."},
+        {"id": "E", "text": "A brief mild headache after missing lunch that fully resolves after eating and has no associated symptoms."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Thunderclap onset, fever with neck stiffness, and new neurologic or visual deficits can signal serious secondary causes and require urgent assessment. Stable, familiar symptoms without red flags follow a different pathway, while change from baseline should always be clarified.",
+      "option_rationales": {
+        "A": "A sudden worst-ever headache is a neurologic red flag.",
+        "B": "Fever and neck stiffness with headache can indicate a serious infection or other urgent condition.",
+        "C": "New focal deficits or visual loss require prompt assessment.",
+        "D": "A familiar, resolving headache without new features is not the same red-flag presentation.",
+        "E": "A fully resolved mild headache without associated symptoms does not by itself signal an emergency."
+      },
+      "exam_strategy": "Use onset, associated symptoms, and deviation from baseline to identify headache red flags.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 10], "relationship": "focused assessment and escalation"}]
+    },
+    {
+      "id": "NUR235-T2-028",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Possible giant cell arteritis",
+      "difficulty": "challenging",
+      "stem": "A 72-year-old reports a new temporal headache, scalp tenderness when combing the hair, jaw fatigue while chewing, and brief episodes of blurred vision. What is the priority?",
+      "options": [
+        {"id": "A", "text": "Arrange urgent same-day medical evaluation because an inflammatory vascular cause could threaten vision."},
+        {"id": "B", "text": "Recommend a new toothbrush and routine dental appointment only."},
+        {"id": "C", "text": "Reassure the patient that scalp tenderness is expected with normal aging."},
+        {"id": "D", "text": "Delay assessment until the patient develops constant vision loss."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "In an older adult, a new temporal headache with scalp tenderness, jaw claudication, and visual symptoms is concerning for giant cell arteritis. Prompt evaluation is needed to reduce risk of irreversible vision loss.",
+      "option_rationales": {
+        "A": "The symptom cluster is a time-sensitive warning pattern requiring urgent evaluation.",
+        "B": "Dental evaluation alone would not address the visual symptoms and vascular concern.",
+        "C": "New temporal pain and visual symptoms should not be dismissed as aging.",
+        "D": "Waiting for permanent loss could allow preventable harm."
+      },
+      "exam_strategy": "New headache plus jaw claudication or visual symptoms in an older adult warrants urgent assessment.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 6, 10], "relationship": "focused symptom interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-029",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Headache during pregnancy",
+      "difficulty": "challenging",
+      "stem": "A pregnant patient in the first trimester reports a new severe headache unlike prior headaches and brief blurred vision. Which response is best?",
+      "options": [
+        {"id": "A", "text": "Assess onset, blood pressure, neurologic symptoms, and vision, then promptly notify the appropriate clinician for evaluation."},
+        {"id": "B", "text": "Reassure the patient that first-trimester headaches resolve once hormone levels stabilize."},
+        {"id": "C", "text": "Document the headache as a normal pregnancy finding and do not reassess."},
+        {"id": "D", "text": "Recommend an over-the-counter medication without checking the patient's history or pregnancy plan."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pregnancy can change headache patterns, but a new severe headache with visual symptoms should not be normalized by trimester. Focused assessment and prompt clinical review are appropriate; treatment decisions must account for pregnancy and patient-specific factors.",
+      "option_rationales": {
+        "A": "This identifies urgent associated findings and initiates evaluation without assuming a benign cause.",
+        "B": "The slide's generalization cannot safely explain a new severe headache with visual symptoms.",
+        "C": "A severe new symptom requires assessment, not automatic normalization.",
+        "D": "Medication recommendations in pregnancy require individualized review."
+      },
+      "exam_strategy": "Do not let a common pregnancy symptom label override new severe or neurologic features.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 7], "relationship": "developmental consideration with clinical qualification"}, {"source_id": "ACOG_HEADACHE", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-030",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Infant skull and fontanel assessment",
+      "difficulty": "challenging",
+      "stem": "During an infant assessment, the anterior fontanel appears persistently bulging while the infant is calm and held upright. The infant is also unusually difficult to arouse. What should the nurse do?",
+      "options": [
+        {"id": "A", "text": "Promptly escalate the finding and assess the infant's overall neurologic status and vital signs."},
+        {"id": "B", "text": "Document normal molding because all fontanels are bulging in infants."},
+        {"id": "C", "text": "Press firmly on the fontanel to determine whether it is soft."},
+        {"id": "D", "text": "Wait until the fontanel closes before reporting the change."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A persistently bulging fontanel when calm and upright, especially with altered responsiveness, is concerning and needs prompt evaluation. Normal fontanel assessment is gentle; molding and fontanel status are not interchangeable findings.",
+      "option_rationales": {
+        "A": "The combination of a persistent bulge and decreased responsiveness warrants urgent assessment.",
+        "B": "Molding refers to skull shape changes around birth and does not explain this finding in a calm infant.",
+        "C": "Firm pressure is inappropriate and may harm the infant.",
+        "D": "Waiting for natural closure could delay evaluation of an acute change."
+      },
+      "exam_strategy": "Interpret infant head findings with position, state, and neurologic behavior.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [8, 10], "relationship": "developmental assessment"}]
+    },
+    {
+      "id": "NUR235-T2-031",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Cranial nerve function matching",
+      "difficulty": "challenging",
+      "stem": "Which assessment maneuver-function pairs are correctly matched? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Cranial nerve V: compare facial sensation and assess jaw clenching."},
+        {"id": "B", "text": "Cranial nerve VII: observe facial symmetry during smiling and eye closure."},
+        {"id": "C", "text": "Cranial nerve XI: assess shoulder shrug and head turning against resistance."},
+        {"id": "D", "text": "Cranial nerve XII: assess tongue protrusion and side-to-side movement."},
+        {"id": "E", "text": "Cranial nerve II: assess facial expression by asking the patient to smile."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Cranial nerves V, VII, XI, and XII are assessed through their sensory/masticatory, facial-expression, shoulder/head-turning, and tongue-movement functions, respectively. Cranial nerve II is visual, not facial motor.",
+      "option_rationales": {
+        "A": "Cranial nerve V carries facial sensation and motor fibers to muscles of mastication.",
+        "B": "Cranial nerve VII controls facial expression, including smile and eye closure.",
+        "C": "Cranial nerve XI supplies sternocleidomastoid and trapezius function.",
+        "D": "Cranial nerve XII controls tongue movement.",
+        "E": "Cranial nerve II is the optic nerve and does not control smiling."
+      },
+      "exam_strategy": "Map each maneuver to the nerve's function rather than memorizing a single test in isolation.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 6], "relationship": "cranial nerve assessment"}]
+    },
+    {
+      "id": "NUR235-T2-032",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Facial edema in pregnancy",
+      "difficulty": "challenging",
+      "stem": "A pregnant patient reports sudden facial and hand swelling with a persistent headache and new visual spots. Which action is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Promptly assess blood pressure and associated symptoms and notify the obstetric clinician."},
+        {"id": "B", "text": "Reassure the patient that all facial edema is expected in pregnancy."},
+        {"id": "C", "text": "Document melasma, because skin pigmentation changes explain swelling and visual spots."},
+        {"id": "D", "text": "Suggest limiting all fluids and reassess at the next routine visit."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Sudden edema with persistent headache and visual symptoms in pregnancy requires prompt assessment for hypertensive complications and other urgent causes. Do not treat it as a routine appearance change or advise fluid restriction without an order.",
+      "option_rationales": {
+        "A": "Blood pressure and symptom assessment support timely evaluation of a potentially serious pregnancy complication.",
+        "B": "Sudden swelling with headache and visual changes is not safely normalized.",
+        "C": "Melasma is pigmentation change and does not explain edema or visual symptoms.",
+        "D": "Unordered fluid restriction is inappropriate and delays assessment."
+      },
+      "exam_strategy": "Distinguish a common visible pregnancy change from an acute symptom cluster.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [7, 10], "relationship": "developmental and abnormal findings"}]
+    },
+    {
+      "id": "NUR235-T2-033",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Parkinson-related facial expression",
+      "difficulty": "challenging",
+      "stem": "A patient with Parkinson disease has reduced spontaneous facial movement and a relatively fixed expression. The patient accurately reports feeling comfortable. What is the best interpretation?",
+      "options": [
+        {"id": "A", "text": "Reduced facial expression can occur with Parkinson disease and should not be used alone to infer the patient's mood."},
+        {"id": "B", "text": "The fixed expression proves the patient is depressed."},
+        {"id": "C", "text": "This finding is diagnostic of a new stroke even without a change from baseline."},
+        {"id": "D", "text": "Facial movement does not need to be documented if the patient denies discomfort."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Parkinson disease can reduce spontaneous facial movement (hypomimia). The nurse should describe the finding, compare with baseline, and ask about the patient's experience rather than infer emotion from facial expression alone.",
+      "option_rationales": {
+        "A": "This accounts for a known movement pattern while preserving individualized assessment.",
+        "B": "A reduced facial expression alone cannot diagnose depression.",
+        "C": "A chronic baseline pattern without new focal findings does not by itself establish acute stroke.",
+        "D": "Objective findings remain relevant even when the patient feels comfortable."
+      },
+      "exam_strategy": "Interpret facial movement in context and compare with baseline before concluding it is new.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [9, 10, 14], "relationship": "normal/abnormal and disease context"}]
+    },
+    {
+      "id": "NUR235-T2-034",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Characterizing facial asymmetry",
+      "difficulty": "challenging",
+      "stem": "A patient has subtle facial asymmetry, and no baseline description is available. Which assessment steps are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Ask when the asymmetry began and whether it is new or changing."},
+        {"id": "B", "text": "Observe facial movement at rest and with smile, eyebrow raise, and eye closure."},
+        {"id": "C", "text": "Assess for associated speech, limb-strength, sensation, vision, or level-of-consciousness changes."},
+        {"id": "D", "text": "Document the specific observed side and movement rather than labeling a cause prematurely."},
+        {"id": "E", "text": "Assume the asymmetry is normal because many people have unequal facial features."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Onset, change from baseline, specific movement, and associated neurologic findings determine the significance and urgency of asymmetry. Precise description is safer than assuming a benign variant or assigning a diagnosis from appearance alone.",
+      "option_rationales": {
+        "A": "New or progressive asymmetry changes the urgency of the assessment.",
+        "B": "Comparing rest and movement helps characterize which facial functions are affected.",
+        "C": "Associated focal findings can indicate a broader neurologic emergency.",
+        "D": "Objective documentation supports communication and avoids premature diagnosis.",
+        "E": "Some asymmetry is common, but a new change must not be dismissed without assessment."
+      },
+      "exam_strategy": "Establish timing, pattern, associated symptoms, and baseline before interpreting facial asymmetry.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 5, 10, 13], "relationship": "focused assessment"}]
+    },
+    {
+      "id": "NUR235-T2-035",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "New unilateral facial pain",
+      "difficulty": "challenging",
+      "stem": "A patient reports new unilateral facial pain with a visible vesicular rash near the eye and increasing light sensitivity. What is the most appropriate response?",
+      "options": [
+        {"id": "A", "text": "Arrange urgent same-day medical evaluation because periocular involvement can threaten the eye."},
+        {"id": "B", "text": "Recommend waiting several days because facial rashes are never urgent."},
+        {"id": "C", "text": "Document a routine acne flare and advise squeezing the lesions."},
+        {"id": "D", "text": "Assess only the TMJ because the pain is unilateral."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A painful vesicular rash near the eye with photophobia can reflect a condition requiring prompt treatment to protect ocular structures. The nurse should not manipulate lesions or defer assessment.",
+      "option_rationales": {
+        "A": "Periocular rash and eye symptoms create a time-sensitive need for evaluation.",
+        "B": "Some facial rashes can involve the eye and require prompt care.",
+        "C": "The morphology and eye symptoms are not safely labeled acne; squeezing is inappropriate.",
+        "D": "TMJ assessment alone would miss the periocular lesion and photophobia."
+      },
+      "exam_strategy": "A facial finding close to the eye plus new eye symptoms warrants escalation.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 10], "relationship": "focused facial assessment"}]
+    },
+    {
+      "id": "NUR235-T2-036",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Head shape and developmental context",
+      "difficulty": "challenging",
+      "stem": "A caregiver reports that an infant's head shape has become more asymmetric over several weeks. Which next step best supports an accurate assessment?",
+      "options": [
+        {"id": "A", "text": "Review birth history and positioning, inspect head shape and sutures, measure and trend head circumference, and report progressive change."},
+        {"id": "B", "text": "Assume the shape is molding and stop assessing because molding never persists."},
+        {"id": "C", "text": "Press on the sutures until the skull shape changes."},
+        {"id": "D", "text": "Compare the infant's head only with an adult's head size."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Infant head shape is interpreted in developmental and birth context. Trend, symmetry, suture/fontanel findings, and associated development help distinguish expected variation from progressive change; avoid forceful manipulation.",
+      "option_rationales": {
+        "A": "This combines relevant history with objective developmental assessment and follow-up.",
+        "B": "Progressive asymmetry should not be assumed to be harmless molding without evaluation.",
+        "C": "Forceful pressure is unsafe and cannot correct or diagnose the cause.",
+        "D": "Head size and shape must be interpreted using age-appropriate growth information."
+      },
+      "exam_strategy": "Use age-specific context and trends rather than a single adult comparison.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [2, 8], "relationship": "lifespan assessment"}]
+    },
+    {
+      "id": "NUR235-T2-037",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Cranial nerves XI and XII",
+      "difficulty": "challenging",
+      "stem": "Which findings during cranial nerve assessment are matched to the correct function? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Weak shoulder shrug against resistance may indicate impaired cranial nerve XI function."},
+        {"id": "B", "text": "Tongue deviation on protrusion may indicate impaired cranial nerve XII function."},
+        {"id": "C", "text": "Inability to close one eye tightly assesses cranial nerve VII motor function."},
+        {"id": "D", "text": "Reduced cheek sensation assesses the sensory component of cranial nerve V."},
+        {"id": "E", "text": "A reduced sense of smell is assessed by asking the patient to clench the jaw."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Shoulder movement, tongue movement, facial expression, and facial sensation correspond to cranial nerves XI, XII, VII, and V, respectively. Smell is cranial nerve I and is not tested by jaw clenching.",
+      "option_rationales": {
+        "A": "Cranial nerve XI supplies trapezius and sternocleidomastoid function.",
+        "B": "Cranial nerve XII controls tongue movement; deviation is an abnormal finding to characterize.",
+        "C": "Eye closure tests facial motor function through cranial nerve VII.",
+        "D": "Facial sensation is carried by cranial nerve V.",
+        "E": "Jaw clenching tests muscles of mastication, not olfaction."
+      },
+      "exam_strategy": "Map each observed movement or sensation to the nerve that carries it.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 6], "relationship": "cranial nerve technique"}]
+    },
+    {
+      "id": "NUR235-T2-038",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "New temporal headache with visual symptoms",
+      "difficulty": "challenging",
+      "stem": "A 68-year-old with no headache history reports a new temporal headache and brief episodes of double vision. The patient is alert and has no current weakness. What is the best action?",
+      "options": [
+        {"id": "A", "text": "Promptly notify the clinician and arrange urgent evaluation; the absence of weakness does not rule out a serious cause."},
+        {"id": "B", "text": "Defer evaluation because there is no limb weakness."},
+        {"id": "C", "text": "Classify the headache as tension-type based on its temporal location."},
+        {"id": "D", "text": "Recommend pressing on the temporal artery to see whether the diplopia stops."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A new headache later in life with transient diplopia is a concerning change even without limb weakness. Prompt evaluation is indicated; location alone cannot establish a benign headache type.",
+      "option_rationales": {
+        "A": "The age, new onset, and visual symptom support timely evaluation.",
+        "B": "A serious cause can occur without limb weakness.",
+        "C": "Temporal location alone is insufficient to diagnose a tension headache.",
+        "D": "Pressing an artery is not a diagnostic test and could cause harm."
+      },
+      "exam_strategy": "A new neurologic or visual symptom changes the significance of a headache.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 6, 10], "relationship": "symptom prioritization"}]
+    },
+    {
+      "id": "NUR235-T2-039",
+      "type": "single_select",
+      "category": "Head and Face",
+      "concept": "Documenting facial movement",
+      "difficulty": "challenging",
+      "stem": "During assessment, the right nasolabial fold appears flatter and the right corner of the mouth moves less during a smile. Which documentation is best?",
+      "options": [
+        {"id": "A", "text": "\"Right lower facial movement is reduced during smile; compared with baseline and associated findings are being assessed.\""},
+        {"id": "B", "text": "\"Patient has Bell's palsy.\""},
+        {"id": "C", "text": "\"Patient is uncooperative and has an abnormal personality.\""},
+        {"id": "D", "text": "\"Face normal\" because the patient can speak."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Objective, side-specific documentation describes what was observed without assigning a cause. Onset, baseline, and associated neurologic findings determine urgency and are assessed separately.",
+      "option_rationales": {
+        "A": "It records the observed side and movement while preserving the need for further assessment.",
+        "B": "Bell's palsy is a diagnosis and cannot be concluded from this single observation.",
+        "C": "This is judgmental and unrelated to the objective finding.",
+        "D": "Speaking does not rule out facial weakness or other neurologic findings."
+      },
+      "exam_strategy": "Use precise, neutral findings rather than a premature diagnostic label.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [4, 5, 13], "relationship": "assessment documentation"}]
+    },
+    {
+      "id": "NUR235-T2-040",
+      "type": "sata",
+      "category": "Head and Face",
+      "concept": "Pregnancy headache escalation",
+      "difficulty": "challenging",
+      "stem": "Which findings in a pregnant patient with a headache require prompt assessment and escalation? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Sudden severe headache that reaches maximum intensity quickly."},
+        {"id": "B", "text": "New visual disturbance or focal neurologic change."},
+        {"id": "C", "text": "Persistent headache with elevated blood pressure or new edema."},
+        {"id": "D", "text": "A mild familiar headache that resolves with rest and has no new associated symptoms."},
+        {"id": "E", "text": "A long-standing, unchanged headache pattern already evaluated by the patient's clinician."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Sudden severe onset, neurologic or visual symptoms, and persistent headache with elevated blood pressure or new edema are warning features in pregnancy. A stable familiar pattern without new symptoms is not equivalent, though ongoing care should follow the patient's plan.",
+      "option_rationales": {
+        "A": "Thunderclap onset is a red flag requiring urgent evaluation.",
+        "B": "New visual or focal neurologic findings may signal a serious secondary cause.",
+        "C": "The combination can indicate a hypertensive pregnancy complication and requires prompt evaluation.",
+        "D": "A mild familiar symptom that resolves without associated findings is not the same emergency pattern.",
+        "E": "An unchanged, previously assessed pattern is different from a new or worsening symptom, although the established plan remains relevant."
+      },
+      "exam_strategy": "In pregnancy, assess warning features and blood pressure rather than relying on trimester-based reassurance.",
+      "source_refs": [{"source_id": "HEAD_FACE", "slides": [5, 7], "relationship": "pregnancy assessment"}, {"source_id": "ACOG_HEADACHE", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-041",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Tracheal position",
+      "difficulty": "moderate",
+      "stem": "During a routine neck inspection, the trachea appears slightly left of midline. The patient is comfortable and has no respiratory symptoms. What should the nurse do first?",
+      "options": [
+        {"id": "A", "text": "Reposition the patient, inspect again, palpate gently, and compare with the patient's overall anatomy and baseline."},
+        {"id": "B", "text": "Diagnose tension pneumothorax based on the first visual impression."},
+        {"id": "C", "text": "Press firmly on the trachea until it returns to midline."},
+        {"id": "D", "text": "Ignore the finding because tracheal position is never clinically relevant."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A subtle apparent shift should be verified with positioning and gentle assessment, then interpreted alongside symptoms and the rest of the examination. Tracheal deviation with acute respiratory distress is urgent, but a single mild visual impression in a comfortable patient is not a diagnosis.",
+      "option_rationales": {
+        "A": "Confirming the observation and correlating it with symptoms avoids overcalling an uncertain finding.",
+        "B": "Tension pneumothorax is an emergency clinical syndrome, not diagnosed from a subtle isolated appearance.",
+        "C": "Forceful manipulation is unsafe and cannot correct the cause.",
+        "D": "Tracheal position is relevant and should be assessed accurately."
+      },
+      "exam_strategy": "Verify a subtle finding and interpret it with symptoms before escalating or labeling it.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6], "relationship": "inspection and palpation"}]
+    },
+    {
+      "id": "NUR235-T2-042",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Lymph-node palpation technique",
+      "difficulty": "moderate",
+      "stem": "Which technique is most appropriate when palpating the cervical lymph-node groups?",
+      "options": [
+        {"id": "A", "text": "Use the finger pads in gentle circular motions, comparing corresponding groups on both sides."},
+        {"id": "B", "text": "Use the fingertips to pinch each node sharply between the nails."},
+        {"id": "C", "text": "Palpate all groups with force until every node is easily felt."},
+        {"id": "D", "text": "Palpate only the supraclavicular nodes because other groups are not assessable."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Gentle finger-pad palpation in a systematic sequence allows assessment of size, tenderness, consistency, and mobility while minimizing discomfort. Comparing sides helps identify asymmetry.",
+      "option_rationales": {
+        "A": "This is a controlled technique for sequential palpation and side-to-side comparison.",
+        "B": "Pinching with nails can hurt the patient and is not the intended technique.",
+        "C": "Excessive force causes discomfort and does not improve the assessment.",
+        "D": "A complete assessment includes the relevant node groups, not only one area."
+      },
+      "exam_strategy": "Use a consistent sequence, light pressure, and comparison.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8, 9], "relationship": "lymph-node technique"}]
+    },
+    {
+      "id": "NUR235-T2-043",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Thyroid observation during swallowing",
+      "difficulty": "moderate",
+      "stem": "The nurse is observing the anterior neck for thyroid enlargement. Which instruction best helps the nurse observe thyroid movement?",
+      "options": [
+        {"id": "A", "text": "Ask the patient to take a sip of water and swallow while the nurse watches the lower anterior neck."},
+        {"id": "B", "text": "Ask the patient to hold the breath and turn the head rapidly."},
+        {"id": "C", "text": "Ask the patient to shrug both shoulders while the nurse watches the jaw."},
+        {"id": "D", "text": "Ask the patient to cough forcefully and palpate both carotids at once."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "The thyroid elevates with swallowing, making a sip of water a useful inspection maneuver. Follow-up palpation or auscultation should be performed only as appropriate to the clinician's training and the assessment context.",
+      "option_rationales": {
+        "A": "Swallowing helps reveal movement of the thyroid region.",
+        "B": "Rapid head movement does not assess thyroid movement and may cause discomfort.",
+        "C": "Shoulder shrug assesses a different function and does not expose thyroid movement.",
+        "D": "Forceful coughing is unnecessary, and simultaneous carotid palpation is unsafe."
+      },
+      "exam_strategy": "Use swallowing to observe thyroid excursion, then assess a specific abnormality as indicated.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 12], "relationship": "thyroid assessment"}]
+    },
+    {
+      "id": "NUR235-T2-044",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Describing lymph-node findings",
+      "difficulty": "moderate",
+      "stem": "A cervical node is palpable. Which features should the nurse document to characterize it? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Location and approximate size."},
+        {"id": "B", "text": "Tenderness and consistency."},
+        {"id": "C", "text": "Mobility or fixation to surrounding tissue."},
+        {"id": "D", "text": "Associated symptoms and whether nearby nodes are also enlarged."},
+        {"id": "E", "text": "A definitive diagnosis of malignancy based only on palpation."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Accurate node assessment describes location, size, tenderness, consistency, mobility, distribution, and relevant symptoms. Palpation alone cannot establish malignancy or a specific infection.",
+      "option_rationales": {
+        "A": "Location and size make the finding reproducible for follow-up.",
+        "B": "Tenderness and consistency help characterize the node.",
+        "C": "Mobility versus fixation is a useful objective descriptor.",
+        "D": "Associated symptoms and distribution add context to the finding.",
+        "E": "A node's cause cannot be diagnosed as malignant from palpation alone."
+      },
+      "exam_strategy": "Document objective node characteristics; distinguish description from diagnosis.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8, 9, 10], "relationship": "palpation and lifespan context"}]
+    },
+    {
+      "id": "NUR235-T2-045",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Neck range of motion",
+      "difficulty": "moderate",
+      "stem": "A patient reports chronic neck stiffness. Which assessment instruction is safest?",
+      "options": [
+        {"id": "A", "text": "Ask the patient to move the neck actively through comfortable flexion, extension, rotation, and lateral bending, stopping if pain occurs."},
+        {"id": "B", "text": "Move the patient's head passively to the end of each range despite resistance."},
+        {"id": "C", "text": "Ask the patient to perform rapid repeated circles to test endurance."},
+        {"id": "D", "text": "Skip asking about pain because range of motion is objective."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Active range of motion should be performed within comfort and stopped if pain or neurologic symptoms occur. The nurse should not force the neck or ignore a patient's report.",
+      "option_rationales": {
+        "A": "This safely evaluates movement while respecting symptoms and patient control.",
+        "B": "Forcing passive movement against resistance can cause harm.",
+        "C": "Rapid repeated movement is not a routine neck assessment technique.",
+        "D": "Pain and symptoms are essential context for interpreting movement."
+      },
+      "exam_strategy": "Assess actively and comfortably; do not force a painful joint or neck.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 10], "relationship": "range-of-motion technique"}]
+    },
+    {
+      "id": "NUR235-T2-046",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Acute tracheal deviation",
+      "difficulty": "challenging",
+      "stem": "A patient suddenly becomes severely short of breath after a central-line procedure. The nurse notes unilateral absent breath sounds, falling oxygen saturation, and tracheal deviation. What is the priority?",
+      "options": [
+        {"id": "A", "text": "Activate emergency assistance and support immediate evaluation for a life-threatening thoracic complication."},
+        {"id": "B", "text": "Finish the planned lymph-node examination before notifying anyone."},
+        {"id": "C", "text": "Ask the patient to swallow water to confirm thyroid movement."},
+        {"id": "D", "text": "Document the trachea as normally off-center and reassess at the next vital-sign interval."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Acute respiratory distress with unilateral absent breath sounds and tracheal deviation after a procedure is a life-threatening pattern, including possible tension pneumothorax. Immediate emergency response takes priority over routine assessment.",
+      "option_rationales": {
+        "A": "The rapidly deteriorating respiratory findings require emergency escalation.",
+        "B": "Continuing a routine examination would dangerously delay intervention.",
+        "C": "Thyroid movement is irrelevant to this acute respiratory emergency.",
+        "D": "A new deviation with respiratory distress cannot be dismissed as a normal variant."
+      },
+      "exam_strategy": "Interpret neck findings with acute respiratory status and prioritize instability.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6], "relationship": "tracheal assessment in context"}]
+    },
+    {
+      "id": "NUR235-T2-047",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Carotid assessment safety",
+      "difficulty": "challenging",
+      "stem": "A nurse is assessing the carotid arteries in an older adult. Which actions are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Auscultate for a bruit when indicated, using light pressure and asking the patient to briefly hold the breath."},
+        {"id": "B", "text": "Palpate one carotid artery at a time with gentle pressure."},
+        {"id": "C", "text": "Avoid massaging the carotid sinus."},
+        {"id": "D", "text": "Compress both carotid arteries simultaneously to compare pulses."},
+        {"id": "E", "text": "Press firmly until a bruit can be felt through the skin."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Carotid assessment is performed carefully: auscultate when appropriate, palpate one side at a time with gentle pressure, and avoid carotid sinus massage. Simultaneous compression can compromise cerebral blood flow.",
+      "option_rationales": {
+        "A": "Auscultation with the patient briefly holding the breath can reduce transmitted breath sounds.",
+        "B": "One-sided gentle palpation reduces risk and allows assessment of each pulse.",
+        "C": "Carotid sinus massage is not a routine assessment maneuver and can provoke dangerous responses.",
+        "D": "Simultaneous bilateral compression is unsafe.",
+        "E": "A bruit is heard with a stethoscope; forceful pressure is inappropriate."
+      },
+      "exam_strategy": "Protect cerebral perfusion: never compress both carotids at the same time.",
+      "source_refs": [{"source_id": "NECK", "slides": [3, 5], "relationship": "vessel assessment"}]
+    },
+    {
+      "id": "NUR235-T2-048",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Jugular venous distention assessment",
+      "difficulty": "challenging",
+      "stem": "A patient is short of breath when lying flat. At a 45-degree head-of-bed angle, the nurse observes prominent jugular venous pulsation above the clavicle. What is the best next step?",
+      "options": [
+        {"id": "A", "text": "Document the position and finding, assess related cardiopulmonary signs, and notify the clinician of the concerning pattern."},
+        {"id": "B", "text": "Press on both jugular veins to see whether the pulsation stops."},
+        {"id": "C", "text": "Label the finding as a carotid bruit without auscultation."},
+        {"id": "D", "text": "Lower the head of bed flat and leave the patient unattended."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Jugular venous distention is assessed with the patient positioned at an appropriate angle and interpreted alongside symptoms and other findings. Orthopnea with prominent venous pulsation warrants further cardiopulmonary evaluation; do not compress the veins or misidentify the finding as a bruit.",
+      "option_rationales": {
+        "A": "This captures the observed position and symptom context and communicates a potentially significant finding.",
+        "B": "Bilateral neck-vein compression is not an appropriate routine assessment action.",
+        "C": "A bruit is an auscultated arterial sound, not a visible venous pulsation.",
+        "D": "The patient's orthopnea should be respected, and the patient should not be left unattended."
+      },
+      "exam_strategy": "Record the angle and correlate visible neck-vein findings with respiratory symptoms.",
+      "source_refs": [{"source_id": "NECK", "slides": [3, 5], "relationship": "neck-vessel assessment"}]
+    },
+    {
+      "id": "NUR235-T2-049",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Thyroid enlargement and swallowing",
+      "difficulty": "challenging",
+      "stem": "A patient has visible anterior-neck fullness that rises during swallowing. The patient also reports new difficulty swallowing solid food. What is the best response?",
+      "options": [
+        {"id": "A", "text": "Document the enlargement and swallowing symptom, then arrange further clinical evaluation."},
+        {"id": "B", "text": "Assume the enlargement is a normal thyroid response because it moves with swallowing."},
+        {"id": "C", "text": "Press deeply over the thyroid to force the patient to swallow again."},
+        {"id": "D", "text": "Diagnose hyperthyroidism from the neck appearance alone."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Thyroid tissue moves with swallowing, but visible enlargement plus dysphagia is not a normal finding to dismiss. Describe the observation and symptom and arrange evaluation; appearance alone does not determine thyroid function or cause.",
+      "option_rationales": {
+        "A": "The enlargement and compressive symptom warrant follow-up and accurate documentation.",
+        "B": "Normal movement with swallowing does not mean the size or associated dysphagia is normal.",
+        "C": "Deep pressure is unnecessary and may be uncomfortable or unsafe.",
+        "D": "Neck appearance alone cannot establish hyperthyroidism."
+      },
+      "exam_strategy": "A normal movement pattern does not make an abnormal size or symptom benign.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 12], "relationship": "thyroid inspection and symptoms"}]
+    },
+    {
+      "id": "NUR235-T2-050",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Thyroid examination sequence",
+      "difficulty": "challenging",
+      "stem": "A nurse trained to perform an indicated thyroid assessment is preparing to examine the gland. Which actions are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Inspect the anterior neck and observe movement during swallowing."},
+        {"id": "B", "text": "Palpate gently for enlargement, asymmetry, nodules, or tenderness when indicated."},
+        {"id": "C", "text": "Auscultate for a bruit when enlargement or clinical context makes it appropriate."},
+        {"id": "D", "text": "Treat the presence of a bruit as a complete diagnosis without further assessment."},
+        {"id": "E", "text": "Apply forceful pressure over the gland to elicit a bruit."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Thyroid assessment may include inspection, gentle palpation, and auscultation when indicated and within training. A bruit is a finding to document and interpret with the full assessment, not a diagnosis; forceful pressure is not appropriate.",
+      "option_rationales": {
+        "A": "Observation during swallowing helps assess gland movement and visible enlargement.",
+        "B": "Gentle palpation can characterize size, symmetry, nodules, and tenderness.",
+        "C": "Auscultation may be appropriate when indicated, such as with an enlarged gland.",
+        "D": "A bruit alone does not establish a specific disease or severity.",
+        "E": "Forceful pressure is not part of safe thyroid auscultation."
+      },
+      "exam_strategy": "Use each assessment technique for the finding it measures, and avoid diagnosing from one sign.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 12], "relationship": "advanced thyroid assessment"}]
+    },
+    {
+      "id": "NUR235-T2-051",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Supraclavicular node",
+      "difficulty": "challenging",
+      "stem": "The nurse palpates a firm, fixed, nontender supraclavicular node in an adult. The patient reports no recent infection. What is the most appropriate response?",
+      "options": [
+        {"id": "A", "text": "Document the characteristics and arrange prompt clinician evaluation."},
+        {"id": "B", "text": "Assume the node is a normal consequence of aging."},
+        {"id": "C", "text": "Repeatedly massage the node to see whether it becomes mobile."},
+        {"id": "D", "text": "Tell the patient the finding proves cancer."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A firm, fixed supraclavicular node is concerning and warrants evaluation, especially without a clear transient cause. Palpation cannot establish a specific diagnosis, and repeated manipulation is not useful.",
+      "option_rationales": {
+        "A": "Clear documentation and timely follow-up are appropriate for this concerning node pattern.",
+        "B": "A fixed supraclavicular node is not a routine age-related finding.",
+        "C": "Massage cannot reliably characterize or resolve the node and may cause discomfort.",
+        "D": "The finding is concerning but does not by itself prove malignancy."
+      },
+      "exam_strategy": "Recognize concerning node characteristics and arrange evaluation without claiming a diagnosis.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8, 9], "relationship": "lymph-node interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-052",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Tender mobile cervical nodes",
+      "difficulty": "challenging",
+      "stem": "A patient with a recent sore throat has several small, mobile, tender anterior cervical nodes. The patient is afebrile and otherwise stable. Which interpretation is best?",
+      "options": [
+        {"id": "A", "text": "The pattern can be reactive, but the nurse should assess the throat and symptoms and monitor for persistence or worsening."},
+        {"id": "B", "text": "Tenderness proves the nodes are malignant."},
+        {"id": "C", "text": "The finding requires an immediate cancer diagnosis."},
+        {"id": "D", "text": "The nurse should start antibiotics without an order."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Tender mobile nodes with a recent local infection can be reactive, but palpation does not identify a cause with certainty. Assess associated symptoms and follow up if the nodes persist, enlarge, or become more concerning.",
+      "option_rationales": {
+        "A": "This considers a plausible reactive pattern while preserving reassessment and follow-up.",
+        "B": "Tenderness does not prove malignancy.",
+        "C": "The described pattern does not justify a definitive cancer diagnosis.",
+        "D": "Antibiotics require clinical assessment and an authorized order."
+      },
+      "exam_strategy": "A likely reactive pattern still needs context and follow-up if it does not resolve.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8, 9, 10], "relationship": "lymph-node assessment"}]
+    },
+    {
+      "id": "NUR235-T2-053",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Lymph-node locations",
+      "difficulty": "challenging",
+      "stem": "Which lymph-node location descriptions are accurate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Preauricular nodes are located anterior to the ear."},
+        {"id": "B", "text": "Postauricular nodes are located behind the ear near the mastoid region."},
+        {"id": "C", "text": "Submental nodes are located beneath the chin."},
+        {"id": "D", "text": "Supraclavicular nodes are located above the clavicle."},
+        {"id": "E", "text": "The deep cervical chain is located in the axilla."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "The preauricular, postauricular, submental, and supraclavicular groups are named for their anatomic locations. Deep cervical nodes lie along deeper cervical structures, not in the axilla.",
+      "option_rationales": {
+        "A": "Preauricular means in front of the ear.",
+        "B": "Postauricular nodes are behind the ear in the mastoid region.",
+        "C": "Submental nodes lie beneath the chin.",
+        "D": "Supraclavicular nodes are above the clavicle.",
+        "E": "The axilla contains axillary nodes; deep cervical nodes are in the neck."
+      },
+      "exam_strategy": "Use anatomic landmarks to keep each node group distinct.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8], "relationship": "lymph-node sequence and locations"}]
+    },
+    {
+      "id": "NUR235-T2-054",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Lymphadenopathy with systemic symptoms",
+      "difficulty": "challenging",
+      "stem": "A patient has enlarged cervical and supraclavicular nodes and reports unexplained weight loss and drenching night sweats. What should the nurse do?",
+      "options": [
+        {"id": "A", "text": "Document the distribution and characteristics and promptly notify the clinician for further evaluation."},
+        {"id": "B", "text": "Assume a viral infection and advise no follow-up."},
+        {"id": "C", "text": "Tell the patient the symptoms prove lymphoma."},
+        {"id": "D", "text": "Massage the nodes and wait several months before reporting them."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Multiple enlarged nodes with systemic symptoms require clinical evaluation. The nurse should communicate precise findings and avoid diagnosing either infection or malignancy based on the assessment alone.",
+      "option_rationales": {
+        "A": "The distribution and constitutional symptoms are significant and need timely evaluation.",
+        "B": "The pattern should not be dismissed as viral without further assessment.",
+        "C": "These findings are concerning but do not prove a particular diagnosis.",
+        "D": "Massage and prolonged delay are inappropriate for this presentation."
+      },
+      "exam_strategy": "Systemic symptoms and multiple node groups increase the need for prompt follow-up.",
+      "source_refs": [{"source_id": "NECK", "slides": [7, 8, 10], "relationship": "lymphatic assessment"}]
+    },
+    {
+      "id": "NUR235-T2-055",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Neck mass with airway symptoms",
+      "difficulty": "challenging",
+      "stem": "A patient with a rapidly enlarging anterior-neck mass develops noisy breathing and difficulty swallowing saliva. What is the priority?",
+      "options": [
+        {"id": "A", "text": "Treat this as a potential airway emergency and activate immediate clinical assistance."},
+        {"id": "B", "text": "Complete a detailed lymph-node sequence before calling for help."},
+        {"id": "C", "text": "Offer food and water to see whether swallowing improves."},
+        {"id": "D", "text": "Schedule a routine thyroid ultrasound for next month."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Noisy breathing and inability to handle secretions with a rapidly enlarging neck mass can signal impending airway compromise. Airway support and immediate escalation take priority over a complete routine exam or oral intake.",
+      "option_rationales": {
+        "A": "The airway findings are potentially life-threatening and require immediate response.",
+        "B": "A full node sequence must not delay airway intervention.",
+        "C": "Oral intake can increase aspiration risk when swallowing is impaired.",
+        "D": "A delayed outpatient test is not appropriate for acute airway symptoms."
+      },
+      "exam_strategy": "Airway compromise takes priority over anatomic completeness.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 12], "relationship": "neck assessment and escalation"}]
+    },
+    {
+      "id": "NUR235-T2-056",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Concerning neck findings",
+      "difficulty": "challenging",
+      "stem": "Which neck findings require prompt communication or further evaluation? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "A new fixed supraclavicular node."},
+        {"id": "B", "text": "A rapidly enlarging thyroid-region mass with new dysphagia."},
+        {"id": "C", "text": "Acute tracheal deviation with respiratory distress."},
+        {"id": "D", "text": "A small, mobile, mildly tender node during a short-lived upper-respiratory illness, with no other concerns."},
+        {"id": "E", "text": "A symmetric neck with full comfortable range of motion and no palpable nodes."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "A fixed supraclavicular node, an enlarging neck mass with dysphagia, and tracheal deviation with respiratory distress are concerning and require follow-up, with the last two potentially urgent. A mild reactive node or normal examination should still be documented in context but is not equivalent.",
+      "option_rationales": {
+        "A": "A new fixed supraclavicular node warrants clinical evaluation.",
+        "B": "Rapid enlargement and dysphagia may indicate compression and need prompt assessment.",
+        "C": "Deviation with respiratory distress is an emergency pattern.",
+        "D": "This may be reactive and is not the same red-flag pattern, although persistence or worsening needs follow-up.",
+        "E": "These are reassuring findings when consistent with the patient's baseline."
+      },
+      "exam_strategy": "Triage using airway symptoms, growth, fixation, and change from baseline.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 7, 8, 12], "relationship": "abnormal-finding interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-057",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Thyroid bruit interpretation",
+      "difficulty": "challenging",
+      "stem": "A trained clinician hears a soft bruit over an enlarged thyroid. Which documentation and interpretation are most appropriate?",
+      "options": [
+        {"id": "A", "text": "Document the bruit and thyroid enlargement and communicate the findings; the bruit alone does not establish a diagnosis."},
+        {"id": "B", "text": "Document that the patient definitely has hyperthyroidism."},
+        {"id": "C", "text": "Ignore the bruit because thyroid auscultation is never indicated."},
+        {"id": "D", "text": "Press harder on the gland until the sound disappears."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A thyroid bruit can reflect increased vascular flow and may be relevant with enlargement, but it is one finding rather than a definitive diagnosis. It should be documented and interpreted with history, examination, and any ordered tests.",
+      "option_rationales": {
+        "A": "This accurately reports the observation without overclaiming its meaning.",
+        "B": "A bruit alone cannot diagnose hyperthyroidism.",
+        "C": "Auscultation may be appropriate in selected contexts and within scope/training.",
+        "D": "Increasing pressure does not improve assessment and is inappropriate."
+      },
+      "exam_strategy": "Auscultatory findings support, but do not replace, the full clinical assessment.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 12], "relationship": "thyroid auscultation"}]
+    },
+    {
+      "id": "NUR235-T2-058",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Carotid versus jugular finding",
+      "difficulty": "challenging",
+      "stem": "While the patient is reclined, the nurse sees a soft, undulating pulsation in the neck that changes with position. Which interpretation is most likely?",
+      "options": [
+        {"id": "A", "text": "A visible jugular venous pulsation, which should be assessed in relation to position and other findings."},
+        {"id": "B", "text": "A carotid bruit, which is a sound heard only by inspection."},
+        {"id": "C", "text": "A thyroid nodule moving with swallowing."},
+        {"id": "D", "text": "A cervical lymph node enlarging with each heartbeat."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Jugular venous pulsation is visible and varies with position; carotid bruit is an auscultated sound. The observation should be assessed with the patient at an appropriate angle and correlated with symptoms and other findings.",
+      "option_rationales": {
+        "A": "A position-sensitive visible pulsation is consistent with a jugular venous finding.",
+        "B": "A bruit is heard with a stethoscope, not identified by visual inspection alone.",
+        "C": "A thyroid nodule is not a pulsation that changes with each cardiac cycle.",
+        "D": "A lymph node does not enlarge and recede with the heartbeat."
+      },
+      "exam_strategy": "Distinguish a visible venous pulsation from an auscultated arterial bruit.",
+      "source_refs": [{"source_id": "NECK", "slides": [3, 5], "relationship": "neck-vessel observation"}]
+    },
+    {
+      "id": "NUR235-T2-059",
+      "type": "sata",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Thyroid and lymph findings in context",
+      "difficulty": "challenging",
+      "stem": "Which statements reflect safe interpretation of thyroid and lymph-node findings? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "A thyroid that moves with swallowing can be observed normally, but enlargement or compressive symptoms still need assessment."},
+        {"id": "B", "text": "A tender node may be reactive, but tenderness alone does not identify its cause."},
+        {"id": "C", "text": "A firm, fixed node is more concerning than a small, mobile node, but palpation alone is not diagnostic."},
+        {"id": "D", "text": "A thyroid bruit by itself proves a specific hormone disorder."},
+        {"id": "E", "text": "The absence of palpable nodes excludes all head and neck disease."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Movement, tenderness, size, and mobility are useful descriptive findings but require context and do not independently diagnose a cause. Enlarging or compressive thyroid findings and fixed nodes warrant further evaluation.",
+      "option_rationales": {
+        "A": "Normal movement does not make an enlarged or symptomatic gland automatically normal.",
+        "B": "Tenderness may occur with reactive nodes but is nonspecific.",
+        "C": "Fixation increases concern, but definitive diagnosis requires further evaluation.",
+        "D": "A bruit is a finding and cannot independently establish a hormone disorder.",
+        "E": "Many disorders do not produce palpable nodes."
+      },
+      "exam_strategy": "Describe findings accurately and avoid diagnostic certainty from a single sign.",
+      "source_refs": [{"source_id": "NECK", "slides": [5, 6, 7, 8, 12], "relationship": "integrated assessment"}]
+    },
+    {
+      "id": "NUR235-T2-060",
+      "type": "single_select",
+      "category": "Neck, Lymph, and Thyroid",
+      "concept": "Lymphedema assessment",
+      "difficulty": "challenging",
+      "stem": "A patient with a history of lymph-node removal reports slowly increasing unilateral arm swelling. Which response best applies the assessment principles from the lymphatic unit?",
+      "options": [
+        {"id": "A", "text": "Compare both limbs, characterize the swelling and skin, review the history, and arrange clinical follow-up."},
+        {"id": "B", "text": "Assume the swelling is an infection and apply heat without assessment."},
+        {"id": "C", "text": "Massage the area forcefully to move fluid back toward the chest."},
+        {"id": "D", "text": "Document the swelling as normal because lymph-node surgery always causes it."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Prior lymphatic disruption can contribute to lymphedema, but unilateral swelling needs assessment for change, skin condition, infection signs, and other causes. Compare sides and arrange follow-up rather than assuming or applying forceful massage.",
+      "option_rationales": {
+        "A": "This evaluates the change and relevant context without presuming the cause.",
+        "B": "Heat and an infection diagnosis are not justified without assessment.",
+        "C": "Forceful massage is not appropriate and may cause harm.",
+        "D": "A known risk factor does not make every new swelling normal or safe to ignore."
+      },
+      "exam_strategy": "A relevant history guides assessment but does not replace evaluation of new swelling.",
+      "source_refs": [{"source_id": "NECK", "slides": [10, 11], "relationship": "lymphatic and lifespan considerations"}]
+    },
+    {
+      "id": "NUR235-T2-061",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Focused ear history",
+      "difficulty": "moderate",
+      "stem": "A patient reports gradually worsening hearing. Which additional question best helps identify relevant exposures and associated symptoms?",
+      "options": [
+        {"id": "A", "text": "\"Have you noticed tinnitus, dizziness, ear pain or drainage, noise exposure, or medicines associated with hearing changes?\""},
+        {"id": "B", "text": "\"You have an ear infection, don't you?\""},
+        {"id": "C", "text": "\"Do you have a family history of dental decay?\""},
+        {"id": "D", "text": "\"Does your hearing change when you swallow?\""}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A focused ear history includes onset and pattern of hearing change, associated tinnitus, vertigo, pain or drainage, noise exposure, medications, and relevant history. Open, neutral questions avoid assuming infection or age-related loss.",
+      "option_rationales": {
+        "A": "This gathers symptoms and exposures that can shape the ear assessment.",
+        "B": "It is leading and assumes an infection without assessment.",
+        "C": "Dental history does not directly characterize hearing change.",
+        "D": "Swallowing is not the most useful first question for gradual hearing loss."
+      },
+      "exam_strategy": "Explore the symptom, associated findings, and relevant environmental or medication exposures.",
+      "source_refs": [{"source_id": "ENMT", "slides": [8, 13], "relationship": "focused interview"}]
+    },
+    {
+      "id": "NUR235-T2-062",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Otoscopy and normal tympanic membrane",
+      "difficulty": "moderate",
+      "stem": "Which tympanic-membrane appearance is most consistent with a normal otoscopic finding?",
+      "options": [
+        {"id": "A", "text": "Gray, translucent membrane with no bulging or perforation."},
+        {"id": "B", "text": "Opaque, markedly bulging membrane with loss of landmarks."},
+        {"id": "C", "text": "Visible hole with fluid drainage from the canal."},
+        {"id": "D", "text": "Bright red membrane in every healthy adult."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A normal tympanic membrane is generally gray and translucent with identifiable landmarks. Color alone must be interpreted with symptoms and the full otoscopic view; a bulging membrane or perforation is abnormal.",
+      "option_rationales": {
+        "A": "This describes the usual normal appearance in the slide.",
+        "B": "Bulging and obscured landmarks can be abnormal and require clinical correlation.",
+        "C": "A visible perforation and drainage are not normal findings.",
+        "D": "A red membrane is not the expected normal appearance and may reflect several causes."
+      },
+      "exam_strategy": "Combine membrane appearance with symptoms and the whole ear examination.",
+      "source_refs": [{"source_id": "ENMT", "slides": [9, 11], "relationship": "otoscopic technique and findings"}]
+    },
+    {
+      "id": "NUR235-T2-063",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Otitis externa pattern",
+      "difficulty": "moderate",
+      "stem": "A patient who swims frequently reports ear-canal pain that worsens when the nurse gently moves the auricle or presses the tragus. Which finding is most consistent with this pattern?",
+      "options": [
+        {"id": "A", "text": "External-canal inflammation, as can occur with otitis externa."},
+        {"id": "B", "text": "A normal response proving middle-ear disease."},
+        {"id": "C", "text": "Presbycusis."},
+        {"id": "D", "text": "A definite tympanic-membrane perforation."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pain with manipulation of the auricle or tragus is associated with external-canal inflammation. It supports, but does not independently prove, otitis externa; otoscopy and the broader history are still needed.",
+      "option_rationales": {
+        "A": "The pain pattern and water exposure are compatible with otitis externa.",
+        "B": "Tragus tenderness does not prove middle-ear disease.",
+        "C": "Presbycusis is age-associated sensorineural hearing loss, not canal tenderness.",
+        "D": "The finding does not establish a tympanic-membrane perforation."
+      },
+      "exam_strategy": "Use the location and provocation of pain to focus the ear examination, not to skip otoscopy.",
+      "source_refs": [{"source_id": "ENMT", "slides": [9, 11], "relationship": "external-ear assessment"}]
+    },
+    {
+      "id": "NUR235-T2-064",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Rinne and Weber screening",
+      "difficulty": "moderate",
+      "stem": "Which statements about Rinne and Weber screening are accurate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "In a normal Rinne pattern, air conduction is heard longer or louder than bone conduction."},
+        {"id": "B", "text": "A Weber sound heard equally in both ears is described as not lateralized."},
+        {"id": "C", "text": "A single Weber result should be interpreted with symptoms and, when needed, a Rinne result."},
+        {"id": "D", "text": "A fixed two-second Rinne result proves normal hearing in every frequency."},
+        {"id": "E", "text": "Any Weber lateralization identifies sensorineural loss in the ear where it is heard."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Rinne compares air and bone conduction qualitatively; a normal pattern is air conduction greater than bone conduction. Weber is normally perceived at midline or equally, while lateralization must be interpreted with other findings and does not by itself identify loss type.",
+      "option_rationales": {
+        "A": "This is the usual normal Rinne relationship.",
+        "B": "Equal perception is a non-lateralized Weber response.",
+        "C": "Combined interpretation and clinical context improve screening interpretation.",
+        "D": "A precise elapsed time is not a universal guarantee of normal hearing or every frequency.",
+        "E": "Lateralization can occur with conductive or sensorineural loss, with different side relationships."
+      },
+      "exam_strategy": "Interpret direction and conduction pattern together; do not use an isolated fixed-time rule.",
+      "source_refs": [{"source_id": "ENMT", "slides": [13, 23], "relationship": "screening technique clarification"}, {"source_id": "OXFORD_RINNE_WEBER", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-065",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Conductive hearing-loss pattern",
+      "difficulty": "moderate",
+      "stem": "A tuning fork is placed at the patient's midline, and the sound is louder in the right ear. On the right, bone conduction is heard longer than air conduction. Which interpretation best fits these combined screening findings?",
+      "options": [
+        {"id": "A", "text": "A possible right conductive hearing loss that needs clinical correlation."},
+        {"id": "B", "text": "A definite left sensorineural loss proven without further testing."},
+        {"id": "C", "text": "Normal bilateral hearing in every frequency."},
+        {"id": "D", "text": "A finding of impaired equilibrium rather than hearing."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Weber lateralization toward the right combined with bone conduction greater than air conduction on the right is consistent with possible right conductive loss. Tuning-fork tests are screening maneuvers; formal hearing assessment may be needed.",
+      "option_rationales": {
+        "A": "The Weber and negative Rinne pattern on the same side supports possible conductive loss there.",
+        "B": "The combined pattern does not prove left sensorineural loss.",
+        "C": "The results are not the expected symmetric normal pattern.",
+        "D": "These are hearing-conduction tests, not the Romberg balance assessment."
+      },
+      "exam_strategy": "Combine the Weber side with the Rinne relationship on each side.",
+      "source_refs": [{"source_id": "ENMT", "slides": [13, 23], "relationship": "hearing-test interpretation"}, {"source_id": "OXFORD_RINNE_WEBER", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-066",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Presbycusis pattern",
+      "difficulty": "challenging",
+      "stem": "An older adult says, \"I hear people talking, but I cannot understand them when the room is noisy.\" What is the best nursing response?",
+      "options": [
+        {"id": "A", "text": "Assess the hearing change and communication needs; age-related high-frequency loss is possible but should not be assumed without evaluation."},
+        {"id": "B", "text": "Tell the patient that reduced hearing is inevitable and no assessment is needed."},
+        {"id": "C", "text": "Assume the patient is ignoring instructions."},
+        {"id": "D", "text": "Speak from another room so the patient learns to listen more carefully."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Presbycusis often affects high-frequency hearing and speech discrimination, especially in background noise, but age alone does not establish the cause. Assess onset, functional impact, exposures, medications, and communication preferences.",
+      "option_rationales": {
+        "A": "This recognizes a possible age-related pattern while preserving individualized assessment.",
+        "B": "Hearing changes are not inevitable in a way that makes assessment unnecessary.",
+        "C": "The communication difficulty should not be interpreted as nonadherence or inattention.",
+        "D": "Speaking from another room worsens communication and does not assess hearing."
+      },
+      "exam_strategy": "Adapt communication while assessing the cause and functional effect of hearing changes.",
+      "source_refs": [{"source_id": "ENMT", "slides": [6, 8, 20], "relationship": "lifespan and hearing assessment"}]
+    },
+    {
+      "id": "NUR235-T2-067",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Romberg safety",
+      "difficulty": "challenging",
+      "stem": "A patient reports dizziness and recently fell. The nurse is considering a Romberg test. What is the safest approach?",
+      "options": [
+        {"id": "A", "text": "Explain the test, stand close enough to guard the patient, use a clear area, and stop if balance becomes unsafe."},
+        {"id": "B", "text": "Ask the patient to stand unsupported with eyes closed near the edge of the bed."},
+        {"id": "C", "text": "Perform the test while the patient is walking down a hallway."},
+        {"id": "D", "text": "Leave the room so the patient will respond naturally."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Romberg assesses balance and requires fall precautions, especially in a patient with dizziness or a recent fall. The nurse should guard the patient and stop if the test is unsafe; slight sway alone is not interpreted without the full response.",
+      "option_rationales": {
+        "A": "This protects the patient while allowing a controlled assessment.",
+        "B": "An unsupported position at the bed edge creates an avoidable fall risk.",
+        "C": "The test is not performed while walking, and the patient should be guarded.",
+        "D": "Leaving the patient unattended is unsafe."
+      },
+      "exam_strategy": "Do not perform a balance test without guarding a patient at risk of falling.",
+      "source_refs": [{"source_id": "ENMT", "slides": [13], "relationship": "Romberg assessment"}]
+    },
+    {
+      "id": "NUR235-T2-068",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Ear-canal safety",
+      "difficulty": "challenging",
+      "stem": "A patient routinely inserts cotton-tipped applicators into the ear canal to remove wax. Which teaching points are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Avoid inserting objects into the ear canal because they can injure the canal or tympanic membrane."},
+        {"id": "B", "text": "An applicator can push cerumen deeper and contribute to impaction."},
+        {"id": "C", "text": "Seek advice if there is pain, drainage, sudden hearing change, or a history of ear surgery before using removal products."},
+        {"id": "D", "text": "Insert the applicator as far as possible as long as it is cotton-tipped."},
+        {"id": "E", "text": "Use another person's prescription ear drops if wax does not come out."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Objects in the canal can cause trauma or push wax inward. Symptoms or a history that raises concern should be assessed before using cerumen products; shared or unprescribed ear drops are not appropriate.",
+      "option_rationales": {
+        "A": "Avoiding canal instrumentation reduces risk of trauma and perforation.",
+        "B": "Cotton-tipped applicators can move cerumen deeper rather than remove it.",
+        "C": "Pain, drainage, sudden change, and prior ear surgery warrant individualized guidance.",
+        "D": "Cotton does not make deep insertion safe.",
+        "E": "Prescription drops should not be shared or used without appropriate assessment."
+      },
+      "exam_strategy": "Teach safe ear care and identify symptoms that need evaluation rather than self-treatment.",
+      "source_refs": [{"source_id": "ENMT", "slides": [8, 9, 11], "relationship": "focused history and ear safety"}]
+    },
+    {
+      "id": "NUR235-T2-069",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Tympanic-membrane perforation",
+      "difficulty": "challenging",
+      "stem": "After a sudden sharp ear pain during a flight, a patient reports drainage and reduced hearing from that ear. The nurse sees a possible tympanic-membrane defect. Which response is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Document the symptoms and appearance, keep the ear from further water or instrumentation, and arrange clinical evaluation."},
+        {"id": "B", "text": "Irrigate the canal forcefully to see whether the membrane is intact."},
+        {"id": "C", "text": "Insert a cotton swab to assess the depth of the opening."},
+        {"id": "D", "text": "Instill any available ear drops before clarifying the injury."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pain, drainage, reduced hearing, and a possible perforation require evaluation. Avoid irrigation, instrumentation, and unverified drops that may worsen injury or be unsafe with a nonintact membrane.",
+      "option_rationales": {
+        "A": "This protects the ear and ensures the suspected perforation is assessed.",
+        "B": "Irrigation can introduce fluid through a perforation and cause harm.",
+        "C": "Instrumenting the canal can worsen the injury.",
+        "D": "Some drops are inappropriate when the tympanic membrane may be perforated."
+      },
+      "exam_strategy": "When membrane integrity is uncertain, avoid canal irrigation or unprescribed drops.",
+      "source_refs": [{"source_id": "ENMT", "slides": [9, 11], "relationship": "abnormal ear findings"}]
+    },
+    {
+      "id": "NUR235-T2-070",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Nasal patency and septum assessment",
+      "difficulty": "challenging",
+      "stem": "A patient reports that one side of the nose is often blocked. Which technique best assesses nasal patency safely?",
+      "options": [
+        {"id": "A", "text": "Inspect the external nose and septum, then ask the patient to breathe through one nostril at a time while the other is gently occluded."},
+        {"id": "B", "text": "Occlude both nostrils and ask the patient to breathe deeply through the nose."},
+        {"id": "C", "text": "Insert a cotton applicator deeply into the blocked nostril."},
+        {"id": "D", "text": "Diagnose a deviated septum from the patient's report alone."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Inspect symmetry and the septum, then compare airflow one side at a time without inserting instruments into the nose. A subjective blockage alone does not establish the cause.",
+      "option_rationales": {
+        "A": "This compares each nostril safely and directly assesses patency.",
+        "B": "Occluding both nostrils prevents the requested patency assessment and is uncomfortable.",
+        "C": "Deep insertion can injure mucosa and is not needed for this screening.",
+        "D": "A deviated septum requires examination; symptoms alone are insufficient."
+      },
+      "exam_strategy": "Compare each side separately and avoid unnecessary intranasal instrumentation.",
+      "source_refs": [{"source_id": "ENMT", "slides": [14], "relationship": "nasal assessment technique"}]
+    },
+    {
+      "id": "NUR235-T2-071",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Sinus discomfort",
+      "difficulty": "challenging",
+      "stem": "A patient reports pressure over the cheeks and forehead, nasal congestion, and tenderness with gentle sinus palpation. Which interpretation is most appropriate?",
+      "options": [
+        {"id": "A", "text": "The findings can occur with sinus inflammation, but history, duration, associated symptoms, and examination are needed to determine the cause."},
+        {"id": "B", "text": "Tenderness proves bacterial sinusitis and requires antibiotics."},
+        {"id": "C", "text": "The findings establish a nasal polyp."},
+        {"id": "D", "text": "Sinus tenderness is always a normal finding and needs no assessment."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Facial pressure, congestion, and tenderness may occur with sinus inflammation but are not specific for bacterial infection. The cause and need for treatment depend on the full history and clinical evaluation.",
+      "option_rationales": {
+        "A": "This connects the findings to a possible source without overdiagnosing.",
+        "B": "Tenderness alone cannot determine bacterial cause or antibiotic need.",
+        "C": "A nasal polyp is a separate finding that requires inspection.",
+        "D": "New pain or tenderness should be interpreted with the patient's symptoms."
+      },
+      "exam_strategy": "Treat a physical sign as evidence to interpret, not a standalone diagnosis.",
+      "source_refs": [{"source_id": "ENMT", "slides": [14, 19], "relationship": "sinus assessment"}]
+    },
+    {
+      "id": "NUR235-T2-072",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Nasal assessment and history",
+      "difficulty": "challenging",
+      "stem": "A patient reports intermittent nasal obstruction and occasional nosebleeds. Which assessment steps are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Inspect the external nose for symmetry and skin changes."},
+        {"id": "B", "text": "Compare airflow through each nostril separately."},
+        {"id": "C", "text": "Ask about duration, triggers, allergies, trauma, medications, and bleeding pattern."},
+        {"id": "D", "text": "Insert a cotton swab deeply to check the nasal passage."},
+        {"id": "E", "text": "Press firmly over both sinuses until the patient reports pain."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "External inspection, one-sided patency comparison, and a focused history help assess obstruction and epistaxis. Deep instrumentation and forceful sinus palpation are unnecessary and can injure the patient.",
+      "option_rationales": {
+        "A": "Inspection provides information about symmetry and visible abnormalities.",
+        "B": "Testing each side separately identifies unilateral obstruction.",
+        "C": "Triggers, trauma, medications, and timing provide context for symptoms and bleeding.",
+        "D": "Deep cotton-swab insertion risks mucosal injury and is not a routine assessment technique.",
+        "E": "Forceful pressure is painful and does not improve the assessment."
+      },
+      "exam_strategy": "Gather a focused history and use gentle external techniques before considering further evaluation.",
+      "source_refs": [{"source_id": "ENMT", "slides": [8, 14], "relationship": "focused interview and assessment"}]
+    },
+    {
+      "id": "NUR235-T2-073",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Anterior epistaxis first aid",
+      "difficulty": "challenging",
+      "stem": "A patient develops a nosebleed while seated in the clinic. The patient is alert and has no signs of major blood loss. Which initial instruction is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Sit upright, lean slightly forward, and apply continuous pressure to the soft part of the nose."},
+        {"id": "B", "text": "Tilt the head far back and swallow the blood."},
+        {"id": "C", "text": "Lie flat and pack the nose deeply with tissue."},
+        {"id": "D", "text": "Blow the nose forcefully until the bleeding stops."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "For an uncomplicated anterior nosebleed, sitting upright, leaning forward, and pinching the soft part continuously helps control bleeding while limiting swallowed blood. Persistent or severe bleeding requires escalation.",
+      "option_rationales": {
+        "A": "This position and pressure are appropriate initial measures for a stable patient.",
+        "B": "Tilting backward encourages blood to run into the throat and be swallowed or aspirated.",
+        "C": "Deep packing without training or an order risks trauma and is not the first step.",
+        "D": "Forceful blowing can disrupt clot formation and worsen bleeding."
+      },
+      "exam_strategy": "Use forward positioning and continuous soft-nose pressure; avoid directing blood into the throat.",
+      "source_refs": [{"source_id": "ENMT", "slides": [14], "relationship": "abnormal nasal finding application"}]
+    },
+    {
+      "id": "NUR235-T2-074",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Oral candidiasis finding",
+      "difficulty": "challenging",
+      "stem": "A patient using an inhaled corticosteroid has white patches on the buccal mucosa and tongue with soreness. Which response is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Document the location and appearance, ask about inhaler and mouth-rinsing technique, and notify the clinician for evaluation."},
+        {"id": "B", "text": "Scrape the patches forcefully to confirm the diagnosis."},
+        {"id": "C", "text": "Tell the patient that every white oral patch is harmless food residue."},
+        {"id": "D", "text": "Stop all prescribed medication immediately without consulting the prescriber."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "White oral patches and soreness can be consistent with candidiasis, which is associated with inhaled corticosteroid use, but assessment and clinical evaluation are needed. Mouth-rinsing technique and adherence to prescribed therapy can be reviewed without stopping medication independently.",
+      "option_rationales": {
+        "A": "This captures the finding and relevant exposure while arranging appropriate evaluation.",
+        "B": "Forceful scraping can injure mucosa and is not needed to establish the nursing assessment.",
+        "C": "Persistent patches with soreness should not be assumed to be food residue.",
+        "D": "Abruptly stopping prescribed treatment without clinician guidance is unsafe."
+      },
+      "exam_strategy": "Describe oral lesions and review relevant medication technique without making an independent diagnosis.",
+      "source_refs": [{"source_id": "ENMT", "slides": [16, 17], "relationship": "oral assessment and abnormal findings"}]
+    },
+    {
+      "id": "NUR235-T2-075",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Tonsillar enlargement and airway",
+      "difficulty": "challenging",
+      "stem": "A patient with markedly enlarged tonsils is drooling, unable to swallow secretions, and making a high-pitched inspiratory sound. What is the priority?",
+      "options": [
+        {"id": "A", "text": "Activate emergency assistance and prioritize airway evaluation."},
+        {"id": "B", "text": "Offer oral fluids and ask the patient to gargle."},
+        {"id": "C", "text": "Complete a detailed dental history before responding."},
+        {"id": "D", "text": "Document uncomplicated tonsillitis and schedule routine follow-up."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Drooling, inability to handle secretions, and inspiratory stridor suggest possible upper-airway compromise. Immediate airway escalation is more important than oral intake or a complete routine examination.",
+      "option_rationales": {
+        "A": "Stridor with impaired secretion handling is an airway emergency.",
+        "B": "Oral fluids can increase aspiration risk when swallowing is impaired.",
+        "C": "A detailed history must not delay emergency airway assessment.",
+        "D": "This is not an uncomplicated outpatient presentation."
+      },
+      "exam_strategy": "Prioritize stridor and secretion difficulty as potential airway compromise.",
+      "source_refs": [{"source_id": "ENMT", "slides": [16, 17], "relationship": "throat assessment and escalation"}]
+    },
+    {
+      "id": "NUR235-T2-076",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Oral and throat inspection",
+      "difficulty": "challenging",
+      "stem": "A nurse is completing an oral and throat assessment. Which actions or observations are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Inspect the lips, oral mucosa, gums, teeth, tongue, and visible throat."},
+        {"id": "B", "text": "Note color, lesions or white patches, odor, and the presence or absence of tonsils."},
+        {"id": "C", "text": "Ask about pain, swallowing difficulty, oral hygiene, and relevant dental or medication history."},
+        {"id": "D", "text": "Assume a white patch is candidiasis without recording its appearance or context."},
+        {"id": "E", "text": "Use a tongue blade despite severe stridor and inability to manage secretions."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "A systematic inspection covers oral structures and describes visible findings; a focused history adds symptoms and risk context. A possible airway emergency takes priority over routine oral inspection.",
+      "option_rationales": {
+        "A": "These structures are part of a thorough oral and throat assessment.",
+        "B": "These objective observations can identify abnormalities and guide follow-up.",
+        "C": "Pain, dysphagia, hygiene, and medication history help interpret findings.",
+        "D": "A white patch has multiple possible causes and must be assessed in context.",
+        "E": "Instrumenting the throat in a patient with stridor may worsen airway risk and should not delay emergency response."
+      },
+      "exam_strategy": "Inspect systematically, describe rather than diagnose, and prioritize airway stability.",
+      "source_refs": [{"source_id": "ENMT", "slides": [8, 16, 17], "relationship": "oral assessment"}]
+    },
+    {
+      "id": "NUR235-T2-077",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Dysphagia and aspiration risk",
+      "difficulty": "challenging",
+      "stem": "During a meal, a patient coughs repeatedly after swallowing thin liquids and develops a wet-sounding voice. What should the nurse do first?",
+      "options": [
+        {"id": "A", "text": "Stop oral intake, assess breathing and swallowing safety, and promptly notify the appropriate clinician."},
+        {"id": "B", "text": "Offer a larger sip to determine whether the cough is reproducible."},
+        {"id": "C", "text": "Document normal swallowing because the patient can speak."},
+        {"id": "D", "text": "Place the patient supine and continue the meal."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Coughing with liquids and a wet voice can indicate impaired swallowing and aspiration risk. Stop the trial, ensure respiratory stability, and arrange further evaluation rather than continuing to challenge swallowing.",
+      "option_rationales": {
+        "A": "This reduces further aspiration exposure and initiates appropriate assessment.",
+        "B": "A larger sip may increase aspiration risk and is not a safe test.",
+        "C": "Ability to speak does not establish safe swallowing.",
+        "D": "Supine positioning and continued intake increase risk."
+      },
+      "exam_strategy": "Treat coughing and wet voice during swallowing as a safety signal, not a cue to keep testing orally.",
+      "source_refs": [{"source_id": "ENMT", "slides": [16, 22], "relationship": "dysphagia application"}]
+    },
+    {
+      "id": "NUR235-T2-078",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Focused ENMT history",
+      "difficulty": "challenging",
+      "stem": "A patient reports recurrent sore throat and intermittent hoarseness. Which focused-history questions are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Ask about duration, progression, fever, pain, swallowing, and voice changes."},
+        {"id": "B", "text": "Ask about tobacco or irritant exposure, reflux symptoms, and relevant environmental exposures."},
+        {"id": "C", "text": "Ask whether there is difficulty breathing, drooling, or inability to swallow secretions."},
+        {"id": "D", "text": "Assume the cause is contagious without asking about symptoms or exposure."},
+        {"id": "E", "text": "Ask only about the patient's ancestry because that determines the cause."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "A focused ENMT history explores symptom pattern, associated swallowing or airway symptoms, and relevant exposures. Breathing difficulty or inability to handle secretions changes urgency; ancestry alone does not determine the cause.",
+      "option_rationales": {
+        "A": "These details characterize the symptom and its progression.",
+        "B": "Irritants and reflux can be relevant contributors to recurrent throat or voice symptoms.",
+        "C": "Airway and secretion-handling symptoms are important red flags.",
+        "D": "A presumed contagious cause is not a substitute for a focused assessment.",
+        "E": "The slide's ancestry generalization is unsupported and is not an individualized clinical assessment."
+      },
+      "exam_strategy": "Ask about symptoms, airway safety, and relevant exposures without stereotyping or presuming etiology.",
+      "source_refs": [{"source_id": "ENMT", "slides": [7, 8, 16], "relationship": "focused interview with slide clarification"}]
+    },
+    {
+      "id": "NUR235-T2-079",
+      "type": "single_select",
+      "category": "ENMT",
+      "concept": "Pregnancy-related nasal congestion",
+      "difficulty": "challenging",
+      "stem": "A pregnant patient reports bilateral nasal stuffiness without fever, facial pain, or purulent drainage. Which response is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Acknowledge that pregnancy-related vascular changes can contribute, assess severity and associated symptoms, and avoid assuming infection."},
+        {"id": "B", "text": "Diagnose bacterial sinusitis based on congestion alone."},
+        {"id": "C", "text": "Tell the patient the symptom is imaginary because the external nose looks normal."},
+        {"id": "D", "text": "Recommend any decongestant without checking pregnancy-specific guidance."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pregnancy-related vascular changes can contribute to nasal congestion, but the nurse should assess associated symptoms and severity. Congestion alone does not establish infection, and medication choices during pregnancy require individualized guidance.",
+      "option_rationales": {
+        "A": "This recognizes a possible developmental consideration without assuming cause or treatment.",
+        "B": "Congestion alone does not diagnose bacterial sinusitis.",
+        "C": "A normal external appearance does not invalidate the patient's symptom.",
+        "D": "Medication choices in pregnancy should be checked with an appropriate clinician."
+      },
+      "exam_strategy": "Use developmental context without dismissing symptoms or making an unsupported diagnosis.",
+      "source_refs": [{"source_id": "ENMT", "slides": [6, 8, 14], "relationship": "pregnancy and nasal assessment"}]
+    },
+    {
+      "id": "NUR235-T2-080",
+      "type": "sata",
+      "category": "ENMT",
+      "concept": "Interpreting ENMT findings",
+      "difficulty": "challenging",
+      "stem": "Which statements about common ENMT assessment findings are accurate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Dysphagia means difficulty swallowing."},
+        {"id": "B", "text": "Presbycusis commonly affects high-frequency hearing and may impair speech understanding in noise."},
+        {"id": "C", "text": "Weber lateralization requires interpretation with the clinical context and other hearing findings."},
+        {"id": "D", "text": "A normal Romberg result proves normal hearing acuity."},
+        {"id": "E", "text": "Any white oral patch can be diagnosed as thrush from color alone."}
+      ],
+      "correct_answers": ["A", "B", "C"],
+      "correct_rationale": "Dysphagia describes difficulty swallowing; presbycusis can affect high-frequency hearing; and Weber lateralization is not diagnostic on its own. Romberg assesses balance, while oral patches require contextual assessment.",
+      "option_rationales": {
+        "A": "This is the definition of dysphagia.",
+        "B": "High-frequency hearing loss can make speech harder to understand, especially with background noise.",
+        "C": "Lateralization may reflect different hearing-loss patterns and needs correlation.",
+        "D": "Romberg evaluates balance and does not establish hearing acuity.",
+        "E": "White patches have multiple causes and require examination and history."
+      },
+      "exam_strategy": "Know what each bedside test measures and avoid interpreting one sign in isolation.",
+      "source_refs": [{"source_id": "ENMT", "slides": [13, 16, 17, 20, 22, 23], "relationship": "integrated interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-081",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Respiratory rate after activity",
+      "difficulty": "moderate",
+      "stem": "A patient walks quickly into the clinic and has a respiratory rate of 24/min while speaking. The patient is not in distress. What is the best next step?",
+      "options": [
+        {"id": "A", "text": "Allow the patient to rest, then reassess the rate, depth, pattern, and effort in context."},
+        {"id": "B", "text": "Document the rate as the patient's resting baseline."},
+        {"id": "C", "text": "Diagnose pneumonia based on the rate alone."},
+        {"id": "D", "text": "Ask the patient to breathe more slowly while counting the rate."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Recent exertion can temporarily raise respiratory rate. Reassess after rest and observe effort, depth, pattern, symptoms, and baseline rather than interpreting one post-activity count as a resting value or a diagnosis.",
+      "option_rationales": {
+        "A": "Rest and repeat assessment help determine whether the rate remains elevated and whether distress is present.",
+        "B": "A post-exertion measurement is not a resting baseline.",
+        "C": "Respiratory rate alone cannot diagnose pneumonia.",
+        "D": "Coaching the patient to alter breathing can distort the measurement."
+      },
+      "exam_strategy": "Measure under appropriate conditions and interpret the rate with effort and context.",
+      "source_refs": [{"source_id": "RESP", "slides": [3, 5], "relationship": "rate and respiratory inspection"}]
+    },
+    {
+      "id": "NUR235-T2-082",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Thoracic inspection",
+      "difficulty": "moderate",
+      "stem": "Which observation is most important to include during the initial inspection of an adult's anterior and posterior thorax?",
+      "options": [
+        {"id": "A", "text": "Symmetry, skin color, respiratory rate, depth, pattern, and visible work of breathing."},
+        {"id": "B", "text": "The patient's preferred sleep position only."},
+        {"id": "C", "text": "The presence of a cough, without observing breathing at rest."},
+        {"id": "D", "text": "The exact shape of the nose and the color of the iris."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Respiratory inspection begins with the thorax and breathing: symmetry, configuration, rate, depth, pattern, skin color, and effort. History adds important context but does not replace direct observation.",
+      "option_rationales": {
+        "A": "These observations directly characterize respiratory status at the time of assessment.",
+        "B": "Sleep position may be relevant history but is not a complete thoracic inspection.",
+        "C": "A cough history alone does not assess current respiratory effort or pattern.",
+        "D": "These features do not assess the respiratory system."
+      },
+      "exam_strategy": "Start with a structured look at how the patient is breathing now.",
+      "source_refs": [{"source_id": "RESP", "slides": [5, 6], "relationship": "inspection technique"}]
+    },
+    {
+      "id": "NUR235-T2-083",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Normal breath-sound locations",
+      "difficulty": "moderate",
+      "stem": "While auscultating a healthy adult, the nurse hears loud, high-pitched bronchial sounds over a peripheral lung field. How should this finding be interpreted?",
+      "options": [
+        {"id": "A", "text": "It is unexpected in a peripheral field and should be reassessed and interpreted with other findings."},
+        {"id": "B", "text": "It is expected because bronchial sounds are loudest over all lung tissue."},
+        {"id": "C", "text": "It proves the patient has asthma."},
+        {"id": "D", "text": "It means the stethoscope should be placed over clothing."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Bronchial breath sounds are normally heard over the trachea; vesicular sounds are expected over most peripheral lung fields. A peripheral bronchial quality is abnormal and can reflect altered sound transmission, but it is not diagnostic by itself.",
+      "option_rationales": {
+        "A": "This recognizes the location mismatch and calls for reassessment and correlation.",
+        "B": "Bronchial sounds are not normally heard throughout peripheral fields.",
+        "C": "Bronchial sound location does not diagnose asthma.",
+        "D": "Auscultate directly on skin when possible; clothing can distort sounds."
+      },
+      "exam_strategy": "Interpret breath-sound quality together with where it is heard.",
+      "source_refs": [{"source_id": "RESP", "slides": [12, 13, 14, 15], "relationship": "normal sound locations"}]
+    },
+    {
+      "id": "NUR235-T2-084",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Lung auscultation technique",
+      "difficulty": "moderate",
+      "stem": "Which actions support a systematic lung auscultation? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Place the diaphragm on bare skin when possible."},
+        {"id": "B", "text": "Compare corresponding areas side to side in a consistent sequence."},
+        {"id": "C", "text": "Listen through a full respiratory cycle at each site when feasible."},
+        {"id": "D", "text": "Ask the patient to breathe deeply through the mouth and pause if dizzy."},
+        {"id": "E", "text": "Listen to only one posterior site and infer the rest of the lung fields."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Auscultating on skin, comparing paired fields, and listening through inspiration and expiration support a reliable assessment. Deep breathing can cause dizziness, so pause as needed; one site cannot represent both lungs.",
+      "option_rationales": {
+        "A": "Clothing can create friction sounds or obscure breath sounds.",
+        "B": "Side-to-side comparison helps identify asymmetry.",
+        "C": "A full respiratory cycle allows the nurse to compare inspiratory and expiratory sounds.",
+        "D": "Mouth breathing can improve sound assessment, and stopping for dizziness protects the patient.",
+        "E": "A single site is insufficient to assess the distribution of sounds."
+      },
+      "exam_strategy": "Use a consistent ladder pattern and compare matching areas on both sides.",
+      "source_refs": [{"source_id": "RESP", "slides": [12, 14, 15], "relationship": "auscultation technique"}]
+    },
+    {
+      "id": "NUR235-T2-085",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Characterizing cough",
+      "difficulty": "moderate",
+      "stem": "A patient reports a persistent cough. Which follow-up question yields the most useful focused assessment information?",
+      "options": [
+        {"id": "A", "text": "\"When does it occur, is it dry or productive, what does the sputum look and smell like, and is there pain or blood?\""},
+        {"id": "B", "text": "\"You probably have an allergy, correct?\""},
+        {"id": "C", "text": "\"Can you stop coughing while I finish the exam?\""},
+        {"id": "D", "text": "\"Do you want me to document pneumonia?\""}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Cough assessment includes timing, quality, productivity, sputum characteristics, associated pain, blood, exposures, and impact. An open symptom question gathers information without presuming the cause.",
+      "option_rationales": {
+        "A": "These details characterize the cough and identify findings that may change urgency.",
+        "B": "It assumes an allergic cause before assessment.",
+        "C": "It discourages reporting and does not assess the symptom.",
+        "D": "The nurse should not diagnose pneumonia from the patient's report alone."
+      },
+      "exam_strategy": "Describe cough and sputum before inferring an etiology.",
+      "source_refs": [{"source_id": "RESP", "slides": [2, 18], "relationship": "focused respiratory history"}]
+    },
+    {
+      "id": "NUR235-T2-086",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Stridor and airway priority",
+      "difficulty": "challenging",
+      "stem": "A patient develops a harsh, high-pitched sound during inspiration with suprasternal retractions and difficulty speaking. What is the priority response?",
+      "options": [
+        {"id": "A", "text": "Activate emergency assistance and prioritize airway assessment."},
+        {"id": "B", "text": "Continue a routine posterior percussion sequence."},
+        {"id": "C", "text": "Ask the patient to cough forcefully and reassess in an hour."},
+        {"id": "D", "text": "Document this as a normal vesicular sound."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Inspiratory stridor with retractions and difficulty speaking suggests upper-airway obstruction and potential rapid deterioration. Emergency airway response takes priority over completing a routine respiratory examination.",
+      "option_rationales": {
+        "A": "The findings indicate immediate airway risk.",
+        "B": "Percussion is not the priority in a patient with signs of upper-airway compromise.",
+        "C": "Waiting or provoking a cough could delay necessary intervention.",
+        "D": "Stridor is not a normal vesicular breath sound."
+      },
+      "exam_strategy": "Recognize upper-airway noise and increased work of breathing as urgent.",
+      "source_refs": [{"source_id": "RESP", "slides": [5, 18], "relationship": "respiratory distress assessment"}]
+    },
+    {
+      "id": "NUR235-T2-087",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Respiratory distress indicators",
+      "difficulty": "challenging",
+      "stem": "Which findings indicate increased respiratory distress and require prompt reassessment or escalation? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "New accessory-muscle use and suprasternal retractions."},
+        {"id": "B", "text": "Inability to speak a full sentence because of breathlessness."},
+        {"id": "C", "text": "New cyanosis or decreasing level of alertness."},
+        {"id": "D", "text": "Markedly reduced air movement in a patient who is tiring."},
+        {"id": "E", "text": "A comfortable patient with an even pattern and no increased effort."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Retractions, inability to speak comfortably, cyanosis, altered alertness, and poor air movement with fatigue are concerning signs of respiratory compromise. A comfortable, even pattern without effort is reassuring but should still be interpreted with the patient's baseline.",
+      "option_rationales": {
+        "A": "Accessory-muscle use and retractions signal increased work of breathing.",
+        "B": "Speech limited by breathlessness can reflect significant respiratory distress.",
+        "C": "Cyanosis or declining alertness can indicate hypoxemia or deterioration.",
+        "D": "A tiring patient with very little air movement may be critically ill even if wheezing decreases.",
+        "E": "This describes a relatively reassuring pattern without the listed distress signs."
+      },
+      "exam_strategy": "Assess effort, speech, color, alertness, and air movement—not rate alone.",
+      "source_refs": [{"source_id": "RESP", "slides": [5, 18, 20, 26], "relationship": "clinical assessment"}]
+    },
+    {
+      "id": "NUR235-T2-088",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Tactile fremitus and consolidation",
+      "difficulty": "challenging",
+      "stem": "The nurse finds increased tactile fremitus over one area of the posterior lung and hears bronchial-quality sounds in that same peripheral region. Which interpretation is most appropriate?",
+      "options": [
+        {"id": "A", "text": "The findings may reflect increased sound transmission through consolidated lung and require correlation with the full examination."},
+        {"id": "B", "text": "The findings prove a pneumothorax."},
+        {"id": "C", "text": "Increased fremitus is expected over a large pleural effusion."},
+        {"id": "D", "text": "The findings are normal because bronchial sounds are expected over all posterior fields."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Consolidated lung can transmit voice vibrations and breath sounds more strongly, producing increased fremitus and bronchial-quality sounds in an abnormal location. These findings support further assessment but are not diagnostic alone.",
+      "option_rationales": {
+        "A": "The paired findings are compatible with consolidation and need clinical correlation.",
+        "B": "Pneumothorax typically reduces or abolishes breath sounds and fremitus on the affected side.",
+        "C": "Pleural fluid usually dampens tactile fremitus over the affected region.",
+        "D": "Bronchial sounds are normally heard over the trachea, not throughout posterior peripheral fields."
+      },
+      "exam_strategy": "Interpret sound and vibration findings together and by location.",
+      "source_refs": [{"source_id": "RESP", "slides": [10, 12, 13, 15, 24], "relationship": "assessment interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-089",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Percussion findings",
+      "difficulty": "challenging",
+      "stem": "Percussion over the right lower posterior thorax is dull, with decreased breath sounds and decreased tactile fremitus in the same region. Which condition is most consistent with this combination?",
+      "options": [
+        {"id": "A", "text": "Pleural effusion, which can dampen sound transmission over the fluid."},
+        {"id": "B", "text": "A normal air-filled lung in every case."},
+        {"id": "C", "text": "An uncomplicated small airway wheeze."},
+        {"id": "D", "text": "A tension pneumothorax established by these findings alone."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pleural fluid can produce dullness to percussion and reduce breath sounds and tactile fremitus over the affected area. The pattern suggests an abnormality but still requires evaluation with symptoms and other findings.",
+      "option_rationales": {
+        "A": "The combined findings are compatible with fluid in the pleural space.",
+        "B": "Dullness with reduced sounds and fremitus is not the expected normal air-filled-lung pattern.",
+        "C": "Wheeze is an auscultatory airway sound and does not explain this percussion/fremitus pattern.",
+        "D": "These findings alone do not establish tension physiology or a specific emergency diagnosis."
+      },
+      "exam_strategy": "Use percussion, breath sounds, and fremitus as a pattern rather than relying on one sign.",
+      "source_refs": [{"source_id": "RESP", "slides": [10, 11, 18, 25], "relationship": "percussion and abnormal findings"}]
+    },
+    {
+      "id": "NUR235-T2-090",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Interpreting common lung findings",
+      "difficulty": "challenging",
+      "stem": "Which statements about respiratory assessment findings are accurate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Wheezes can occur with narrowed airways, but do not by themselves prove asthma."},
+        {"id": "B", "text": "Crackles may occur with fluid or reopening of small airways and need clinical correlation."},
+        {"id": "C", "text": "Decreased fremitus can occur over pleural effusion or pneumothorax."},
+        {"id": "D", "text": "Increased fremitus can occur over consolidated lung."},
+        {"id": "E", "text": "Auscultation findings alone identify the exact cause of every respiratory disorder."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Wheezes, crackles, and changes in fremitus provide useful but nonspecific clues. Their location, symmetry, timing, associated symptoms, and other assessment findings determine their significance.",
+      "option_rationales": {
+        "A": "Wheezing indicates narrowed airways but can have more than one cause.",
+        "B": "Crackles have several mechanisms and should be interpreted in context.",
+        "C": "Pleural air or fluid can reduce vibration transmission to the chest wall.",
+        "D": "Consolidation can transmit vocal vibrations more strongly.",
+        "E": "No single auscultation finding identifies every cause with certainty."
+      },
+      "exam_strategy": "Treat breath sounds as clues that must be integrated with the rest of the examination.",
+      "source_refs": [{"source_id": "RESP", "slides": [10, 12, 15, 18, 24, 25, 26], "relationship": "integrated interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-091",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Orthopnea and possible heart failure",
+      "difficulty": "challenging",
+      "stem": "A patient reports needing three pillows to sleep because breathing worsens when lying flat. The nurse also hears bilateral crackles and observes new ankle edema. What is the best response?",
+      "options": [
+        {"id": "A", "text": "Keep the patient in the position that eases breathing, assess oxygenation and vital signs, and promptly notify the clinician."},
+        {"id": "B", "text": "Place the patient flat to see whether the symptoms can be reproduced."},
+        {"id": "C", "text": "Document the findings as normal aging and continue routine care."},
+        {"id": "D", "text": "Conclude that pneumonia is the only possible cause."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Orthopnea with crackles and new edema can indicate fluid overload or heart failure and warrants prompt assessment. Support breathing in the patient's preferred upright position and communicate the combined findings without making a definitive diagnosis.",
+      "option_rationales": {
+        "A": "This supports breathing while assessing and escalating a concerning cardiopulmonary pattern.",
+        "B": "Provoking dyspnea is unsafe and unnecessary.",
+        "C": "New orthopnea, crackles, and edema are not findings to normalize as aging.",
+        "D": "Several conditions can produce crackles; the full pattern needs clinical evaluation."
+      },
+      "exam_strategy": "Combine orthopnea, crackles, and edema and avoid deliberately worsening breathing.",
+      "source_refs": [{"source_id": "RESP", "slides": [18, 23], "relationship": "symptom and abnormal finding"}]
+    },
+    {
+      "id": "NUR235-T2-092",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Severe asthma and reduced air movement",
+      "difficulty": "challenging",
+      "stem": "A patient with a history of asthma initially has loud wheezing. The patient becomes drowsy, appears exhausted, and now has very little audible air movement. What should the nurse do?",
+      "options": [
+        {"id": "A", "text": "Treat the change as impending respiratory failure and activate emergency assistance."},
+        {"id": "B", "text": "Reassure the patient that less wheezing means the asthma is resolving."},
+        {"id": "C", "text": "Wait for the next scheduled assessment because the patient is no longer coughing."},
+        {"id": "D", "text": "Ask the patient to walk to improve lung expansion."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "A tiring or drowsy patient with minimal air movement may have critically severe obstruction; disappearance of wheeze can reflect inadequate airflow rather than improvement. Immediate emergency response is required.",
+      "option_rationales": {
+        "A": "The decline in alertness and air movement indicates possible impending respiratory failure.",
+        "B": "Reduced wheezing with poor air movement is not reassuring.",
+        "C": "Waiting can delay lifesaving intervention.",
+        "D": "Exertion is unsafe in a deteriorating patient."
+      },
+      "exam_strategy": "Listen for air movement and assess fatigue; a quieter chest can be more dangerous than loud wheezing.",
+      "source_refs": [{"source_id": "RESP", "slides": [18, 20], "relationship": "asthma and respiratory distress"}]
+    },
+    {
+      "id": "NUR235-T2-093",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Asthma triggers",
+      "difficulty": "challenging",
+      "stem": "A patient with asthma wants to identify patterns that worsen symptoms. Which exposures or activities can be asthma triggers for some people? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Allergens such as pollen or dust mites."},
+        {"id": "B", "text": "Respiratory infections."},
+        {"id": "C", "text": "Exercise, especially with cold dry air for some patients."},
+        {"id": "D", "text": "Tobacco smoke or other airway irritants."},
+        {"id": "E", "text": "Every patient with asthma has the same trigger, so individual history is unnecessary."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Asthma triggers vary and can include allergens, respiratory infections, exercise, cold air, smoke, and other irritants. A focused history identifies the individual patient's pattern; allergens are not the only possible trigger.",
+      "option_rationales": {
+        "A": "Pollen and dust mites can trigger symptoms in some patients.",
+        "B": "Respiratory infections can worsen asthma symptoms.",
+        "C": "Exercise and cold, dry air can trigger bronchoconstriction for some people.",
+        "D": "Smoke and irritants can provoke airway symptoms.",
+        "E": "Triggers differ among patients and should be assessed individually."
+      },
+      "exam_strategy": "Ask the patient about their own trigger pattern rather than assuming asthma is always allergic.",
+      "source_refs": [{"source_id": "RESP", "slides": [2, 20], "relationship": "environment and asthma"}, {"source_id": "NHLBI_ASTHMA", "relationship": "clinical reference"}]
+    },
+    {
+      "id": "NUR235-T2-094",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Postoperative atelectasis risk",
+      "difficulty": "challenging",
+      "stem": "On the first day after abdominal surgery, a patient has shallow breathing, reduced movement, and diminished breath sounds at both bases. Which response is most appropriate?",
+      "options": [
+        {"id": "A", "text": "Assess oxygenation, pain, mobility, and the prescribed pulmonary-care plan; report worsening findings and support ordered breathing/mobility measures."},
+        {"id": "B", "text": "Assume this is harmless because reduced breath sounds are expected after surgery."},
+        {"id": "C", "text": "Diagnose pneumonia and request antibiotics without further evaluation."},
+        {"id": "D", "text": "Keep the patient immobile to prevent discomfort."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Postoperative shallow breathing and immobility increase atelectasis risk, but diminished sounds require assessment of oxygenation, pain, and the full clinical picture. Support prescribed pulmonary hygiene and mobility measures and communicate deterioration.",
+      "option_rationales": {
+        "A": "This addresses likely contributors while monitoring for worsening or alternative causes.",
+        "B": "Postoperative status does not make new abnormal findings harmless.",
+        "C": "The findings do not establish pneumonia or justify independent antibiotic treatment.",
+        "D": "Immobility can worsen pulmonary complications."
+      },
+      "exam_strategy": "Connect postoperative immobility with atelectasis risk but assess before assigning a diagnosis.",
+      "source_refs": [{"source_id": "RESP", "slides": [18, 21], "relationship": "abnormal findings and immobility"}]
+    },
+    {
+      "id": "NUR235-T2-095",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Pleural effusion pattern",
+      "difficulty": "challenging",
+      "stem": "A patient has progressive dyspnea and a unilateral area of dullness with reduced breath sounds and fremitus. Imaging later identifies pleural fluid. Which statement about the assessment is most accurate?",
+      "options": [
+        {"id": "A", "text": "The physical findings are compatible with pleural effusion; drainage decisions and thoracentesis are performed by qualified clinicians."},
+        {"id": "B", "text": "Increased fremitus over the fluid is the expected finding in every effusion."},
+        {"id": "C", "text": "The nurse should insert a needle to remove the fluid at the bedside."},
+        {"id": "D", "text": "Dullness alone proves the fluid is infected."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Pleural effusion can produce dullness and decreased breath sounds and fremitus. The assessment supports the diagnosis in context, but does not determine etiology; thoracentesis is a procedure performed by an appropriately qualified clinician.",
+      "option_rationales": {
+        "A": "This appropriately links the findings with effusion and respects procedural scope.",
+        "B": "Pleural fluid usually decreases transmission of fremitus over the affected area.",
+        "C": "Thoracentesis is not a routine nursing procedure and requires qualified procedural care.",
+        "D": "Dullness cannot identify infection on its own."
+      },
+      "exam_strategy": "Recognize the effusion pattern and distinguish assessment from invasive treatment.",
+      "source_refs": [{"source_id": "RESP", "slides": [10, 11, 18, 25], "relationship": "assessment and procedure context"}]
+    },
+    {
+      "id": "NUR235-T2-096",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Possible pneumothorax",
+      "difficulty": "challenging",
+      "stem": "A patient suddenly develops unilateral pleuritic chest pain and severe dyspnea. Which findings or actions support urgent evaluation for possible pneumothorax? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "Unilateral markedly diminished or absent breath sounds."},
+        {"id": "B", "text": "Acute worsening oxygenation or hemodynamic instability."},
+        {"id": "C", "text": "Rapid emergency escalation while supporting airway and breathing."},
+        {"id": "D", "text": "A new asymmetry in chest expansion."},
+        {"id": "E", "text": "Waiting to finish the routine auscultation sequence before seeking help."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Sudden unilateral pain and dyspnea with asymmetric expansion or absent breath sounds can indicate pneumothorax; instability raises urgency further. Escalate promptly and support airway and breathing rather than delaying for a complete exam.",
+      "option_rationales": {
+        "A": "Absent or markedly decreased unilateral sounds are concerning in this acute context.",
+        "B": "Worsening oxygenation or instability may indicate life-threatening progression.",
+        "C": "Immediate escalation is appropriate for acute respiratory deterioration.",
+        "D": "Asymmetric expansion supports the need for urgent evaluation.",
+        "E": "Completing a routine sequence must not delay emergency response."
+      },
+      "exam_strategy": "Sudden unilateral respiratory change plus instability takes priority over completing the exam.",
+      "source_refs": [{"source_id": "RESP", "slides": [5, 10, 18, 26], "relationship": "urgent abnormal-finding application"}]
+    },
+    {
+      "id": "NUR235-T2-097",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Hemoptysis",
+      "difficulty": "challenging",
+      "stem": "A patient reports coughing up bright-red blood and is now short of breath. What should the nurse do first?",
+      "options": [
+        {"id": "A", "text": "Assess airway, breathing, oxygenation, and the amount of bleeding while initiating urgent clinical escalation."},
+        {"id": "B", "text": "Ask the patient to lie flat and continue the interview."},
+        {"id": "C", "text": "Reassure the patient that blood in sputum is always from dry air."},
+        {"id": "D", "text": "Delay assessment until the patient can provide a full environmental history."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Hemoptysis with dyspnea can threaten airway and breathing and requires immediate assessment and escalation. A focused history is useful after stabilizing the immediate respiratory concern.",
+      "option_rationales": {
+        "A": "Airway, breathing, oxygenation, and bleeding severity determine immediate safety needs.",
+        "B": "A flat position may worsen breathing and does not prioritize safety.",
+        "C": "Hemoptysis has multiple potential causes and should not be dismissed.",
+        "D": "A complete exposure history must not delay urgent respiratory assessment."
+      },
+      "exam_strategy": "When blood and breathing difficulty occur together, assess airway and breathing before routine history.",
+      "source_refs": [{"source_id": "RESP", "slides": [2, 18], "relationship": "focused history and urgent symptom"}]
+    },
+    {
+      "id": "NUR235-T2-098",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Chest configuration",
+      "difficulty": "challenging",
+      "stem": "An adult's anterior-posterior chest diameter appears nearly equal to the transverse diameter. The patient has a long smoking history and prolonged expiration. What is the best interpretation?",
+      "options": [
+        {"id": "A", "text": "The increased AP diameter can occur with chronic hyperinflation, but the nurse should correlate it with symptoms and other findings."},
+        {"id": "B", "text": "A 1:1 chest ratio is the expected finding in every healthy adult."},
+        {"id": "C", "text": "The chest shape alone proves emphysema."},
+        {"id": "D", "text": "The finding is a pectus excavatum deformity."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "An adult AP-to-transverse ratio near 1:1 can occur with chronic hyperinflation, including emphysema, but it is not diagnostic by itself. The normal adult ratio is generally closer to 1:2, and the full respiratory history and examination matter.",
+      "option_rationales": {
+        "A": "This identifies a possible chronic pattern without treating appearance as a diagnosis.",
+        "B": "A near 1:1 ratio is not the usual adult chest configuration.",
+        "C": "Chest shape alone cannot prove emphysema.",
+        "D": "Pectus excavatum describes a depressed sternum, not generalized AP enlargement."
+      },
+      "exam_strategy": "Interpret chest configuration with history, effort, and auscultation rather than diagnosing from shape alone.",
+      "source_refs": [{"source_id": "RESP", "slides": [5, 6, 8, 9, 22], "relationship": "configuration and abnormal findings"}]
+    },
+    {
+      "id": "NUR235-T2-099",
+      "type": "sata",
+      "category": "Respiratory Assessment",
+      "concept": "Respiratory rate across the lifespan",
+      "difficulty": "challenging",
+      "stem": "Which statements about respiratory-rate interpretation are appropriate? Select all that apply.",
+      "options": [
+        {"id": "A", "text": "For a resting adult, 12–20 breaths/minute is a common reference range, but symptoms and baseline also matter."},
+        {"id": "B", "text": "A persistent rate of 25/minute in a resting adult should be assessed rather than automatically normalized as aging."},
+        {"id": "C", "text": "Infant and child rates must be interpreted using age-specific references and the child's state."},
+        {"id": "D", "text": "Rate should be interpreted with depth, pattern, effort, oxygenation, and clinical context."},
+        {"id": "E", "text": "A single rate can diagnose the cause of respiratory distress."}
+      ],
+      "correct_answers": ["A", "B", "C", "D"],
+      "correct_rationale": "Adult respiratory rate is commonly referenced at 12–20/minute at rest, but the patient's baseline, effort, symptoms, and context matter. Pediatric rates vary with age and state, and no single rate diagnoses an etiology.",
+      "option_rationales": {
+        "A": "This is a common resting adult reference range, interpreted alongside other findings.",
+        "B": "A persistent rate above the common adult range needs assessment, not automatic age-based reassurance.",
+        "C": "Pediatric respiratory rates vary by age and state.",
+        "D": "Rate alone omits important indicators of work and gas exchange.",
+        "E": "Rate is a finding, not a stand-alone diagnosis."
+      },
+      "exam_strategy": "Interpret age-appropriate rate together with respiratory effort, symptoms, and the broader assessment.",
+      "source_refs": [{"source_id": "RESP", "slides": [3, 4, 5], "relationship": "lifespan and rate interpretation"}]
+    },
+    {
+      "id": "NUR235-T2-100",
+      "type": "single_select",
+      "category": "Respiratory Assessment",
+      "concept": "Ventilator-associated pneumonia risk",
+      "difficulty": "challenging",
+      "stem": "A mechanically ventilated patient develops fever, purulent respiratory secretions, new crackles, and increased oxygen needs. Which interpretation is most accurate?",
+      "options": [
+        {"id": "A", "text": "The patient needs prompt evaluation for possible ventilator-associated pneumonia; ventilation increases risk but is not itself an infectious cause."},
+        {"id": "B", "text": "Mechanical ventilation alone proves pneumonia and identifies the organism."},
+        {"id": "C", "text": "The findings are expected during ventilation and need no assessment."},
+        {"id": "D", "text": "Crackles exclude pneumonia because pneumonia causes only wheezing."}
+      ],
+      "correct_answers": ["A"],
+      "correct_rationale": "Fever, secretions, new lung findings, and increased oxygen need warrant evaluation for ventilator-associated pneumonia and other complications. Mechanical ventilation increases risk by impairing airway defenses but does not itself identify an infectious cause or pathogen.",
+      "option_rationales": {
+        "A": "This recognizes a concerning change and correctly distinguishes risk from etiology.",
+        "B": "Ventilation is a risk factor, not proof of infection or its organism.",
+        "C": "New fever, secretions, crackles, and oxygen needs are not findings to dismiss.",
+        "D": "Pneumonia can cause crackles; wheezing is not required."
+      },
+      "exam_strategy": "Use the whole change from baseline and distinguish a risk factor from the cause of infection.",
+      "source_refs": [{"source_id": "RESP", "slides": [18, 24], "relationship": "pneumonia assessment and slide clarification"}, {"source_id": "CDC_PNEUMONIA", "relationship": "clinical reference"}]
+    }
+  ]
+}
