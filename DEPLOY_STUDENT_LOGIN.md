@@ -23,7 +23,19 @@ This feature lets Madison create and connect a new student's portal login from t
    supabase functions deploy create-student-login --no-verify-jwt
    ```
 
-The function verifies the signed-in caller itself and then checks the `app_admins` table before it creates an Auth user. The `--no-verify-jwt` setting is only used so CORS preflight requests can reach the function; the function rejects any non-admin request.
+Preserve the deployed `--no-verify-jwt` configuration for this workflow. This
+disables only the gateway's additional JWT check: the function still requires a
+Bearer token, validates it with Supabase Auth using `auth.getUser()`, and checks
+the verified user's membership in `app_admins` before accessing student records
+or creating an Auth user. Never remove or bypass these checks.
+
+The original setup cited CORS preflight as the reason for this setting. Isolated
+testing in October 2026 passed preflight and authenticated onboarding with both
+gateway settings, so that historical explanation is not evidence that disabling
+the gateway check is currently necessary. Keep the production setting unchanged
+unless a separately reviewed compatibility change requires it. See the
+[onboarding deployment handoff](.agents/tasks/student-lifecycle-management.md)
+for the migration order, invitation-status behavior, and latest verification.
 
 ## Day-to-day use
 
