@@ -5,10 +5,10 @@
   <meta name="nclex-option-protocol" content="sata-order-v1">
   <title>Synthetic combined NGN and SATA fixture</title>
   <link rel="stylesheet" href="../exam-ui.css">
-  <script src="../option-presentation.js?v=ngn-sata-v1"></script>
-  <script src="../ngn-scoring.js?v=ngn-sata-v1"></script>
-  <script src="../exam-ui-ngn.js?v=ngn-sata-v1"></script>
-  <script src="../ngn-author-ngn.js?v=ngn-sata-v1"></script>
+  <script src="../option-presentation.js?v=mcq-order-v1"></script>
+  <script src="../ngn-scoring.js?v=mcq-order-v1"></script>
+  <script src="../exam-ui-ngn.js?v=mcq-order-v1"></script>
+  <script src="../ngn-author-ngn.js?v=mcq-order-v1"></script>
 </head>
 <body>
   <button id="author" type="button">Open synthetic author</button>
@@ -21,7 +21,13 @@
       correct: Array.from({ length: n }, (_, i) => i), rationale: 'Synthetic overall rationale.',
       optionRationales: Object.fromEntries(Array.from({ length: 6 }, (_, i) => [i, 'Synthetic explanation ' + i]))
     }));
-    const bank = [source[0], { kind: 'case', id: 'combined-case', scenario: 'Synthetic case', textFormat: 'plain',
+    const mcq = {
+      id: 'mcq-browser', type: 'mcq', stem: 'Synthetic MCQ: choose the fourth option.',
+      options: ['Synthetic option A', 'Synthetic option B', 'Synthetic option C', 'Synthetic option D'],
+      correct: [3], rationale: 'Synthetic overall rationale.',
+      optionRationales: { a: 'Rationale A', b: 'Rationale B', c: 'Rationale C', d: 'Rationale D' },
+    };
+    const bank = [mcq, source[0], { kind: 'case', id: 'combined-case', scenario: 'Synthetic case', textFormat: 'plain',
       tabs: ['notes', 'labs'].map((id, i) => ({ id, label: i ? 'Labs' : 'Notes', columns: ['Finding'],
         entries: [{ at: '2026-10-21T08:00', cells: [{ t: 'Synthetic clinical record ' + id }] }] })), items: source.slice(1) }];
     window.exam = new ExamUI.Exam(document.getElementById('root'), {

@@ -26,6 +26,32 @@ test('capability is advertised only by the updated page with matching loaded mod
   }
 });
 
+test('MCQ answer-order capability is independently versioned and advertised only with matching renderer assets', async () => {
+  const window = {
+    document: { querySelector: name => name === 'meta[name="nclex-mcq-option-protocol"]' ? { content: 'mcq-order-v1' } :
+      name === 'meta[name="nclex-option-protocol"]' ? { content: 'sata-order-v1' } : null },
+    OptionPresentation: { VERSION: 'sata-order-v1', MCQ_VERSION: 'mcq-order-v1' },
+    ExamUI: { OPTION_PROTOCOL: 'sata-order-v1', MCQ_OPTION_PROTOCOL: 'mcq-order-v1' },
+  };
+  const calls = [];
+  vm.runInNewContext(read('assessment-persistence.js'), { window });
+  const supabase = {
+    auth: { getSession: async () => ({ data: { session: { user: { id: 'test' } } } }) },
+    functions: { invoke: async (_name, { body }) => {
+      calls.push(body);
+      return { data: { attempt: null, abandoned: true } };
+    } },
+  };
+  await window.NCLEX_ASSESSMENT_PERSISTENCE.resumeAttempt({ supabase, assessmentKey: 'diagnostic-mock' });
+  assert.equal(calls[0].optionProtocol, 'sata-order-v1');
+  assert.equal(calls[0].mcqOptionProtocol, 'mcq-order-v1');
+
+  window.ExamUI.MCQ_OPTION_PROTOCOL = 'old';
+  await assert.rejects(window.NCLEX_ASSESSMENT_PERSISTENCE.resumeAttempt({
+    supabase, assessmentKey: 'diagnostic-mock',
+  }), /MCQ answer-order modules could not load/);
+});
+
 test('missing or mismatched scoring/renderer assets block persistence before authentication or writes', async () => {
   for (const modules of [
     {},
@@ -171,9 +197,10 @@ test('changed non-JSX HTML scripts parse and every shared renderer page loads th
   }
   for (const name of ['diagnostic.html', 'shared-progress.html', 'question-bank-review.html', 'supplemental-practice.html', 'bianca-nur215.html', 'madison-diagnostic.html']) {
     const html = read(name);
-    const scorer = html.indexOf('src="ngn-scoring.js?v=ngn-sata-v1"');
-    assert.ok(scorer >= 0 && scorer < html.indexOf('src="exam-ui-ngn.js?v=ngn-sata-v1"'), name);
-    const options = html.indexOf('src="option-presentation.js?v=ngn-sata-v1"');
-    assert.ok(options >= 0 && options < html.indexOf('src="exam-ui-ngn.js?v=ngn-sata-v1"'), name);
+    const scorer = html.indexOf('src="ngn-scoring.js');
+    const renderer = html.indexOf('src="exam-ui-ngn.js');
+    const options = html.indexOf('src="option-presentation.js');
+    assert.ok(scorer >= 0 && scorer < renderer, name);
+    assert.ok(options >= 0 && options < renderer, name);
   }
 });

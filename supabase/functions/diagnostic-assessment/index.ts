@@ -52,6 +52,12 @@ function requirePresentationClient(attempt: Record<string, any>, body: Record<st
   }
 }
 
+function requireMCQPresentationClient(attempt: Record<string, any>, body: Record<string, any>) {
+  if (attempt.checkpoint?.mcqOptionProtocol && body.mcqOptionProtocol !== 'mcq-order-v1') {
+    throw new HttpError(409, 'This assessment uses saved MCQ answer ordering. Refresh to the current assessment page to continue.');
+  }
+}
+
 function decodeAnswer(attempt: Record<string, any>, id: string, answer: unknown, draft = false) {
   const checkpoint = attempt.checkpoint;
   const saved = { ...checkpoint?.presentations, ...checkpoint?.ngnState?.current?.presentations };
@@ -296,6 +302,7 @@ const CLIENT_PROTOCOL = 'ngn-cat-v1';
 
 function requireCompatibleClient(attempt: Record<string, any>, body: Record<string, any>) {
   requirePresentationClient(attempt, body);
+  requireMCQPresentationClient(attempt, body);
   if (attempt.checkpoint?.scoringModel === MODEL && body.clientProtocol !== CLIENT_PROTOCOL) {
     throw new HttpError(409, 'This saved assessment requires the updated CAT page. Refresh the portal and resume; your progress is unchanged.');
   }
@@ -363,11 +370,15 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   const checkpoint = {
     schemaVersion: ngnEnabled ? 4 : 3,
     assessmentVersion: ngnEnabled ? MODEL : 'in-house-core-v1',
-    ...(ngnEnabled ? { scoringModel: MODEL, ngnState: selectCurrent({ optionProtocol: body.optionProtocol }, firstItem) } : {}),
+    ...(ngnEnabled ? { scoringModel: MODEL, ngnState: selectCurrent({ optionProtocol: body.optionProtocol, mcqOptionProtocol: body.mcqOptionProtocol }, firstItem) } : {}),
     ...(body.optionProtocol === presentation.VERSION ? {
       optionProtocol: presentation.VERSION,
-      presentations: newPresentations(keys),
     } : {}),
+    ...(body.mcqOptionProtocol === 'mcq-order-v1' ? {
+      mcqOptionProtocol: 'mcq-order-v1',
+      presentations: newPresentations(keys, true),
+    } : {}),
+    ...(body.optionProtocol === presentation.VERSION && body.mcqOptionProtocol !== 'mcq-order-v1' ? { presentations: newPresentations(keys) } : {}),
     mode,
     profile,
     currentItemId: firstItem.item_id,

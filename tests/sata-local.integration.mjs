@@ -64,22 +64,30 @@ await rest('in_house_diagnostic_item_keys', 'POST', [
 ]);
 const bank = await rest('in_house_diagnostic_item_keys');
 const reports = [];
-const clients = process.argv.includes('--combined') ? ['legacy', 'sata', 'ngn', 'combined'] : ['legacy', 'sata'];
+const clients = process.argv.includes('--combined')
+  ? ['legacy', 'sata', 'mcq', 'ngn', 'combined']
+  : ['legacy', 'sata', 'mcq'];
 for (const mode of ['practice', 'nclex', 'mock', 'assessment', 'remediation']) for (const client of clients) {
-  const capable = client === 'sata' || client === 'combined';
+  const sataCapable = client === 'sata' || client === 'combined';
+  const mcqCapable = client === 'mcq' || client === 'combined';
+  const presentationCapable = sataCapable || mcqCapable;
   const user = await account(mode);
-  const call = body => api('/functions/v1/diagnostic-assessment', 'POST', { ...body, ...(capable ? { optionProtocol: presentation.VERSION } : {}),
+  const call = body => api('/functions/v1/diagnostic-assessment', 'POST', { ...body, ...(sataCapable ? { optionProtocol: presentation.VERSION } : {}),
+    ...(mcqCapable ? { mcqOptionProtocol: 'mcq-order-v1' } : {}),
     ...(['ngn', 'combined'].includes(client) ? { clientProtocol: 'ngn-cat-v1' } : {}) }, user.token);
   const profile = { mode, qCount: mode === 'remediation' ? 2 : 12 };
   const started = await call({ action: 'start', mode, sessionKey: randomUUID(), profile });
   assert.equal(started.status, 200, JSON.stringify(started));
   assert.equal(started.data.attempt.assessment_version, 'in-house-core-v1', 'Run this baseline matrix with local NGN admissions disabled');
   const attemptId = started.data.attempt.id, saved = started.data.attempt.checkpoint.presentations;
-  assert.equal(Boolean(saved), capable);
+  assert.equal(Boolean(saved), presentationCapable);
   const scopeKeys = bank.filter(k => k.bank_scope === (mode === 'remediation' ? 'remediation' : 'diagnostic'));
   const encoded = (id, answer) => saved?.[id] ? { version: presentation.VERSION, optionIds: answer.map(i => saved[id].ids[i]) } : answer;
+  const mcqAnswer = (id, index) => saved?.[id]
+    ? { version: presentation.VERSION, optionIds: [saved[id].ids[index]] }
+    : index;
   let current = started.data.currentItemId, revision = 0, history = [], ability = 0.5, sataCount = 0, result;
-  if (capable) {
+  if (presentationCapable) {
     const cached = await api('/functions/v1/diagnostic-assessment', 'POST', { action: 'resume', assessmentKey: started.data.attempt.assessment_key }, user.token);
     assert.equal(cached.status, 409);
     const overwrite = await call({ action: 'checkpoint', attemptId, expectedRevision: revision,
@@ -92,11 +100,15 @@ for (const mode of ['practice', 'nclex', 'mock', 'assessment', 'remediation']) f
     const correct = history.length % 3 !== 1;
     const answers = Object.fromEntries(children.map(child => {
       const canonical = child.item_type === 'sata' ? correct ? child.correct_response : [counts[child.item_id] - 1] : correct ? [0] : [1];
-      return [child.item_id, child.item_type === 'sata' || child.parent_item_id ? encoded(child.item_id, canonical) : canonical[0]];
+      return [child.item_id,
+        child.item_type === 'sata' || child.parent_item_id ? encoded(child.item_id, canonical)
+          : child.item_type === 'mcq' ? mcqAnswer(child.item_id, canonical[0]) : canonical[0]];
     }));
     const draft = item.item_type === 'casestudy'
       ? { selected: [], csAnswers: Object.fromEntries(children.map(c => [c.item_id.split(':')[1], answers[c.item_id]])) }
-      : { selected: item.item_type === 'sata' ? answers[current] : [correct ? 0 : 1], csAnswers: {} };
+      : { selected: item.item_type === 'sata' ? answers[current]
+        : item.item_type === 'mcq' ? mcqAnswer(current, correct ? 0 : 1)
+          : [correct ? 0 : 1], csAnswers: {} };
     const paused = await call({ action: 'checkpoint', attemptId, expectedRevision: revision, checkpoint: { draft } });
     assert.equal(paused.status, 200, JSON.stringify(paused));
     revision = paused.data.checkpointRevision;
@@ -105,7 +117,7 @@ for (const mode of ['practice', 'nclex', 'mock', 'assessment', 'remediation']) f
     assert.equal(resumed.data.currentItemId, current);
     assert.deepEqual(resumed.data.attempt.checkpoint.presentations, saved);
     if (item.item_type === 'sata') assert.deepEqual(resumed.data.attempt.checkpoint.draft.selected, correct ? item.correct_response : [counts[current] - 1]);
-    if (capable && children.some(c => c.item_type === 'sata')) {
+    if (presentationCapable && children.some(c => c.item_type === 'sata')) {
       const broken = item.item_type === 'sata' ? { answer: { version: presentation.VERSION, optionIds: ['foreign'] } }
         : { caseAnswers: { cs1a: { version: presentation.VERSION, optionIds: ['foreign'] }, cs1b: [0] } };
       const invalid = await call({ action: 'answer', attemptId, expectedRevision: revision, itemId: current, ...broken });
@@ -151,8 +163,12 @@ for (const mode of ['practice', 'nclex', 'mock', 'assessment', 'remediation']) f
   for (const response of review.data.responses) {
     assert.equal(response.is_correct, history.find(h => h.id === response.item_id).correct);
     if (response.question_type === 'sata') assert.deepEqual(response.presentation, saved?.[response.item_id]);
+    if (response.question_type === 'mcq' && saved?.[response.item_id]) {
+      assert.deepEqual(response.presentation, saved[response.item_id], 'Historical MCQ review must retain its saved answer mapping.');
+      assert.ok(response.rationale, 'Mapped MCQ review must retain its canonical rationale.');
+    }
   }
-  reports.push({ mode, client, capable, responses: history.length, sata: sataCount, passed: true });
+  reports.push({ mode, client, sataCapable, mcqCapable, responses: history.length, sata: sataCount, passed: true });
 }
 const afterAttempts = new Map((await all('in_house_assessment_attempts')).map(row => [row.id, row]));
 const afterRows = new Map((await all('in_house_assessment_item_responses')).map(row => [row.id, row]));

@@ -20,6 +20,10 @@ DECLARE
   v_student uuid;
   v_attempt public.in_house_assessment_attempts%ROWTYPE;
   v_key jsonb;
+  v_orders jsonb;
+  v_order integer[];
+  v_canonical_answer integer;
+  v_responses jsonb;
   v_saved record;
   v_total integer;
   v_correct integer;
@@ -39,7 +43,76 @@ BEGIN
       USING ERRCODE = '42501';
   END IF;
 
-  IF p_action='start' THEN
+  IF p_action='start-mcq-order-v1' THEN
+    SELECT * INTO v_attempt
+    FROM public.in_house_assessment_attempts
+    WHERE student_id=v_student AND session_key=p_session_key
+    FOR UPDATE;
+
+    IF v_attempt.id IS NULL THEN
+      SELECT * INTO v_attempt
+      FROM public.in_house_assessment_attempts
+      WHERE student_id=v_student AND assessment_key='nur312-exam2-parallel'
+        AND status='in_progress'
+      ORDER BY updated_at DESC
+      LIMIT 1
+      FOR UPDATE;
+    END IF;
+
+    IF v_attempt.id IS NULL THEN
+      SELECT * INTO v_saved FROM public.create_in_house_assessment_attempt(
+        v_student,p_session_key,'nur312-exam2-parallel',
+        'NUR 312 Exam 2 Clinical Judgment Practice · Parallel Set',
+        'nur312-exam2-parallel-v1',jsonb_array_length(v_keys),false,
+        jsonb_build_object('schemaVersion',2,'currentQuestion',0)
+      );
+      SELECT * INTO v_attempt FROM public.in_house_assessment_attempts WHERE id=v_saved.attempt_id
+      FOR UPDATE;
+    END IF;
+
+    IF v_attempt.assessment_key <> 'nur312-exam2-parallel' THEN
+      RAISE EXCEPTION 'Practice session belongs to another assessment.';
+    END IF;
+
+    IF v_attempt.status='in_progress' AND NOT (v_attempt.checkpoint ? 'presentationOrders') THEN
+      SELECT jsonb_object_agg(k.value->>'id',
+        CASE WHEN EXISTS (
+          SELECT 1 FROM public.in_house_assessment_item_responses r
+          WHERE r.attempt_id=v_attempt.id
+            AND r.item_id=k.value->>'id'
+            AND r.item_source=k.value->>'source'
+        ) THEN '[0,1,2,3]'::jsonb ELSE to_jsonb(randomized.option_order) END)
+      INTO v_orders
+      FROM jsonb_array_elements(v_keys) k
+      CROSS JOIN LATERAL (
+        SELECT array_agg(position ORDER BY random()) AS option_order
+        FROM generate_series(0,3) AS positions(position)
+        WHERE k.value ? 'id'
+      ) randomized;
+
+      UPDATE public.in_house_assessment_attempts attempts
+      SET checkpoint=COALESCE(v_attempt.checkpoint,'{}'::jsonb) ||
+          jsonb_build_object('schemaVersion',2,'presentationOrders',v_orders),
+          checkpoint_revision=attempts.checkpoint_revision+1,
+          updated_at=now()
+      WHERE attempts.id=v_attempt.id AND attempts.status='in_progress'
+      RETURNING * INTO v_attempt;
+    END IF;
+
+    SELECT COALESCE(jsonb_agg(jsonb_build_object(
+      'item_id',item_id,'selected_answer',selected_answer,'is_correct',is_correct
+    ) ORDER BY answered_at,item_id),'[]'::jsonb)
+    INTO v_responses
+    FROM public.in_house_assessment_item_responses
+    WHERE attempt_id=v_attempt.id;
+
+    RETURN jsonb_build_object(
+      'id',v_attempt.id,'checkpoint_revision',v_attempt.checkpoint_revision,
+      'checkpoint',COALESCE(v_attempt.checkpoint,'{}'::jsonb),'responses',v_responses,
+      'status',v_attempt.status,'totalQuestions',v_attempt.total_questions,
+      'correctQuestions',v_attempt.correct_questions
+    );
+  ELSIF p_action='start' THEN
     SELECT * INTO v_saved FROM public.create_in_house_assessment_attempt(
       v_student,p_session_key,'nur312-exam2-parallel',
       'NUR 312 Exam 2 Clinical Judgment Practice · Parallel Set',
@@ -60,7 +133,7 @@ BEGIN
     RAISE EXCEPTION 'Practice attempt not found for this account.' USING ERRCODE = '42501';
   END IF;
 
-  IF p_action='answer' THEN
+  IF p_action IN ('answer','answer-mcq-order-v1') THEN
     IF p_expected_revision IS NULL OR p_expected_revision < 0 THEN
       RAISE EXCEPTION 'Practice response revision is required.';
     END IF;
@@ -68,15 +141,33 @@ BEGIN
     IF v_key IS NULL OR p_answer IS NULL OR p_answer NOT BETWEEN 0 AND 3 THEN
       RAISE EXCEPTION 'A valid practice question and answer are required.';
     END IF;
+    v_canonical_answer := p_answer;
+    IF p_action='answer-mcq-order-v1' THEN
+      IF jsonb_typeof(v_attempt.checkpoint->'presentationOrders'->p_item_id) <> 'array'
+         OR jsonb_array_length(v_attempt.checkpoint->'presentationOrders'->p_item_id) <> 4 THEN
+        RAISE EXCEPTION 'Saved answer ordering is missing. Reload and resume this practice test.';
+      END IF;
+      SELECT array_agg(value::integer ORDER BY ordinal)
+      INTO v_order
+      FROM jsonb_array_elements_text(v_attempt.checkpoint->'presentationOrders'->p_item_id)
+        WITH ORDINALITY AS entries(value,ordinal);
+      IF cardinality(v_order) <> 4
+         OR (SELECT count(DISTINCT choice) FROM unnest(v_order) AS choices(choice)) <> 4
+         OR EXISTS (SELECT 1 FROM unnest(v_order) AS choices(choice) WHERE choice < 0 OR choice > 3) THEN
+        RAISE EXCEPTION 'Saved answer ordering is invalid. Reload and resume this practice test.';
+      END IF;
+      v_canonical_answer := v_order[p_answer+1];
+    END IF;
     SELECT * INTO v_saved FROM public.record_in_house_assessment_response(
       v_attempt.id,p_expected_revision,
       jsonb_build_object(
         'item_id',p_item_id,'item_source',v_key->>'source','question_type','mcq',
         'difficulty',(v_key->>'difficulty')::integer,'topic',v_key->>'topic',
-        'selected_answer',p_answer,'correct_answer',(v_key->>'a')::integer,
-        'is_correct',p_answer=(v_key->>'a')::integer
+        'selected_answer',v_canonical_answer,'correct_answer',(v_key->>'a')::integer,
+        'is_correct',v_canonical_answer=(v_key->>'a')::integer
       ),
-      jsonb_build_object('schemaVersion',1,'currentQuestion',v_attempt.total_questions),
+      COALESCE(v_attempt.checkpoint,'{}'::jsonb) ||
+        jsonb_build_object('currentQuestion',v_attempt.total_questions+1),
       NULL
     );
     RETURN jsonb_build_object(

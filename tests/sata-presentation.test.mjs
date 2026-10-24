@@ -145,9 +145,10 @@ test('cached assets and canonical content are untouched; new entry points share 
   const scoring = source => source.slice(source.indexOf('function emptyAnswer('), source.indexOf('function reviewHtml('));
   assert.equal(scoring(read('exam-ui-sata.js')), scoring(read('exam-ui.js')), 'shared scoring formulas and answer-completion rules are unchanged');
   for (const page of ['supplemental-practice.html', 'madison-diagnostic.html', 'bianca-nur215.html', 'question-bank-review.html']) {
-    assert.match(read(page), /option-presentation\.js\?v=ngn-sata-v1/);
-    assert.match(read(page), /exam-ui-ngn\.js\?v=ngn-sata-v1/);
+    assert.match(read(page), /option-presentation\.js\?v=mcq-order-v1/);
+    assert.match(read(page), /exam-ui-ngn\.js\?v=mcq-order-v1/);
   }
   assert.match(read('diagnostic.html'), /name="nclex-option-protocol" content="sata-order-v1"/);
+  assert.match(read('diagnostic.html'), /name="nclex-mcq-option-protocol" content="mcq-order-v1"/);
   assert.match(read('assessment-persistence-sata.js'), /optionProtocol: global\.OptionPresentation\.VERSION/);
 });

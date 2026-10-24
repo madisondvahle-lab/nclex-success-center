@@ -94,21 +94,21 @@ test('combined preparation randomizes identities/order without mutating canonica
   }
 });
 
-test('case children preserve NGN metadata and incoming stable SATA presentation', () => {
+test('case children create a fresh SATA presentation per standalone run and preserve NGN metadata', () => {
   const { api, context } = load();
-  const child = sata(), presentation = context.OptionPresentation.create(6);
-  child.presentation = presentation;
+  const child = sata(), previous = context.OptionPresentation.create(6);
+  child.presentation = previous;
   const original = { id: 'case', kind: 'case', title: 'Synthetic', scenario: 'Synthetic', category: 'test', items: [child] };
   const [item] = api.prepare([original]);
-  assert.deepEqual(plain(item.presentation), plain(presentation));
+  assert.notDeepEqual(plain(item.presentation.ids), plain(previous.ids));
   assert.equal(item.scoringVersion, 'ngn-v1');
   assert.equal(item.case.id, 'case');
   assert.equal(item.caseIndex, 0);
   assert.equal(item.ngn, true);
   const exam = mount(api, { items: [item], answer: [0, 2, 4], readOnly: true, showTimer: false });
   assert.deepEqual(plain(exam.ans[0]), [0, 2, 4]);
-  assert.deepEqual(plain(exam.items[0].presentation), plain(presentation));
-  exam.onChange({ target: { name: 'opt', value: presentation.ids[1], checked: true } });
+  assert.deepEqual(plain(exam.items[0].presentation), plain(item.presentation));
+  exam.onChange({ target: { name: 'opt', value: item.presentation.ids[1], checked: true } });
   assert.deepEqual(plain(exam.ans[0]), [0, 2, 4]);
 });
 
@@ -202,9 +202,10 @@ test('owned combined pages opt in, use cache-safe versioned assets, and reject s
     const html = read(page);
     assert.doesNotMatch(html, /^(?:<<<<<<<|=======|>>>>>>>)/m);
     assert.match(html, /name="nclex-option-protocol" content="sata-order-v1"/);
-    assert.match(html, /option-presentation\.js\?v=ngn-sata-v1/);
-    assert.match(html, /ngn-scoring\.js\?v=ngn-sata-v1/);
-    assert.match(html, /exam-ui-ngn\.js\?v=ngn-sata-v1/);
+    assert.match(html, /name="nclex-mcq-option-protocol" content="mcq-order-v1"/);
+    assert.match(html, /option-presentation\.js\?v=mcq-order-v1/);
+    assert.match(html, /ngn-scoring\.js\?v=mcq-order-v1/);
+    assert.match(html, /exam-ui-ngn\.js\?v=mcq-order-v1/);
     assert.doesNotMatch(html, /src="exam-ui-sata\.js/);
     const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
     for (const script of scripts) new Script(script, { filename: page });

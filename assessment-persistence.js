@@ -2,12 +2,20 @@
 (function (global) {
   const CLIENT_PROTOCOL = 'ngn-cat-v1';
   const OPTION_PROTOCOL = 'sata-order-v1';
+  const MCQ_OPTION_PROTOCOL = 'mcq-order-v1';
   function optionProtocol() {
     if (global.document?.querySelector('meta[name="nclex-option-protocol"]')?.content !== OPTION_PROTOCOL) return undefined;
     if (global.OptionPresentation?.VERSION !== OPTION_PROTOCOL || global.ExamUI?.OPTION_PROTOCOL !== OPTION_PROTOCOL) {
       throw new Error('The saved answer-order modules could not load. Refresh the assessment page; your progress is unchanged.');
     }
     return OPTION_PROTOCOL;
+  }
+  function mcqOptionProtocol() {
+    if (global.document?.querySelector('meta[name="nclex-mcq-option-protocol"]')?.content !== MCQ_OPTION_PROTOCOL) return undefined;
+    if (global.OptionPresentation?.MCQ_VERSION !== MCQ_OPTION_PROTOCOL || global.ExamUI?.MCQ_OPTION_PROTOCOL !== MCQ_OPTION_PROTOCOL) {
+      throw new Error('The saved MCQ answer-order modules could not load. Refresh the assessment page; your progress is unchanged.');
+    }
+    return MCQ_OPTION_PROTOCOL;
   }
   function clientProtocol() {
     const requested = global.document?.querySelector('meta[name="nclex-cat-protocol"]')?.content;
@@ -20,12 +28,13 @@
   async function invokeAssessment(supabase, body) {
     const protocol = clientProtocol();
     const options = optionProtocol();
+    const mcqOptions = mcqOptionProtocol();
     if (!supabase) throw new Error('Supabase client is unavailable');
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
     if (!session) throw new Error('Your session has expired. Sign in again to continue.');
     const { data, error } = await supabase.functions.invoke('diagnostic-assessment', {
-      body: { ...body, ...(protocol ? { clientProtocol: protocol } : {}), ...(options ? { optionProtocol: options } : {}) }
+      body: { ...body, ...(protocol ? { clientProtocol: protocol } : {}), ...(options ? { optionProtocol: options } : {}), ...(mcqOptions ? { mcqOptionProtocol: mcqOptions } : {}) }
     });
     if (error) {
       if (error.context?.status === 409 && typeof error.context.json === 'function') {

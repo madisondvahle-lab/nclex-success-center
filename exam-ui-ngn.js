@@ -7,8 +7,8 @@
   const optionProtocol = typeof document !== 'undefined' && document.querySelector?.('meta[name="nclex-option-protocol"]')?.content === 'sata-order-v1';
   const OptionPresentation = optionProtocol ? window.OptionPresentation : null;
   if (optionProtocol && (OptionPresentation?.VERSION !== 'sata-order-v1' || typeof OptionPresentation.rationale !== 'function')) throw new Error('The answer presentation module could not load. Refresh and try again.');
-  const optionOrder = it => OptionPresentation && it.type === 'sata' ? OptionPresentation.order(it) : it.options.map((_, i) => i);
-  const withPresentation = it => OptionPresentation && it.type === 'sata'
+  const optionOrder = it => OptionPresentation && ['mcq', 'sata'].includes(it.type) ? OptionPresentation.order(it) : it.options.map((_, i) => i);
+  const withPresentation = it => OptionPresentation && ['mcq', 'sata'].includes(it.type)
     ? Object.assign({}, it, { presentation: it.presentation ? OptionPresentation.validate(it.presentation, it.options.length) : OptionPresentation.create(it.options.length) }) : it;
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ico = p => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
@@ -62,10 +62,10 @@
         const total = entry.items.length;
         const cs = { id: entry.id, title: entry.title, scenario: entry.scenario, textFormat: entry.textFormat, tabs: entry.tabs, banner: entry.banner, total };
         entry.items.forEach((it, idx) => {
-          out.push(withPresentation(Object.assign({ category: entry.category, topic: entry.topic, difficulty: entry.difficulty, ngn: true }, it, { qid: it.id, case: cs, caseIndex: idx })));
+          out.push(withPresentation(Object.assign({ category: entry.category, topic: entry.topic, difficulty: entry.difficulty, ngn: true }, it, { qid: it.id, case: cs, caseIndex: idx, presentation: undefined })));
         });
       } else {
-        const it = OptionPresentation && entry.type === 'sata' ? withPresentation(entry) : o.shuffleOptions ? shuffleItemOptions(entry) : entry;
+        const it = OptionPresentation && ['mcq', 'sata'].includes(entry.type) ? withPresentation(Object.assign({}, entry, { presentation: undefined })) : o.shuffleOptions ? shuffleItemOptions(entry) : entry;
         out.push(Object.assign({}, it, { qid: it.id }));
       }
     });
@@ -108,7 +108,7 @@
       const sel = it.type === 'mcq' ? (a === null ? [] : [a]) : a;
       return '<ul class="ex-rv">' + optionOrder(it).map(i => {
         const t = it.options[i];
-        const explanation = OptionPresentation && it.type === 'sata' && OptionPresentation.rationale(it, i);
+        const explanation = OptionPresentation && ['mcq', 'sata'].includes(it.type) && OptionPresentation.rationale(it, i);
         const label = esc(t) + (explanation ? ' — ' + esc(explanation) : '');
         const isC = it.correct.includes(i), isS = sel.includes(i);
         if (isC && isS) return li('good', '✓', label);
@@ -177,7 +177,7 @@
         const saved = opts.resume;
         if (!Array.isArray(saved.items) || saved.items.length !== this.items.length || !Array.isArray(saved.ans) ||
             saved.ans.length !== this.items.length || !Number.isInteger(saved.i) || saved.i < 0 || saved.i >= this.items.length) throw new Error('Saved practice does not match this assessment.');
-        for (const it of saved.items) if (it.type === 'sata') OptionPresentation.validate(it.presentation, it.options.length);
+        for (const it of saved.items) if (['mcq', 'sata'].includes(it.type)) OptionPresentation.validate(it.presentation, it.options.length);
         this.items = saved.items; this.ans = saved.ans; this.i = saved.i;
         if (saved.settings) for (const key of ['instant', 'showTimer', 'noFeedback']) this.o[key] = saved.settings[key];
         for (const key of ['marked', 'time', 'changes', 'fb', 'checked', 'tab', 'notes', 'elapsed', 'remaining']) this[key] = saved[key];
@@ -318,7 +318,7 @@
     }
 
     optRow(kind, i, text, checked, struck, position = i) {
-      const value = OptionPresentation && this.it.type === 'sata' ? this.it.presentation?.ids[i] || i : i;
+      const value = OptionPresentation && ['mcq', 'sata'].includes(this.it.type) ? this.it.presentation?.ids[i] || i : i;
       return `<label class="ex-opt${struck ? ' struck' : ''}" data-i="${i}"><input type="${kind === 'r' ? 'radio' : 'checkbox'}" name="opt" value="${esc(value)}"${checked ? ' checked' : ''}><span class="ex-ctl ${kind}"></span><span class="ex-num">${position + 1}.</span><span class="ex-txt">${esc(text)}</span></label>`;
     }
 
@@ -328,7 +328,7 @@
       const lead = ng ? `${it.intro ? `<p class="ex-prompt first">${text(it.intro)}</p>` : ''}<p class="ex-prompt${it.intro ? '' : ' first'}"><span class="ex-chev">»</span>${text(it.prompt || it.stem)}</p>` : `<p class="ex-stem">${text(it.stem)}</p>`;
       const hint = '<p class="ex-hint">Tip: right-click (or press and hold) an answer to cross it out.</p>';
       if (it.type === 'bowtie') return this.bowtieUi(it, a);
-      if (it.type === 'mcq') return lead + '<div class="ex-opts" role="radiogroup">' + it.options.map((t, i) => this.optRow('r', i, t, a === i, this.struck[this.i].has(i))).join('') + '</div>' + hint;
+      if (it.type === 'mcq') return lead + '<div class="ex-opts" role="radiogroup">' + optionOrder(it).map((i, position) => this.optRow('r', i, it.options[i], a === i, this.struck[this.i].has(i), position)).join('') + '</div>' + hint;
       if (it.type === 'sata') return lead + '<div class="ex-opts">' + optionOrder(it).map((i, position) => this.optRow('c', i, it.options[i], a.includes(i), this.struck[this.i].has(i), position)).join('') + '</div>' + hint;
       if (it.type === 'fill') return lead + `<div class="ex-fill"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer" value="${esc(a)}"><span>${esc(it.unit || '')}</span></div><p class="ex-hint">Use the Calculator in the toolbar. Round only at the end if the question asks you to.</p>`;
       if (it.type === 'matrix') {
@@ -366,7 +366,7 @@
       const t = e.target, it = this.it, k = this.i;
       if (this.checked[k] || this.o.readOnly) return;
       if (t.name === 'opt') {
-        const v = OptionPresentation && it.type === 'sata' && it.presentation ? OptionPresentation.indexes(it.presentation, [t.value])[0] : +t.value; this.struck[k].delete(v);
+        const v = OptionPresentation && ['mcq', 'sata'].includes(it.type) && it.presentation ? OptionPresentation.indexes(it.presentation, [t.value])[0] : +t.value; this.struck[k].delete(v);
         if (it.type === 'mcq') { if (this.ans[k] !== null && this.ans[k] !== v) this.changes[k]++; this.ans[k] = v; }
         else { const set = new Set(this.ans[k]); if (t.checked) set.add(v); else { set.delete(v); this.changes[k]++; } this.ans[k] = [...set].sort((a, b) => a - b); }
         this.main.querySelectorAll('.ex-opt[data-i]').forEach(r => r.classList.toggle('struck', this.struck[k].has(+r.dataset.i)));
@@ -547,5 +547,5 @@
     }
   }
 
-  window.ExamUI = { Exam, prepare, score, isAnswered, reviewHtml, esc, CLIENT_PROTOCOL: 'ngn-cat-v1', OPTION_PROTOCOL: 'sata-order-v1' };
+  window.ExamUI = { Exam, prepare, score, isAnswered, reviewHtml, esc, CLIENT_PROTOCOL: 'ngn-cat-v1', OPTION_PROTOCOL: 'sata-order-v1', MCQ_OPTION_PROTOCOL: 'mcq-order-v1' };
 })();

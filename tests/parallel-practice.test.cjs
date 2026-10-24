@@ -13,14 +13,15 @@ test('course persistence uses the fixed-course RPC contract, not the diagnostic 
   const api = context.window.NCLEX_COURSE_PRACTICE;
   const supabase = {
     auth: { getSession: async () => ({ data: { session: { user: {} } } }) },
-    rpc: async (name, args) => { calls.push({ name, args }); return { data: { id: 'attempt' } }; }
+    rpc: async (name, args) => { calls.push({ name, args }); return { data: { id: 'attempt', checkpoint_revision: 0 } }; }
   };
   await api.createAttempt({ supabase, sessionKey: 'session' });
-  await api.recordResponse({ supabase, attemptId: 'attempt', expectedRevision: 2, itemId: 'item', answer: 3 });
+  await api.recordResponse({ supabase, attemptId: 'attempt', expectedRevision: 2, itemId: 'item', displayAnswer: 3 });
   await api.finalizeAttempt({ supabase, attemptId: 'attempt' });
   assert.equal(calls.length, 3);
   assert.ok(calls.every(call => call.name === 'save_nur312_parallel_practice'));
-  assert.equal(calls[0].args.p_action, 'start');
+  assert.equal(calls[0].args.p_action, 'start-mcq-order-v1');
+  assert.equal(calls[1].args.p_action, 'answer-mcq-order-v1');
   assert.equal(calls[1].args.p_answer, 3);
   assert.equal(calls[1].args.p_expected_revision, 2);
   assert.equal(calls[2].args.p_action, 'finish');
@@ -49,6 +50,20 @@ test('generated server keys match the unchanged course bank exactly', () => {
   assert.equal(keys.length, 116);
   assert.deepEqual(keys, bank.map(({ id, source, a, difficulty, topic }) => ({ id, source, a, difficulty, topic })));
   assert.doesNotMatch(sql, /GRANT.*(?:create_in_house|record_in_house|finalize_in_house)/i);
+});
+
+test('parallel persistence stores mapped options and resumes from the server checkpoint', () => {
+  const sql = readFileSync(join(root, 'supabase-nur312-parallel-persistence.sql'), 'utf8');
+  assert.match(sql, /start-mcq-order-v1/);
+  assert.match(sql, /answer-mcq-order-v1/);
+  assert.match(sql, /presentationOrders/);
+  assert.match(sql, /selected_answer',v_canonical_answer/);
+  assert.match(sql, /'responses',v_responses/);
+  assert.match(sql, /status='in_progress'/);
+  assert.match(html, /sessionStorageKey="nclex:nur312-exam2-parallel:session"/);
+  assert.match(html, /displayAnswer/);
+  assert.match(html, /Saved answer ordering is invalid/);
+  assert.match(html, /can be resumed in this browser tab/);
 });
 
 function player() {
