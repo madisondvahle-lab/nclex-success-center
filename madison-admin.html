@@ -417,7 +417,7 @@
         return;
       }
       const {data,error}=await db.from('consultations')
-        .select('id,invitee_name,invitee_email,scheduled_start,consult_type,student_id')
+        .select('id,invitee_name,invitee_email,scheduled_start,consult_type,student_id,consult_intakes(student_id)')
         .eq('status','scheduled')
         .gte('scheduled_start',queryStart.toISOString())
         .lt('scheduled_start',rangeEnd.toISOString())
@@ -433,6 +433,7 @@
       appointmentsByDate=new Map;
       (data||[]).forEach(booking=>{
         const start=new Date(booking.scheduled_start),date=StudyCalendar.isoDate(start);
+        const studentId=booking.student_id||booking.consult_intakes?.student_id;
         if(!appointmentsByDate.has(date))appointmentsByDate.set(date,[]);
         appointmentsByDate.get(date).push({
           id:booking.id,
@@ -440,7 +441,7 @@
           time:start.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
           consult_type:booking.consult_type,
           label:consultationType(booking.consult_type),
-          url:booking.student_id?'shared-progress.html?student='+encodeURIComponent(booking.student_id):'madison-consultations.html?consultation='+encodeURIComponent(booking.id)
+          url:booking.consult_type==='tutoring_session'?'madison-tutoring-sessions.html?session='+encodeURIComponent(booking.id):studentId?'shared-progress.html?student='+encodeURIComponent(studentId):'madison-consultations.html?consultation='+encodeURIComponent(booking.id)
         });
       });
       if(!appointmentSelectedDate.startsWith(appointmentMonth))appointmentSelectedDate=`${appointmentMonth}-01`;
@@ -494,7 +495,7 @@
       const now=new Date().toISOString();
       const [consultCount,consultRows,reviewCount]=await Promise.all([
         db.from('consultations').select('id',{count:'exact',head:true}).eq('status','scheduled').gte('scheduled_start',now),
-        db.from('consultations').select('id,student_id').eq('status','scheduled').gte('scheduled_start',now).order('scheduled_start',{ascending:true}).limit(1000),
+        db.from('consultations').select('id,student_id,consult_intakes(student_id)').eq('status','scheduled').gte('scheduled_start',now).order('scheduled_start',{ascending:true}).limit(1000),
         db.from('question_flags').select('id',{count:'exact',head:true}).eq('status','open')
       ]);
       if(lifecycleAvailable){
@@ -524,7 +525,7 @@
         consultationStudentIds=new Set;
       }else{
         const bookings=consultRows.data||[];
-        consultationStudentIds=new Set(bookings.map(booking=>booking.student_id).filter(Boolean));
+        consultationStudentIds=new Set(bookings.map(booking=>booking.student_id||booking.consult_intakes?.student_id).filter(Boolean));
       }
       renderDirectory();
     }

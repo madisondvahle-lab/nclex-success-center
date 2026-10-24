@@ -108,8 +108,13 @@
         event.preventDefault();
         await saveNotes();
       });
-      await loadSessions();
+      const loaded=await loadSessions();
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
+      const requestedSession=new URLSearchParams(location.search).get('session');
+      if(requestedSession&&loaded){
+        if(sessions.some(session=>session.id===requestedSession))openSession(requestedSession);
+        else $('session-list-status').textContent='This tutoring session is not upcoming or in progress. It may have ended, been cancelled, or changed. Only upcoming and in-progress sessions are shown here.';
+      }
     }
 
     function isAvailable(session){
@@ -126,10 +131,11 @@
       if(error){
         $('session-list-status').textContent='Tutoring sessions could not load. Refresh the page to try again.';
         console.error('Could not load tutoring sessions',error.message);
-        return;
+        return false;
       }
       sessions=(data||[]).filter(isAvailable);
       renderSessions();
+      return true;
     }
 
     function renderSessions(){
