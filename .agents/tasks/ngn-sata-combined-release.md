@@ -33,7 +33,59 @@ Server-first checkpoint completed:
 - Frontend remained on `2fec3b9` during server verification; protected frontend
   PR/Pages publication is the next authorized checkpoint.
 
-### Publication paused: required production monitoring not yet verified
+### Monitoring resolved through dashboard; frontend continuation approved
+
+On October 24 at 00:49 UTC, the owner accepted monitoring clearance and
+authorized completing PR #242 and publishing matching frontend assets, subject
+to renewed baseline/check validation. Production write-based testing, new NGN
+admissions, question activation and billing changes remain unauthorized.
+The release remains server-first, with compatible version 8 retained.
+
+On October 24, the owner signed into the shared Supabase dashboard. Read-only
+dashboard log views successfully returned production records for the exact
+window **2026-10-23 05:11:59 UTC through 2026-10-24 00:44:55.774 UTC**.
+The deprecated public logging endpoint was not retried, and no internal
+dashboard endpoint was called directly. Results were inspected through the
+official dashboard's function and log collection views, including full-window
+severity charts rather than relying on the latest 100-row previews.
+
+| Collection | Full-window evidence |
+| --- | --- |
+| CAT invocations | 28 records, all version 8: 27 HTTP 200 and one HTTP 401; zero HTTP 5xx |
+| CAT runtime | 54 records: 27 Boot and 27 Shutdown; zero warnings/errors |
+| Postgres | 347 routine entries; zero WARNING/ERROR/FATAL/PANIC |
+| PostgREST | 156 routine entries; zero warnings/errors |
+| Auth | 86 informational entries, one warning, zero errors |
+
+The HTTP 401 at 05:12:22.250 UTC matches the intentional anonymous rejection
+check recorded during the deployment verification, not an authenticated CAT
+failure. The auth warning at 14:48:56 UTC reports
+`refresh_token_not_found` on POST `/token` (HTTP 400). It is an Auth
+session-refresh event, not a CAT invocation, retrieval or save-RPC error;
+no version 8 CAT failure is evidenced. The sampled predeployment Auth window
+(October 23, 00:45:00 through 05:11:58 UTC) had 41 informational entries and
+no warnings/errors. Therefore do not claim that this warning was demonstrably
+preexisting or that its cause was conclusively established.
+
+**Monitoring checkpoint cleared for the observed release stage.** These
+records corroborate earlier authenticated read-only resume checks and isolated
+integration tests; they do not prove live scoring/persistence workflows that
+were deliberately not exercised. No production assessments, submissions,
+scores or student records were created or changed for this inspection.
+
+At monitoring clearance, fresh read-only checks showed version 8 ACTIVE, JWT
+verification true, admission digest matching `false`, and PR #242
+OPEN/draft/unmerged. The subsequent explicit approval above authorizes the
+protected frontend workflow only. Recheck current main/server before merging;
+keep admissions disabled and do not redeploy or roll back the compatible server.
+
+The dashboard separately warns that the organization exceeded quota in the
+previous billing cycle and projects may be restricted beginning November 15,
+2026 if it remains over quota. This is an operational billing concern, not a
+logged version 8 regression. The owner's reported upgrade was GitHub, not
+Supabase; no Supabase plan change was assumed or made.
+
+### Historical publication hold: monitoring access initially unavailable
 
 Frontend release [PR #242](https://github.com/madisondvahle-lab/nclex-success-center/pull/242)
 is prepared, not merged. No production frontend publication has occurred.
