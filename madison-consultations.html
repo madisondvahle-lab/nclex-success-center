@@ -138,7 +138,7 @@
 
     async function loadList(){
       const status=document.getElementById('list-status');
-      const {data,error}=await db.from('consultations').select('*').order('scheduled_start',{ascending:false});
+      const {data,error}=await db.from('consultations').select('*,consult_intakes(student_id)').order('scheduled_start',{ascending:false});
       if(error){status.textContent='Consultations could not load. Run supabase-calendly-consultations-migration.sql first. '+error.message;return}
       consults=excludeStudentConsultations(data||[]);
       const names=await profileNames(consults);
@@ -158,7 +158,8 @@
     }
 
     function excludeStudentConsultations(items){
-      return items.filter(c=>!c.student_id);
+      return items.filter(c=>!c.student_id&&!c.consult_intakes?.student_id&&
+        (c.consult_type==='free_consultation'||c.consult_type==='strategy_session'));
     }
 
     async function profileNames(items){
@@ -196,8 +197,11 @@
     }
 
     async function openConsult(id){
-      const {data,error}=await db.from('consultations').select('*').eq('id',id).single();
+      const {data,error}=await db.from('consultations').select('*,consult_intakes(student_id)').eq('id',id).single();
       if(error){document.getElementById('list-status').textContent=error.message;return}
+      if(data.consult_type==='tutoring_session'){
+        location.replace('madison-tutoring-sessions.html?session='+encodeURIComponent(id));return;
+      }
       current=data;current.template=current.template||{};
       const {data:events}=await db.from('consultation_events').select('*').eq('consultation_id',id).order('created_at');
       renderDetail(events||[]);
