@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Synthetic SATA presentation regression fixture</title>
+  <link rel="stylesheet" href="../exam-ui.css">
+  <script src="../option-presentation.js?v=sata-order-v1"></script>
+  <script src="../exam-ui-sata.js?v=sata-order-v1"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const source = [3, 4, 5].map(n => ({
+      id: 'synthetic-' + n, type: 'sata', stem: 'Synthetic SATA with ' + n + ' correct options.',
+      options: Array.from({ length: 6 }, (_, i) => 'Synthetic option ' + i),
+      correct: Array.from({ length: n }, (_, i) => i), rationale: 'Synthetic rationale.',
+      optionRationales: Object.fromEntries(Array.from({ length: 6 }, (_, i) => [i, 'Synthetic explanation ' + i]))
+    }));
+    const bank = [source[0], { kind: 'case', id: 'case', scenario: 'Synthetic case',
+      tabs: [{ id: 'notes', label: 'Notes', html: '<p>Synthetic clinical record.</p>' },
+        { id: 'labs', label: 'Labs', html: '<p>Synthetic chronological lab record.</p>' }], items: source.slice(1)
+    }];
+    const resume = JSON.parse(sessionStorage.getItem('sata-fixture') || 'null');
+    window.exam = new ExamUI.Exam(document.getElementById('root'), {
+      title: 'Synthetic local test', items: resume?.items || ExamUI.prepare(bank, { shuffleOptions: false }),
+      resume, showTimer: false, instant: true,
+      onCheckpoint: state => sessionStorage.setItem('sata-fixture', JSON.stringify(state)),
+      onFinish: result => {
+        window.result = result;
+        document.getElementById('root').innerHTML = result.items.map((item, i) => ExamUI.reviewHtml(item, result.ans[i])).join('');
+      }
+    });
+  </script>
+</body>
+</html>

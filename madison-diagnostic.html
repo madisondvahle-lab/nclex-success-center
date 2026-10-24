@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
   <link rel="stylesheet" href="admin-shell.css">
   <link rel="stylesheet" href="exam-ui.css">
   <title>Consult Diagnostic · Study With Madison, RN</title>
@@ -126,6 +127,7 @@
               <p class="meta" id="count-note" style="margin-top:12px">Questions are spread evenly across content areas. The 6-item case study is included at 20 or more.</p>
               <p class="meta" id="prior"></p>
               <label class="check" style="margin-top:8px"><input type="checkbox" id="shuffle" checked> Shuffle answer order for each run</label>
+              <p class="meta">SATA answers are always randomized. Unfinished diagnostics can resume in this tab using the same consultation and student name.</p>
               <p style="margin-top:16px"><button class="button primary" id="start" type="button">Start diagnostic</button></p>
             </div>
           </div>
@@ -157,18 +159,27 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="consult-diagnostic-bank.js"></script>
   <script src="category-names.js"></script>
-  <script src="exam-ui.js"></script>
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script>
+    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1') {
+      window.ExamUI = undefined;
+      throw new Error('The assessment modules could not load. Refresh and try again.');
+    }
+  </script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const esc=ExamUI.esc;
     const TYPE_LABEL={mcq:'Single answer',sata:'Select all that apply',fill:'Dosage calculation',matrix:'Case study: matrix',cloze:'Case study: drop-down',highlight:'Case study: highlight',bowtie:'Bowtie'};
-    let lastResult=null,lastWho='',consults=[],selConsult=null,saveCtx=null;
+    let lastResult=null,lastWho='',consults=[],selConsult=null,saveCtx=null,adminId='';
 
     async function init(){
       const {data:{session}}=await db.auth.getSession();
       if(!session){location.replace('student-login.html');return}
       const {data:admin}=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
       if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
+      adminId=session.user.id;
       document.getElementById('loading').classList.add('hidden');document.getElementById('app').classList.remove('hidden');
       document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
       document.getElementById('start').addEventListener('click',startExam);
@@ -196,10 +207,13 @@
 
     function startExam(){
       lastWho=document.getElementById('who').value.trim();
+      const storageKey='sata-consult:'+adminId+':'+(selConsult?.id||'unsaved')+':'+encodeURIComponent(lastWho);
+      if(sessionStorage.getItem(storageKey)&&!confirm('Resume this tab’s unfinished diagnostic for '+(lastWho||selConsult?.invitee_name||'this practice run')+'? Cancel starts a new run.'))sessionStorage.removeItem(storageKey);
       const seconds=+document.getElementById('limit').value||null;
       const items=ExamUI.prepare(window.CONSULT_DIAGNOSTIC_BANK,{shuffleOptions:document.getElementById('shuffle').checked,count:+document.getElementById('count').value});
       document.getElementById('app').classList.add('hidden');
       new ExamUI.Exam(document.getElementById('exam-root'),{title:'NCLEX-RN CONSULT DIAGNOSTIC'+(lastWho?' - '+lastWho:''),items,seconds,
+        storageKey,
         onFinish:showResults,onExit:()=>document.getElementById('app').classList.remove('hidden')});
     }
 

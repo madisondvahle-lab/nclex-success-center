@@ -1,11 +1,17 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { presentation, newPresentations, canonicalAnswer } from '../_shared/sata-presentation.mjs';
 import {
   pickNextQuestion,
   shouldStop,
   shouldStopMock,
   updateAbility,
+  updateNGNAbility,
+  shouldStopNGN,
 } from '../_shared/diagnostic-assessment-engine.mjs';
-import { previouslyAnsweredItemIds } from '../_shared/diagnostic-assessment-history.mjs';
+import {
+  MODEL, registryEntry, currentInteraction, publicInteraction, publicCheckpoint,
+  selectCurrent, validateDraft, scoreCurrent, recordCredit, responseDetail,
+} from '../_shared/diagnostic-ngn.mjs';
 
 const allowedOrigins = new Set([
   'https://portal.studywithmadison.com',
@@ -39,6 +45,19 @@ const requiredString = (value: unknown, name: string) => {
   if (typeof value !== 'string' || !value.trim()) throw new HttpError(400, `${name} is required.`);
   return value.trim();
 };
+
+function requirePresentationClient(attempt: Record<string, any>, body: Record<string, any>) {
+  if (attempt.checkpoint?.optionProtocol && body.optionProtocol !== presentation.VERSION) {
+    throw new HttpError(409, 'This assessment uses saved answer ordering. Refresh to the current assessment page to continue.');
+  }
+}
+
+function decodeAnswer(attempt: Record<string, any>, id: string, answer: unknown, draft = false) {
+  const checkpoint = attempt.checkpoint;
+  const saved = { ...checkpoint?.presentations, ...checkpoint?.ngnState?.current?.presentations };
+  try { return canonicalAnswer(saved, id, answer, draft); }
+  catch (error) { throw new HttpError(400, error instanceof Error ? error.message : 'Invalid answer identity.'); }
+}
 
 const canonicalize = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -102,9 +121,9 @@ async function createContext(request: Request) {
   return { user, student, isAdmin: isAdmin === true, service };
 }
 
-type AssessmentService = Awaited<ReturnType<typeof createContext>>['service'];
+type SupabaseClient = Awaited<ReturnType<typeof createContext>>['service'];
 
-async function attemptForStudent(service: AssessmentService, attemptId: string, studentId: string) {
+async function attemptForStudent(service: SupabaseClient, attemptId: string, studentId: string) {
   const { data, error } = await service
     .from('in_house_assessment_attempts')
     .select('id,student_id,session_key,assessment_key,assessment_title,assessment_version,mode,status,result,ability_estimate,target_questions,total_questions,correct_questions,checkpoint,checkpoint_revision,qa_mode,started_at,updated_at,completed_at')
@@ -116,13 +135,32 @@ async function attemptForStudent(service: AssessmentService, attemptId: string, 
   return data;
 }
 
-async function itemKeys(service: AssessmentService, scope: string) {
+async function itemKeys(service: SupabaseClient, scope: string, includeNGN = false) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('bank_scope,item_id,item_source,parent_item_id,selectable,item_type,difficulty,blueprint,category,nclex_category,topic,cognitive_level,core_tags,correct_response,rationale,sequence_order,case_length')
     .eq('bank_scope', scope);
   if (error) throw error;
-  return data || [];
+  const keys = data || [];
+  if (!includeNGN || scope !== 'diagnostic') return keys;
+  const ngnKeys: Array<NonNullable<Awaited<ReturnType<typeof registryEntry>>>> = [];
+  for (let offset = 0; ; offset += 100) {
+    const { data: questions, error: questionError } = await service.from('questions')
+      .select('id,stem,rationale,option_rationales,active,source_key,item_type,item_data,difficulty,nclex_category,topic')
+      .eq('active', true).eq('item_data->>schemaVersion', '1')
+      .like('source_key', 'qbank-bulk-%').order('id').range(offset, offset + 99);
+    if (questionError) throw questionError;
+    if (!questions?.length) break;
+    const { data: reviews, error: reviewError } = await service.from('question_import_reviews')
+      .select('source_key,status').in('source_key', questions.map(q => q.source_key)).in('status', ['approved', 'published']);
+    if (reviewError) throw reviewError;
+    for (const question of questions) {
+      const key = await registryEntry(question, reviews?.find(review => review.source_key === question.source_key));
+      if (key) ngnKeys.push(key);
+    }
+    if (questions.length < 100) break;
+  }
+  return [...keys, ...ngnKeys];
 }
 
 function keyForItem(keys: Array<Record<string, any>>, id: string) {
@@ -131,7 +169,7 @@ function keyForItem(keys: Array<Record<string, any>>, id: string) {
   return item;
 }
 
-async function responseRows(service: AssessmentService, attemptId: string) {
+async function responseRows(service: SupabaseClient, attemptId: string) {
   const { data, error } = await service
     .from('in_house_assessment_item_responses')
     .select('item_id,item_source,blueprint,nclex_category,system,topic,cognitive_level,difficulty,question_type,selected_answer,correct_answer,is_correct,answered_at')
@@ -142,11 +180,11 @@ async function responseRows(service: AssessmentService, attemptId: string) {
   return data || [];
 }
 
-function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string, any>>, reveal: boolean) {
+function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string, any>>, reveal: boolean, checkpoint: Record<string, any> = {}) {
   const byId = new Map(keys.map(row => [row.item_id, row]));
   return rows.map(row => {
     const key = byId.get(row.item_id);
-    const sourceId = key?.parent_item_id || row.item_id;
+    const sourceId = checkpoint.ngnState?.responses?.[row.item_id]?.parentId || key?.parent_item_id || row.item_id;
     const record: Record<string, any> = {
       ...row,
       id: row.item_id,
@@ -158,11 +196,18 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
       core_tags: key?.core_tags || [],
       correct: reveal ? Boolean(row.is_correct) : null,
       selectedAnswer: row.selected_answer,
+      scoringModel: checkpoint.scoringModel || 'in-house-core-v1',
+      ...(checkpoint.presentations?.[row.item_id] ? { presentation: checkpoint.presentations[row.item_id] } : {}),
     };
     if (reveal) {
       record.correctAnswer = row.correct_answer;
       record.rationale = key?.rationale || null;
       record.is_correct = Boolean(row.is_correct);
+      Object.assign(record, responseDetail(checkpoint, row.item_id, true));
+      if (record.interaction) {
+        record.rationale = record.interaction.rationale;
+        record.correctAnswer = row.correct_answer;
+      }
     } else {
       delete record.correct_answer;
       delete record.is_correct;
@@ -171,8 +216,8 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
   });
 }
 
-function selectionHistory(rows: Array<Record<string, any>>, keys: Array<Record<string, any>>) {
-  const full = historyFor(rows, keys, true);
+function selectionHistory(rows: Array<Record<string, any>>, keys: Array<Record<string, any>>, checkpoint: Record<string, any> = {}) {
+  const full = historyFor(rows, keys, true, checkpoint);
   return full.map(row => ({
     id: row.id,
     sourceId: row.sourceId,
@@ -181,12 +226,25 @@ function selectionHistory(rows: Array<Record<string, any>>, keys: Array<Record<s
     nclex_category: row.nclex_category,
     core_tags: row.core_tags,
     correct: row.is_correct,
+    ...(checkpoint.scoringModel === MODEL ? {
+      evidenceGroup: row.sourceId,
+      evidenceComplete: !checkpoint.ngnState?.current || checkpoint.ngnState.current.key.item_id !== row.sourceId ||
+        checkpoint.ngnState.current.stage >= (checkpoint.ngnState.current.key.case_length || 1),
+      evidenceCredit: row.credit?.score ?? (row.is_correct ? 1 : 0),
+    } : {}),
   }));
 }
 
+function canReveal(attempt: Record<string, any>) {
+  if (attempt.status === 'completed') return true;
+  return attempt.checkpoint?.scoringModel === MODEL
+    ? !['nclex', 'mock', 'assessment'].includes(attempt.checkpoint?.mode)
+    : attempt.checkpoint?.mode !== 'mock';
+}
+
 function attemptSummary(attempt: Record<string, any>) {
-  const reveal = attempt.status === 'completed' || attempt.checkpoint?.mode !== 'mock';
-  const checkpoint = { ...attempt.checkpoint };
+  const reveal = canReveal(attempt);
+  const checkpoint = publicCheckpoint(attempt.checkpoint || {});
   if (!reveal) delete checkpoint.ability;
   return {
     id: attempt.id,
@@ -210,13 +268,14 @@ function attemptSummary(attempt: Record<string, any>) {
   };
 }
 
-async function stateForAttempt(service: AssessmentService, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
+async function stateForAttempt(service: SupabaseClient, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
   const rows = await responseRows(service, attempt.id);
-  const reveal = attempt.status === 'completed' || attempt.checkpoint?.mode !== 'mock';
+  const reveal = canReveal(attempt);
   return {
     attempt: attemptSummary(attempt),
-    responses: historyFor(rows, keys, reveal),
+    responses: historyFor(rows, keys, reveal, attempt.checkpoint),
     currentItemId: attempt.checkpoint?.currentItemId || null,
+    currentItem: publicInteraction(attempt.checkpoint),
   };
 }
 
@@ -233,9 +292,18 @@ function targetFor(mode: string, requested: unknown) {
   return count;
 }
 
+const CLIENT_PROTOCOL = 'ngn-cat-v1';
+
+function requireCompatibleClient(attempt: Record<string, any>, body: Record<string, any>) {
+  requirePresentationClient(attempt, body);
+  if (attempt.checkpoint?.scoringModel === MODEL && body.clientProtocol !== CLIENT_PROTOCOL) {
+    throw new HttpError(409, 'This saved assessment requires the updated CAT page. Refresh the portal and resume; your progress is unchanged.');
+  }
+}
+
 async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
-  const mode = requiredString(body.mode, 'Assessment mode');
+  const mode = requiredString(body.mode ?? body.profile?.mode, 'Assessment mode');
   if (!['practice', 'nclex', 'mock', 'remediation', 'assessment'].includes(mode)) {
     throw new HttpError(400, 'Assessment mode is not supported.');
   }
@@ -245,7 +313,8 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   const sessionKey = requiredString(body.sessionKey, 'Assessment session key');
   const assessmentKey = mode === 'assessment' ? 'readiness-assessment' : `diagnostic-${mode}`;
   const scope = mode === 'remediation' ? 'remediation' : 'diagnostic';
-  const keys = await itemKeys(context.service, scope);
+  const ngnEnabled = Deno.env.get('NGN_CAT_NEW_ATTEMPTS_ENABLED') === 'true' &&
+    body.clientProtocol === CLIENT_PROTOCOL && ['nclex', 'mock', 'assessment'].includes(mode);
   const profile = {
     mode,
     weakAreas: Array.isArray(body.profile?.weakAreas) ? body.profile.weakAreas.filter((value: unknown) => typeof value === 'string').slice(0, 8) : [],
@@ -265,13 +334,16 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     .limit(1)
     .maybeSingle();
   if (existingError) throw existingError;
-  if (existing) return await stateForAttempt(context.service, existing, keys);
+  if (existing) {
+    requireCompatibleClient(existing, body);
+    const existingKeys = await itemKeys(context.service, scope, existing.checkpoint?.scoringModel === MODEL);
+    return await stateForAttempt(context.service, existing, existingKeys);
+  }
+  const keys = await itemKeys(context.service, scope, ngnEnabled);
+  if (ngnEnabled) Object.assign(profile, { scoringModel: MODEL });
 
   const requirements = await coreRequirements(context.service);
-  const previouslyAnsweredIds = ['nclex', 'mock', 'assessment'].includes(mode)
-    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys)
-    : new Set<string>();
-  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions, previouslyAnsweredIds);
+  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions);
   if (!firstItem) throw new HttpError(503, 'No assessment items are available for this mode.');
   const now = new Date().toISOString();
   const examTimer = mode === 'mock'
@@ -289,8 +361,13 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
       ? 'SWM-CAT'
       : String(body.profile?.name || 'Adaptive Diagnostic').slice(0, 120);
   const checkpoint = {
-    schemaVersion: 3,
-    assessmentVersion: 'in-house-core-v1',
+    schemaVersion: ngnEnabled ? 4 : 3,
+    assessmentVersion: ngnEnabled ? MODEL : 'in-house-core-v1',
+    ...(ngnEnabled ? { scoringModel: MODEL, ngnState: selectCurrent({ optionProtocol: body.optionProtocol }, firstItem) } : {}),
+    ...(body.optionProtocol === presentation.VERSION ? {
+      optionProtocol: presentation.VERSION,
+      presentations: newPresentations(keys),
+    } : {}),
     mode,
     profile,
     currentItemId: firstItem.item_id,
@@ -299,6 +376,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     examTimer,
     draft: { selected: [], btState: { left: [], center: [], right: [] }, csAnswers: {}, submitted: false },
   };
+  checkpoint.currentItemId = currentInteraction(checkpoint)?.id || firstItem.item_id;
   const { data: attempt, error } = await context.service
     .from('in_house_assessment_attempts')
     .insert({
@@ -306,7 +384,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
       session_key: sessionKey,
       assessment_key: assessmentKey,
       assessment_title: title,
-      assessment_version: 'in-house-core-v1',
+      assessment_version: ngnEnabled ? MODEL : 'in-house-core-v1',
       mode: attemptMode(mode),
       status: 'in_progress',
       result: null,
@@ -324,10 +402,10 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     .select('id,student_id,session_key,assessment_key,assessment_title,assessment_version,mode,status,result,ability_estimate,target_questions,total_questions,correct_questions,checkpoint,checkpoint_revision,qa_mode,started_at,updated_at,completed_at')
     .single();
   if (error) throw error;
-  return { attempt: attemptSummary(attempt), responses: [], currentItemId: firstItem.item_id };
+  return await stateForAttempt(context.service, attempt, keys);
 }
 
-async function coreRequirements(service: AssessmentService) {
+async function coreRequirements(service: SupabaseClient) {
   const { data, error } = await service
     .from('in_house_diagnostic_item_keys')
     .select('item_id,core_tags')
@@ -358,7 +436,8 @@ async function resumeAttempt(context: Awaited<ReturnType<typeof createContext>>,
     .maybeSingle();
   if (error) throw error;
   if (!attempt) return null;
-  const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic');
+  requireCompatibleClient(attempt, body);
+  const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic', attempt.checkpoint?.scoringModel === MODEL);
   return await stateForAttempt(context.service, attempt, keys);
 }
 
@@ -368,6 +447,7 @@ async function checkpointAttempt(context: Awaited<ReturnType<typeof createContex
   const revision = Number(body.expectedRevision);
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Checkpoint revision is invalid.');
   const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  requireCompatibleClient(attempt, body);
   if (attempt.status !== 'in_progress' || attempt.checkpoint_revision !== revision) {
     throw new HttpError(409, 'This assessment changed in another session. Reload and resume it.');
   }
@@ -375,16 +455,29 @@ async function checkpointAttempt(context: Awaited<ReturnType<typeof createContex
   if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
     throw new HttpError(400, 'Checkpoint is invalid.');
   }
+  if (incoming.presentations && JSON.stringify(incoming.presentations) !== JSON.stringify(attempt.checkpoint?.presentations)) {
+    throw new HttpError(400, 'Saved answer mappings cannot be replaced by the client.');
+  }
+  const selected = currentInteraction(attempt.checkpoint) ? [] :
+    decodeAnswer(attempt, attempt.checkpoint.currentItemId, incoming.draft?.selected || [], true);
+  const csAnswers: Record<string, unknown> = {};
+  for (const [id, value] of Object.entries(incoming.draft?.csAnswers || {})) {
+    csAnswers[id] = decodeAnswer(attempt, `${attempt.checkpoint.currentItemId}:${id}`, value, true);
+  }
   const checkpoint = {
     ...attempt.checkpoint,
     draft: {
-      selected: Array.isArray(incoming.draft?.selected) ? incoming.draft.selected : [],
+      selected: Array.isArray(selected) ? selected : [],
       btState: incoming.draft?.btState || { left: [], center: [], right: [] },
-      csAnswers: incoming.draft?.csAnswers && typeof incoming.draft.csAnswers === 'object' ? incoming.draft.csAnswers : {},
+      csAnswers,
       submitted: false,
     },
     examTimer: cleanExamTimer(incoming.examTimer, attempt.checkpoint?.mode),
   };
+  if (currentInteraction(attempt.checkpoint)) {
+    try { Object.assign(checkpoint.draft, { ngn: validateDraft(attempt.checkpoint, incoming.draft?.ngn) }); }
+    catch (error) { throw new HttpError(400, error instanceof Error ? error.message : 'Invalid NGN draft.'); }
+  }
   const { data, error } = await context.service
     .from('in_house_assessment_attempts')
     .update({ checkpoint, checkpoint_revision: revision + 1, updated_at: new Date().toISOString() })
@@ -416,6 +509,8 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   const itemId = requiredString(body.itemId, 'Item ID');
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Assessment revision is invalid.');
   const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  requireCompatibleClient(attempt, body);
+  if (body.presentations || body.presentation || body.optionOrder) throw new HttpError(400, 'Answer mappings are server-owned.');
   if (attempt.status !== 'in_progress') throw new HttpError(409, 'This assessment is no longer active.');
   if (attempt.checkpoint_revision !== revision || attempt.checkpoint?.currentItemId !== itemId) {
     throw new HttpError(409, 'This response no longer matches the current assessment item. Reload and resume.');
@@ -423,13 +518,37 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
 
   const mode = attempt.checkpoint.mode;
   const scope = mode === 'remediation' ? 'remediation' : 'diagnostic';
-  const keys = await itemKeys(context.service, scope);
-  const item = keyForItem(keys, itemId);
+  const versioned = attempt.checkpoint.scoringModel === MODEL;
+  const keys = await itemKeys(context.service, scope, versioned);
+  const ngnItem = currentInteraction(attempt.checkpoint);
+  const item = ngnItem ? attempt.checkpoint.ngnState.current.key : keyForItem(keys, itemId);
   if (!item.selectable) throw new HttpError(400, 'This item cannot be submitted independently.');
   const answeredAt = new Date().toISOString();
   const outcomes: Array<Record<string, any>> = [];
+  let ngnResult: ReturnType<typeof recordCredit> | null = null;
 
-  if (item.item_type === 'casestudy') {
+  if (ngnItem) {
+    let detail;
+    const canonical = decodeAnswer(attempt, itemId, body.answer);
+    try { detail = scoreCurrent(attempt.checkpoint, canonical); }
+    catch (error) { throw new HttpError(400, error instanceof Error ? error.message : 'Invalid NGN response.'); }
+    ngnResult = recordCredit(attempt.checkpoint, detail);
+    const correct = ngnItem.type === 'highlight'
+      ? ngnItem.segments.filter((s: Record<string, any>) => s.id && s.correct).map((s: Record<string, any>) => s.id)
+      : ngnItem.type === 'cloze' ? ngnItem.dropdowns.map((d: Record<string, any>) => d.correct) : ngnItem.correct;
+    const row = {
+      item_id: ngnItem.id, item_source: item.item_source, blueprint: item.blueprint,
+      nclex_category: item.nclex_category, topic: item.topic, difficulty: item.difficulty,
+      question_type: ngnItem.type, selected_answer: canonical, correct_answer: correct,
+      is_correct: detail.credit.full, answered_at: answeredAt,
+    };
+    outcomes.push({
+      ...row, isCorrect: row.is_correct,
+      databaseRow: (attemptId: string) => ({ ...row, attempt_id: attemptId }),
+      toClient: (reveal: boolean) => reveal ? { ...row, rationale: ngnItem.rationale, credit: detail.credit } :
+        { item_id: row.item_id, question_type: row.question_type, selected_answer: row.selected_answer },
+    });
+  } else if (item.item_type === 'casestudy') {
     const submitted = body.caseAnswers;
     if (!submitted || typeof submitted !== 'object' || Array.isArray(submitted)) {
       throw new HttpError(400, 'Case-study responses are required.');
@@ -440,59 +559,65 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     }
     for (const child of children) {
       const subId = child.item_id.slice(itemId.length + 1);
-      if (!Object.hasOwn(submitted, subId) || !Array.isArray(submitted[subId]) || !submitted[subId].length) {
+      const answer = decodeAnswer(attempt, child.item_id, submitted[subId]);
+      if (!Object.hasOwn(submitted, subId) || !Array.isArray(answer) || !answer.length) {
         throw new HttpError(400, 'Complete every item in the case study before submitting.');
       }
-      outcomes.push(score(child, submitted[subId], answeredAt));
+      outcomes.push(score(child, answer, answeredAt));
     }
   } else {
     if (body.answer === undefined || body.answer === null) throw new HttpError(400, 'A response is required.');
-    outcomes.push(score(item, body.answer, answeredAt));
+    outcomes.push(score(item, decodeAnswer(attempt, itemId, body.answer), answeredAt));
   }
 
   const priorRows = await responseRows(context.service, attempt.id);
-  const historyBefore = selectionHistory(priorRows, keys);
+  const historyBefore = selectionHistory(priorRows, keys, attempt.checkpoint);
   let ability = Number(attempt.ability_estimate ?? 0.5);
   const newHistory = [...historyBefore];
   for (const outcome of outcomes) {
-    ability = updateAbility(ability, outcome.isCorrect, item.difficulty);
+    if (!ngnItem && !versioned) ability = updateAbility(ability, outcome.isCorrect, item.difficulty);
     newHistory.push({
       id: outcome.item_id,
-      sourceId: itemId,
+      sourceId: item.item_id,
       difficulty: item.difficulty,
       blueprint: item.blueprint,
       nclex_category: item.nclex_category,
       core_tags: item.core_tags || [],
       correct: outcome.isCorrect,
+      ...(versioned ? { evidenceGroup: item.item_id, evidenceComplete: !ngnResult || ngnResult.final,
+        evidenceCredit: outcome.isCorrect ? 1 : ngnResult ? ngnResult.state.responses[outcome.item_id].credit.score : 0 } : {}),
     });
+  }
+  if (versioned) {
+    if (ngnResult?.final) ability = updateNGNAbility(ability, ngnResult.evidenceScore, item.difficulty);
+    else if (!ngnResult) ability = updateNGNAbility(ability, outcomes.filter(o => o.isCorrect).length / outcomes.length, item.difficulty);
+    if (ngnResult?.final) newHistory.forEach(row => { if (row.evidenceGroup === item.item_id) row.evidenceComplete = true; });
   }
 
   const requirements = await coreRequirements(context.service);
   let result: string | null = null;
-  if (mode === 'nclex') result = shouldStop(newHistory, ability, requirements);
-  else if (mode === 'mock') result = shouldStopMock(newHistory, ability, requirements);
+  const continuingCase = ngnResult && !ngnResult.final;
+  if (!continuingCase && versioned && (mode === 'nclex' || mode === 'mock')) result = shouldStopNGN(newHistory, ability, requirements, mode);
+  else if (!continuingCase && mode === 'nclex') result = shouldStop(newHistory, ability, requirements);
+  else if (!continuingCase && mode === 'mock') result = shouldStopMock(newHistory, ability, requirements);
   else if (mode === 'assessment' && newHistory.length >= attempt.target_questions) result = null;
-  if (mode === 'nclex' && newHistory.length >= 45) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
-  if (mode === 'mock' && newHistory.length >= 150) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
-  const reachedTarget = mode === 'assessment'
+  if (!versioned && mode === 'nclex' && newHistory.length >= 45) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
+  if (!versioned && mode === 'mock' && newHistory.length >= 150) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
+  const reachedTarget = !continuingCase && (mode === 'assessment'
     ? newHistory.length >= attempt.target_questions
     : mode === 'nclex' || mode === 'mock'
-      ? Boolean(result)
-      : newHistory.length >= attempt.target_questions;
-  const previouslyAnsweredIds = !reachedTarget && ['nclex', 'mock', 'assessment'].includes(mode)
-    ? await previouslyAnsweredItemIds(context.service, context.student.id, keys, attempt.id)
-    : new Set<string>();
-  const next = reachedTarget ? null : pickNextQuestion(
+      ? Boolean(result) || (versioned && newHistory.length >= attempt.target_questions)
+      : newHistory.length >= attempt.target_questions);
+  const next = continuingCase ? item : reachedTarget ? null : pickNextQuestion(
     keys.filter(row => row.selectable),
     newHistory,
     attempt.checkpoint.profile || { mode },
     ability,
     requirements,
     attempt.target_questions,
-    previouslyAnsweredIds,
   );
   const complete = reachedTarget || !next;
-  if (complete && (mode === 'nclex' || mode === 'mock')) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
+  if (complete && !versioned && (mode === 'nclex' || mode === 'mock')) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
 
   const nextRevision = revision + 1;
   const checkpoint = {
@@ -503,6 +628,12 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     draft: { selected: [], btState: { left: [], center: [], right: [] }, csAnswers: {}, submitted: false },
     examTimer: cleanExamTimer(body.examTimer, mode) || attempt.checkpoint.examTimer || null,
   };
+  if (versioned) {
+    const stateCheckpoint = { ...attempt.checkpoint, ...(ngnResult ? { ngnState: ngnResult.state } : {}) };
+    checkpoint.ngnState = ngnResult && !ngnResult.final ? ngnResult.state : selectCurrent(stateCheckpoint, next);
+    checkpoint.currentItemId = currentInteraction(checkpoint)?.id || next?.item_id || null;
+    checkpoint.completionReason = complete ? result ? 'confidence-rule' : reachedTarget ? 'item-limit-or-fixed-length' : 'insufficient-items' : null;
+  }
   const { data: committed, error: commitError } = await context.service.rpc('commit_in_house_diagnostic_answer', {
     p_attempt_id: attempt.id,
     p_expected_revision: revision,
@@ -512,21 +643,29 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     p_result: result,
     p_complete: complete,
   });
-  if (commitError) throw commitError;
-  if (!committed) throw new HttpError(409, 'This assessment changed in another session. Reload and resume.');
+  if (commitError) {
+    if (commitError.message.includes('Assessment response conflict or attempt is no longer active')) {
+      throw new HttpError(409, 'This assessment changed in another session. Reload and resume.');
+    }
+    throw commitError;
+  }
+  if (!committed || (Array.isArray(committed) && committed.length !== 1)) throw new HttpError(409, 'This assessment changed in another session. Reload and resume.');
 
   const allRows = await responseRows(context.service, attempt.id);
-  const reveal = complete || mode !== 'mock';
-  const responses = historyFor(allRows, keys, reveal);
+  const reveal = canReveal({ status: complete ? 'completed' : 'in_progress', checkpoint });
+  const responses = historyFor(allRows, keys, reveal, checkpoint);
   return {
     attemptId: attempt.id,
     checkpointRevision: nextRevision,
     totalQuestions: newHistory.length,
-    correctQuestions: complete || mode !== 'mock' ? newHistory.filter(row => row.correct).length : null,
-    abilityEstimate: complete || mode !== 'mock' ? Number(ability.toFixed(3)) : null,
+    correctQuestions: reveal ? newHistory.filter(row => row.correct).length : null,
+    abilityEstimate: reveal ? Number(ability.toFixed(3)) : null,
     result,
     completed: complete,
-    nextItemId: next?.item_id || null,
+    nextItemId: checkpoint.currentItemId,
+    nextItem: publicInteraction(checkpoint),
+    scoringModel: attempt.checkpoint.scoringModel || 'in-house-core-v1',
+    completionReason: checkpoint.completionReason || null,
     outcomes: outcomes.map(outcome => outcome.toClient(reveal)),
     responses,
   };
@@ -571,6 +710,15 @@ function score(item: Record<string, any>, submitted: unknown, answeredAt: string
 async function abandonAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
   const attemptId = requiredString(body.attemptId, 'Attempt ID');
+  const { data: attempt, error: readError } = await context.service
+    .from('in_house_assessment_attempts')
+    .select('checkpoint')
+    .eq('id', attemptId)
+    .eq('student_id', context.student.id)
+    .maybeSingle();
+  if (readError) throw readError;
+  if (!attempt) return { abandoned: false };
+  requireCompatibleClient(attempt, body);
   const { data, error } = await context.service
     .from('in_house_assessment_attempts')
     .update({ status: 'abandoned', updated_at: new Date().toISOString() })
@@ -596,9 +744,10 @@ async function reviewAttempt(context: Awaited<ReturnType<typeof createContext>>,
     throw new HttpError(403, 'You cannot view this assessment review.');
   }
   if (attempt.status !== 'completed') throw new HttpError(403, 'Question review is available after the assessment is complete.');
+  requireCompatibleClient(attempt, body);
   const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic');
   const rows = await responseRows(context.service, attempt.id);
-  return { responses: historyFor(rows, keys, true) };
+  return { responses: historyFor(rows, keys, true, attempt.checkpoint), scoringModel: attempt.checkpoint?.scoringModel || 'in-house-core-v1' };
 }
 
 export default {

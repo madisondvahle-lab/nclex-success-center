@@ -10,7 +10,13 @@
   <script src="diagnostic-question-bank.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
   <script src="assessment-personalization.js"></script>
-  <script src="assessment-persistence.js"></script>
+  <meta name="nclex-cat-protocol" content="ngn-cat-v1">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
+  <script src="option-presentation.js?v=ngn-sata-v1"></script>
+  <script src="assessment-persistence.js?v=ngn-sata-v1"></script>
+  <link rel="stylesheet" href="exam-ui.css">
+  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
+  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -118,10 +124,10 @@ function assessmentDb() {
   return supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-function readinessCheckpoint({ selected, btState, csAnswers, examTimer }) {
+function readinessCheckpoint({ selected, btState, csAnswers, examTimer, schemaVersion = 3, assessmentVersion = 'in-house-core-v1' }) {
   return {
-    schemaVersion: 3,
-    assessmentVersion: 'in-house-core-v1',
+    schemaVersion,
+    assessmentVersion,
     examTimer: examTimer ? {
       multiplier: examTimer.multiplier,
       showTimer: examTimer.showTimer,
@@ -159,11 +165,19 @@ function restoreResponseHistory(responses) {
       system: response.system,
       topic: response.topic || item?.topic,
       cognitiveLevel: response.cognitive_level || item?.cognitiveLevel,
-      stem: item?.stem || null,
+      stem: response.interaction?.prompt || response.interaction?.stem || item?.stem || null,
       selectedAnswer: response.selected_answer,
+      presentation: response.presentation,
       correctAnswer: response.correct_answer,
       rationale: response.rationale,
-      correct: response.is_correct
+      correct: response.is_correct,
+      credit: response.credit,
+      scoringVersion: response.scoringVersion,
+      scoringModel: response.scoringModel,
+      interaction: response.interaction,
+      contentVersion: response.contentVersion,
+      caseIndex: response.caseIndex,
+      caseLength: response.caseLength
     };
   });
 }
@@ -341,7 +355,7 @@ const CAT_COLORS = {
 };
 const DIFF_LABELS = { 1: "Foundational", 2: "Applying", 3: "Analyzing" };
 const DIFF_COLORS = { 1:{ bg:"#d1fae5", text:"#065f46" }, 2:{ bg:"#fef3c7", text:"#92400e" }, 3:{ bg:"#fee2e2", text:"#991b1b" } };
-const NGN_LABELS = { mcq:"MCQ", sata:"SATA", bowtie:"NGN · Bow-Tie", casestudy:"NGN · Case Study" };
+const NGN_LABELS = { mcq:"MCQ", sata:"SATA", bowtie:"NGN · Bow-Tie", casestudy:"NGN · Case Study", highlight:"NGN · Highlight", matrix:"NGN · Matrix", cloze:"NGN · Drop-down", fill:"Numeric response" };
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────────────────
 function Tag({ children, color, bg, border }) {
@@ -375,11 +389,12 @@ function MCQQuestion({ q, submitted, examMode, selected, onSelect }) {
   const showFeedback = submitted && !examMode;
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
-      {q.options.map((opt,idx) => {
+      {OptionPresentation.order(q).map((idx,position) => {
+        const opt = q.options[idx];
         let state = "neutral";
         if (showFeedback) { if(idx===q.correct[0]) state="correct"; else if(idx===(selected||[])[0]&&idx!==q.correct[0]) state="wrong"; else state="dim"; }
         else if ((selected||[]).includes(idx)) state="selected";
-        return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+        return <OptionBtn key={idx} letter={String.fromCharCode(65+position)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
       })}
     </div>
   );
@@ -391,11 +406,12 @@ function SATAQuestion({ q, submitted, examMode, selected, onSelect }) {
     <div>
       <div className="instruction-text" style={{ marginBottom:10 }}>Select all that apply — choose every correct option.</div>
       <div style={{ display:"flex", flexDirection:"column", gap:9, marginBottom:20 }}>
-        {q.options.map((opt,idx) => {
+        {OptionPresentation.order(q).map((idx,position) => {
+          const opt = q.options[idx];
           let state = "neutral";
           if (showFeedback) { if(q.correct.includes(idx)) state="correct"; else if((selected||[]).includes(idx)) state="wrong"; else state="dim"; }
           else if ((selected||[]).includes(idx)) state="selected";
-          return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
+          return <OptionBtn key={idx} letter={String.fromCharCode(65+position)} text={opt} state={state} onClick={()=>!submitted&&onSelect(idx)} />;
         })}
       </div>
     </div>
@@ -493,11 +509,12 @@ function CaseStudyQuestion({ q, submitted, examMode, showQuestionCount, csAnswer
             <div className="question-stem" style={{ marginBottom:12 }}>{sub.stem}</div>
             {sub.type==="sata"&&<div className="instruction-text" style={{ marginBottom:8 }}>Select all that apply</div>}
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              {sub.options.map((opt,idx) => {
+              {OptionPresentation.order(sub).map((idx,position) => {
+                const opt = sub.options[idx];
                 let state="neutral";
                 if(showFeedback){ if(sub.correct.includes(idx)) state="correct"; else if(sel.includes(idx)) state="wrong"; else state="dim"; }
                 else if(sel.includes(idx)) state="selected";
-                return <OptionBtn key={idx} letter={String.fromCharCode(65+idx)} text={opt} state={state} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const cur=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,cur.includes(idx)?cur.filter(x=>x!==idx):[...cur,idx]); }}} />;
+                return <OptionBtn key={idx} letter={String.fromCharCode(65+position)} text={opt} state={state} onClick={()=>{ if(submitted)return; if(sub.type==="mcq") onCSAnswer(sub.qid,[idx]); else { const cur=csAnswers[sub.qid]||[]; onCSAnswer(sub.qid,cur.includes(idx)?cur.filter(x=>x!==idx):[...cur,idx]); }}} />;
               })}
             </div>
             {showFeedback&&<div style={{ marginTop:12, padding:"10px 14px", background:"#fff", borderRadius:8, border:"1px solid #e2e8f0", fontSize:13, color:"#475569", lineHeight:1.6 }}><strong>Rationale:</strong> {sub.rationale}</div>}
@@ -662,6 +679,7 @@ function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmen
 const lbl={ fontSize:12, fontWeight:700, color:"#475569", letterSpacing:0.5, textTransform:"uppercase", display:"block", marginBottom:6 };
 
 function getReviewItem(entry) {
+  if(entry.interaction)return entry.interaction;
   const parentId = entry.sourceId || String(entry.id || '').split(':')[0];
   const source = [...QUESTION_BANK, ...REMEDIATION_BANK].find(item => item.id === parentId);
   if (!source) return null;
@@ -672,6 +690,7 @@ function getReviewItem(entry) {
   if (item.type === 'bowtie') {
     return {
       ...item,
+      presentation: entry.presentation,
       correctLeft: entry.correctAnswer?.left,
       correctCenter: entry.correctAnswer?.center,
       correctRight: entry.correctAnswer?.right,
@@ -680,6 +699,7 @@ function getReviewItem(entry) {
   }
   return {
     ...item,
+    presentation: entry.presentation,
     correct: Array.isArray(entry.correctAnswer) ? entry.correctAnswer : [entry.correctAnswer],
     rationale: entry.rationale
   };
@@ -723,8 +743,10 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
   const isAssessment = profile.mode==="assessment";
   const total=history.length, correct=history.filter(h=>h.correct).length, pct=total?Math.round((correct/total)*100):0;
   const isAdaptiveMock = isNCLEX || isMock;
-  const passed = catResult==="PASS" || (isAdaptiveMock && !catResult && pct>=75);
-  const ringColor = isAdaptiveMock ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
+  const versioned = history.some(h=>h.scoringModel==="in-house-ngn-v1");
+  const insufficient = versioned && isAdaptiveMock && !catResult;
+  const passed = !insufficient && (catResult==="PASS" || (isAdaptiveMock && !catResult && pct>=75));
+  const ringColor = insufficient ? "#64748b" : isAdaptiveMock ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
   const byBlueprint={};
   history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
   const byClientNeed = Object.fromEntries(Object.keys(MOCK_CATEGORY_TARGETS).map(category=>[category,{correct:0,total:0}]));
@@ -758,8 +780,8 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           <div style={{ width:160, height:160, borderRadius:"50%", border:`6px solid ${ringColor}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4 }}>
             {isAdaptiveMock ? (
               <>
-                <span style={{ fontSize:32, fontWeight:700, color:ringColor }}>{passed?"PASS":"FAIL"}</span>
-                <span style={{ fontSize:12, color:"#64748b" }}>{isMock ? "Mock readiness estimate" : "Readiness estimate"}</span>
+                <span style={{ fontSize:insufficient?20:32, fontWeight:700, color:ringColor }}>{insufficient?"INCONCLUSIVE":passed?"PASS":"FAIL"}</span>
+                <span style={{ fontSize:12, color:"#64748b" }}>{insufficient?"Insufficient readiness evidence":isMock ? "Mock readiness estimate" : "Readiness estimate"}</span>
               </>
             ) : (
               <>
@@ -770,7 +792,8 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           </div>
         </div>
 
-        {isAdaptiveMock&&(
+        {insufficient&&<p role="status" style={{padding:14,marginBottom:20}}>Your responses are saved. The item limit or available item pool was reached without enough independent evidence for a readiness classification. No pass/fail estimate is reported.</p>}
+        {isAdaptiveMock&&!insufficient&&(
           <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
             <strong>{passed?"✓ SWM-CAT PASS":"✗ SWM-CAT FAIL"}</strong><br/>
             {passed?"This adaptive study result is above the program benchmark. It is not an official NCLEX outcome.":"This adaptive study result is below the program benchmark. Review the focus areas before retesting."}
@@ -818,22 +841,35 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           </div>
         )}
 
+        {versioned&&<div style={{padding:14,marginBottom:20,background:"#f8fafc",color:"#334155",fontSize:13,lineHeight:1.6}}>
+          <strong>Scoring model: in-house-ngn-v1.</strong> NGN points are shown separately from the educational ability estimate.
+          Category percentages above count fully correct questions, not points earned. A case contributes one grouped unit of adaptive evidence.
+          This model is not calibrated to predict an official NCLEX result.
+          {history.some(h=>h.credit)&&<p>NGN points: {history.reduce((s,h)=>s+(h.credit?.earned||0),0)} / {history.reduce((s,h)=>s+(h.credit?.max||0),0)} across {history.filter(h=>h.credit).length} NGN responses.</p>}
+        </div>}
         {/* Question Review */}
         <div style={{ marginBottom:24 }}>
           <div style={{ fontSize:12, fontWeight:700, color:"#64748b", letterSpacing:0.8, textTransform:"uppercase", marginBottom:10 }}>Question Review</div>
           {history.map((h,i)=>{
             const reviewItem = getReviewItem(h);
             const sections = rationaleSections(reviewItem);
-            const answerText = correctResponseText(reviewItem);
+            const answerText = h.interaction ? null : correctResponseText(reviewItem);
             return <div key={i} style={{ marginBottom:8 }}>
               <div style={{ padding:"10px 14px", background:"#f8fafc", borderRadius:8, borderLeft:`4px solid ${h.correct?"#10b981":"#ef4444"}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                 <div>
                   <div style={{ fontSize:11, color:"#64748b", marginBottom:2 }}>{h.blueprint} · {NGN_LABELS[h.type]}</div>
                   <div style={{ fontSize:13, color:"#334155" }}>Q{i+1}: {h.stem?h.stem.substring(0,65)+"...":"(NGN Case Study)"}</div>
                 </div>
-                <span style={{ color:h.correct?"#166534":"#b91c1c", fontWeight:700, fontSize:15, marginLeft:12 }}>{h.correct?"✓":"✗"}</span>
+                <span style={{ color:h.correct?"#166534":"#b91c1c", fontWeight:700, fontSize:15, marginLeft:12 }}>{h.credit?`${h.credit.earned}/${h.credit.max} points`:h.correct?"✓":"✗"}</span>
               </div>
-              {(isMock||isNCLEX) && sections.length>0 && <details style={{ padding:"8px 14px 12px", background:"#fff", border:"1px solid #e2e8f0", borderTop:0, borderRadius:"0 0 8px 8px", color:"#334155" }}>
+              {h.interaction&&<details style={{padding:14}}>
+                <summary>View response, score, and rationale</summary>
+                <p>Scoring: {h.credit.rule} · {h.scoringVersion}{h.caseLength>1?` · Case item ${h.caseIndex+1} of ${h.caseLength}`:""}</p>
+                <div dangerouslySetInnerHTML={{__html:ExamUI.reviewHtml(h.interaction,h.selectedAnswer)}} />
+                <p>{h.interaction.rationale}</p>
+                <p style={{fontSize:11}}>Content version: {h.contentVersion}</p>
+              </details>}
+              {!h.interaction&&(isMock||isNCLEX) && sections.length>0 && <details style={{ padding:"8px 14px 12px", background:"#fff", border:"1px solid #e2e8f0", borderTop:0, borderRadius:"0 0 8px 8px", color:"#334155" }}>
                 <summary style={{ cursor:"pointer", fontSize:12, fontWeight:700 }}>View rationale</summary>
                 <div style={{ display:"grid", gap:10, marginTop:10 }}>
                   {answerText && <p style={{ margin:0, fontSize:13, lineHeight:1.6 }}><strong>Correct response:</strong> {answerText}</p>}
@@ -854,6 +890,27 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
 }
 
 // ─── QUIZ SCREEN ──────────────────────────────────────────────────────────────
+function CATInteraction({ item, answer, tabId, onAnswer, onTab, readOnly }) {
+  const host = useRef(null), engine = useRef(null);
+  const callbacks = useRef({onAnswer,onTab});
+  callbacks.current = {onAnswer,onTab};
+  useEffect(() => {
+    const key=item.case?.id || item.id;
+    const exam=new ExamUI.Exam(host.current,{
+      title:"Clinical record",items:[item],answer,
+      tabState:tabId?{[key]:tabId}:{},embedded:true,showTimer:false,noFeedback:true,readOnly,
+      onAnswer:value=>callbacks.current.onAnswer(JSON.parse(JSON.stringify(value))),
+      onTab:value=>callbacks.current.onTab(value)
+    });
+    engine.current=exam;
+    return ()=>{exam.destroy();engine.current=null};
+  },[item.id]);
+  useEffect(()=>{
+    if(engine.current){engine.current.o.readOnly=readOnly;engine.current.show(0)}
+  },[readOnly]);
+  return <div ref={host} />;
+}
+
 function QuizScreen({ profile, onFinish, onPause }) {
   const isAssessment = profile.mode === "assessment";
   const isTimedFullMock = profile.mode === "mock";
@@ -873,15 +930,19 @@ function QuizScreen({ profile, onFinish, onPause }) {
     const runningSince = Date.parse(savedTimer.runningSince || '');
     return Math.max(0, remaining - (Number.isFinite(runningSince) ? Math.max(0, Date.now() - runningSince) : 0));
   })();
-  const resumeQuestion = resumeCheckpoint.currentItemId
-    ? activeBank.find(item => item.id === resumeCheckpoint.currentItemId)
-    : null;
+  const questionFor = (id, checkpoint) => {
+    const item = activeBank.find(item => item.id === id);
+    return item ? OptionPresentation.attach(item, checkpoint?.presentations) : null;
+  };
+  const resumeQuestion = profile.resumeAttempt?.currentItem || questionFor(resumeCheckpoint.currentItemId, resumeCheckpoint);
   const [history, setHistory] = useState(() => restoreResponseHistory(profile.resumeAttempt?.responses));
   const [ability, setAbility] = useState(() => Number(profile.resumeAttempt?.ability_estimate ?? resumeCheckpoint.ability ?? 0.5));
   const [currentQ, setCurrentQ] = useState(() => resumeQuestion);
   const [selected, setSelected] = useState(resumeDraft.selected || []);
   const [btState, setBtState] = useState(resumeDraft.btState || {left:[],center:[],right:[]});
   const [csAnswers, setCsAnswers] = useState(resumeDraft.csAnswers || {});
+  const [ngnAnswer,setNGNAnswer]=useState(resumeDraft.ngn?.answer);
+  const [ngnTab,setNGNTab]=useState(resumeDraft.ngn?.tabId || null);
   const [submitted, setSubmitted] = useState(Boolean(resumeDraft.submitted));
   const [submissionResult, setSubmissionResult] = useState(null);
   const [timerRemainingMs,setTimerRemainingMs] = useState(initialRemainingMs);
@@ -892,7 +953,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
   const timerDeadline = useRef(Date.now() + initialRemainingMs);
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
-  const isCAT = isNCLEX || isMock;
+  const isCAT = isNCLEX || isMock || (isAssessment && (!profile.resumeAttempt || profile.resumeAttempt.checkpoint?.scoringModel==="in-house-ngn-v1"));
   const [attempt, setAttempt] = useState(profile.resumeAttempt ? {
     id:profile.resumeAttempt.id,
     sessionKey:profile.resumeAttempt.session_key,
@@ -900,7 +961,8 @@ function QuizScreen({ profile, onFinish, onPause }) {
     targetQuestions:profile.resumeAttempt.target_questions,
     qaMode:profile.resumeAttempt.qa_mode,
     assessmentKey:profile.resumeAttempt.assessment_key || assessmentKeyForMode(profile.mode),
-    checkpoint:profile.resumeAttempt.checkpoint
+    checkpoint:profile.resumeAttempt.checkpoint,
+    responses:profile.resumeAttempt.responses || []
   } : null);
   const [persistenceState, setPersistenceState] = useState({ status:persistenceEnabled ? "starting" : "idle", error:null });
 
@@ -954,11 +1016,14 @@ function QuizScreen({ profile, onFinish, onPause }) {
             targetQuestions:created.target_questions,
             qaMode:created.qa_mode,
             assessmentKey:created.assessment_key || assessmentKeyForMode(profile.mode),
-            checkpoint:created.checkpoint
+            checkpoint:created.checkpoint,
+            responses:created.responses || []
           });
           setHistory(restored);
           setAbility(Number(created.ability_estimate ?? 0.5));
-          setCurrentQ(activeBank.find(item => item.id === created.currentItemId) || null);
+          setCurrentQ(created.currentItem || questionFor(created.currentItemId, created.checkpoint));
+          setNGNAnswer(created.checkpoint?.draft?.ngn?.answer);
+          setNGNTab(created.checkpoint?.draft?.ngn?.tabId || null);
           setPersistenceState({ status:"ready", error:null });
         }
       } catch (error) {
@@ -970,6 +1035,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
   }, [persistenceEnabled, attempt, profile.sessionKey]);
 
   const q = currentQ;
+  const sharedInteraction = Boolean(q?.qid);
   if(!q) return <div className="assessment-interface" style={{ minHeight:"100vh", display:"grid", placeItems:"center", background:"#0f172a", color:"#fff", padding:24 }}>
     <div>{persistenceState.status==="failed" ? persistenceState.error : "Preparing your assessment…"}</div>
   </div>;
@@ -979,9 +1045,12 @@ function QuizScreen({ profile, onFinish, onPause }) {
   }
 
   const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
-  const diffStyle = DIFF_COLORS[q.difficulty];
+  const diffStyle = DIFF_COLORS[q.difficulty] || DIFF_COLORS[2];
 
   function isAnswered() {
+    if(sharedInteraction) {
+      return ExamUI.isAnswered({...q,scoringVersion:"ngn-v1"},ngnAnswer ?? NGNScoring.emptyAnswer(q));
+    }
     if(q.type==="mcq") return selected.length===1;
     if(q.type==="sata") return selected.length>0;
     if(q.type==="bowtie") return btState.left.length===2&&btState.center.length===1&&btState.right.length===2;
@@ -1031,8 +1100,8 @@ function QuizScreen({ profile, onFinish, onPause }) {
         attemptId:attempt.id,
         expectedRevision:attempt.revision,
         itemId:q.id,
-        answer:q.type==="mcq" ? selected[0] : q.type==="sata" ? selected : q.type==="bowtie" ? btState : undefined,
-        caseAnswers:q.type==="casestudy" ? csAnswers : undefined,
+        answer:sharedInteraction ? OptionPresentation.encode(q, ngnAnswer) : q.type==="mcq" ? selected[0] : q.type==="sata" ? OptionPresentation.encode(q, selected) : q.type==="bowtie" ? btState : undefined,
+        caseAnswers:q.type==="casestudy" ? Object.fromEntries(q.questions.map(child => [child.qid, OptionPresentation.encode(child, csAnswers[child.qid] || [])])) : undefined,
         examTimer:examTimerCheckpoint()
       });
       const nextCheckpoint = {
@@ -1046,7 +1115,8 @@ function QuizScreen({ profile, onFinish, onPause }) {
       setAttempt(current => current ? {
         ...current,
         revision:result.checkpointRevision,
-        checkpoint:nextCheckpoint
+        checkpoint:nextCheckpoint,
+        responses:result.responses || []
       } : current);
       setHistory(restoreResponseHistory(result.responses));
       if (result.abilityEstimate !== null) setAbility(Number(result.abilityEstimate));
@@ -1075,16 +1145,29 @@ function QuizScreen({ profile, onFinish, onPause }) {
           selected:submitted ? [] : selected,
           btState:submitted ? {left:[],center:[],right:[]} : btState,
           csAnswers:submitted ? {} : csAnswers,
-          examTimer:timerSnapshot
+          examTimer:timerSnapshot,
+          schemaVersion:attempt.checkpoint?.schemaVersion,
+          assessmentVersion:attempt.checkpoint?.assessmentVersion
         })
       };
+      if(sharedInteraction&&!submitted)checkpoint.draft.ngn={answer:OptionPresentation.encode(q,ngnAnswer ?? NGNScoring.emptyAnswer(q)),tabId:ngnTab};
+      else if (!submitted) {
+        if (q.type === 'sata') checkpoint.draft.selected = OptionPresentation.encode(q, selected);
+        if (q.type === 'casestudy') checkpoint.draft.csAnswers = Object.fromEntries(q.questions.map(child => [child.qid, OptionPresentation.encode(child, csAnswers[child.qid] || [])]));
+      } else if (attempt.checkpoint?.presentations) {
+        const next = submissionResult?.nextItem || questionFor(attempt.checkpoint.currentItemId, attempt.checkpoint);
+        if (next?.qid) checkpoint.draft.ngn={answer:OptionPresentation.encode(next,NGNScoring.emptyAnswer(next)),tabId:null};
+        else if (next?.type === 'sata') checkpoint.draft.selected = OptionPresentation.encode(next, []);
+      }
       const revision = await NCLEX_ASSESSMENT_PERSISTENCE.checkpointAttempt({
         supabase: assessmentDb(),
         attemptId: attempt.id,
         expectedRevision: attempt.revision,
         checkpoint
       });
-      onPause({...attempt, assessment_key:attempt.assessmentKey, session_key:attempt.sessionKey, checkpoint, checkpoint_revision:revision, total_questions:history.length, updated_at:new Date().toISOString()});
+      checkpoint.draft = submitted ? { selected:[], btState:{left:[],center:[],right:[]}, csAnswers:{}, submitted:false } :
+        { selected, btState, csAnswers, submitted:false, ...(sharedInteraction?{ngn:{answer:ngnAnswer ?? NGNScoring.emptyAnswer(q),tabId:ngnTab}}:{}) };
+      onPause({...attempt, currentItem:submitted?submissionResult?.nextItem:sharedInteraction?q:null, assessment_key:attempt.assessmentKey, session_key:attempt.sessionKey, checkpoint, checkpoint_revision:revision, total_questions:history.length, updated_at:new Date().toISOString()});
     } catch (error) {
       if (timerSnapshot && !timerSnapshot.overTime) {
         timerDeadline.current = Date.now() + timerSnapshot.remainingMs;
@@ -1107,7 +1190,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
       );
       return;
     }
-    const next = activeBank.find(item => item.id === submissionResult.nextItemId);
+    const next = submissionResult.nextItem || questionFor(submissionResult.nextItemId, attempt.checkpoint);
     if (!next) {
       setPersistenceState({ status:"failed", error:"The server-selected next item is missing from the published question bank." });
       return;
@@ -1116,6 +1199,8 @@ function QuizScreen({ profile, onFinish, onPause }) {
     setSelected([]);
     setBtState({left:[],center:[],right:[]});
     setCsAnswers({});
+    setNGNAnswer(undefined);
+    setNGNTab(null);
     setSubmitted(false);
     setSubmissionResult(null);
   }
@@ -1180,12 +1265,13 @@ function QuizScreen({ profile, onFinish, onPause }) {
         )}
 
         {/* Stem */}
-        <div className="question-stem" style={{ marginBottom:18 }}>{q.stem}</div>
+        {!sharedInteraction&&<div className="question-stem" style={{ marginBottom:18 }}>{q.stem}</div>}
 
         {/* Question */}
-        {q.type==="mcq"&&<MCQQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
-        {q.type==="sata"&&<SATAQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
-        {q.type==="bowtie"&&<BowTieQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} btState={btState} onBTSelect={(col,arr)=>setBtState(s=>({...s,[col]:arr}))} />}
+        {sharedInteraction&&<CATInteraction key={q.id} item={q} answer={ngnAnswer} tabId={ngnTab} onAnswer={setNGNAnswer} onTab={setNGNTab} readOnly={submitted||persistenceState.status==="saving"} />}
+        {!sharedInteraction&&q.type==="mcq"&&<MCQQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected([idx])} />}
+        {!sharedInteraction&&q.type==="sata"&&<SATAQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} selected={selected} onSelect={idx=>!submitted&&setSelected(s=>s.includes(idx)?s.filter(x=>x!==idx):[...s,idx])} />}
+        {!sharedInteraction&&q.type==="bowtie"&&<BowTieQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} btState={btState} onBTSelect={(col,arr)=>setBtState(s=>({...s,[col]:arr}))} />}
         {q.type==="casestudy"&&<CaseStudyQuestion q={feedbackQuestion} submitted={submitted} examMode={isCAT} showQuestionCount={questionCountVisible} csAnswers={csAnswers} onCSAnswer={(qid,val)=>setCsAnswers(s=>({...s,[qid]:val}))} />}
 
         {/* Rationale */}
@@ -1203,7 +1289,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
             ) : (
               <>
                 <div style={{ background:"#d1fae5", padding:"10px 14px", borderRadius:8, marginBottom:8, fontSize:13, color:"#065f46", lineHeight:1.6 }}><strong>✓ Correct:</strong> {feedbackQuestion.rationale?.correct}</div>
-                {q.options.map((_,idx)=>{ if(feedbackQuestion.correct?.includes(idx)) return null; const wrongItems=q.options.map((_,i)=>i).filter(i=>!feedbackQuestion.correct?.includes(i)); const wi=wrongItems.indexOf(idx); return wi>=0&&feedbackQuestion.rationale?.wrong?.[wi]?(<div key={idx} style={{ padding:"8px 12px", background:"#fff", borderRadius:8, border:"1px solid #f1f5f9", fontSize:12, color:"#475569", lineHeight:1.6, marginBottom:5 }}><strong>✗ {String.fromCharCode(65+idx)}:</strong> {feedbackQuestion.rationale.wrong[wi]}</div>):null; })}
+                {OptionPresentation.order(q).map((idx,position)=>{ if(feedbackQuestion.correct?.includes(idx)) return null; const wrongItems=q.options.map((_,i)=>i).filter(i=>!feedbackQuestion.correct?.includes(i)); const wi=wrongItems.indexOf(idx); return wi>=0&&feedbackQuestion.rationale?.wrong?.[wi]?(<div key={idx} style={{ padding:"8px 12px", background:"#fff", borderRadius:8, border:"1px solid #f1f5f9", fontSize:12, color:"#475569", lineHeight:1.6, marginBottom:5 }}><strong>✗ {String.fromCharCode(65+position)}:</strong> {feedbackQuestion.rationale.wrong[wi]}</div>):null; })}
               </>
             )}
           </div>
@@ -1241,6 +1327,12 @@ function App() {
   useEffect(() => {
     let active = true;
     async function loadAssessmentHistory() {
+      if (window.NCLEX_ASSESSMENT_PERSISTENCE?.CLIENT_PROTOCOL !== "ngn-cat-v1" ||
+          window.NCLEX_ASSESSMENT_PERSISTENCE?.OPTION_PROTOCOL !== "sata-order-v1" ||
+          window.ExamUI?.OPTION_PROTOCOL !== "sata-order-v1" || window.OptionPresentation?.VERSION !== "sata-order-v1" ||
+          window.ExamUI?.CLIENT_PROTOCOL !== "ngn-cat-v1" || window.NGNScoring?.VERSION !== "ngn-v1") {
+        throw new Error("The updated CAT modules could not load. Refresh the portal; your saved progress is unchanged.");
+      }
       if (!window.supabase || !ASSESSMENT_PERSONALIZATION) throw new Error("The assessment service is unavailable. Please refresh or contact Madison.");
       const db = supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
       const { data: { session }, error: sessionError } = await db.auth.getSession();
