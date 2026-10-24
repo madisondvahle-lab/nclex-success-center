@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NCLEX-RN Adaptive Quiz · 2026 Blueprint</title>
+  <title>Adaptive Assessments &amp; Practice · NCLEX Success Center</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="diagnostic-core-blueprint.js"></script>
   <script src="assessment-personalization.js"></script>
+  <script src="assessment-display.js?v=assessment-clarity-v1"></script>
   <meta name="nclex-cat-protocol" content="ngn-cat-v1">
   <meta name="nclex-option-protocol" content="sata-order-v1">
   <script src="option-presentation.js?v=ngn-sata-v1"></script>
@@ -25,6 +26,13 @@
     .assessment-interface,
     .assessment-interface button {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .mode-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .assessment-panel { padding: 36px 40px; }
+    .assessment-interface button:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
+    @media (max-width: 540px) {
+      .mode-options { grid-template-columns: 1fr; }
+      .assessment-panel { padding: 24px 18px; }
     }
     .clinical-scenario {
       font-size: 15px;
@@ -96,6 +104,11 @@ const MOCK_CATEGORY_MAXIMUMS = Object.fromEntries(
   Object.entries(MOCK_CATEGORY_RANGES).map(([category, range]) => [category, Math.floor(FULL_MOCK_MIN_Q * range.max / 100)])
 );
 const ASSESSMENT_PERSONALIZATION = window.NCLEX_ASSESSMENT_PERSONALIZATION;
+const ASSESSMENT_DISPLAY = window.AssessmentDisplay;
+if (!ASSESSMENT_DISPLAY) {
+  document.getElementById('root').textContent = 'The assessment display could not load. Refresh the page; your saved progress is unchanged.';
+  throw new Error('AssessmentDisplay not loaded');
+}
 const ASSESSMENT_ONLY = new URLSearchParams(window.location.search).get('mode') === 'assessment';
 const getCoreTags = item => CORE_BLUEPRINT.tagsForItem(item);
 const getNCLEXCategory = item => {
@@ -530,13 +543,15 @@ const BLUEPRINT_AREAS = ["Management of Care","Safety & Infection Prevention","H
 
 function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmentLoading, assessmentLoadError }) {
   const [weak,setWeak]=useState([]);
-  const [mode,setMode]=useState(ASSESSMENT_ONLY?'assessment':'practice');
+  const [mode,setMode]=useState(() => ASSESSMENT_DISPLAY.entryMode(window.location.search));
   const [qCount,setQCount]=useState(10);
   const [timeMultiplier,setTimeMultiplier]=useState(1);
   const [showTimer,setShowTimer]=useState(true);
   const [showQuestionCount,setShowQuestionCount]=useState(true);
   const [actionState,setActionState]=useState({ status:null, error:null });
-  const availableModes=ASSESSMENT_ONLY?[{val:'assessment',label:'NCLEX Readiness Assessment',sub:'85 questions · adaptive blueprint · no pass/fail label'}]:[{val:'practice',label:'📝 Practice Mode',sub:'Custom length · See score'},{val:'nclex',label:'💻 Core-Safe CAT',sub:'30–45 items · adaptive + essential safety coverage'},{val:'mock',label:'🧭 SWM-CAT · Adaptive Readiness Mock',sub:'85–150 items · adaptive readiness estimate + safety blueprint'},{val:'remediation',label:'🎯 Remediation Mode',sub:'Targeted student weaknesses'}];
+  const availableModes=(ASSESSMENT_ONLY?['assessment']:['practice','nclex','mock','remediation']).map(val=>({
+    val,label:ASSESSMENT_DISPLAY.label(val),sub:ASSESSMENT_DISPLAY.modes[val].description
+  }));
   const studentName = assessmentProfile?.studentName || 'Student';
   const activeAttempt = assessmentProfile?.activeAttempts?.[assessmentKeyForMode(mode)] || null;
   const baseProfile = {name:studentName,studentId:assessmentProfile?.studentId||null,weakAreas:weak,notes:'',externalCategoryWeights:assessmentProfile?.categoryWeights||{},assessmentSummary:assessmentProfile||null,qCount:mode==="nclex"?MAX_Q:mode==="mock"?FULL_MOCK_MAX_Q:mode==="assessment"?(activeAttempt?.target_questions||FULL_MOCK_MIN_Q):qCount,mode,examTimerSettings:mode==="mock"?{multiplier:timeMultiplier,showTimer,showQuestionCount}:null};
@@ -557,10 +572,13 @@ function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmen
   };
   return (
     <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
-      <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
+      <div className="assessment-panel" style={{ background:"#fff", borderRadius:20, maxWidth:700, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase", marginBottom:6 }}>NCLEX-RN · 2026 Blueprint</div>
-          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>{ASSESSMENT_ONLY?"NCLEX Readiness Assessment":"Adaptive Practice"}</div>
+          <div style={{ fontSize:26, fontWeight:700, color:"#0f172a" }}>{ASSESSMENT_ONLY?ASSESSMENT_DISPLAY.label('assessment'):"Adaptive Assessments & Practice"}</div>
+          <p style={{fontSize:13,color:"#475569",marginTop:10,lineHeight:1.6}}>
+            {ASSESSMENT_ONLY?ASSESSMENT_DISPLAY.modes.assessment.description:"Choose practice, a short assessment, a full-length mock, or remediation. The initial baseline assessment has a separate, authorized entry."}
+          </p>
           {assessmentLoadError && <div role="alert" style={{ marginTop:12, padding:"10px 14px", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:10, color:"#991b1b", fontSize:13, lineHeight:1.5 }}>{assessmentLoadError}</div>}
           {assessmentLoading ? (
             <div style={{ fontSize:13, color:"#94a3b8", marginTop:8 }}>Loading your personalization…</div>
@@ -577,15 +595,24 @@ function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmen
           {/* Mode Selection */}
           {!ASSESSMENT_ONLY&&(<div>
             <label style={lbl}>Session Mode</label>
-            <div style={{ display:"flex", gap:10 }}>
+            <div className="mode-options">
               {availableModes.map(m=>(
-                <button key={m.val} onClick={()=>setMode(m.val)} style={{ flex:1, padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
+                <button key={m.val} type="button" aria-pressed={mode===m.val} onClick={()=>setMode(m.val)} style={{ padding:"12px 14px", borderRadius:10, cursor:"pointer", border:"1.5px solid", textAlign:"left", background:mode===m.val?"#0f172a":"#f8fafc", color:mode===m.val?"#fff":"#475569", borderColor:mode===m.val?"#0f172a":"#e2e8f0" }}>
                   <div style={{ fontWeight:700, fontSize:13 }}>{m.label}</div>
                   <div style={{ fontSize:11, opacity:0.7, marginTop:2 }}>{m.sub}</div>
                 </button>
               ))}
             </div>
           </div>)}
+
+          <p role="note" style={{fontSize:13,color:"#475569",lineHeight:1.6}}>
+            {mode==='nclex'?"A short adaptive study check, not a full-length NCLEX simulation. Results are reported as above or below the study benchmark.":
+             mode==='mock'?"An NCLEX-style educational mock. Its internal readiness estimate is not an official NCLEX result or a validated prediction of passing.":
+             mode==='remediation'?`Uses a separate remediation bank, your optional focus areas and available external assessment category scores. It does not automatically target every question missed in the portal. This session uses ${qCount} questions.`:
+             mode==='assessment'?"Establishes an initial percentage and category profile without a pass/fail label.":
+             "Adaptive question selection with a percentage score and content-area feedback; no pass/fail label."}
+            {' '}Question counts are targets; available eligible questions may limit length.
+          </p>
 
           {mode==="practice"&&(
             <div>
@@ -668,7 +695,7 @@ function ProfileScreen({ onStart, onAbandonAttempt, assessmentProfile, assessmen
           )}
           {!activeAttempt ? <button onClick={handleStart} disabled={assessmentLoading || !assessmentProfile?.studentId || Boolean(assessmentLoadError)}
             style={{ width:"100%", padding:"14px", background:"#0f172a", color:"#fff", border:"none", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", letterSpacing:0.5 }}>
-            {mode==="nclex" ? "Begin Core-Safe CAT →" : mode==="mock" ? "Begin SWM-CAT →" : mode==="assessment" ? "Begin Readiness Assessment →" : "Start Practice Session →"}
+            {`Begin ${ASSESSMENT_DISPLAY.label(mode)} →`}
           </button> : null}
         </div>
       </div>
@@ -737,15 +764,16 @@ function correctResponseText(item) {
 }
 
 // ─── RESULTS SCREEN ───────────────────────────────────────────────────────────
-function ResultsScreen({ profile, history, ability, catResult, attemptId, overTime, onRestart }) {
+function ResultsScreen({ profile, history, ability, catResult, attemptId, overTime, completionInfo = {}, onRestart }) {
   const isNCLEX = profile.mode==="nclex";
   const isMock = profile.mode==="mock";
   const isAssessment = profile.mode==="assessment";
   const total=history.length, correct=history.filter(h=>h.correct).length, pct=total?Math.round((correct/total)*100):0;
   const isAdaptiveMock = isNCLEX || isMock;
   const versioned = history.some(h=>h.scoringModel==="in-house-ngn-v1");
-  const insufficient = versioned && isAdaptiveMock && !catResult;
-  const passed = !insufficient && (catResult==="PASS" || (isAdaptiveMock && !catResult && pct>=75));
+  const classification = ASSESSMENT_DISPLAY.classification(profile.mode, catResult);
+  const insufficient = isAdaptiveMock && !classification.outcome;
+  const passed = classification?.outcome === "PASS";
   const ringColor = insufficient ? "#64748b" : isAdaptiveMock ? (passed?"#10b981":"#ef4444") : (pct>=75?"#10b981":pct>=55?"#f59e0b":"#ef4444");
   const byBlueprint={};
   history.forEach(h=>{ const bp=h.blueprint; if(!byBlueprint[bp]) byBlueprint[bp]={correct:0,total:0}; byBlueprint[bp].total++; if(h.correct) byBlueprint[bp].correct++; });
@@ -764,11 +792,14 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
 
   return (
     <div className="assessment-interface" style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f172a,#1e293b)", display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"32px 16px" }}>
-      <div style={{ background:"#fff", borderRadius:20, padding:"36px 40px", maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
+      <div className="assessment-panel" style={{ background:"#fff", borderRadius:20, maxWidth:720, width:"100%", boxShadow:"0 25px 60px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign:"center", marginBottom:24 }}>
-          <div style={{ fontSize:11, letterSpacing:3, color:"#94a3b8", textTransform:"uppercase" }}>{isNCLEX?"Core-Safe CAT Complete":isMock?"SWM-CAT Complete":isAssessment?"Readiness Assessment Complete":"Practice Session Complete"}</div>
+          <div style={{ fontSize:11, letterSpacing:3, color:"#64748b", textTransform:"uppercase" }}>{ASSESSMENT_DISPLAY.label(profile.mode)} Complete</div>
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
+          <p role="status" style={{fontSize:13,color:"#475569",marginTop:10,lineHeight:1.6}}>{ASSESSMENT_DISPLAY.completionMessage({
+            mode:profile.mode,total,target:completionInfo.target || profile.qCount,reason:completionInfo.reason
+          })}</p>
           {isMock && overTime && <div role="status" style={{ display:"inline-block", marginTop:10, background:"#fff7ed", color:"#9a3412", border:"1px solid #fdba74", borderRadius:99, padding:"6px 12px", fontSize:12, fontWeight:700 }}>Completed over allotted time</div>}
         </div>
         <div style={{ background:saveState.status==="saved"?"#f0fdf4":"#fff7ed", border:`1px solid ${saveState.status==="saved"?"#86efac":"#fdba74"}`, borderRadius:10, padding:"12px 15px", marginBottom:20, fontSize:13, color:saveState.status==="saved"?"#166534":"#9a3412" }}>
@@ -780,8 +811,8 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           <div style={{ width:160, height:160, borderRadius:"50%", border:`6px solid ${ringColor}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4 }}>
             {isAdaptiveMock ? (
               <>
-                <span style={{ fontSize:insufficient?20:32, fontWeight:700, color:ringColor }}>{insufficient?"INCONCLUSIVE":passed?"PASS":"FAIL"}</span>
-                <span style={{ fontSize:12, color:"#64748b" }}>{insufficient?"Insufficient readiness evidence":isMock ? "Mock readiness estimate" : "Readiness estimate"}</span>
+                <span style={{ fontSize:isNCLEX||insufficient?20:32, fontWeight:700, color:ringColor, textAlign:"center", padding:"0 8px" }}>{classification.label}</span>
+                <span style={{ fontSize:12, color:"#64748b" }}>{isMock ? "Internal readiness estimate" : "Internal study benchmark"}</span>
               </>
             ) : (
               <>
@@ -792,13 +823,18 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           </div>
         </div>
 
-        {insufficient&&<p role="status" style={{padding:14,marginBottom:20}}>Your responses are saved. The item limit or available item pool was reached without enough independent evidence for a readiness classification. No pass/fail estimate is reported.</p>}
+        {insufficient&&<p role="status" style={{padding:14,marginBottom:20}}>Your responses are saved, but the assessment did not return a classification. No benchmark or pass/fail outcome is inferred from your percentage score.</p>}
         {isAdaptiveMock&&!insufficient&&(
           <div style={{ background:passed?"#f0fdf4":"#fef2f2", border:`1px solid ${passed?"#86efac":"#fca5a5"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:14, color:passed?"#065f46":"#991b1b", lineHeight:1.6 }}>
-            <strong>{passed?"✓ SWM-CAT PASS":"✗ SWM-CAT FAIL"}</strong><br/>
-            {passed?"This adaptive study result is above the program benchmark. It is not an official NCLEX outcome.":"This adaptive study result is below the program benchmark. Review the focus areas before retesting."}
+            <strong>{classification.label}</strong><br/>
+            {passed?"This adaptive study result is above the program benchmark.":"This adaptive study result is below the program benchmark. Review the focus areas before retesting."}
           </div>
         )}
+        {isAdaptiveMock&&<p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:20}}>
+          {isNCLEX?"This short assessment is an educational study check, not a full-length NCLEX simulation.":
+            "This full-length mock provides an internal educational readiness estimate."}
+          {' '}The result is not an official NCLEX outcome or a validated prediction of passing.
+        </p>}
 
         {(isNCLEX||isMock)&&(
           <div style={{ background:missingCore.length?"#fff7ed":"#f0fdf4", border:`1px solid ${missingCore.length?"#fdba74":"#86efac"}`, borderRadius:12, padding:"14px 18px", marginBottom:20, fontSize:13, color:missingCore.length?"#9a3412":"#065f46", lineHeight:1.6 }}>
@@ -1041,7 +1077,10 @@ function QuizScreen({ profile, onFinish, onPause }) {
   </div>;
   function finishSession(records, result, abilityEstimate=ability, completedAttemptId=attempt?.id) {
     const timerState = examTimerCheckpoint();
-    onFinish(records, result, abilityEstimate, completedAttemptId, Boolean(timerState?.overTime));
+    onFinish(records, result, abilityEstimate, completedAttemptId, Boolean(timerState?.overTime), {
+      reason:submissionResult?.completionReason || null,
+      target:attempt?.targetQuestions || profile.qCount
+    });
   }
 
   const catColor = CAT_COLORS[q.blueprint]||"#6366f1";
@@ -1219,7 +1258,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, gap:12, flexWrap:"wrap" }}>
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:"#0f172a", letterSpacing:2 }}>NCLEX-RN</div>
-            <div className="progress-text" style={{ letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {isNCLEX?"Core-Safe CAT":isMock?"SWM-CAT":isAssessment?"Readiness Assessment":"Practice"}</div>
+            <div className="progress-text" style={{ letterSpacing:1, textTransform:"uppercase" }}>{profile.name} · {ASSESSMENT_DISPLAY.label(profile.mode)}</div>
           </div>
           {(!isTimedFullMock || questionCountVisible) && <div style={{ flex:1, maxWidth:260 }}>
             <div className="progress-text" style={{ marginBottom:5 }}>
@@ -1384,6 +1423,7 @@ function App() {
   const [finalAbility, setFinalAbility] = useState(0.5);
   const [finalAttemptId, setFinalAttemptId] = useState(null);
   const [finalOverTime, setFinalOverTime] = useState(false);
+  const [finalCompletionInfo, setFinalCompletionInfo] = useState({});
 
   if(screen==="profile") return <ProfileScreen assessmentProfile={assessmentProfile} assessmentLoading={assessmentLoading} assessmentLoadError={assessmentLoadError}
     onAbandonAttempt={async attempt => {
@@ -1404,15 +1444,16 @@ function App() {
     });
     setProfile(null);
     setScreen("profile");
-  }} onFinish={(h,r,a,attemptId,overTime)=>{
+  }} onFinish={(h,r,a,attemptId,overTime,completionInfo)=>{
     setFinalHistory(h);
     setCatResult(r);
     setFinalAbility(a);
     setFinalOverTime(Boolean(overTime));
+    setFinalCompletionInfo(completionInfo);
     setFinalAttemptId(attemptId);
     setScreen("results");
   }} />;
-  if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} ability={finalAbility} catResult={catResult} attemptId={finalAttemptId} overTime={finalOverTime} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setFinalAbility(0.5); setFinalAttemptId(null); setFinalOverTime(false); setScreen("profile"); }} />;
+  if(screen==="results") return <ResultsScreen profile={profile} history={finalHistory} ability={finalAbility} catResult={catResult} attemptId={finalAttemptId} overTime={finalOverTime} completionInfo={finalCompletionInfo} onRestart={()=>{ setProfile(null); setFinalHistory([]); setCatResult(null); setFinalAbility(0.5); setFinalAttemptId(null); setFinalOverTime(false); setFinalCompletionInfo({}); setScreen("profile"); }} />;
 }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
