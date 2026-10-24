@@ -316,6 +316,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="assessment-platforms.js"></script>
+  <script src="assessment-display.js?v=assessment-clarity-v1"></script>
   <script src="assessment-import.js"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="consult-diagnostic-bank.js"></script>
@@ -934,7 +935,7 @@
         </section>`;
       const breakdownHtml=isSwmCat?`
         <div style="display:grid;gap:16px;margin-bottom:18px;padding:14px;background:var(--soft)">
-          <div><strong>SWM-CAT section breakdown</strong><p class="muted" style="margin:4px 0 0">Percent fully correct by section, not percentage of NGN points earned. Small samples are less stable.</p></div>
+          <div><strong>Adaptive assessment section breakdown</strong><p class="muted" style="margin:4px 0 0">Percent fully correct by section, not percentage of NGN points earned. Small samples are less stable.</p></div>
           ${breakdownGroup('Client Needs',clientNeeds,NCLEXCats.NAMES)}
           ${breakdownGroup('Blueprint areas',blueprints)}
         </div>`:'';
@@ -1114,7 +1115,7 @@
         ...(attempts||[]).map(item=>({
           id:item.id,
           kind:item.mode==='mock'?'Adaptive mock CAT':'NCLEX Success Center assessment',
-          title:item.mode==='mock'?'SWM-CAT':item.assessment_title||item.assessment_key||'Assessment',
+          title:AssessmentDisplay.modes[AssessmentDisplay.modeForAttempt(item)]?AssessmentDisplay.label(AssessmentDisplay.modeForAttempt(item)):item.assessment_title||item.assessment_key||'Assessment',
           mode:item.mode,
           date:item.completed_at||item.created_at,
           correct:item.correct_questions,
