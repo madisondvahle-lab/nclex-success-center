@@ -11,11 +11,11 @@
 
   global.NCLEX_COURSE_PRACTICE = {
     createAttempt: ({ supabase, sessionKey }) => save(supabase, {
-      p_action: 'start', p_session_key: sessionKey
+      p_action: 'start-mcq-order-v1', p_session_key: sessionKey
     }),
-    recordResponse: ({ supabase, attemptId, expectedRevision, itemId, answer }) => save(supabase, {
-      p_action: 'answer', p_attempt_id: attemptId, p_expected_revision: expectedRevision,
-      p_item_id: itemId, p_answer: answer
+    recordResponse: ({ supabase, attemptId, expectedRevision, itemId, displayAnswer }) => save(supabase, {
+      p_action: 'answer-mcq-order-v1', p_attempt_id: attemptId, p_expected_revision: expectedRevision,
+      p_item_id: itemId, p_answer: displayAnswer
     }),
     finalizeAttempt: ({ supabase, attemptId }) => save(supabase, {
       p_action: 'finish', p_attempt_id: attemptId

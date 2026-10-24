@@ -13,11 +13,12 @@
   <script src="assessment-display.js?v=assessment-clarity-v1"></script>
   <meta name="nclex-cat-protocol" content="ngn-cat-v1">
   <meta name="nclex-option-protocol" content="sata-order-v1">
-  <script src="option-presentation.js?v=ngn-sata-v1"></script>
-  <script src="assessment-persistence.js?v=ngn-sata-v1"></script>
+  <meta name="nclex-mcq-option-protocol" content="mcq-order-v1">
+  <script src="option-presentation.js?v=mcq-order-v1"></script>
+  <script src="assessment-persistence.js?v=mcq-order-v1"></script>
   <link rel="stylesheet" href="exam-ui.css">
-  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=mcq-order-v1"></script>
+  <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1139,7 +1140,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
         attemptId:attempt.id,
         expectedRevision:attempt.revision,
         itemId:q.id,
-        answer:sharedInteraction ? OptionPresentation.encode(q, ngnAnswer) : q.type==="mcq" ? selected[0] : q.type==="sata" ? OptionPresentation.encode(q, selected) : q.type==="bowtie" ? btState : undefined,
+        answer: sharedInteraction ? OptionPresentation.encode(q, ngnAnswer) : q.type==="mcq" ? (q.presentation ? OptionPresentation.encode(q, selected) : selected[0]) : q.type==="sata" ? OptionPresentation.encode(q, selected) : q.type==="bowtie" ? btState : undefined,
         caseAnswers:q.type==="casestudy" ? Object.fromEntries(q.questions.map(child => [child.qid, OptionPresentation.encode(child, csAnswers[child.qid] || [])])) : undefined,
         examTimer:examTimerCheckpoint()
       });
@@ -1191,6 +1192,7 @@ function QuizScreen({ profile, onFinish, onPause }) {
       };
       if(sharedInteraction&&!submitted)checkpoint.draft.ngn={answer:OptionPresentation.encode(q,ngnAnswer ?? NGNScoring.emptyAnswer(q)),tabId:ngnTab};
       else if (!submitted) {
+        if (q.type === 'mcq' && q.presentation) checkpoint.draft.selected = OptionPresentation.encode(q, selected);
         if (q.type === 'sata') checkpoint.draft.selected = OptionPresentation.encode(q, selected);
         if (q.type === 'casestudy') checkpoint.draft.csAnswers = Object.fromEntries(q.questions.map(child => [child.qid, OptionPresentation.encode(child, csAnswers[child.qid] || [])]));
       } else if (attempt.checkpoint?.presentations) {
@@ -1368,6 +1370,7 @@ function App() {
     async function loadAssessmentHistory() {
       if (window.NCLEX_ASSESSMENT_PERSISTENCE?.CLIENT_PROTOCOL !== "ngn-cat-v1" ||
           window.NCLEX_ASSESSMENT_PERSISTENCE?.OPTION_PROTOCOL !== "sata-order-v1" ||
+          window.ExamUI?.MCQ_OPTION_PROTOCOL !== "mcq-order-v1" || window.OptionPresentation?.MCQ_VERSION !== "mcq-order-v1" ||
           window.ExamUI?.OPTION_PROTOCOL !== "sata-order-v1" || window.OptionPresentation?.VERSION !== "sata-order-v1" ||
           window.ExamUI?.CLIENT_PROTOCOL !== "ngn-cat-v1" || window.NGNScoring?.VERSION !== "ngn-v1") {
         throw new Error("The updated CAT modules could not load. Refresh the portal; your saved progress is unchanged.");

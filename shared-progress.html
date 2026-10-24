@@ -322,9 +322,9 @@
   <script src="consult-diagnostic-bank.js"></script>
   <script src="practice-review-data.js"></script>
   <meta name="nclex-option-protocol" content="sata-order-v1">
-  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
-  <script src="option-presentation.js?v=ngn-sata-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script src="ngn-scoring.js?v=mcq-order-v1"></script>
+  <script src="option-presentation.js?v=mcq-order-v1"></script>
+  <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -809,7 +809,7 @@
           cls+=' opt-wrong-choice';
           marker=' <span class="opt-tag wrong">✗ Student selected (Incorrect)</span>';
         }
-        const explanation=bankItem.optionRationales?.[idx] || bankItem.option_rationales?.[idx];
+        const explanation=OptionPresentation.rationale(bankItem,idx);
         return `<div class="${cls}"><span class="opt-letter">${letter}.</span> <span class="opt-text">${esc(opt)}${explanation?` — ${esc(explanation)}`:''}</span>${marker}</div>`;
       }).join('')+'</div>';
     }

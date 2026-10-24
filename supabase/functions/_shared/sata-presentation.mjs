@@ -13,9 +13,10 @@ export const counts = {
   rm43: 6, rm44: 6, rm45: 6, rm46: 6, rm47: 6, rm48: 6,
   'rm51:rm51b': 6, 'rm52:rm52b': 6,
 };
-export function newPresentations(keys) {
-  return Object.fromEntries(keys.filter(key => key.item_type === 'sata' && !key.ngn_entry).map(key => {
-    const count = counts[key.item_id];
+export function newPresentations(keys, includeMCQ = false) {
+  return Object.fromEntries(keys.filter(key => (key.item_type === 'sata' && !key.ngn_entry) ||
+    (includeMCQ && key.item_type === 'mcq' && !key.ngn_entry)).map(key => {
+    const count = key.item_type === 'mcq' ? 4 : counts[key.item_id];
     if (!count) throw new Error(`Missing canonical SATA option count: ${key.item_id}`);
     return [key.item_id, presentation.create(count)];
   }));

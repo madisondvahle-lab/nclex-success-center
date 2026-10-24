@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Module 7 · EKG Challenge</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assessment-persistence.js"></script>
 
 <style>
 :root{
@@ -305,22 +303,11 @@ r:"Assess the patient first, determine whether a pulse is present, interpret the
 ];
 
 let i=0,selected=null,answered=false,score=0;
+let restoreFailed=false;
 const responses=Array(Q.length).fill(null);
 Q.forEach((question,index)=>{ question.id=`module7-ekg-${String(index+1).padStart(3,"0")}`; });
-const optionOrders=Q.map(question=>{
- const order=question.o.map((_,index)=>index);
- for(let index=order.length-1;index>0;index--){
-   const swapIndex=Math.floor(Math.random()*(index+1));
-   [order[index],order[swapIndex]]=[order[swapIndex],order[index]];
- }
- return order;
-});
-
-const SUPABASE_URL="https://pmjwwktwlsqpetwfvolb.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT";
-const assessmentKey="module7-ekg-practice";
-const sessionKey=globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `module7-ekg-${Date.now()}`;
-let persistence={db:null,attempt:null,revision:0,status:"checking"};
+const optionOrders=Q.map(question=>shuffle(question.o.map((_,index)=>index)));
+const storageKey="module7-ekg-practice:v2";
 
 const meta=document.getElementById("meta");
 const stem=document.getElementById("stem");
@@ -334,67 +321,20 @@ const bar=document.getElementById("bar");
 const saveStatus=document.getElementById("saveStatus");
 
 function setSaveStatus(status,message){
- persistence.status=status;
  saveStatus.textContent=message;
  saveStatus.className=`save-status ${status}`;
 }
-
-async function initializePersistence(){
- if(!window.supabase || !window.NCLEX_ASSESSMENT_PERSISTENCE){
-   setSaveStatus("unsaved","Practice results are not being saved in this browser.");
-   return;
- }
- persistence.db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
- const {data:{session},error}=await persistence.db.auth.getSession();
- if(error) throw error;
- if(!session){
-   setSaveStatus("unsaved","Sign in through Student Login to save this practice attempt.");
-   return;
- }
- try{
-   persistence.attempt=await NCLEX_ASSESSMENT_PERSISTENCE.createAttempt({
-     supabase:persistence.db,
-     sessionKey,
-     assessmentKey,
-     assessmentTitle:"Module 7 EKG Strip Practice",
-     assessmentVersion:"module7-ekg-v1",
-     targetQuestions:Q.length,
-     checkpoint:{schemaVersion:1,currentQuestion:0,answered:[]}
-   });
-   persistence.revision=Number(persistence.attempt.checkpoint_revision||0);
-   setSaveStatus("saved","Your EKG practice progress is being saved.");
- }catch(error){
-   persistence.attempt=null;
-   setSaveStatus("error",error.message||"Practice progress could not be saved.");
- }
+function shuffle(order){
+ for(let index=order.length-1;index>0;index--){const swapIndex=Math.floor(Math.random()*(index+1));[order[index],order[swapIndex]]=[order[swapIndex],order[index]]}
+ return order;
 }
-
-async function saveResponse(questionIndex,selectedAnswer,isCorrect){
- if(!persistence.attempt || !persistence.db) return;
- setSaveStatus("saving","Saving your response…");
- const result=await NCLEX_ASSESSMENT_PERSISTENCE.recordResponse({
-   supabase:persistence.db,
-   attemptId:persistence.attempt.id,
-   expectedRevision:persistence.revision,
-   response:{
-     id:Q[questionIndex].id,
-     source:"module7-ekg",
-     type:"mcq",
-     difficulty:2,
-     topic:Q[questionIndex].type,
-     selectedAnswer,
-     correctAnswer:Q[questionIndex].a,
-     correct:isCorrect
-   },
-   checkpoint:{
-     schemaVersion:1,
-     currentQuestion:questionIndex,
-     answered:responses.map((entry,index)=>entry?.answered?{id:Q[index].id,selected:entry.selected}:null).filter(Boolean)
-   },
-   abilityEstimate:score/Q.length
- });
- persistence.revision=result.checkpointRevision;
- setSaveStatus("saved","Your EKG practice progress is being saved.");
+function persistLocal(){
+ try{
+   sessionStorage.setItem(storageKey,JSON.stringify({version:2,i,score,responses,optionOrders}));
+   setSaveStatus("saved","Progress is saved in this browser tab. It is not added to assessment history.");
+ }catch(error){
+   setSaveStatus("error","Progress could not be saved in this browser tab. Keep this page open to retain it.");
+ }
 }
 
 function render(){
@@ -427,6 +367,8 @@ function render(){
    b.onclick=()=>{
      if(answered)return;
      selected=displayIndex;
+     responses[i]={...responses[i],selected};
+     persistLocal();
      [...options.children].forEach(x=>x.classList.remove("selected"));
      b.classList.add("selected");
      submit.disabled=false;
@@ -439,7 +381,7 @@ function render(){
  feedback.innerHTML="";
 
  if(answered){
-   const correct=selected===q.a;
+   const correct=selected===correctDisplayIndex;
    feedback.className="feedback show "+(correct?"good":"bad");
    feedback.innerHTML=`<strong>${correct?"Correct":"Not quite."}</strong><br>${q.r}`;
  }
@@ -461,12 +403,9 @@ submit.onclick=async()=>{
  if(!responses[i]?.answered && isCorrect)score++;
 
  responses[i]={selected,answered:true};
+ responses[i].originalIndex=selectedOriginalIndex;
+ persistLocal();
  render();
- try{
-   await saveResponse(i,selectedOriginalIndex,isCorrect);
- }catch(error){
-   setSaveStatus("error",error.message||"This response could not be saved.");
- }
 };
 
 next.onclick=()=>{
@@ -474,6 +413,7 @@ next.onclick=()=>{
    showResults();
  }else{
    i++;
+   persistLocal();
    render();
  }
 };
@@ -481,6 +421,7 @@ next.onclick=()=>{
 back.onclick=()=>{
  if(i>0){
    i--;
+   persistLocal();
    render();
  }
 };
@@ -499,20 +440,22 @@ function showResults(){
 
  document.getElementById("summary").textContent=`${pct}% · ${msg}`;
  bar.style.width="100%";
- if(persistence.attempt && persistence.db){
-   setSaveStatus("saving","Saving your completed EKG practice result…");
-   NCLEX_ASSESSMENT_PERSISTENCE.finalizeAttempt({
-     supabase:persistence.db,
-     attemptId:persistence.attempt.id,
-     result:null,
-     abilityEstimate:pct/100
-   }).then(()=>setSaveStatus("saved","Your completed EKG practice result was saved."))
-     .catch(error=>setSaveStatus("error",error.message||"Your completed result could not be saved."));
- }
+ persistLocal();
 }
 
-initializePersistence().catch(error=>setSaveStatus("error",error.message||"Practice saving is unavailable."));
+try{
+ const saved=JSON.parse(sessionStorage.getItem(storageKey)||"null");
+ if(saved?.version===2&&saved.responses?.length===Q.length&&saved.optionOrders?.length===Q.length&&
+    saved.optionOrders.every((order,index)=>Array.isArray(order)&&order.length===Q[index].o.length&&new Set(order).size===order.length&&order.every(value=>Number.isInteger(value)&&value>=0&&value<Q[index].o.length))){
+   i=Number.isInteger(saved.i)?Math.min(Math.max(saved.i,0),Q.length-1):0;
+   responses.splice(0,Q.length,...saved.responses);
+   optionOrders.splice(0,Q.length,...saved.optionOrders);
+   score=responses.filter((entry,index)=>entry?.answered&&entry.originalIndex===Q[index].a).length;
+   setSaveStatus("saved","Saved progress restored from this browser tab. It is not added to assessment history.");
+ }else setSaveStatus("","Progress will be saved in this browser tab.");
+}catch(error){restoreFailed=true;setSaveStatus("error","Saved progress could not be read. Existing work was left unchanged.");}
 render();
+if(!restoreFailed)persistLocal();
 </script>
 
 </main>

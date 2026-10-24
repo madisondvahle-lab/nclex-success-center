@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="nclex-option-protocol" content="sata-order-v1">
+  <meta name="nclex-mcq-option-protocol" content="mcq-order-v1">
   <link rel="stylesheet" href="exam-ui.css">
   <title>NUR 215 Practice · Study With Madison, RN</title>
   <style>
@@ -26,11 +27,13 @@
     details{border:1px solid var(--line);background:#fff;margin:8px 0}summary{cursor:pointer;padding:12px 14px;font-weight:600}.in{padding:0 16px 16px;line-height:1.55;font-size:.92rem}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="option-presentation.js?v=ngn-sata-v1"></script>
-  <script src="ngn-scoring.js?v=ngn-sata-v1"></script>
-  <script src="exam-ui-ngn.js?v=ngn-sata-v1"></script>
+  <script src="option-presentation.js?v=mcq-order-v1"></script>
+  <script src="ngn-scoring.js?v=mcq-order-v1"></script>
+  <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
   <script>
-    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1') {
+    if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' ||
+        window.ExamUI?.MCQ_OPTION_PROTOCOL !== 'mcq-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1' ||
+        window.OptionPresentation?.MCQ_VERSION !== 'mcq-order-v1') {
       window.ExamUI = undefined;
       throw new Error('The assessment modules could not load. Refresh and try again.');
     }

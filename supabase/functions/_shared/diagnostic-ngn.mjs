@@ -181,9 +181,11 @@ export function publicInteraction(checkpoint) {
 
 export function selectCurrent(checkpoint, key) {
   let presentations;
-  if (checkpoint.optionProtocol === presentation.VERSION && key?.ngn_entry) {
+  if ((checkpoint.optionProtocol === presentation.VERSION || checkpoint.mcqOptionProtocol === 'mcq-order-v1') && key?.ngn_entry) {
     const entry = key.ngn_entry;
-    presentations = Object.fromEntries((entry.kind === 'case' ? entry.items : [entry]).filter(it => it.type === 'sata').map(it => [
+    presentations = Object.fromEntries((entry.kind === 'case' ? entry.items : [entry]).filter(it =>
+      (it.type === 'sata' && checkpoint.optionProtocol === presentation.VERSION) ||
+      (it.type === 'mcq' && checkpoint.mcqOptionProtocol === 'mcq-order-v1')).map(it => [
       entry.kind === 'case' ? `${key.item_id}:${it.id}` : key.item_id, presentation.create(it.options.length),
     ]));
   }
