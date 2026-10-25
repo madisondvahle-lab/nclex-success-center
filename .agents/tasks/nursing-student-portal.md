@@ -15,13 +15,21 @@ For example: select Jack, choose NUR 312, check Module 4 - Cardiac, and save.
 Use the student preview's NUR 312 tab and Learning Library to check the result.
 NCLEX students retain the existing student-wide module assignment workflow.
 
-Class links reuse `student_resources` with `resource_type='study_guide'`,
-`class_code`, and the module catalog's `guide_url`. Module access continues
-through `student_module_access`; no RLS or clinical content changes are needed.
-Saving is additive, matching the existing assignment screen; it does not
-revoke access or remove other classes' assignments. Saving the same class/module
-again checks for an existing link rather than adding another. A module can be
-assigned independently to more than one class.
+Class links use `student_class_module_assignments`, with a primary key on
+student, class, and module. `save_nursing_class_modules` is an admin-only RPC
+that replaces one class's module selections atomically, including an empty
+selection. Other classes and unrelated resources are not changed. Concurrent
+saves are serialized per student; saves to the same class use last-save-wins
+snapshot semantics. The database key prevents duplicate class links.
+
+Module access continues through `student_module_access`. The new
+`independent_enabled` column distinguishes independent grants from course-only
+access. Effective access remains enabled while either source exists. The
+access trigger records later independent writes from existing tools, including
+upserts of an already-enabled module. Removing the last course link disables
+course-only access, but never clears independent access. Existing enabled rows
+are conservatively treated as independent because their original source is
+unknown; no attempt is made to guess or revoke legacy grants.
 
 The nursing library filters modules by the selected class. Existing enabled
 modules without any class link remain visible separately as "Other assigned
@@ -29,10 +37,50 @@ modules" rather than being silently moved or removed. Existing class defaults
 are shared between admin and student screens, with saved schedule/resource
 class codes also included.
 
-No new migration is required. The existing nursing-student, class-schedule,
-and class-notes/uploads migrations must already be present (in particular
-`students.student_type` and `student_resources.class_code`). Missing-schema
-or query errors are shown rather than reporting a successful assignment.
+### Required database change and release order
+
+`supabase-nursing-course-modules.sql` **must be reviewed and applied after
+approval, before deploying the updated UI**. It requires the existing
+nursing-student, class-schedule, class-notes/uploads, and secure-access schema
+(including `students.student_type`, `students.archived_at`,
+`student_resources.class_code`, `modules`, and `is_app_admin()`).
+
+The migration creates the class-assignment table, student/admin read RLS,
+admin-only transactional save RPC, independent-access column, and access
+trigger. Direct writes to the new table are not granted to authenticated
+clients. Existing class-tagged study-guide resources matching module guide
+URLs are imported once and deduplicated into the new table, without deleting
+or changing any original resource records. Reapplying the migration does not
+restore removed links. Legacy guide resources are no longer the authority for
+module assignments. Missing-schema/query errors block saving and are shown
+explicitly.
+
+Do not deploy the earlier additive UI after this migration: it does not write
+the new table. A frontend rollback to the pre-feature main is possible, but
+leave the additive database changes in place pending a separately reviewed
+database rollback. Do not drop provenance or disable the access trigger while
+course-only access exists.
+
+Validation commands:
+
+- `node --test tests/*.test.cjs tests/*.test.mjs`
+- `bash tests/nursing-course-modules-local.sh`
+
+The database runner uses a disposable PostgreSQL 17 Docker container with
+synthetic auth identities and RLS roles, not a hosted Supabase project. It tests
+atomic save/removal, independent grants, rollback, repeat migration, real
+concurrent connections, and persistence from a fresh connection. The JavaScript
+tests reload fresh application contexts and check library filtering. This is
+not a hosted PostgREST/Supabase Auth end-to-end validation; that remains a
+staging check after migration approval.
+
+Integration validation against main `6c20c92`: all 298 Node regression tests
+passed on a combined-tree export, including the recent question-editor and
+Safe Delete tests. The disposable database runner passed. Browser checks used
+isolated, session-persisted mocks and verified add, empty-class save, actual
+page refresh, preservation of the other class, final removal, reassignment,
+and matching library placement. No production student data was used.
+
 Local code does not assign Jack automatically. Production data changes,
 migrations, merging, and deployment require separate approval.
 

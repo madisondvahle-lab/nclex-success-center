@@ -16,35 +16,21 @@
       (classCode === undefined || resource.class_code === classCode));
   }
 
-  function assignedKeys(resources, catalog, classCode) {
-    const urls = new Set(moduleResources(resources, catalog, classCode).map(resource => resource.url));
-    return catalog.filter(module => urls.has(module.guide_url)).map(module => module.module_key);
+  function assignedKeys(assignments, classCode) {
+    return assignments.filter(item => classCode === undefined || item.class_code === classCode)
+      .map(item => item.module_key);
   }
 
-  async function assign(db, student, classCode, modules) {
+  async function save(db, student, classCode, moduleKeys) {
     if (student.student_type !== 'nursing_student' || !classCode) {
       throw new Error('Choose a nursing-school student and class before assigning modules.');
     }
-    for (const module of modules) {
-      if (!module.guide_url) throw new Error('This module does not have a student guide link: ' + module.name);
-      const { data, error } = await db.from('student_resources').select('id')
-        .eq('student_id', student.id).eq('class_code', classCode)
-        .eq('resource_type', 'study_guide').eq('url', module.guide_url).limit(1);
-      if (error) throw new Error('Could not check class module assignments: ' + error.message);
-      if (!data?.length) {
-        const { error: saveError } = await db.from('student_resources').insert({
-          student_id: student.id,
-          class_code: classCode,
-          resource_type: 'study_guide',
-          title: module.name,
-          url: module.guide_url,
-          note: 'Success Center module assigned for ' + classCode + '.'
-        });
-        if (saveError) throw new Error('Could not assign ' + module.name + ' to ' + classCode +
-          ': ' + saveError.message + '. Some assignments may already be saved; retrying will keep them.');
-      }
-    }
+    const { error } = await db.rpc('save_nursing_class_modules', {
+      p_student: student.id, p_class: classCode, p_modules: moduleKeys
+    });
+    if (error) throw new Error('Could not save class modules: ' + error.message +
+      '. Reload to verify the saved selections before retrying. Check that the course-module migration is installed.');
   }
 
-  window.NursingClassModules = { classes, moduleResources, assignedKeys, assign };
+  window.NursingClassModules = { classes, moduleResources, assignedKeys, save };
 })();

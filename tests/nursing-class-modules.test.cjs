@@ -11,12 +11,35 @@ const cardiac = { module_key: 'm4', name: 'Module 4 - Cardiac', guide_url: 'modu
 const respiratory = { module_key: 'm5', name: 'Module 5 - Respiratory', guide_url: 'module5-guide.html' };
 
 function database() {
-  const rows = { student_resources: [], student_module_access: [], student_class_schedules: [] };
+  const rows = { student_resources: [], student_module_access: [], student_class_schedules: [], student_class_module_assignments: [] };
   const calls = [];
   const failures = {};
   let delay;
   return {
     rows, calls, failures,
+    async rpc(name, params) {
+      calls.push({ table: name, action: 'rpc', params });
+      if (failures.rpc) return { error: { message: failures.rpc } };
+      const { p_student, p_class, p_modules } = params;
+      const oldKeys = rows.student_class_module_assignments.filter(row =>
+        row.student_id === p_student && row.class_code === p_class).map(row => row.module_key);
+      rows.student_class_module_assignments = rows.student_class_module_assignments.filter(row =>
+        row.student_id !== p_student || row.class_code !== p_class);
+      for (const module_key of new Set(p_modules)) rows.student_class_module_assignments.push({
+        student_id: p_student, class_code: p_class, module_key
+      });
+      for (const module_key of new Set([...oldKeys, ...p_modules])) {
+        let access = rows.student_module_access.find(row => row.student_id === p_student && row.module_key === module_key);
+        if (!access) {
+          access = { student_id: p_student, module_key, enabled: false, independent_enabled: false };
+          rows.student_module_access.push(access);
+        }
+        access.independent_enabled ??= access.enabled;
+        access.enabled = access.independent_enabled || rows.student_class_module_assignments.some(row =>
+          row.student_id === p_student && row.module_key === module_key);
+      }
+      return { error: null };
+    },
     setDelay(callback) { delay = callback; },
     from(table) {
       const filters = [];
@@ -119,8 +142,7 @@ test('only exact class-tagged module guide resources count as class module assig
     { resource_type: 'study_guide', class_code: 'NUR 312', url: 'unrelated-guide.html' },
     { resource_type: 'study_guide', url: respiratory.guide_url }
   ];
-  assert.deepEqual(plain(app.context.NursingClassModules.assignedKeys(resources, [cardiac, respiratory], 'NUR 312')), ['m4']);
-  assert.deepEqual(plain(app.context.NursingClassModules.assignedKeys(resources, [cardiac, respiratory])), ['m4', 'm5']);
+  assert.equal(app.context.NursingClassModules.moduleResources(resources, [cardiac, respiratory], 'NUR 312').length, 1);
 });
 
 test('nursing assignment requires an explicit class, persists Cardiac, reloads, and is retry-safe', async () => {
@@ -134,16 +156,14 @@ test('nursing assignment requires an explicit class, persists Cardiac, reloads, 
   app.run('syncModuleClass()');
   app.ui.get('m4').checked = true;
   await app.run('save()');
-  assert.equal(app.db.rows.student_resources.length, 1);
-  assert.deepEqual(app.db.rows.student_resources[0], {
-    id: '1', student_id: nursing.id, class_code: 'NUR 312', resource_type: 'study_guide',
-    title: 'Module 4 · Cardiac', url: 'module4-guide.html',
-    note: 'Success Center module assigned for NUR 312.'
-  });
-  assert.deepEqual(app.db.rows.student_module_access, [{ student_id: nursing.id, module_key: 'm4', enabled: true }]);
-  assert.match(app.ui.get('notice').innerHTML, /Modules are filed under NUR 312/);
+  assert.equal(app.db.rows.student_resources.length, 0);
+  assert.deepEqual(app.db.rows.student_class_module_assignments, [
+    { student_id: nursing.id, class_code: 'NUR 312', module_key: 'm4' }
+  ]);
+  assert.deepEqual(app.db.rows.student_module_access, [{ student_id: nursing.id, module_key: 'm4', enabled: true, independent_enabled: false }]);
+  assert.match(app.ui.get('notice').innerHTML, /Module selections saved for NUR 312/);
   await app.run('save()');
-  assert.equal(app.db.rows.student_resources.length, 1);
+  assert.equal(app.db.rows.student_class_module_assignments.length, 1);
   await app.run('loadStudent()');
   app.ui.get('module-class').value = 'NUR 312';
   app.run('syncModuleClass()');
@@ -152,7 +172,7 @@ test('nursing assignment requires an explicit class, persists Cardiac, reloads, 
   app.run('syncModuleClass()');
   assert.equal(app.ui.get('m4').checked, false);
   await app.run("saveModuleAssignments(selected(), ['m4'])");
-  assert.equal(app.db.rows.student_resources.length, 2);
+  assert.equal(app.db.rows.student_class_module_assignments.length, 2);
   assert.equal(app.db.rows.student_module_access.length, 1);
 });
 
@@ -166,7 +186,8 @@ test('class scope is independent of other students, other classes, and pre-exist
   await app.run("saveModuleAssignments(selected(), ['m4'])");
   app.ui.get('module-class').value = 'NUR 416';
   await app.run("saveModuleAssignments(selected(), ['m5'])");
-  assert.equal(app.db.rows.student_resources.length, 3);
+  assert.equal(app.db.rows.student_resources.length, 1);
+  assert.equal(app.db.rows.student_class_module_assignments.length, 2);
   assert.deepEqual(app.db.rows.student_resources[0], unrelated);
   assert.equal(app.db.rows.student_module_access.length, 2);
   await app.run('loadStudent()');
@@ -200,32 +221,69 @@ test('failed class loads block saving and show the actual error', async () => {
   assert.match(app.ui.get('notice').textContent, /Could not load classes.*schedule unavailable/);
 });
 
-test('resource and access failures surface explicitly and can be retried without duplicate links', async () => {
+test('transaction failures surface explicitly without changing the local assignment snapshot', async () => {
   const app = admin();
   await app.run('loadStudent()');
   app.ui.get('module-class').value = 'NUR 312';
-  app.db.failures['student_resources:insert'] = 'insert denied';
-  await assert.rejects(app.run("saveModuleAssignments(selected(), ['m4'])"), /insert denied/);
+  app.db.failures.rpc = 'transaction denied';
+  await assert.rejects(app.run("saveModuleAssignments(selected(), ['m4'])"), /transaction denied/);
   assert.equal(app.db.rows.student_module_access.length, 0);
-  delete app.db.failures['student_resources:insert'];
-  app.db.failures['student_module_access:upsert'] = 'access denied';
-  await assert.rejects(app.run("saveModuleAssignments(selected(), ['m4'])"), /access denied.*retry/);
-  assert.equal(app.db.rows.student_resources.length, 1);
-  delete app.db.failures['student_module_access:upsert'];
+  assert.equal(app.run('classModuleAssignments.length'), 0);
+  delete app.db.failures.rpc;
   await app.run("saveModuleAssignments(selected(), ['m4'])");
-  assert.equal(app.db.rows.student_resources.length, 1);
+  assert.equal(app.db.rows.student_class_module_assignments.length, 1);
   assert.equal(app.db.rows.student_module_access.length, 1);
 });
 
-test('lookup failures do not insert a success-shaped class assignment', async () => {
+test('missing migration blocks the class controls with an explicit setup error', async () => {
   const app = admin();
-  app.db.failures['student_resources:select'] = 'lookup denied';
-  await assert.rejects(
-    app.context.NursingClassModules.assign(app.db, nursing, 'NUR 312', [cardiac]),
-    /Could not check class module assignments: lookup denied/
-  );
+  app.db.failures['student_class_module_assignments:select'] = 'table missing';
+  await app.run('loadStudent()');
+  assert.equal(app.ui.get('save').disabled, true);
+  assert.match(app.ui.get('notice').textContent, /table missing.*migration must be installed/);
   assert.equal(app.db.rows.student_resources.length, 0);
   assert.equal(app.db.rows.student_module_access.length, 0);
+});
+
+test('fresh runtime preserves class changes, including zero modules and independent access', async () => {
+  const db = database();
+  let app = admin(db);
+  await app.run('loadStudent()');
+  app.ui.get('module-class').value = 'NUR 312';
+  await app.run("saveModuleAssignments(selected(), ['m4','m5'])");
+  app.ui.get('module-class').value = 'NUR 416';
+  await app.run("saveModuleAssignments(selected(), ['m4'])");
+  app = admin(db);
+  await app.run('loadStudent()');
+  app.ui.get('module-class').value = 'NUR 312';
+  app.run('syncModuleClass()');
+  assert.equal(app.ui.get('m4').checked, true);
+  assert.equal(app.ui.get('m5').checked, true);
+  app.ui.get('m4').checked = false;
+  app.ui.get('m5').checked = false;
+  await app.run('save()');
+  assert.match(app.ui.get('notice').innerHTML, /NUR 312 \(0 selected\)/);
+  assert.equal(db.rows.student_class_module_assignments.length, 1);
+  assert.equal(db.rows.student_module_access.find(row => row.module_key === 'm4').enabled, true);
+  assert.equal(db.rows.student_module_access.find(row => row.module_key === 'm5').enabled, false);
+  app = admin(db);
+  await app.run('loadStudent()');
+  app.ui.get('module-class').value = 'NUR 312';
+  app.run('syncModuleClass()');
+  assert.equal(app.ui.get('m4').checked, false);
+  assert.equal(app.ui.get('m5').checked, false);
+  app.ui.get('module-class').value = 'NUR 416';
+  app.run('syncModuleClass()');
+  assert.equal(app.ui.get('m4').checked, true);
+  app.ui.get('m4').checked = false;
+  await app.run('save()');
+  assert.equal(db.rows.student_module_access.find(row => row.module_key === 'm4').enabled, false);
+  app.ui.get('module-class').value = 'NUR 312';
+  await app.run("saveModuleAssignments(selected(), ['m4'])");
+  assert.equal(db.rows.student_module_access.find(row => row.module_key === 'm4').enabled, true);
+  db.rows.student_module_access.find(row => row.module_key === 'm4').independent_enabled = true;
+  await app.run("saveModuleAssignments(selected(), [])");
+  assert.equal(db.rows.student_module_access.find(row => row.module_key === 'm4').enabled, true);
 });
 
 test('a late student load cannot replace the current student or class assignments', async () => {
@@ -259,8 +317,8 @@ test('student library switches class modules, clears stale cards, and keeps lega
   context.catalog = [cardiac, respiratory, { module_key: 'm3', name: 'Pharmacology', guide_url: 'module3-guide.html' }];
   context.access = [{ module_key: 'm4', enabled: true }, { module_key: 'm5', enabled: true }, { module_key: 'm3', enabled: true }];
   context.resources = [
-    { resource_type: 'study_guide', class_code: 'NUR 312', url: cardiac.guide_url },
-    { resource_type: 'study_guide', class_code: 'NUR 416', url: respiratory.guide_url }
+    { class_code: 'NUR 312', module_key: 'm4' },
+    { class_code: 'NUR 416', module_key: 'm5' }
   ];
   vm.runInContext("renderNursingModules('NUR 312',catalog,access,resources)", context);
   assert.match(ui.get('modules-nursing-class').innerHTML, /Cardiac/);
@@ -285,7 +343,7 @@ test('edited pages parse and both load the same class helper before their inline
     assert.ok(html.indexOf('src="nursing-class-modules.js"') < html.indexOf('const db'));
   }
   const dashboard = read('student-dashboard.html');
-  assert.match(dashboard, /renderNursingModules\(classCode, catalog, access, resources, moduleError\)/);
+  assert.match(dashboard, /renderNursingModules\(classCode, catalog, access, assignments, moduleError\)/);
   assert.match(dashboard, /!classModuleResources\.has\(r\)/);
   assert.match(dashboard, /renderModulesInto\('modules-nclex', catalog, access, true\)/);
 });

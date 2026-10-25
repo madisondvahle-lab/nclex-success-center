@@ -1466,14 +1466,14 @@
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
-    function renderNursingModules(classCode, catalog, access, resources, errorMessage) {
+    function renderNursingModules(classCode, catalog, access, assignments, errorMessage) {
       const host = document.getElementById('modules-nursing');
       if (errorMessage) {
         host.innerHTML = `<p class="empty" role="status">Class modules could not be loaded: ${text(errorMessage)}</p>`;
         return;
       }
-      const scopedKeys = new Set(NursingClassModules.assignedKeys(resources, catalog, classCode));
-      const allClassKeys = new Set(NursingClassModules.assignedKeys(resources, catalog));
+      const scopedKeys = new Set(NursingClassModules.assignedKeys(assignments, classCode));
+      const allClassKeys = new Set(NursingClassModules.assignedKeys(assignments));
       host.innerHTML = `<h3>${text(classCode)} modules</h3><div id="modules-nursing-class"></div><div id="modules-nursing-general"></div>`;
       renderModulesInto('modules-nursing-class', catalog, access.filter(item => scopedKeys.has(item.module_key)));
       const general = access.filter(item => item.enabled && !allClassKeys.has(item.module_key));
@@ -1567,14 +1567,14 @@
       };
       render();
     }
-    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError, moduleError) {
+    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError, moduleError, assignments) {
       document.getElementById('portal-nursing').classList.remove('hidden');
       initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
       const activateClass = classCode => {
         selectedNursingClass = classCode;
-        renderNursingModules(classCode, catalog, access, resources, moduleError);
+        renderNursingModules(classCode, catalog, access, assignments, moduleError);
         document.getElementById('upload-class-context').textContent = `New uploads will be filed under ${classCode}.`;
         loadStudentUploads(student.id, classCode, ++uploadListRequestId);
         classPanels.forEach(panel => panel.classList.remove('hidden'));
@@ -1586,7 +1586,7 @@
         countdown.innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
       const classModuleResources = new Set(NursingClassModules.moduleResources(resources, catalog));
-      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass, [...classModuleResources]);
+      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass, assignments);
 
       // Course name in hero subtitle
       if (student.course_name) {
@@ -1748,12 +1748,13 @@
             .select('practice_key,practice_title,score,total_questions,completed_at')
             .eq('student_id', student.id)
             .order('completed_at', { ascending: false })
-            .limit(6)
+            .limit(6),
+          db.from('student_class_module_assignments').select('class_code,module_key').eq('student_id', student.id)
         );
       }
 
       const results = await Promise.all(fetches);
-      const [plans, resources, catalog, access, schedules, classNotes, practiceRes] = results;
+      const [plans, resources, catalog, access, schedules, classNotes, practiceRes, classModules] = results;
       assignmentState = { student, isPreview, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
@@ -1761,8 +1762,8 @@
 
       if (isNursing) {
         const notesByClass = new Map((classNotes && !classNotes.error ? classNotes.data || [] : []).map(item => [item.class_code, item.note || '']));
-        const moduleError = [resources.error, catalog.error, access.error].filter(Boolean).map(item => item.message).join('; ');
-        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '', moduleError);
+        const moduleError = [catalog.error, access.error, classModules.error].filter(Boolean).map(item => item.message).join('; ');
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '', moduleError, classModules.data || []);
         // Show onboarding modal only on true first login (never in preview)
         if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');
