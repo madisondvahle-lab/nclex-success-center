@@ -5,7 +5,10 @@ Permanent deletion of master-QBank questions failed with
 `question_revision_drafts_question_id_fkey` (drafts and `question_audits` are `on delete restrict`).
 
 ## Status
-Branch `agents/question-safe-delete`; PR open. Migration NOT applied to Supabase. Not deployed.
+DEPLOYED 2026-10-25. PR #250 merged (merge commit `04700cc`, from `5074ddc`); GitHub Pages build for
+`04700cc` completed 18:10 UTC and the live page matches. Migration applied to production Supabase
+(project `pmjwwktwlsqpetwfvolb`) at ~18:08 UTC from commit `5074ddc` (file SHA-256 prefix
+`c3075e1e0f122cc0`), preceded by `set lock_timeout = '5s'`; applied in one pass, no errors.
 
 ## Design
 - `supabase-question-safe-delete.sql`: `question_deletion_blockers` (admin), `delete_questions_permanently`
@@ -50,12 +53,37 @@ Branch `agents/question-safe-delete`; PR open. Migration NOT applied to Supabase
 - Read-only live preview: 147 of 1,133 questions protected (65 practice history, 75 practice sets,
   19 student flags); 106 unused questions with drafts become deletable.
 
-## Remaining
-Owner approval -> apply migration in Supabase SQL editor -> read-only verification (functions, grants,
-both triggers) -> merge PR -> hard-refresh page -> create a NEW disposable inactive test question and
-delete it -> check an existing protected question with the read-only blocker check only.
-Never delete existing question-bank content to test.
+## Production deployment record (2026-10-25)
+- Preflight (read-only): fresh production schema dump identical to the tested dump; all 15 referenced
+  tables/columns present; 5 FKs to `questions` as tested; no existing triggers or name conflicts;
+  tables owned by `postgres`; daily physical backups present (latest 2026-10-25 08:58 UTC, 8 retained).
+  Point-in-time recovery is OFF: a backup restore rewinds the whole database to that day's backup.
+- Pre-deploy export (outside the repo, owner-only permissions):
+  `~/nclex-backups/safe-delete-preflight-20261025/` - questions (1,133), revision drafts (131),
+  audits (17), with `SHA256SUMS` and `README.txt`; counts, ids, and per-row content verified against
+  production.
+- Post-apply verification: 7 functions, 2 enabled triggers (`before/row`, `after/statement`);
+  `authenticated` can execute only `question_deletion_blockers` and `delete_questions_permanently`;
+  `anon` cannot; archive has RLS, admin-only SELECT, 0 rows. Questions/drafts/audits/student counts
+  unchanged. Read-only eligibility: 147 protected by history, 349 blocked only because active,
+  637 deletable.
+- Live test: disposable inactive question Q-1135 ("SAFE-DELETE TEST", one saved correction draft, no
+  other links) created and deleted by the owner through the live Delete forever button.
+  - Q-1135 and its draft are gone from `questions` / `question_revision_drafts`.
+  - `question_deletion_archive` has exactly 1 row: full question snapshot (stem, rationale, inactive)
+    plus the draft; `deleted_by` is an app admin.
+  - Fingerprints of all other questions, drafts, audits, flags, practice-set entries, and all nine
+    student/assessment tables are identical before and after.
+  - Access (tested in a rolled-back transaction): student sees 0 archive rows and cannot run the
+    blocker check, delete, or insert into the archive; anon cannot read; admin can read 1 row but
+    cannot update or delete it.
+- Rollback: `supabase-question-safe-delete-rollback.sql` removes the triggers/functions and keeps the
+  archive. Deleted questions are not restored automatically (manual re-insert from `question_snapshot`).
 
-## Follow-up (separate PR)
+## Operating notes
+- Make a question inactive before deleting; protected questions offer Make inactive instead.
+- Test only with newly created disposable questions; use the read-only blocker check for existing ones.
+
+## Follow-up (separate PR, not started)
 Retire workflow. It must also fix historical practice reviews so students still see question text,
 answers, and rationales for questions they encountered that are now inactive or retired.
