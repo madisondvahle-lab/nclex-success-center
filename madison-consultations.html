@@ -19,6 +19,7 @@
     .row{display:grid;grid-template-columns:2fr 1.4fr auto;gap:16px;align-items:center}
     .meta{color:var(--muted);font-size:.88rem;line-height:1.5}.label{display:inline-block;background:var(--soft);padding:3px 8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
     .label.cancelled,.label.rescheduled{background:#f3dcdc}.label.in_progress{background:#dcebf3}.label.completed{background:#dff0e3}
+    .label.no_show{background:#fff0cc;color:#754b00}
     .history-group{margin:24px 0}
     .history-group>summary{padding:12px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:.9rem;font-weight:800;cursor:pointer}
     button,.button{font:800 .85rem Inter,sans-serif;border:1px solid var(--ink);background:var(--ink);color:#fff;padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-block}
@@ -150,7 +151,7 @@
         const canStart=c.status==='scheduled';
         return `<article class="row"><div><h3>${esc(c.invitee_name)}</h3><div class="meta">${esc(c.invitee_email)}<br><strong>${esc(TYPE_LABEL[c.consult_type]||'Consultation')}</strong> · ${p.kind==='student'?'Existing student profile':'Prospective student profile'}${isStrat(c)&&c.credit_status!=='none'?'<br>Credit: '+esc(CREDIT_LABEL[c.credit_status]):''}</div></div>
         <div class="meta"><span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span><br>${esc(fmt(c.scheduled_start))}${c.cancel_reason?'<br>Reason: '+esc(c.cancel_reason):''}</div>
-        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join('');
+        <div>${c.status==='cancelled'||c.status==='rescheduled'?'<button class="secondary" data-open="'+esc(c.id)+'">View</button>':canStart?'<button data-start="'+esc(c.id)+'">Start Consultation</button> <button class="secondary" data-open="'+esc(c.id)+'">View / mark No Show</button>':'<button class="secondary" data-open="'+esc(c.id)+'">Open</button>'}</div></article>`}).join('');
       list.innerHTML=(upcoming.length?renderRows(upcoming):'<p class="empty">No upcoming or in-progress consultations.</p>')
         +(history.length?`<details class="history-group"><summary>Past and cancelled consultations (${history.length})</summary>${renderRows(history)}</details>`:'');
       list.querySelectorAll('[data-start]').forEach(b=>b.addEventListener('click',()=>startConsult(b.dataset.start)));
@@ -188,7 +189,7 @@
     async function startConsult(id){
       const c=consults.find(x=>x.id===id);if(!c)return;
       const known=await prefill(c);
-      const template={snapshot:{exam:'',attempt_type:'',attempts:'',target_date:'',resources:'',struggles:'',prior_tutoring:'',reports_available:'',patterns:'',...known},checklist:{},recommendations:[],package:'',notes:'',concerns:''};
+      const template={snapshot:{exam:'',attempt_type:'',attempts:'',target_date:'',resources:'',struggles:'',prior_tutoring:'',reports_available:'',patterns:'',...known},checklist:{},recommendations:[],package:'',notes:'',concerns:'',...c.template};
       // Only transitions scheduled -> in_progress so a second tab cannot overwrite a started consultation.
       const {data,error}=await db.from('consultations').update({status:'in_progress',started_at:new Date().toISOString(),template}).eq('id',id).eq('status','scheduled').select().maybeSingle();
       if(error){document.getElementById('list-status').textContent='Could not start: '+error.message;return}
@@ -208,7 +209,7 @@
     }
 
     function renderDetail(events){
-      const c=current,t=c.template,s=t.snapshot||{},strat=isStrat(c),items=strat?STRAT_CHECKLIST:CHECKLIST,readOnly=c.status==='cancelled'||c.status==='rescheduled'||c.status==='scheduled';
+      const c=current,t=c.template,s=t.snapshot||{},strat=isStrat(c),items=strat?STRAT_CHECKLIST:CHECKLIST,readOnly=!['in_progress','completed'].includes(c.status);
       const answers=(c.calendly_answers||[]).filter(a=>a.answer).map(a=>`<strong>${esc(a.question)}</strong>: ${esc(a.answer)}`).join('<br>');
       const f=(key,label,type)=>`<label>${label}${type==='area'?`<textarea data-snap="${key}" ${readOnly?'disabled':''}>${esc(s[key])}</textarea>`:type==='date'?`<input type="date" data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`:`<input data-snap="${key}" value="${esc(s[key])}" ${readOnly?'disabled':''}>`}</label>`;
       const sel=(key,label,opts)=>`<label>${label}<select data-snap="${key}" ${readOnly?'disabled':''}><option value="">Not specified</option>${opts.map(o=>`<option ${s[key]===o?'selected':''}>${o}</option>`).join('')}</select></label>`;
@@ -216,7 +217,9 @@
       view.innerHTML=`<p style="margin-top:24px"><button class="secondary" id="back">← All consultations</button></p>
       <div class="bar"><div><strong>${esc(c.invitee_name)}</strong> <span class="meta">· ${esc(c.invitee_email)} · ${esc(fmt(c.scheduled_start))}</span> <span class="label ${esc(c.status)}">${esc(c.status.replace('_',' '))}</span></div>
         <div><label class="check" style="display:inline-flex;padding:0"><input type="checkbox" id="timer-toggle">${strat?'45':'15'}-minute timer</label> <span class="timer hidden" id="timer">--:--</span> <span class="save" id="save-state" role="status"></span></div></div>
-      ${readOnly?'<p class="meta">'+(c.status==='scheduled'?'Start the consultation from the list to edit the template.':'This booking was '+esc(c.status)+'. History is kept below.')+'</p>':''}
+      ${readOnly?'<p class="meta">'+(c.status==='scheduled'?'Start the consultation from the list to edit the template.':'This booking is marked '+esc(c.status.replace('_',' '))+'. History is kept below.')+'</p>':''}
+      ${['scheduled','in_progress','completed'].includes(c.status)?'<p><button class="secondary" id="no-show" type="button">Mark No Show</button></p>':''}
+      ${c.status==='no_show'?'<section class="panel"><h2>Correct No Show status</h2><p class="meta">This record is not a completed consultation or tutoring session. Notes and student history are preserved.</p><label>Correct status<select id="correct-status"><option value="scheduled">Scheduled</option><option value="in_progress">In progress</option><option value="completed">Completed</option></select></label><button id="correct-no-show" type="button">Save corrected status</button></section>':''}
       ${answers?`<div class="answers"><p class="eyebrow">Calendly booking answers</p>${answers}</div>`:''}
       <section class="panel"><p class="eyebrow">${strat?'Section 1 · Student snapshot':'Section 1 · 0–5 min'}</p><h2>${strat?'Student snapshot and reports':'Student snapshot'}</h2><div class="grid">
         ${sel('exam','NCLEX-RN or NCLEX-PN',['NCLEX-RN','NCLEX-PN'])}${sel('attempt_type','First attempt or retake',['First attempt','Retake'])}
@@ -232,12 +235,12 @@
         <label>${strat?'Follow-up date (package credit window ends 7 days after the session)':'Follow-up date'}<input type="date" id="follow-up" value="${esc(c.follow_up_date)}" ${readOnly?'disabled':''}></label></section>
       ${strat?`<section class="panel"><h2>Package credit</h2><p class="meta">Status: <strong id="credit-state">${esc(CREDIT_LABEL[c.credit_status]||'')}</strong>${c.credit_expires_at?' · window closes '+esc(fmt(c.credit_expires_at)):''}</p>
         <p><button class="secondary" id="credit-purchased" type="button">Mark package purchased</button> <button class="secondary" id="credit-skip" type="button">${c.followup_skip?'Resume automatic emails':'Stop automatic emails for this student'}</button></p></section>`:''}
-      <section class="panel"><h2>Follow-up email</h2><p><button id="draft" type="button" ${c.status==='scheduled'?'disabled':''}>Generate draft</button></p>
+      <section class="panel"><h2>Follow-up email</h2><p><button id="draft" type="button" ${c.status==='scheduled'||c.status==='no_show'?'disabled':''}>Generate draft</button></p>
         <textarea id="draft-text" class="hidden" style="min-height:240px"></textarea>
         <p class="hidden" id="draft-actions"><button class="secondary" id="copy-draft" type="button">Copy</button> <a class="button secondary" id="mail-draft" href="#">Open in email app</a></p></section>
       ${c.status==='in_progress'?'<p><button id="complete" type="button">Mark consultation complete</button></p>':''}
       <p><a class="button secondary" href="madison-diagnostic.html?consultation=${encodeURIComponent(c.id)}">Run diagnostic for this consult</a></p>
-      <section class="panel"><h3>Booking history</h3>${events.map(e=>`<p class="meta">${esc(fmt(e.created_at))} · ${esc(e.event_type.replaceAll('_',' '))}${e.details&&e.details.start?' · '+esc(fmt(e.details.start)):''}${e.details&&e.details.reason?' · '+esc(e.details.reason):''}</p>`).join('')||'<p class="meta">No events.</p>'}</section>`;
+      <section class="panel"><h3>Booking history</h3>${events.map(e=>`<p class="meta">${esc(fmt(e.created_at))} · ${esc(e.event_type.replaceAll('_',' '))}${e.details&&e.details.from_status?' · '+esc(e.details.from_status.replaceAll('_',' '))+' → '+esc(e.details.to_status.replaceAll('_',' ')):''}${e.details&&e.details.start?' · '+esc(fmt(e.details.start)):''}${e.details&&e.details.reason?' · '+esc(e.details.reason):''}</p>`).join('')||'<p class="meta">No events.</p>'}</section>`;
       document.getElementById('list-view').classList.add('hidden');view.classList.remove('hidden');
       document.getElementById('back').addEventListener('click',closeDetail);
       view.querySelectorAll('[data-snap],[data-top],[data-check],[data-rec],#follow-up').forEach(el=>{el.addEventListener('input',queueSave);el.addEventListener('change',queueSave)});
@@ -246,6 +249,8 @@
       const cp=document.getElementById('credit-purchased');if(cp){cp.addEventListener('click',()=>setCredit('purchased'));
         document.getElementById('credit-skip').addEventListener('click',async e=>{const v=!current.followup_skip;const {error}=await db.from('consultations').update({followup_skip:v}).eq('id',current.id);if(!error){current.followup_skip=v;e.target.textContent=v?'Resume automatic emails':'Stop automatic emails for this student'}})}
       const done=document.getElementById('complete');if(done)done.addEventListener('click',completeConsult);
+      const noShow=document.getElementById('no-show');if(noShow)noShow.addEventListener('click',()=>changeAttendanceStatus('no_show'));
+      const correct=document.getElementById('correct-no-show');if(correct)correct.addEventListener('click',()=>changeAttendanceStatus(document.getElementById('correct-status').value));
     }
 
     function collect(){
@@ -277,6 +282,24 @@
       const {error}=await db.from('consultations').update({status:'completed',completed_at:new Date().toISOString()}).eq('id',current.id).eq('status','in_progress');
       if(error){setSaveState('Could not complete: '+error.message,true);return}
       await loadList();openConsult(current.id);
+    }
+    async function changeAttendanceStatus(status){
+      if(!current)return;
+      const correcting=current.status==='no_show';
+      if(!(correcting?['scheduled','in_progress','completed'].includes(status):status==='no_show'&&['scheduled','in_progress','completed'].includes(current.status))){
+        setSaveState('This status change is not available. Reopen the consultation.',true);return;
+      }
+      if(saving){setSaveState('Notes are still saving. Please try again when saved.',true);return}
+      clearTimeout(saveTimer);await save();
+      if(dirty||saving)return;
+      const id=current.id,previousStatus=current.status;
+      const patch={status,completed_at:status==='completed'?new Date().toISOString():null};
+      if(status==='in_progress'&&!current.started_at)patch.started_at=new Date().toISOString();
+      const {data,error}=await db.from('consultations').update(patch).eq('id',id).eq('status',previousStatus).select('id').maybeSingle();
+      if(error){setSaveState('Could not change status: '+error.message,true);return}
+      if(!data){setSaveState('Status changed elsewhere. Reopen the consultation before trying again.',true);return}
+      clearInterval(timerHandle);timerHandle=null;
+      await loadList();await openConsult(id);
     }
     async function closeDetail(){
       clearTimeout(saveTimer);await save();clearInterval(timerHandle);timerHandle=null;current=null;
