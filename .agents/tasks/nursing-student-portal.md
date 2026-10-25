@@ -31,8 +31,10 @@ course-only access, but never clears independent access. Existing enabled rows
 are conservatively treated as independent because their original source is
 unknown; no attempt is made to guess or revoke legacy grants.
 
-The nursing library filters modules by the selected class. Existing enabled
-modules without any class link remain visible separately as "Other assigned
+The nursing dashboard shows an "Assigned modules" card below Exam prep for
+the selected class, in the former Study resources position. Study resources
+remain in Learning Library, reached from the left navigation. Existing enabled
+modules without any class link remain visible there separately as "Other assigned
 modules" rather than being silently moved or removed. Existing class defaults
 are no longer used for module assignment. Admin/student class choices come
 from active `student_courses` enrollments via `nursing_module_classes(uuid)`.

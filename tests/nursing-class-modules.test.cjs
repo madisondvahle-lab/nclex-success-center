@@ -336,8 +336,10 @@ test('student library switches class modules, clears stale cards, and keeps lega
   assert.match(ui.get('modules-nursing-class').innerHTML, /No modules assigned/);
   vm.runInContext("renderNursingModules('NUR 312',catalog,[],resources)", context);
   assert.match(ui.get('modules-nursing-class').innerHTML, /No modules assigned/);
+  assert.equal(ui.get('modules-nursing-general').innerHTML, '', 'library must clear stale independent modules');
   vm.runInContext("renderNursingModules('NUR 312',catalog,access,resources,'load failed')", context);
   assert.match(ui.get('modules-nursing').innerHTML, /could not be loaded: load failed/);
+  assert.match(ui.get('modules-nursing-general').innerHTML, /could not be loaded: load failed/);
 });
 
 test('edited pages parse and both load the same class helper before their inline application', () => {
