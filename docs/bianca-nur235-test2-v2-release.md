@@ -1,8 +1,8 @@
 # Bianca NUR 235 Test 2 — Version 2 Release Assets
 
-**Release state:** Prepared for review only. This change is not merged or
-deployed and does not update Bianca's assignment, redirect the original exam,
-or modify existing results.
+**Release state:** V2 is deployed from PR #255. Bianca's existing NUR 235
+assignment now points to v2. The old URL redirect is proposed separately in
+the legacy-retirement release; no historical results were modified.
 
 ## Versioned assets
 
@@ -42,42 +42,38 @@ started a 100-question tutor session. A correctly answered MCQ and an exact
 four-choice SATA response each displayed the correct result, correct-answer
 rationale, per-option rationales, and clinical-reasoning guidance. A
 10-question exam-mode run completed and displayed end-of-exam review with
-correct answers, the selected response, and rationales. The release PR does
-not alter the production assignment or dashboard; verifying Bianca's live
-dashboard link requires the separately approved deployment and exact-row
-assignment update below.
+correct answers, the selected response, and rationales. Live verification
+confirmed the deployed page, assignment, and dashboard after the approved
+production update. No test result was written.
 
-## Approval-gated production sequence
+## Production deployment and rollback
 
-This PR intentionally does not update the existing assignment, old exam URL,
-or production database. After separate explicit release approval:
+After explicit release approval, the following steps were completed:
 
-1. Merge/deploy the versioned page and bank without redirecting the old page.
-2. Independently verify the deployed versioned page loads 100 questions,
-   defaults to all 100, preserves MCQ and exact-set SATA scoring, shows
-   rationales in tutor mode and end-of-exam review, and writes only the v2
-   result key. Use a controlled test identity or a non-production test; do not
-   create a misleading Bianca result.
-3. Update only Bianca's existing NUR 235 `student_resources` record, selected
-   by exact student ID and existing URL. Change only its `url` to
-   `bianca-nur235-test2-2026-v2.html` (and title only if separately approved
-   as necessary). Preserve the row ID, due date, note, status/completion
-   fields, all other resources, and all other students.
-4. Verify the student dashboard links to the v2 page, that Bianca can open it,
-   and that her other assigned resources remain unchanged.
-5. Only after those checks succeed, redirect the old
-   `bianca-nur235-test2.html` route to the revised page so an old bookmark
-   cannot start the flawed version. Do not remove or overwrite the old bank
-   during this release; keep the original page and bank recoverable in Git for
-   rollback. The old route must not redirect before the v2 page and assignment
-   update have both been verified.
+1. PR #255 was merged and the versioned page and bank deployed without
+   redirecting the old page.
+2. The live page loaded all 100 questions with All 100 selected. A keyed MCQ
+   and exact-set SATA response each scored correctly and displayed the overall
+   and per-option rationales. Supabase result writes were blocked; no Bianca
+   result was created.
+3. Only the `url` on Bianca's existing NUR 235 `student_resources` record
+   was updated to `bianca-nur235-test2-2026-v2.html`. Its row ID, resource
+   type, title, and due date were preserved; the row has no status field. The
+   NUR 215 resource and URL were unchanged.
+4. Bianca's student-dashboard preview linked NUR 235 to v2 and NUR 215 to
+   `bianca-nur215.html`.
+5. The separately proposed legacy-retirement release redirects
+   `bianca-nur235-test2.html` to v2. It retains the old exam source and does
+   not delete or overwrite the legacy bank. Deployment is gated on its own
+   protected workflow succeeding.
 
-If release verification fails before assignment update, leave the old
-assignment untouched and fix or remove the v2 release assets. If the
-assignment has been updated but rollback is required, pause/withdraw the
-v2 link, restore the original assignment URL by an exact-row update, and
-verify dashboard access before any additional redirect action. Never delete
-or rewrite historical results.
+If the legacy-retirement deployment fails, the assignment remains linked to
+the live v2 exam. If the corrected exam must be rolled back after retirement,
+first revert the legacy redirect through the protected GitHub workflow and
+verify the original URL is restored, then restore the assignment URL to
+`bianca-nur235-test2.html` by an exact-row update and verify dashboard access.
+The original bank and page remain in Git. Never delete or rewrite historical
+results.
 
 ## Prior results and reporting limitation
 

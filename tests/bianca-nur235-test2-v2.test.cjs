@@ -7,6 +7,7 @@ const vm = require('node:vm');
 const read = name => readFileSync(join(__dirname, '..', name), 'utf8');
 const bank = JSON.parse(read('bianca-nur235-test2-2026-v2-bank.json'));
 const page = read('bianca-nur235-test2-2026-v2.html');
+const legacyPage = read('bianca-nur235-test2.html');
 const questions = bank.questions;
 
 test('version 2 bank preserves all 100 question IDs and MCQ/SATA distribution', () => {
@@ -94,4 +95,10 @@ test('Q047 keeps its corrected observation key', () => {
   const question = questions.find(item => item.id === 'NUR235-T2-047');
   assert.ok(question);
   assert.deepEqual(question.correct_answers, ['A', 'B', 'C']);
+});
+
+test('legacy exam URL redirects to v2 while retaining its source for rollback', () => {
+  assert.match(legacyPage, /http-equiv="refresh" content="0; url=bianca-nur235-test2-2026-v2\.html"/);
+  assert.match(legacyPage, /location\.replace\('bianca-nur235-test2-2026-v2\.html'\)/);
+  assert.match(legacyPage, /fetch\('bianca-nur235-test2-bank\.json'/);
 });
