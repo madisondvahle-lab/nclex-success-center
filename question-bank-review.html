@@ -776,6 +776,7 @@
               <div id="flag-list" class="panel-content"></div>
             </section>
 
+            <div id="draft-audit-mount"></div>
             <div id="qa-audit-mount"></div>
 
             <section class="dashboard-panel" id="clinical-revisions">
@@ -893,6 +894,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="question-audit-panel.js"></script>
+  <script src="question-draft-audit-panel.js"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
@@ -1794,10 +1796,13 @@
       });
       $('bulk-json').addEventListener('input',()=>{if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before changing the batch.';return}stagedBatch=[];renderBulkPreview();$('bulk-status').textContent='Batch changed. Validate and preview it again.'});
       render();renderManage();renderRevisionDrafts();
-      globalThis.QAAudit?.init({db,esc,qlabel,getLive:()=>live,getFlags:()=>flags,getDrafts:()=>revisionDrafts,
+      const reviewContext={db,esc,qlabel,userId:session.user.id,getLive:()=>live,getFlags:()=>flags,getDrafts:()=>revisionDrafts,
         reloadDrafts:async()=>{revisionDrafts=await loadAllRevisionDrafts();renderRevisionDrafts();render()},
+        reloadQuestions:async()=>{const result=await loadAllQuestions();live=result.rows;renderManage();updateBankOverview()},
         rerender:()=>{render();renderManage();updateBankOverview()},
-        showDraft:id=>{switchTab('review');const card=$('rev-'+id);if(card){card.scrollIntoView({behavior:'smooth',block:'start'});const details=card.querySelector('details');if(details)details.open=true}}});
+        showDraft:id=>{switchTab('review');const card=$('rev-'+id);if(card){card.scrollIntoView({behavior:'smooth',block:'start'});const details=card.querySelector('details');if(details)details.open=true}}};
+      globalThis.QAAudit?.init(reviewContext);
+      globalThis.DraftAudit?.init(reviewContext);
       db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags();updateBankOverview()});renderFlags();updateBankOverview()}});
       if(!bulkImportReady)$('bulk-status').textContent='Run supabase-question-bulk-import.sql before using bulk import.';
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');

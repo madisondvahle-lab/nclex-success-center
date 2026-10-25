@@ -6,7 +6,7 @@
   const STATUS_CLASS = { pass: 'good', auto_fix: 'good', revised: 'warn', quarantine: 'bad', released: '', error: 'bad' };
   const MAX_BATCH = 25;
   let ctx, core, audits = [], latest = new Map(), batch = [], processed = new Map();
-  let running = false, pauseRequested = false, sessionCost = 0, approveSel = new Set(), root;
+  let running = false, pauseRequested = false, sessionCost = 0, root;
   const failedIds = new Set();
   const $ = id => document.getElementById(id);
 
@@ -95,9 +95,9 @@
       rows.push(...(result.data || []));
       if ((result.data || []).length < 500) break;
     }
-    audits = rows;
+    audits = rows.filter(row => row.criteria_version !== 'draft-qa-v1');
     latest = new Map();
-    rows.forEach(row => { if (!latest.has(row.question_id)) latest.set(row.question_id, row); });
+    audits.forEach(row => { if (!latest.has(row.question_id)) latest.set(row.question_id, row); });
   }
 
   async function auditOne(item, remainingBudget) {
@@ -118,6 +118,7 @@
   async function runBatch() {
     if (running) return;
     const cap = Math.max(0.1, Math.min(2, Number($('qa-cap').value) || 2));
+    if (!confirm(`Authorize paid AI auditing of ${pending().length} selected question(s)? Typical estimate: $0.01-$0.05 per question; the request budget is up to $0.25 per question and this session is capped at ${money(cap)}. AI agreement is not clinical verification. No live question will be applied or published.`)) return;
     running = true; pauseRequested = false; updateRunButton();
     const status = $('qa-progress');
     const queue = pending();
@@ -225,7 +226,6 @@
     const blocked = openDraftIds();
     $('qa-results').innerHTML = rows.slice(0, limit).map(({ audit, question }) => {
       const draft = audit.revision_id ? drafts.get(audit.revision_id) : null;
-      const awaiting = draft && draft.status === 'pending_review';
       const issues = findingList(audit);
       const removed = isQuarantined(audit) && audit.quarantined_at;
       const actions = [];
@@ -236,36 +236,14 @@
         if (blocked.has(question.id)) actions.push('<span class="qa-detail">Re-audit blocked: a pending or approved correction draft already exists.</span>');
       }
       if (audit.audit_status === 'error') actions.push(`<button class="button secondary" type="button" data-qa-retry="${esc(question.id)}">Retry audit</button>`);
-      return `<article class="candidate"><div class="qa-row">${awaiting ? `<input type="checkbox" data-qa-approve="${esc(draft.id)}" ${approveSel.has(draft.id) ? 'checked' : ''} aria-label="Select correction for batch approval">` : ''}<div style="flex:1"><div class="meta"><span class="tag ${STATUS_CLASS[audit.audit_status] || ''}">${esc(STATUS_LABEL[audit.audit_status] || audit.audit_status)}</span>${audit.screening_class ? `<span class="tag">${esc(audit.screening_class)}</span>` : ''}${audit.clinical_risk ? `<span class="tag ${audit.clinical_risk === 'high' ? 'bad' : audit.clinical_risk === 'medium' ? 'warn' : ''}">${esc(audit.clinical_risk)} risk</span>` : ''}<span class="tag">${esc(ctx.qlabel(question))}</span><span class="tag">${question.active ? 'Published' : 'Inactive'}</span>${draft ? `<span class="tag ${draft.status === 'approved' ? 'good' : 'warn'}">Draft: ${esc(draft.status.replace('_', ' '))}</span>` : ''}${removed ? '<span class="tag bad">Removed from assessments</span>' : ''}<span class="tag">${money(audit.est_cost_usd)}</span></div><h3>${esc(question.topic || 'Uncategorized')} · ${esc(question.difficulty || '')}</h3><p class="rationale">${esc(question.stem || '')}</p>${audit.note ? `<p class="qa-detail"><strong>Note:</strong> ${esc(audit.note)}</p>` : ''}${issues.length ? `<details><summary>Findings (${issues.length})</summary><ul class="qa-detail">${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul></details>` : ''}${verificationText(audit)}<div class="buttons">${actions.join('')}</div></div></div></article>`;
+      return `<article class="candidate"><div class="qa-row"><div style="flex:1"><div class="meta"><span class="tag ${STATUS_CLASS[audit.audit_status] || ''}">${esc(STATUS_LABEL[audit.audit_status] || audit.audit_status)}</span>${audit.screening_class ? `<span class="tag">${esc(audit.screening_class)}</span>` : ''}${audit.clinical_risk ? `<span class="tag ${audit.clinical_risk === 'high' ? 'bad' : audit.clinical_risk === 'medium' ? 'warn' : ''}">${esc(audit.clinical_risk)} risk</span>` : ''}<span class="tag">${esc(ctx.qlabel(question))}</span><span class="tag">${question.active ? 'Published' : 'Inactive'}</span>${draft ? `<span class="tag ${draft.status === 'approved' ? 'good' : 'warn'}">Draft: ${esc(draft.status.replace('_', ' '))}</span>` : ''}${removed ? '<span class="tag bad">Removed from assessments</span>' : ''}<span class="tag">${money(audit.est_cost_usd)}</span></div><h3>${esc(question.topic || 'Uncategorized')} · ${esc(question.difficulty || '')}</h3><p class="rationale">${esc(question.stem || '')}</p>${audit.note ? `<p class="qa-detail"><strong>Note:</strong> ${esc(audit.note)}</p>` : ''}${issues.length ? `<details><summary>Findings (${issues.length})</summary><ul class="qa-detail">${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul></details>` : ''}${verificationText(audit)}<div class="buttons">${actions.join('')}</div></div></div></article>`;
     }).join('');
     const sel = $('qa-results');
-    sel.querySelectorAll('[data-qa-approve]').forEach(box => box.addEventListener('change', () => { box.checked ? approveSel.add(box.dataset.qaApprove) : approveSel.delete(box.dataset.qaApprove); updateApprove(); }));
     sel.querySelectorAll('[data-qa-open]').forEach(button => button.addEventListener('click', () => ctx.showDraft(button.dataset.qaOpen)));
     sel.querySelectorAll('[data-qa-quarantine]').forEach(button => button.addEventListener('click', () => setQuarantine(button.dataset.qaQuarantine, true)));
     sel.querySelectorAll('[data-qa-release]').forEach(button => button.addEventListener('click', () => setQuarantine(button.dataset.qaRelease, false)));
     sel.querySelectorAll('[data-qa-retry]').forEach(button => button.addEventListener('click', () => retry(button.dataset.qaRetry)));
     sel.querySelectorAll('[data-qa-reaudit]').forEach(button => button.addEventListener('click', () => retry(button.dataset.qaReaudit, true)));
-    updateApprove();
-  }
-
-  function updateApprove() {
-    const open = new Set(ctx.getDrafts().filter(draft => draft.status === 'pending_review').map(draft => draft.id));
-    approveSel = new Set([...approveSel].filter(id => open.has(id)));
-    $('qa-approve').disabled = !approveSel.size;
-    $('qa-approve').textContent = approveSel.size ? `Approve ${approveSel.size} selected correction${approveSel.size === 1 ? '' : 's'}` : 'Approve selected corrections';
-  }
-
-  async function approveSelected() {
-    const ids = [...approveSel];
-    if (!ids.length || !confirm(`Approve ${ids.length} correction${ids.length === 1 ? '' : 's'}? Approval does not change any live question; applying is a separate step.`)) return;
-    let failed = 0;
-    for (const id of ids) {
-      const result = await ctx.db.rpc('approve_question_revision', { p_revision_id: id });
-      if (result.error) failed++;
-    }
-    approveSel.clear();
-    await refresh();
-    if (failed) alert(`${failed} correction${failed === 1 ? '' : 's'} could not be approved (it may have changed). Refresh and review it individually.`);
   }
 
   async function setQuarantine(questionId, remove) {
@@ -324,14 +302,13 @@
       <p class="count" id="qa-progress" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">Build a batch to begin. Each question costs roughly 1–5 cents; the spend cap stops the run.</p>
       <h3 style="margin:22px 0 6px">Audit results and exceptions</h3>
       <div class="toolbar"><input id="qa-f-text" type="search" placeholder="Q-number or topic" aria-label="Search by question number or topic"><select id="qa-f-status" aria-label="Audit status"><option value="">Any audit status</option><option value="revised">Revised</option><option value="auto_fix">Auto-fix</option><option value="quarantine">Quarantine</option><option value="pass">Pass</option><option value="released">Released</option><option value="error">Error</option></select><select id="qa-f-risk" aria-label="Clinical risk"><option value="">Any clinical risk</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select><select id="qa-f-active" aria-label="Published state"><option value="">Published or inactive</option><option value="true">Published</option><option value="false">Inactive</option></select><select id="qa-f-flagged" aria-label="Flagged"><option value="">Flagged or not</option><option value="true">Flagged</option><option value="false">Not flagged</option></select><select id="qa-f-diff" aria-label="Difficulty"><option value="">Any difficulty</option><option>easy</option><option>medium</option><option>hard</option></select><select id="qa-f-type" aria-label="Question type"><option value="">Any type</option><option value="mcq">Multiple choice</option><option value="sata">Select all</option></select><select id="qa-f-cat" aria-label="NCLEX category"><option value="">Any NCLEX category</option></select></div>
-      <div class="buttons" style="margin-bottom:10px"><button class="button" type="button" id="qa-approve" disabled>Approve selected corrections</button></div>
+      <p>Batch approval is available only in Bulk correction-draft review above, after a current deterministic audit and server-side eligibility checks. Clinical revisions require individual review.</p>
       <p class="count" id="qa-results-status" style="margin:0 0 10px;font-size:.82rem;color:var(--admin-muted)"></p><div id="qa-results" class="quality-grid"></div></div></section>`;
     const catSelect = $('qa-f-cat');
     categories().forEach(name => { const option = document.createElement('option'); option.value = name; option.textContent = name; catSelect.appendChild(option); });
     $('qa-build').addEventListener('click', buildBatch);
     $('qa-run').addEventListener('click', runBatch);
     $('qa-pause').addEventListener('click', () => { pauseRequested = true; $('qa-progress').textContent = 'Pausing after the current question finishes…'; });
-    $('qa-approve').addEventListener('click', approveSelected);
     ['qa-f-text', 'qa-f-status', 'qa-f-risk', 'qa-f-active', 'qa-f-flagged', 'qa-f-diff', 'qa-f-type', 'qa-f-cat'].forEach(id => $(id).addEventListener(id === 'qa-f-text' ? 'input' : 'change', renderResults));
   }
 
