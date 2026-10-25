@@ -51,7 +51,7 @@ test('protected question is not deleted; real reason shown and Make inactive off
   assert.ok(!h.calls.some(call => call[0] === 'delete_questions_permanently'));
   assert.match(h.alerts[0], /#2: 1 assigned practice-set entry/);
   assert.doesNotMatch(h.alerts[0], /student.*answers/i);
-  assert.match(h.prompts[0], /Make the 1 published question .* inactive/);
+  assert.match(h.prompts[0], /Make the 1 published question inactive instead\? It will be hidden from students\. 1 with student or assessment history must be kept/);
   assert.equal(JSON.stringify(h.calls.at(-1)), JSON.stringify(['update', 'questions', { active: false }, ['used']]));
   assert.equal(h.context.live.find(q => q.id === 'used').active, false);
 });
@@ -85,4 +85,35 @@ test('raw foreign-key errors name the linked records', async () => {
   await h.context.mApply('delete', ['unused']);
   assert.match(h.alerts[0], /Nothing was deleted\. The question is still linked to saved correction drafts/);
   assert.equal(h.context.live.length, 2);
+});
+
+test('active-only question: told to make it inactive first, then Delete again', async () => {
+  const h = harness({ usage: [{ question_id: 'used', reason: 'active_question', label: 'still active (visible to students); make it inactive first', record_count: 1, blocks_delete: true }] });
+  await h.context.mApply('delete', ['used']);
+  assert.ok(!h.calls.some(call => call[0] === 'delete_questions_permanently'));
+  assert.match(h.alerts[0], /#2: still active \(visible to students\); make it inactive first$/m);
+  assert.doesNotMatch(h.alerts[0], /1 still active/);
+  assert.match(h.prompts[0], /It has no student or assessment history, so you can permanently delete it afterwards by choosing Delete again/);
+  assert.equal(JSON.stringify(h.calls.at(-1)), JSON.stringify(['update', 'questions', { active: false }, ['used']]));
+});
+
+test('active question with history: Make inactive offered, not a later delete', async () => {
+  const h = harness({ usage: [
+    { question_id: 'used', reason: 'active_question', label: 'still active (visible to students); make it inactive first', record_count: 1, blocks_delete: true },
+    { question_id: 'used', reason: 'assessment_attempts', label: 'saved, paused, or completed assessment attempt', record_count: 1, blocks_delete: true }
+  ] });
+  await h.context.mApply('delete', ['used']);
+  assert.match(h.alerts[0], /#2: still active .*; 1 saved, paused, or completed assessment attempt/);
+  assert.match(h.prompts[0], /1 with student or assessment history must be kept/);
+  assert.doesNotMatch(h.prompts[0], /Delete again/);
+});
+
+test('busy database: friendly retry message, nothing removed locally', async () => {
+  const h = harness({ deleteError: { code: '55P03', message: 'Nothing was deleted because students are saving work right now. Please try again in a minute.' } });
+  await h.context.mApply('delete', ['unused']);
+  assert.equal(h.alerts[0], 'Nothing was deleted because students are saving work right now. Please try again in a minute.');
+  assert.equal(h.context.live.length, 2);
+  const t = harness({ deleteError: { code: '55P03', message: 'canceling statement due to lock timeout' } });
+  await t.context.mApply('delete', ['unused']);
+  assert.match(t.alerts[0], /busy .* try again in a minute/);
 });

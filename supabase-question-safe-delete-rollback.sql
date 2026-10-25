@@ -5,8 +5,11 @@
 -- Deleted questions are NOT restored by this script.
 
 drop trigger if exists questions_prevent_used_delete on questions;
+drop trigger if exists questions_prevent_used_delete_batch on questions;
 drop function if exists delete_questions_permanently(uuid[]);
 drop function if exists question_deletion_blockers(uuid[]);
 drop function if exists prevent_used_question_delete();
-drop function if exists question_usage_summary(uuid);
-drop function if exists question_usage_details(uuid[]);
+drop function if exists prevent_used_question_delete_batch();
+drop function if exists lock_question_usage_tables();
+drop function if exists question_block_report(uuid[], text, xid, text[]);
+drop function if exists question_usage_details(uuid[], text, xid, text[]);

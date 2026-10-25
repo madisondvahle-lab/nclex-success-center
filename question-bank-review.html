@@ -1598,6 +1598,10 @@
       const text=[error?.message||String(error),error?.details,error?.hint].filter(Boolean).join('\n');
       if(/question_deletion_blockers|delete_questions_permanently/.test(text)&&/schema cache|does not exist|could not find/i.test(text))
         return 'Nothing was deleted. Permanent deletion needs the safe-delete database update (supabase-question-safe-delete.sql), which has not been installed yet. Make inactive still works.';
+      if(error?.code==='55P03')
+        return /students are saving/.test(text)?error.message:'Nothing was deleted because these questions are busy (students are saving work or another edit is in progress). Please try again in a minute.';
+      if(error?.code==='57014')
+        return 'Nothing was deleted because the safety check took too long. Please try again with fewer questions selected.';
       const table=Object.keys(DELETE_LINK_NAMES).find(name=>text.includes(name));
       if(error?.code==='23503'&&table&&!/cannot be permanently deleted|must be kept/.test(text))
         return `Nothing was deleted. The question is still linked to ${DELETE_LINK_NAMES[table]}, which the database protects.\n\n${text}`;
@@ -1605,7 +1609,7 @@
     }
     async function mDelete(ids){
       const label=id=>{const q=live.find(x=>x.id===id);return q?.question_no?`#${q.question_no}`:`"${String(q?.stem||id).slice(0,60)}"`};
-      const describe=rows=>rows.map(row=>`${row.record_count} ${row.label}${Number(row.record_count)===1?'':'(s)'}`).join('; ');
+      const describe=rows=>rows.map(row=>row.reason==='active_question'?row.label:`${row.record_count} ${row.label}${Number(row.record_count)===1?'':'(s)'}`).join('; ');
       const checked=await db.rpc('question_deletion_blockers',{p_question_ids:ids});
       if(checked.error){alert(deleteErrorMessage(checked.error));return}
       const usage=new Map();
@@ -1633,7 +1637,11 @@
         }
       }
       const activeBlocked=blocked.filter(id=>live.find(q=>q.id===id)?.active);
-      if(activeBlocked.length&&confirm(`Make the ${activeBlocked.length} published question${activeBlocked.length===1?'':'s'} that must be kept inactive instead? ${activeBlocked.length===1?'It':'They'} will be hidden from students, and all student history is preserved.`))
+      const onlyActive=activeBlocked.filter(id=>usage.get(id).every(row=>!row.blocks_delete||row.reason==='active_question'));
+      const keep=activeBlocked.length-onlyActive.length;
+      const after=[keep?`${keep} with student or assessment history must be kept; all student history is preserved.`:'',
+        onlyActive.length?`${onlyActive.length===activeBlocked.length?(onlyActive.length===1?'It has':'They have'):`${onlyActive.length} of them ${onlyActive.length===1?'has':'have'}`} no student or assessment history, so you can permanently delete ${onlyActive.length===1?'it':'them'} afterwards by choosing Delete again.`:''].filter(Boolean).join(' ');
+      if(activeBlocked.length&&confirm(`Make the ${activeBlocked.length} published question${activeBlocked.length===1?'':'s'} inactive instead? ${activeBlocked.length===1?'It':'They'} will be hidden from students. ${after}`))
         await mApply('inactive',activeBlocked,true);
     }
     async function mApply(action,ids,skipConfirm){
