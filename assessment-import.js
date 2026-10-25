@@ -12,9 +12,10 @@
       var classic=Number(ar[2]),nn=ng?Number(ng[2]):null;
       var cq=(t.split(/NGN Questions/i)[0].match(/\s\d+\s+\d{4,5}\s+[A-Z]/g)||[]).length,nq=(t.split(/NGN Questions/i)[1]||'').match(/\s\d+\s+\d{5}\s/g);nq=nq?nq.length:0;
       out.platform='archer';out.date=dt?dt[1]:'';out.result=res?res[1]:'';
-      out.overall=nn!=null&&cq&&nq?Math.round((classic*cq+nn*nq)/(cq+nq)):classic;
+      out.overall=null;
+      out.sections={classic:{overall_percent:classic,question_count:cq||null},ngn:{overall_percent:nn,question_count:nq||null}};
       out.label='CAT'+(id?' ('+id[1]+')':'')+' · Classic '+classic+'%'+(nn!=null?' / NGN '+nn+'%':'')+(res?' · '+res[1]:'');
-      out.note='Archer reports do not include category percentages. Add them below if you have them.';
+      out.note='Archer Classic and NGN percentages are separate. A combined score needs actual earned and possible points; enter both sections separately.';
       return out;
     }
     var tid=t.match(/TestId\s*:\s*(\d+)/i);
@@ -31,6 +32,260 @@
     }
     return out;
   }
+  var ARCHER_CATEGORY_RULES=[
+    /management\s+of\s+care/i,
+    /safety\s*(?:&|and)?\s*infection\s*(?:control|prevention)/i,
+    /health\s+promotion\s*(?:(?:&|and)\s*maintenance)?/i,
+    /psychosocial\s+integrity/i,
+    /basic\s+care\s*(?:(?:&|and)\s*comfort)?/i,
+    /pharmacological\s*(?:(?:&|and)\s*parenteral\s*therapies)?|parenteral\s+therapies/i,
+    /reduction\s+of\s+risk\s+potential/i,
+    /physiological\s+adaptation/i
+  ];
+  function categoryInLine(value){
+    for(var i=0;i<ARCHER_CATEGORY_RULES.length;i++){
+      if(ARCHER_CATEGORY_RULES[i].test(value))return C.NAMES[i];
+    }
+    return null;
+  }
+  function parseArcherRows(section,rows,metadata){
+    var result={section:section,categories:{},reviewRequired:true,missingCategories:[],ambiguousCategories:[],missingFields:[]},ambiguous={};
+    (rows||[]).forEach(function(row){
+      var category=C.canon(row.category,'');
+      if(!category||C.index(category)<0||ambiguous[category])return;
+      if(result.categories[category]){
+        delete result.categories[category];
+        result.ambiguousCategories.push(category);
+        ambiguous[category]=true;
+        return;
+      }
+      var score=finiteScore(row.score),peer=finiteScore(row.peer_score),count=finiteCount(row.question_count);
+      result.categories[category]={
+        score:score,
+        peer_score:peer,
+        peer_score_unit:section==='ngn'?'points':section==='classic'?'percent':null,
+        question_count:count
+      };
+      if(score==null||peer==null||count==null)result.missingCategories.push(category);
+    });
+    if(metadata){
+      result.question_count=finiteCount(metadata.question_count);
+      result.overall_points=pointValues(metadata.overall_points);
+      result.overall_percent=finiteScore(metadata.overall_percent);
+      result.result_counts=metadata.result_counts||null;
+    }
+    if(result.question_count==null)result.missingFields.push('question_count');
+    if(result.overall_percent==null)result.missingFields.push('overall_percent');
+    if(section==='ngn'&&!result.overall_points)result.missingFields.push('overall_points');
+    if(section==='classic'&&(!result.result_counts||['correct','incorrect','omitted'].some(function(field){return finiteCount(result.result_counts[field])==null}))){
+      result.missingFields.push('result_counts');
+    }
+    C.NAMES.forEach(function(category){
+      if(!result.categories[category]&&!result.ambiguousCategories.includes(category)){
+        result.missingCategories.push(category);
+      }
+    });
+    return result;
+  }
+  function finiteScore(value){
+    var number=Number(value);
+    return value!==''&&value!=null&&Number.isFinite(number)&&number>=0&&number<=100?number:null;
+  }
+  function finiteCount(value){
+    var number=Number(value);
+    return value!==''&&value!=null&&Number.isInteger(number)&&number>=0?number:null;
+  }
+  function pointValues(value){
+    if(!value)return null;
+    var earned=Number(value.earned_points),possible=Number(value.possible_points);
+    return Number.isFinite(earned)&&Number.isFinite(possible)&&earned>=0&&possible>0&&earned<=possible
+      ?{earned_points:earned,possible_points:possible}:null;
+  }
+  function parseArcherStats(raw){
+    var lines=String(raw||'').split(/\r?\n/).map(function(line){return line.trim()}).filter(Boolean);
+    var rows=[],scoreFirst=true;
+    var header=lines.find(function(line){return /your\s+score/i.test(line)&&/peer\s+score/i.test(line)});
+    if(header)scoreFirst=header.search(/your\s+score/i)<header.search(/peer\s+score/i);
+    lines.forEach(function(line){
+      var category=categoryInLine(line);
+      if(!category)return;
+      var percentages=(line.match(/\b\d{1,3}(?:\.\d+)?\s*%/g)||[])
+        .map(function(value){return finiteScore(value.replace('%','').trim())})
+        .filter(function(value){return value!=null});
+      var tail=line.replace(ARCHER_CATEGORY_RULES[C.index(category)],'');
+      var countMatch=tail.match(/(?:\d{1,3}\s*%\s*){1,2}(\d{1,3})(?=\s|$)/);
+      rows.push({
+        category:category,
+        score:percentages.length===2?percentages[scoreFirst?0:1]:null,
+        peer_score:percentages.length===2?percentages[scoreFirst?1:0]:null,
+        question_count:countMatch?Number(countMatch[1]):null
+      });
+    });
+    return parseArcherRows(null,rows);
+  }
+  function wordText(word){return String(word&&word.text||'').trim()}
+  function wordCenter(word){return (Number(word.bbox.y0)+Number(word.bbox.y1))/2}
+  function groupWordRows(words){
+    var groups=[];
+    (words||[]).filter(function(word){return word&&word.bbox&&wordText(word)}).sort(function(a,b){return wordCenter(a)-wordCenter(b)}).forEach(function(word){
+      var center=wordCenter(word),group=groups.find(function(item){return Math.abs(item.center-center)<=13});
+      if(!group){group={center:center,words:[]};groups.push(group)}
+      group.words.push(word);
+      group.center=group.words.reduce(function(sum,item){return sum+wordCenter(item)},0)/group.words.length;
+    });
+    groups.forEach(function(group){
+      group.words.sort(function(a,b){return a.bbox.x0-b.bbox.x0});
+      group.text=group.words.map(wordText).join(' ');
+    });
+    return groups;
+  }
+  function activeSectionFromPixels(bitmap){
+    var canvas=document.createElement('canvas'),context=canvas.getContext('2d',{willReadFrequently:true});
+    canvas.width=bitmap.width;canvas.height=bitmap.height;context.drawImage(bitmap,0,0);
+    var y=Math.max(0,Math.min(bitmap.height-1,Math.round(bitmap.height*0.039)));
+    function tealCount(start,end){
+      var image=context.getImageData(start,y,end-start,1).data,count=0;
+      for(var i=0;i<image.length;i+=4){
+        if(image[i+1]>120&&image[i+2]>120&&image[i]<110&&image[i+1]-image[i]>55)count++;
+      }
+      return count;
+    }
+    var classic=tealCount(0,Math.min(120,bitmap.width)),ngn=tealCount(115,Math.min(230,bitmap.width));
+    if(Math.max(classic,ngn)<20||Math.abs(classic-ngn)<12)return null;
+    return classic>ngn?'classic':'ngn';
+  }
+  function cropCanvas(bitmap,x,y,width,height){
+    var scale=5,canvas=document.createElement('canvas');
+    canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);
+    var context=canvas.getContext('2d',{willReadFrequently:true});
+    context.imageSmoothingEnabled=true;
+    context.drawImage(bitmap,x,y,width,height,0,0,canvas.width,canvas.height);
+    var image=context.getImageData(0,0,canvas.width,canvas.height),min=255,max=0;
+    for(var i=0;i<image.data.length;i+=4){
+      var gray=Math.round(.299*image.data[i]+.587*image.data[i+1]+.114*image.data[i+2]);
+      min=Math.min(min,gray);max=Math.max(max,gray);
+      image.data[i]=image.data[i+1]=image.data[i+2]=gray;
+    }
+    var range=Math.max(1,max-min);
+    for(var j=0;j<image.data.length;j+=4){
+      var value=Math.max(0,Math.min(255,Math.round((image.data[j]-min)*255/range)));
+      image.data[j]=image.data[j+1]=image.data[j+2]=value;
+    }
+    context.putImageData(image,0,0);
+    return canvas;
+  }
+  function parsePercentText(text){
+    var match=String(text||'').match(/^\s*(\d{1,3})\s*%\s*$/);
+    return match?finiteScore(match[1]):null;
+  }
+  function parseIntegerText(text){
+    var match=String(text||'').match(/^\s*(\d{1,3})\s*$/);
+    return match?finiteCount(match[1]):null;
+  }
+  function parsePointText(text){
+    var match=String(text||'').match(/^\s*(\d{1,3}(?:\.\d+)?)\s*$/);
+    var value=match?Number(match[1]):null;
+    return value!=null&&Number.isFinite(value)&&value>=0?value:null;
+  }
+  async function recognizeCell(worker,canvas){
+    var result=await worker.recognize(canvas);
+    return String(result.data.text||'').trim();
+  }
+  async function readArcherImage(file,expectedSection){
+    if(!window.Tesseract||typeof Tesseract.createWorker!=='function')throw new Error('The screenshot OCR engine is unavailable.');
+    var bitmap=await createImageBitmap(file),worker=await Tesseract.createWorker('eng');
+    try{
+      await worker.setParameters({tessedit_pageseg_mode:'6'});
+      var sourceCanvas=document.createElement('canvas');
+      sourceCanvas.width=bitmap.width;sourceCanvas.height=bitmap.height;
+      sourceCanvas.getContext('2d').drawImage(bitmap,0,0);
+      var recognized=await worker.recognize(sourceCanvas),data=recognized.data||{},text=String(data.text||'');
+      var section=activeSectionFromPixels(bitmap);
+      if(!section||section!==expectedSection){
+        return {section:section,categories:{},reviewRequired:true,warning:section?'This screenshot is selected as '+section.toUpperCase()+', not '+expectedSection.toUpperCase()+'. No values were imported.':'Could not identify the selected Classic/NGN tab. No values were imported.'};
+      }
+      var words=data.words||[],groups=groupWordRows(words),rows=[];
+      var width=bitmap.width,height=bitmap.height;
+      var columns=section==='classic'
+        ?{scoreX:.394,scoreW:.045,peerX:.518,peerW:.045,countX:.644,countW:.031}
+        :{scoreX:.4932,scoreW:.0284,peerX:.612,peerW:.039,countX:.757,countW:.018};
+      async function readAt(xRatio,yRatio,widthRatio,heightRatio,parser,pageMode){
+        var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
+        var y=Math.max(0,Math.min(height-1,Math.round(height*yRatio)));
+        var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
+        var cropHeight=Math.max(14,Math.min(height-y,Math.round(height*heightRatio)));
+        await worker.setParameters({tessedit_pageseg_mode:pageMode||'8',tessedit_char_whitelist:'0123456789%'});
+        return parser(await recognizeCell(worker,cropCanvas(bitmap,x,y,cropWidth,cropHeight)));
+      }
+      groups.forEach(function(group){
+        var category=categoryInLine(group.text);
+        if(!category)return;
+        var yValues=group.words.filter(function(word){
+          var x=(word.bbox.x0+word.bbox.x1)/2/width;
+          return x>columns.scoreX-.015&&x<columns.countX+columns.countW+.02;
+        }).map(wordCenter);
+        var rowY=yValues.length?yValues.sort(function(a,b){return a-b})[Math.floor(yValues.length/2)]:group.center;
+        rows.push({category:category,rowY:rowY});
+      });
+      var extracted=[];
+      for(var row of rows){
+        var top=Math.max(0,Math.round(row.rowY-8)),cellHeight=Math.min(22,height-top);
+        async function cell(xRatio,widthRatio,pageMode,characterWhitelist){
+          var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
+          var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
+          await worker.setParameters({
+            tessedit_pageseg_mode:pageMode||'8',
+            tessedit_char_whitelist:characterWhitelist||'0123456789%'
+          });
+          return recognizeCell(worker,cropCanvas(bitmap,x,top,cropWidth,cellHeight));
+        }
+        var scoreText=await cell(columns.scoreX,columns.scoreW);
+        var peerText=await cell(
+          columns.peerX,columns.peerW,section==='ngn'?'7':'8',
+          section==='ngn'?'0123456789.':'0123456789%'
+        );
+        var countText=await cell(columns.countX,columns.countW);
+        extracted.push({
+          category:row.category,
+          score:parsePercentText(scoreText),
+          peer_score:section==='ngn'?parsePointText(peerText):parsePercentText(peerText),
+          question_count:parseIntegerText(countText)
+        });
+      }
+      var metadata={};
+      var tabCount=text.match(new RegExp(section+'\\s*\\((\\d+)\\)','i'));
+      metadata.question_count=tabCount?Number(tabCount[1]):await readAt(section==='classic' ? .033 : .091,.013,.032,.04,parseIntegerText);
+      if(section==='classic'){
+        metadata.overall_percent=await readAt(.139,.09,.026,.032,parsePercentText);
+        var correct=await readAt(.139,.354,.028,.031,parseIntegerText);
+        var incorrect=await readAt(.187,.354,.028,.031,parseIntegerText);
+        var omitted=await readAt(.237,.354,.028,.031,parseIntegerText);
+        var countMatch=text.match(/Correct\s+Incorrect[.:]?\s+Omitted\s+(\d+)\s+(\d+)\s+(\d+|[Oo°])/i);
+        metadata.result_counts=countMatch
+          ?{correct:Number(countMatch[1]),incorrect:Number(countMatch[2]),omitted:/^[Oo°]$/.test(countMatch[3])?0:Number(countMatch[3])}
+          :{correct:correct,incorrect:incorrect,omitted:omitted};
+        if(Object.values(metadata.result_counts).every(function(value){return value==null})){
+          metadata.result_counts=null;
+        }
+      }else{
+        metadata.overall_percent=await readAt(.1597,.09,.034,.032,parsePercentText);
+        var earned=await readAt(.16,.337,.047,.035,parseIntegerText,'7');
+        var possible=await readAt(.217,.337,.047,.035,parseIntegerText,'7');
+        if(earned!=null&&possible!=null&&possible>0&&earned<=possible){
+          metadata.overall_points={earned_points:earned,possible_points:possible};
+        }
+      }
+      var result=parseArcherRows(section,extracted,metadata);
+      result.reviewRequired=true;
+      result.warning=result.missingCategories.length||result.ambiguousCategories.length||result.missingFields.length
+        ?'Some categories or fields were not recognized reliably. Verify every candidate and review all blank fields.'
+        :'Review every extracted value against the screenshot before saving.';
+      return result;
+    }finally{
+      await worker.terminate();
+      bitmap.close();
+    }
+  }
   function load(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('Could not load reader'))};document.head.appendChild(s)})}
   async function pdfText(file){
     if(!window.pdfjsLib){await load('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
@@ -41,6 +296,12 @@
   async function imageText(file){
     if(!window.Tesseract)await load('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
     var r=await Tesseract.recognize(file,'eng');return r.data.text;
+  }
+  async function readArcherStats(file,section){
+    if(!file||(!/^image\/(png|jpeg)$/i.test(file.type)&&!/\.(png|jpe?g)$/i.test(file.name)))throw new Error('Choose a PNG, JPG, or JPEG screenshot.');
+    if(section!=='classic'&&section!=='ngn')throw new Error('Choose whether the screenshot is Classic or NGN before reading it.');
+    if(!window.Tesseract)await load('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+    return readArcherImage(file,section);
   }
   async function readFile(file){
     var text=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)?await pdfText(file):await imageText(file);
@@ -62,5 +323,5 @@
     var text=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)?await pdfText(file):await imageText(file);
     return parseCPR(text);
   }
-  window.AssessmentImport={parseText:parseText,readFile:readFile,parseCPR:parseCPR,readCPR:readCPR};
+  window.AssessmentImport={parseText:parseText,parseArcherStats:parseArcherStats,parseArcherRows:parseArcherRows,readArcherStats:readArcherStats,readFile:readFile,parseCPR:parseCPR,readCPR:readCPR};
 })();

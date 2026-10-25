@@ -32,9 +32,25 @@
     .file-note{margin:5px 0 0;font-size:.74rem;color:var(--admin-muted)}
     .summary h3{margin:0 0 6px;font:700 1.15rem Georgia,serif;color:var(--admin-navy)}
     .summary p{margin:5px 0;color:var(--admin-muted);font-size:.84rem;line-height:1.5}
+    .archer-panel{margin:16px 0;padding:16px;border:1px solid var(--admin-line);background:#f8fafc}
+    .archer-panel h3{margin:0 0 6px;color:var(--admin-navy);font:700 1rem Georgia,serif}
+    .archer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
+    .archer-section{margin:14px 0;padding:12px;background:#fff;border:1px solid var(--admin-line)}
+    .archer-section label{margin-top:8px}
+    .archer-upload-previews{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px;margin-top:10px}
+    .archer-preview{position:relative;border:1px solid var(--admin-line);padding:6px;background:#fff}
+    .archer-preview img{display:block;width:100%;height:90px;object-fit:contain}
+    .archer-preview button{margin-top:6px}
+    .archer-matrix-wrap{overflow-x:auto}
+    .archer-matrix{width:100%;min-width:980px;border-collapse:collapse;font-size:.75rem}
+    .archer-matrix th,.archer-matrix td{padding:6px;border-bottom:1px solid var(--admin-line);text-align:left}
+    .archer-matrix th{color:var(--admin-navy)}
+    .archer-matrix input{min-width:70px;padding:7px}
+    .archer-message{min-height:20px;margin:8px 0 0;color:var(--admin-muted);font-size:.8rem}
     @media(max-width:860px){
       .assessments-layout{grid-template-columns:1fr}
       .fields,.scores{grid-template-columns:1fr}
+      .archer-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -136,6 +152,52 @@
                     <div><label for="readiness">Readiness label</label><input id="readiness" maxlength="80" placeholder="e.g. High chance of passing"></div>
                   </div>
                   <div class="scores" id="scores"></div>
+                  <section class="archer-panel" id="archer-panel" hidden aria-labelledby="archer-title">
+                    <h3 id="archer-title">Archer CAT · Classic and NGN results</h3>
+                    <p class="hint">Each CAT is saved as one assessment. Screenshot OCR is a draft only; review and correct all values before saving. Leave unreported values blank.</p>
+                    <div class="archer-grid">
+                      <div><label for="archer-result">Pass/Fail result</label><select id="archer-result"><option value="">Select result</option><option value="PASS">Pass</option><option value="FAIL">Fail</option></select></div>
+                      <div><label for="archer-total-questions">Total questions</label><input id="archer-total-questions" type="number" min="0" step="1" placeholder="Optional"></div>
+                      <div><label for="archer-classic-questions">Classic questions</label><input id="archer-classic-questions" type="number" min="0" step="1" placeholder="Optional"></div>
+                      <div><label for="archer-ngn-questions">NGN questions</label><input id="archer-ngn-questions" type="number" min="0" step="1" placeholder="Optional"></div>
+                      <div><label for="archer-classic-overall">Classic overall %</label><input id="archer-classic-overall" type="number" min="0" max="100" step="0.1" placeholder="Provider-reported"></div>
+                      <div><label for="archer-ngn-overall">NGN overall %</label><input id="archer-ngn-overall" type="number" min="0" max="100" step="0.1" placeholder="Provider-reported"></div>
+                      <div><label for="archer-classic-earned">Classic earned points</label><input id="archer-classic-earned" type="number" min="0" step="0.01" placeholder="Only if reported"></div>
+                      <div><label for="archer-classic-possible">Classic possible points</label><input id="archer-classic-possible" type="number" min="0" step="0.01" placeholder="Only if reported"></div>
+                      <div><label for="archer-ngn-earned">NGN earned points</label><input id="archer-ngn-earned" type="number" min="0" step="0.01" placeholder="Only if reported"></div>
+                      <div><label for="archer-ngn-possible">NGN possible points</label><input id="archer-ngn-possible" type="number" min="0" step="0.01" placeholder="Only if reported"></div>
+                      <div><label for="archer-classic-correct">Classic correct</label><input id="archer-classic-correct" type="number" min="0" step="1" placeholder="Optional"></div>
+                      <div><label for="archer-classic-incorrect">Classic incorrect</label><input id="archer-classic-incorrect" type="number" min="0" step="1" placeholder="Optional"></div>
+                      <div><label for="archer-classic-omitted">Classic omitted</label><input id="archer-classic-omitted" type="number" min="0" step="1" placeholder="Optional"></div>
+                    </div>
+                    <div class="archer-grid">
+                      <div class="archer-section">
+                        <h3>Classic Client Needs screenshot(s)</h3>
+                        <label for="archer-classic-files">Upload Classic statistics</label>
+                        <input id="archer-classic-files" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple>
+                        <div class="archer-upload-previews" id="archer-classic-previews"></div>
+                        <p class="archer-message" id="archer-classic-message" aria-live="polite"></p>
+                      </div>
+                      <div class="archer-section">
+                        <h3>NGN Client Needs screenshot(s)</h3>
+                        <label for="archer-ngn-files">Upload NGN statistics</label>
+                        <input id="archer-ngn-files" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple>
+                        <div class="archer-upload-previews" id="archer-ngn-previews"></div>
+                        <p class="archer-message" id="archer-ngn-message" aria-live="polite"></p>
+                      </div>
+                    </div>
+                    <div class="archer-matrix-wrap">
+                      <table class="archer-matrix" id="archer-category-matrix">
+                        <caption class="hint">Enter provider-reported percentages, Classic peer percentages, NGN average peer points, question counts, and actual point totals only when shown.</caption>
+                        <thead><tr><th scope="col">Client Needs category</th><th scope="col">Classic %</th><th scope="col">Classic peer %</th><th scope="col">Classic #</th><th scope="col">Classic earned</th><th scope="col">Classic possible</th><th scope="col">NGN %</th><th scope="col">NGN peer points</th><th scope="col">NGN #</th><th scope="col">NGN earned</th><th scope="col">NGN possible</th></tr></thead>
+                        <tbody id="archer-category-rows"></tbody>
+                      </table>
+                    </div>
+                    <div id="archer-ocr-review-wrap" hidden>
+                      <label><input id="archer-ocr-reviewed" type="checkbox"> I reviewed each screenshot and the reported values, corrected any OCR errors, and confirmed any remaining blank fields are not reported.</label>
+                    </div>
+                    <p class="archer-message" id="archer-score-message" aria-live="polite"></p>
+                  </section>
                   <div><label for="notes">Private notes</label><textarea id="notes" maxlength="2000" placeholder="Optional context from the report or tutoring session"></textarea></div>
                   <div style="margin-top:14px"><label for="report-file">Attach source report <span style="font-weight:400;text-transform:none">(optional)</span></label><input id="report-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,application/pdf,image/png,image/jpeg,image/webp,text/csv"><p class="file-note">Private to admins. PDF, image, or CSV; up to 10 MB.</p></div>
                   <button class="submit" id="save" type="submit">Save assessment history</button>
@@ -208,6 +270,9 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="category-names.js"></script>
+  <script src="assessment-archer.js"></script>
+  <script src="assessment-import.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const categories=['Management of Care','Safety & Infection Prevention','Health Promotion & Maintenance','Psychosocial Integrity','Basic Care & Comfort','Pharmacological & Parenteral Therapies','Reduction of Risk Potential','Physiological Adaptation'];
@@ -244,5 +309,6 @@
     document.getElementById('import-csv').addEventListener('click',async()=>{const input=document.getElementById('csv-file'),importStatus=document.getElementById('import-status'),file=input.files[0];if(!file){message('Choose a completed CSV file first.','error',importStatus);return}const button=document.getElementById('import-csv');button.disabled=true;message('Checking CSV…','',importStatus);try{const payload=csvPayload(await file.text());if(!payload.length)throw new Error('No valid assessment rows were found.');const {error}=await db.from('external_assessments').insert(payload);if(error)throw error;input.value='';message(payload.length+' assessment '+(payload.length===1?'entry was':'entries were')+' imported.','success',importStatus);await loadHistory()}catch(error){message(error.message||'Unable to import this CSV.','error',importStatus)}button.disabled=false});
     document.getElementById('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
   </script>
+  <script src="assessment-history-archer.js"></script>
 </body>
 </html>

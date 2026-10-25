@@ -315,6 +315,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="assessment-archer.js"></script>
   <script src="assessment-platforms.js"></script>
   <script src="assessment-display.js?v=assessment-clarity-v1"></script>
   <script src="assessment-import.js"></script>
@@ -472,6 +473,52 @@
       list.innerHTML=(notes||[]).length?(notes||[]).map(item=>'<article class="upload"><p>'+esc(item.note||'')+'</p><p class="muted">'+esc(new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(new Date(item.created_at)))+'</p></article>').join(''):'<p class="empty">No private notes yet.</p>';
     }
 
+    function archerValue(section,category){
+      if(!category)return section?.overall_percent??section?.calculated_overall_percent??null;
+      const value=section?.categories?.[category];
+      return value?.score_percent??value?.calculated_score_percent??null;
+    }
+    function archerCategoryCell(section,category,sectionName){
+      const value=section?.categories?.[category];
+      const count=value?.question_count;
+      const score=archerValue(section,category);
+      if(count===0)return 'Not Tested';
+      const peer=sectionName==='ngn'
+        ?value?.peer_average_points==null?'':` · avg peer ${value.peer_average_points} points`
+        :value?.peer_score_percent==null?'':` · peer ${value.peer_score_percent}%`;
+      if(score==null)return `Not Reported${peer}${count==null?'':` · ${count} q`}`;
+      return `${score}%${peer}${count==null?'':` · ${count} q`}${count!=null&&count<3?' · limited exposure':''}`;
+    }
+    function renderArcherCatDetails(uploads){
+      const archerRows=uploads.filter(item=>item.archer_cat_data).sort((a,b)=>assessmentDate(a)-assessmentDate(b)).slice(-6);
+      const legacy=uploads.some(item=>item.fromHistory&&/^archer$/i.test(item.platform||'')&&!item.archer_cat_data);
+      if(!archerRows.length)return legacy?'<p class="muted">Legacy Archer entries remain in history, but are excluded from Classic/NGN comparison because section-level scoring data was not recorded.</p>':'';
+      const attempts=archerRows.map(item=>{
+        const detail=item.archer_cat_data;
+        const classic=archerValue(detail.classic);
+        const ngn=archerValue(detail.ngn);
+        const combined=detail.combined?.overall?.score;
+        return `<tr><th scope="row">${esc(item.report_label||item.platform||'Archer CAT')}<br><span class="muted">${esc(date(item.taken_on))}</span></th>
+          <td>${detail.result?esc(detail.result):'—'} · ${esc(detail.total_questions??'—')} q</td>
+          <td>${classic==null?'Not Reported':`${esc(classic)}%${detail.classic.overall_score_source==='earned-points-over-possible-points'?' · points':''}`} · ${esc(detail.classic.question_count??'—')} q</td>
+          <td>${ngn==null?'Not Reported':`${esc(ngn)}%${detail.ngn.overall_score_source==='earned-points-over-possible-points'?' · points':''}`} · ${esc(detail.ngn.question_count??'—')} q</td>
+          <td>${combined==null?'Insufficient Data':`${esc(combined)}% · ${esc(detail.combined.overall.earned_points)}/${esc(detail.combined.overall.possible_points)} points`}</td></tr>`;
+      }).join('');
+      const latest=archerRows[archerRows.length-1].archer_cat_data;
+      const categories=ArcherCAT.categories.map(category=>{
+        const combined=latest.combined?.categories?.[category];
+        return `<tr><th scope="row">${esc(category)}</th>
+          <td>${esc(archerCategoryCell(latest.classic,category,'classic'))}</td>
+          <td>${esc(archerCategoryCell(latest.ngn,category,'ngn'))}</td>
+          <td>${combined?`${esc(combined.score)}% · ${esc(combined.earned_points)}/${esc(combined.possible_points)} points`:'Insufficient Data'}</td></tr>`;
+      }).join('');
+      return `<section style="margin-top:18px"><h3>Archer CAT · separate scoring trends</h3>
+        <p class="muted">Classic and NGN provider-reported scores stay separate. Combined scores are shown only when both sections have actual earned/possible points. Categories with fewer than 3 questions are marked limited exposure.</p>
+        <div class="ov-scroll"><table class="ov-table"><thead><tr><th>CAT / date</th><th>Result / total</th><th>Classic overall</th><th>NGN overall</th><th>Combined</th></tr></thead><tbody>${attempts}</tbody></table></div>
+        <h4>Latest CAT by Client Needs</h4><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Category</th><th>Classic % · peer % · #</th><th>NGN % · peer points · #</th><th>Combined %</th></tr></thead><tbody>${categories}</tbody></table></div>
+        ${legacy?'<p class="muted">Legacy Archer entries remain in history, but are excluded from section-level trend comparison because section-level scoring data was not recorded.</p>':''}
+      </section>`;
+    }
     function renderTrend(uploads,categories){
       let card=$('progress-trend-card');
 
@@ -495,6 +542,7 @@
 
       const scored=uploads
         .filter(isProgressAssessment)
+        .filter(item=>!(item.fromHistory&&/^archer$/i.test(item.platform||'')&&!item.archer_cat_data))
         .filter(item=>item.overall_score!==null&&item.overall_score!==undefined&&item.overall_score!=='')
         .map(item=>({...item,score:Number(item.overall_score)}))
         .filter(item=>Number.isFinite(item.score))
@@ -503,8 +551,9 @@
 
       const trend=$('progress-trend');
 
+      const archerDetails=renderArcherCatDetails(uploads);
       if(!scored.length){
-        trend.innerHTML='<p class="empty">No scored assessments yet.</p>';
+        trend.innerHTML=archerDetails||'<p class="empty">No scored assessments yet.</p>';
         return;
       }
 
@@ -526,6 +575,7 @@
           }).join('')}
         </div>
         ${latestCategories.length?`<h3 style="margin:16px 0 6px;font-size:1rem">Latest CAT sections${latest.taken_on?' · '+esc(date(latest.taken_on)):''}</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px 16px">${latestCategories.map(item=>`<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.8rem"><span>${esc(item.category)}</span><strong>${Math.round(item.score)}%</strong></div>`).join('')}</div>`:''}
+          ${archerDetails}
       `;
     }
 
@@ -553,20 +603,25 @@
 
       const scored=uploads
         .filter(isProgressAssessment)
+        .filter(item=>!(item.fromHistory&&/^archer$/i.test(item.platform||'')&&!item.archer_cat_data))
         .filter(item=>item.overall_score!==null&&item.overall_score!==undefined&&item.overall_score!=='')
         .map(item=>({...item,score:Number(item.overall_score)}))
         .filter(item=>Number.isFinite(item.score))
         .sort((a,b)=>assessmentDate(b)-assessmentDate(a))
         .slice(0,5);
+      const archerRows=uploads.filter(item=>item.archer_cat_data)
+        .sort((a,b)=>assessmentDate(b)-assessmentDate(a)).slice(0,5);
 
       const target=$('recent-assessments');
 
-      if(!scored.length){
-        target.innerHTML='<p class="empty">No scored assessments yet.</p>';
+      if(!scored.length&&!archerRows.length){
+        target.innerHTML=uploads.some(item=>item.fromHistory&&/^archer$/i.test(item.platform||''))
+          ?'<p class="empty">Legacy Archer scores are retained in history but are not comparable without separate Classic/NGN scoring details.</p>'
+          :'<p class="empty">No scored assessments yet.</p>';
         return;
       }
 
-      target.innerHTML=scored.map((item,index)=>{
+      const scoredHtml=scored.map((item,index)=>{
         const older=scored[index+1];
         const delta=older?Math.round(item.score-older.score):null;
         const deltaText=delta===null?'':delta>0?` ↑ ${delta}%`:delta<0?` ↓ ${Math.abs(delta)}%`:' →';
@@ -577,6 +632,21 @@
           </div>
         `;
       }).join('');
+      const archerHtml=archerRows.map(item=>{
+        const detail=item.archer_cat_data;
+        const classic=archerValue(detail.classic);
+        const ngn=archerValue(detail.ngn);
+        const combined=detail.combined?.overall;
+        const label=(value,section)=>value==null?'Not Reported'
+          :`${esc(value)}% (${section.overall_score_source==='earned-points-over-possible-points'?'points-based':'provider-reported'})`;
+        return `<article class="snapshot-score" style="display:block">
+          <strong>${esc(item.report_label||item.platform||'Archer CAT')} · ${esc(date(item.taken_on))} · ${esc(detail.result||'Result not recorded')}</strong>
+          <p>Classic ${label(classic,detail.classic)} (${esc(detail.classic.question_count??'—')} q)
+          · NGN ${label(ngn,detail.ngn)} (${esc(detail.ngn.question_count??'—')} q)
+          · Combined ${combined?.score==null?'Insufficient Data':`${esc(combined.score)}% (${esc(combined.earned_points)}/${esc(combined.possible_points)} points)`}</p>
+        </article>`;
+      }).join('');
+      target.innerHTML=(scoredHtml||'')+archerHtml;
     }
 
     const fmtDateTime=value=>{
@@ -1289,16 +1359,19 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     async function loadHistoryAssessments(studentId){
       const {data,error}=await db.from('external_assessments').select('*').eq('student_id',studentId);
       if(error){$('intro').textContent='Assessments entered on the Assessments page could not be loaded: '+(error.message||'unknown error');return{uploads:[],categories:[]}}
-      const filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename').eq('student_id',studentId);
-      const filesBy=new Map;(filesResult.data||[]).forEach(f=>{if(!filesBy.has(f.assessment_id))filesBy.set(f.assessment_id,f)});
-      (data||[]).forEach(row=>{row.assessment_report_files=filesBy.has(row.id)?[filesBy.get(row.id)]:[]});
+      let filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename,section').eq('student_id',studentId);
+      if(filesResult.error&&/section/i.test(filesResult.error.message||'')){
+        filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename').eq('student_id',studentId);
+      }
+      const filesBy=new Map;(filesResult.data||[]).forEach(f=>filesBy.set(f.assessment_id,[...(filesBy.get(f.assessment_id)||[]),f]));
+      (data||[]).forEach(row=>{row.assessment_report_files=filesBy.get(row.id)||[]});
       const uploads=[],categories=[];
       (data||[]).forEach(row=>{
         const id='history:'+row.id,file=(row.assessment_report_files||[])[0],name=row.assessment_name||'';
         const kind=/cpr/i.test(name+' '+row.platform)?'cpr_report':/\bcat\b|computer adaptive/i.test(name+' '+row.platform)?'cat':'other';
-        uploads.push({id,fromHistory:true,platform:row.platform||'Assessment',assessment_type:kind,taken_on:row.taken_at,created_at:row.created_at,overall_score:row.overall_score,report_label:name||null,report_filename:(file&&file.original_filename)||name||'Entered manually',report_path:file?file.storage_path:'',uploaded_by:session.user.id});
+        uploads.push({id,fromHistory:true,platform:row.platform||'Assessment',assessment_type:kind,taken_on:row.taken_at,created_at:row.created_at,overall_score:row.overall_score,report_label:name||null,report_filename:(file&&file.original_filename)||name||'Entered manually',report_path:file?file.storage_path:'',assessment_report_files:row.assessment_report_files||[],archer_cat_data:row.archer_cat_data||null,uploaded_by:session.user.id});
         const cnt={};Object.entries(row.category_counts||{}).forEach(([k,v])=>cnt[NCLEXCats.canon(k,k)]=Number(v));
-        Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:NCLEXCats.canon(cat,cat.replace(/ & /g,' and ')),score:score,n:cnt[NCLEXCats.canon(cat,cat)]}));
+        if(!row.archer_cat_data)Object.entries(row.category_scores||{}).forEach(([cat,score])=>categories.push({assessment_id:id,category:NCLEXCats.canon(cat,cat.replace(/ & /g,' and ')),score:score,n:cnt[NCLEXCats.canon(cat,cat)]}));
       });
       return{uploads,categories};
     }
@@ -1714,5 +1787,6 @@ $('review-form')?.addEventListener('submit',async event=>{event.preventDefault()
     $('coach-note-form').addEventListener('submit',async event=>{event.preventDefault();const message=$('coach-note-message'),note=$('coach-note').value.trim();if(!student||!note)return;message.textContent='Saving private note…';const saved=await db.from('session_notes').insert({student_id:student.id,note});if(saved.error){message.textContent='The private note could not be saved. '+(saved.error.message||'Please try again.');return}$('coach-note').value='';message.textContent='Private note saved.';loadStudent(student)});
     $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});init();
   </script>
+  <script src="shared-progress-archer.js"></script>
 </body>
 </html>
