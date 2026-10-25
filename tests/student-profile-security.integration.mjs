@@ -26,7 +26,7 @@ function docker(args, input) {
   return result.stdout.trim();
 }
 function sql(source) {
-  return docker(['exec', '-i', dbName, 'psql', '-X', '-q', '-U', 'postgres', '-v', 'ON_ERROR_STOP=1'], source);
+  return docker(['exec', '-i', dbName, 'psql', '-h', '127.0.0.1', '-X', '-q', '-U', 'postgres', '-v', 'ON_ERROR_STOP=1'], source);
 }
 function token(sub, role = 'authenticated') {
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
@@ -44,7 +44,7 @@ await test('student profile security over real disposable PostgREST', async t =>
     dbCreated = true;
     let ready = false;
     for (let i = 0; i < 100; i++) {
-      const result = spawnSync('docker', ['exec', dbName, 'pg_isready', '-U', 'postgres'], { timeout: 10000 });
+      const result = spawnSync('docker', ['exec', dbName, 'pg_isready', '-h', '127.0.0.1', '-U', 'postgres'], { timeout: 10000 });
       if (result.status === 0) { ready = true; break; }
       await delay(200);
     }
