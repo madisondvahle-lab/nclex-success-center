@@ -157,6 +157,11 @@
             <div id="choices" class="hidden" aria-busy="false">
               <section class="choice-group">
                 <h3>Success Center modules</h3>
+                <div id="module-class-field" class="hidden">
+                  <label class="field-label" for="module-class">Class for these modules</label>
+                  <select id="module-class"><option value="">Choose a class…</option></select>
+                  <p>Choose the class first, then check the modules to add. Saving adds assignments; unchecking does not remove existing work or access.</p>
+                </div>
                 <div id="module-choices" class="assignments"></div>
               </section>
               <section class="choice-group">
@@ -287,6 +292,7 @@
 </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="study-area-names.js"></script>
+  <script src="nursing-class-modules.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -312,6 +318,7 @@
     function selected(){return students.find(item=>item.id===$('student').value)}
     const assignmentKeys=[];
     let loadedStudentId=null,loadSequence=0,uploadLoadSequence=0;
+    let moduleResources=[],moduleAccess=[];
     const jackExam2ResourceUrls=['assets/jack-nur312-exam2/Pneumo%20vs%20tension%20pneumo.png','assets/jack-nur312-exam2/Flail%20chest.png','assets/jack-nur312-exam2/Pneumo%3Ahemo%3Aeffusion.png','assets/jack-nur312-exam2/PEs.png','assets/jack-nur312-exam2/Chest%20Tubes.png','assets/jack-nur312-exam2/Vent%20settings.png','assets/jack-nur312-exam2/Bipap%20vs%20CPAP.png','assets/jack-nur312-exam2/Oxygen%20delivery.png','assets/jack-nur312-exam2/Whiteboard.png'];
 
     function studentMaterialPath(value,studentId){
@@ -391,6 +398,45 @@
       choices.setAttribute('aria-busy',String(isLoading));
       choices.querySelectorAll('input,select').forEach(control=>{control.disabled=isLoading});
       $('save').disabled=isLoading||!loadedStudentId;
+      if(!isLoading){
+        const needsClass=selected()?.student_type==='nursing_student'&&!$('module-class').value;
+        assignmentKeys.forEach(key=>{if($(key))$(key).disabled=!loadedStudentId||needsClass});
+      }
+    }
+    function syncModuleClass(){
+      const nursing=selected()?.student_type==='nursing_student';
+      const classCode=$('module-class').value;
+      const keys=new Set(nursing
+        ? NursingClassModules.assignedKeys(moduleResources,catalog,classCode)
+        : moduleAccess.filter(item=>item.enabled).map(item=>item.module_key));
+      assignmentKeys.forEach(key=>{
+        const input=$(key);
+        if(!input)return;
+        input.checked=keys.has(key);
+        input.disabled=!loadedStudentId||(nursing&&!classCode);
+      });
+    }
+    async function saveModuleAssignments(student,keys){
+      if(student.student_type==='nursing_student'&&keys.length){
+        const classCode=$('module-class').value;
+        if(!classCode)throw new Error('Choose a class for these modules.');
+        await NursingClassModules.assign(db,student,classCode,keys.map(key=>coreModules[key]));
+      }
+      if(keys.length){
+        const {error}=await db.from('student_module_access').upsert(
+          keys.map(module_key=>({student_id:student.id,module_key,enabled:true})),
+          {onConflict:'student_id,module_key'});
+        if(error)throw new Error('Student module access save failed: '+error.message+
+          '. Class links may already be saved; retry to finish enabling access.');
+      }
+      if(student.student_type==='nursing_student'){
+        keys.forEach(key=>{
+          const url=coreModules[key].guide_url;
+          if(!moduleResources.some(item=>item.class_code===$('module-class').value&&item.url===url)){
+            moduleResources.push({url,class_code:$('module-class').value,resource_type:'study_guide'});
+          }
+        });
+      }
     }
     function updateStudentContext(studentId){
       const student=students.find(item=>item.id===studentId);
@@ -420,6 +466,10 @@
       const sequence=++loadSequence;
       const student=selected();
       loadedStudentId=null;
+      moduleResources=[];
+      moduleAccess=[];
+      $('module-class').replaceChildren(new Option('Choose a class…',''));
+      $('module-class-field').classList.toggle('hidden',student?.student_type!=='nursing_student');
       clearNotice();
       $('choices').classList.toggle('hidden',!student);
       updateStudentContext(student?student.id:null);
@@ -431,13 +481,25 @@
       if(!student){setAssignmentLoading(false);return}
       setAssignmentLoading(true);
       try{
-        const [{data:access,error:accessError},{data:resources,error:resourcesError}]=await Promise.all([
+        const [{data:access,error:accessError},{data:resources,error:resourcesError},schedules]=await Promise.all([
           db.from('student_module_access').select('module_key,enabled').eq('student_id',student.id),
-          db.from('student_resources').select('url,title,resource_type').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document'])
+          db.from('student_resources').select(student.student_type==='nursing_student'
+            ? 'url,title,resource_type,class_code' : 'url,title,resource_type')
+            .eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
+          student.student_type==='nursing_student'
+            ? db.from('student_class_schedules').select('class_code').eq('student_id',student.id)
+            : Promise.resolve({data:[],error:null})
         ]);
         if(sequence!==loadSequence||selected()?.id!==student.id)return;
         if(accessError)throw new Error('Could not load module access for '+student.name+': '+accessError.message);
         if(resourcesError)throw new Error('Could not load practice assignments for '+student.name+': '+resourcesError.message);
+        if(schedules.error)throw new Error('Could not load classes for '+student.name+': '+schedules.error.message);
+        moduleResources=resources||[];
+        moduleAccess=access||[];
+        if(student.student_type==='nursing_student'){
+          const classes=NursingClassModules.classes(student,[...(schedules.data||[]),...moduleResources]);
+          classes.forEach(item=>$('module-class').append(new Option(item.name,item.code)));
+        }
         const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
         const assignedResources=resources||[];
         assignmentKeys.forEach(key=>{const input=$(key);if(input)input.checked=enabled.has(key)});
@@ -462,13 +524,19 @@
           document.querySelectorAll('[data-mixed-study-area]').forEach(input=>{input.checked=areas.includes(input.value)});
         }
         loadedStudentId=student.id;
+        syncModuleClass();
       }catch(error){
         if(sequence===loadSequence)show(error.message||'Could not load assignments. Please try again.','error');
       }finally{
         if(sequence===loadSequence)setAssignmentLoading(false);
       }
     }
-    async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);const requested=selectedKeys.map(module_key=>({student_id:student.id,module_key,enabled:true}));        const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur215-foundations')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('nur312-exam2-parallel')?.checked||$('jack-nur312-exam2-resources')?.checked||$('jack-nur312-exam2')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;if(!requested.length&&!hasExtra)throw new Error('Choose at least one assignment before saving.');show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');if(requested.length){const {error}=await db.from('student_module_access').upsert(requested,{onConflict:'student_id,module_key'});if(error)throw new Error('Student module access save failed: '+error.message)}if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
+    async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);
+      const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur215-foundations')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('nur312-exam2-parallel')?.checked||$('jack-nur312-exam2-resources')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;
+      if(!selectedKeys.length&&!hasExtra)throw new Error('Choose at least one assignment before saving.');
+      show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');
+      await saveModuleAssignments(student,selectedKeys);
+      if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
     if($('nur215-foundations').checked){
       const url='supplemental-practice.html?set=nur215-foundations-practice';
       const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url',url).limit(1);
@@ -659,7 +727,9 @@ if($('jack-nur416-exam2-guide').checked)items.push('NUR 416 Exam 2 Study Guide')
 if($('jack-nur416-exam2-questions').checked)items.push('NUR 416 Exam 2 Practice (65 questions)');
 const returnUrl='shared-progress.html?student='+encodeURIComponent(student.id);
 const previewUrl='student-dashboard.html?previewStudent='+encodeURIComponent(student.id);
-const html='<div>Assigned '+esc(items.join(', '))+' to <strong>'+esc(student.name)+'</strong>.</div>'+
+const classSummary=student.student_type==='nursing_student'&&selectedKeys.length
+  ? ' Modules are filed under '+$('module-class').value+'.' : '';
+const html='<div>Assigned '+esc(items.join(', '))+' to <strong>'+esc(student.name)+'</strong>.'+esc(classSummary)+'</div>'+
   '<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">'+
   '<a class="button" style="text-decoration:none;display:inline-block;padding:9px 18px;font-size:.85rem;background:var(--plum)" href="'+esc(returnUrl)+'">← Return to '+esc(student.name)+'’s workspace</a>'+
   '<a class="button secondary" style="text-decoration:none;display:inline-block;padding:9px 18px;font-size:.85rem;background:#456276;color:#fff" href="'+esc(previewUrl)+'" target="_blank" rel="noopener">Preview student dashboard ↗</a>'+
@@ -712,7 +782,7 @@ show(html,'success',true)}catch(error){show(error.message||'Could not save these
       if(adminError)throw new Error('Could not verify admin access: '+adminError.message);
       if(!admin){await db.auth.signOut();location.replace('student-login.html');return}
       const [{data:studentData,error:studentError},{data:moduleData,error:moduleError}]=await Promise.all([
-        db.from('students').select('id,name,email').is('archived_at',null).order('name'),
+        db.from('students').select('id,name,email,student_type').is('archived_at',null).order('name'),
         db.from('modules').select('*').order('module_number')
       ]);
       if(studentError){
@@ -733,6 +803,7 @@ show(html,'success',true)}catch(error){show(error.message||'Could not save these
       if(!students.length)$('empty').classList.remove('hidden');
 
       $('student').addEventListener('change',onStudentChange);
+      $('module-class').addEventListener('change',syncModuleClass);
       $('mixed-review').addEventListener('change',()=>{$('mixed-options').classList.toggle('hidden',!$('mixed-review').checked)});
       $('sign-out').addEventListener('click',async()=>{await db.auth.signOut();location.replace('student-login.html')});
 

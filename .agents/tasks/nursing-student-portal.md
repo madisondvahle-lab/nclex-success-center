@@ -7,6 +7,35 @@ Author: Claude (Cowork), 2026-09-01
 Added a nursing-school student portal experience inside the existing `student-dashboard.html`.
 NCLEX students are completely unaffected — all existing behaviour preserved.
 
+## Class-scoped module assignments (local feature follow-up)
+
+The `feat/nursing-course-modules` branch adds a class picker to the Success
+Center module section of `madison-assignments.html` for nursing-school students.
+For example: select Jack, choose NUR 312, check Module 4 - Cardiac, and save.
+Use the student preview's NUR 312 tab and Learning Library to check the result.
+NCLEX students retain the existing student-wide module assignment workflow.
+
+Class links reuse `student_resources` with `resource_type='study_guide'`,
+`class_code`, and the module catalog's `guide_url`. Module access continues
+through `student_module_access`; no RLS or clinical content changes are needed.
+Saving is additive, matching the existing assignment screen; it does not
+revoke access or remove other classes' assignments. Saving the same class/module
+again checks for an existing link rather than adding another. A module can be
+assigned independently to more than one class.
+
+The nursing library filters modules by the selected class. Existing enabled
+modules without any class link remain visible separately as "Other assigned
+modules" rather than being silently moved or removed. Existing class defaults
+are shared between admin and student screens, with saved schedule/resource
+class codes also included.
+
+No new migration is required. The existing nursing-student, class-schedule,
+and class-notes/uploads migrations must already be present (in particular
+`students.student_type` and `student_resources.class_code`). Missing-schema
+or query errors are shown rather than reporting a successful assignment.
+Local code does not assign Jack automatically. Production data changes,
+migrations, merging, and deployment require separate approval.
+
 ## What was changed
 
 ### `student-dashboard.html`
