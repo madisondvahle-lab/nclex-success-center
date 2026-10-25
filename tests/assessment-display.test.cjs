@@ -71,7 +71,9 @@ test('activity history displays new names without mutating stored titles, modes 
 
 test('completion copy uses recorded reasons and does not invent a legacy reason', () => {
   assert.match(display.completionMessage({ reason: 'insufficient-items' }), /no further eligible questions/);
+  assert.match(display.completionMessage({ reason: 'question-limit-insufficient-evidence' }), /without enough eligible coverage or evidence/);
   assert.match(display.completionMessage({ reason: 'confidence-rule' }), /coverage and evidence requirements/);
+  assert.match(display.completionMessage({ mode: 'nclex', result: 'PASS' }), /adaptive evidence requirements/);
   for (const mode of ['nclex', 'mock']) {
     assert.match(display.completionMessage({ mode, reason: 'item-limit-or-fixed-length' }), /question limit/);
     assert.match(display.completionMessage({ mode, total: 20, target: 45 }), /does not identify/);

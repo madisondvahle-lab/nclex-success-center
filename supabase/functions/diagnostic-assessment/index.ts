@@ -192,21 +192,30 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
     const key = byId.get(row.item_id);
     const sourceId = checkpoint.ngnState?.responses?.[row.item_id]?.parentId || key?.parent_item_id || row.item_id;
     const record: Record<string, any> = {
-      ...row,
+      item_id: row.item_id,
+      item_source: row.item_source,
+      ...(row.attempt_id !== undefined ? { attempt_id: row.attempt_id } : {}),
       id: row.item_id,
       sourceId,
       type: row.question_type || key?.item_type || 'mcq',
+      question_type: row.question_type || key?.item_type || 'mcq',
       difficulty: row.difficulty ?? key?.difficulty ?? 2,
       blueprint: row.blueprint || key?.blueprint || null,
       nclex_category: row.nclex_category || key?.nclex_category || null,
+      ...(row.system !== undefined ? { system: row.system } : {}),
+      topic: row.topic || key?.topic || null,
+      cognitive_level: row.cognitive_level || key?.cognitive_level || null,
       core_tags: key?.core_tags || [],
       correct: reveal ? Boolean(row.is_correct) : null,
+      answered_at: row.answered_at,
+      selected_answer: row.selected_answer,
       selectedAnswer: row.selected_answer,
       scoringModel: checkpoint.scoringModel || 'in-house-core-v1',
       ...(checkpoint.presentations?.[row.item_id] ? { presentation: checkpoint.presentations[row.item_id] } : {}),
     };
     if (reveal) {
       record.correctAnswer = row.correct_answer;
+      record.correct_answer = row.correct_answer;
       record.rationale = key?.rationale || null;
       record.is_correct = Boolean(row.is_correct);
       Object.assign(record, responseDetail(checkpoint, row.item_id, true));
@@ -214,9 +223,6 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
         record.rationale = record.interaction.rationale;
         record.correctAnswer = row.correct_answer;
       }
-    } else {
-      delete record.correct_answer;
-      delete record.is_correct;
     }
     return record;
   });
@@ -243,9 +249,7 @@ function selectionHistory(rows: Array<Record<string, any>>, keys: Array<Record<s
 
 function canReveal(attempt: Record<string, any>) {
   if (attempt.status === 'completed') return true;
-  return attempt.checkpoint?.scoringModel === MODEL
-    ? !['nclex', 'mock', 'assessment'].includes(attempt.checkpoint?.mode)
-    : attempt.checkpoint?.mode !== 'mock';
+  return !['nclex', 'mock', 'assessment'].includes(attempt.checkpoint?.mode);
 }
 
 function attemptSummary(attempt: Record<string, any>) {
@@ -612,12 +616,10 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   else if (!continuingCase && mode === 'nclex') result = shouldStop(newHistory, ability, requirements);
   else if (!continuingCase && mode === 'mock') result = shouldStopMock(newHistory, ability, requirements);
   else if (mode === 'assessment' && newHistory.length >= attempt.target_questions) result = null;
-  if (!versioned && mode === 'nclex' && newHistory.length >= 45) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
-  if (!versioned && mode === 'mock' && newHistory.length >= 150) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
   const reachedTarget = !continuingCase && (mode === 'assessment'
     ? newHistory.length >= attempt.target_questions
     : mode === 'nclex' || mode === 'mock'
-      ? Boolean(result) || (versioned && newHistory.length >= attempt.target_questions)
+      ? Boolean(result) || newHistory.length >= attempt.target_questions
       : newHistory.length >= attempt.target_questions);
   const next = continuingCase ? item : reachedTarget ? null : pickNextQuestion(
     keys.filter(row => row.selectable),
@@ -628,7 +630,6 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     attempt.target_questions,
   );
   const complete = reachedTarget || !next;
-  if (complete && !versioned && (mode === 'nclex' || mode === 'mock')) result ||= ability >= 0.6 ? 'PASS' : 'FAIL';
 
   const nextRevision = revision + 1;
   const checkpoint = {
@@ -644,6 +645,9 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     checkpoint.ngnState = ngnResult && !ngnResult.final ? ngnResult.state : selectCurrent(stateCheckpoint, next);
     checkpoint.currentItemId = currentInteraction(checkpoint)?.id || next?.item_id || null;
     checkpoint.completionReason = complete ? result ? 'confidence-rule' : reachedTarget ? 'item-limit-or-fixed-length' : 'insufficient-items' : null;
+  } else if (complete && (mode === 'nclex' || mode === 'mock')) {
+    if (result) delete checkpoint.completionReason;
+    else checkpoint.completionReason = reachedTarget ? 'question-limit-insufficient-evidence' : 'insufficient-items';
   }
   const { data: committed, error: commitError } = await context.service.rpc('commit_in_house_diagnostic_answer', {
     p_attempt_id: attempt.id,
