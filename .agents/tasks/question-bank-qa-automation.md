@@ -35,6 +35,20 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
   and unfolding-case controls, saved keys, and editable individual rationales.
   These used local candidate files routed into the authenticated browser;
   they are not a deployment or live database save test.
+- Safe Delete compatibility (2026-10-25): integrated deployed main merge
+  `04700cc` from PR #250 without conflicts in an isolated editor worktree.
+  The combined editor, correction-draft, NGN/scoring/history, and Safe Delete
+  Node suite passed 94/94 tests. Syntax and whitespace checks passed.
+- The disposable local PostgreSQL suite passed checks 1-9 and 2b, migration
+  re-application, rollback/re-application, and concurrency checks A-G.
+  Student-history fixtures remained unchanged; concurrent student writes
+  had zero failed transactions. The test container was removed afterward.
+  No production database reads or writes were performed in this integration.
+- The deployed Safe Delete UI function section, SQL, rollback, and tests
+  remain byte-for-byte identical to main. Relative to main, PR #249 still
+  contains only the five editor-related source, test, and documentation
+  files, with no migration or student-history changes. Merge and deployment
+  remain pending separate owner authorization.
 
 ## Rules baked in
 - Questions with a pending/approved draft are skipped and never overwritten.
