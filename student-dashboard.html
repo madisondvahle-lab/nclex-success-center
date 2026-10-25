@@ -139,7 +139,7 @@
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
-    .modules{grid-column:1/-1}
+    .modules,.course-modules{grid-column:1/-1}
     #main-content:not(.library-view) :is(.modules,.graphics-library){display:none!important}
     #main-content.library-view .study-calendar,
     #main-content.library-view .hero,
@@ -567,14 +567,14 @@
           </div>
         </article>
 
-        <!-- 2 · Study resources (full width) — non-practice content only -->
-        <article class="card resources nursing-support class-dependent-panel hidden">
+        <!-- 2 · Modules assigned to the selected class -->
+        <article class="card course-modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Class library</p><h2>Study resources</h2></div>
-            <span class="label teal">For this class</span>
+            <div><p class="eyebrow" style="color:var(--teal)">For this class</p><h2>Assigned modules</h2></div>
+            <span class="label teal">Course access</span>
           </div>
-          <p class="card-desc">Study guides, infographics, and reference materials for your selected class. Assigned exam question sets appear in Exam Prep.</p>
-          <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
+          <p class="card-desc">Modules Madison assigned to your selected class. Other study materials are in Learning Library.</p>
+          <div class="module-library" id="modules-nursing"><p class="empty">Modules assigned to this class will appear here.</p></div>
         </article>
 
         <article class="card nursing-support graphics-library" id="gfxn-card" style="grid-column:1/-1;display:none">
@@ -613,13 +613,15 @@
           <div class="progress-grid" id="progress-nursing"><p class="empty" style="grid-column:1/-1">Quiz scores will appear here after you complete your first practice set.</p></div>
         </article>
 
-        <!-- 5 · Class modules / study guides (full width) -->
-        <article class="card modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
+        <!-- 5 · Study resources in Learning Library -->
+        <article class="card modules resources nursing-support class-dependent-panel hidden" id="resources-nursing-card">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
-            <span class="label teal">Course access</span>
+            <div><p class="eyebrow" style="color:var(--teal)">Class library</p><h2>Study resources</h2></div>
+            <span class="label teal">For this class</span>
           </div>
-          <div class="module-library" id="modules-nursing"><p class="empty">Study guides and modules available to you will appear here.</p></div>
+          <p class="card-desc">Study guides, infographics, and reference materials for your selected class. Assigned modules are on your dashboard; assigned exam question sets are in Exam Prep.</p>
+          <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
+          <div class="module-library" id="modules-nursing-general"></div>
         </article>
 
       </section>
@@ -1481,13 +1483,16 @@
     // ── Nursing portal ────────────────────────────────────────────────
     function renderNursingModules(classCode, catalog, access, assignments, errorMessage) {
       const host = document.getElementById('modules-nursing');
+      const generalHost = document.getElementById('modules-nursing-general');
+      generalHost.innerHTML = '';
       if (errorMessage) {
         host.innerHTML = `<p class="empty" role="status">Class modules could not be loaded: ${text(errorMessage)}</p>`;
+        generalHost.innerHTML = `<p class="empty" role="status">Other assigned modules could not be loaded: ${text(errorMessage)}</p>`;
         return;
       }
       const scopedKeys = new Set(NursingClassModules.assignedKeys(assignments, classCode));
       const allClassKeys = new Set(NursingClassModules.assignedKeys(assignments));
-      host.innerHTML = `<h3>${text(classCode)} modules</h3><div id="modules-nursing-class"></div><div id="modules-nursing-general"></div>`;
+      host.innerHTML = `<h3>${text(classCode)} modules</h3><div id="modules-nursing-class"></div>`;
       renderModulesInto('modules-nursing-class', catalog, access.filter(item => scopedKeys.has(item.module_key)));
       const general = access.filter(item => item.enabled && !allClassKeys.has(item.module_key));
       if (general.length) {
