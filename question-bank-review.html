@@ -1598,25 +1598,78 @@
         question.active=true;render();setLiveFilter('active');
       }catch(error){alert(`Could not approve and publish this question: ${error.message||error}`)}
     }
+    const DELETE_LINK_NAMES={question_revision_drafts:'saved correction drafts',question_audits:'quality-audit records',question_set_items:'an assigned practice set',question_flags:'student question flags'};
+    function deleteErrorMessage(error){
+      const text=[error?.message||String(error),error?.details,error?.hint].filter(Boolean).join('\n');
+      if(/question_deletion_blockers|delete_questions_permanently/.test(text)&&/schema cache|does not exist|could not find/i.test(text))
+        return 'Nothing was deleted. Permanent deletion needs the safe-delete database update (supabase-question-safe-delete.sql), which has not been installed yet. Make inactive still works.';
+      if(error?.code==='55P03')
+        return /students are saving/.test(text)?error.message:'Nothing was deleted because these questions are busy (students are saving work or another edit is in progress). Please try again in a minute.';
+      if(error?.code==='57014')
+        return 'Nothing was deleted because the safety check took too long. Please try again with fewer questions selected.';
+      const table=Object.keys(DELETE_LINK_NAMES).find(name=>text.includes(name));
+      if(error?.code==='23503'&&table&&!/cannot be permanently deleted|must be kept/.test(text))
+        return `Nothing was deleted. The question is still linked to ${DELETE_LINK_NAMES[table]}, which the database protects.\n\n${text}`;
+      return text;
+    }
+    async function mDelete(ids){
+      const label=id=>{const q=live.find(x=>x.id===id);return q?.question_no?`#${q.question_no}`:`"${String(q?.stem||id).slice(0,60)}"`};
+      const describe=rows=>rows.map(row=>row.reason==='active_question'?row.label:`${row.record_count} ${row.label}${Number(row.record_count)===1?'':'(s)'}`).join('; ');
+      const checked=await db.rpc('question_deletion_blockers',{p_question_ids:ids});
+      if(checked.error){alert(deleteErrorMessage(checked.error));return}
+      const usage=new Map();
+      (checked.data||[]).forEach(row=>{if(!usage.has(row.question_id))usage.set(row.question_id,[]);usage.get(row.question_id).push(row)});
+      const blocked=ids.filter(id=>(usage.get(id)||[]).some(row=>row.blocks_delete));
+      const deletable=ids.filter(id=>!blocked.includes(id));
+      if(blocked.length){
+        const lines=blocked.slice(0,15).map(id=>`• ${label(id)}: ${describe(usage.get(id).filter(row=>row.blocks_delete))}`);
+        if(blocked.length>15)lines.push(`• …and ${blocked.length-15} more`);
+        alert(`${blocked.length} selected question${blocked.length===1?'':'s'} cannot be permanently deleted because ${blocked.length===1?'it is':'they are'} linked to records that must be preserved:\n\n${lines.join('\n')}${deletable.length?`\n\nThe other ${deletable.length} question${deletable.length===1?'':'s'} can still be deleted. You will be asked to confirm next.`:''}`);
+      }
+      if(deletable.length){
+        const handled=deletable.flatMap(id=>(usage.get(id)||[]).filter(row=>!row.blocks_delete));
+        const totals=new Map();handled.forEach(row=>totals.set(row.label,(totals.get(row.label)||0)+Number(row.record_count)));
+        const note=totals.size?`\n\nAlso removed (a copy is kept in the deletion archive): ${describe([...totals].map(([label,record_count])=>({label,record_count})))}.`:'';
+        if(confirm(`PERMANENTLY DELETE ${deletable.length} question${deletable.length===1?'':'s'}? None of ${deletable.length===1?'it has':'them have'} student or assessment history.${note}\n\nThis cannot be undone.`)){
+          let failed=null;
+          for(let i=0;i<deletable.length&&!failed;i+=100){
+            const chunk=deletable.slice(i,i+100),result=await db.rpc('delete_questions_permanently',{p_question_ids:chunk});
+            if(result.error)failed=result.error;
+            else{live=live.filter(q=>!chunk.includes(q.id));revisionDrafts=revisionDrafts.filter(item=>!chunk.includes(item.question_id));chunk.forEach(id=>mSel.delete(id))}
+          }
+          render();renderManage();
+          if(failed){alert(deleteErrorMessage(failed));return}
+        }
+      }
+      const activeBlocked=blocked.filter(id=>live.find(q=>q.id===id)?.active);
+      const onlyActive=activeBlocked.filter(id=>usage.get(id).every(row=>!row.blocks_delete||row.reason==='active_question'));
+      const keep=activeBlocked.length-onlyActive.length;
+      const after=[keep?`${keep} with student or assessment history must be kept; all student history is preserved.`:'',
+        onlyActive.length?`${onlyActive.length===activeBlocked.length?(onlyActive.length===1?'It has':'They have'):`${onlyActive.length} of them ${onlyActive.length===1?'has':'have'}`} no student or assessment history, so you can permanently delete ${onlyActive.length===1?'it':'them'} afterwards by choosing Delete again.`:''].filter(Boolean).join(' ');
+      if(activeBlocked.length&&confirm(`Make the ${activeBlocked.length} published question${activeBlocked.length===1?'':'s'} inactive instead? ${activeBlocked.length===1?'It':'They'} will be hidden from students. ${after}`))
+        await mApply('inactive',activeBlocked,true);
+    }
     async function mApply(action,ids,skipConfirm){
       if(!ids.length){alert('Select at least one question first.');return}
+      if(action==='delete'){
+        try{await mDelete(ids)}catch(e){alert(deleteErrorMessage(e))}
+        return;
+      }
       const selected=live.filter(question=>ids.includes(question.id));
       if(action==='publish'&&selected.some(question=>question.source_key?.startsWith('qbank-bulk-')&&!['approved','published'].includes(reviews.get(question.source_key)?.status))){alert('Approve every bulk-import draft before publishing it.');return}
-      const words={publish:'Publish to students',inactive:'Make inactive (hidden from students)',delete:'PERMANENTLY DELETE'}[action];
+      const words={publish:'Publish to students',inactive:'Make inactive (hidden from students)'}[action];
       if(!skipConfirm&&!confirm(words+': '+ids.length+' question'+(ids.length===1?'':'s')+'?'))return;
-      if(action==='delete'&&!confirm('This cannot be undone. Delete '+ids.length+' question(s) forever?'))return;
       try{
         for(let i=0;i<ids.length;i+=100){
-          const chunk=ids.slice(i,i+100),r=action==='delete'?await db.from('questions').delete().in('id',chunk):await db.from('questions').update({active:action==='publish'}).in('id',chunk);
+          const chunk=ids.slice(i,i+100),r=await db.from('questions').update({active:action==='publish'}).in('id',chunk);
           if(r.error)throw r.error;
         }
         if(action==='publish'){
           const records=selected.filter(question=>question.source_key?.startsWith('qbank-bulk-')).map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'published',reviewed_by:session.user.id,reviewed_at:new Date().toISOString(),imported_question_id:question.id,updated_at:new Date().toISOString()}));
           if(records.length){const tracked=await db.from('question_import_reviews').upsert(records);if(tracked.error)throw tracked.error;records.forEach(record=>reviews.set(record.source_key,record))}
         }
-      }catch(e){alert((e.message||e)+(action==='delete'?' If students already have answers saved for these questions, use Make inactive instead.':''));return}
-      if(action==='delete'){live=live.filter(q=>!ids.includes(q.id));ids.forEach(id=>mSel.delete(id))}
-      else{live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'})}
+      }catch(e){alert(e.message||e);return}
+      live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'});
       render();renderManage();
     }
     const QUESTION_COLUMNS='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
