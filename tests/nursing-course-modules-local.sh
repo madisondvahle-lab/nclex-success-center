@@ -19,6 +19,22 @@ done
 if [ "$ready" != true ]; then echo "Disposable Postgres did not become ready" >&2; exit 1; fi
 psqlx() { docker exec -i "$NAME" psql -X -q -v ON_ERROR_STOP=1 -U postgres "$@"; }
 psqlx < tests/nursing-course-modules-schema.sql
+psqlx < supabase-m4-cardiac-catalog.sql
+psqlx < supabase-m4-cardiac-catalog.sql
+psqlx -c "DO \$\$ BEGIN
+IF (SELECT count(*) FROM modules WHERE module_key='m4' AND module_number=4 AND guide_url='module4-guide.html' AND is_available) <> 1
+THEN RAISE EXCEPTION 'M4 catalog insert/replay failed'; END IF;
+IF (SELECT count(*) FROM student_module_access) <> 2 THEN RAISE EXCEPTION 'Catalog changed student access'; END IF;
+END \$\$;"
+psqlx -c "UPDATE modules SET guide_url='conflicting-guide.html' WHERE module_key='m4';"
+if psqlx < supabase-m4-cardiac-catalog.sql > "$WORK/a.log" 2>&1; then
+  echo "Conflicting M4 catalog entry was not rejected" >&2; exit 1
+fi
+psqlx -c "DO \$\$ BEGIN
+IF (SELECT guide_url FROM modules WHERE module_key='m4') <> 'conflicting-guide.html'
+THEN RAISE EXCEPTION 'Conflicting catalog was overwritten'; END IF;
+END \$\$;
+UPDATE modules SET guide_url='module4-guide.html' WHERE module_key='m4';"
 psqlx < supabase-nursing-course-modules.sql
 psqlx < supabase-nursing-course-modules.sql
 psqlx < tests/nursing-course-modules.sql

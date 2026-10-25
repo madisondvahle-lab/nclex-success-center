@@ -3,12 +3,50 @@ CREATE FUNCTION public.test_assert(ok boolean, message text) RETURNS void
 LANGUAGE plpgsql AS $$ BEGIN IF ok IS DISTINCT FROM true THEN RAISE EXCEPTION '%', message; END IF; END $$;
 SET ROLE authenticated;
 SET request.jwt.claim.sub = '00000000-0000-0000-0000-000000000099';
+SELECT test_assert((SELECT count(*) = 2 FROM nursing_module_classes('00000000-0000-0000-0000-000000000001')), 'only enrolled classes returned');
+DO $$ BEGIN
+  BEGIN
+    PERFORM save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 321',ARRAY['m4']);
+    RAISE EXCEPTION 'unenrolled class accepted';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'Student is not actively enrolled in this class' THEN RAISE; END IF;
+  END;
+END $$;
+RESET ROLE;
+INSERT INTO student_courses (student_id,course_key,course_name)
+VALUES ('00000000-0000-0000-0000-000000000001','nur321-ob','NUR 321 OB');
+SET ROLE authenticated;
+SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 321',ARRAY['m4']);
+SELECT test_assert((SELECT count(*)=1 FROM student_class_module_assignments
+WHERE student_id='00000000-0000-0000-0000-000000000001' AND class_code='NUR 321' AND module_key='m4'),
+  'newly enrolled class can receive existing Cardiac module');
+SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 321',ARRAY[]::text[]);
+RESET ROLE;
+DELETE FROM student_courses WHERE student_id='00000000-0000-0000-0000-000000000001' AND course_key='nur321-ob';
+SET ROLE authenticated;
 SELECT test_assert((SELECT count(*) = 1 FROM student_class_module_assignments WHERE student_id = '00000000-0000-0000-0000-000000000003'), 'legacy deduplication');
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m4','m5','m4']);
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 416',ARRAY['m4']);
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 416',ARRAY['m4']);
 SELECT test_assert((SELECT count(*) = 3 FROM student_class_module_assignments WHERE student_id = '00000000-0000-0000-0000-000000000001'), 'different classes, shared module, repeated save');
 SELECT test_assert((SELECT enabled AND NOT independent_enabled FROM student_module_access WHERE student_id = '00000000-0000-0000-0000-000000000001' AND module_key = 'm4'), 'course-only access provenance');
+SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m5']);
+RESET ROLE;
+UPDATE student_courses SET active=false WHERE student_id='00000000-0000-0000-0000-000000000001' AND course_key='nur312';
+SET ROLE authenticated;
+DO $$ BEGIN
+  BEGIN
+    PERFORM save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m4']);
+    RAISE EXCEPTION 'inactive enrollment accepted';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'Student is not actively enrolled in this class' THEN RAISE; END IF;
+  END;
+END $$;
+-- Retired courses can still be cleared without revoking independent grants.
+SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY[]::text[]);
+RESET ROLE;
+UPDATE student_courses SET active=true WHERE student_id='00000000-0000-0000-0000-000000000001' AND course_key='nur312';
+SET ROLE authenticated;
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m5']);
 SELECT test_assert((SELECT enabled FROM student_module_access WHERE student_id = '00000000-0000-0000-0000-000000000001' AND module_key = 'm4'), 'other class keeps access');
 SELECT test_assert((SELECT count(*) = 1 FROM student_class_module_assignments WHERE student_id = '00000000-0000-0000-0000-000000000001' AND module_key = 'm4'), 'remove only one class');
@@ -89,6 +127,8 @@ SET ROLE authenticated;
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m5']);
 SELECT save_nursing_class_modules('00000000-0000-0000-0000-000000000003','NUR 312',ARRAY['m4']);
 SET request.jwt.claim.sub = '00000000-0000-0000-0000-000000000011';
+SELECT test_assert((SELECT count(*)=0 FROM nursing_module_classes('00000000-0000-0000-0000-000000000003')), 'cannot read other enrollment');
+SELECT test_assert((SELECT count(*)=2 FROM nursing_module_classes('00000000-0000-0000-0000-000000000001')), 'can read own enrollments');
 DO $$ BEGIN
   BEGIN
     PERFORM save_nursing_class_modules('00000000-0000-0000-0000-000000000001','NUR 312',ARRAY['m4']);

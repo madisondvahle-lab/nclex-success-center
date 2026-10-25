@@ -1483,8 +1483,8 @@
           '<h3>Other assigned modules</h3><p>These existing assignments are not linked to a specific class.</p>');
       }
     }
-    function renderClassSchedule(student, schedules, notes, notesError, isPreview, onSelect, moduleResources = []) {
-      const classes = NursingClassModules.classes(student, [...schedules, ...moduleResources]);
+    function renderClassSchedule(student, schedules, notes, notesError, isPreview, onSelect, moduleResources = [], enrollments = []) {
+      const classes = NursingClassModules.classes(student, [...enrollments, ...moduleResources]);
       const byClass = new Map((schedules || []).map(item => [item.class_code, item]));
       const tabs = document.getElementById('class-tabs');
       const panel = document.getElementById('class-schedule-panel');
@@ -1567,7 +1567,7 @@
       };
       render();
     }
-    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError, moduleError, assignments) {
+    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError, moduleError, assignments, enrollments) {
       document.getElementById('portal-nursing').classList.remove('hidden');
       initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
@@ -1586,7 +1586,7 @@
         countdown.innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
       const classModuleResources = new Set(NursingClassModules.moduleResources(resources, catalog));
-      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass, assignments);
+      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass, assignments, enrollments);
 
       // Course name in hero subtitle
       if (student.course_name) {
@@ -1749,12 +1749,13 @@
             .eq('student_id', student.id)
             .order('completed_at', { ascending: false })
             .limit(6),
-          db.from('student_class_module_assignments').select('class_code,module_key').eq('student_id', student.id)
+          db.from('student_class_module_assignments').select('class_code,module_key').eq('student_id', student.id),
+          db.rpc('nursing_module_classes',{p_student:student.id})
         );
       }
 
       const results = await Promise.all(fetches);
-      const [plans, resources, catalog, access, schedules, classNotes, practiceRes, classModules] = results;
+      const [plans, resources, catalog, access, schedules, classNotes, practiceRes, classModules, enrollments] = results;
       assignmentState = { student, isPreview, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
@@ -1762,8 +1763,8 @@
 
       if (isNursing) {
         const notesByClass = new Map((classNotes && !classNotes.error ? classNotes.data || [] : []).map(item => [item.class_code, item.note || '']));
-        const moduleError = [catalog.error, access.error, classModules.error].filter(Boolean).map(item => item.message).join('; ');
-        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '', moduleError, classModules.data || []);
+        const moduleError = [catalog.error, access.error, classModules.error, enrollments.error].filter(Boolean).map(item => item.message).join('; ');
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '', moduleError, classModules.data || [], enrollments.data || []);
         // Show onboarding modal only on true first login (never in preview)
         if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');

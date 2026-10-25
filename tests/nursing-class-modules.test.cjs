@@ -19,6 +19,10 @@ function database() {
     rows, calls, failures,
     async rpc(name, params) {
       calls.push({ table: name, action: 'rpc', params });
+      if(name==='nursing_module_classes'){
+        if(failures['student_class_schedules:select'])return {data:null,error:{message:failures['student_class_schedules:select']}};
+        return {data:[{class_code:'NUR 312'},{class_code:'NUR 416'}],error:null};
+      }
       if (failures.rpc) return { error: { message: failures.rpc } };
       const { p_student, p_class, p_modules } = params;
       const oldKeys = rows.student_class_module_assignments.filter(row =>
@@ -124,13 +128,13 @@ function admin(db = database()) {
   return { db, ui, context, run: code => vm.runInContext(code, context) };
 }
 
-test('shared class choices preserve defaults and include saved additional classes without duplicates', () => {
+test('class choices contain enrollment and saved-assignment codes only, without defaults or duplicates', () => {
   const app = admin();
   assert.deepEqual(plain(app.context.NursingClassModules.classes(nursing, [
     { class_code: 'NUR 312' }, { class_code: 'NUR 500' }, {}
-  ])).map(item => item.code), ['NUR 312', 'NUR 321', 'NUR 416', 'NUR 500']);
+  ])).map(item => item.code), ['NUR 312', 'NUR 500']);
   assert.deepEqual(plain(app.context.NursingClassModules.classes({ email: 'BIANCA.EDWARDS86@GMAIL.COM' }))
-    .map(item => item.code), ['NUR 215', 'NUR 235']);
+    .map(item => item.code), []);
 });
 
 test('only exact class-tagged module guide resources count as class module assignments', () => {
@@ -151,7 +155,7 @@ test('nursing assignment requires an explicit class, persists Cardiac, reloads, 
   assert.equal(app.ui.get('m4').disabled, true);
   assert.equal(app.ui.get('module-class-field').classList.contains('hidden'), false);
   await assert.rejects(app.run("saveModuleAssignments(selected(), ['m4'])"), /Choose a class/);
-  assert.equal(app.db.calls.some(call => call.action !== 'select'), false);
+  assert.equal(app.db.calls.some(call => call.action !== 'select'&&call.table!=='nursing_module_classes'), false);
   app.ui.get('module-class').value = 'NUR 312';
   app.run('syncModuleClass()');
   app.ui.get('m4').checked = true;
@@ -290,7 +294,7 @@ test('a late student load cannot replace the current student or class assignment
   const app = admin();
   let release;
   const waiting = new Promise(resolve => { release = resolve; });
-  app.db.setDelay(table => table === 'student_class_schedules' ? waiting : undefined);
+  app.db.setDelay(table => table === 'student_class_module_assignments' ? waiting : undefined);
   const first = app.run('loadStudent()');
   app.ui.get('student').value = nclex.id;
   await app.run('loadStudent()');

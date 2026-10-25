@@ -484,7 +484,7 @@
             ? 'url,title,resource_type,class_code' : 'url,title,resource_type')
             .eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
           student.student_type==='nursing_student'
-            ? db.from('student_class_schedules').select('class_code').eq('student_id',student.id)
+            ? db.rpc('nursing_module_classes',{p_student:student.id})
             : Promise.resolve({data:[],error:null}),
           student.student_type==='nursing_student'
             ? db.from('student_class_module_assignments').select('class_code,module_key').eq('student_id',student.id)
@@ -500,6 +500,7 @@
         if(student.student_type==='nursing_student'){
           const classes=NursingClassModules.classes(student,[...(schedules.data||[]),...classModuleAssignments]);
           classes.forEach(item=>$('module-class').append(new Option(item.name,item.code)));
+          if(!classes.length)show('No active course enrollments. Add the student to the appropriate course before assigning modules.','info');
         }
         const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
         const assignedResources=resources||[];

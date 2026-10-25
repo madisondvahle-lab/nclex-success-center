@@ -2,6 +2,21 @@
 -- Existing enabled access is conservatively retained as an independent source.
 BEGIN;
 
+CREATE OR REPLACE FUNCTION public.nursing_module_classes(p_student uuid)
+RETURNS TABLE(class_code text)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp AS $$
+  SELECT DISTINCT coalesce(
+    'NUR ' || substring(upper(c.course_name || ' ' || c.course_key) FROM 'NUR[ _-]*([0-9]{3})'),
+    c.course_key
+  )
+  FROM public.student_courses c JOIN public.students s ON s.id = c.student_id
+  WHERE c.student_id = p_student AND c.active
+    AND s.student_type = 'nursing_student' AND s.archived_at IS NULL
+    AND (public.is_app_admin() OR s.auth_user_id = auth.uid())
+$$;
+REVOKE ALL ON FUNCTION public.nursing_module_classes(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.nursing_module_classes(uuid) TO authenticated;
+
 ALTER TABLE public.student_module_access
   ADD COLUMN IF NOT EXISTS independent_enabled boolean;
 UPDATE public.student_module_access SET independent_enabled = enabled
@@ -83,6 +98,11 @@ BEGIN
   WHERE id = p_student AND student_type = 'nursing_student' AND archived_at IS NULL
   FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'Active nursing-school student required'; END IF;
+  -- Hold enrollment rows against concurrent edits until this snapshot commits.
+  PERFORM 1 FROM public.student_courses WHERE student_id = p_student AND active FOR SHARE;
+  IF cardinality(p_modules) > 0 AND NOT EXISTS (
+    SELECT 1 FROM public.nursing_module_classes(p_student) c WHERE c.class_code = p_class
+  ) THEN RAISE EXCEPTION 'Student is not actively enrolled in this class'; END IF;
 
   SELECT array_agg(DISTINCT module_key) INTO affected FROM (
     SELECT module_key FROM public.student_class_module_assignments

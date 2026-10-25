@@ -13,7 +13,17 @@ CREATE FUNCTION public.is_app_admin() RETURNS boolean
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT EXISTS (SELECT 1 FROM app_admins WHERE user_id = auth.uid())
 $$;
-CREATE TABLE public.modules (module_key text PRIMARY KEY, guide_url text);
+CREATE TABLE public.modules (
+  module_key text PRIMARY KEY, module_number integer NOT NULL UNIQUE,
+  name text NOT NULL, description text DEFAULT '', guide_url text,
+  is_available boolean NOT NULL DEFAULT false
+);
+CREATE TABLE public.student_courses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id uuid NOT NULL REFERENCES students(id),
+  course_key text NOT NULL, course_name text NOT NULL, active boolean NOT NULL DEFAULT true,
+  UNIQUE(student_id,course_key)
+);
 CREATE TABLE public.student_module_access (
   student_id uuid REFERENCES students(id), module_key text,
   enabled boolean NOT NULL DEFAULT false, PRIMARY KEY (student_id, module_key)
@@ -35,7 +45,13 @@ INSERT INTO students VALUES
   ('00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000012','nclex',NULL),
   ('00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000013','nursing_student',NULL);
 INSERT INTO app_admins VALUES ('00000000-0000-0000-0000-000000000099');
-INSERT INTO modules VALUES ('m4','module4-guide.html'),('m5','module5-guide.html'),('m3','module3-guide.html');
+INSERT INTO modules (module_key,module_number,name,guide_url)
+VALUES ('m5',5,'Respiratory','module5-guide.html'),('m3',3,'Pharmacology','module3-guide.html');
+INSERT INTO student_courses (student_id,course_key,course_name)
+SELECT s.id,c.key,c.name FROM students s
+CROSS JOIN (VALUES ('nur312','NUR 312'),('nur416','NUR 416')) c(key,name)
+WHERE s.student_type = 'nursing_student';
+ALTER TABLE student_courses ENABLE ROW LEVEL SECURITY;
 INSERT INTO student_module_access VALUES
   ('00000000-0000-0000-0000-000000000001','m3',true),
   ('00000000-0000-0000-0000-000000000002','m4',true);

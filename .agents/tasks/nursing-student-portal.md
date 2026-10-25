@@ -34,12 +34,53 @@ unknown; no attempt is made to guess or revoke legacy grants.
 The nursing library filters modules by the selected class. Existing enabled
 modules without any class link remain visible separately as "Other assigned
 modules" rather than being silently moved or removed. Existing class defaults
-are shared between admin and student screens, with saved schedule/resource
-class codes also included.
+are no longer used for module assignment. Admin/student class choices come
+from active `student_courses` enrollments via `nursing_module_classes(uuid)`.
+Existing assignment class codes remain visible for cleanup.
+
+### M4-only catalog prerequisite and course validation
+
+`supabase-m4-cardiac-catalog.sql` inserts only M4 Cardiac, pointing to the
+existing `module4-guide.html`. It does not alter clinical content, M5/M6, or
+student grants. It is repeatable and stops on a conflicting key/number/URL
+instead of overwriting another module. It must precede the course migration.
+
+The course RPC rejects nonempty module selections unless the nursing-school
+student has an active matching `student_courses` enrollment. Standard NUR
+course names/keys normalize to the portal class code (e.g. `nur312`,
+`NUR 312` -> `NUR 312`); other courses use their course key. Only admins or
+the enrolled student can read their choices through the new read-only RPC.
+No broad enrollment-table RLS policy or write permission is added. Active
+enrollment rows are locked while assignments save. Empty snapshots can still
+clear an old assignment after enrollment ends, preserving existing grants.
+
+Read-only preflight found Jack's active nursing profile but only NUR 321 OB
+in `student_courses`, not NUR 312. Production therefore needs an explicitly
+approved NUR 312 enrollment before saving Cardiac. Add/reuse the enrollment
+for the exact student UUID selected in the admin workspace; do not use a
+name-prefix match for a write or delete/remap other enrollment/access records.
+No Jack-specific INSERT or assignment has been executed by this work.
+
+After separate approval, production order is:
+
+1. Apply the separately reviewed PR #258 security migration and deploy its
+   onboarding change, so students cannot change profile lifecycle/type fields.
+2. Apply the M4 catalog prerequisite and the course-module migration.
+3. Add/reuse Jack's approved active NUR 312 enrollment in `student_courses`
+   (course key `nur312`, course name `NUR 312`), preserving his other courses.
+4. Merge/deploy the tested PR #252 frontend with the security fix retained.
+5. In Assignments select Jack, NUR 312, Module 4 Cardiac, and save. Verify
+   after refresh and in his Learning Library; do not clear other class modules.
+
+PR #258 remains separate. Applying PR #252 does not fix the profile UPDATE
+policy. Its security correction should be applied first for safe production
+release. The unrelated 42 legacy access rows remain unchanged and do not
+need to be deleted or broadly reconciled to insert the missing M4 catalog row.
 
 ### Required database change and release order
 
-`supabase-nursing-course-modules.sql` **must be reviewed and applied after
+`supabase-m4-cardiac-catalog.sql`, followed by
+`supabase-nursing-course-modules.sql`, **must be reviewed and applied after
 approval, before deploying the updated UI**. It requires the existing
 nursing-student, class-schedule, class-notes/uploads, and secure-access schema
 (including `students.student_type`, `students.archived_at`,

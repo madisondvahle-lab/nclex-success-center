@@ -1,11 +1,8 @@
 (function () {
   'use strict';
 
-  function classes(student, schedules = []) {
-    const legacyClasses = String(student.email || '').toLowerCase() === 'bianca.edwards86@gmail.com'
-      ? ['NUR 215', 'NUR 235']
-      : ['NUR 312', 'NUR 321', 'NUR 416'];
-    return [...new Set([...legacyClasses, ...schedules.map(item => item.class_code)])]
+  function classes(student, enrollments = []) {
+    return [...new Set(enrollments.map(item => item.class_code))]
       .filter(Boolean).map(code => ({ code, name: code }));
   }
 
