@@ -100,6 +100,9 @@
   }
   function itemEditor(parent, item, chartTabs, child = false) {
     const type = item.kind === 'case' ? 'case' : item.type;
+    if (!types.includes(type)) throw new Error('The interaction needs a supported question type before it can be edited.');
+    const clinicalRecord = !['mcq', 'sata'].includes(type) || !!item.tabs?.length || !!item.scoringVersion;
+    const ngn = child || clinicalRecord || !!item.scoring;
     if (child) field(parent, 'Question', item.prompt || item.stem || '', v => { item.prompt = v; }, 'textarea');
     if (type === 'case') {
       field(parent, 'Client scenario', item.scenario, v => { item.scenario = v; }, 'textarea');
@@ -119,21 +122,23 @@
       });
       return;
     }
-    if (!child) {
+    if (!child && clinicalRecord) {
       item.tabs = item.tabs || [];
       chartEditor(parent, item.tabs);
       chartTabs = item.tabs;
     }
     if (child) field(parent, 'Rationale', item.rationale, v => { item.rationale = v; }, 'textarea');
-    select(parent, 'Scoring version (requires review before CAT eligibility)', item.scoringVersion || 'legacy',
-      [['legacy', 'Legacy shared practice scoring'], ['ngn-v1', 'NGN v1: type-specific points and server-scored CAT']], value => {
-        if (value === 'legacy') delete item.scoringVersion;
-        else item.scoringVersion = value;
+    if (ngn) {
+      select(parent, 'Scoring version (requires review before CAT eligibility)', item.scoringVersion || 'legacy',
+        [['legacy', 'Legacy shared practice scoring'], ['ngn-v1', 'NGN v1: type-specific points and server-scored CAT']], value => {
+          if (value === 'legacy') delete item.scoringVersion;
+          else item.scoringVersion = value;
+        });
+      const scoring = type === 'mcq' || type === 'fill' ? 'All or nothing' : type === 'matrix' && item.scoringVersion ? 'Per-row zero/one (single) or plus/minus (multiple)' : type === 'sata' || type === 'highlight' || type === 'matrix' ? 'Plus/minus partial credit' : 'Per-choice zero/one partial credit';
+      select(parent, 'Scoring rule', item.scoring || 'legacy', [['legacy', scoring], ['zero-one', 'All or nothing for this item']], v => {
+        if (v === 'legacy') delete item.scoring; else item.scoring = v;
       });
-    const scoring = type === 'mcq' || type === 'fill' ? 'All or nothing' : type === 'matrix' && item.scoringVersion ? 'Per-row zero/one (single) or plus/minus (multiple)' : type === 'sata' || type === 'highlight' || type === 'matrix' ? 'Plus/minus partial credit' : 'Per-choice zero/one partial credit';
-    select(parent, 'Scoring rule', item.scoring || 'legacy', [['legacy', scoring], ['zero-one', 'All or nothing for this item']], v => {
-      if (v === 'legacy') delete item.scoring; else item.scoring = v;
-    });
+    }
     if (type === 'mcq' || type === 'sata') answers(parent, item, type === 'mcq');
     if (type === 'matrix') {
       select(parent, 'Selections per matrix row', item.responseMode || 'multiple', [['multiple', 'Multiple selections'], ['single', 'One selection']], v => { item.responseMode = v; });

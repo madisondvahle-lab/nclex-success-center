@@ -896,7 +896,7 @@
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
-  <script src="ngn-author-ngn.js?v=ngn-sata-v1"></script>
+  <script src="ngn-author-ngn.js?v=question-editor-v1"></script>
   <script>
     if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' ||
         window.ExamUI?.MCQ_OPTION_PROTOCOL !== 'mcq-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1' ||
@@ -1225,12 +1225,19 @@
       if(type!=='mcq'){
         try{
           if(!data)throw new Error('This existing question is missing its interaction data. Its answer key cannot be reconstructed automatically.');
-          const source={...data,stem:q.stem||'',rationale:q.rationale||''};
+          const storedType=data.kind==='case'?'case':data.type;
+          if(storedType&&storedType!==type)throw new Error(`The stored question type (${type}) conflicts with its interaction type (${storedType}). Review the classification before editing.`);
+          const source={...data,id:data.id||q.id,...(type==='case'?{kind:'case'}:{type}),stem:q.stem||'',rationale:q.rationale||''};
           form.ngnAuthor=NGNAuthor.mount($('e-ngn'),source,()=>({stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim(),...(type==='case'?{title:$('e-stem').value.trim()}:{})}));
         }catch(error){
           $('e-ngn').textContent=`Cannot edit this interaction safely: ${error.message||error}`;
           form.querySelector('button[type="submit"]').disabled=true;
         }
+      }
+      if(globalThis.NGNAuthor){
+        const metadata=document.createElement('div');
+        form.querySelector('.buttons').before(metadata);
+        form.ngnMetadata=NGNAuthor.metadata(metadata,q);
       }
       $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
       $('ed-form').onsubmit=async ev=>{
@@ -1296,8 +1303,6 @@
       fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(editable.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(editable.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(editable.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(editable.item_data||{},null,2))}</textarea>`}`;
       if(globalThis.NGNAuthor){
         fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea>`;
-        const metadata=document.createElement('div');fields.appendChild(metadata);
-        form.ngnMetadata=NGNAuthor.metadata(metadata,editable);
       }
       form.querySelector('.buttons').before(fields);
       form.onsubmit=async event=>{
@@ -1743,9 +1748,6 @@
         form.querySelector('h2').textContent='Create interactive question';
         form.querySelector('.intro').textContent='Save as an inactive draft. Clinical review and publishing remain separate actions. Use the student preview to verify the chart, interactions, and scoring.';
         form.querySelector('button[type="submit"]').textContent='Save inactive draft';
-        const metadata=document.createElement('div');
-        form.querySelector('.buttons').before(metadata);
-        form.ngnMetadata=NGNAuthor.metadata(metadata,{});
       });
 
       // Metric card click-to-filter / tab handlers

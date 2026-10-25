@@ -10,6 +10,46 @@ Follows `.agents/tasks/question-bank-audit.md` (protocol) and `.agents/CLINICAL-
 - `question-audit-panel.js` + small hooks in `question-bank-review.html` (Review & Flags tab): batch builder, run/pause/resume, spend cap, results with filters, batch approve (approve only), quarantine/release. Correction editor now syncs scoring JSON and shows field-specific errors.
 - Tests: `supabase/functions/_shared/question-audit.test.mjs`, `supabase/functions/question-audit/question-audit.test.mjs` (mocked DB/AI), `tests/question-audit-wiring.test.cjs`.
 
+## Existing-question editor fix (release pending approval)
+- `question-bank-review.html` supplies the bank's `item_type` and stable ID
+  when older interaction data omits them. Conflicting stored interaction
+  types block saving rather than silently converting the question.
+- Standard standalone MCQ/SATA show their answer controls without a clinical
+  record builder. Existing NGN charts, scoring settings, and cases retain
+  their controls. Structured option rationales and references are available
+  in direct edits and correction drafts without JSON editing.
+- Opening and typing do not save. Existing-question correction drafts still
+  require separate save, approval, and application.
+- Authenticated read-only Q-1008 verification: `item_type=sata`, `is_ngn=false`,
+  six options, five correct selections, and six option rationales. Its
+  `item_data` has only `options` and `correct`, confirming the missing nested
+  type/ID compatibility bug. The locally routed candidate loaded its saved
+  correction draft and supported unsaved choice/key/rationale edits.
+  Database readback confirmed the question and draft were unchanged.
+- Regression coverage: `tests/existing-question-author.test.cjs`. This release
+  has no schema, Edge Function, student assessment, or NGN CAT changes.
+- Release validation: 85 focused authoring, correction, scoring, legacy
+  assessment, and immutable-history regression tests passed; JavaScript
+  syntax and whitespace checks passed. Browser checks using synthetic
+  fixtures passed for MCQ, SATA, matrix, cloze, highlight, bow-tie, numeric,
+  and unfolding-case controls, saved keys, and editable individual rationales.
+  These used local candidate files routed into the authenticated browser;
+  they are not a deployment or live database save test.
+- Safe Delete compatibility (2026-10-25): integrated deployed main merge
+  `04700cc` from PR #250 without conflicts in an isolated editor worktree.
+  The combined editor, correction-draft, NGN/scoring/history, and Safe Delete
+  Node suite passed 94/94 tests. Syntax and whitespace checks passed.
+- The disposable local PostgreSQL suite passed checks 1-9 and 2b, migration
+  re-application, rollback/re-application, and concurrency checks A-G.
+  Student-history fixtures remained unchanged; concurrent student writes
+  had zero failed transactions. The test container was removed afterward.
+  No production database reads or writes were performed in this integration.
+- The deployed Safe Delete UI function section, SQL, rollback, and tests
+  remain byte-for-byte identical to main. Relative to main, PR #249 still
+  contains only the five editor-related source, test, and documentation
+  files, with no migration or student-history changes. Merge and deployment
+  remain pending separate owner authorization.
+
 ## Rules baked in
 - Questions with a pending/approved draft are skipped and never overwritten.
 - Revisions keep UUID, question_no, type, topic, category, references (no AI-invented citations).
