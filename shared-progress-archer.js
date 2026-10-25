@@ -15,8 +15,12 @@
       section.className = 'muted';
       section.style.marginTop = '8px';
       section.innerHTML = files.map((file, fileIndex) => {
-        const label = file.section === 'classic' ? 'Classic screenshot'
-          : file.section === 'ngn' ? 'NGN screenshot' : 'Source report';
+        const sectionLabel = file.section === 'classic' ? 'Classic'
+          : file.section === 'ngn' ? 'NGN' : 'Source report';
+        const viewLabel = file.report_view === 'subject_lesson' ? 'Subject/Lesson'
+          : file.report_view === 'client_need' ? 'Client Need' : '';
+        const label = viewLabel ? `${sectionLabel} · ${viewLabel} screenshot`
+          : `${sectionLabel} screenshot`;
         return `<button class="link" type="button" data-archer-report="${fileIndex}">${label}: ${String(file.original_filename || 'report').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])} →</button>`;
       }).join('');
       card.appendChild(section);

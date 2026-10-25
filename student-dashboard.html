@@ -1436,9 +1436,9 @@
           const score=category?item.score_percent??item.calculated_score_percent:item.overall_percent??item.calculated_overall_percent;
           if(score==null)return 'Not Reported';
           const count=category?item.question_count:section.question_count;
-          const peer=!category?'':sectionName==='ngn'
-            ?item.peer_average_points==null?'':` · avg peer ${item.peer_average_points} points`
-            :item.peer_score_percent==null?'':` · peer ${item.peer_score_percent}%`;
+          const peerValue=item.peer_score_percent??item.peer_average_points;
+          const peerUnit=item.peer_score_percent!=null?'%':item.peer_average_points!=null?' points':'';
+          const peer=!category||peerValue==null?'':` · peer ${peerValue}${peerUnit}`;
           const exposure=count!=null?` · ${count} q${count<3?' (limited exposure)':''}`:'';
           const source=category?item.score_source:section.overall_score_source;
           const method=source==='earned-points-over-possible-points'?' · calculated from points':source==='archer-reported'?' · provider-reported':'';
@@ -1446,6 +1446,19 @@
         };
         const attemptHeaders=attempts.map(row=>`<th colspan="2">${text(fmt(when(row)))}<br>${text(row.assessment_name||'Archer CAT')}</th>`).join('');
         const categoryRows=ArcherCAT.categories.map(category=>`<tr><th scope="row">${text(category)}</th>${attempts.map(row=>`<td>${text(value(row.archer_cat_data.classic,category,'classic'))}</td><td>${text(value(row.archer_cat_data.ngn,category,'ngn'))}</td>`).join('')}<td>${rowCombined(attempts[attempts.length-1].archer_cat_data,category)}</td></tr>`).join('');
+        const latestDetail=attempts[attempts.length-1].archer_cat_data;
+        const subjectNames=[...new Set(['classic','ngn'].flatMap(section=>Object.keys(latestDetail.subject_lesson?.[section]?.subjects||{})))].sort();
+        const subjectRows=subjectNames.map(subject=>{
+          const subjectCell=section=>{
+            const item=latestDetail.subject_lesson?.[section]?.subjects?.[subject];
+            if(!item)return 'Not Reported';
+            const score=item.score_percent==null?'Not Reported':`${item.score_percent}%`;
+            const peer=item.peer_score==null?'':` · peer ${item.peer_score}${item.peer_score_unit==='percent'?'%':item.peer_score_unit==='points'?' points':' · unit unclear'}`;
+            const count=item.question_count==null?'':` · ${item.question_count} q`;
+            return `${score}${peer}${count}`;
+          };
+          return `<tr><th scope="row">${text(subject)}</th><td>${text(subjectCell('classic'))}</td><td>${text(subjectCell('ngn'))}</td></tr>`;
+        }).join('');
         function rowCombined(detail,category){
           const combined=detail.combined?.categories?.[category];
           return combined?`${text(combined.score)}% · ${text(combined.earned_points)}/${text(combined.possible_points)} pts`:'Insufficient Data';
@@ -1456,7 +1469,8 @@
         }).join('');
         return `<section style="margin-top:18px"><h3 style="font-size:1rem">Archer CAT · separate Classic and NGN trends</h3>
           <p style="color:var(--muted);font-size:.8rem">Classic and NGN reported percentages remain separate. Combined performance uses actual earned/possible points only. Small category samples are marked limited exposure.</p>
-          <div style="overflow-x:auto"><table class="ov-table"><thead><tr><th>CAT date / category</th>${attemptHeaders}<th>Latest combined</th></tr><tr><th></th>${attempts.map(()=>'<th>Classic · peer %</th><th>NGN · peer points</th>').join('')}<th>Points-based</th></tr></thead><tbody>${categoryRows}</tbody></table></div>
+          <div style="overflow-x:auto"><table class="ov-table"><thead><tr><th>CAT date / client-needs category</th>${attemptHeaders}<th>Latest combined</th></tr><tr><th></th>${attempts.map(()=>'<th>Classic · peer value</th><th>NGN · peer value</th>').join('')}<th>Points-based</th></tr></thead><tbody>${categoryRows}</tbody></table></div>
+          ${subjectRows?`<h4>Subject/Lesson view · latest CAT · separate from Client Needs</h4><div style="overflow-x:auto"><table class="ov-table"><thead><tr><th>Archer subject</th><th>Classic % · peer value · questions</th><th>NGN % · peer value · questions</th></tr></thead><tbody>${subjectRows}</tbody></table></div>`:''}
           <div style="overflow-x:auto;margin-top:12px"><table class="ov-table"><thead><tr><th>Attempt</th><th>Pass/Fail</th><th>Total Q</th><th>Classic overall</th><th>NGN overall</th><th>Combined</th></tr></thead><tbody>${summaries}</tbody></table></div>
           ${legacy?'<p style="color:var(--muted)">Legacy Archer CAT records remain saved, but are excluded from section-level comparisons because their section-level scoring method was not recorded.</p>':''}
         </section>`;

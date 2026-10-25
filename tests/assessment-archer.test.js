@@ -32,34 +32,31 @@ test('Archer OCR follows reversed peer and student score headers', () => {
 });
 
 /*
-Manual browser OCR reference (not an automated image fixture): Tesseract.js v5
-was run against "Screenshot 2026-10-25 at 12.27.50 PM.png" (Classic, 1777x768)
-and "Screenshot 2026-10-25 at 12.28.07 PM.png" (NGN, 1691x768). Both were
-correctly identified and processed separately and together in their matching
-upload controls. The screenshots are not committed; these row values are the
-expected values transcribed from those originals and checked against the
-successful browser OCR results. Classic peer averages are percentages; NGN
-average peer values are points, without a percent sign.
+Real-image browser validation references (not automated fixtures): the user
+attached "Pasted Image.png" (Classic, Subject/Lesson, 1954x768) and
+"Pasted Image 2.png" (NGN, Subject/Lesson, 1713x768). Expected subject rows
+are recorded in the test below; peer values in both reports are percentages.
+The files remain in the conversation attachment store and are not committed.
 */
 test('Archer screenshot OCR results remain isolated by report section and category row', () => {
   const classic = window.AssessmentImport.parseArcherRows('classic', [
-    { category: 'Physiological Adaptation', score: 70, peer_score: 66, question_count: 10 },
-    { category: 'Reduction of Risk Potential', score: 75, peer_score: 68, question_count: 8 },
-    { category: 'Psychosocial Integrity', score: 100, peer_score: 67, question_count: 2 },
-    { category: 'Pharmacological and Parenteral Therapies', score: 75, peer_score: 54, question_count: 4 },
-    { category: 'Management of Care', score: 100, peer_score: 72, question_count: 6 }
+    { category: 'Physiological Adaptation', score: 70, peer_score: 66, peer_score_unit: 'percent', question_count: 10 },
+    { category: 'Reduction of Risk Potential', score: 75, peer_score: 68, peer_score_unit: 'percent', question_count: 8 },
+    { category: 'Psychosocial Integrity', score: 100, peer_score: 67, peer_score_unit: 'percent', question_count: 2 },
+    { category: 'Pharmacological and Parenteral Therapies', score: 75, peer_score: 54, peer_score_unit: 'percent', question_count: 4 },
+    { category: 'Management of Care', score: 100, peer_score: 72, peer_score_unit: 'percent', question_count: 6 }
   ], {
     question_count: 30,
     overall_percent: 80,
     result_counts: { correct: 24, incorrect: 6, omitted: 0 }
   });
   const ngn = window.AssessmentImport.parseArcherRows('ngn', [
-    { category: 'Physiological Adaptation', score: 86, peer_score: 5, question_count: 17 },
-    { category: 'Reduction of Risk Potential', score: 83, peer_score: 9, question_count: 9 },
-    { category: 'Health Promotion and Maintenance', score: 57, peer_score: 14, question_count: 3 },
-    { category: 'Psychosocial Integrity', score: 57, peer_score: 11, question_count: 8 },
-    { category: 'Pharmacological and Parenteral Therapies', score: 69, peer_score: 6, question_count: 12 },
-    { category: 'Management of Care', score: 70, peer_score: 15, question_count: 6 }
+    { category: 'Physiological Adaptation', score: 86, peer_score: 5, peer_score_unit: 'points', question_count: 17 },
+    { category: 'Reduction of Risk Potential', score: 83, peer_score: 9, peer_score_unit: 'points', question_count: 9 },
+    { category: 'Health Promotion and Maintenance', score: 57, peer_score: 14, peer_score_unit: 'points', question_count: 3 },
+    { category: 'Psychosocial Integrity', score: 57, peer_score: 11, peer_score_unit: 'points', question_count: 8 },
+    { category: 'Pharmacological and Parenteral Therapies', score: 69, peer_score: 6, peer_score_unit: 'points', question_count: 12 },
+    { category: 'Management of Care', score: 70, peer_score: 15, peer_score_unit: 'points', question_count: 6 }
   ], {
     question_count: 55,
     overall_percent: 75,
@@ -119,6 +116,69 @@ test('incomplete or duplicate Archer OCR rows remain blank and flagged for revie
     question_count: null,
     overall_percent: null,
     result_counts: { correct: 24, incorrect: 6, omitted: null }
+  });
+
+  test('Subject/Lesson rows preserve Archer names, section separation, and report-specific peer units', () => {
+    const classic = window.AssessmentImport.parseArcherSubjectRows('classic', [
+      { subject: 'Adult Health', score: 75, peer_score: 70, peer_score_unit: 'percent', question_count: 8 },
+      { subject: 'Child Health', score: 75, peer_score: 76, peer_score_unit: 'percent', question_count: 4 },
+      { subject: 'Critical Care', score: 33, peer_score: 49, peer_score_unit: 'percent', question_count: 3 },
+      { subject: 'Fundamentals', score: 75, peer_score: 59, peer_score_unit: 'percent', question_count: 4 },
+      { subject: 'Leadership & Management', score: 100, peer_score: 72, peer_score_unit: 'percent', question_count: 6 },
+      { subject: 'Maternal & Newborn Health', score: 100, peer_score: 53, peer_score_unit: 'percent', question_count: 1 },
+      { subject: 'Mental Health', score: 100, peer_score: 67, peer_score_unit: 'percent', question_count: 2 },
+      { subject: 'Pharmacology', score: 100, peer_score: 50, peer_score_unit: 'percent', question_count: 1 },
+      { subject: 'Nutrition', score: 100, peer_score: 73, peer_score_unit: 'percent', question_count: 1 }
+    ], {});
+    const ngn = window.AssessmentImport.parseArcherSubjectRows('ngn', [
+      { subject: 'Adult Health', score: 83, peer_score: 2, peer_score_unit: 'percent', question_count: 37 },
+      { subject: 'Leadership & Management', score: 0, peer_score: 50, peer_score_unit: 'percent', question_count: 1 },
+      { subject: 'Maternal & Newborn Health', score: 44, peer_score: 33, peer_score_unit: 'percent', question_count: 2 },
+      { subject: 'Mental Health', score: 62, peer_score: 4, peer_score_unit: 'percent', question_count: 13 },
+      { subject: 'Pharmacology', score: 60, peer_score: 40, peer_score_unit: 'percent', question_count: 2 }
+    ], {
+      question_count: 55,
+      overall_percent: 75,
+      overall_points: { earned_points: 144, possible_points: 193 }
+    });
+
+    assert.equal(classic.view, 'subject_lesson');
+    assert.equal(ngn.view, 'subject_lesson');
+    assert.deepEqual(
+      Object.fromEntries(Object.entries(classic.subjects).map(([subject, row]) =>
+        [subject, [row.score, row.peer_score, row.peer_score_unit, row.question_count]])),
+      {
+        'Adult Health': [75, 70, 'percent', 8],
+        'Child Health': [75, 76, 'percent', 4],
+        'Critical Care': [33, 49, 'percent', 3],
+        'Fundamentals': [75, 59, 'percent', 4],
+        'Leadership & Management': [100, 72, 'percent', 6],
+        'Maternal & Newborn Health': [100, 53, 'percent', 1],
+        'Mental Health': [100, 67, 'percent', 2],
+        'Pharmacology': [100, 50, 'percent', 1],
+        'Nutrition': [100, 73, 'percent', 1]
+      }
+    );
+    assert.deepEqual(
+      Object.fromEntries(Object.entries(ngn.subjects).map(([subject, row]) =>
+        [subject, [row.score, row.peer_score, row.peer_score_unit, row.question_count]])),
+      {
+        'Adult Health': [83, 2, 'percent', 37],
+        'Leadership & Management': [0, 50, 'percent', 1],
+        'Maternal & Newborn Health': [44, 33, 'percent', 2],
+        'Mental Health': [62, 4, 'percent', 13],
+        'Pharmacology': [60, 40, 'percent', 2]
+      }
+    );
+    assert.equal(ngn.question_count, 55);
+    assert.equal(ngn.overall_percent, 75);
+    assert.deepEqual(ngn.overall_points, { earned_points: 144, possible_points: 193 });
+    assert.equal(classic.subjects['Adult Health'].score, 75);
+    assert.equal(ngn.subjects['Adult Health'].score, 83);
+    assert.equal(classic.categories, undefined);
+    assert.equal(ngn.categories, undefined);
+    assert.equal(classic.reviewRequired, true);
+    assert.equal(ngn.reviewRequired, true);
   });
 
   assert.equal(incomplete.categories['Physiological Adaptation'].score, 70);

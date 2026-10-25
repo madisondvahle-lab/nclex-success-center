@@ -63,7 +63,7 @@
       result.categories[category]={
         score:score,
         peer_score:peer,
-        peer_score_unit:section==='ngn'?'points':section==='classic'?'percent':null,
+        peer_score_unit:row.peer_score_unit||null,
         question_count:count
       };
       if(score==null||peer==null||count==null)result.missingCategories.push(category);
@@ -85,6 +85,40 @@
         result.missingCategories.push(category);
       }
     });
+    return result;
+  }
+  function parseArcherSubjectRows(section,rows,metadata){
+    var subjects={},ambiguousSubjects=[];
+    (rows||[]).forEach(function(row){
+      var name=clean(row.subject);
+      if(!name)return;
+      if(subjects[name]){
+        delete subjects[name];
+        ambiguousSubjects.push(name);
+        return;
+      }
+      if(ambiguousSubjects.indexOf(name)>=0)return;
+      subjects[name]={
+        score:finiteScore(row.score),
+        peer_score:finiteScore(row.peer_score),
+        peer_score_unit:row.peer_score_unit||null,
+        question_count:finiteCount(row.question_count)
+      };
+    });
+    var result={section:section,view:'subject_lesson',subjects:subjects,ambiguousSubjects:ambiguousSubjects,reviewRequired:true,missingSubjects:[],missingFields:[]};
+    Object.keys(subjects).forEach(function(name){
+      var subject=subjects[name];
+      if(subject.score==null||subject.peer_score==null||subject.peer_score_unit==null||subject.question_count==null)result.missingSubjects.push(name);
+    });
+    if(metadata){
+      result.question_count=finiteCount(metadata.question_count);
+      result.overall_percent=finiteScore(metadata.overall_percent);
+      result.overall_points=pointValues(metadata.overall_points);
+      result.result_counts=metadata.result_counts||null;
+    }
+    if(result.question_count==null)result.missingFields.push('question_count');
+    if(result.overall_percent==null)result.missingFields.push('overall_percent');
+    if(section==='ngn'&&!result.overall_points)result.missingFields.push('overall_points');
     return result;
   }
   function finiteScore(value){
@@ -128,7 +162,7 @@
   function groupWordRows(words){
     var groups=[];
     (words||[]).filter(function(word){return word&&word.bbox&&wordText(word)}).sort(function(a,b){return wordCenter(a)-wordCenter(b)}).forEach(function(word){
-      var center=wordCenter(word),group=groups.find(function(item){return Math.abs(item.center-center)<=13});
+      var center=wordCenter(word),group=groups.find(function(item){return Math.abs(item.center-center)<=20});
       if(!group){group={center:center,words:[]};groups.push(group)}
       group.words.push(word);
       group.center=group.words.reduce(function(sum,item){return sum+wordCenter(item)},0)/group.words.length;
@@ -139,6 +173,109 @@
     });
     return groups;
   }
+  function activeLabeledTab(bitmap,words,labels){
+    var canvas=document.createElement('canvas'),context=canvas.getContext('2d',{willReadFrequently:true});
+    canvas.width=bitmap.width;canvas.height=bitmap.height;context.drawImage(bitmap,0,0);
+    function labelBox(pattern){
+      var matching=(words||[]).filter(function(word){return pattern.test(wordText(word))&&word.bbox});
+      if(!matching.length)return null;
+      return matching.reduce(function(box,word){
+        box.x0=Math.min(box.x0,word.bbox.x0);box.y0=Math.min(box.y0,word.bbox.y0);
+        box.x1=Math.max(box.x1,word.bbox.x1);box.y1=Math.max(box.y1,word.bbox.y1);
+        return box;
+      },{x0:Infinity,y0:Infinity,x1:0,y1:0});
+    }
+    function selectedPixels(box){
+      if(!box)return 0;
+      var x0=Math.max(0,Math.floor(box.x0-14)),x1=Math.min(bitmap.width,Math.ceil(box.x1+14));
+      var y0=Math.max(0,Math.floor(box.y0-9)),y1=Math.min(bitmap.height,Math.ceil(box.y1+9));
+      var data=context.getImageData(x0,y0,x1-x0,y1-y0).data,count=0;
+      for(var i=0;i<data.length;i+=4){
+        if(data[i]<100&&data[i+1]>115&&data[i+2]>120&&data[i+2]-data[i]>45)count++;
+      }
+      return count;
+    }
+    var ordered=labels.map(function(label){return selectedPixels(labelBox(label.pattern))});
+    if(!ordered.length)return null;
+    var sorted=ordered.slice().sort(function(a,b){return b-a});
+    if(sorted[0]<24||sorted[0]-sorted[1]<8)return null;
+    return labels[ordered.indexOf(sorted[0])].value;
+  }
+  function activeViewFromWords(bitmap,words){
+    return activeLabeledTab(bitmap,words,[
+      {value:'subject_lesson',pattern:/^(?:subject\/lesson|subject|lesson)$/i},
+      {value:'client_need',pattern:/^(?:client|need|needs)$/i}
+    ]);
+  }
+  function activeViewFromPixels(bitmap){
+    var canvas=document.createElement('canvas'),context=canvas.getContext('2d',{willReadFrequently:true});
+    canvas.width=bitmap.width;canvas.height=bitmap.height;context.drawImage(bitmap,0,0);
+    var image=context.getImageData(0,0,bitmap.width,bitmap.height).data;
+    function strongestTab(start,end){
+      var x0=Math.floor(bitmap.width*start),x1=Math.floor(bitmap.width*end),strongest=0;
+      for(var y=0;y<bitmap.height;y++){
+        var count=0;
+        for(var x=x0;x<x1;x++){
+          var offset=(y*bitmap.width+x)*4;
+          if(image[offset]<100&&image[offset+1]>115&&image[offset+2]>140&&image[offset+2]-image[offset+1]>25)count++;
+        }
+        strongest=Math.max(strongest,count);
+      }
+      return strongest;
+    }
+    var subject=strongestTab(.005,.08),client=strongestTab(.075,.15);
+    if(Math.max(subject,client)<35||Math.abs(subject-client)<15)return null;
+    return subject>client?'subject_lesson':'client_need';
+  }
+  function headerCenter(groups,pattern,width){
+    var group=(groups||[]).find(function(item){return pattern.test(item.text)});
+    if(!group)return null;
+    var matching=group.words.filter(function(word){return pattern.test(wordText(word))});
+    if(!matching.length&&pattern.source.indexOf('your')>=0){
+      var your=group.words.findIndex(function(word){return /^your$/i.test(wordText(word))});
+      if(your>=0){
+        var score=group.words.slice(your+1).find(function(word){return /^score$/i.test(wordText(word))});
+        if(score)return (group.words[your].bbox.x0+score.bbox.x1)/2/width;
+      }
+    }
+    if(!matching.length&&pattern.source.indexOf('peer')>=0){
+      var peer=group.words.findIndex(function(word){return /^peer$/i.test(wordText(word))});
+      if(peer>=0){
+        var scoreWord=group.words.slice(peer+1).find(function(word){return /^score$/i.test(wordText(word))});
+        if(scoreWord)return (group.words[peer].bbox.x0+scoreWord.bbox.x1)/2/width;
+      }
+    }
+    if(!matching.length&&pattern.source.indexOf('usage')>=0){
+      matching=group.words.filter(function(word){return /usage/i.test(wordText(word))});
+    }
+    if(!matching.length)return null;
+    return matching.reduce(function(sum,word){return sum+(word.bbox.x0+word.bbox.x1)/2},0)/matching.length/width;
+  }
+  function subjectNameFromRow(group,scoreCenter,width){
+    if(/your\s+score|peer\s+score|ques\.?\s*usage|time\s+spent|subject\s*\/\s*lesson|client\s+need/i.test(group.text))return '';
+    var words=group.words.filter(function(word){
+      var text=wordText(word),center=(word.bbox.x0+word.bbox.x1)/2/width;
+      return center>.03&&center<scoreCenter-.12&&!/^[+•·-]+$/.test(text)&&
+        !/^(?:needs|neads|focus|cieed|©|®|j|\||\(|\)|\[|\]|\{|\})+$/i.test(text);
+    });
+    return clean(words.map(wordText).join(' ')).replace(/^[^A-Za-z0-9]+/,'').replace(/\s*[+•·-]+$/,'');
+  }
+  function peerValue(text,headerText){
+    var valueMatch=String(text||'').match(/^\s*(\d{1,3}(?:\.\d+)?)\s*(%)?\s*$/);
+    if(!valueMatch)return {value:null,unit:null};
+    var value=Number(valueMatch[1]);
+    if(!Number.isFinite(value)||value<0)return {value:null,unit:null};
+    if(valueMatch[2])return value<=100?{value:value,unit:'percent'}:{value:null,unit:null};
+    if(/peer(?:\s+average)?\s*(?:score\s*)?(?:\(%\)|%|percent(?:age)?)/i.test(headerText||''))return value<=100?{value:value,unit:'percent'}:{value:null,unit:null};
+    if(/peer\s*(?:average\s*)?points/i.test(headerText||''))return {value:value,unit:'points'};
+    return {value:null,unit:null};
+  }
+  function activeSectionFromWords(bitmap,words){
+    return activeLabeledTab(bitmap,words,[
+      {value:'classic',pattern:/^classic(?:\s*\(\d+\))?$/i},
+      {value:'ngn',pattern:/^ngn(?:\s*\(\d+\))?$/i}
+    ]);
+  }
   function activeSectionFromPixels(bitmap){
     var canvas=document.createElement('canvas'),context=canvas.getContext('2d',{willReadFrequently:true});
     canvas.width=bitmap.width;canvas.height=bitmap.height;context.drawImage(bitmap,0,0);
@@ -146,7 +283,7 @@
     function tealCount(start,end){
       var image=context.getImageData(start,y,end-start,1).data,count=0;
       for(var i=0;i<image.length;i+=4){
-        if(image[i+1]>120&&image[i+2]>120&&image[i]<110&&image[i+1]-image[i]>55)count++;
+        if(image[i+1]>120&&image[i+1]>image[i+2]+8&&image[i]<110&&image[i+1]-image[i]>55)count++;
       }
       return count;
     }
@@ -154,22 +291,25 @@
     if(Math.max(classic,ngn)<20||Math.abs(classic-ngn)<12)return null;
     return classic>ngn?'classic':'ngn';
   }
-  function cropCanvas(bitmap,x,y,width,height){
-    var scale=5,canvas=document.createElement('canvas');
+  function cropCanvas(bitmap,x,y,width,height,invertBadge,preserveColors){
+    var scale=8,canvas=document.createElement('canvas');
     canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);
     var context=canvas.getContext('2d',{willReadFrequently:true});
-    context.imageSmoothingEnabled=true;
+    context.imageSmoothingEnabled=false;
     context.drawImage(bitmap,x,y,width,height,0,0,canvas.width,canvas.height);
+    if(preserveColors)return canvas;
     var image=context.getImageData(0,0,canvas.width,canvas.height),min=255,max=0;
     for(var i=0;i<image.data.length;i+=4){
       var gray=Math.round(.299*image.data[i]+.587*image.data[i+1]+.114*image.data[i+2]);
       min=Math.min(min,gray);max=Math.max(max,gray);
-      image.data[i]=image.data[i+1]=image.data[i+2]=gray;
+      image.data[i]=image.data[i+1]=image.data[i+2]=invertBadge?(gray>170?0:255):gray;
     }
-    var range=Math.max(1,max-min);
-    for(var j=0;j<image.data.length;j+=4){
-      var value=Math.max(0,Math.min(255,Math.round((image.data[j]-min)*255/range)));
-      image.data[j]=image.data[j+1]=image.data[j+2]=value;
+    if(!invertBadge){
+      var range=Math.max(1,max-min);
+      for(var j=0;j<image.data.length;j+=4){
+        var value=Math.max(0,Math.min(255,Math.round((image.data[j]-min)*255/range)));
+        image.data[j]=image.data[j+1]=image.data[j+2]=value;
+      }
     }
     context.putImageData(image,0,0);
     return canvas;
@@ -187,6 +327,14 @@
     var value=match?Number(match[1]):null;
     return value!=null&&Number.isFinite(value)&&value>=0?value:null;
   }
+  function valueFromWords(words,xRatio,rowY,width,parser){
+    var candidates=(words||[]).filter(function(word){
+      var centerX=(word.bbox.x0+word.bbox.x1)/2/width;
+      return Math.abs(centerX-xRatio)<=.035&&Math.abs(wordCenter(word)-rowY)<=18;
+    }).map(function(word){return parser(wordText(word))}).filter(function(value){return value!=null});
+    var unique=Array.from(new Set(candidates));
+    return unique.length===1?unique[0]:null;
+  }
   async function recognizeCell(worker,canvas){
     var result=await worker.recognize(canvas);
     return String(result.data.text||'').trim();
@@ -200,62 +348,137 @@
       sourceCanvas.width=bitmap.width;sourceCanvas.height=bitmap.height;
       sourceCanvas.getContext('2d').drawImage(bitmap,0,0);
       var recognized=await worker.recognize(sourceCanvas),data=recognized.data||{},text=String(data.text||'');
-      var section=activeSectionFromPixels(bitmap);
-      if(!section||section!==expectedSection){
-        return {section:section,categories:{},reviewRequired:true,warning:section?'This screenshot is selected as '+section.toUpperCase()+', not '+expectedSection.toUpperCase()+'. No values were imported.':'Could not identify the selected Classic/NGN tab. No values were imported.'};
-      }
       var words=data.words||[],groups=groupWordRows(words),rows=[];
+      var wordSection=activeSectionFromWords(bitmap,words),pixelSection=activeSectionFromPixels(bitmap);
+      var section=wordSection||pixelSection||expectedSection;
+      if(section!==expectedSection){
+        return {section:section,view:null,categories:{},subjects:{},reviewRequired:true,warning:'This screenshot is selected as '+section.toUpperCase()+', not '+expectedSection.toUpperCase()+'. No values were imported.'};
+      }
+      var view=activeViewFromWords(bitmap,words)||activeViewFromPixels(bitmap);
+      if(!view){
+        return {section:section,view:null,categories:{},subjects:{},reviewRequired:true,warning:'Could not reliably identify whether Subject/Lesson or Client Need is selected. No values were imported.'};
+      }
       var width=bitmap.width,height=bitmap.height;
+      var tableHeader=groups.find(function(group){
+        return /your\s+score/i.test(group.text)&&/peer\s+score/i.test(group.text)&&/usage/i.test(group.text)&&!/max\s+score/i.test(group.text);
+      });
+      var scoreHeader=tableHeader?headerCenter([tableHeader],/your\s+score/i,width):null;
+      var peerHeader=tableHeader?headerCenter([tableHeader],/peer\s+score/i,width):null;
+      var countHeader=tableHeader?headerCenter([tableHeader],/(?:ques\.?\s*)?usage/i,width):null;
       var columns=section==='classic'
         ?{scoreX:.394,scoreW:.045,peerX:.518,peerW:.045,countX:.644,countW:.031}
         :{scoreX:.4932,scoreW:.0284,peerX:.612,peerW:.039,countX:.757,countW:.018};
-      async function readAt(xRatio,yRatio,widthRatio,heightRatio,parser,pageMode){
+      if(view==='subject_lesson'){
+        columns={
+          scoreX:scoreHeader==null?(section==='classic'?.357:.435):scoreHeader,
+          peerX:peerHeader==null?(section==='classic'?.478:.58):peerHeader,
+          countX:countHeader==null?(section==='classic'?.608:.739):countHeader,
+          scoreW:.042,peerW:.05,countW:.045
+        };
+      }
+      async function readAt(xRatio,yRatio,widthRatio,heightRatio,parser,pageMode,characterWhitelist,invertBadge,preserveColors){
         var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
         var y=Math.max(0,Math.min(height-1,Math.round(height*yRatio)));
         var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
         var cropHeight=Math.max(14,Math.min(height-y,Math.round(height*heightRatio)));
-        await worker.setParameters({tessedit_pageseg_mode:pageMode||'8',tessedit_char_whitelist:'0123456789%'});
-        return parser(await recognizeCell(worker,cropCanvas(bitmap,x,y,cropWidth,cropHeight)));
+        await worker.setParameters({tessedit_pageseg_mode:pageMode||'8',tessedit_char_whitelist:characterWhitelist||'0123456789%'});
+        return parser(await recognizeCell(worker,cropCanvas(bitmap,x,y,cropWidth,cropHeight,invertBadge,preserveColors)));
       }
       groups.forEach(function(group){
-        var category=categoryInLine(group.text);
-        if(!category)return;
+        var category=view==='client_need'?categoryInLine(group.text):null;
+        var subject=view==='subject_lesson'?subjectNameFromRow(group,columns.scoreX,width):'';
+        if(view==='client_need'&&!category||view==='subject_lesson'&&!subject)return;
         var yValues=group.words.filter(function(word){
           var x=(word.bbox.x0+word.bbox.x1)/2/width;
           return x>columns.scoreX-.015&&x<columns.countX+columns.countW+.02;
         }).map(wordCenter);
-        var rowY=yValues.length?yValues.sort(function(a,b){return a-b})[Math.floor(yValues.length/2)]:group.center;
-        rows.push({category:category,rowY:rowY});
+        if(view==='subject_lesson'&&!yValues.length)return;
+        var labelY=subject?group.words.filter(function(word){
+          var center=(word.bbox.x0+word.bbox.x1)/2/width,text=wordText(word);
+          return center>.03&&center<columns.scoreX-.12&&
+            !/^(?:needs|neads|focus|cieed|©|®|j|\||\(|\)|\[|\]|\{|\})+$/i.test(text);
+        }).map(wordCenter):[];
+        var sortedValues=yValues.slice().sort(function(a,b){return a-b});
+        var sortedLabels=labelY.slice().sort(function(a,b){return a-b});
+        var rowY=sortedValues.length?sortedValues[Math.floor(sortedValues.length/2)]:group.center;
+        var labelRowY=sortedLabels.length?sortedLabels[Math.floor(sortedLabels.length/2)]:null;
+        rows.push({category:category,subject:subject,rowY:rowY,labelRowY:labelRowY});
       });
       var extracted=[];
+      var peerHeaderText=(groups.find(function(group){return /peer\s+score/i.test(group.text)})||{}).text||'';
       for(var row of rows){
-        var top=Math.max(0,Math.round(row.rowY-8)),cellHeight=Math.min(22,height-top);
-        async function cell(xRatio,widthRatio,pageMode,characterWhitelist){
+        var top=Math.max(0,Math.round(row.rowY-15)),cellHeight=Math.min(36,height-top);
+        async function cell(xRatio,widthRatio,pageMode,characterWhitelist,invertBadge){
           var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
           var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
           await worker.setParameters({
             tessedit_pageseg_mode:pageMode||'8',
             tessedit_char_whitelist:characterWhitelist||'0123456789%'
           });
-          return recognizeCell(worker,cropCanvas(bitmap,x,top,cropWidth,cellHeight));
+          return recognizeCell(worker,cropCanvas(bitmap,x,top,cropWidth,cellHeight,invertBadge));
         }
-        var scoreText=await cell(columns.scoreX,columns.scoreW);
+        var scoreText=await cell(columns.scoreX-columns.scoreW/2,columns.scoreW,'7','0123456789%',true);
+        var score=finiteScore(parsePercentText(scoreText));
+        if(score==null){
+          scoreText=await cell(columns.scoreX-columns.scoreW/2,columns.scoreW,'7');
+          score=parsePercentText(scoreText);
+        }
+        if(score==null&&section==='ngn'&&row.labelRowY!=null){
+          var labelTop=Math.max(0,Math.round(row.labelRowY-15));
+          await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789%'});
+          var labelScore=await recognizeCell(worker,cropCanvas(
+            bitmap,
+            Math.max(0,Math.round(width*(columns.scoreX-columns.scoreW/2))),
+            labelTop,
+            Math.min(width-Math.round(width*(columns.scoreX-columns.scoreW/2)),Math.round(width*columns.scoreW)),
+            Math.min(36,height-labelTop),
+            true
+          ));
+          score=parsePercentText(labelScore);
+        }
+        var peerFromWords=valueFromWords(words,columns.peerX,row.rowY,width,parsePercentText);
         var peerText=await cell(
-          columns.peerX,columns.peerW,section==='ngn'?'7':'8',
-          section==='ngn'?'0123456789.':'0123456789%'
+          columns.peerX-columns.peerW/2,columns.peerW,section==='ngn'?'7':'8',
+          '0123456789.%'
         );
-        var countText=await cell(columns.countX,columns.countW);
-        extracted.push({
-          category:row.category,
-          score:parsePercentText(scoreText),
-          peer_score:section==='ngn'?parsePointText(peerText):parsePercentText(peerText),
-          question_count:parseIntegerText(countText)
-        });
+        var peerScore=parsePercentText(peerText);
+        if(peerFromWords!=null){
+          if(peerFromWords>=10)peerScore=peerFromWords;
+          else if(peerScore===peerFromWords)peerScore=peerFromWords;
+          else if(peerScore!=null&&peerScore>=10&&peerScore%10===peerFromWords)peerScore=peerScore;
+          else peerScore=null;
+        }else if(peerScore!=null&&peerScore<10){
+          peerScore=null;
+        }
+        var peer=peerFromWords!=null&&peerScore===peerFromWords
+          ?{value:peerScore,unit:'percent'}:peerValue(peerText,peerHeaderText);
+        if(peerFromWords!=null&&peerScore==null||peer.value!=null&&peer.unit==='percent'&&peer.value<10&&peerScore==null){
+          peer={value:null,unit:null};
+        }else if(peerScore!=null){
+          peer.value=peerScore;
+          if(peerFromWords!=null)peer.unit='percent';
+        }
+        var countFromWords=valueFromWords(words,columns.countX,row.rowY,width,parseIntegerText);
+        var countText=await cell(columns.countX-columns.countW/2,columns.countW,'7','0123456789');
+        var countFromCrop=parseIntegerText(countText);
+        var questionCount=countFromWords!=null&&countFromCrop!=null&&countFromWords!==countFromCrop
+          ?null:countFromWords??countFromCrop;
+        var extractedRow={
+          score:score,
+          peer_score:peer.value,
+          peer_score_unit:peer.unit,
+          question_count:questionCount==null?parseIntegerText(countText):questionCount
+        };
+        if(view==='client_need')extractedRow.category=row.category;
+        else extractedRow.subject=row.subject;
+        extracted.push(extractedRow);
       }
       var metadata={};
       var tabCount=text.match(new RegExp(section+'\\s*\\((\\d+)\\)','i'));
-      metadata.question_count=tabCount?Number(tabCount[1]):await readAt(section==='classic' ? .033 : .091,.013,.032,.04,parseIntegerText);
-      if(section==='classic'){
+      metadata.question_count=tabCount?Number(tabCount[1]):pixelSection||wordSection
+        ?await readAt(section==='classic'?.005:.064,.008,.07,.06,parseIntegerText,'7','0123456789',false,true)
+        :null;
+      if(view==='client_need'&&section==='classic'){
         metadata.overall_percent=await readAt(.139,.09,.026,.032,parsePercentText);
         var correct=await readAt(.139,.354,.028,.031,parseIntegerText);
         var incorrect=await readAt(.187,.354,.028,.031,parseIntegerText);
@@ -267,18 +490,34 @@
         if(Object.values(metadata.result_counts).every(function(value){return value==null})){
           metadata.result_counts=null;
         }
-      }else{
+      }else if(view==='client_need'&&section==='ngn'){
         metadata.overall_percent=await readAt(.1597,.09,.034,.032,parsePercentText);
         var earned=await readAt(.16,.337,.047,.035,parseIntegerText,'7');
         var possible=await readAt(.217,.337,.047,.035,parseIntegerText,'7');
         if(earned!=null&&possible!=null&&possible>0&&earned<=possible){
           metadata.overall_points={earned_points:earned,possible_points:possible};
         }
+      }else if(view==='subject_lesson'&&section==='classic'){
+        var classicOverall=text.match(/your\s+score\s+(\d{1,3})\s*%/i);
+        metadata.overall_percent=classicOverall?finiteScore(classicOverall[1]):null;
+      }else if(view==='subject_lesson'&&section==='ngn'){
+        metadata.overall_percent=await readAt(.1597,.09,.034,.04,parsePercentText,'7','0123456789%',true);
+        var earnedPoints=await readAt(.166,.35,.026,.032,parseIntegerText,'7','0123456789');
+        var possiblePoints=await readAt(.224,.35,.03,.032,parseIntegerText,'7','0123456789');
+        if(earnedPoints!=null&&possiblePoints!=null&&possiblePoints>0&&earnedPoints<=possiblePoints){
+          metadata.overall_points={earned_points:earnedPoints,possible_points:possiblePoints};
+        }
       }
-      var result=parseArcherRows(section,extracted,metadata);
+      var result=view==='client_need'
+        ?parseArcherRows(section,extracted,metadata)
+        :parseArcherSubjectRows(section,extracted,metadata);
+      result.view=view;
       result.reviewRequired=true;
-      result.warning=result.missingCategories.length||result.ambiguousCategories.length||result.missingFields.length
-        ?'Some categories or fields were not recognized reliably. Verify every candidate and review all blank fields.'
+      var hasMissing=view==='client_need'
+        ?result.missingCategories.length||result.ambiguousCategories.length||result.missingFields.length
+        :result.missingSubjects.length||result.ambiguousSubjects.length||result.missingFields.length;
+      result.warning=hasMissing
+        ?'Some rows or fields were not recognized reliably. Verify every candidate and review all blank fields.'
         :'Review every extracted value against the screenshot before saving.';
       return result;
     }finally{
@@ -323,5 +562,5 @@
     var text=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name)?await pdfText(file):await imageText(file);
     return parseCPR(text);
   }
-  window.AssessmentImport={parseText:parseText,parseArcherStats:parseArcherStats,parseArcherRows:parseArcherRows,readArcherStats:readArcherStats,readFile:readFile,parseCPR:parseCPR,readCPR:readCPR};
+  window.AssessmentImport={parseText:parseText,parseArcherStats:parseArcherStats,parseArcherRows:parseArcherRows,parseArcherSubjectRows:parseArcherSubjectRows,readArcherStats:readArcherStats,readFile:readFile,parseCPR:parseCPR,readCPR:readCPR};
 })();

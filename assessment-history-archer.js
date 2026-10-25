@@ -22,27 +22,84 @@
   })[char]);
   const keyFor = (section, file) => `${section}|${file.name}|${file.size}|${file.lastModified}`;
   const inputFor = (section, category, field) => form.querySelector(
-    `[data-archer-section="${section}"][data-archer-category="${CSS.escape(category)}"][data-archer-field="${field}"]`
+    `[data-archer-view="client_need"][data-archer-section="${section}"][data-archer-category="${CSS.escape(category)}"][data-archer-field="${field}"]`
+  );
+  const subjectInputFor = (section, subject, field) => form.querySelector(
+    `[data-archer-view="subject_lesson"][data-archer-section="${section}"][data-archer-subject="${CSS.escape(subject)}"][data-archer-field="${field}"]`
   );
 
   function buildCategoryRows() {
     document.getElementById('archer-category-rows').innerHTML = ArcherCAT.categories.map(category => {
       const fields = [
         ['classic', 'score', 'Classic percentage', '0.1', '0-100'],
-        ['classic', 'peer_score', 'Classic peer average (%)', '0.1', 'Optional'],
+        ['classic', 'peer_score', 'Classic peer value', '0.1', 'Reported value'],
+        ['classic', 'peer_score_unit', 'Classic peer unit', '1', ''],
         ['classic', 'question_count', 'Classic questions', '1', 'Count'],
         ['classic', 'earned_points', 'Classic earned points', '0.01', 'Optional'],
         ['classic', 'possible_points', 'Classic possible points', '0.01', 'Optional'],
         ['ngn', 'score', 'NGN percentage', '0.1', '0-100'],
-        ['ngn', 'peer_score', 'NGN average peer points', '0.1', 'Points'],
+        ['ngn', 'peer_score', 'NGN peer value', '0.1', 'Reported value'],
+        ['ngn', 'peer_score_unit', 'NGN peer unit', '1', ''],
         ['ngn', 'question_count', 'NGN questions', '1', 'Count'],
         ['ngn', 'earned_points', 'NGN earned points', '0.01', 'Optional'],
         ['ngn', 'possible_points', 'NGN possible points', '0.01', 'Optional']
       ];
-      return `<tr><th scope="row">${esc(category)}</th>${fields.map(([section, field, label, step, placeholder]) =>
-        `<td><input type="number" min="0" ${field === 'score' || (field === 'peer_score' && section === 'classic') ? 'max="100"' : ''} step="${step}" placeholder="${placeholder}" aria-label="${esc(label)} · ${esc(category)}" data-archer-section="${section}" data-archer-category="${esc(category)}" data-archer-field="${field}"></td>`
-      ).join('')}</tr>`;
+      return `<tr><th scope="row">${esc(category)}</th>${fields.map(([section, field, label, step, placeholder]) => {
+        const attrs = `aria-label="${esc(label)} · ${esc(category)}" data-archer-view="client_need" data-archer-section="${section}" data-archer-category="${esc(category)}" data-archer-field="${field}"`;
+        const control = field === 'peer_score_unit'
+          ? `<select ${attrs}><option value="">Unclear</option><option value="percent">Percent</option><option value="points">Points</option></select>`
+          : `<input type="number" min="0" ${field === 'score' || (field === 'peer_score' && section === 'classic') ? 'max="100"' : ''} step="${step}" placeholder="${placeholder}" ${attrs}>`;
+        return `<td>${control}</td>`;
+      }).join('')}</tr>`;
     }).join('');
+  }
+
+  function collectSubjectSection(section) {
+    const subjects = {};
+    [...document.querySelectorAll('#archer-subject-rows [data-archer-subject-name]')].forEach(row => {
+      const subject = row.dataset.archerSubjectName;
+      const scoreInput = subjectInputFor(section, subject, 'score');
+      const peerInput = subjectInputFor(section, subject, 'peer_score');
+      const unitInput = subjectInputFor(section, subject, 'peer_score_unit');
+      const countInput = subjectInputFor(section, subject, 'question_count');
+      const score = numeric(scoreInput, `${subject} ${section} score`, { maximum: 100 });
+      const peerUnit = unitInput.value;
+      const peer = numeric(peerInput, `${subject} ${section} peer score`,
+        peerUnit === 'percent' ? { maximum: 100 } : {});
+      const questionCount = numeric(countInput, `${subject} ${section} question count`, { integer: true });
+      if (peer != null && !['percent', 'points'].includes(peerUnit)) {
+        throw new Error(`${subject} ${section} peer value needs an explicitly selected unit.`);
+      }
+      if (score != null || peer != null || questionCount != null) {
+        subjects[subject] = {
+          score_percent: score,
+          ...(peer == null ? {} : { peer_score: peer, peer_score_unit: peerUnit }),
+          question_count: questionCount
+        };
+      }
+    });
+    return { subjects };
+  }
+
+  function ensureSubjectRow(subject) {
+    const target = document.getElementById('archer-subject-rows');
+    if ([...target.querySelectorAll('[data-archer-subject-name]')].some(row => row.dataset.archerSubjectName === subject)) return;
+    const escapeSelector = value => CSS.escape(value);
+    const makeFields = section => [
+      ['score', 'Score %', '0.1', '0-100'],
+      ['peer_score', 'Peer value', '0.1', 'Reported value'],
+      ['peer_score_unit', 'Peer unit', '1', ''],
+      ['question_count', 'Questions', '1', 'Count']
+    ].map(([field, label, step, placeholder]) => {
+      const input = field === 'peer_score_unit'
+        ? `<select aria-label="${esc(section.toUpperCase())} ${esc(label)} · ${esc(subject)}" data-archer-view="subject_lesson" data-archer-section="${section}" data-archer-subject="${esc(subject)}" data-archer-field="${field}"><option value="">Unclear</option><option value="percent">Percent</option><option value="points">Points</option></select>`
+        : `<input type="number" min="0" ${field === 'score' ? 'max="100"' : ''} step="${step}" placeholder="${placeholder}" aria-label="${esc(section.toUpperCase())} ${esc(label)} · ${esc(subject)}" data-archer-view="subject_lesson" data-archer-section="${section}" data-archer-subject="${esc(subject)}" data-archer-field="${field}">`;
+      return `<td>${input}</td>`;
+    }).join('');
+    const row = document.createElement('tr');
+    row.dataset.archerSubjectName = subject;
+    row.innerHTML = `<th scope="row">${esc(subject)}</th>${makeFields('classic')}${makeFields('ngn')}`;
+    target.appendChild(row);
   }
 
   function isArcher() {
@@ -98,9 +155,11 @@
     }));
   }
 
-  function addValue(section, category, field, value) {
+  function addValue(section, category, field, value, view = 'client_need') {
     if (value == null || value === '') return 'missing';
-    const input = inputFor(section, category, field);
+    const input = view === 'subject_lesson'
+      ? subjectInputFor(section, category, field)
+      : inputFor(section, category, field);
     return addInputValue(input, value);
   }
 
@@ -108,7 +167,12 @@
     if (value == null || value === '') return 'missing';
     if (!input) return 'missing';
     if (input.dataset.userEdited === 'true') return 'conflict';
-    if (input.value !== '') return Number(input.value) === Number(value) ? 'same' : 'conflict';
+    if (input.value !== '') {
+      const current = Number(input.value), candidate = Number(value);
+      return Number.isFinite(current) && Number.isFinite(candidate)
+        ? current === candidate ? 'same' : 'conflict'
+        : input.value === String(value) ? 'same' : 'conflict';
+    }
     input.value = value;
     input.dataset.ocrCandidate = 'true';
     updateOcrReviewRequirement();
@@ -130,15 +194,33 @@
             warnings.push(`${entry.file.name}: selected as ${String(result.section || 'unknown').toUpperCase()}, expected ${section.toUpperCase()}; no values imported.`);
             continue;
           }
-          Object.entries(result.categories || {}).forEach(([category, values]) => {
-            const canonical = ArcherCAT.categoryName(category);
-            if (!canonical) return;
-            ['score', 'peer_score', 'question_count'].forEach(field => {
-              const state = addValue(section, canonical, field, values[field]);
-              if (state === 'added') found++;
-              if (state === 'conflict') conflicts++;
+          entry.view = result.view;
+          if (result.view === 'client_need') {
+            Object.entries(result.categories || {}).forEach(([category, values]) => {
+              const canonical = ArcherCAT.categoryName(category);
+              if (!canonical) return;
+              ['score', 'peer_score', 'question_count'].forEach(field => {
+                const state = addValue(section, canonical, field, values[field], 'client_need');
+                if (state === 'added') found++;
+                if (state === 'conflict') conflicts++;
+              });
+              const unitState = addValue(section, canonical, 'peer_score_unit', values.peer_score_unit, 'client_need');
+              if (unitState === 'added') found++;
+              if (unitState === 'conflict') conflicts++;
             });
-          });
+          } else if (result.view === 'subject_lesson') {
+            Object.entries(result.subjects || {}).forEach(([subject, values]) => {
+              ensureSubjectRow(subject);
+              ['score', 'peer_score', 'peer_score_unit', 'question_count'].forEach(field => {
+                const state = addValue(section, subject, field, values[field], 'subject_lesson');
+                if (state === 'added') found++;
+                if (state === 'conflict') conflicts++;
+              });
+            });
+          } else {
+            warnings.push(`${entry.file.name}: report view is ambiguous; no values imported.`);
+            continue;
+          }
           const topFields = section === 'classic'
             ? [
                 ['archer-classic-overall', result.overall_percent],
@@ -153,11 +235,20 @@
                 ['archer-ngn-earned', result.overall_points?.earned_points],
                 ['archer-ngn-possible', result.overall_points?.possible_points]
               ];
-          topFields.forEach(([id, value]) => {
+          if (result.view === 'client_need') topFields.forEach(([id, value]) => {
             const state = addInputValue(document.getElementById(id), value);
             if (state === 'added') found++;
             if (state === 'conflict') conflicts++;
           });
+          if (result.view === 'subject_lesson' && section === 'ngn') {
+            [['archer-ngn-overall', result.overall_percent], ['archer-ngn-questions', result.question_count],
+              ['archer-ngn-earned', result.overall_points?.earned_points], ['archer-ngn-possible', result.overall_points?.possible_points]]
+              .forEach(([id, value]) => {
+                const state = addInputValue(document.getElementById(id), value);
+                if (state === 'added') found++;
+                if (state === 'conflict') conflicts++;
+              });
+          }
           if (result.warning) warnings.push(`${entry.file.name}: ${result.warning}`);
         } catch (error) {
           target.textContent = `OCR could not read ${entry.file.name}: ${error.message || 'review the screenshot and enter values manually'}`;
@@ -237,8 +328,12 @@
     const categories = {};
     ArcherCAT.categories.forEach(category => {
       const score = numeric(inputFor(section, category, 'score'), `${category} ${section} score`, { maximum: 100 });
+      const peerUnit = inputFor(section, category, 'peer_score_unit').value;
       const peer = numeric(inputFor(section, category, 'peer_score'), `${category} ${section} peer score`,
-        isClassic ? { maximum: 100 } : {});
+        peerUnit === 'percent' ? { maximum: 100 } : {});
+      if (peer != null && !['percent', 'points'].includes(peerUnit)) {
+        throw new Error(`${category} ${section} peer value needs an explicitly selected unit.`);
+      }
       const questionCount = numeric(inputFor(section, category, 'question_count'), `${category} ${section} question count`, { integer: true });
       const categoryPoints = pair(
         inputFor(section, category, 'earned_points'),
@@ -257,7 +352,7 @@
           score_source: score == null
             ? categoryPoints ? 'earned-points-over-possible-points' : null
             : 'archer-reported',
-          ...(peer == null ? {} : isClassic ? { peer_score_percent: peer } : { peer_average_points: peer }),
+          ...(peer == null ? {} : peerUnit === 'percent' ? { peer_score_percent: peer } : { peer_average_points: peer }),
           question_count: questionCount,
           earned_points: categoryPoints?.earned_points ?? null,
           possible_points: categoryPoints?.possible_points ?? null,
@@ -299,6 +394,8 @@
   function collectRecord() {
     const classic = collectSection('classic');
     const ngn = collectSection('ngn');
+    const subjectClassic = collectSubjectSection('classic');
+    const subjectNgn = collectSubjectSection('ngn');
     const combined = ArcherCAT.combine(classic, ngn);
     const total = numeric('archer-total-questions', 'Total question count', { integer: true });
     const derivedTotal = classic.question_count != null && ngn.question_count != null
@@ -322,13 +419,17 @@
       if (classicCount != null && ngnCount != null) categoryCounts[category] = classicCount + ngnCount;
     });
     const screenshots = [
-      ...files.classic.map(entry => ({ section: 'classic', file: entry.file })),
-      ...files.ngn.map(entry => ({ section: 'ngn', file: entry.file }))
+      ...files.classic.map(entry => ({ section: 'classic', view: entry.view, file: entry.file })),
+      ...files.ngn.map(entry => ({ section: 'ngn', view: entry.view, file: entry.file }))
     ];
     return {
       result,
       classic,
       ngn,
+      subjectLesson: {
+        classic: subjectClassic,
+        ngn: subjectNgn
+      },
       combined,
       totalQuestions: total ?? derivedTotal,
       categoryScores,
@@ -337,7 +438,7 @@
     };
   }
 
-  async function uploadFile(file, assessment, section) {
+  async function uploadFile(file, assessment, section, view) {
     if (file.size > 10485760) throw new Error(`${file.name} exceeds the 10 MB upload limit.`);
     const extension = file.name.toLowerCase();
     const mime = file.type || (extension.endsWith('.png') ? 'image/png'
@@ -363,7 +464,8 @@
       mime_type: mime,
       byte_size: file.size,
       uploaded_by: currentUser.id,
-      section
+      section,
+      report_view: view || 'not_applicable'
     });
     if (metadataError) {
       const { error: cleanupError } = await db.storage.from('assessment-reports').remove([path]);
@@ -393,6 +495,7 @@
             total_questions: record.totalQuestions,
             classic: record.classic,
             ngn: record.ngn,
+            subject_lesson: record.subjectLesson,
             combined: record.combined,
             capture_method: form.querySelector('[data-ocr-candidate="true"]')
               ? 'browser-ocr-reviewed'
@@ -410,15 +513,15 @@
       }
 
       const pending = [
-        ...files.classic.map(entry => ({ section: 'classic', file: entry.file })),
-        ...files.ngn.map(entry => ({ section: 'ngn', file: entry.file }))
+        ...files.classic.map(entry => ({ section: 'classic', view: entry.view, file: entry.file })),
+        ...files.ngn.map(entry => ({ section: 'ngn', view: entry.view, file: entry.file }))
       ];
       const report = document.getElementById('report-file').files[0];
-      if (report) pending.push({ section: 'report', file: report });
+      if (report) pending.push({ section: 'report', view: 'not_applicable', file: report });
       for (const item of pending) {
         const key = keyFor(item.section, item.file);
         if (uploaded.has(key)) continue;
-        await uploadFile(item.file, savedAssessment, item.section);
+        await uploadFile(item.file, savedAssessment, item.section, item.view);
         uploaded.add(key);
         if (item.section === 'classic' || item.section === 'ngn') drawPreviews(item.section);
       }
@@ -513,9 +616,9 @@
           const value = detail[section]?.categories?.[category];
           const count = value?.question_count;
           const score = value?.score_percent ?? value?.calculated_score_percent;
-          const peer = section === 'ngn'
-            ? value?.peer_average_points == null ? '' : ` · avg peer ${Number(value.peer_average_points)} points`
-            : value?.peer_score_percent == null ? '' : ` · peer ${Number(value.peer_score_percent)}%`;
+          const peerValue = value?.peer_score_percent ?? value?.peer_average_points;
+          const peerUnit = value?.peer_score_percent != null ? '%' : value?.peer_average_points != null ? ' points' : '';
+          const peer = peerValue == null ? '' : ` · peer ${Number(peerValue)}${peerUnit}`;
           if (score != null) return `${Number(score)}%${value.score_source === 'earned-points-over-possible-points' ? ' points-based' : ''}${peer}${count == null ? '' : ` · ${count} q${count < 3 ? ' · limited exposure' : ''}`}`;
           if (count === 0) return 'Not Tested';
           return 'Not Reported';
@@ -523,6 +626,15 @@
         const rowsHtml = ArcherCAT.categories.map(category => `
           <tr><th scope="row">${esc(category)}</th><td>${esc(cell('classic', category))}</td><td>${esc(cell('ngn', category))}</td>
           <td>${detail.combined?.categories?.[category] ? `${Number(detail.combined.categories[category].score)}% (${Number(detail.combined.categories[category].earned_points)}/${Number(detail.combined.categories[category].possible_points)} pts)` : 'Insufficient Data'}</td></tr>`).join('');
+        const subjectRows = section => Object.entries(detail.subject_lesson?.[section]?.subjects || {}).map(([subject, value]) => {
+          const peer = value.peer_score == null ? 'Not Reported'
+            : `${Number(value.peer_score)}${value.peer_score_unit === 'percent' ? '%' : value.peer_score_unit === 'points' ? ' points' : ' · unit unclear'}`;
+          return `<tr><th scope="row">${esc(subject)}</th><td>${value.score_percent == null ? 'Not Reported' : `${esc(value.score_percent)}%`}</td><td>${esc(peer)}</td><td>${value.question_count == null ? 'Not Reported' : `${esc(value.question_count)} q`}</td></tr>`;
+        }).join('');
+        const subjectTables = ['classic', 'ngn'].map(section => {
+          const rows = subjectRows(section);
+          return rows ? `<h4>Subject/Lesson · ${section.toUpperCase()}</h4><div class="archer-matrix-wrap"><table class="archer-matrix"><thead><tr><th>Reported subject</th><th>Score</th><th>Peer value</th><th>Questions</th></tr></thead><tbody>${rows}</tbody></table></div>` : '';
+        }).join('');
         const summary = document.createElement('div');
         summary.className = 'archer-assessment-detail';
         const combinedDetail = detail.combined?.overall;
@@ -534,9 +646,10 @@
           · NGN ${esc(detail.ngn.overall_percent ?? detail.ngn.calculated_overall_percent ?? 'Not Reported')}${detail.ngn.overall_percent != null || detail.ngn.calculated_overall_percent != null ? '%' : ''}${detail.ngn.overall_score_source === 'earned-points-over-possible-points' ? ' (calculated from points)' : detail.ngn.overall_score_source ? ' (provider-reported)' : ''}
           · Combined ${esc(combinedSummary)}</p>
           <p>Questions: ${esc(detail.total_questions ?? 'Not reported')} total · ${esc(detail.classic.question_count ?? 'Not reported')} Classic · ${esc(detail.ngn.question_count ?? 'Not reported')} NGN</p>
-          <div class="archer-matrix-wrap"><table class="archer-matrix"><thead><tr><th>Client Needs</th><th>Classic % · peer % · #</th><th>NGN % · peer points · #</th><th>Combined %</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>
+          <div class="archer-matrix-wrap"><table class="archer-matrix"><thead><tr><th>Client Needs</th><th>Classic % · peer value · #</th><th>NGN % · peer value · #</th><th>Combined %</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>
+          ${subjectTables}
           <p class="file-note">Classic and NGN percentages are provider-reported; combined values are calculated from actual point totals only.</p>
-          ${detail.attachments?.length ? `<p class="file-note"><strong>Attached screenshots/reports:</strong> ${detail.attachments.map((file, fileIndex) => `<button class="top" type="button" data-archer-open="${fileIndex}">${esc(file.section === 'classic' ? 'Classic' : file.section === 'ngn' ? 'NGN' : 'Report')}: ${esc(file.original_filename)}</button>`).join(' · ')}</p>` : ''}`;
+          ${detail.attachments?.length ? `<p class="file-note"><strong>Attached screenshots/reports:</strong> ${detail.attachments.map((file, fileIndex) => `<button class="top" type="button" data-archer-open="${fileIndex}">${esc(file.section === 'classic' ? 'Classic' : file.section === 'ngn' ? 'NGN' : 'Report')} · ${esc(file.report_view === 'subject_lesson' ? 'Subject/Lesson' : file.report_view === 'client_need' ? 'Client Need' : 'Report')}: ${esc(file.original_filename)}</button>`).join(' · ')}</p>` : ''}`;
         card.appendChild(summary);
         summary.querySelectorAll('[data-archer-open]').forEach(button => button.addEventListener('click', () => {
           const file = detail.attachments[Number(button.dataset.archerOpen)];
@@ -547,7 +660,7 @@
     window.loadHistory = async function () {
       await originalLoadHistory();
       const { data, error } = await db.from('external_assessments')
-        .select('id,archer_cat_data,assessment_report_files(section,storage_path,original_filename)')
+        .select('id,archer_cat_data,assessment_report_files(section,report_view,storage_path,original_filename)')
         .not('archer_cat_data', 'is', null);
       if (error) {
         status.textContent = 'Archer detail history is unavailable. Confirm the Archer CAT migration has been applied.';

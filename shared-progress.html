@@ -483,9 +483,9 @@
       const count=value?.question_count;
       const score=archerValue(section,category);
       if(count===0)return 'Not Tested';
-      const peer=sectionName==='ngn'
-        ?value?.peer_average_points==null?'':` · avg peer ${value.peer_average_points} points`
-        :value?.peer_score_percent==null?'':` · peer ${value.peer_score_percent}%`;
+      const peerValue=value?.peer_score_percent??value?.peer_average_points;
+      const peerUnit=value?.peer_score_percent!=null?'%':value?.peer_average_points!=null?' points':'';
+      const peer=peerValue==null?'':` · peer ${peerValue}${peerUnit}`;
       if(score==null)return `Not Reported${peer}${count==null?'':` · ${count} q`}`;
       return `${score}%${peer}${count==null?'':` · ${count} q`}${count!=null&&count<3?' · limited exposure':''}`;
     }
@@ -512,10 +512,23 @@
           <td>${esc(archerCategoryCell(latest.ngn,category,'ngn'))}</td>
           <td>${combined?`${esc(combined.score)}% · ${esc(combined.earned_points)}/${esc(combined.possible_points)} points`:'Insufficient Data'}</td></tr>`;
       }).join('');
+      const subjectNames=[...new Set(['classic','ngn'].flatMap(section=>Object.keys(latest.subject_lesson?.[section]?.subjects||{})))].sort();
+      const subjects=subjectNames.map(subject=>{
+        const subjectCell=section=>{
+          const value=latest.subject_lesson?.[section]?.subjects?.[subject];
+          if(!value)return 'Not Reported';
+          const score=value.score_percent==null?'Not Reported':`${value.score_percent}%`;
+          const peer=value.peer_score==null?'':` · peer ${value.peer_score}${value.peer_score_unit==='percent'?'%':value.peer_score_unit==='points'?' points':' · unit unclear'}`;
+          const count=value.question_count==null?'':` · ${value.question_count} q`;
+          return `${score}${peer}${count}`;
+        };
+        return `<tr><th scope="row">${esc(subject)}</th><td>${esc(subjectCell('classic'))}</td><td>${esc(subjectCell('ngn'))}</td></tr>`;
+      }).join('');
       return `<section style="margin-top:18px"><h3>Archer CAT · separate scoring trends</h3>
         <p class="muted">Classic and NGN provider-reported scores stay separate. Combined scores are shown only when both sections have actual earned/possible points. Categories with fewer than 3 questions are marked limited exposure.</p>
         <div class="ov-scroll"><table class="ov-table"><thead><tr><th>CAT / date</th><th>Result / total</th><th>Classic overall</th><th>NGN overall</th><th>Combined</th></tr></thead><tbody>${attempts}</tbody></table></div>
-        <h4>Latest CAT by Client Needs</h4><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Category</th><th>Classic % · peer % · #</th><th>NGN % · peer points · #</th><th>Combined %</th></tr></thead><tbody>${categories}</tbody></table></div>
+        <h4>Client Need view · latest CAT</h4><div class="ov-scroll"><table class="ov-table"><thead><tr><th>NCLEX client-needs category</th><th>Classic % · peer value · #</th><th>NGN % · peer value · #</th><th>Combined %</th></tr></thead><tbody>${categories}</tbody></table></div>
+        ${subjects?`<h4>Subject/Lesson view · separate from Client Needs</h4><div class="ov-scroll"><table class="ov-table"><thead><tr><th>Archer subject</th><th>Classic % · peer value · questions</th><th>NGN % · peer value · questions</th></tr></thead><tbody>${subjects}</tbody></table></div>`:''}
         ${legacy?'<p class="muted">Legacy Archer entries remain in history, but are excluded from section-level trend comparison because section-level scoring data was not recorded.</p>':''}
       </section>`;
     }
@@ -1359,7 +1372,10 @@ document.querySelectorAll('[data-delete-report]').forEach(button=>button.addEven
     async function loadHistoryAssessments(studentId){
       const {data,error}=await db.from('external_assessments').select('*').eq('student_id',studentId);
       if(error){$('intro').textContent='Assessments entered on the Assessments page could not be loaded: '+(error.message||'unknown error');return{uploads:[],categories:[]}}
-      let filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename,section').eq('student_id',studentId);
+      let filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename,section,report_view').eq('student_id',studentId);
+      if(filesResult.error&&/section|report_view/i.test(filesResult.error.message||'')){
+        filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename,section').eq('student_id',studentId);
+      }
       if(filesResult.error&&/section/i.test(filesResult.error.message||'')){
         filesResult=await db.from('assessment_report_files').select('assessment_id,storage_path,original_filename').eq('student_id',studentId);
       }

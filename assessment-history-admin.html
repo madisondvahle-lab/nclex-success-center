@@ -172,15 +172,15 @@
                     </div>
                     <div class="archer-grid">
                       <div class="archer-section">
-                        <h3>Classic Client Needs screenshot(s)</h3>
-                        <label for="archer-classic-files">Upload Classic statistics</label>
+                        <h3>Classic Archer screenshot(s)</h3>
+                        <label for="archer-classic-files">Upload Classic statistics (Client Need or Subject/Lesson)</label>
                         <input id="archer-classic-files" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple>
                         <div class="archer-upload-previews" id="archer-classic-previews"></div>
                         <p class="archer-message" id="archer-classic-message" aria-live="polite"></p>
                       </div>
                       <div class="archer-section">
-                        <h3>NGN Client Needs screenshot(s)</h3>
-                        <label for="archer-ngn-files">Upload NGN statistics</label>
+                        <h3>NGN Archer screenshot(s)</h3>
+                        <label for="archer-ngn-files">Upload NGN statistics (Client Need or Subject/Lesson)</label>
                         <input id="archer-ngn-files" type="file" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple>
                         <div class="archer-upload-previews" id="archer-ngn-previews"></div>
                         <p class="archer-message" id="archer-ngn-message" aria-live="polite"></p>
@@ -188,9 +188,17 @@
                     </div>
                     <div class="archer-matrix-wrap">
                       <table class="archer-matrix" id="archer-category-matrix">
-                        <caption class="hint">Enter provider-reported percentages, Classic peer percentages, NGN average peer points, question counts, and actual point totals only when shown.</caption>
-                        <thead><tr><th scope="col">Client Needs category</th><th scope="col">Classic %</th><th scope="col">Classic peer %</th><th scope="col">Classic #</th><th scope="col">Classic earned</th><th scope="col">Classic possible</th><th scope="col">NGN %</th><th scope="col">NGN peer points</th><th scope="col">NGN #</th><th scope="col">NGN earned</th><th scope="col">NGN possible</th></tr></thead>
+                        <caption class="hint">Enter Client Need percentages and counts. Peer units are detected from the report and must be verified; choose a unit manually if OCR cannot identify it.</caption>
+                        <thead><tr><th scope="col">Client Needs category</th><th scope="col">Classic %</th><th scope="col">Classic peer</th><th scope="col">Classic unit</th><th scope="col">Classic #</th><th scope="col">Classic earned</th><th scope="col">Classic possible</th><th scope="col">NGN %</th><th scope="col">NGN peer</th><th scope="col">NGN unit</th><th scope="col">NGN #</th><th scope="col">NGN earned</th><th scope="col">NGN possible</th></tr></thead>
                         <tbody id="archer-category-rows"></tbody>
+                      </table>
+                    </div>
+                    <h3>Subject/Lesson results</h3>
+                    <p class="hint">Subject names are preserved as reported and kept separate from NCLEX Client Needs categories.</p>
+                    <div class="archer-matrix-wrap">
+                      <table class="archer-matrix">
+                        <thead><tr><th scope="col">Archer subject</th><th scope="col">Classic %</th><th scope="col">Classic peer</th><th scope="col">Classic unit</th><th scope="col">Classic #</th><th scope="col">NGN %</th><th scope="col">NGN peer</th><th scope="col">NGN unit</th><th scope="col">NGN #</th></tr></thead>
+                        <tbody id="archer-subject-rows"></tbody>
                       </table>
                     </div>
                     <div id="archer-ocr-review-wrap" hidden>
