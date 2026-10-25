@@ -1,7 +1,7 @@
 // Real authenticated HTTP requests to a disposable, loopback-only PostgREST.
 import assert from 'node:assert/strict';
 import { createHmac, randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
@@ -195,7 +195,9 @@ await test('student profile security over real disposable PostgREST', async t =>
       assert.deepEqual(await read(studentId), before);
     });
     await t.test('forged privileged JWTs do not bypass authenticated API checks', async () => {
-      const forged = token(adminUser, 'service_role').replace(/.$/, character => character === 'a' ? 'b' : 'a');
+      const parts = token(adminUser, 'service_role').split('.');
+      parts[2] = (parts[2][0] === 'a' ? 'b' : 'a') + parts[2].slice(1);
+      const forged = parts.join('.');
       const before = await read(studentId);
       assert.equal((await patch({ status: 'completed' }, forged)).status, 401);
       assert.equal((await profile({ course_name: 'Forged identity' }, forged)).status, 401);
@@ -234,6 +236,55 @@ await test('student profile security over real disposable PostgREST', async t =>
       const response = await api('/app_admins', 'POST', { user_id: studentUser });
       assert.equal(response.status, 403);
     });
+    const courseMigration = new URL('../supabase-nursing-course-modules.sql', import.meta.url);
+    if (existsSync(courseMigration)) {
+      await t.test('coexists with the separately reviewed course-assignment migration', async () => {
+        sql(`CREATE TABLE public.modules (module_key text PRIMARY KEY, guide_url text);
+CREATE TABLE public.student_resources (
+  student_id uuid REFERENCES students(id), class_code text, resource_type text, url text
+);
+CREATE TABLE public.student_module_access (
+  student_id uuid REFERENCES students(id), module_key text, enabled boolean DEFAULT false,
+  PRIMARY KEY (student_id,module_key)
+);
+ALTER TABLE public.student_module_access ENABLE ROW LEVEL SECURITY;
+CREATE POLICY manage_access ON public.student_module_access FOR ALL TO authenticated
+  USING (is_app_admin()) WITH CHECK (is_app_admin());
+GRANT SELECT,INSERT,UPDATE ON public.student_module_access TO authenticated;
+INSERT INTO public.modules VALUES ('m4','module4-guide.html'),('m5','module5-guide.html');
+INSERT INTO public.student_module_access VALUES ('${studentId}','m5',true);`);
+        sql(readFileSync(courseMigration, 'utf8'));
+        sql(migration);
+        sql("NOTIFY pgrst, 'reload schema';");
+        async function course(classCode, modules, jwt = token(adminUser)) {
+          return api('/rpc/save_nursing_class_modules', 'POST', {
+            p_student: studentId, p_class: classCode, p_modules: modules
+          }, jwt);
+        }
+        for (let i = 0; i < 100; i++) {
+          const result = await course('NUR 312', ['m4', 'm5']);
+          if (result.status !== 404) { assert.equal(result.status, 204, JSON.stringify(result)); break; }
+          await delay(200);
+        }
+        assert.equal((await course('NUR 416', ['m4'])).status, 204);
+        assert.equal((await course('NUR 312', [])).status, 204);
+        let grants = await api(`/student_module_access?student_id=eq.${studentId}`, 'GET', undefined, token(adminUser));
+        assert.equal(grants.status, 200);
+        assert.equal(grants.data.find(row => row.module_key === 'm4').enabled, true);
+        assert.equal((await course('NUR 416', [])).status, 204);
+        grants = await api(`/student_module_access?student_id=eq.${studentId}`, 'GET', undefined, token(adminUser));
+        assert.equal(grants.data.find(row => row.module_key === 'm4').enabled, false);
+        assert.equal(grants.data.find(row => row.module_key === 'm5').enabled, true);
+        const denied = await course('NUR 312', ['m4'], token(studentUser));
+        assert.equal(denied.status, 400);
+        assert.match(denied.data.message, /Admin access required/);
+        const links = await api(`/student_class_module_assignments?student_id=eq.${studentId}`);
+        assert.equal(links.status, 200);
+        assert.deepEqual(links.data, []);
+        assert.equal((await profile({ course_name: 'Compatible self-service' })).status, 200);
+        assert.equal((await read(studentId)).portal_stage, 'assessment');
+      });
+    }
   } finally {
     if (apiCreated) docker(['rm', '-f', apiName]);
     if (dbCreated) docker(['rm', '-f', dbName]);
