@@ -117,14 +117,18 @@ async function createContext(request: Request, timing: ReturnType<typeof assessm
   const service = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: student, error: studentError } = await timing.measure('student', () => service
+  const [studentResult, adminResult] = await Promise.all([
+    timing.measure('student', () => service
     .from('students')
     .select('id,name,portal_stage')
     .eq('auth_user_id', user.id)
-    .maybeSingle());
+    .maybeSingle()),
+    timing.measure('admin', () => userClient.rpc('is_app_admin')),
+  ]);
+  const { data: student, error: studentError } = studentResult;
   if (studentError) throw studentError;
 
-  const { data: isAdmin, error: adminError } = await timing.measure('admin', () => userClient.rpc('is_app_admin'));
+  const { data: isAdmin, error: adminError } = adminResult;
   if (adminError) throw adminError;
   return { user, student, isAdmin: isAdmin === true, service, timing };
 }
@@ -355,7 +359,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   const keys = await itemKeys(context.service, scope, ngnEnabled);
   if (ngnEnabled) Object.assign(profile, { scoringModel: MODEL });
 
-  const requirements = await coreRequirements(context.service);
+  const requirements = await coreRequirements(context.service, scope === 'diagnostic' ? keys : null);
   const preferences = scope === 'diagnostic'
     ? await selectionPreferences(context.service, context.student.id, keys) : null;
   const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions, preferences || {});
@@ -425,13 +429,14 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   return await stateForAttempt(context.service, attempt, keys);
 }
 
-async function coreRequirements(service: SupabaseClient) {
-  const { data, error } = await service
-    .from('in_house_diagnostic_item_keys')
-    .select('item_id,core_tags')
-    .eq('bank_scope', 'diagnostic')
-    .eq('selectable', true);
-  if (error) throw error;
+async function coreRequirements(service: SupabaseClient, inventory: Array<Record<string, any>> | null = null) {
+  let data = inventory?.filter(row => row.selectable);
+  if (!data) {
+    const result = await service.from('in_house_diagnostic_item_keys')
+      .select('item_id,core_tags').eq('bank_scope', 'diagnostic').eq('selectable', true);
+    if (result.error) throw result.error;
+    data = result.data || [];
+  }
   const tags = new Map((data || []).map((row: Record<string, any>) => [row.item_id, row.core_tags || []]));
   const keys = [
     'delegation', 'consent_rights', 'infection_prevention', 'insulin_glucose',
@@ -541,7 +546,10 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   const mode = attempt.checkpoint.mode;
   const scope = mode === 'remediation' ? 'remediation' : 'diagnostic';
   const versioned = attempt.checkpoint.scoringModel === MODEL;
-  const keys = await context.timing.measure('inventory', () => itemKeys(context.service, scope, versioned));
+  const [keys, priorRows] = await Promise.all([
+    context.timing.measure('inventory', () => itemKeys(context.service, scope, versioned)),
+    context.timing.measure('responses', () => responseRows(context.service, attempt.id)),
+  ]);
   const ngnItem = currentInteraction(attempt.checkpoint);
   const item = ngnItem ? attempt.checkpoint.ngnState.current.key : keyForItem(keys, itemId);
   if (!item.selectable) throw new HttpError(400, 'This item cannot be submitted independently.');
@@ -592,7 +600,6 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     outcomes.push(score(item, decodeAnswer(attempt, itemId, body.answer), answeredAt));
   }
 
-  const priorRows = await context.timing.measure('responses', () => responseRows(context.service, attempt.id));
   const historyBefore = selectionHistory(priorRows, keys, attempt.checkpoint);
   let ability = Number(attempt.ability_estimate ?? 0.5);
   const newHistory = [...historyBefore];
@@ -616,7 +623,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     if (ngnResult?.final) newHistory.forEach(row => { if (row.evidenceGroup === item.item_id) row.evidenceComplete = true; });
   }
 
-  const requirements = await context.timing.measure('requirements', () => coreRequirements(context.service));
+  const requirements = await context.timing.measure('requirements', () => coreRequirements(context.service, scope === 'diagnostic' ? keys : null));
   const preferences = scope === 'diagnostic'
     ? await context.timing.measure('history', () => selectionPreferences(context.service, studentId, keys, attempt)) : null;
   let result: string | null = null;
