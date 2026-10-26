@@ -3,6 +3,13 @@
 ## Task
 Build the responsive student practice navigation shell (sidebar + mobile drawer) inspired by nursing school QBank platforms, wire it exclusively to existing student features without placeholder routes, and document gaps for features that do not yet exist.
 
+## October 25, 2026: Restore discoverable adaptive CAT access
+- NCLEX students have a permanent **Adaptive CAT** link in both dashboard and practice sidebars, including the mobile drawer, plus a dashboard **Start adaptive CAT** button and a practice-builder link.
+- All CAT entry points use the existing `diagnostic.html?mode=mock` route, which preselects **Full-Length Adaptive Mock**. Regular question-bank practice stays on `supplemental-practice.html`; nursing-course navigation is unchanged and hides the CAT menu item.
+- No question content, selection mechanics, student history, authentication, RLS, database records, or schema changes.
+- Validate with `node --test tests/student-nav.test.cjs tests/assessment-display.test.cjs`.
+- Publication requires the changes to reach `main` and GitHub Pages at `portal.studywithmadison.com`; local changes alone do not update the live portal.
+
 ## October 14, 2026: Practice-first student home
 ### October 15 correction: dashboard content
 - User-directed: remove the NCLEX **Assigned work** card list and both roles' assignment-reminder panels; keep the study calendar and its dated assignments.

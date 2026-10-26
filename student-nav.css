@@ -166,6 +166,10 @@
   box-sizing: border-box;
 }
 
+.portal-nav-item[hidden] {
+  display: none;
+}
+
 .portal-nav-item:hover {
   background: var(--portal-sidebar-hover);
   color: #ffffff;
