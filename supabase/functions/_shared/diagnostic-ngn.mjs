@@ -238,6 +238,7 @@ export function publicCheckpoint(checkpoint) {
   const result = { ...checkpoint };
   delete result.ngnState;
   delete result.selectionHistory;
+  delete result.catCurrentItemKey;
   return result;
 }
 

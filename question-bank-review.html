@@ -734,6 +734,7 @@
               </select>
             </div>
 
+            <p class="count" id="cat-approval-status" role="status" aria-live="polite" style="margin:0 18px 12px;color:var(--admin-muted)"></p>
             <div class="bulk" style="border-bottom:0">
               <button class="button secondary" id="import-diag" type="button">Add consult diagnostic questions to this bank (inactive)</button>
               <span class="count" id="import-note"></span>
@@ -914,7 +915,7 @@
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let session,legacy=[],live=[],reviews=new Map(),legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[],stagedBatch=[],revisionDrafts=[],bulkImportReady=false,revisionWorkflowReady=false,pendingBulkTracking=null,mVisible=100,bankOverlapSignature=null,bankOverlapPairs=[],flags=[],names=new Map();
+    let session,legacy=[],live=[],reviews=new Map(),catApprovals=new Map(),catApprovalReady=false,legSel=new Set(),mSel=new Set(),mShown=[],legacyShown=[],stagedBatch=[],revisionDrafts=[],bulkImportReady=false,revisionWorkflowReady=false,pendingBulkTracking=null,mVisible=100,bankOverlapSignature=null,bankOverlapPairs=[],flags=[],names=new Map();
     const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
     const words=value=>new Set(normalize(value).split(' ').filter(word=>word.length>3));
     const similarity=(a,b)=>{const aw=words(a),bw=words(b);let both=0;aw.forEach(word=>{if(bw.has(word))both++});return both/Math.max(1,new Set([...aw,...bw]).size)};
@@ -1224,7 +1225,10 @@
       let opts='';
       if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}
       else{opts='<div id="e-ngn"></div>'}
-      $('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div><div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;
+      const catApproval=catApprovals.get(id);
+      const catReviewable=Boolean(id&&q.active&&['mcq','sata'].includes(type)&&data?.schemaVersion!==1);
+      const catPanel=catReviewable?`<section class="notice" style="margin:18px 0 0"><strong>Traditional CAT eligibility</strong><p style="margin:6px 0">Review the complete stem, options, answer key, rationale, difficulty, and clinical suitability above. CAT approval does not alter publication or question content. Open flags, unresolved correction drafts, failed/quarantined audits, or a later question edit block or clear approval.</p><p style="margin:6px 0">Recorded status: <strong>${catApproval?'Approved for CAT':'Not approved for CAT'}</strong>${catApproval?` · ${esc(catApproval.reviewed_difficulty)} · ${esc(catApproval.reviewed_cognitive_demand.replaceAll('_',' '))}`:''}</p><label for="cat-demand">Reviewed cognitive demand</label><select id="cat-demand"><option value="">Choose cognitive demand</option><option value="application" ${catApproval?.reviewed_cognitive_demand==='application'?'selected':''}>Application</option><option value="analysis" ${catApproval?.reviewed_cognitive_demand==='analysis'?'selected':''}>Analysis</option><option value="clinical_judgment" ${catApproval?.reviewed_cognitive_demand==='clinical_judgment'?'selected':''}>Clinical judgment</option></select><label style="display:flex;align-items:flex-start;gap:8px;text-transform:none;letter-spacing:0;font-size:.82rem;font-weight:600"><input id="cat-confirm-review" type="checkbox" style="margin-top:3px">I reviewed this question, all answer options, its key and rationale, and confirm its clinical suitability for adaptive CAT practice.</label><div class="buttons"><button class="button" id="cat-approval-action" type="button">${catApproval?'Reconfirm CAT approval':'Approve for CAT'}</button>${catApproval?'<button class="button secondary" id="cat-approval-revoke" type="button">Remove CAT approval</button>':''}</div><p id="cat-approval-message" role="status" aria-live="polite"></p></section>`:id?`<p class="notice" style="margin:18px 0 0">${q.active?'Only traditional MCQ and SATA items can be approved; NGN admissions remain disabled.':'Publish this question through the existing workflow before reviewing it for CAT.'}</p>`:'';
+      $('ed-form').innerHTML=`<h2>Edit question ${qlabel(q)}</h2><p class="intro" style="margin:0">Changes save to the master bank immediately and apply to students if the question is published.</p><label for="e-stem">${type==='case'?'Title':'Question'}</label><textarea id="e-stem" rows="4" required>${esc(q.stem)}</textarea>${opts}<label for="e-rat">Rationale</label><textarea id="e-rat" rows="5">${esc(q.rationale||'')}</textarea><div class="three"><div><label for="e-topic">Topic</label><input type="text" id="e-topic" value="${esc(q.topic||'')}"></div><div><label for="e-cat">NCLEX category</label><input type="text" id="e-cat" value="${esc(q.nclex_category||'')}"></div><div><label for="e-dif">Difficulty</label><select id="e-dif">${['easy','medium','hard'].map(d=>`<option ${d===dif?'selected':''}>${d}</option>`).join('')}</select></div></div>${catPanel}<div class="buttons"><button class="button" type="submit">Save changes</button><button class="button secondary" type="button" id="e-cancel">Cancel</button></div>`;
       $('ed').classList.remove('hidden');
       const form=$('ed-form');
       form.ngnAuthor=null;form.ngnMetadata=null;
@@ -1246,6 +1250,37 @@
         form.ngnMetadata=NGNAuthor.metadata(metadata,q);
       }
       $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
+      const catAction=form.querySelector('#cat-approval-action');
+      const catMessage=form.querySelector('#cat-approval-message');
+      if(catAction&&catApprovalReady){
+        catAction.disabled=true;
+        const consent=form.querySelector('#cat-confirm-review'),demand=form.querySelector('#cat-demand');
+        const updateCatAction=()=>{catAction.disabled=!consent.checked||!demand.value};
+        consent.addEventListener('change',updateCatAction);demand.addEventListener('change',updateCatAction);updateCatAction();
+        catAction.addEventListener('click',async()=>{
+          catAction.disabled=true;catMessage.textContent='Checking current clinical-review safeguards…';
+          try{
+            const result=await db.rpc('set_question_cat_approval',{p_question_id:id,p_approved:true,p_confirmed_clinical_review:consent.checked,p_cognitive_demand:demand.value});
+            if(result.error)throw result.error;
+            catApprovals.set(id,result.data);catMessage.textContent='CAT approval recorded. Current eligibility is rechecked by the assessment service.';
+            $('ed').classList.add('hidden');renderManage();
+          }catch(error){catMessage.textContent=error.message||'Could not approve this question for CAT.';catAction.disabled=false}
+        });
+        const revoke=form.querySelector('#cat-approval-revoke');
+        if(revoke)revoke.addEventListener('click',async()=>{
+          if(!confirm('Remove this question from future CAT selections? Student answers already saved will remain unchanged.'))return;
+          revoke.disabled=true;catMessage.textContent='Removing CAT approval…';
+          try{
+            const result=await db.rpc('set_question_cat_approval',{p_question_id:id,p_approved:false,p_confirmed_clinical_review:false,p_cognitive_demand:null});
+            if(result.error)throw result.error;
+            catApprovals.delete(id);catMessage.textContent='CAT approval removed.';
+            $('ed').classList.add('hidden');renderManage();
+          }catch(error){catMessage.textContent=error.message||'Could not remove CAT approval.';revoke.disabled=false}
+        });
+      }else if(catAction){
+        catAction.disabled=true;
+        catMessage.textContent='CAT approval is unavailable until the local CAT approval migration is installed.';
+      }
       $('ed-form').onsubmit=async ev=>{
         ev.preventDefault();
         const row={stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim()||null,topic:$('e-topic').value.trim()||null,nclex_category:$('e-cat').value.trim()||null,difficulty:$('e-dif').value};
@@ -1564,10 +1599,16 @@
       mShown=filtered.slice(0,mVisible);
       [...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
       $('m-list').innerHTML=mShown.length?mShown.map(q=>{
-        const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null;
+        const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null,catApproval=catApprovals.get(q.id);
         const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
         const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'):'Draft: review required';
-        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.study_area?`<span class="tag">${esc(q.study_area)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
+        const traditional=['mcq','sata'].includes(q.item_type||'mcq')&&q.item_data?.schemaVersion==null;
+        const openFlag=flags.some(flag=>flag.status==='open'&&(flag.question_id===q.id||(q.question_no!=null&&flag.question_no===q.question_no)));
+        const openCorrection=revisionDrafts.some(revision=>revision.question_id===q.id&&['pending_review','approved'].includes(revision.status));
+        const catBlock=!q.active?'inactive':openFlag?'open student flag':openCorrection?'open correction draft':null;
+        const catLabel=catApproval?(catBlock?`approval blocked · ${catBlock}`:`CAT approved · ${catApproval.reviewed_cognitive_demand.replaceAll('_',' ')}`):'not approved for CAT';
+        const catSourceTag=traditional?`<span class="tag ${catApproval&&!catBlock?'good':'warn'}">Main Question Bank · ${esc(catLabel)}</span>`:'';
+        return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${catSourceTag}${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.study_area?`<span class="tag">${esc(q.study_area)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
       }).join(''):'<p class="empty" style="margin:18px">No questions match this view.</p>';
       renderBulkBatchActions();
       document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
@@ -1716,6 +1757,16 @@
       }
       return rows;
     }
+    async function loadAllCatApprovals(){
+      const rows=[],pageSize=500;
+      for(let start=0;;start+=pageSize){
+        const result=await db.from('question_cat_approvals').select('question_id,approved_by,approved_at,reviewed_difficulty,reviewed_cognitive_demand').order('approved_at',{ascending:false}).range(start,start+pageSize-1);
+        if(result.error)throw result.error;
+        rows.push(...(result.data||[]));
+        if((result.data||[]).length<pageSize)break;
+      }
+      return rows;
+    }
 
     async function init(){
       const {data}=await db.auth.getSession();session=data.session;
@@ -1731,6 +1782,14 @@
         live=questionData.rows;bulkImportReady=questionData.metadata;
         reviewData.forEach(row=>reviews.set(row.source_key,row));
       }catch(error){$('loading').textContent=`Could not load the complete question bank: ${error.message||error}`;return}
+      try{
+        const approvalRows=await loadAllCatApprovals();
+        approvalRows.forEach(row=>catApprovals.set(row.question_id,row));
+        catApprovalReady=true;
+        $('cat-approval-status').textContent=`${catApprovals.size} questions explicitly approved for traditional CAT. Current question status and clinical-review safeguards are checked again by the assessment service.`;
+      }catch(error){
+        $('cat-approval-status').textContent=`CAT approval controls unavailable: ${error.message||error}. Install supabase-question-cat-approval.sql before using them.`;
+      }
       try{revisionDrafts=await loadAllRevisionDrafts();revisionWorkflowReady=true}
       catch(error){revisionWorkflowReady=false;$('revision-status').textContent=`Correction workflow unavailable: ${error.message||error}. Run supabase-question-bulk-import.sql.`}
 
@@ -1805,7 +1864,7 @@
         reloadDrafts:async()=>{revisionDrafts=await loadAllRevisionDrafts();renderRevisionDrafts();render()},
         rerender:()=>{render();renderManage();updateBankOverview()},
         showDraft:id=>{switchTab('review');const card=$('rev-'+id);if(card){card.scrollIntoView({behavior:'smooth',block:'start'});const details=card.querySelector('details');if(details)details.open=true}}});
-      db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags();updateBankOverview()});renderFlags();updateBankOverview()}});
+      db.from('question_flags').select('*').order('created_at',{ascending:false}).limit(200).then(r=>{if(!r.error){flags=r.data||[];db.from('students').select('id,name').limit(1000).then(s=>{(s.data||[]).forEach(x=>names.set(x.id,x.name));renderFlags();updateBankOverview()});renderFlags();renderManage();updateBankOverview()}});
       if(!bulkImportReady)$('bulk-status').textContent='Run supabase-question-bulk-import.sql before using bulk import.';
       $('loading').classList.add('hidden');$('app').classList.remove('hidden');
     }
