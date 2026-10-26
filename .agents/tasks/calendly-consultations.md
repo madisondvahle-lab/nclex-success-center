@@ -9,6 +9,13 @@
 - `supabase/functions/calendly-webhook`: verifies Calendly HMAC signature, filters to the free consultation, calls the function.
 - `madison-consultations.html`: admin-only list, Start Consultation, template, autosave, optional timer, follow-up email draft. Linked from admin nav.
 
+## No Show status (pending approval; not deployed)
+- Apply `supabase-consultation-no-show-migration.sql` after the existing strategy-followup migration and before publishing the updated consultation page. It extends the existing status check and atomically logs No Show changes/corrections in `consultation_events`; no existing rows or RLS policies are changed.
+- Open a scheduled consultation with **View / mark No Show**, then **Mark No Show**. In-progress or previously completed consultations can also be corrected to No Show. No-shows remain in past consultation history with a distinct amber label and read-only notes.
+- Open a No Show record to correct it to Scheduled, In progress, or Completed. Restarting a corrected scheduled consultation preserves its existing template. Compare-and-set updates reject stale status changes.
+- No-shows have no `completed_at` and are not `completed`; they do not count as completed consultations or tutoring sessions. Existing scheduled-only calendar/count queries and tutoring availability filters exclude them. Preview email status filters already exclude them; the migration also prevents live follow-up/reminder claims for No Show records, even if an initial email was sent before correction. No Edge Function deployment is needed. Separate student/package/session-note records are not modified.
+- No production migration, deployment, or data correction is authorized by this change.
+
 ## Manual setup required
 1. Run the migration in Supabase SQL Editor.
 2. `supabase functions deploy calendly-webhook --no-verify-jwt`

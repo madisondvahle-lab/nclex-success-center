@@ -799,7 +799,7 @@ function ResultsScreen({ profile, history, ability, catResult, attemptId, overTi
           <div style={{ fontSize:22, fontWeight:700, color:"#0f172a", marginTop:4 }}>{profile.name}</div>
           <div style={{ fontSize:13, color:"#64748b" }}>Exam ended after {total} questions</div>
           <p role="status" style={{fontSize:13,color:"#475569",marginTop:10,lineHeight:1.6}}>{ASSESSMENT_DISPLAY.completionMessage({
-            mode:profile.mode,total,target:completionInfo.target || profile.qCount,reason:completionInfo.reason
+            mode:profile.mode,total,target:completionInfo.target || profile.qCount,reason:completionInfo.reason,result:catResult
           })}</p>
           {isMock && overTime && <div role="status" style={{ display:"inline-block", marginTop:10, background:"#fff7ed", color:"#9a3412", border:"1px solid #fdba74", borderRadius:99, padding:"6px 12px", fontSize:12, fontWeight:700 }}>Completed over allotted time</div>}
         </div>

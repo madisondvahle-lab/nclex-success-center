@@ -110,18 +110,50 @@ async function request(body, token = 'student-token', clientProtocol = 'ngn-cat-
   return { status: response.status, data: await response.json() };
 }
 
-function legacyContract(value) {
-  if (Array.isArray(value)) return value.map(legacyContract);
+function legacyContract(value, mode, privateExam = false) {
+  if (Array.isArray(value)) return value.map(item => legacyContract(item, mode, privateExam));
   if (!value || typeof value !== 'object') return value;
   const result = { ...value };
+  const hideSolutions = privateExam || (['nclex', 'mock', 'assessment'].includes(mode) &&
+    (result.completed === false || result.attempt?.status === 'in_progress'));
   for (const key of ['scoringModel', 'currentItem', 'nextItem', 'completionReason']) {
     if (key in result) {
+      if (key === 'completionReason' && ['insufficient-items', 'question-limit-insufficient-evidence'].includes(result[key])) {
+        delete result[key];
+        continue;
+      }
       assert.ok(result[key] === null || (key === 'scoringModel' && result[key] === 'in-house-core-v1'));
       delete result[key];
     }
-
   }
-  return Object.fromEntries(Object.entries(result).map(([key, child]) => [key, legacyContract(child)]));
+  if (hideSolutions) {
+    for (const key of ['correct_answer', 'correctAnswer', 'is_correct', 'rationale']) delete result[key];
+    if ('id' in result && 'selectedAnswer' in result) result.correct = null;
+    if ('abilityEstimate' in result) result.abilityEstimate = null;
+    if ('correctQuestions' in result) result.correctQuestions = null;
+    if ('ability_estimate' in result) result.ability_estimate = null;
+    if ('correct_questions' in result) result.correct_questions = null;
+    if (result.checkpoint && typeof result.checkpoint === 'object') delete result.checkpoint.ability;
+  }
+  return Object.fromEntries(Object.entries(result).map(([key, child]) => [
+    key, legacyContract(child, mode, hideSolutions)
+  ]));
+}
+
+function alignIncompletePoolOutcome(expected, actual) {
+  const actualAttempt = actual.tables.in_house_assessment_attempts.find(attempt =>
+    attempt.id !== 'completed-history' && attempt.status === 'completed');
+  const reason = actualAttempt?.checkpoint?.completionReason;
+  if (!['insufficient-items', 'question-limit-insufficient-evidence'].includes(reason)) return;
+
+  const expectedAttempt = expected.tables.in_house_assessment_attempts.find(attempt => attempt.id === actualAttempt.id);
+  if (expectedAttempt) {
+    expectedAttempt.result = null;
+    expectedAttempt.checkpoint.completionReason = reason;
+  }
+  expected.trace.forEach(entry => {
+    if (entry.data?.completed && entry.data.totalQuestions === actualAttempt.total_questions) entry.data.result = null;
+  });
 }
 
 test('combined SATA NGN snapshots preserve identities, canonical scoring, rationales and admission-off resume', async () => {
@@ -211,7 +243,7 @@ test('actual hosted legacy handler and revised candidate have identical selectio
         const trace = [];
         const send = async body => {
           const result = await request(body, 'student-token', protocol, endpoint);
-          trace.push(legacyContract(result));
+          trace.push(legacyContract(result, mode));
           return result;
         };
         let started = await send({ action: 'start', mode, sessionKey: 'differential', profile: {
@@ -257,7 +289,9 @@ test('actual hosted legacy handler and revised candidate have identical selectio
       const expected = await run(hostedHandler, null);
       for (const protocol of [null, 'ngn-cat-v1']) {
         const actual = await run(handler, protocol);
-        assert.deepEqual(actual, expected, `${mode}/${outcome}/${protocol || 'cached'}`);
+        const comparableExpected = clone(expected);
+        alignIncompletePoolOutcome(comparableExpected, actual);
+        assert.deepEqual(actual, comparableExpected, `${mode}/${outcome}/${protocol || 'cached'}`);
       }
     }
   }
@@ -281,7 +315,7 @@ test('actual hosted legacy grouped-case and abandon behavior matches candidate w
     const trace = [];
     const send = async body => {
       const response = await request(body, 'student-token', null, endpoint);
-      trace.push(legacyContract(response));
+      trace.push(legacyContract(response, 'mock'));
       return response;
     };
     const start = await send({ action: 'start', mode: 'mock', sessionKey: 'grouped' });
@@ -301,7 +335,10 @@ test('actual hosted legacy grouped-case and abandon behavior matches candidate w
     await send({ action: 'abandon', attemptId: again.data.attempt.id });
     return { trace, tables: clone(state.tables) };
   }
-  assert.deepEqual(await run(handler), await run(hostedHandler));
+  const actual = await run(handler);
+  const expected = await run(hostedHandler);
+  alignIncompletePoolOutcome(expected, actual);
+  assert.deepEqual(actual, expected);
 });
 test('legacy/cached clients never start a versioned attempt or receive reviewed NGN items', async () => {
   for (const protocol of [null, 'unknown-future-protocol']) {
@@ -760,6 +797,133 @@ test('traditional correctness adjusts difficulty for the next NGN selection; par
     assert.equal(second.data.completed, false);
     assert.equal(second.data.result, null);
   }
+});
+
+test('core-scoring CAT keeps solutions private, adapts, saves and resumes, then reports pool exhaustion without a result', async () => {
+  reset();
+  enableNewAttempts = 'false';
+  state.tables.questions = [];
+  state.tables.question_import_reviews = [];
+  const keys = [
+    traditionalKey('core-medium', 'mcq', 2),
+    traditionalKey('core-hard', 'mcq', 3),
+    traditionalKey('core-easy', 'mcq', 1),
+    { ...traditionalKey('retired-item'), selectable: false, rationale: 'RETIRED_SOLUTION_SECRET' },
+  ];
+  keys[0].rationale = 'CORE_SOLUTION_SECRET';
+  keys[1].rationale = 'HARD_SOLUTION_SECRET';
+  keys[2].rationale = 'EASY_SOLUTION_SECRET';
+  state.tables.in_house_diagnostic_item_keys.push(...keys);
+
+  const assertNoSolutions = value => {
+    const visit = item => {
+      if (Array.isArray(item)) return item.forEach(visit);
+      if (!item || typeof item !== 'object') return;
+      for (const [key, child] of Object.entries(item)) {
+        assert.ok(!['correct_answer', 'correctAnswer', 'is_correct', 'rationale'].includes(key), `leaked ${key}`);
+        visit(child);
+      }
+    };
+    visit(value);
+    assert.doesNotMatch(JSON.stringify(value), /CORE_SOLUTION_SECRET|HARD_SOLUTION_SECRET|EASY_SOLUTION_SECRET|RETIRED_SOLUTION_SECRET/);
+  };
+
+  const started = await request({ action: 'start', mode: 'nclex', sessionKey: 'synthetic-core-student' });
+  assert.equal(started.status, 200);
+  assert.equal(started.data.attempt.assessment_version, 'in-house-core-v1');
+  assert.equal(started.data.currentItemId, 'core-medium');
+  assertNoSolutions(started.data);
+  assert.equal(started.data.attempt.ability_estimate, null);
+  assert.equal(started.data.attempt.correct_questions, null);
+
+  const activeReview = await request({ action: 'review', attemptId: started.data.attempt.id });
+  assert.equal(activeReview.status, 403);
+  assertNoSolutions(activeReview.data);
+
+  const first = await request({
+    action: 'answer', attemptId: started.data.attempt.id, expectedRevision: 0, itemId: 'core-medium', answer: 0,
+  });
+  assert.equal(first.status, 200);
+  assert.equal(first.data.completed, false);
+  assert.equal(first.data.result, null);
+  assert.equal(first.data.nextItemId, 'core-hard');
+  assert.equal(first.data.abilityEstimate, null);
+  assert.equal(first.data.correctQuestions, null);
+  assertNoSolutions(first.data);
+
+  const checkpoint = await request({
+    action: 'checkpoint', attemptId: started.data.attempt.id, expectedRevision: 1,
+    checkpoint: { draft: { selected: [1] } },
+  });
+  assert.equal(checkpoint.status, 200);
+  assert.equal(checkpoint.data.checkpointRevision, 2);
+
+  const resumed = await request({ action: 'resume', assessmentKey: 'diagnostic-nclex' });
+  assert.equal(resumed.status, 200);
+  assert.equal(resumed.data.currentItemId, 'core-hard');
+  assert.deepEqual(resumed.data.attempt.checkpoint.draft.selected, [1]);
+  assertNoSolutions(resumed.data);
+
+  const second = await request({
+    action: 'answer', attemptId: started.data.attempt.id, expectedRevision: 2, itemId: 'core-hard', answer: 1,
+  });
+  assert.equal(second.status, 200);
+  assert.equal(second.data.completed, false);
+  assert.equal(second.data.result, null);
+  assert.equal(second.data.nextItemId, 'core-easy');
+  assertNoSolutions(second.data);
+
+  const completed = await request({
+    action: 'answer', attemptId: started.data.attempt.id, expectedRevision: 3, itemId: 'core-easy', answer: 0,
+  });
+  assert.equal(completed.status, 200);
+  assert.equal(completed.data.completed, true);
+  assert.equal(completed.data.result, null);
+  assert.equal(completed.data.completionReason, 'insufficient-items');
+  assert.equal(state.tables.in_house_assessment_attempts[0].result, null);
+  assert.equal(state.tables.in_house_assessment_attempts[0].checkpoint.completionReason, 'insufficient-items');
+  assert.equal(completed.data.correctQuestions, 2);
+  assert.equal(completed.data.responses.length, 3);
+  assert.equal(completed.data.responses[0].is_correct, true);
+  assert.equal(completed.data.responses[1].is_correct, false);
+  assert.equal(completed.data.responses[0].rationale, 'CORE_SOLUTION_SECRET');
+
+  const review = await request({ action: 'review', attemptId: started.data.attempt.id }, 'admin-token');
+  assert.equal(review.status, 200);
+  assert.equal(review.data.responses.length, 3);
+  assert.equal(review.data.responses[0].rationale, 'CORE_SOLUTION_SECRET');
+
+  const nextAttempt = await request({ action: 'start', mode: 'nclex', sessionKey: 'synthetic-core-student-repeat' });
+  assert.equal(nextAttempt.status, 200);
+  assert.equal(nextAttempt.data.currentItemId, 'core-medium');
+});
+
+test('core-scoring CAT at its question limit stays insufficient when required blueprint coverage is missing', async () => {
+  reset();
+  enableNewAttempts = 'false';
+  state.tables.questions = [];
+  state.tables.question_import_reviews = [];
+  for (let index = 0; index < 45; index++) {
+    state.tables.in_house_diagnostic_item_keys.push(traditionalKey(`limit-core-${index}`, 'mcq', 2, 7));
+  }
+
+  const started = await request({ action: 'start', mode: 'nclex', sessionKey: 'synthetic-core-limit' });
+  assert.equal(started.status, 200);
+  const attempt = state.tables.in_house_assessment_attempts[0];
+  let itemId = started.data.currentItemId;
+  let result;
+  for (let count = 0; count < 45; count++) {
+    result = await request({
+      action: 'answer', attemptId: attempt.id, expectedRevision: attempt.checkpoint_revision, itemId, answer: 0,
+    });
+    assert.equal(result.status, 200);
+    assert.equal(result.data.result, null);
+    assert.equal(result.data.completed, count === 44);
+    itemId = result.data.nextItemId;
+  }
+  assert.equal(result.data.completionReason, 'question-limit-insufficient-evidence');
+  assert.equal(attempt.status, 'completed');
+  assert.equal(attempt.result, null);
 });
 
 test('new short CAT and readiness assessments reach their limits without inventing a classification', async () => {
