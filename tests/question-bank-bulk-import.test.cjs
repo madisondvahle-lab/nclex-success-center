@@ -16,7 +16,7 @@ function harness() {
   };
   const context = {
     window: {}, crypto: webcrypto, $, console,
-    document: { querySelectorAll: () => [] },
+    document: { querySelectorAll: () => [], querySelector: () => null },
     bulkImportReady: true, stagedBatch: [], pendingBulkTracking: null,
     live: [], reviews: new Map(), session: { user: { id: 'synthetic-admin' } },
     esc: value => String(value ?? '').replaceAll('<', '&lt;'),
@@ -86,6 +86,101 @@ test('all eight interaction types and record-backed MCQ/SATA validate without mu
   }
   const classic = question('mcq'); delete classic.item_data;
   assert.deepEqual(plain(h.context.validateBatchItems([classic])[0].errors), []);
+});
+
+function previewHarness() {
+  const h = harness(), hosts = [], engines = [], prepared = [];
+  Object.assign(h.context.document, {
+    createElement() {
+      const host = { removed: false, remove() { this.removed = true; } };
+      hosts.push(host);
+      return host;
+    },
+    body: { appendChild() {} }
+  });
+  for (const file of ['ngn-scoring.js', 'exam-ui-ngn.js']) vm.runInNewContext(read(file), h.context);
+  const realPrepare = h.context.window.ExamUI.prepare;
+  h.context.ExamUI = {
+    prepare(items, options) {
+      const value = realPrepare(items, options);
+      prepared.push(plain(value));
+      return value;
+    },
+    Exam: class { constructor(host, options) { engines.push({ host, options }); } }
+  };
+  return { ...h, hosts, engines, prepared };
+}
+
+test('valid import cards expose interactive preview before review; malformed cards do not', async () => {
+  const h = harness(), good = question(), bad = question('cloze', 'bad');
+  bad.item_data.dropdowns[0].correct = 99;
+  await stage(h, [good, bad]);
+  const markup = h.$('bulk-preview-list').innerHTML;
+  assert.match(markup, /data-bulk-preview="0"/);
+  assert.doesNotMatch(markup, /data-bulk-preview="1"/);
+  assert.equal(h.context.stagedBatch[0].reviewed, false);
+  assert.equal(h.context.stagedCanSave(), false);
+});
+
+test('all eight staged formats use real preparation without writes, mutation, review, or persistence hooks', async () => {
+  for (const type of ['mcq', 'sata', 'cloze', 'matrix', 'highlight', 'bowtie', 'fill', 'case']) {
+    const h = previewHarness(), q = question(type);
+    await stage(h, [q]);
+    const before = plain(h.context.stagedBatch);
+    h.context.previewBulkItem(0);
+    assert.equal(h.engines.length, 1, h.$('bulk-status').textContent);
+    const { options } = h.engines[0];
+    assert.equal(options.instant, true);
+    assert.equal(options.showTimer, false);
+    for (const key of ['storageKey', 'onCheckpoint', 'onAnswer', 'onFlag']) assert.equal(options[key], undefined, key);
+    assert.match(options.title, /Unsaved import preview/);
+    assert.equal(options.items.length, type === 'case' ? 6 : 1);
+    if (type === 'case') {
+      assert.deepEqual(h.prepared[0].map(it => it.qid), q.item_data.items.map(it => it.id));
+      assert.deepEqual(h.prepared[0][5].case.tabs, q.item_data.tabs);
+    } else assert.deepEqual(h.prepared[0][0].tabs, q.item_data.tabs);
+    options.items[0].stem = 'Preview-only edit';
+    options.onExit();
+    assert.equal(h.hosts[0].removed, true);
+    assert.deepEqual(plain(h.context.stagedBatch), before);
+    assert.equal(h.writes.length, 0);
+    assert.equal(h.context.stagedCanSave(), false);
+    h.context.previewBulkItem(0);
+    h.engines[1].options.onFinish({});
+    assert.equal(h.hosts[1].removed, true);
+    assert.equal(h.engines[1].options.items[0].stem, before[0].item.item_data.stem);
+  }
+});
+
+test('traditional MCQ preview maps letter key and explanations without requiring item_data', async () => {
+  const h = previewHarness(), q = question('mcq');
+  delete q.item_data;
+  q.correct_answer = 'c';
+  await stage(h, [q]);
+  h.context.previewBulkItem(0);
+  const item = h.prepared[0][0];
+  assert.deepEqual(item.correct, [2]);
+  assert.deepEqual(item.options, q.options);
+  assert.deepEqual(item.option_rationales, q.option_rationales);
+  assert.equal(item.stem, q.stem);
+  assert.equal(item.rationale, q.rationale);
+  assert.equal(h.writes.length, 0);
+});
+
+test('invalid previews fail explicitly and renderer failure removes the empty host', async () => {
+  const h = previewHarness(), q = question();
+  q.item_data.dropdowns[0].correct = 99;
+  await stage(h, [q]);
+  h.context.previewBulkItem(0);
+  assert.match(h.$('bulk-status').textContent, /validation errors/);
+  assert.equal(h.hosts.length, 0);
+  await stage(h, [question()]);
+  h.context.ExamUI.Exam = class { constructor() { throw new Error('Synthetic renderer failure'); } };
+  h.context.previewBulkItem(0);
+  assert.match(h.$('bulk-status').textContent, /Could not preview question synthetic-1: Synthetic renderer failure/);
+  assert.equal(h.hosts[0].removed, true);
+  assert.equal(h.context.stagedBatch[0].reviewed, false);
+  assert.equal(h.writes.length, 0);
 });
 
 test('documented copy/paste cloze example validates and saves unchanged as one inactive draft', async () => {

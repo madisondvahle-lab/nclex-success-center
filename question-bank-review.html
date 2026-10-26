@@ -1104,6 +1104,38 @@
       stagedBatch.forEach(entry=>{if(!entry.errors.length&&!entry.match)entry.reviewed=true});
       renderBulkPreview();
     }
+    function previewBulkItem(index){
+      const entry=stagedBatch[index];
+      if(!entry||entry.errors.length){$('bulk-status').textContent='Resolve this item’s validation errors before previewing.';return}
+      let host;
+      const trigger=document.querySelector(`[data-bulk-preview="${index}"]`);
+      try{
+        const item=entry.item,type=String(item.item_type).toLowerCase();
+        validateBatchInteraction(item,type);
+        const data=item.item_data?JSON.parse(JSON.stringify(item.item_data)):{
+          id:String(item.id),type:'mcq',textFormat:'plain',options:[...item.options],
+          correct:['abcd'.indexOf(String(item.correct_answer).toLowerCase())]
+        };
+        if(type!=='case'){
+          data.stem=item.stem;
+          data.rationale=item.rationale;
+          data.option_rationales=JSON.parse(JSON.stringify(item.option_rationales));
+        }
+        host=document.createElement('div');
+        document.body.appendChild(host);
+        const close=()=>{host.remove();trigger?.focus()};
+        new ExamUI.Exam(host,{
+          title:`Unsaved import preview - ${item.id}`,
+          items:ExamUI.prepare([data],{shuffleOptions:false}),
+          showTimer:false,instant:true,noFeedback:true,
+          onExit:close,onFinish:close
+        });
+      }catch(error){
+        host?.remove();
+        trigger?.focus();
+        $('bulk-status').textContent=`Could not preview question ${entry.item.id}: ${error.message}`;
+      }
+    }
     function renderBulkPreview(){
       const list=$('bulk-preview-list'),save=$('bulk-save'),reviewClear=$('bulk-review-clear');
       if(!stagedBatch.length){list.innerHTML='';save.disabled=true;reviewClear.disabled=true;reviewClear.textContent='Mark no-overlap items reviewed';return}
@@ -1119,8 +1151,10 @@
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
         const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref?.url||'')}" target="_blank" rel="noopener noreferrer">${esc(ref?.title||'Invalid reference: add title and URL')}</a></li>`).join(''):'';
-        return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I reviewed the match and confirmed this is a distinct item.':'I reviewed this item and its answer/rationales.'}</span></label></article>`;
+        const preview=entry.errors.length?'':`<div class="buttons"><button class="button secondary" type="button" data-bulk-preview="${index}">Preview as student</button></div><p class="rationale">Test the tabs and responses, then use Check answer to review the key and rationale. Previewing does not save, approve, or publish this item.</p>`;
+        return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${preview}${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I previewed this item, reviewed its answer/rationales and the match, and confirmed this is a distinct item.':'I previewed this item and reviewed its answer/rationales.'}</span></label></article>`;
       }).join('');
+      document.querySelectorAll('[data-bulk-preview]').forEach(button=>button.addEventListener('click',()=>previewBulkItem(Number(button.dataset.bulkPreview))));
       document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
       save.disabled=!stagedCanSave();
     }
