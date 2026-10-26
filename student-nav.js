@@ -123,6 +123,7 @@
       const roleEl = document.getElementById('portal-user-role');
       const brandSubEl = document.getElementById('portal-brand-subtitle');
       const practiceLabel = document.getElementById('nav-label-practice');
+      const catLink = document.getElementById('nav-item-cat');
       const lecturesLabel = document.getElementById('nav-label-lectures');
       const sidebar = document.getElementById('portal-sidebar');
 
@@ -152,6 +153,8 @@
       if (practiceLabel) {
         practiceLabel.textContent = isNursing ? 'Exam Prep' : 'Create practice';
       }
+
+      if (catLink) catLink.hidden = isNursing;
 
       if (lecturesLabel) {
         lecturesLabel.textContent = 'Learning Library';

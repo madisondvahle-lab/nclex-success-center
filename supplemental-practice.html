@@ -269,6 +269,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             <span id="nav-label-practice">Start practice</span>
           </a>
+          <a class="portal-nav-item" id="nav-item-cat" href="diagnostic.html?mode=mock" hidden>
+            <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4M7 10h3l2-3 2 6 2-3h1"/></svg>
+            <span>Adaptive CAT</span>
+          </a>
           <a class="portal-nav-item" id="nav-item-previous-tests" href="student-dashboard.html#previous-tests">
             <svg class="portal-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span>Previous Tests</span>
@@ -1919,6 +1923,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const categoryOptions=questionCategories.map(category=>`<label class="builder-choice"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)}</span><small>${category.count}</small></label>`).join('');
       target.innerHTML=`<section class="custom-builder" aria-labelledby="custom-builder-title">
         <h2 id="custom-builder-title">Build a practice set</h2>
+        <p>Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>. This builder creates regular question-bank practice sets.</p>
         <p>Choose the question style, practice mode, and focus for this session. Study Areas and NCLEX Client Needs use the tags already in your question bank. Questions you have not practiced will be selected first; previously practiced questions fill the set only when needed.</p>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Question filters could not load: ${escapeHtml(questionTopicsError)} If this is the first setup, apply the Study Area migration. Otherwise, retry or contact Madison. Mixed practice remains available.</p>`:''}
         ${questionHistoryError?`<p class="custom-topic-note custom-topic-error" role="status">Saved practice history could not be counted: ${escapeHtml(questionHistoryError)} It will be checked again before questions are selected.</p>`:''}

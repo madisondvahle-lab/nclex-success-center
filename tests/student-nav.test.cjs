@@ -9,7 +9,7 @@ const source = readFileSync(join(root, 'student-nav.js'), 'utf8');
 
 function navigation(nursing, visibleIds) {
   const elements = new Map();
-  for (const id of [...visibleIds, 'portal-nursing', 'nav-label-practice', 'portal-user-role', 'main-content']) {
+  for (const id of [...visibleIds, 'portal-nursing', 'nav-label-practice', 'nav-item-cat', 'portal-user-role', 'main-content']) {
     const classes = new Set(id === 'portal-nursing' && !nursing ? ['hidden'] : []);
     elements.set(id, {
       id,
@@ -58,6 +58,30 @@ test('practice labels preserve course-specific vs NCLEX workflows', () => {
     nav.updateStudent({ name: 'Test Student', student_type: type }, false);
     assert.equal(elements.get('nav-label-practice').textContent, label);
     assert.equal(elements.get('portal-user-role').textContent, role);
+    assert.equal(elements.get('nav-item-cat').hidden, type === 'nursing_student');
+  }
+});
+
+test('adaptive CAT is discoverable from both student menus and the NCLEX dashboard and builder', () => {
+  for (const file of ['student-dashboard.html', 'supplemental-practice.html']) {
+    const html = readFileSync(join(root, file), 'utf8');
+    assert.match(html, /id="nav-item-cat" href="diagnostic\.html\?mode=mock" hidden>[\s\S]*?<span>Adaptive CAT<\/span>/);
+    assert.match(html, /href="diagnostic\.html\?mode=mock">Start adaptive CAT/);
+  }
+  const css = readFileSync(join(root, 'student-nav.css'), 'utf8');
+  assert.match(css, /\.portal-nav-item\[hidden\]\s*\{\s*display:\s*none;/);
+  const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  const nclex = dashboard.slice(dashboard.indexOf('id="portal-nclex"'), dashboard.indexOf('id="portal-nursing"'));
+  assert.match(nclex, /aria-labelledby="practice-title-nclex"/);
+  assert.match(nclex, /href="diagnostic\.html\?mode=mock">Start adaptive CAT/);
+  assert.match(nclex, /href="supplemental-practice\.html">Create practice/);
+});
+
+test('CAT menu visibility updates when switching between NCLEX and nursing students', () => {
+  const { nav, elements } = navigation(false, []);
+  for (const type of ['nclex', 'nursing_student', 'nclex']) {
+    nav.updateStudent({ name: 'Test Student', student_type: type }, false);
+    assert.equal(elements.get('nav-item-cat').hidden, type === 'nursing_student');
   }
 });
 
