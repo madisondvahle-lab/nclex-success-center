@@ -29,16 +29,45 @@ test('Archer OCR follows reversed peer and student score headers', () => {
 
   assert.equal(result.categories['Psychosocial Integrity'].score, 81);
   assert.equal(result.categories['Psychosocial Integrity'].peer_score, 69);
+  assert.equal(result.categories['Psychosocial Integrity'].peer_score_unit, 'percent');
 });
 
-/*
-Real-image browser validation references (not automated fixtures): the user
-attached "Pasted Image.png" (Classic, Subject/Lesson, 1954x768) and
-"Pasted Image 2.png" (NGN, Subject/Lesson, 1713x768). Expected subject rows
-are recorded in the test below; peer values in both reports are percentages.
-The files remain in the conversation attachment store and are not committed.
-*/
-test('Archer screenshot OCR results remain isolated by report section and category row', () => {
+test('explicit peer point values are not truncated to the percentage scale', () => {
+  for (const parse of [window.AssessmentImport.parseArcherRows, window.AssessmentImport.parseArcherSubjectRows]) {
+    const pointResult = parse('ngn', [{
+      category: 'Management of Care', subject: 'Adult Health',
+      score: 70, peer_score: 144, peer_score_unit: 'points', question_count: 7
+    }], {});
+    const rows = pointResult.categories || pointResult.subjects;
+    assert.equal(Object.values(rows)[0].peer_score, 144);
+    assert.equal(Object.values(rows)[0].peer_score_unit, 'points');
+    const percentResult = parse('ngn', [{
+      category: 'Management of Care', subject: 'Adult Health',
+      score: 70, peer_score: 144, peer_score_unit: 'percent', question_count: 7
+    }], {});
+    assert.equal(Object.values(percentResult.categories || percentResult.subjects)[0].peer_score, null);
+  }
+});
+
+test('verified screenshot expectations normalize without converting peer units or filling absent totals', () => {
+  const fixtures = require('./fixtures/archer-report-expectations.json');
+  for (const fixture of fixtures) {
+    const subjectView = fixture.view === 'subject_lesson';
+    const parse = subjectView ? window.AssessmentImport.parseArcherSubjectRows : window.AssessmentImport.parseArcherRows;
+    const rows = Object.entries(fixture.rows).map(([label, values]) => ({
+      [subjectView ? 'subject' : 'category']: label,
+      score: values[0], peer_score: values[1], peer_score_unit: values[2], question_count: values[3]
+    }));
+    const result = parse(fixture.section, rows, fixture);
+    assert.deepEqual(Object.fromEntries(Object.entries(result[subjectView ? 'subjects' : 'categories']).map(([label, row]) =>
+      [label, [row.score, row.peer_score, row.peer_score_unit, row.question_count]])), fixture.rows);
+    assert.equal(result.question_count, fixture.question_count);
+    assert.equal(result.overall_percent, fixture.overall_percent);
+    assert.deepEqual(result.overall_points, fixture.overall_points);
+  }
+});
+
+test('normalized Archer rows remain isolated by section and preserve explicit peer units', () => {
   const classic = window.AssessmentImport.parseArcherRows('classic', [
     { category: 'Physiological Adaptation', score: 70, peer_score: 66, peer_score_unit: 'percent', question_count: 10 },
     { category: 'Reduction of Risk Potential', score: 75, peer_score: 68, peer_score_unit: 'percent', question_count: 8 },
@@ -118,7 +147,19 @@ test('incomplete or duplicate Archer OCR rows remain blank and flagged for revie
     result_counts: { correct: 24, incorrect: 6, omitted: null }
   });
 
-  test('Subject/Lesson rows preserve Archer names, section separation, and report-specific peer units', () => {
+  assert.equal(incomplete.categories['Physiological Adaptation'].score, 70);
+  assert.equal(incomplete.categories['Physiological Adaptation'].peer_score, null);
+  assert.equal(incomplete.question_count, null);
+  assert.deepEqual(incomplete.result_counts, { correct: 24, incorrect: 6, omitted: null });
+  assert.equal(incomplete.categories['Psychosocial Integrity'], undefined);
+  assert.ok(incomplete.ambiguousCategories.includes('Psychosocial Integrity'));
+  assert.ok(incomplete.missingCategories.includes('Physiological Adaptation'));
+  assert.ok(incomplete.missingFields.includes('overall_percent'));
+  assert.ok(incomplete.missingFields.includes('result_counts'));
+  assert.equal(incomplete.reviewRequired, true);
+});
+
+test('Subject/Lesson rows preserve Archer names, section separation, and report-specific peer units', () => {
     const classic = window.AssessmentImport.parseArcherSubjectRows('classic', [
       { subject: 'Adult Health', score: 75, peer_score: 70, peer_score_unit: 'percent', question_count: 8 },
       { subject: 'Child Health', score: 75, peer_score: 76, peer_score_unit: 'percent', question_count: 4 },
@@ -179,18 +220,6 @@ test('incomplete or duplicate Archer OCR rows remain blank and flagged for revie
     assert.equal(ngn.categories, undefined);
     assert.equal(classic.reviewRequired, true);
     assert.equal(ngn.reviewRequired, true);
-  });
-
-  assert.equal(incomplete.categories['Physiological Adaptation'].score, 70);
-  assert.equal(incomplete.categories['Physiological Adaptation'].peer_score, null);
-  assert.equal(incomplete.question_count, null);
-  assert.deepEqual(incomplete.result_counts, { correct: 24, incorrect: 6, omitted: null });
-  assert.equal(incomplete.categories['Psychosocial Integrity'], undefined);
-  assert.ok(incomplete.ambiguousCategories.includes('Psychosocial Integrity'));
-  assert.ok(incomplete.missingCategories.includes('Physiological Adaptation'));
-  assert.ok(incomplete.missingFields.includes('overall_percent'));
-  assert.ok(incomplete.missingFields.includes('result_counts'));
-  assert.equal(incomplete.reviewRequired, true);
 });
 
 test('Archer report import does not invent a combined score from section percentages', () => {

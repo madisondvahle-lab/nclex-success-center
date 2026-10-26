@@ -59,14 +59,14 @@
         ambiguous[category]=true;
         return;
       }
-      var score=finiteScore(row.score),peer=finiteScore(row.peer_score),count=finiteCount(row.question_count);
+      var score=finiteScore(row.score),peer=finitePeer(row.peer_score,row.peer_score_unit),count=finiteCount(row.question_count);
       result.categories[category]={
         score:score,
         peer_score:peer,
         peer_score_unit:row.peer_score_unit||null,
         question_count:count
       };
-      if(score==null||peer==null||count==null)result.missingCategories.push(category);
+      if(score==null||peer==null||!row.peer_score_unit||count==null)result.missingCategories.push(category);
     });
     if(metadata){
       result.question_count=finiteCount(metadata.question_count);
@@ -100,7 +100,7 @@
       if(ambiguousSubjects.indexOf(name)>=0)return;
       subjects[name]={
         score:finiteScore(row.score),
-        peer_score:finiteScore(row.peer_score),
+        peer_score:finitePeer(row.peer_score,row.peer_score_unit),
         peer_score_unit:row.peer_score_unit||null,
         question_count:finiteCount(row.question_count)
       };
@@ -124,6 +124,11 @@
   function finiteScore(value){
     var number=Number(value);
     return value!==''&&value!=null&&Number.isFinite(number)&&number>=0&&number<=100?number:null;
+  }
+  function finitePeer(value,unit){
+    var number=Number(value);
+    return value!==''&&value!=null&&Number.isFinite(number)&&number>=0&&
+      (unit==='points'||number<=100)?number:null;
   }
   function finiteCount(value){
     var number=Number(value);
@@ -152,6 +157,7 @@
         category:category,
         score:percentages.length===2?percentages[scoreFirst?0:1]:null,
         peer_score:percentages.length===2?percentages[scoreFirst?1:0]:null,
+        peer_score_unit:percentages.length===2?'percent':null,
         question_count:countMatch?Number(countMatch[1]):null
       });
     });
@@ -251,17 +257,8 @@
     if(!matching.length)return null;
     return matching.reduce(function(sum,word){return sum+(word.bbox.x0+word.bbox.x1)/2},0)/matching.length/width;
   }
-  function subjectNameFromRow(group,scoreCenter,width){
-    if(/your\s+score|peer\s+score|ques\.?\s*usage|time\s+spent|subject\s*\/\s*lesson|client\s+need/i.test(group.text))return '';
-    var words=group.words.filter(function(word){
-      var text=wordText(word),center=(word.bbox.x0+word.bbox.x1)/2/width;
-      return center>.03&&center<scoreCenter-.12&&!/^[+•·-]+$/.test(text)&&
-        !/^(?:needs|neads|focus|cieed|©|®|j|\||\(|\)|\[|\]|\{|\})+$/i.test(text);
-    });
-    return clean(words.map(wordText).join(' ')).replace(/^[^A-Za-z0-9]+/,'').replace(/\s*[+•·-]+$/,'');
-  }
   function peerValue(text,headerText){
-    var valueMatch=String(text||'').match(/^\s*(\d{1,3}(?:\.\d+)?)\s*(%)?\s*$/);
+    var valueMatch=String(text||'').match(/^\s*(\d+(?:\.\d+)?)\s*(%)?\s*$/);
     if(!valueMatch)return {value:null,unit:null};
     var value=Number(valueMatch[1]);
     if(!Number.isFinite(value)||value<0)return {value:null,unit:null};
@@ -276,26 +273,11 @@
       {value:'ngn',pattern:/^ngn(?:\s*\(\d+\))?$/i}
     ]);
   }
-  function activeSectionFromPixels(bitmap){
-    var canvas=document.createElement('canvas'),context=canvas.getContext('2d',{willReadFrequently:true});
-    canvas.width=bitmap.width;canvas.height=bitmap.height;context.drawImage(bitmap,0,0);
-    var y=Math.max(0,Math.min(bitmap.height-1,Math.round(bitmap.height*0.039)));
-    function tealCount(start,end){
-      var image=context.getImageData(start,y,end-start,1).data,count=0;
-      for(var i=0;i<image.length;i+=4){
-        if(image[i+1]>120&&image[i+1]>image[i+2]+8&&image[i]<110&&image[i+1]-image[i]>55)count++;
-      }
-      return count;
-    }
-    var classic=tealCount(0,Math.min(120,bitmap.width)),ngn=tealCount(115,Math.min(230,bitmap.width));
-    if(Math.max(classic,ngn)<20||Math.abs(classic-ngn)<12)return null;
-    return classic>ngn?'classic':'ngn';
-  }
   function cropCanvas(bitmap,x,y,width,height,invertBadge,preserveColors){
-    var scale=8,canvas=document.createElement('canvas');
+    var scale=3,canvas=document.createElement('canvas');
     canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);
     var context=canvas.getContext('2d',{willReadFrequently:true});
-    context.imageSmoothingEnabled=false;
+    context.imageSmoothingEnabled=true;
     context.drawImage(bitmap,x,y,width,height,0,0,canvas.width,canvas.height);
     if(preserveColors)return canvas;
     var image=context.getImageData(0,0,canvas.width,canvas.height),min=255,max=0;
@@ -322,163 +304,149 @@
     var match=String(text||'').match(/^\s*(\d{1,3})\s*$/);
     return match?finiteCount(match[1]):null;
   }
-  function parsePointText(text){
-    var match=String(text||'').match(/^\s*(\d{1,3}(?:\.\d+)?)\s*$/);
-    var value=match?Number(match[1]):null;
-    return value!=null&&Number.isFinite(value)&&value>=0?value:null;
-  }
-  function valueFromWords(words,xRatio,rowY,width,parser){
-    var candidates=(words||[]).filter(function(word){
-      var centerX=(word.bbox.x0+word.bbox.x1)/2/width;
-      return Math.abs(centerX-xRatio)<=.035&&Math.abs(wordCenter(word)-rowY)<=18;
-    }).map(function(word){return parser(wordText(word))}).filter(function(value){return value!=null});
-    var unique=Array.from(new Set(candidates));
-    return unique.length===1?unique[0]:null;
-  }
   async function recognizeCell(worker,canvas){
     var result=await worker.recognize(canvas);
     return String(result.data.text||'').trim();
   }
+  function archerTableBounds(canvas){
+    var width=canvas.width,height=canvas.height;
+    var pixels=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data;
+    var headers=[],borders=[];
+    function runs(values){
+      var result=[];
+      values.forEach(function(y){
+        var last=result[result.length-1];
+        if(last&&y===last.end+1)last.end=y;
+        else result.push({start:y,end:y});
+      });
+      return result;
+    }
+    for(var y=0;y<height;y++){
+      var dark=0,border=0,samples=0;
+      for(var x=0;x<width;x+=4){
+        var offset=(y*width+x)*4,r=pixels[offset],g=pixels[offset+1],b=pixels[offset+2];
+        samples++;
+        if(r<85&&g<100&&b<115&&g>=r&&b>=r)dark++;
+        if(r>=210&&r<235&&g>=215&&g<240&&b>=225&&b<250)border++;
+      }
+      if(dark/samples>.65)headers.push(y);
+      if(border/samples>.7)borders.push(y);
+    }
+    var header=runs(headers).filter(function(run){return run.end-run.start>=14})
+      .sort(function(a,b){return (b.end-b.start)-(a.end-a.start)})[0];
+    if(!header)return null;
+    var lines=runs(borders).filter(function(run){return run.start>header.end});
+    var rows=[],start=header.end+1;
+    lines.forEach(function(line){
+      if(line.start-start>=20)rows.push({top:start,bottom:line.start});
+      start=line.end+1;
+    });
+    return {header:header,rows:rows};
+  }
+  function badgeCanvas(bitmap,x,y,width,height){
+    var canvas=document.createElement('canvas');
+    canvas.width=width;canvas.height=height;
+    var context=canvas.getContext('2d',{willReadFrequently:true});
+    context.drawImage(bitmap,x,y,width,height,0,0,width,height);
+    var image=context.getImageData(0,0,width,height),data=image.data;
+    // Keep white glyphs inside each colored badge, not the white page around it.
+    for(var row=0;row<height;row++){
+      var left=width,right=-1;
+      for(var column=0;column<width;column++){
+        var index=(row*width+column)*4;
+        if(Math.max(data[index],data[index+1],data[index+2])-Math.min(data[index],data[index+1],data[index+2])>65){
+          left=Math.min(left,column);right=column;
+        }
+      }
+      for(var col=0;col<width;col++){
+        var offset=(row*width+col)*4;
+        var value=col>left&&col<right&&Math.min(data[offset],data[offset+1],data[offset+2])>210?0:255;
+        data[offset]=data[offset+1]=data[offset+2]=value;
+      }
+    }
+    context.putImageData(image,0,0);
+    var scaled=document.createElement('canvas');
+    scaled.width=width*3;scaled.height=height*3;
+    scaled.getContext('2d').drawImage(canvas,0,0,scaled.width,scaled.height);
+    return scaled;
+  }
   async function readArcherImage(file,expectedSection){
     if(!window.Tesseract||typeof Tesseract.createWorker!=='function')throw new Error('The screenshot OCR engine is unavailable.');
-    var bitmap=await createImageBitmap(file),worker=await Tesseract.createWorker('eng');
+    var bitmap=await createImageBitmap(file),worker;
     try{
+      worker=await Tesseract.createWorker('eng');
       await worker.setParameters({tessedit_pageseg_mode:'6'});
       var sourceCanvas=document.createElement('canvas');
       sourceCanvas.width=bitmap.width;sourceCanvas.height=bitmap.height;
       sourceCanvas.getContext('2d').drawImage(bitmap,0,0);
       var recognized=await worker.recognize(sourceCanvas),data=recognized.data||{},text=String(data.text||'');
-      var words=data.words||[],groups=groupWordRows(words),rows=[];
-      var wordSection=activeSectionFromWords(bitmap,words),pixelSection=activeSectionFromPixels(bitmap);
-      var section=wordSection||pixelSection||expectedSection;
+      var words=data.words||[];
+      var width=bitmap.width,height=bitmap.height,table=archerTableBounds(sourceCanvas);
+      if(!table||!table.rows.length)throw new Error('Could not locate a complete Archer report table. Enter verified values manually.');
+      await worker.setParameters({tessedit_pageseg_mode:'6',tessedit_char_whitelist:''});
+      var headerData=(await worker.recognize(cropCanvas(bitmap,0,table.header.start,width,table.header.end-table.header.start+1,true))).data;
+      var headerGroups=groupWordRows(headerData.words||[]);
+      var scoreX=headerCenter(headerGroups,/your\s+score/i,width*3);
+      var peerX=headerCenter(headerGroups,/peer\s+score/i,width*3);
+      var countX=headerCenter(headerGroups,/(?:ques\.?\s*)?usage/i,width*3);
+      if(scoreX==null||peerX==null||countX==null)throw new Error('Could not identify Your Score, Peer Score, and Ques. Usage columns. Enter verified values manually.');
+      var centers=[scoreX,peerX,countX].sort(function(a,b){return a-b});
+      var gap=Math.min(centers[1]-centers[0],centers[2]-centers[1]);
+      if(gap<=0)throw new Error('The report columns overlap. Enter verified values manually.');
+      var selectedText='';
+      if(table.header.start>=60){
+        await worker.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
+        selectedText=await recognizeCell(worker,badgeCanvas(bitmap,0,0,Math.round(width*.25),60));
+      }
+      var selectedTab=selectedText.match(/\b(classic|ngn)\s*\(\s*(\d+)\s*\)/i);
+      var section=selectedTab?selectedTab[1].toLowerCase():activeSectionFromWords(bitmap,words)||
+        (/your\s+answers/i.test(headerData.text||'')?'classic':expectedSection);
       if(section!==expectedSection){
         return {section:section,view:null,categories:{},subjects:{},reviewRequired:true,warning:'This screenshot is selected as '+section.toUpperCase()+', not '+expectedSection.toUpperCase()+'. No values were imported.'};
       }
       var view=activeViewFromWords(bitmap,words)||activeViewFromPixels(bitmap);
-      if(!view){
-        return {section:section,view:null,categories:{},subjects:{},reviewRequired:true,warning:'Could not reliably identify whether Subject/Lesson or Client Need is selected. No values were imported.'};
-      }
-      var width=bitmap.width,height=bitmap.height;
-      var tableHeader=groups.find(function(group){
-        return /your\s+score/i.test(group.text)&&/peer\s+score/i.test(group.text)&&/usage/i.test(group.text)&&!/max\s+score/i.test(group.text);
-      });
-      var scoreHeader=tableHeader?headerCenter([tableHeader],/your\s+score/i,width):null;
-      var peerHeader=tableHeader?headerCenter([tableHeader],/peer\s+score/i,width):null;
-      var countHeader=tableHeader?headerCenter([tableHeader],/(?:ques\.?\s*)?usage/i,width):null;
-      var columns=section==='classic'
-        ?{scoreX:.394,scoreW:.045,peerX:.518,peerW:.045,countX:.644,countW:.031}
-        :{scoreX:.4932,scoreW:.0284,peerX:.612,peerW:.039,countX:.757,countW:.018};
-      if(view==='subject_lesson'){
-        columns={
-          scoreX:scoreHeader==null?(section==='classic'?.357:.435):scoreHeader,
-          peerX:peerHeader==null?(section==='classic'?.478:.58):peerHeader,
-          countX:countHeader==null?(section==='classic'?.608:.739):countHeader,
-          scoreW:.042,peerW:.05,countW:.045
-        };
-      }
       async function readAt(xRatio,yRatio,widthRatio,heightRatio,parser,pageMode,characterWhitelist,invertBadge,preserveColors){
         var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
         var y=Math.max(0,Math.min(height-1,Math.round(height*yRatio)));
         var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
         var cropHeight=Math.max(14,Math.min(height-y,Math.round(height*heightRatio)));
         await worker.setParameters({tessedit_pageseg_mode:pageMode||'8',tessedit_char_whitelist:characterWhitelist||'0123456789%'});
-        return parser(await recognizeCell(worker,cropCanvas(bitmap,x,y,cropWidth,cropHeight,invertBadge,preserveColors)));
+        return parser(await recognizeCell(worker,invertBadge
+          ?badgeCanvas(bitmap,x,y,cropWidth,cropHeight)
+          :cropCanvas(bitmap,x,y,cropWidth,cropHeight,false,preserveColors)));
       }
-      groups.forEach(function(group){
-        var category=view==='client_need'?categoryInLine(group.text):null;
-        var subject=view==='subject_lesson'?subjectNameFromRow(group,columns.scoreX,width):'';
-        if(view==='client_need'&&!category||view==='subject_lesson'&&!subject)return;
-        var yValues=group.words.filter(function(word){
-          var x=(word.bbox.x0+word.bbox.x1)/2/width;
-          return x>columns.scoreX-.015&&x<columns.countX+columns.countW+.02;
-        }).map(wordCenter);
-        if(view==='subject_lesson'&&!yValues.length)return;
-        var labelY=subject?group.words.filter(function(word){
-          var center=(word.bbox.x0+word.bbox.x1)/2/width,text=wordText(word);
-          return center>.03&&center<columns.scoreX-.12&&
-            !/^(?:needs|neads|focus|cieed|©|®|j|\||\(|\)|\[|\]|\{|\})+$/i.test(text);
-        }).map(wordCenter):[];
-        var sortedValues=yValues.slice().sort(function(a,b){return a-b});
-        var sortedLabels=labelY.slice().sort(function(a,b){return a-b});
-        var rowY=sortedValues.length?sortedValues[Math.floor(sortedValues.length/2)]:group.center;
-        var labelRowY=sortedLabels.length?sortedLabels[Math.floor(sortedLabels.length/2)]:null;
-        rows.push({category:category,subject:subject,rowY:rowY,labelRowY:labelRowY});
-      });
       var extracted=[];
-      var peerHeaderText=(groups.find(function(group){return /peer\s+score/i.test(group.text)})||{}).text||'';
-      for(var row of rows){
-        var top=Math.max(0,Math.round(row.rowY-15)),cellHeight=Math.min(36,height-top);
-        async function cell(xRatio,widthRatio,pageMode,characterWhitelist,invertBadge){
-          var x=Math.max(0,Math.min(width-1,Math.round(width*xRatio)));
-          var cropWidth=Math.max(18,Math.min(width-x,Math.round(width*widthRatio)));
-          await worker.setParameters({
-            tessedit_pageseg_mode:pageMode||'8',
-            tessedit_char_whitelist:characterWhitelist||'0123456789%'
-          });
-          return recognizeCell(worker,cropCanvas(bitmap,x,top,cropWidth,cellHeight,invertBadge));
+      for(var row of table.rows){
+        var top=row.top+2,cellHeight=row.bottom-top;
+        await worker.setParameters({tessedit_pageseg_mode:'6',tessedit_char_whitelist:''});
+        var label=await recognizeCell(worker,cropCanvas(bitmap,0,top,Math.round(width*(centers[0]-gap*.45)),cellHeight));
+        label=label.split(/\r?\n/).filter(function(line){return !/needs\s+focus/i.test(line)})
+          .map(function(line){return line.replace(/^[^A-Za-z]+/,'').trim()}).filter(Boolean).join(' ');
+        if(!label)continue;
+        async function cell(center,badge){
+          var x=Math.max(0,Math.round(width*(center-gap*.35)));
+          var cropWidth=Math.min(width-x,Math.round(width*gap*.7));
+          await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789.%'});
+          return recognizeCell(worker,badge
+            ?badgeCanvas(bitmap,x,top,cropWidth,cellHeight)
+            :cropCanvas(bitmap,x,top,cropWidth,cellHeight));
         }
-        var scoreText=await cell(columns.scoreX-columns.scoreW/2,columns.scoreW,'7','0123456789%',true);
-        var score=finiteScore(parsePercentText(scoreText));
-        if(score==null){
-          scoreText=await cell(columns.scoreX-columns.scoreW/2,columns.scoreW,'7');
-          score=parsePercentText(scoreText);
-        }
-        if(score==null&&section==='ngn'&&row.labelRowY!=null){
-          var labelTop=Math.max(0,Math.round(row.labelRowY-15));
-          await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789%'});
-          var labelScore=await recognizeCell(worker,cropCanvas(
-            bitmap,
-            Math.max(0,Math.round(width*(columns.scoreX-columns.scoreW/2))),
-            labelTop,
-            Math.min(width-Math.round(width*(columns.scoreX-columns.scoreW/2)),Math.round(width*columns.scoreW)),
-            Math.min(36,height-labelTop),
-            true
-          ));
-          score=parsePercentText(labelScore);
-        }
-        var peerFromWords=valueFromWords(words,columns.peerX,row.rowY,width,parsePercentText);
-        var peerText=await cell(
-          columns.peerX-columns.peerW/2,columns.peerW,section==='ngn'?'7':'8',
-          '0123456789.%'
-        );
-        var peerScore=parsePercentText(peerText);
-        if(peerFromWords!=null){
-          if(peerFromWords>=10)peerScore=peerFromWords;
-          else if(peerScore===peerFromWords)peerScore=peerFromWords;
-          else if(peerScore!=null&&peerScore>=10&&peerScore%10===peerFromWords)peerScore=peerScore;
-          else peerScore=null;
-        }else if(peerScore!=null&&peerScore<10){
-          peerScore=null;
-        }
-        var peer=peerFromWords!=null&&peerScore===peerFromWords
-          ?{value:peerScore,unit:'percent'}:peerValue(peerText,peerHeaderText);
-        if(peerFromWords!=null&&peerScore==null||peer.value!=null&&peer.unit==='percent'&&peer.value<10&&peerScore==null){
-          peer={value:null,unit:null};
-        }else if(peerScore!=null){
-          peer.value=peerScore;
-          if(peerFromWords!=null)peer.unit='percent';
-        }
-        var countFromWords=valueFromWords(words,columns.countX,row.rowY,width,parseIntegerText);
-        var countText=await cell(columns.countX-columns.countW/2,columns.countW,'7','0123456789');
-        var countFromCrop=parseIntegerText(countText);
-        var questionCount=countFromWords!=null&&countFromCrop!=null&&countFromWords!==countFromCrop
-          ?null:countFromWords??countFromCrop;
-        var extractedRow={
-          score:score,
-          peer_score:peer.value,
-          peer_score_unit:peer.unit,
-          question_count:questionCount==null?parseIntegerText(countText):questionCount
-        };
-        if(view==='client_need')extractedRow.category=row.category;
-        else extractedRow.subject=row.subject;
-        extracted.push(extractedRow);
+        var peer=peerValue(await cell(peerX,false),headerData.text);
+        extracted.push({
+          label:label,category:categoryInLine(label),subject:label,
+          score:parsePercentText(await cell(scoreX,true)),
+          peer_score:peer.value,peer_score_unit:peer.unit,
+          question_count:parseIntegerText(await cell(countX,false))
+        });
+      }
+      if(!view&&extracted.length&&extracted.every(function(row){return row.category}))view='client_need';
+      if(!view){
+        return {section:section,view:null,categories:{},subjects:{},reviewRequired:true,warning:'Could not reliably identify whether Subject/Lesson or Client Need is selected. No values were imported.'};
       }
       var metadata={};
-      var tabCount=text.match(new RegExp(section+'\\s*\\((\\d+)\\)','i'));
-      metadata.question_count=tabCount?Number(tabCount[1]):pixelSection||wordSection
-        ?await readAt(section==='classic'?.005:.064,.008,.07,.06,parseIntegerText,'7','0123456789',false,true)
-        :null;
-      if(view==='client_need'&&section==='classic'){
+      metadata.question_count=selectedTab?Number(selectedTab[2]):null;
+      var hasSummary=table.header.start>height*.35&&/max\s+score|correct\s+incorrect/i.test(text);
+      if(hasSummary&&view==='client_need'&&section==='classic'){
         metadata.overall_percent=await readAt(.139,.09,.026,.032,parsePercentText);
         var correct=await readAt(.139,.354,.028,.031,parseIntegerText);
         var incorrect=await readAt(.187,.354,.028,.031,parseIntegerText);
@@ -490,17 +458,17 @@
         if(Object.values(metadata.result_counts).every(function(value){return value==null})){
           metadata.result_counts=null;
         }
-      }else if(view==='client_need'&&section==='ngn'){
+      }else if(hasSummary&&view==='client_need'&&section==='ngn'){
         metadata.overall_percent=await readAt(.1597,.09,.034,.032,parsePercentText);
         var earned=await readAt(.16,.337,.047,.035,parseIntegerText,'7');
         var possible=await readAt(.217,.337,.047,.035,parseIntegerText,'7');
         if(earned!=null&&possible!=null&&possible>0&&earned<=possible){
           metadata.overall_points={earned_points:earned,possible_points:possible};
         }
-      }else if(view==='subject_lesson'&&section==='classic'){
+      }else if(hasSummary&&view==='subject_lesson'&&section==='classic'){
         var classicOverall=text.match(/your\s+score\s+(\d{1,3})\s*%/i);
         metadata.overall_percent=classicOverall?finiteScore(classicOverall[1]):null;
-      }else if(view==='subject_lesson'&&section==='ngn'){
+      }else if(hasSummary&&view==='subject_lesson'&&section==='ngn'){
         metadata.overall_percent=await readAt(.1597,.09,.034,.04,parsePercentText,'7','0123456789%',true);
         var earnedPoints=await readAt(.166,.35,.026,.032,parseIntegerText,'7','0123456789');
         var possiblePoints=await readAt(.224,.35,.03,.032,parseIntegerText,'7','0123456789');
@@ -521,8 +489,8 @@
         :'Review every extracted value against the screenshot before saving.';
       return result;
     }finally{
-      await worker.terminate();
-      bitmap.close();
+      try{if(worker)await worker.terminate()}
+      finally{bitmap.close()}
     }
   }
   function load(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('Could not load reader'))};document.head.appendChild(s)})}

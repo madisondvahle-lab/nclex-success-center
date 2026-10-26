@@ -48,7 +48,7 @@
         const attrs = `aria-label="${esc(label)} · ${esc(category)}" data-archer-view="client_need" data-archer-section="${section}" data-archer-category="${esc(category)}" data-archer-field="${field}"`;
         const control = field === 'peer_score_unit'
           ? `<select ${attrs}><option value="">Unclear</option><option value="percent">Percent</option><option value="points">Points</option></select>`
-          : `<input type="number" min="0" ${field === 'score' || (field === 'peer_score' && section === 'classic') ? 'max="100"' : ''} step="${step}" placeholder="${placeholder}" ${attrs}>`;
+          : `<input type="number" min="0" ${field === 'score' ? 'max="100"' : ''} step="${step}" placeholder="${placeholder}" ${attrs}>`;
         return `<td>${control}</td>`;
       }).join('')}</tr>`;
     }).join('');
@@ -84,7 +84,6 @@
   function ensureSubjectRow(subject) {
     const target = document.getElementById('archer-subject-rows');
     if ([...target.querySelectorAll('[data-archer-subject-name]')].some(row => row.dataset.archerSubjectName === subject)) return;
-    const escapeSelector = value => CSS.escape(value);
     const makeFields = section => [
       ['score', 'Score %', '0.1', '0-100'],
       ['peer_score', 'Peer value', '0.1', 'Reported value'],
@@ -180,6 +179,19 @@
     return 'added';
   }
 
+  function addPeerValue(section, label, values, view) {
+    const input = field => view === 'subject_lesson'
+      ? subjectInputFor(section, label, field) : inputFor(section, label, field);
+    const fields = [['peer_score', values.peer_score], ['peer_score_unit', values.peer_score_unit]];
+    const conflicts = fields.some(([field, value]) => {
+      const control = input(field);
+      return control.dataset.userEdited === 'true' ||
+        (value != null && control.value !== '' && control.value !== String(value));
+    });
+    if (conflicts) return ['conflict'];
+    return fields.map(([field, value]) => addInputValue(input(field), value));
+  }
+
   async function readScreenshots(section, newEntries) {
     const target = document.getElementById(`archer-${section}-message`);
     pendingOcr++;
@@ -199,20 +211,25 @@
             Object.entries(result.categories || {}).forEach(([category, values]) => {
               const canonical = ArcherCAT.categoryName(category);
               if (!canonical) return;
-              ['score', 'peer_score', 'question_count'].forEach(field => {
+              ['score', 'question_count'].forEach(field => {
                 const state = addValue(section, canonical, field, values[field], 'client_need');
                 if (state === 'added') found++;
                 if (state === 'conflict') conflicts++;
               });
-              const unitState = addValue(section, canonical, 'peer_score_unit', values.peer_score_unit, 'client_need');
-              if (unitState === 'added') found++;
-              if (unitState === 'conflict') conflicts++;
+              addPeerValue(section, canonical, values, 'client_need').forEach(state => {
+                if (state === 'added') found++;
+                if (state === 'conflict') conflicts++;
+              });
             });
           } else if (result.view === 'subject_lesson') {
             Object.entries(result.subjects || {}).forEach(([subject, values]) => {
               ensureSubjectRow(subject);
-              ['score', 'peer_score', 'peer_score_unit', 'question_count'].forEach(field => {
+              ['score', 'question_count'].forEach(field => {
                 const state = addValue(section, subject, field, values[field], 'subject_lesson');
+                if (state === 'added') found++;
+                if (state === 'conflict') conflicts++;
+              });
+              addPeerValue(section, subject, values, 'subject_lesson').forEach(state => {
                 if (state === 'added') found++;
                 if (state === 'conflict') conflicts++;
               });
@@ -235,24 +252,14 @@
                 ['archer-ngn-earned', result.overall_points?.earned_points],
                 ['archer-ngn-possible', result.overall_points?.possible_points]
               ];
-          if (result.view === 'client_need') topFields.forEach(([id, value]) => {
+          topFields.forEach(([id, value]) => {
             const state = addInputValue(document.getElementById(id), value);
             if (state === 'added') found++;
             if (state === 'conflict') conflicts++;
           });
-          if (result.view === 'subject_lesson' && section === 'ngn') {
-            [['archer-ngn-overall', result.overall_percent], ['archer-ngn-questions', result.question_count],
-              ['archer-ngn-earned', result.overall_points?.earned_points], ['archer-ngn-possible', result.overall_points?.possible_points]]
-              .forEach(([id, value]) => {
-                const state = addInputValue(document.getElementById(id), value);
-                if (state === 'added') found++;
-                if (state === 'conflict') conflicts++;
-              });
-          }
           if (result.warning) warnings.push(`${entry.file.name}: ${result.warning}`);
         } catch (error) {
-          target.textContent = `OCR could not read ${entry.file.name}: ${error.message || 'review the screenshot and enter values manually'}`;
-          return;
+          warnings.push(`OCR could not read ${entry.file.name}: ${error.message || 'review the screenshot and enter values manually'}`);
         }
       }
       updateTotalFromSections();
@@ -529,6 +536,8 @@
       const assessmentId = savedAssessment.id;
       const hasFiles = uploaded.size > 0;
       form.reset();
+      document.getElementById('archer-total-questions').dataset.derived = 'true';
+      document.getElementById('archer-subject-rows').replaceChildren();
       form.querySelectorAll('[data-ocr-candidate], [data-user-edited]').forEach(input => {
         delete input.dataset.ocrCandidate;
         delete input.dataset.userEdited;

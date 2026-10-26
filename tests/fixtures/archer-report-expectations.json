@@ -1,0 +1,71 @@
+[
+  {
+    "id": "classic-client-need",
+    "section": "classic",
+    "view": "client_need",
+    "rows": {
+      "Physiological Adaptation": [71, 71, "percent", 7],
+      "Reduction of Risk Potential": [100, 79, "percent", 5],
+      "Health Promotion and Maintenance": [100, 70, "percent", 8],
+      "Basic Care and Comfort": [100, 47, "percent", 1],
+      "Safety and Infection Control": [88, 74, "percent", 8],
+      "Pharmacological and Parenteral Therapies": [75, 57, "percent", 8],
+      "Management of Care": [86, 65, "percent", 7]
+    },
+    "question_count": null,
+    "overall_percent": null,
+    "overall_points": null
+  },
+  {
+    "id": "ngn-client-need",
+    "section": "ngn",
+    "view": "client_need",
+    "rows": {
+      "Physiological Adaptation": [67, 5, "percent", 16],
+      "Reduction of Risk Potential": [71, 11, "percent", 6],
+      "Health Promotion and Maintenance": [70, 9, "percent", 9],
+      "Basic Care and Comfort": [50, 50, "percent", 1],
+      "Safety and Infection Control": [75, 50, "percent", 1],
+      "Psychosocial Integrity": [86, 43, "percent", 2],
+      "Pharmacological and Parenteral Therapies": [38, 15, "percent", 4],
+      "Management of Care": [71, 43, "percent", 2]
+    },
+    "question_count": null,
+    "overall_percent": null,
+    "overall_points": null
+  },
+  {
+    "id": "classic-subject-lesson",
+    "section": "classic",
+    "view": "subject_lesson",
+    "rows": {
+      "Adult Health": [75, 70, "percent", 8],
+      "Child Health": [75, 76, "percent", 4],
+      "Critical Care": [33, 49, "percent", 3],
+      "Fundamentals": [75, 59, "percent", 4],
+      "Leadership & Management": [100, 72, "percent", 6],
+      "Maternal & Newborn Health": [100, 53, "percent", 1],
+      "Mental Health": [100, 67, "percent", 2],
+      "Pharmacology": [100, 50, "percent", 1],
+      "Nutrition": [100, 73, "percent", 1]
+    },
+    "question_count": null,
+    "overall_percent": null,
+    "overall_points": null
+  },
+  {
+    "id": "ngn-subject-lesson",
+    "section": "ngn",
+    "view": "subject_lesson",
+    "rows": {
+      "Adult Health": [83, 2, "percent", 37],
+      "Leadership & Management": [0, 50, "percent", 1],
+      "Maternal & Newborn Health": [44, 33, "percent", 2],
+      "Mental Health": [62, 4, "percent", 13],
+      "Pharmacology": [60, 40, "percent", 2]
+    },
+    "question_count": 55,
+    "overall_percent": 75,
+    "overall_points": { "earned_points": 144, "possible_points": 193 }
+  }
+]
