@@ -19,7 +19,7 @@ const draft = {
 };
 
 function harness(existing = draft, failure) {
-  const fields = new Map(), alerts = [], calls = [], save = {}, intro = {};
+  const fields = new Map(), alerts = [], calls = [], save = { after() {} }, intro = {};
   let values, closed = false, saving;
   const decode = value => value.replaceAll('&quot;', '"').replaceAll('&lt;', '<').replaceAll('&amp;', '&');
   const form = {
@@ -53,7 +53,7 @@ function harness(existing = draft, failure) {
         for (const match of markup.matchAll(/<input[^>]*id="([^"]+)"[^>]*value="([^"]*)"/g)) fields.set(match[1], { value: decode(match[2]) });
       }
     }) },
-    renderRevisionDrafts() {}, render() {},
+    renderRevisionDrafts() {}, render() {}, renderManage() {}, catApprovals: new Map(),
     db: {
       from(table) {
         assert.equal(table, 'question_revision_drafts', 'must never write the questions table');
@@ -67,6 +67,9 @@ function harness(existing = draft, failure) {
       },
       async rpc(name, args) {
         calls.push({ name, args });
+        if (name === 'approve_question_revision' || name === 'apply_question_revision') {
+          return { error: failure?.[name] };
+        }
         if (saving) await saving;
         return { data: { ...existing, proposed_content: args.p_proposed_content, status: 'pending_review' }, error: failure?.save };
       }
@@ -86,7 +89,7 @@ test('reopening uses saved proposed fields and metadata, not original bank value
   assert.equal(h.fields.get('e-cj').value, 'Saved skill');
   assert.deepEqual(JSON.parse(h.fields.get('e-option-rationales').value), draft.proposed_content.option_rationales);
   assert.deepEqual(JSON.parse(h.fields.get('e-reference-list').value), draft.proposed_content.reference_list);
-  assert.match(h.intro.textContent, /fresh approval/);
+  assert.match(h.intro.textContent, /admin approval/);
 });
 
 test('saving updates the same draft with concurrency guards and leaves the original unchanged', async () => {
@@ -155,6 +158,34 @@ test('double submits do not send a second write', async () => {
   assert.equal(h.calls.length, 1);
   release();
   await pending;
+});
+
+test('save and apply uses protected approval/application and updates the master cache', async () => {
+  const h = harness(), master = structuredClone(question);
+  await h.context.openCorrectionEditor(master);
+  await h.context.$('ed-form').onsubmit({ preventDefault() {}, submitter: { value: 'apply' } });
+  assert.deepEqual(h.calls.map(call => call.name), [
+    'update_question_revision_draft', 'approve_question_revision', 'apply_question_revision'
+  ]);
+  assert.equal(master.stem, draft.proposed_content.stem);
+  assert.equal(h.context.revisionDrafts[0].status, 'applied');
+  assert.equal(h.closed, true);
+});
+
+test('failed approval or application preserves the saved correction without changing the master', async () => {
+  for (const name of ['approve_question_revision', 'apply_question_revision']) {
+    const h = harness(draft, { [name]: { message: 'Blocked by safeguard' } });
+    const master = structuredClone(question);
+    await h.context.openCorrectionEditor(master);
+    await h.context.$('ed-form').onsubmit({ preventDefault() {}, submitter: { value: 'apply' } });
+    assert.equal(master.stem, question.stem);
+    assert.equal(h.closed, false);
+    assert.match(h.alerts[0], /saved but could not/);
+    assert.equal(h.context.revisionDrafts[0].status, name === 'apply_question_revision' ? 'approved' : 'pending_review');
+    if (name === 'approve_question_revision') {
+      assert.equal(h.calls.some(call => call.name === 'apply_question_revision'), false);
+    }
+  }
 });
 
 test('question bank inline JavaScript parses', () => {
