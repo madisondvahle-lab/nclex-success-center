@@ -59,7 +59,12 @@
 .ex-prompt{line-height:1.6;margin:0 0 18px;font-size:.9em}
 .ex-prompt.first{margin-top:0}
 .ex-chev{color:#1e88e5;font-weight:700;margin-right:12px}
-.ex-right .ex-opts{margin-left:6px}
+.ex-right .ex-stem{font-size:.9em;line-height:1.6;margin:0 0 18px}
+.ex-right .ex-opts{margin-left:0;font-size:.9em}
+.ex-right .ex-opts .ex-opt{align-items:flex-start;gap:12px;padding:12px 0;min-height:44px}
+.ex-right .ex-opts .ex-ctl{width:1.35em;height:1.35em;margin-top:.1em}
+.ex-right .ex-opts .ex-num{width:1.2em;line-height:1.6}
+.ex-right .ex-opts .ex-txt{flex:1;min-width:0;line-height:1.6;overflow-wrap:break-word}
 .ex-matrix{max-width:760px;margin:6px 0 12px}
 .ex-matrix th,.ex-matrix td{font-size:.9em}
 .ex-matrix .ex-opt{justify-content:center;padding:2px 0}

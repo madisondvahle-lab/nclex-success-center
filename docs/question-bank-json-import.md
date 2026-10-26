@@ -21,6 +21,9 @@ Do not include Markdown fences in the importer input.
    click **Check answer** to inspect the key and rationale. Exit or finish to
    return to the import cards. This uses the existing student renderer; preview
    responses are temporary and do not save questions or student attempts.
+   In split clinical-record previews, question text and MCQ/SATA answers use
+   matching font sizes. The text-size control scales both together; multiline
+   answers align with their option number and selection control.
 5. Review every stem, key, rationale, reference, and overlap warning. Mark
    reviewed items, then **Save reviewed items as inactive drafts**. Previewing
    alone does not mark an item reviewed or enable saving. Saved drafts remain
