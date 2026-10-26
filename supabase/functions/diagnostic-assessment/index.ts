@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectionPreferences, historySnapshot } from '../_shared/diagnostic-assessment-history.mjs';
+import { assessmentTiming } from '../_shared/diagnostic-timing.mjs';
 import { presentation, newPresentations, canonicalAnswer } from '../_shared/sata-presentation.mjs';
 import {
   pickNextQuestion,
@@ -97,7 +98,7 @@ function cleanExamTimer(timer: Record<string, unknown> | null, mode: string) {
   };
 }
 
-async function createContext(request: Request) {
+async function createContext(request: Request, timing: ReturnType<typeof assessmentTiming>) {
   const authorization = request.headers.get('Authorization');
   if (!authorization?.startsWith('Bearer ')) throw new HttpError(401, 'Sign in to use the assessment.');
 
@@ -110,22 +111,22 @@ async function createContext(request: Request) {
     global: { headers: { Authorization: authorization } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: { user }, error: authError } = await userClient.auth.getUser();
+  const { data: { user }, error: authError } = await timing.measure('auth', () => userClient.auth.getUser());
   if (authError || !user) throw new HttpError(401, 'Your session has expired. Sign in again.');
 
   const service = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: student, error: studentError } = await service
+  const { data: student, error: studentError } = await timing.measure('student', () => service
     .from('students')
     .select('id,name,portal_stage')
     .eq('auth_user_id', user.id)
-    .maybeSingle();
+    .maybeSingle());
   if (studentError) throw studentError;
 
-  const { data: isAdmin, error: adminError } = await userClient.rpc('is_app_admin');
+  const { data: isAdmin, error: adminError } = await timing.measure('admin', () => userClient.rpc('is_app_admin'));
   if (adminError) throw adminError;
-  return { user, student, isAdmin: isAdmin === true, service };
+  return { user, student, isAdmin: isAdmin === true, service, timing };
 }
 
 type SupabaseClient = Awaited<ReturnType<typeof createContext>>['service'];
@@ -462,10 +463,11 @@ async function resumeAttempt(context: Awaited<ReturnType<typeof createContext>>,
 
 async function checkpointAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
+  const studentId = context.student.id;
   const attemptId = requiredString(body.attemptId, 'Attempt ID');
   const revision = Number(body.expectedRevision);
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Checkpoint revision is invalid.');
-  const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  const attempt = await context.timing.measure('attempt', () => attemptForStudent(context.service, attemptId, studentId));
   requireCompatibleClient(attempt, body);
   if (attempt.status !== 'in_progress' || attempt.checkpoint_revision !== revision) {
     throw new HttpError(409, 'This assessment changed in another session. Reload and resume it.');
@@ -523,11 +525,12 @@ function correctAnswer(item: Record<string, any>) {
 
 async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>, body: Record<string, any>) {
   if (!context.student) throw new HttpError(403, 'No student profile is linked to this account.');
+  const studentId = context.student.id;
   const attemptId = requiredString(body.attemptId, 'Attempt ID');
   const revision = Number(body.expectedRevision);
   const itemId = requiredString(body.itemId, 'Item ID');
   if (!Number.isInteger(revision)) throw new HttpError(400, 'Assessment revision is invalid.');
-  const attempt = await attemptForStudent(context.service, attemptId, context.student.id);
+  const attempt = await context.timing.measure('attempt', () => attemptForStudent(context.service, attemptId, studentId));
   requireCompatibleClient(attempt, body);
   if (body.presentations || body.presentation || body.optionOrder) throw new HttpError(400, 'Answer mappings are server-owned.');
   if (attempt.status !== 'in_progress') throw new HttpError(409, 'This assessment is no longer active.');
@@ -538,7 +541,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   const mode = attempt.checkpoint.mode;
   const scope = mode === 'remediation' ? 'remediation' : 'diagnostic';
   const versioned = attempt.checkpoint.scoringModel === MODEL;
-  const keys = await itemKeys(context.service, scope, versioned);
+  const keys = await context.timing.measure('inventory', () => itemKeys(context.service, scope, versioned));
   const ngnItem = currentInteraction(attempt.checkpoint);
   const item = ngnItem ? attempt.checkpoint.ngnState.current.key : keyForItem(keys, itemId);
   if (!item.selectable) throw new HttpError(400, 'This item cannot be submitted independently.');
@@ -589,7 +592,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     outcomes.push(score(item, decodeAnswer(attempt, itemId, body.answer), answeredAt));
   }
 
-  const priorRows = await responseRows(context.service, attempt.id);
+  const priorRows = await context.timing.measure('responses', () => responseRows(context.service, attempt.id));
   const historyBefore = selectionHistory(priorRows, keys, attempt.checkpoint);
   let ability = Number(attempt.ability_estimate ?? 0.5);
   const newHistory = [...historyBefore];
@@ -613,9 +616,9 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     if (ngnResult?.final) newHistory.forEach(row => { if (row.evidenceGroup === item.item_id) row.evidenceComplete = true; });
   }
 
-  const requirements = await coreRequirements(context.service);
+  const requirements = await context.timing.measure('requirements', () => coreRequirements(context.service));
   const preferences = scope === 'diagnostic'
-    ? await selectionPreferences(context.service, context.student.id, keys, attempt) : null;
+    ? await context.timing.measure('history', () => selectionPreferences(context.service, studentId, keys, attempt)) : null;
   let result: string | null = null;
   const continuingCase = ngnResult && !ngnResult.final;
   if (!continuingCase && versioned && (mode === 'nclex' || mode === 'mock')) result = shouldStopNGN(newHistory, ability, requirements, mode);
@@ -657,7 +660,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     if (result) delete checkpoint.completionReason;
     else checkpoint.completionReason = reachedTarget ? 'question-limit-insufficient-evidence' : 'insufficient-items';
   }
-  const { data: committed, error: commitError } = await context.service.rpc('commit_in_house_diagnostic_answer', {
+  const { data: committed, error: commitError } = await context.timing.measure('commit', () => context.service.rpc('commit_in_house_diagnostic_answer', {
     p_attempt_id: attempt.id,
     p_expected_revision: revision,
     p_responses: outcomes.map(outcome => outcome.databaseRow(attempt.id)),
@@ -665,7 +668,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     p_ability_estimate: Number(ability.toFixed(3)),
     p_result: result,
     p_complete: complete,
-  });
+  }));
   if (commitError) {
     if (commitError.message.includes('Assessment response conflict or attempt is no longer active')) {
       throw new HttpError(409, 'This assessment changed in another session. Reload and resume.');
@@ -674,7 +677,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   }
   if (!committed || (Array.isArray(committed) && committed.length !== 1)) throw new HttpError(409, 'This assessment changed in another session. Reload and resume.');
 
-  const allRows = await responseRows(context.service, attempt.id);
+  const allRows = await context.timing.measure('reload', () => responseRows(context.service, attempt.id));
   const reveal = canReveal({ status: complete ? 'completed' : 'in_progress', checkpoint });
   const responses = historyFor(allRows, keys, reveal, checkpoint);
   return {
@@ -801,8 +804,19 @@ export default {
     const origin = request.headers.get('Origin') ?? '';
     if (origin && !allowedOrigins.has(origin)) return reply(request, { error: 'Origin not allowed.' }, 403);
 
+    const timing = assessmentTiming();
+    const timedReply = (body: object, status = 200) => {
+      const result = timing.finish();
+      if (Deno.env.get('CAT_STAGE_TIMING') === 'true') {
+        console.info(JSON.stringify({ event: 'cat-stage-timing', status, ...result }));
+      }
+      const response = reply(request, body, status);
+      response.headers.set('Server-Timing', result.header);
+      response.headers.set('Access-Control-Expose-Headers', 'Server-Timing');
+      return response;
+    };
     try {
-      const context = await createContext(request);
+      const context = await createContext(request, timing);
       const body = await request.json();
       if (!body || typeof body !== 'object' || Array.isArray(body)) throw new HttpError(400, 'Request body is invalid.');
       let result: unknown;
@@ -816,11 +830,11 @@ export default {
         case 'traditional-inventory': result = await traditionalInventory(context); break;
         default: throw new HttpError(400, 'Assessment action is not supported.');
       }
-      return reply(request, result as object);
+      return timedReply(result as object);
     } catch (error) {
-      if (error instanceof HttpError) return reply(request, { error: error.message }, error.status);
+      if (error instanceof HttpError) return timedReply({ error: error.message }, error.status);
       console.error(error);
-      return reply(request, { error: 'The assessment service could not complete this request.' }, 500);
+      return timedReply({ error: 'The assessment service could not complete this request.' }, 500);
     }
   },
 };
