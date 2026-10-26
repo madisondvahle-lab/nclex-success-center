@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectionPreferences, historySnapshot } from '../_shared/diagnostic-assessment-history.mjs';
 import { assessmentTiming } from '../_shared/diagnostic-timing.mjs';
 import { presentation, newPresentations, canonicalAnswer } from '../_shared/sata-presentation.mjs';
+import { approvedQuestionKey, publicApprovedQuestion } from '../_shared/cat-approved-question-bank.mjs';
 import {
   pickNextQuestion,
   shouldStop,
@@ -148,13 +149,25 @@ async function attemptForStudent(service: SupabaseClient, attemptId: string, stu
 }
 
 async function itemKeys(service: SupabaseClient, scope: string, includeNGN = false) {
-  const { data, error } = await service
+  const registryRequest = service
     .from('in_house_diagnostic_item_keys')
     .select('bank_scope,item_id,item_source,parent_item_id,selectable,item_type,difficulty,blueprint,category,nclex_category,topic,cognitive_level,core_tags,correct_response,rationale,sequence_order,case_length')
     .eq('bank_scope', scope);
-  if (error) throw error;
+  const approvalRequest = scope === 'diagnostic' ? service.rpc('get_cat_approved_questions') : null;
+  const [registryResult, approvalResult] = await Promise.all([
+    registryRequest,
+    approvalRequest || Promise.resolve({ data: [], error: null }),
+  ]);
+  if (registryResult.error) throw registryResult.error;
+  if (approvalResult.error) throw approvalResult.error;
+  const data = registryResult.data;
   const keys = data || [];
-  if (!includeNGN || scope !== 'diagnostic') return keys;
+  if (scope !== 'diagnostic') return keys;
+  const approvedKeys = (approvalResult.data || [])
+    .map((question: Record<string, any>) => approvedQuestionKey(question))
+    .filter(Boolean);
+  const traditionalKeys = [...keys, ...approvedKeys];
+  if (!includeNGN) return traditionalKeys;
   const ngnKeys: Array<NonNullable<Awaited<ReturnType<typeof registryEntry>>>> = [];
   for (let offset = 0; ; offset += 100) {
     const { data: questions, error: questionError } = await service.from('questions')
@@ -172,7 +185,7 @@ async function itemKeys(service: SupabaseClient, scope: string, includeNGN = fal
     }
     if (questions.length < 100) break;
   }
-  return [...keys, ...ngnKeys];
+  return [...traditionalKeys, ...ngnKeys];
 }
 
 function keyForItem(keys: Array<Record<string, any>>, id: string) {
@@ -212,6 +225,10 @@ function historyFor(rows: Array<Record<string, any>>, keys: Array<Record<string,
       topic: row.topic || key?.topic || null,
       cognitive_level: row.cognitive_level || key?.cognitive_level || null,
       core_tags: key?.core_tags || [],
+      ...(reveal && key?.item_source === 'main-question-bank-cat-approved' ? {
+        stem: key.stem,
+        options: key.options,
+      } : {}),
       correct: reveal ? Boolean(row.is_correct) : null,
       answered_at: row.answered_at,
       selected_answer: row.selected_answer,
@@ -287,11 +304,15 @@ function attemptSummary(attempt: Record<string, any>) {
 async function stateForAttempt(service: SupabaseClient, attempt: Record<string, any>, keys: Array<Record<string, any>>) {
   const rows = await responseRows(service, attempt.id);
   const reveal = canReveal(attempt);
+  const current = keys.find(row => row.item_id === attempt.checkpoint?.currentItemId) ||
+    (attempt.checkpoint?.catCurrentItemKey?.item_id === attempt.checkpoint?.currentItemId
+      ? attempt.checkpoint.catCurrentItemKey : null);
   return {
     attempt: attemptSummary(attempt),
     responses: historyFor(rows, keys, reveal, attempt.checkpoint),
     currentItemId: attempt.checkpoint?.currentItemId || null,
-    currentItem: publicInteraction(attempt.checkpoint),
+    currentItem: publicInteraction(attempt.checkpoint) ||
+      publicApprovedQuestion(current, attempt.checkpoint?.presentations),
   };
 }
 
@@ -395,6 +416,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     profile,
     ...(preferences ? { selectionHistory: historySnapshot(preferences) } : {}),
     currentItemId: firstItem.item_id,
+    ...(firstItem.item_source === 'main-question-bank-cat-approved' ? { catCurrentItemKey: firstItem } : {}),
     ability: 0.5,
     answeredItemIds: [],
     examTimer,
@@ -551,7 +573,9 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     context.timing.measure('responses', () => responseRows(context.service, attempt.id)),
   ]);
   const ngnItem = currentInteraction(attempt.checkpoint);
-  const item = ngnItem ? attempt.checkpoint.ngnState.current.key : keyForItem(keys, itemId);
+  const savedCATKey = attempt.checkpoint?.catCurrentItemKey;
+  const item = ngnItem ? attempt.checkpoint.ngnState.current.key :
+    savedCATKey?.item_id === itemId ? savedCATKey : keyForItem(keys, itemId);
   if (!item.selectable) throw new HttpError(400, 'This item cannot be submitted independently.');
   const answeredAt = new Date().toISOString();
   const outcomes: Array<Record<string, any>> = [];
@@ -658,6 +682,8 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     draft: { selected: [], btState: { left: [], center: [], right: [] }, csAnswers: {}, submitted: false },
     examTimer: cleanExamTimer(body.examTimer, mode) || attempt.checkpoint.examTimer || null,
   };
+  if (next?.item_source === 'main-question-bank-cat-approved') checkpoint.catCurrentItemKey = next;
+  else delete checkpoint.catCurrentItemKey;
   if (versioned) {
     const stateCheckpoint = { ...attempt.checkpoint, ...(ngnResult ? { ngnState: ngnResult.state } : {}) };
     checkpoint.ngnState = ngnResult && !ngnResult.final ? ngnResult.state : selectCurrent(stateCheckpoint, next);
@@ -696,7 +722,7 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     result,
     completed: complete,
     nextItemId: checkpoint.currentItemId,
-    nextItem: publicInteraction(checkpoint),
+    nextItem: publicInteraction(checkpoint) || publicApprovedQuestion(next, checkpoint.presentations),
     scoringModel: attempt.checkpoint.scoringModel || 'in-house-core-v1',
     completionReason: checkpoint.completionReason || null,
     outcomes: outcomes.map(outcome => outcome.toClient(reveal)),
@@ -780,6 +806,31 @@ async function reviewAttempt(context: Awaited<ReturnType<typeof createContext>>,
   requireCompatibleClient(attempt, body);
   const keys = await itemKeys(context.service, attempt.checkpoint?.mode === 'remediation' ? 'remediation' : 'diagnostic');
   const rows = await responseRows(context.service, attempt.id);
+  const keyedIds = new Set(keys.map(row => row.item_id));
+  const missingQuestionIds = [...new Set(rows.map(row => String(row.item_id || ''))
+    .filter(id => id.startsWith('qbank:') && !keyedIds.has(id))
+    .map(id => id.slice('qbank:'.length))
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)))];
+  if (missingQuestionIds.length) {
+    const { data: questions, error: questionError } = await context.service.from('questions')
+      .select('id,stem,option_a,option_b,option_c,option_d,item_type,item_data,rationale')
+      .in('id', missingQuestionIds);
+    if (questionError) throw questionError;
+    for (const question of questions || []) {
+      const type = question.item_type || 'mcq';
+      const options = type === 'sata' ? question.item_data?.options :
+        [question.option_a, question.option_b, question.option_c, question.option_d];
+      if (!['mcq', 'sata'].includes(type) || !Array.isArray(options)) continue;
+      keys.push({
+        item_id: `qbank:${question.id}`,
+        item_source: 'main-question-bank-cat-approved',
+        item_type: type,
+        stem: question.stem,
+        options,
+        rationale: question.rationale,
+      });
+    }
+  }
   return { responses: historyFor(rows, keys, true, attempt.checkpoint), scoringModel: attempt.checkpoint?.scoringModel || 'in-house-core-v1' };
 }
 

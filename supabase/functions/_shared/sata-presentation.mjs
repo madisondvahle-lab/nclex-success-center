@@ -16,7 +16,7 @@ export const counts = {
 export function newPresentations(keys, includeMCQ = false) {
   return Object.fromEntries(keys.filter(key => (key.item_type === 'sata' && !key.ngn_entry) ||
     (includeMCQ && key.item_type === 'mcq' && !key.ngn_entry)).map(key => {
-    const count = key.item_type === 'mcq' ? 4 : counts[key.item_id];
+    const count = key.item_type === 'mcq' ? 4 : counts[key.item_id] || key.option_count;
     if (!count) throw new Error(`Missing canonical SATA option count: ${key.item_id}`);
     return [key.item_id, presentation.create(count)];
   }));

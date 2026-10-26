@@ -179,7 +179,8 @@ function restoreResponseHistory(responses) {
       system: response.system,
       topic: response.topic || item?.topic,
       cognitiveLevel: response.cognitive_level || item?.cognitiveLevel,
-      stem: response.interaction?.prompt || response.interaction?.stem || item?.stem || null,
+      stem: response.interaction?.prompt || response.interaction?.stem || response.stem || item?.stem || null,
+      options: response.options || item?.options || null,
       selectedAnswer: response.selected_answer,
       presentation: response.presentation,
       correctAnswer: response.correct_answer,
@@ -710,7 +711,18 @@ function getReviewItem(entry) {
   if(entry.interaction)return entry.interaction;
   const parentId = entry.sourceId || String(entry.id || '').split(':')[0];
   const source = [...QUESTION_BANK, ...REMEDIATION_BANK].find(item => item.id === parentId);
-  if (!source) return null;
+  if (!source) {
+    if (!entry.stem || !Array.isArray(entry.options)) return null;
+    return {
+      id: entry.id,
+      type: entry.type,
+      stem: entry.stem,
+      options: entry.options,
+      presentation: entry.presentation,
+      correct: Array.isArray(entry.correctAnswer) ? entry.correctAnswer : [entry.correctAnswer],
+      rationale: entry.rationale,
+    };
+  }
   const item = source.type === 'casestudy'
     ? source.questions.find(question => question.qid === String(entry.id || '').split(':').pop())
     : source;
