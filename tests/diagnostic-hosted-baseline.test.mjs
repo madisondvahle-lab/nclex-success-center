@@ -58,8 +58,9 @@ test('legacy selection, ability and stopping match actual hosted code over diffi
   assert.equal(comparisons, 11328);
 });
 
-test('prior-question preference and historical scans are absent from the Phase 2 runtime', () => {
+test('prior-question preference is an explicit Phase 1 extension; hosted fixtures remain unchanged', () => {
   const handler = readFileSync(new URL('../supabase/functions/diagnostic-assessment/index.ts', import.meta.url), 'utf8');
   const engine = readFileSync(new URL('../supabase/functions/_shared/diagnostic-assessment-engine.mjs', import.meta.url), 'utf8');
-  assert.doesNotMatch(handler + engine, /previouslyAnswered|diagnostic-assessment-history/);
+  assert.match(handler, /diagnostic-assessment-history/);
+  assert.match(engine, /preferences\.previouslyAnsweredIds/);
 });

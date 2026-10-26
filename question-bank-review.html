@@ -696,12 +696,16 @@
 
         <!-- Workspace Tabs -->
         <div class="workspace-tabs" role="tablist" aria-label="Question bank sections">
+          <button type="button" class="tab-btn" role="tab" id="tab-btn-cat" aria-selected="false" aria-controls="pane-cat" data-tab="cat">Traditional CAT inventory</button>
           <button type="button" class="tab-btn active" role="tab" id="tab-btn-live" aria-selected="true" aria-controls="pane-live" data-tab="live">Live question bank (<span id="tab-count-live">-</span>)</button>
           <button type="button" class="tab-btn" role="tab" id="tab-btn-review" aria-selected="false" aria-controls="pane-review" data-tab="review">Review &amp; Flags (<span id="tab-count-review">0</span>)</button>
           <button type="button" class="tab-btn" role="tab" id="tab-btn-duplicates" aria-selected="false" aria-controls="pane-duplicates" data-tab="duplicates">Possible duplicates (<span id="tab-count-duplicates">0</span>)</button>
           <button type="button" class="tab-btn" role="tab" id="tab-btn-import" aria-selected="false" aria-controls="pane-import" data-tab="import">Intake &amp; Legacy (<span id="tab-count-legacy">-</span>)</button>
         </div>
 
+        <div class="tab-pane" id="pane-cat" role="tabpanel" aria-labelledby="tab-btn-cat">
+          <section class="dashboard-panel" id="cat-inventory"></section>
+        </div>
         <!-- TAB 1: Live Question Bank -->
         <div class="tab-pane active" id="pane-live" role="tabpanel" aria-labelledby="tab-btn-live">
           <section class="dashboard-panel">
@@ -897,6 +901,8 @@
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
   <script src="ngn-author-ngn.js?v=question-editor-v1"></script>
+  <script src="diagnostic-question-bank.js"></script>
+  <script src="cat-inventory.js"></script>
   <script>
     if (window.ExamUI?.CLIENT_PROTOCOL !== 'ngn-cat-v1' || window.ExamUI?.OPTION_PROTOCOL !== 'sata-order-v1' ||
         window.ExamUI?.MCQ_OPTION_PROTOCOL !== 'mcq-order-v1' || window.OptionPresentation?.VERSION !== 'sata-order-v1' ||
@@ -918,7 +924,7 @@
     function stateFor(item){return reviews.get(item.id)?.status||'pending'}
 
     function switchTab(tabId){
-      const tabs=['live','review','duplicates','import'];
+      const tabs=['live','review','duplicates','import','cat'];
       if(!tabs.includes(tabId))tabId='live';
       tabs.forEach(t=>{
         const btn=$(`tab-btn-${t}`),pane=$(`pane-${t}`);
@@ -1716,6 +1722,7 @@
       if(!session){location.replace('student-login.html');return}
       const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
       if(!admin.data){location.replace('student-dashboard.html');return}
+      CATInventory.mount({client:db,host:$('cat-inventory'),bank:window.DIAGNOSTIC_BANKS.questionBank});
       const frame=$('legacy-source');
       if(!frame.contentWindow.NCLEX_LEGACY_QUESTIONS)await new Promise((resolve,reject)=>{frame.addEventListener('load',resolve,{once:true});setTimeout(()=>reject(new Error('The legacy question source did not load.')),8000)});
       legacy=frame.contentWindow.NCLEX_LEGACY_QUESTIONS||[];
