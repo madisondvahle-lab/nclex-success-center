@@ -49,6 +49,49 @@ Before changing database behavior:
 
 Never silently assume a migration has already been run in the deployed Supabase project.
 
+### Student profile UPDATE remediation (pending approval)
+
+`supabase-student-profile-update-security.sql` removes the deployed unconditional
+`allow_anon_update_students` UPDATE policy and adds an authenticated,
+restrictive admin-only UPDATE guard. Shared table/column UPDATE grants are
+retained because existing admin tools use the same authenticated database role.
+The restrictive policy prevents student direct updates even if another
+permissive UPDATE policy is present. Existing admin SELECT/ALL policies and
+the secure-access schema must be installed first.
+
+The only traced direct student-row edit is dashboard onboarding: `course_name`
+and `exam_date`. These descriptive fields are now saved by
+`update_my_student_profile(profile_patch jsonb)`, an authenticated own-account
+RPC with a strict field/type allowlist, no student-ID argument, and explicit
+failure for unlinked/archived profiles. They do not grant enrollment or module
+access. Identity, name/email/PIN, portal stage, student type, lifecycle, invite
+metadata, and creation fields are not accepted. There is no existing student
+name/email/PIN editing workflow to preserve; future self-service changes need
+their own reviewed validation, not a broader allowlist. NCLEX target-date
+editing stays on `update_my_nclex_target_date(date)`; class exam scheduling
+continues to use its separate table and policies. Admin lifecycle changes and
+service-role login/invitation operations are unchanged.
+
+Rollout: separately approve/apply the migration before deploying this dashboard.
+It changes policies/functions only; it does not backfill or edit student rows.
+After approval verify function owner is the intended trusted database owner and
+PostgREST has reloaded its schema. Test real admin/student sessions on disposable
+staging before production. If rolling back the UI, keep the restrictive policy
+and RPC: older onboarding's direct profile UPDATE will be denied rather than
+reopening the exposure. Prefer a forward UI fix; never restore the unconditional
+policy to recover onboarding.
+
+Validation:
+`node --test tests/*.test.cjs tests/*.test.mjs` and
+`node --test tests/student-profile-security.integration.mjs`.
+The latter starts/cleans up disposable PostgreSQL 17 and PostgREST containers,
+uses synthetic signed JWTs, reproduces the original flaw before the migration,
+and tests direct HTTP PATCH/upsert/RPC bypass attempts, admin/service-role
+compatibility, self-service persistence, and the existing NCLEX date RPC.
+It requires Docker; no live Supabase credentials or student records are used.
+This remediation is a separate branch/PR, not part of nursing-module PR #252.
+No migration has been applied to production by preparing this fix.
+
 ## Student learning architecture
 Keep these concepts separate:
 

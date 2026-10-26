@@ -167,7 +167,7 @@
       const nursing = document.getElementById('portal-nursing');
       const isNursing = nursing && !nursing.classList.contains('hidden');
       const targets = isNursing ? {
-        lectures: ['modules-nursing-card', 'class-schedule-card'],
+        lectures: ['resources-nursing-card', 'class-schedule-card'],
         'previous-tests': ['performance-nursing-card', 'class-schedule-card'],
         performance: ['performance-nursing-card', 'class-schedule-card']
       } : {

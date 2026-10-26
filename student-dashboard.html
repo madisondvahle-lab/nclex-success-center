@@ -139,7 +139,7 @@
     .resource h3{margin:0 0 7px;font-size:1.12rem}
     .resource p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}
     .resource a:not(.resource-button){display:inline-block;margin-top:13px;font-size:.78rem;font-weight:900;color:var(--ink);border-bottom:1px solid currentColor;text-decoration:none}
-    .modules{grid-column:1/-1}
+    .modules,.course-modules{grid-column:1/-1}
     #main-content:not(.library-view) :is(.modules,.graphics-library){display:none!important}
     #main-content.library-view .study-calendar,
     #main-content.library-view .hero,
@@ -350,6 +350,7 @@
           <button class="btn-skip" id="ob-skip-upload">Skip for now</button>
         </div>
       </div>
+      <p id="ob-save-message" role="alert" hidden></p>
     </div>
   </div>
 
@@ -566,14 +567,14 @@
           </div>
         </article>
 
-        <!-- 2 · Study resources (full width) — non-practice content only -->
-        <article class="card resources nursing-support class-dependent-panel hidden">
+        <!-- 2 · Modules assigned to the selected class -->
+        <article class="card course-modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Class library</p><h2>Study resources</h2></div>
-            <span class="label teal">For this class</span>
+            <div><p class="eyebrow" style="color:var(--teal)">For this class</p><h2>Assigned modules</h2></div>
+            <span class="label teal">Course access</span>
           </div>
-          <p class="card-desc">Study guides, infographics, and reference materials for your selected class. Assigned exam question sets appear in Exam Prep.</p>
-          <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
+          <p class="card-desc">Modules Madison assigned to your selected class. Other study materials are in Learning Library.</p>
+          <div class="module-library" id="modules-nursing"><p class="empty">Modules assigned to this class will appear here.</p></div>
         </article>
 
         <article class="card nursing-support graphics-library" id="gfxn-card" style="grid-column:1/-1;display:none">
@@ -612,13 +613,15 @@
           <div class="progress-grid" id="progress-nursing"><p class="empty" style="grid-column:1/-1">Quiz scores will appear here after you complete your first practice set.</p></div>
         </article>
 
-        <!-- 5 · Class modules / study guides (full width) -->
-        <article class="card modules nursing-support class-dependent-panel hidden" id="modules-nursing-card">
+        <!-- 5 · Study resources in Learning Library -->
+        <article class="card modules resources nursing-support class-dependent-panel hidden" id="resources-nursing-card">
           <div class="card-head">
-            <div><p class="eyebrow" style="color:var(--teal)">Class resources</p><h2>Study guides &amp; modules</h2></div>
-            <span class="label teal">Course access</span>
+            <div><p class="eyebrow" style="color:var(--teal)">Class library</p><h2>Study resources</h2></div>
+            <span class="label teal">For this class</span>
           </div>
-          <div class="module-library" id="modules-nursing"><p class="empty">Study guides and modules available to you will appear here.</p></div>
+          <p class="card-desc">Study guides, infographics, and reference materials for your selected class. Assigned modules are on your dashboard; assigned exam question sets are in Exam Prep.</p>
+          <div class="resource-list" id="resources-nursing"><p class="empty">No class resources yet. Available study materials will appear here.</p></div>
+          <div class="module-library" id="modules-nursing-general"></div>
         </article>
 
       </section>
@@ -635,6 +638,7 @@
   <script src="study-calendar.js"></script>
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
+  <script src="nursing-class-modules.js"></script>
   <script>
     const db = supabase.createClient(
       'https://pmjwwktwlsqpetwfvolb.supabase.co',
@@ -689,6 +693,9 @@
       const btn = document.getElementById('ob-finish');
       btn.disabled = true;
       btn.textContent = 'Saving…';
+      const message = document.getElementById('ob-save-message');
+      message.hidden = true;
+      message.textContent = '';
 
       const courseName = document.getElementById('ob-course').value.trim();
       const examDate   = document.getElementById('ob-exam-date').value;
@@ -699,9 +706,18 @@
       if (courseName) update.course_name = courseName;
       if (examDate)   update.exam_date   = examDate;
 
-      // Save to students table
       if (Object.keys(update).length) {
-        await db.from('students').update(update).eq('id', _student.id);
+        try {
+          const { error } = await db.rpc('update_my_student_profile', { profile_patch: update });
+          if (error) throw error;
+        } catch (error) {
+          message.textContent = 'Your profile could not be saved: ' +
+            (error.message || 'Please try again.') + ' Your setup is still open; retry after the issue is resolved.';
+          message.hidden = false;
+          btn.disabled = false;
+          btn.textContent = 'Save & open my hub';
+          return;
+        }
       }
 
       // Save exam topics as a resource note
@@ -1206,7 +1222,10 @@
     function renderModulesInto(containerId, catalog, access, showAvailableCatalog = false) {
       const enabled  = new Set(access.filter(i => i.enabled).map(i => i.module_key));
       const modules  = catalog.filter(i => showAvailableCatalog ? i.is_available : enabled.has(i.module_key));
-      if (!modules.length) return;
+      if (!modules.length) {
+        document.getElementById(containerId).innerHTML = '<p class="empty">No modules assigned here yet.</p>';
+        return;
+      }
       const core     = modules.filter(i =>  String(i.module_key || '').startsWith('core-'));
       const deepDive = modules.filter(i => !String(i.module_key || '').startsWith('core-'));
       const card     = m => `<article class="module">
@@ -1462,17 +1481,35 @@
     }
 
     // ── Nursing portal ────────────────────────────────────────────────
-    function renderClassSchedule(student, schedules, notes, notesError, isPreview, onSelect) {
-      const classCodesByEmail = { 'bianca.edwards86@gmail.com': ['NUR 215', 'NUR 235'] };
-      const classes = (classCodesByEmail[String(student.email || '').toLowerCase()] || ['NUR 312', 'NUR 321', 'NUR 416'])
-        .map(code => ({ code, name: code }));
+    function renderNursingModules(classCode, catalog, access, assignments, errorMessage) {
+      const host = document.getElementById('modules-nursing');
+      const generalHost = document.getElementById('modules-nursing-general');
+      generalHost.innerHTML = '';
+      if (errorMessage) {
+        host.innerHTML = `<p class="empty" role="status">Class modules could not be loaded: ${text(errorMessage)}</p>`;
+        generalHost.innerHTML = `<p class="empty" role="status">Other assigned modules could not be loaded: ${text(errorMessage)}</p>`;
+        return;
+      }
+      const scopedKeys = new Set(NursingClassModules.assignedKeys(assignments, classCode));
+      const allClassKeys = new Set(NursingClassModules.assignedKeys(assignments));
+      host.innerHTML = `<h3>${text(classCode)} modules</h3><div id="modules-nursing-class"></div>`;
+      renderModulesInto('modules-nursing-class', catalog, access.filter(item => scopedKeys.has(item.module_key)));
+      const general = access.filter(item => item.enabled && !allClassKeys.has(item.module_key));
+      if (general.length) {
+        renderModulesInto('modules-nursing-general', catalog, general);
+        document.getElementById('modules-nursing-general').insertAdjacentHTML('afterbegin',
+          '<h3>Other assigned modules</h3><p>These existing assignments are not linked to a specific class.</p>');
+      }
+    }
+    function renderClassSchedule(student, schedules, notes, notesError, isPreview, onSelect, moduleResources = [], enrollments = []) {
+      const classes = NursingClassModules.classes(student, [...enrollments, ...moduleResources]);
       const byClass = new Map((schedules || []).map(item => [item.class_code, item]));
       const tabs = document.getElementById('class-tabs');
       const panel = document.getElementById('class-schedule-panel');
       let selected = null;
       const render = () => {
         tabs.innerHTML = classes.map(item =>
-          `<button class="class-tab" type="button" role="tab" aria-selected="${item.code === selected}" data-class="${item.code}">${item.name}</button>`
+          `<button class="class-tab" type="button" role="tab" aria-selected="${item.code === selected}" data-class="${text(item.code)}">${text(item.name)}</button>`
         ).join('');
         if (!selected) {
           panel.innerHTML = '<p class="class-choice-prompt">Choose a class to open its exam date, resources, and practice sets.</p>';
@@ -1486,7 +1523,7 @@
         const item = byClass.get(selected);
         const date = item?.next_exam_date || '';
         const note = notes.get(selected) || '';
-        panel.innerHTML = `<h3>${selected}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${notesError ? `<p role="status">Class reminders could not be loaded: ${text(notesError)}</p>` : ''}${note ? `<aside class="class-tutor-note"><strong>Note from Madison</strong><p>${text(note)}</p></aside>` : ''}${isPreview ? `<form class="class-note-form"><label>Note for this class<textarea name="tutor_note" rows="3" maxlength="2000">${text(note)}</textarea></label><button type="submit">Save class note</button><span class="class-note-message" role="status"></span></form>` : ''}${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
+        panel.innerHTML = `<h3>${text(selected)}</h3><p>${date ? `Next test: ${new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}` : 'No test date set for this class yet.'}</p>${notesError ? `<p role="status">Class reminders could not be loaded: ${text(notesError)}</p>` : ''}${note ? `<aside class="class-tutor-note"><strong>Note from Madison</strong><p>${text(note)}</p></aside>` : ''}${isPreview ? `<form class="class-note-form"><label>Note for this class<textarea name="tutor_note" rows="3" maxlength="2000">${text(note)}</textarea></label><button type="submit">Save class note</button><span class="class-note-message" role="status"></span></form>` : ''}${isPreview ? '' : `<form class="class-schedule-form"><label>Next test date<input type="date" name="next_exam_date" value="${date}"></label><button type="submit">Save date</button><span class="class-schedule-message" role="status"></span></form>`}`;
         tabs.querySelectorAll('[data-class]').forEach(button => button.addEventListener('click', () => {
           selected = button.dataset.class;
           render();
@@ -1548,13 +1585,14 @@
       };
       render();
     }
-    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError) {
+    function renderNursing(student, plans, resources, catalog, access, practiceResults, isPreview, schedules, classNotes, classNotesError, moduleError, assignments, enrollments) {
       document.getElementById('portal-nursing').classList.remove('hidden');
       initGraphics('gfxn');
       document.getElementById('welcome-nursing').textContent = `Welcome back, ${(student.name || 'student').split(' ')[0]}.`;
       const classPanels = document.querySelectorAll('.class-dependent-panel');
       const activateClass = classCode => {
         selectedNursingClass = classCode;
+        renderNursingModules(classCode, catalog, access, assignments, moduleError);
         document.getElementById('upload-class-context').textContent = `New uploads will be filed under ${classCode}.`;
         loadStudentUploads(student.id, classCode, ++uploadListRequestId);
         classPanels.forEach(panel => panel.classList.remove('hidden'));
@@ -1565,7 +1603,8 @@
         countdown.hidden = false;
         countdown.innerHTML = `<strong>${text(classCode)}</strong><span>Class selected · use the materials below to prepare.</span>`;
       };
-      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass);
+      const classModuleResources = new Set(NursingClassModules.moduleResources(resources, catalog));
+      renderClassSchedule(student, schedules, classNotes, classNotesError, isPreview, activateClass, assignments, enrollments);
 
       // Course name in hero subtitle
       if (student.course_name) {
@@ -1624,7 +1663,8 @@
       const studyRes = resources.filter(r =>
         r.resource_type !== 'practice_set' &&
         r.resource_type !== 'student_upload' &&
-        r.resource_type !== 'exam_topic'
+        r.resource_type !== 'exam_topic' &&
+        !classModuleResources.has(r)
       );
       if (studyRes.length) {
         const resourceGroups = [
@@ -1665,8 +1705,7 @@
         }).join('');
       }
 
-      // Class modules
-      renderModulesInto('modules-nursing', catalog, access);
+      // Class modules render when a class is selected.
     }
 
     // ── Should we show onboarding? ────────────────────────────────────
@@ -1727,12 +1766,14 @@
             .select('practice_key,practice_title,score,total_questions,completed_at')
             .eq('student_id', student.id)
             .order('completed_at', { ascending: false })
-            .limit(6)
+            .limit(6),
+          db.from('student_class_module_assignments').select('class_code,module_key').eq('student_id', student.id),
+          db.rpc('nursing_module_classes',{p_student:student.id})
         );
       }
 
       const results = await Promise.all(fetches);
-      const [plans, resources, catalog, access, schedules, classNotes, practiceRes] = results;
+      const [plans, resources, catalog, access, schedules, classNotes, practiceRes, classModules, enrollments] = results;
       assignmentState = { student, isPreview, role: isNursing ? 'nursing' : 'nclex', resources: resources.data || [], plan: plans.data?.[0], error: resources.error, busy: false };
 
       loading.classList.add('hidden');
@@ -1740,7 +1781,8 @@
 
       if (isNursing) {
         const notesByClass = new Map((classNotes && !classNotes.error ? classNotes.data || [] : []).map(item => [item.class_code, item.note || '']));
-        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '');
+        const moduleError = [catalog.error, access.error, classModules.error, enrollments.error].filter(Boolean).map(item => item.message).join('; ');
+        renderNursing(student, plans.data || [], resources.data || [], catalog.data || [], access.data || [], practiceRes ? practiceRes.data || [] : [], isPreview, schedules && !schedules.error ? schedules.data || [] : [], notesByClass, classNotes && classNotes.error ? classNotes.error.message : '', moduleError, classModules.data || [], enrollments.data || []);
         // Show onboarding modal only on true first login (never in preview)
         if (!isPreview && shouldShowOnboarding(student, false)) {
           document.getElementById('onboarding-modal').classList.remove('hidden');

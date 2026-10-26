@@ -79,8 +79,8 @@ test('nursing section links respect class-selection visibility', () => {
   for (const name of ['lectures', 'previous-tests', 'performance']) {
     assert.equal(before.nav.sectionTarget(name).id, 'class-schedule-card');
   }
-  const after = navigation(true, ['class-schedule-card', 'modules-nursing-card', 'performance-nursing-card']);
-  assert.equal(after.nav.sectionTarget('lectures').id, 'modules-nursing-card');
+  const after = navigation(true, ['class-schedule-card', 'resources-nursing-card', 'performance-nursing-card']);
+  assert.equal(after.nav.sectionTarget('lectures').id, 'resources-nursing-card');
   assert.equal(after.nav.sectionTarget('performance').id, 'performance-nursing-card');
 });
 
@@ -96,7 +96,7 @@ test('incoming section hashes focus visible role-specific content and honor redu
 
 test('library opens separately and closes for dashboard, performance, calendar, and empty hashes', () => {
   for (const nursing of [false, true]) {
-    const moduleId = nursing ? 'modules-nursing-card' : 'modules-nclex-card';
+    const moduleId = nursing ? 'resources-nursing-card' : 'modules-nclex-card';
     const { nav, elements } = navigation(nursing, [moduleId, 'study-calendar', 'log-cat-card', 'performance-nursing-card']);
     const main = elements.get('main-content');
     for (const destination of ['', '#study-calendar', '#performance', '#previous-tests']) {
@@ -119,7 +119,7 @@ test('inline student scripts remain valid JavaScript', () => {
   }
 });
 
-test('dashboard omits assigned work and reminders while retaining calendar and sidebar-only modules', () => {
+test('dashboard retains calendar and class modules while keeping general study resources in the library', () => {
   const html = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
   assert.doesNotMatch(html, /assigned-work-nclex|id="resources-nclex"|assignment-reminders|View assigned work/);
   assert.match(html, /id="study-calendar"/);
@@ -129,6 +129,19 @@ test('dashboard omits assigned work and reminders while retaining calendar and s
   assert.match(html, /insertBefore\(activePortal\.querySelector\('\.hero'\), document\.getElementById\('study-calendar'\)\)/);
   assert.match(html, /id="modules-nclex-card"/);
   assert.match(html, /id="modules-nursing-card"/);
+  const cards = [...html.matchAll(/<article class="([^"]+)" id="([^"]+)">([\s\S]*?)<\/article>/g)];
+  const assigned = cards.find(card => card[2] === 'modules-nursing-card');
+  const resources = cards.find(card => card[2] === 'resources-nursing-card');
+  assert.ok(assigned);
+  assert.ok(resources);
+  assert.ok(assigned[1].split(' ').includes('course-modules'));
+  assert.ok(!assigned[1].split(' ').includes('modules'), 'class modules must not be hidden by the library-only CSS');
+  assert.match(assigned[3], /Assigned modules/);
+  assert.match(assigned[3], /id="modules-nursing"/);
+  assert.ok(resources[1].split(' ').includes('modules'), 'study resources stay library-only');
+  assert.match(resources[3], /id="resources-nursing"/);
+  assert.match(resources[3], /id="modules-nursing-general"/);
+  assert.ok(html.indexOf('id="modules-nursing-card"') < html.indexOf('id="student-uploads-card"'));
 });
 
 test('Learning Library retains study resources without practice sets or private uploads', () => {
