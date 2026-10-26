@@ -103,6 +103,7 @@ function renderDetail(status) {
     isStrat: () => false, CHECKLIST: [], STRAT_CHECKLIST: [], RECS: [],
     esc: value => String(value ?? ''), fmt: () => 'Date', CREDIT_LABEL: {},
     document: { getElementById: get },
+    db: {}, ConsultCPRReports: { mount() {} },
     closeDetail() {}, queueSave() {}, toggleTimer() {}, makeDraft() {}, completeConsult() {},
     changeAttendanceStatus() {}
   };

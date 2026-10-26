@@ -100,6 +100,15 @@ Keep these concepts separate:
 - **CAT/diagnostic:** adaptive readiness assessment.
 - **Question Bank Manager:** internal tutor/admin tooling for reviewing/managing questions.
 
+### Consultation CPR report attachments
+
+Paid Strategy Sessions retain the existing consultation and linked diagnostic
+workflow. The CPR panel reuses the CPR tracker's per-attempt notes and question
+counts plus private assessment storage. Its additive
+`supabase-consult-cpr-files.sql` migration was explicitly approved and applied
+October 26, 2026, with existing data/policy fingerprints unchanged. UI release
+is tracked in PR #273. See [the rollout handoff](tasks/consultation-cpr-reports.md).
+
 ### Authored clinical-record and NGN supplemental practice
 
 Clinical-record tabs are independent of interaction type. The existing Question
