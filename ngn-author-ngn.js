@@ -122,7 +122,7 @@
       });
       return;
     }
-    if (!child && clinicalRecord) {
+    if (!child) {
       item.tabs = item.tabs || [];
       chartEditor(parent, item.tabs);
       chartTabs = item.tabs;
@@ -296,14 +296,19 @@
       return { clinical_judgment_skill: value.clinical_judgment_skill || null, option_rationales: Object.fromEntries(rationales.map(r => [r.key, r.text])), reference_list: copy(value.reference_list) };
     } };
   }
-  function mount(root, source, getFields = () => ({})) {
+  function mount(root, source, getFields = () => ({}), options = {}) {
     const item = copy(source);
     root.classList.add('ngn-author');
-    itemEditor(root, item);
+    if (options.recordOnly) {
+      item.tabs = item.tabs || [];
+      chartEditor(root, item.tabs);
+    } else itemEditor(root, item);
     const error = node('p', '', root); error.setAttribute('role', 'alert');
     const warning = node('p', '', root); warning.setAttribute('role', 'status');
     const read = () => {
-      const value = validate(Object.assign(copy(item), getFields()));
+      const value = Object.assign(copy(item), getFields());
+      if (!options.recordOnly || value.tabs.length) validate(value);
+      if (!source.tabs && value.tabs?.length === 0) delete value.tabs;
       warning.textContent = window.OptionPresentation?.warnings([value]).join(' ') || '';
       return value;
     };

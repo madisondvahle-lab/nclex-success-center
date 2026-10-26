@@ -102,13 +102,14 @@ function validQuestion(type) {
   };
 }
 
-test('standard MCQ exposes its single answer and structured rationales without NGN controls', async () => {
+test('standard MCQ exposes its single answer, optional clinical records and rationales without NGN scoring controls', async () => {
   const question = validQuestion('mcq'), h = harness(question);
-  assert.equal(h.form.ngnAuthor, null);
+  assert.ok(h.form.ngnAuthor);
   assert.ok(h.form.ngnMetadata);
   assert.equal(h.nodes().filter(el => el.type === 'radio').length, 4);
   assert.equal(h.form.querySelector('[name="e-ans"]:checked').value, 'd');
-  assert.ok(!h.nodes().some(el => /Clinical record|Scoring version/.test(el.textContent || '')));
+  assert.ok(h.nodes().some(el => /Clinical record/.test(el.textContent || '')));
+  assert.ok(!h.nodes().some(el => /Scoring version|Scoring rule/.test(el.textContent || '')));
   const rationale = h.nodes().find(el => el.value === 'First explanation');
   rationale.value = 'Edited MCQ explanation'; rationale.events.input();
   h.ids.get('e-b').value = 'Edited second option';
@@ -139,6 +140,21 @@ test('all supported interactions preserve saved keys, scoring, rationales, IDs a
   }
 });
 
+test('MCQ can author and retain clinical tabs without creating a case or changing its key', async () => {
+  const question = validQuestion('mcq');
+  question.item_data.tabs = ['Nurses Notes', 'Vital Signs', 'Laboratory Results', 'Medication Administration Record'].map((label, i) => ({
+    id: 'tab-' + i, label, columns: ['Finding'], entries: [{ at: '2026-10-26T08:00', cells: [{ t: 'Synthetic finding' }] }]
+  }));
+  const before = plain(question), h = harness(question);
+  assert.equal(h.writes.length, 0);
+  assert.deepEqual(plain(h.form.ngnAuthor.read().tabs), before.item_data.tabs);
+  await h.form.onsubmit({ preventDefault() {} });
+  assert.deepEqual(h.alerts, []);
+  assert.deepEqual(h.writes[0].row.item_data.tabs, before.item_data.tabs);
+  assert.equal(h.writes[0].row.item_data.kind, undefined);
+  assert.equal(h.writes[0].row.correct_answer, 'd');
+});
+
 test('existing SATA uses the bank type and stable ID when nested metadata is absent', async () => {
   const question = sata(), before = JSON.stringify(question), h = harness(question);
   assert.equal(h.writes.length, 0, 'opening must not save anything');
@@ -148,7 +164,8 @@ test('existing SATA uses the bank type and stable ID when nested metadata is abs
   assert.equal(h.form.ngnAuthor.read().id, question.id);
   assert.equal(h.nodes().filter(el => el.textContent === 'Text').length, 5);
   assert.equal(h.nodes().filter(el => el.type === 'checkbox').length, 5);
-  assert.ok(!h.nodes().some(el => /Clinical record|Scoring version|Scoring rule/.test(el.textContent || '')));
+  assert.ok(h.nodes().some(el => /Clinical record/.test(el.textContent || '')));
+  assert.ok(!h.nodes().some(el => /Scoring version|Scoring rule/.test(el.textContent || '')));
   const choice = h.nodes().find(el => el.value === 'Second');
   choice.value = 'Edited second'; choice.events.input();
   const checks = h.nodes().filter(el => el.type === 'checkbox');

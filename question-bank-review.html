@@ -828,7 +828,7 @@
             <div class="notice">“Import as draft” stores a copy privately in the master bank but does not make it available to students. Use this for items you want to edit or quality-check before publishing.</div>
             <section class="dashboard-panel">
               <div class="panel-heading"><div><h2>Create an interactive question</h2><p>Build an NGN question or unfolding case with forms and a student preview. Saving creates an inactive draft only; review and publishing are separate actions.</p></div></div>
-              <div class="panel-content"><label for="ngn-new-type">Question type</label><select id="ngn-new-type"><option value="sata">Multiple response / SATA</option><option value="highlight">Highlight findings</option><option value="matrix">Matrix / grid</option><option value="cloze">Drop-down cloze</option><option value="bowtie">Bow-tie</option><option value="case">Unfolding case</option><option value="fill">Numeric response</option></select> <button type="button" class="button" id="ngn-new">Create private draft</button></div>
+              <div class="panel-content"><label for="ngn-new-type">Question type</label><select id="ngn-new-type"><option value="mcq">Single response / MCQ</option><option value="sata">Multiple response / SATA</option><option value="highlight">Highlight findings</option><option value="matrix">Matrix / grid</option><option value="cloze">Drop-down cloze</option><option value="bowtie">Bow-tie</option><option value="case">Unfolding case</option><option value="fill">Numeric response</option></select> <button type="button" class="button" id="ngn-new">Create private draft</button></div>
             </section>
 
             <!-- Controlled Intake -->
@@ -901,7 +901,7 @@
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
-  <script src="ngn-author-ngn.js?v=question-editor-v1"></script>
+  <script src="ngn-author-ngn.js?v=clinical-record-practice-v1"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="cat-inventory.js"></script>
   <script>
@@ -1223,7 +1223,7 @@
       const type=q.item_type||'mcq',data=q.item_data||null;
       const L=['a','b','c','d'],ans=String(q.correct_answer||'a').toLowerCase(),dif=q.difficulty||'medium';
       let opts='';
-      if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}`}
+      if(type==='mcq'){opts=`<label>Answer options (select the correct one)</label>${L.map(l=>`<div class="opt"><input type="radio" name="e-ans" value="${l}" ${ans===l?'checked':''} aria-label="Correct answer ${l.toUpperCase()}"><input type="text" id="e-${l}" value="${esc(q['option_'+l]||'')}" required></div>`).join('')}<div id="e-ngn"></div>`}
       else{opts='<div id="e-ngn"></div>'}
       const catApproval=catApprovals.get(id);
       const catReviewable=Boolean(id&&q.active&&['mcq','sata'].includes(type)&&data?.schemaVersion!==1);
@@ -1232,13 +1232,16 @@
       $('ed').classList.remove('hidden');
       const form=$('ed-form');
       form.ngnAuthor=null;form.ngnMetadata=null;
-      if(type!=='mcq'){
+      {
         try{
-          if(!data)throw new Error('This existing question is missing its interaction data. Its answer key cannot be reconstructed automatically.');
-          const storedType=data.kind==='case'?'case':data.type;
+          if(!data&&type!=='mcq')throw new Error('This existing question is missing its interaction data. Its answer key cannot be reconstructed automatically.');
+          const storedType=data?.kind==='case'?'case':data?.type;
           if(storedType&&storedType!==type)throw new Error(`The stored question type (${type}) conflicts with its interaction type (${storedType}). Review the classification before editing.`);
-          const source={...data,id:data.id||q.id,...(type==='case'?{kind:'case'}:{type}),stem:q.stem||'',rationale:q.rationale||''};
-          form.ngnAuthor=NGNAuthor.mount($('e-ngn'),source,()=>({stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim(),...(type==='case'?{title:$('e-stem').value.trim()}:{})}));
+          const source={...data,id:data?.id||q.id||crypto.randomUUID(),...(type==='case'?{kind:'case'}:{type}),stem:q.stem||'',rationale:q.rationale||''};
+          form.ngnAuthor=NGNAuthor.mount($('e-ngn'),source,()=>({stem:$('e-stem').value.trim(),rationale:$('e-rat').value.trim(),
+            ...(type==='case'?{title:$('e-stem').value.trim()}:{}),
+            ...(type==='mcq'?{options:L.map(l=>$('e-'+l).value.trim()),correct:[L.indexOf(form.querySelector('[name="e-ans"]:checked').value)]}:{})
+          }),{recordOnly:type==='mcq'});
         }catch(error){
           $('e-ngn').textContent=`Cannot edit this interaction safely: ${error.message||error}`;
           form.querySelector('button[type="submit"]').disabled=true;
@@ -1287,7 +1290,7 @@
         if(type==='mcq'){L.forEach(l=>row['option_'+l]=$('e-'+l).value.trim());row.correct_answer=document.querySelector('[name=e-ans]:checked').value}
         let nd=data?JSON.parse(JSON.stringify(data)):null;
         try{if(form.ngnAuthor)nd=form.ngnAuthor.read();if(form.ngnMetadata)Object.assign(row,form.ngnMetadata.read())}catch(error){alert(error.message);return}
-        if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;row.item_data=nd}
+        if(nd){nd.stem=row.stem;nd.rationale=row.rationale;if(type==='mcq'){nd.options=L.map(l=>row['option_'+l]);nd.correct=[L.indexOf(row.correct_answer)]}if(type==='case')nd.title=row.stem;if(nd.tabs?.length)nd.schemaVersion=nd.schemaVersion||1;row.item_data=type==='mcq'&&!data&&!nd.tabs?.length?null:nd}
         const save=form.querySelector('button[type="submit"]');if(save.disabled)return;
         save.disabled=true;
         try{

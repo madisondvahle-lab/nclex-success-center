@@ -216,7 +216,7 @@ test('owned combined pages opt in, use cache-safe versioned assets, and reject s
     assert.equal(stale.window.ExamUI, undefined, 'a later page script cannot start the stale engine');
     assert.throws(() => runInNewContext(guard, { window: { ExamUI: { CLIENT_PROTOCOL: 'ngn-cat-v1', OPTION_PROTOCOL: 'sata-order-v1' } } }), /assessment modules could not load/);
   }
-  assert.match(read('question-bank-review.html'), /ngn-author-ngn\.js\?v=question-editor-v1/);
+  assert.match(read('question-bank-review.html'), /ngn-author-ngn\.js\?v=clinical-record-practice-v1/);
   assert.match(read('question-bank-review.html'), /OptionPresentation\.warnings\(items\)/);
   assert.match(read('ngn-author-ngn.js'), /OptionPresentation\?\.warnings/);
   assert.match(read('ngn-author-ngn.js'), /scoringVersion: 'ngn-v1'/);
