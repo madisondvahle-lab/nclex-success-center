@@ -89,7 +89,7 @@ numeric strings. Keys must be unique and within their corresponding choices.
 | --- | --- |
 | `mcq` | Nonempty `options` array and `correct: [index]` with exactly one answer. At the parent level, exactly four `options` and `correct_answer: "a"` through `"d"` are always required. If `item_data` is supplied, its options/order and numeric key must match the parent. Traditional MCQ may omit `item_data` entirely. |
 | `sata` | Nonempty `options` array; `correct: [index, ...]` containing one or more correct answers. |
-| `matrix` | Nonempty `rows` and `cols` string arrays; `correct: ["0:1", "1:0", ...]` with canonical zero-based `row:column` coordinates. Optional `responseMode`: `"single"` or `"multiple"`; `"single"` requires exactly one correct cell per row. Optional `scoringAxis`: `"row"` or `"column"`. |
+| `matrix` | Nonempty `rows` and `cols` string arrays; `correct: ["0:1", "1:0", ...]` with canonical zero-based `row:column` coordinates. Optional `responseMode`: `"single"` or `"multiple"`; `"single"` requires exactly one correct cell per row. Optional `scoringAxis`: `"row"` or `"column"`. Optional existing `rowLabel` overrides the presentation heading. Without an override, prompts explicitly mentioning proposed/potential/nursing interventions show "Potential Intervention"; prompts mentioning nursing actions show "Nursing Action"; otherwise the heading remains "Finding". |
 | `cloze` | Nonempty `template`, e.g. `"The finding is {{0}}."`; nonempty `dropdowns: [{"options":["A","B"],"correct":1}]`. Every dropdown index needs exactly one matching `{{index}}` marker, with no duplicates or gaps. |
 | `highlight` | `segments: [{"id":"finding-1","t":"Finding text","correct":true}]`. Selectable IDs must be unique, text nonempty, and at least one finding correct. Nonselectable text segments can omit ID/correct. `correct`, when supplied, is boolean. With `chartSelections: true`, every selectable segment must match an available chart cell's ID and exact text at that question's stage. |
 | `bowtie` | `bowtie: {"actions":[...],"conditions":[...],"complications":[...]}` with nonempty choices; `correct: {"actions":[0,1],"condition":0,"complications":[0,1]}`. Exactly two unique actions, one condition, and two unique parameters/complications are required. |
@@ -114,6 +114,9 @@ Each entry has:
 
 Standalone tabs and entries must be available from item 1.
 Entries render chronologically without changing authored source order.
+Structured records display authored military time only (e.g. `0800`, `1430`),
+without timezone conversion. Original ISO timestamps remain in the data and
+HTML `datetime` attributes; sorting and stage disclosure still use source data.
 Legacy `{"id":"...","label":"...","html":"..."}` tabs remain supported, but new
 generated records should use structured columns/entries.
 

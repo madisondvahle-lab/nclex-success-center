@@ -91,6 +91,44 @@ test('chart entries sort chronologically and cannot reveal future findings', () 
   assert.ok(later.indexOf('Initial finding') < later.indexOf('Later finding'));
   assert.equal(tabs[0].entries[0].at, '2026-10-21T10:00', 'source order remains unchanged');
 });
+test('structured clinical times preserve authored military time and original ISO across offsets and stages', () => {
+  const e = engine(highlight), entries = [
+    { at: '2026-10-26T14:30:00-05:00', fromItem: 2, cells: ['Afternoon'] },
+    { at: '2026-10-26T08:30:00+14:00', cells: ['Early instant'] },
+    { at: '2026-10-26T08:00:00-05:00', cells: ['Morning'] },
+    { at: '2026-10-26T00:00:00Z', cells: ['Midnight'] },
+    { at: '2026-10-26T23:59', cells: ['Late'] }
+  ];
+  const before = plain(entries);
+  for (const label of ['Nursing Assessment', 'Laboratory Results', 'Treatment Records']) {
+    const tab = { label, columns: ['Record'], entries };
+    const first = e.chartHtml(tab, 1), later = e.chartHtml(tab, 2);
+    assert.match(first, /<th scope="col">Time<\/th>/);
+    for (const time of ['0800', '0830', '0000', '2359']) assert.ok(first.includes(`>${time}</time>`));
+    assert.doesNotMatch(first, />1430<\/time>|Afternoon/);
+    assert.match(later, />1430<\/time>/);
+    assert.match(later, /datetime="2026-10-26T14:30:00-05:00"/);
+    assert.doesNotMatch(later, />2026-10-26[^<]*<\/time>/);
+    assert.ok(first.indexOf('Early instant') < first.indexOf('Morning'), 'sort by original instants, not displayed time');
+  }
+  assert.deepEqual(entries, before);
+});
+test('matrix headings use explicit presentation metadata or clear prompt context without changing keys', () => {
+  for (const [extra, label] of [
+    [{ stem: 'For each proposed intervention, classify appropriateness.' }, 'Potential Intervention'],
+    [{ prompt: 'Classify the following potential interventions.' }, 'Potential Intervention'],
+    [{ stem: 'Classify each nursing action.' }, 'Nursing Action'],
+    [{ stem: 'Classify each clinical finding.' }, 'Finding'],
+    [{ stem: 'Which findings require an intervention?' }, 'Finding'],
+    [{ rowLabel: 'Custom <heading>', stem: 'Classify proposed interventions.' }, 'Custom &lt;heading&gt;']
+  ]) {
+    const it = item('matrix', { rows: ['One', 'Two'], cols: ['Yes', 'No'], correct: ['0:0', '1:1'], ...extra });
+    const before = plain(it), e = engine(it);
+    assert.ok(e.answerUi(it).includes(`<th>${label}</th>`));
+    assert.deepEqual(plain(it), before);
+    assert.equal(score(it, ['0:0', '1:1']).full, true);
+  }
+});
 test('case tab disclosure and prior timestamps follow the current question stage', () => {
   const it = { ...highlight, case: { id: 'case', scenario: 'Test', tabs, total: 2 }, caseIndex: 0 };
   const e = engine(it);
