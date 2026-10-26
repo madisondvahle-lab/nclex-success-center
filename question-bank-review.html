@@ -1246,7 +1246,7 @@
       }
       if(globalThis.NGNAuthor){
         const metadata=document.createElement('div');
-        form.querySelector('.buttons').before(metadata);
+        form.querySelector(':scope > .buttons').before(metadata);
         form.ngnMetadata=NGNAuthor.metadata(metadata,q);
       }
       $('e-cancel').onclick=()=>$('ed').classList.add('hidden');
@@ -1312,6 +1312,20 @@
         render();renderManage();
       }
     }
+    function openCatReview(id){
+      const question=live.find(item=>item.id===id);
+      if(!question?.active||!['mcq','sata'].includes(question.item_type||'mcq')||question.item_data?.schemaVersion!=null){
+        alert('CAT review requires a published traditional MCQ or SATA question.');return;
+      }
+      openEdit(id);
+      const form=$('ed-form'),action=form.querySelector('#cat-approval-action'),panel=action.closest('section');
+      form.querySelector('.intro').textContent='Review the saved question below. This view cannot save content changes; CAT approval remains a separate action.';
+      form.querySelectorAll('input,textarea,select').forEach(field=>{if(!panel.contains(field))field.disabled=true});
+      form.querySelector('button[type="submit"]').hidden=true;
+      form.onsubmit=event=>event.preventDefault();
+      panel.scrollIntoView({block:'start'});
+      form.querySelector('#cat-demand').focus({preventScroll:true});
+    }
     function needsRevisionApproval(question){
       const newDraft=question.source_key?.startsWith('qbank-bulk-')||question.source_key?.startsWith('quality-');
       return!!question.active||(!newDraft&&question.question_no!=null);
@@ -1345,7 +1359,7 @@
       if(globalThis.NGNAuthor){
         fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea>`;
       }
-      form.querySelector('.buttons').before(fields);
+      form.querySelector(':scope > .buttons').before(fields);
       form.onsubmit=async event=>{
         event.preventDefault();
         const summary=$('e-summary').value.trim();
@@ -1611,6 +1625,15 @@
         return `<div class="qrow ${mSel.has(q.id)?'sel':''}"><input type="checkbox" data-mpick="${esc(q.id)}" ${mSel.has(q.id)?'checked':''}><div><p>${esc(q.stem)}</p><div class="meta">${qlabel(q)?`<span class="tag" style="background:var(--admin-navy);color:#fff">${qlabel(q)}</span>`:''}<span class="tag ${q.active?'good':'warn'}">${q.active?'Published':'Inactive'}</span>${catSourceTag}${bulk?`<span class="tag ${status==='approved'?'good':'warn'}">${esc(bulkStatus)}</span>`:''}${q.study_area?`<span class="tag">${esc(q.study_area)}</span>`:''}${q.item_type&&q.item_type!=='mcq'?`<span class="tag">${esc(TYPE_NAME[q.item_type]||q.item_type)}</span>`:''}${topicOf(q)?`<span class="tag">${esc(topicOf(q))}</span>`:''}${q.module_key?`<span class="tag">${esc(q.module_key)}</span>`:''}</div>${renderBulkDetails(q)}</div><div class="buttons" style="margin:0"><button class="button" data-medit="${esc(q.id)}" type="button">Edit</button>${action}</div></div>`;
       }).join(''):'<p class="empty" style="margin:18px">No questions match this view.</p>';
       renderBulkBatchActions();
+      document.querySelectorAll('[data-medit]').forEach(button=>{
+        const question=live.find(item=>item.id===button.dataset.medit);
+        if(question?.active&&['mcq','sata'].includes(question.item_type||'mcq')&&question.item_data?.schemaVersion==null){
+          const review=document.createElement('button');
+          review.className='button secondary';review.type='button';review.textContent='Review for CAT';
+          review.addEventListener('click',()=>openCatReview(question.id));
+          button.after(review);
+        }
+      });
       document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
       document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));
       document.querySelectorAll('[data-bulk-stage]').forEach(b=>b.addEventListener('click',()=>stageBulkQuestion(b.dataset.bulkStage)));
