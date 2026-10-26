@@ -11,6 +11,18 @@
   const withPresentation = it => OptionPresentation && ['mcq', 'sata'].includes(it.type)
     ? Object.assign({}, it, { presentation: it.presentation ? OptionPresentation.validate(it.presentation, it.options.length) : OptionPresentation.create(it.options.length) }) : it;
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function clinicalTime(timestamp) {
+    // Display the authored wall-clock time, never the viewer's timezone.
+    const match = String(timestamp).match(/^\d{4}-\d{2}-\d{2}[T ]([01]\d|2[0-3]):([0-5]\d)(?=:|Z|[+-]|$)/);
+    return match ? match[1] + match[2] : timestamp;
+  }
+  function matrixRowLabel(item) {
+    if (item.rowLabel) return item.rowLabel;
+    const prompt = item.prompt || item.stem || '';
+    if (/\b(?:proposed|potential|nursing) interventions?\b/i.test(prompt)) return 'Potential Intervention';
+    if (/\bnursing actions?\b/i.test(prompt)) return 'Nursing Action';
+    return 'Finding';
+  }
   const ico = p => `<svg viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
   const ICON = {
     notes: ico('<rect x="4" y="3" width="14" height="14" rx="2"/><path d="M7 20h11a2 2 0 0 0 2-2V8"/>'),
@@ -288,7 +300,7 @@
       const entries = tab.entries.filter(e => (e.fromItem || 1) <= n)
         .slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
       if (!entries.length) return '<p>No findings available at this stage.</p>';
-      return `<div class="ex-chart"><table class="ex-table"><thead><tr><th scope="col">Date / time</th>${tab.columns.map(c => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${entries.map(e => `<tr><th scope="row"><time datetime="${esc(e.at)}">${esc(e.at.replace('T', ' '))}</time></th>${e.cells.map(c => `<td>${this.findingHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      return `<div class="ex-chart"><table class="ex-table"><thead><tr><th scope="col">Time</th>${tab.columns.map(c => `<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${entries.map(e => `<tr><th scope="row"><time datetime="${esc(e.at)}">${esc(clinicalTime(e.at))}</time></th>${e.cells.map(c => `<td>${this.findingHtml(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     }
 
     leftPane(it) {
@@ -332,7 +344,7 @@
       if (it.type === 'sata') return lead + '<div class="ex-opts">' + optionOrder(it).map((i, position) => this.optRow('c', i, it.options[i], a.includes(i), this.struck[this.i].has(i), position)).join('') + '</div>' + hint;
       if (it.type === 'fill') return lead + `<div class="ex-fill"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer" value="${esc(a)}"><span>${esc(it.unit || '')}</span></div><p class="ex-hint">Use the Calculator in the toolbar. Round only at the end if the question asks you to.</p>`;
       if (it.type === 'matrix') {
-        return lead + `<table class="ex-table ex-matrix"><thead><tr><th>${esc(it.rowLabel || 'Finding')}</th>${it.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>` +
+        return lead + `<table class="ex-table ex-matrix"><thead><tr><th>${esc(matrixRowLabel(it))}</th>${it.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>` +
           it.rows.map((r, ri) => `<tr><td>${esc(r)}</td>${it.cols.map((c, ci) => `<td class="c"><label class="ex-opt" aria-label="${esc(r)}: ${esc(c)}"><input type="${it.responseMode === 'single' ? 'radio' : 'checkbox'}" name="matrix-${ri}" data-r="${ri}" data-c="${ci}"${a.includes(ri + ':' + ci) ? ' checked' : ''}><span class="ex-ctl ${it.responseMode === 'single' ? 'r' : 'c'}"></span></label></td>`).join('')}</tr>`).join('') +
           `</tbody></table><p class="ex-note">${it.note || ''}</p>`;
       }

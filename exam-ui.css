@@ -75,6 +75,7 @@
 .ex-app button.seg.on{background:#ffff00;border-style:solid}
 .ex-app button.seg:focus-visible{outline:3px solid var(--ex-dark);outline-offset:2px}
 .ex-app button.seg:disabled{cursor:default;opacity:1}
+.ex-hl button.seg{display:inline-block;max-width:100%;margin:4px 2px;padding:6px 8px;vertical-align:baseline;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
 .ex-chart{overflow-x:auto}
 .ex-chart time{white-space:nowrap;font-variant-numeric:tabular-nums}
 .ex-fill{display:flex;align-items:center;gap:10px;margin:20px 0 0 38px}

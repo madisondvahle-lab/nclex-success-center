@@ -205,7 +205,7 @@ test('owned combined pages opt in, use cache-safe versioned assets, and reject s
     assert.match(html, /name="nclex-mcq-option-protocol" content="mcq-order-v1"/);
     assert.match(html, /option-presentation\.js\?v=mcq-order-v1/);
     assert.match(html, /ngn-scoring\.js\?v=mcq-order-v1/);
-    assert.match(html, /exam-ui-ngn\.js\?v=mcq-order-v1/);
+    assert.match(html, page === 'question-bank-review.html' ? /exam-ui-ngn\.js\?v=ngn-record-format-v1/ : /exam-ui-ngn\.js\?v=mcq-order-v1/);
     assert.doesNotMatch(html, /src="exam-ui-sata\.js/);
     const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
     for (const script of scripts) new Script(script, { filename: page });
