@@ -25,7 +25,7 @@ function harness(question) {
     addEventListener(name, handler) { this.events[name] = handler; }
     before(child) { form.appendChild(child); }
     querySelector(selector) {
-      if (selector === '.buttons') return buttons;
+      if (selector === ':scope > .buttons') return buttons;
       if (selector.includes('submit')) return save;
       if (selector === '.intro') return intro;
       if (selector.includes('e-ans')) return walk(form).find(el => el.name === 'e-ans' && el.checked);
@@ -60,7 +60,7 @@ function harness(question) {
       createElement: tag => new Element(tag),
       querySelector: selector => form.querySelector(selector)
     },
-    live: [question], $: id => ids.get(id), qlabel: () => 'Synthetic',
+    live: [question], catApprovals: new Map(), $: id => ids.get(id), qlabel: () => 'Synthetic',
     esc: value => String(value ?? ''), alert: message => alerts.push(message),
     render() {}, renderManage() {},
     db: { from: table => {

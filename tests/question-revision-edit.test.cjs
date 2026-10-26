@@ -25,7 +25,7 @@ function harness(existing = draft, failure) {
   const form = {
     querySelector(selector) {
       if (selector === '.intro') return intro;
-      if (selector === '.buttons') return { before() {} };
+      if (selector === ':scope > .buttons') return { before() {} };
       if (selector.includes('submit')) return save;
       if (selector.includes('e-ans')) return { value: values.correct_answer || 'a' };
     },
