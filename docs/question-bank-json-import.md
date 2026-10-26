@@ -16,11 +16,15 @@ Do not include Markdown fences in the importer input.
 3. Paste the generated JSON into the existing importer or choose a JSON file.
    Click **Validate and preview**. Correct all reported question/field errors.
    Paths such as `item_data.items[2].dropdowns[0].correct` use zero-based indexes.
-4. Review every stem, key, rationale, reference, and overlap warning. Mark
-   reviewed items, then **Save reviewed items as inactive drafts**.
-5. Open the draft with **Edit**, then **Preview as student** for interactive
-   clinical tabs, dropdowns, and unfolding stages. The import preview is a review
-   card/raw-data preview, not an interactive student preview.
+4. On each valid import card, click **Preview as student** before checking the
+   review box. Test clinical tabs, responses, and unfolding stages. Answer and
+   click **Check answer** to inspect the key and rationale. Exit or finish to
+   return to the import cards. This uses the existing student renderer; preview
+   responses are temporary and do not save questions or student attempts.
+5. Review every stem, key, rationale, reference, and overlap warning. Mark
+   reviewed items, then **Save reviewed items as inactive drafts**. Previewing
+   alone does not mark an item reviewed or enable saving. Saved drafts remain
+   editable and can also be previewed through **Edit > Preview as student**.
 6. Independently perform clinical review before approval/publication. Approving
    a batch keeps it inactive; publishing is a separate action. Structural
    validation and an AI-generated answer are not clinical approval.
