@@ -100,6 +100,95 @@ Keep these concepts separate:
 - **CAT/diagnostic:** adaptive readiness assessment.
 - **Question Bank Manager:** internal tutor/admin tooling for reviewing/managing questions.
 
+### Authored clinical-record and NGN supplemental practice
+
+Clinical-record tabs are independent of interaction type. The existing Question
+Bank author supports tabs on single MCQ/SATA questions as well as standalone
+NGN items and unfolding cases. Supplemental practice preserves authored tabs
+when delivering MCQ/SATA through mixed, weekly, course, and bank-set routes;
+questions without records retain their normal display and scoring. This does
+not add case studies or standalone NGN types to traditional question selection.
+
+The Assignments page has a separate **Published NGN case studies and standalone
+clinical-record questions** picker. Only explicitly selected published,
+schema-versioned authored entries are assigned. A case must have exactly six
+items; its charts, chronological notes, disclosure stages, and question order
+remain together. Assignment uses existing `student_resources`, and results use
+existing `student_supplemental_practice_results`; no new tables or columns.
+`score` remains an integer count of fully correct items. `answer_details`
+retains interaction/chart snapshots, canonical answers, per-item points and
+rationales; explicit NGN results show partial-credit points separately.
+
+Resume uses the existing per-student, per-route `sessionStorage` checkpoints:
+refresh or return to the same URL in the same tab/browser session. This is not
+cross-device resume. Failed result/completion writes retain the checkpoint and
+offer retry; an acknowledged result is not inserted again on completion retry.
+Students can reopen completed attempts using **Clinical-record / NGN results**
+in supplemental practice. Admins use **Student workspace → Portal assessments
+& practice → Review questions**. Reviews use saved snapshots, not a subsequently
+edited or unpublished bank entry. The general dashboard's legacy practice
+percentage still represents fully correct items, not NGN points.
+
+**Database release prerequisite:** apply `supabase-ngn-practice-completion.sql`
+after the existing weekly-assignment migration, before publishing the UI.
+The owner approved this narrow completion-function extension on October 26,
+2026. It permits owned explicit authored-practice assignments in addition to
+the unchanged weekly path. It retains admin/owner checks and authenticated-only
+execution, changes no RLS policies, and performs no data backfill. CAT selection,
+approval controls, admission settings and server functions are outside this
+release. Applied to the linked production project on October 26, 2026, after
+PR #268 checks and direct review passed. Readback verified the function owner
+(`postgres`), fixed search path, security-definer setting, authenticated-only
+grant and both allowed completion branches. Aggregate counts and ordered row
+fingerprints for seven application tables (questions, students, resources,
+supplemental results, CAT attempts/responses and flags), plus their policy
+fingerprint, were identical before/after. No production test records were
+created. Deployment remains GitHub Pages from `main` and repository root at
+`portal.studywithmadison.com`.
+
+Author workflow:
+1. Question bank → **Intake & Legacy** → Create an interactive question. Choose **Unfolding
+   case** for a case, or **Single response / MCQ** / **Multiple response / SATA** for a standalone
+   MCQ/SATA with records; other existing NGN types remain available.
+2. Enter the question/title, rationale and required classification fields.
+   Add clinical-record tabs, column headings, dated/timed entries and cells.
+   Standalone records must be available from item 1. For a case, add six case
+   questions in the intended order, set each interaction and answer key, and
+   use **Available from item** on tabs/entries for unfolding disclosure.
+3. Use **Preview as student** to verify every chart, stage, interaction, key
+   and rationale. Save the inactive draft. Review it in Manage bank, then use
+   the existing review/approval and **Publish** action. Publication is not CAT
+   approval, and this implementation publishes no content automatically.
+4. Assignments → choose one student → select entries in the separate published
+   authored-practice picker → **Save assignments**. Leave mixed/traditional
+   options unchecked unless separately desired. Multiple cases can be assigned
+   together without consuming dated weekly practice slots.
+5. Student opens the assigned work, completes it, and waits for **Saved to your
+   shared dashboard. Assignment complete.** Then inspect the saved attempt in
+   the student's results link or admin Student workspace, including all six
+   responses, earned/possible points, records and rationales.
+
+Validation: `node --test tests/ngn-practice.test.cjs
+tests/ngn-interactions.test.cjs tests/practice-question-selection.test.cjs
+tests/practice-review-data.test.cjs tests/existing-question-author.test.cjs
+tests/nursing-class-modules.test.cjs tests/weekly-assignments.test.cjs
+tests/assessment-display.test.cjs`, plus
+`node --test tests/ngn-practice-completion.integration.mjs` (disposable Docker
+PostgreSQL; no production test records). The browser fixture
+`tests/fixtures/ngn-practice-browser.js` substitutes a synthetic Supabase client:
+block all Supabase network traffic and fulfill the Supabase CDN script with
+`window.supabase={createClient:()=>window.syntheticDB}`. Verified scenarios
+include explicit multi-assignment, six interaction types in one case,
+standalone record-backed MCQ and numeric NGN, staged charts, refresh resume,
+failed-save/completion retries, one result per submission, student saved
+history and admin saved review. No production students/questions were used.
+The final focused gate also includes shared UI, MCQ and SATA presentation
+regressions: 99 tests passed. The broader test glob has 22 pre-existing CAT
+endpoint-fixture failures also reproduced on clean `main` (`d77ebd8`); those
+fixtures do not recognize the existing `get_cat_approved_questions` RPC.
+They are outside this release and have not been suppressed or repaired here;
+the full repository suite must not be described as green.
+
 An internal question-bank management page must never be used as a student quiz.
 
 Do not replace substantive module content with a login redirect merely because the content requires authentication. Preserve the module and protect access at the appropriate session/routing layer.

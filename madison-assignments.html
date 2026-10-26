@@ -195,6 +195,12 @@
                 </label>
               </section>
               <section class="choice-group">
+                <h3>Published NGN case studies and standalone clinical-record questions</h3>
+                <p>Explicit assignments only. Cases stay together in authored order; none are automatically added to mixed or traditional practice.</p>
+                <div id="ngn-choices" class="assignments"></div>
+                <p id="ngn-status" role="status"></p>
+              </section>
+              <section class="choice-group">
                 <h3>Course-specific exam prep</h3>
               <label class="choice">
             <input id="nur321-ob-exam1" type="checkbox">
@@ -293,6 +299,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="study-area-names.js"></script>
   <script src="nursing-class-modules.js"></script>
+  <script src="ngn-author-ngn.js?v=clinical-record-practice-v1"></script>
+  <script src="ngn-practice.js?v=clinical-record-practice-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id);
@@ -393,6 +401,37 @@
       areas.forEach(area=>params.append('area',area));
       return 'supplemental-practice.html?'+params.toString();
     }
+    async function loadNGNChoices(resources,sequence){
+      $('ngn-choices').replaceChildren();
+      $('ngn-status').textContent='Loading published authored practice…';
+      try{
+        const rows=[],pageSize=200;
+        for(let start=0;;start+=pageSize){
+          const page=await db.from('questions').select(NGNPractice.columns).eq('active',true)
+            .in('item_type',['mcq','sata','matrix','cloze','highlight','bowtie','fill','case']).order('id').range(start,start+pageSize-1);
+          if(page.error)throw page.error;
+          rows.push(...(page.data||[]));
+          if((page.data||[]).length<pageSize)break;
+        }
+        if(sequence!==loadSequence)return;
+        let count=0,invalid=0;
+        rows.filter(row=>row.item_data?.schemaVersion===1).forEach(row=>{
+          let entry;
+          try{entry=NGNPractice.fromRow(row)}
+          catch(error){invalid++;console.warn('Authored practice unavailable:',row.id,error.message);return}
+          const label=document.createElement('label');label.className='choice';
+          const input=document.createElement('input');input.type='checkbox';input.dataset.ngnId=row.id;
+          input.checked=resources.some(resource=>resource.url==='supplemental-practice.html?ngn='+encodeURIComponent(row.id));
+          const text=document.createElement('span');
+          const title=document.createElement('strong');title.textContent=(row.question_no?'Q-'+String(row.question_no).padStart(4,'0')+' · ':'')+entry.title;
+          const description=document.createElement('span');description.textContent=entry.kind==='case'?'Six-item unfolding case · shared clinical records':row.item_type.toUpperCase()+' · standalone authored question';
+          text.append(title,description);label.append(input,text);$('ngn-choices').append(label);count++;
+        });
+        $('ngn-status').textContent=(count?'Select only the published items you want to assign.':'No published authored questions or six-item cases are available.')+(invalid?' '+invalid+' published item(s) could not be offered; check their authored structure and six-item case length in Question bank.':'');
+      }catch(error){
+        if(sequence===loadSequence)$('ngn-status').textContent='Published authored practice could not load: '+error.message;
+      }
+    }
     function setAssignmentLoading(isLoading){
       const choices=$('choices');
       choices.setAttribute('aria-busy',String(isLoading));
@@ -475,6 +514,7 @@
       document.querySelectorAll('[data-mixed-study-area]').forEach(input=>{input.checked=false});
       $('mixed-count').value='20';
       $('mixed-options').classList.add('hidden');
+      $('ngn-choices').replaceChildren();$('ngn-status').textContent='';
       if(!student){setAssignmentLoading(false);return}
       setAssignmentLoading(true);
       try{
@@ -504,6 +544,8 @@
         }
         const enabled=new Set((access||[]).filter(item=>item.enabled).map(item=>item.module_key));
         const assignedResources=resources||[];
+        await loadNGNChoices(assignedResources,sequence);
+        if(sequence!==loadSequence||selected()?.id!==student.id)return;
         assignmentKeys.forEach(key=>{const input=$(key);if(input)input.checked=enabled.has(key)});
         $('diagnostic').checked=assignedResources.some(item=>item.url==='diagnostic.html?mode=mock');
         $('mixed-review').checked=assignedResources.some(item=>/^supplemental-practice\.html\?mixed=/.test(item.url||''));
@@ -534,11 +576,13 @@
       }
     }
     async function save(){const button=$('save');clearNotice();button.disabled=true;button.textContent='Saving…';try{const student=selected();if(!student)throw new Error('Choose a student first.');const selectedKeys=assignmentKeys.filter(key=>$(key)?.checked);
-      const hasExtra=$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur215-foundations')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('nur312-exam2-parallel')?.checked||$('jack-nur312-exam2-resources')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;
+      const ngnIds=[...document.querySelectorAll('[data-ngn-id]:checked')].map(input=>input.dataset.ngnId);
+      const hasExtra=ngnIds.length||$('diagnostic')?.checked||$('mixed-review')?.checked||$('nur215-foundations')?.checked||$('nur321-ob-exam1')?.checked||$('jack-nur312-exam2')?.checked||$('nur312-exam2-parallel')?.checked||$('jack-nur312-exam2-resources')?.checked||$('jack-ob-study-guide')?.checked||$('jack-ob-study-questions')?.checked||$('jack-nur416-exam2-guide')?.checked||$('jack-nur416-exam2-questions')?.checked;
       const savingClass=student.student_type==='nursing_student'&&$('module-class').value;
       if(!selectedKeys.length&&!hasExtra&&!savingClass)throw new Error('Choose at least one assignment before saving.');
       show('Saving '+selectedKeys.length+' module assignment'+(selectedKeys.length===1?'':'s')+' for '+student.name+'…','info');
       await saveModuleAssignments(student,selectedKeys);
+      if(ngnIds.length)await NGNPractice.assign(db,student.id,ngnIds);
       if($('diagnostic').checked){const {data:existing,error:findError}=await db.from('student_resources').select('id').eq('student_id',student.id).eq('url','diagnostic.html?mode=mock').limit(1);if(findError)throw new Error('Diagnostic lookup failed: '+findError.message);if(!existing?.length){const {error}=await db.from('student_resources').insert({student_id:student.id,title:'Full mock CAT diagnostic',resource_type:'practice_set',url:'diagnostic.html?mode=mock',note:'Complete this full mock CAT before your next coaching session.'});if(error)throw new Error('Diagnostic assignment failed: '+error.message)}}
     if($('nur215-foundations').checked){
       const url='supplemental-practice.html?set=nur215-foundations-practice';

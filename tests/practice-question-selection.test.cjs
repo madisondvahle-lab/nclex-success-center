@@ -350,6 +350,7 @@ test('QBank-backed practice preserves legacy IDs and SATA answer indexes', async
   const loaderSource = page.match(/async function loadQuestionBankSet\(set\)\{[\s\S]*?\n    \}/);
   assert.ok(loaderSource, 'page contains the Question Bank set loader');
   const loadSet = vm.runInNewContext(`(${loaderSource[0]})`, {
+    PracticeQuestionSelection: selection(),
     db: { from(table) { assert.equal(table, 'question_set_items'); return query; } }
   });
   const questions = await loadSet({ id: 'nur215-foundations-practice', questionCount: 60, title: 'NUR 215 Foundations Practice' });

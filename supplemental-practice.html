@@ -299,7 +299,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     </aside>
 
     <main class="portal-main shell" id="main-content">
-      <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" id="dashboard-link" href="student-dashboard.html">Dashboard</a></header>
+      <header class="top"><span class="brand">Study With Madison <small>RN</small></span><a class="back" href="supplemental-practice.html?ngn-history=1">Clinical-record / NGN results</a><a class="back" id="dashboard-link" href="student-dashboard.html">Dashboard</a></header>
       <section class="hero" id="library" aria-labelledby="page-title">
         <h1 id="page-title">Your course work, organized by exam.</h1>
         <p id="page-summary">Open a class to find the study materials and question sets assigned for its exams.</p>
@@ -312,7 +312,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
   <script src="study-area-names.js"></script>
-  <script src="question-bank-selection.js"></script>
+  <script src="question-bank-selection.js?v=clinical-record-practice-v1"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
@@ -324,7 +324,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       throw new Error('The assessment modules could not load. Refresh and try again.');
     }
   </script>
-  <script src="exam-adapters.js"></script>
+  <script src="exam-adapters.js?v=clinical-record-practice-v1"></script>
+  <script src="ngn-author-ngn.js?v=clinical-record-practice-v1"></script>
+  <script src="ngn-practice.js?v=clinical-record-practice-v1"></script>
   <script src="student-nav.js"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
@@ -1856,6 +1858,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         return {
           id:String(legacy_id),dbId:row.id,qno:row.question_no,stem:row.stem,options,
           answer,rationale:row.rationale||'',optionRationales:row.option_rationales || {},
+          ...PracticeQuestionSelection.fromBankRow(row),
           category:row.nclex_category||row.nclex_sub||row.topic||set.title,
           topic:row.topic||'',difficulty:row.difficulty||'medium'
         };
@@ -2095,10 +2098,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const saved=JSON.parse(stored);
         if(saved.set?.id===activeSet.id){activeSet=saved.set;resume=saved.snapshot}
       }
+      if(activeSet.ngnCase){beginNGNPractice(resume);return}
       const source=activeSet.questions;
       if(!source.some(q=>q.type!=='intro')){renderQuestion();return}
       const items=resume?.items || ExamUI.prepare(ExamAdapters.fromPracticeSet(source),{shuffleOptions:false});
-      items.forEach(item=>{if(Number.isInteger(item.srcIndex))source[item.srcIndex].presentation=item.presentation});
+      items.forEach(item=>{if(Number.isInteger(item.srcIndex)){
+        source[item.srcIndex].presentation=item.presentation;
+        if(source[item.srcIndex].interaction)source[item.srcIndex].interaction=item;
+      }});
       $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
       const host=document.createElement('div');host.id='exam-host';document.body.appendChild(host);
       new ExamUI.Exam(host,{title:(activeSet.title||'Practice').toUpperCase(),items,resume,instant:activeSet.tutorMode??!activeSet.assignmentId,showTimer:activeSet.timedMode,noFeedback:true,
@@ -2113,6 +2120,99 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           $('quiz').classList.remove('hidden');showResults();
         },
         onExit:()=>{host.remove();$('quiz').classList.add('hidden');showLibrary()}});
+    }
+    async function buildNGNPractice(id){
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');
+      $('quiz').textContent='Loading your assigned NGN case study…';
+      try{
+        const url='supplemental-practice.html?ngn='+encodeURIComponent(id);
+        const resource=await db.from('student_resources').select('id,title,assignment_details').eq('student_id',student.id).eq('url',url).maybeSingle();
+        if(resource.error)throw resource.error;
+        if(!resource.data||resource.data.assignment_details?.practice_type!=='ngn-authored')throw new Error('This clinical-record / NGN practice is not assigned to your account.');
+        const bank=await db.from('questions').select(NGNPractice.columns).eq('id',id).eq('active',true).maybeSingle();
+        if(bank.error)throw bank.error;
+        const entry=NGNPractice.fromRow(bank.data);
+        activeSet={id:'ngn-authored-'+id,title:entry.title,ngnCase:entry,questions:entry.kind==='case'?entry.items:[entry],assignmentId:resource.data.id};
+        beginPractice();
+      }catch(error){
+        $('quiz').textContent='Could not load this NGN case study. '+error.message;
+      }
+    }
+    function beginNGNPractice(resume){
+      const items=resume?.items||ExamUI.prepare([activeSet.ngnCase],{shuffleOptions:false});
+      const saved=JSON.parse(sessionStorage.getItem(practiceStorageKey())||'null');
+      if(saved?.completed){showNGNResults(saved.completed);return}
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.add('hidden');
+      const host=document.createElement('div');document.body.appendChild(host);
+      const exam=new ExamUI.Exam(host,{title:activeSet.title,items,resume,instant:false,showTimer:false,noFeedback:true,
+        onCheckpoint:snapshot=>sessionStorage.setItem(practiceStorageKey(),JSON.stringify({set:activeSet,snapshot})),
+        onFinish:result=>{
+          // Retain the finished responses until both result and completion writes succeed.
+          const snapshot=exam.snapshot();
+          try{
+            NGNPractice.details(result);
+            sessionStorage.setItem(practiceStorageKey(),JSON.stringify({set:activeSet,snapshot,completed:result,resultId:crypto.randomUUID()}));
+          }catch(error){
+            host.remove();
+            alert('Your practice could not be submitted: '+error.message+'. Your responses are still available. Check your answers and try again.');
+            beginNGNPractice(snapshot);
+            return;
+          }
+          host.remove();showNGNResults(result);
+        },
+        onExit:()=>{host.remove();showLibrary()}});
+    }
+    async function showNGNResults(result){
+      $('quiz').classList.remove('hidden');
+      const details=NGNPractice.details(result),summary=NGNPractice.summary(details);
+      $('quiz').innerHTML='<section class="study-session study-results"><div class="study-session-body"><h2>'+escapeHtml(activeSet.title)+'</h2>'+
+        NGNPractice.reviewHtml(details)+'<p id="ngn-save-status" role="status">Saving your case result…</p><button id="ngn-save-retry" class="secondary" type="button" hidden>Retry saving</button> <a href="supplemental-practice.html?ngn-history=1">View saved results</a></div></section>';
+      const status=$('ngn-save-status'),retry=$('ngn-save-retry');
+      const save=async()=>{
+        retry.hidden=true;
+        try{
+          const checkpoint=JSON.parse(sessionStorage.getItem(practiceStorageKey()));
+          if(!checkpoint)throw new Error('The saved case checkpoint is unavailable. Keep this page open and contact Madison.');
+          if(!checkpoint.resultSaved){
+            const saved=await db.from('student_supplemental_practice_results').insert({
+              id:checkpoint.resultId,student_id:student.id,practice_key:activeSet.id,practice_title:activeSet.title,
+              score:summary.full,total_questions:details.length,answer_details:details,
+              category_scores:{'Clinical judgment':{correct:summary.full,total:details.length,earned:summary.earned,max:summary.max}},
+              missed_question_ids:details.filter(row=>!row.correct).map(row=>row.question_id)
+            });
+            if(saved.error){
+              if(saved.error.code!=='23505')throw saved.error;
+              const existing=await db.from('student_supplemental_practice_results').select('student_id,practice_key,answer_details').eq('id',checkpoint.resultId).maybeSingle();
+              if(existing.error)throw existing.error;
+              if(existing.data?.student_id!==student.id||existing.data.practice_key!==activeSet.id||!NGNPractice.sameJSON(existing.data.answer_details,details))throw new Error('The saved result does not match this case. Contact Madison.');
+            }
+            checkpoint.resultSaved=true;
+            sessionStorage.setItem(practiceStorageKey(),JSON.stringify(checkpoint));
+          }
+          const completed=await db.rpc('set_weekly_assignment_complete',{p_assignment:activeSet.assignmentId,p_complete:true});
+          if(completed.error)throw completed.error;
+          sessionStorage.removeItem(practiceStorageKey());
+          status.textContent='Saved to your shared dashboard. Assignment complete.';
+        }catch(error){
+          status.textContent='Your case result could not finish saving: '+error.message+'. Your answers remain saved in this tab. Retry saving.';
+          retry.hidden=false;
+        }
+      };
+      retry.addEventListener('click',save);
+      await save();
+    }
+    async function showNGNHistory(){
+      $('library').classList.add('hidden');$('sets').classList.add('hidden');$('quiz').classList.remove('hidden');
+      $('quiz').textContent='Loading your completed clinical-record / NGN practice…';
+      try{
+        const history=await db.from('student_supplemental_practice_results').select('id,practice_title,completed_at,answer_details')
+          .eq('student_id',student.id).like('practice_key','ngn-authored-%').order('completed_at',{ascending:false}).limit(20);
+        if(history.error)throw history.error;
+        $('quiz').innerHTML='<h2>Completed clinical-record / NGN practice</h2><p>Your latest 20 completed sessions. Scores and rationales use the content saved with each attempt.</p>'+
+          (history.data?.length?history.data.map(row=>'<section class="study-session study-session-body"><h3>'+escapeHtml(row.practice_title)+'</h3><p>'+escapeHtml(new Date(row.completed_at).toLocaleString())+'</p>'+NGNPractice.reviewHtml(row.answer_details)+'</section>').join(''):'<p>No completed authored practice has been saved yet.</p>');
+      }catch(error){
+        $('quiz').textContent='Your saved practice results could not load: '+error.message;
+      }
     }
     function answersMatch(question,selected){return Array.isArray(question.answer)?Array.isArray(selected)&&question.answer.length===selected.length&&question.answer.every(answer=>selected.includes(answer)):selected===question.answer}
     function renderQuestion(){
@@ -2176,6 +2276,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         stem:q.stem,
         presentation:q.presentation,
         rationale:q.rationale,
+        ...(q.interaction?{interaction:q.interaction}:{}),
         option_rationales:q.optionRationales || {},
         correct:answersMatch(q, answers[i]),
         marked_for_review:!!activeSet.sessionMarked?.[i]
@@ -2237,7 +2338,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const review=document.createElement('div');
         review.className='study-session-body';
         const answerText=(q,value)=>{const indexes=Array.isArray(value)?value:[value];return indexes.filter(Number.isInteger).map(optionIndex=>q.options[optionIndex]).filter(Boolean).map(escapeHtml).join('; ')||'Not answered'};
-        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}${activeSet.sessionMarked?.[i]?' · Marked':''}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${answerText(q,answers[i])}</p><p>Correct answer: ${answerText(q,q.answer)}</p>${q.presentation?ExamUI.reviewHtml({type:'sata',options:q.options,correct:q.answer,presentation:q.presentation,optionRationales:q.optionRationales},answers[i]||[]):''}<p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
+        review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>q.interaction
+          ?NGNPractice.reviewHtml([{interaction:q.interaction,selected_answer:answers[i]??NGNScoring.emptyAnswer(q.interaction),credit:{score:+answersMatch(q,answers[i])},correct:answersMatch(q,answers[i])}])
+          :`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}${activeSet.sessionMarked?.[i]?' · Marked':''}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${answerText(q,answers[i])}</p><p>Correct answer: ${answerText(q,q.answer)}</p>${q.presentation?ExamUI.reviewHtml({type:'sata',options:q.options,correct:q.answer,presentation:q.presentation,optionRationales:q.optionRationales},answers[i]||[]):''}<p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
         $('quiz').appendChild(review);
       }
       const retry=$('retry');
@@ -2293,12 +2396,13 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         if(!resource||resource.assignment_kind!=='practice'||resource.assignment_details?.platform!=='Portal Question Bank')throw new Error('This portal practice assignment is not available to your account.');
         const ids=resource.assignment_details.question_ids;
         if(!Array.isArray(ids)||ids.length!==resource.assignment_details.question_count)throw new Error('The assigned question list is incomplete. Contact Madison.');
-        const {data:bank,error:bankError}=await db.from('questions').select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,nclex_category,nclex_sub,question_no').in('id',ids).eq('active',true).eq('item_type','mcq');
+        const {data:bank,error:bankError}=await db.from('questions').select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,nclex_category,nclex_sub,question_no,item_type,item_data').in('id',ids).eq('active',true).eq('item_type','mcq');
         if(bankError)throw bankError;
         if(bank.length!==ids.length||bank.some(q=>!['a','b','c','d'].includes(String(q.correct_answer).toLowerCase())))throw new Error('Some assigned questions are no longer available. Contact Madison to replace this assignment; no unrelated questions were substituted.');
         activeSet={id:'weekly-'+id,assignmentId:id,title:resource.title,tag:'Weekly targeted practice',questions:shuffled(bank).map(q=>({
           id:String(q.id),dbId:q.id,qno:q.question_no,stem:q.stem,options:[q.option_a,q.option_b,q.option_c,q.option_d],
           answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),rationale:q.rationale,
+          ...PracticeQuestionSelection.fromBankRow(q),
           category:NCLEXCats.canon([q.nclex_category,q.nclex_sub].filter(Boolean).join(' ').replace(/_/g,' '),'Other')
         }))};
         index=0;answers=[];revealed=false;beginPractice();
@@ -2462,7 +2566,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       $('quiz').innerHTML='<p class="status">Building your exam practice…</p>';
 
       const {data:bank,error}=await db.from('questions')
-        .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,topic,subtopic,difficulty,cognitive_level,question_no')
+        .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,topic,subtopic,difficulty,cognitive_level,question_no,item_type,item_data')
         .eq('active',true)
         .eq('course_key',courseKey)
         .eq('exam_key',examKey)
@@ -2474,6 +2578,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         stem:q.stem,
         options:[q.option_a,q.option_b,q.option_c,q.option_d],
         answer:['a','b','c','d'].indexOf(String(q.correct_answer).toLowerCase()),
+        ...PracticeQuestionSelection.fromBankRow(q),
         rationale:q.rationale||'Review the underlying nursing principle for this item.',
         category:q.topic||'Exam Review',
         subtopic:q.subtopic||'',
@@ -2534,6 +2639,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           beginPractice(saved.snapshot);
           return;
         }
+        if(new URLSearchParams(location.search).has('ngn-history')){
+          await showNGNHistory();
+          return;
+        }
         const [{data:resources,error:resourcesError},{data:modules,error:modulesError},{data:schedules,error:schedulesError}]=await Promise.all([
           db.from('student_resources').select('title,url,note,resource_type,due_on').eq('student_id',student.id).in('resource_type',['practice_set','study_guide','document']),
           db.from('modules').select('module_key,is_available'),
@@ -2562,7 +2671,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const requestedStudyAreas=params.getAll('area');
         const courseKey=params.get('course');
         const examKey=params.get('exam');
-        if(params.get('assignment')){
+        if(params.get('ngn')){
+          await buildNGNPractice(params.get('ngn'));
+        }else if(params.get('assignment')){
           await buildWeeklyAssignment(params.get('assignment'));
         }else if(courseKey&&examKey){
           await buildCourseExamPractice(courseKey,examKey);

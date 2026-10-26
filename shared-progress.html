@@ -326,6 +326,7 @@
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
+  <script src="ngn-practice.js?v=clinical-record-practice-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const linkify=value=>esc(value).replace(/(https:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">Open practice assignment →</a>');
@@ -1086,6 +1087,10 @@
     async function loadAndRenderPracticeReview(eventItem,container){
       if(!eventItem||!container)return;
       const details=Array.isArray(eventItem.answerDetails)?eventItem.answerDetails:[];
+      if(details.length&&details.every(detail=>detail.interaction&&detail.credit)){
+        container.innerHTML=NGNPractice.reviewHtml(details);
+        return;
+      }
       const missedIds=Array.isArray(eventItem.missed)?eventItem.missed:[];
 
       await ensureDiagnosticBanksLoaded();
@@ -1116,6 +1121,9 @@
           itemsHtml='<p class="empty" style="padding:14px 0;">No questions match this filter (0 missed questions in this practice set).</p>';
         }else{
           itemsHtml=shown.map(d=>{
+            if(d.interaction){
+              return NGNPractice.reviewHtml([{...d,credit:{score:+d.is_correct}}]);
+            }
             const source=findAuthoritativeItem(d.id);
             const bankItem=Array.isArray(d.options)?{...source,stem:d.stem||source?.stem,options:d.options,rationale:d.rationale,presentation:d.presentation,optionRationales:d.option_rationales}:source;
             const isCorrect=Boolean(d.is_correct);
@@ -1228,7 +1236,9 @@
         const total=Number(item.total),correct=Number(item.correct);
         const hasScore=Number.isFinite(total)&&total>0&&Number.isFinite(correct);
         const percent=hasScore?Math.round(correct/total*100):null;
-        const result=hasScore?`${correct}/${total} correct · ${percent}%`:'In progress';
+        const ngnDetails=item.answerDetails?.filter(detail=>detail.credit&&detail.interaction);
+        const ngnScore=ngnDetails?.length>0&&ngnDetails.length===item.answerDetails.length?NGNPractice.summary(ngnDetails):null;
+        const result=ngnScore?`${ngnScore.earned}/${ngnScore.max} NGN points · ${ngnScore.percent}% · ${correct}/${total} fully correct`:hasScore?`${correct}/${total} correct · ${percent}%`:'In progress';
         const categories=Object.entries(item.categories||{}).map(([name,data])=>{
           const correct=Number(data?.correct??0);
           const total=Number(data?.total??0);
