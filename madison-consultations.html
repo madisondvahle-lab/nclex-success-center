@@ -80,6 +80,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="consult-cpr-reports.js?v=consult-cpr-v1"></script>
   <script>
     const db=supabase.createClient('https://pmjwwktwlsqpetwfvolb.supabase.co','sb_publishable_MDgerX5UJd44TlYgMOalDw_DqNMvxfT');
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -225,6 +226,7 @@
         ${sel('exam','NCLEX-RN or NCLEX-PN',['NCLEX-RN','NCLEX-PN'])}${sel('attempt_type','First attempt or retake',['First attempt','Retake'])}
         ${f('attempts','Number of attempts')}${f('target_date','Target exam date','date')}</div>
         ${f('resources','Current study resources','area')}${f('struggles','Biggest reported struggles','area')}${f('prior_tutoring','Previous tutoring experience','area')}${strat?f('reports_available','Performance reports available (CPR, CAT, readiness, other)','area')+f('patterns','Performance patterns observed','area'):''}</section>
+      <section class="panel"><h2>CPR reports and attempt notes</h2><p class="meta">${strat?'Prepare and review CPR reports alongside the diagnostic during this paid, in-depth consultation.':'Keep CPR reports and notes with this consultation profile.'}</p><div id="consult-cpr-reports"></div></section>
       <section class="panel"><p class="eyebrow">${strat?'Section 2 · Session checklist':'Section 2 · 5–10 min'}</p><h2>${strat?'Strategy session':'My tutoring approach'}</h2>
         ${items.map(([k,l])=>`<label class="check"><input type="checkbox" data-check="${k}" ${(t.checklist||{})[k]?'checked':''} ${readOnly?'disabled':''}>${l}</label>`).join('')}</section>
       <section class="panel"><p class="eyebrow">${strat?'Section 3 · Recommendation':'Section 3 · 10–15 min'}</p><h2>Recommendation</h2>
@@ -242,6 +244,7 @@
       <p><a class="button secondary" href="madison-diagnostic.html?consultation=${encodeURIComponent(c.id)}">Run diagnostic for this consult</a></p>
       <section class="panel"><h3>Booking history</h3>${events.map(e=>`<p class="meta">${esc(fmt(e.created_at))} · ${esc(e.event_type.replaceAll('_',' '))}${e.details&&e.details.from_status?' · '+esc(e.details.from_status.replaceAll('_',' '))+' → '+esc(e.details.to_status.replaceAll('_',' ')):''}${e.details&&e.details.start?' · '+esc(fmt(e.details.start)):''}${e.details&&e.details.reason?' · '+esc(e.details.reason):''}</p>`).join('')||'<p class="meta">No events.</p>'}</section>`;
       document.getElementById('list-view').classList.add('hidden');view.classList.remove('hidden');
+      ConsultCPRReports.mount(document.getElementById('consult-cpr-reports'),db,c.consult_intake_id);
       document.getElementById('back').addEventListener('click',closeDetail);
       view.querySelectorAll('[data-snap],[data-top],[data-check],[data-rec],#follow-up').forEach(el=>{el.addEventListener('input',queueSave);el.addEventListener('change',queueSave)});
       document.getElementById('timer-toggle').addEventListener('change',toggleTimer);
