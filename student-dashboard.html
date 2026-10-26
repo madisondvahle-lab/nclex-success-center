@@ -646,6 +646,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="category-names.js"></script>
+  <script src="assessment-archer.js"></script>
   <script src="assessment-platforms.js"></script>
   <script src="weekly-plan.js"></script>
   <script src="weekly-assignments.js"></script>
@@ -1407,14 +1408,24 @@
     // Weekly CAT trend from the assessments Madison enters each week.
     async function renderCatTrend(student, savedPlatform) {
       const [ext, upl, practiceResult] = await Promise.all([
-        db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores').eq('student_id', student.id),
+        db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores,archer_cat_data').eq('student_id', student.id),
         db.from('student_assessment_uploads').select('id,platform,assessment_type,report_label,taken_on,created_at,overall_score').eq('student_id', student.id),
         db.from('student_supplemental_practice_results').select('practice_key,practice_title,score,total_questions,completed_at').eq('student_id', student.id).order('completed_at')
       ]);
+      if (ext.error && /archer_cat_data/i.test(ext.error.message || '')) {
+        const fallback = await db.from('external_assessments').select('platform,assessment_name,taken_at,created_at,overall_score,category_scores').eq('student_id', student.id);
+        if (!fallback.error) {
+          ext.data = fallback.data;
+          ext.error = null;
+        }
+      }
       if (savedPlatform && (ext.error || upl.error)) throw ext.error || upl.error;
       const error = ext.error;
       const isPractice = name => /qbank|mixed practice|question practice/i.test(String(name || ''));
-      const data = (ext.data || []).filter(row => !isPractice(row.assessment_name));
+      const data = (ext.data || []).filter(row => !isPractice(row.assessment_name)).map(row => {
+        const legacyArcher = AssessmentPlatforms.key(row.platform) === 'archer' && !row.archer_cat_data;
+        return legacyArcher ? { ...row, overall_score: null, category_scores: {} } : row;
+      });
       // Keep scored CAT/readiness reports out of the QBank practice series.
       const ups = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type !== 'cpr_report' && u.assessment_type !== 'qbank_report' && !/cumulative|client needs|system needs|qbank usage/i.test(u.report_label || ''));
       const practiceReports = (upl.error ? [] : upl.data || []).filter(u => u.assessment_type === 'qbank_report' && u.overall_score !== null && u.overall_score !== '');
@@ -1447,6 +1458,56 @@
       if (savedPlatform && window.__studentTrendSeries === 'practice') window.__studentTrendSeries = 'both';
       const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
       const arrow = d => d > 0.5 ? `<span style="color:var(--teal);font-weight:700">▲ ${Math.round(d)}</span>` : d < -0.5 ? `<span style="color:#9c3535;font-weight:700">▼ ${Math.abs(Math.round(d))}</span>` : '<span style="color:#888">— 0</span>';
+      const renderArcherSectionTrend = rows => {
+        const attempts=rows.filter(row=>row.archer_cat_data).slice(-6);
+        const legacy=rows.some(row=>AssessmentPlatforms.key(row.platform)==='archer'&&!row.archer_cat_data);
+        if(!attempts.length)return legacy?'<p style="color:var(--muted)">Older Archer CATs remain in history but cannot be compared as Classic/NGN because their section-level scoring method was not recorded.</p>':'';
+        const value=(section,category,sectionName)=>{
+          const item=category?section?.categories?.[category]:section;
+          if(!item)return null;
+          if(category&&item.question_count===0)return 'Not Tested';
+          const score=category?item.score_percent??item.calculated_score_percent:item.overall_percent??item.calculated_overall_percent;
+          if(score==null)return 'Not Reported';
+          const count=category?item.question_count:section.question_count;
+          const peerValue=item.peer_score_percent??item.peer_average_points;
+          const peerUnit=item.peer_score_percent!=null?'%':item.peer_average_points!=null?' points':'';
+          const peer=!category||peerValue==null?'':` · peer ${peerValue}${peerUnit}`;
+          const exposure=count!=null?` · ${count} q${count<3?' (limited exposure)':''}`:'';
+          const source=category?item.score_source:section.overall_score_source;
+          const method=source==='earned-points-over-possible-points'?' · calculated from points':source==='archer-reported'?' · provider-reported':'';
+          return `${score}%${method}${peer}${exposure}`;
+        };
+        const attemptHeaders=attempts.map(row=>`<th colspan="2">${text(fmt(when(row)))}<br>${text(row.assessment_name||'Archer CAT')}</th>`).join('');
+        const categoryRows=ArcherCAT.categories.map(category=>`<tr><th scope="row">${text(category)}</th>${attempts.map(row=>`<td>${text(value(row.archer_cat_data.classic,category,'classic'))}</td><td>${text(value(row.archer_cat_data.ngn,category,'ngn'))}</td>`).join('')}<td>${rowCombined(attempts[attempts.length-1].archer_cat_data,category)}</td></tr>`).join('');
+        const latestDetail=attempts[attempts.length-1].archer_cat_data;
+        const subjectNames=[...new Set(['classic','ngn'].flatMap(section=>Object.keys(latestDetail.subject_lesson?.[section]?.subjects||{})))].sort();
+        const subjectRows=subjectNames.map(subject=>{
+          const subjectCell=section=>{
+            const item=latestDetail.subject_lesson?.[section]?.subjects?.[subject];
+            if(!item)return 'Not Reported';
+            const score=item.score_percent==null?'Not Reported':`${item.score_percent}%`;
+            const peer=item.peer_score==null?'':` · peer ${item.peer_score}${item.peer_score_unit==='percent'?'%':item.peer_score_unit==='points'?' points':' · unit unclear'}`;
+            const count=item.question_count==null?'':` · ${item.question_count} q`;
+            return `${score}${peer}${count}`;
+          };
+          return `<tr><th scope="row">${text(subject)}</th><td>${text(subjectCell('classic'))}</td><td>${text(subjectCell('ngn'))}</td></tr>`;
+        }).join('');
+        function rowCombined(detail,category){
+          const combined=detail.combined?.categories?.[category];
+          return combined?`${text(combined.score)}% · ${text(combined.earned_points)}/${text(combined.possible_points)} pts`:'Insufficient Data';
+        }
+        const summaries=attempts.map(row=>{
+          const detail=row.archer_cat_data,classic=value(detail.classic),ngn=value(detail.ngn),combined=detail.combined?.overall;
+          return `<tr><th scope="row">${text(fmt(when(row)))} · ${text(row.assessment_name||'Archer CAT')}</th><td>${text(detail.result||'Not reported')}</td><td>${text(detail.total_questions??'Not reported')}</td><td>${text(classic)} · ${text(detail.classic.question_count??'—')} q</td><td>${text(ngn)} · ${text(detail.ngn.question_count??'—')} q</td><td>${combined?.score==null?'Insufficient Data':`${text(combined.score)}% · ${text(combined.earned_points)}/${text(combined.possible_points)} points`}</td></tr>`;
+        }).join('');
+        return `<section style="margin-top:18px"><h3 style="font-size:1rem">Archer CAT · separate Classic and NGN trends</h3>
+          <p style="color:var(--muted);font-size:.8rem">Classic and NGN reported percentages remain separate. Combined performance uses actual earned/possible points only. Small category samples are marked limited exposure.</p>
+          <div style="overflow-x:auto"><table class="ov-table"><thead><tr><th>CAT date / client-needs category</th>${attemptHeaders}<th>Latest combined</th></tr><tr><th></th>${attempts.map(()=>'<th>Classic · peer value</th><th>NGN · peer value</th>').join('')}<th>Points-based</th></tr></thead><tbody>${categoryRows}</tbody></table></div>
+          ${subjectRows?`<h4>Subject/Lesson view · latest CAT · separate from Client Needs</h4><div style="overflow-x:auto"><table class="ov-table"><thead><tr><th>Archer subject</th><th>Classic % · peer value · questions</th><th>NGN % · peer value · questions</th></tr></thead><tbody>${subjectRows}</tbody></table></div>`:''}
+          <div style="overflow-x:auto;margin-top:12px"><table class="ov-table"><thead><tr><th>Attempt</th><th>Pass/Fail</th><th>Total Q</th><th>Classic overall</th><th>NGN overall</th><th>Combined</th></tr></thead><tbody>${summaries}</tbody></table></div>
+          ${legacy?'<p style="color:var(--muted)">Legacy Archer CAT records remain saved, but are excluded from section-level comparisons because their section-level scoring method was not recorded.</p>':''}
+        </section>`;
+      };
       const draw = (platform, mode) => {
         const rows=(byPlatform.get(platform)||[]).slice().sort((a,b)=>when(a).localeCompare(when(b)));
         const catScores=rows.filter(r=>r.overall_score!==null&&r.overall_score!==''&&Number.isFinite(Number(r.overall_score)));
@@ -1472,7 +1533,7 @@
         const cats=showCat&&latest?Object.entries(latest.category_scores||{}).map(([name,v])=>{const cur=Number(v),before=prev&&prev.category_scores&&prev.category_scores[name]!=null&&prev.category_scores[name]!==''?Number(prev.category_scores[name]):null;return{name,cur,delta:before!==null&&Number.isFinite(before)?cur-before:null}}).filter(c=>Number.isFinite(c.cur)).sort((a,b)=>a.cur-b.cur):[];
         const table=cats.length?`<h3 style="margin:16px 0 6px;font-size:.95rem">Latest CAT categories · ${fmt(when(latest))} (${text(AssessmentPlatforms.name(latest.platform))})</h3>`+cats.map(c=>{const col=c.cur<55?'#9c3535':c.cur<70?'#b07830':'var(--teal)';return`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:.88rem"><span style="font-weight:600">${text(c.name)}</span><span><b style="color:${col}">${Math.round(c.cur)}%</b>${c.delta!==null?' · '+arrow(c.delta):''}</span></div></div>`}).join(''):'';
         const legend=`<p style="font-size:.78rem;color:var(--muted);margin:4px 0 10px"><span style="color:var(--teal);font-weight:800">● CAT / readiness</span> &nbsp; <span style="color:#a94f67;font-weight:800">● Practice</span> · same date and percent axes, separate scores</p>`;
-        return legend+summary('CAT/readiness',catLatest,catPrev,'var(--teal)')+summary('practice',practiceLatest,practicePrev,'#a94f67')+chart+table+(practiceResult.error?'<p style="color:#9c3535">Practice history could not be loaded: '+text(practiceResult.error.message||'Please try again.')+'</p>':'');
+        return legend+summary('CAT/readiness',catLatest,catPrev,'var(--teal)')+summary('practice',practiceLatest,practicePrev,'#a94f67')+chart+table+renderArcherSectionTrend(rows)+(practiceResult.error?'<p style="color:#9c3535">Practice history could not be loaded: '+text(practiceResult.error.message||'Please try again.')+'</p>':'');
       };
       const chips = platforms.length > 1 ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">${platforms.map(pl => `<button type="button" class="class-tab" data-trend-platform="${text(pl)}" aria-selected="${pl === selected}">${text(platformName(pl))}</button>`).join('')}</div>` : '';
       const seriesButtons=['cat','practice','both'].map(mode=>`<button type="button" class="class-tab" data-trend-series="${mode}" aria-pressed="${(window.__studentTrendSeries||'both')===mode}">${({cat:'CAT only',practice:'Practice only',both:'Compare both'})[mode]}</button>`).join('');

@@ -257,7 +257,7 @@ test('tutor CAT trend combines completed portal CATs with outside platforms in d
 test('admin progress trend shows the latest assessment category snapshot', () => {
   const { context, $ } = harness();
   context.date = value => value;
-  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    function renderTrend('), tutorHtml.indexOf('    function renderRecentAssessments(')), context);
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    function archerValue('), tutorHtml.indexOf('    function renderRecentAssessments(')), context);
   const categories = [
     ['Management of Care', 67],
     ['Safety and Infection Control', 33],
@@ -280,6 +280,43 @@ test('admin progress trend shows the latest assessment category snapshot', () =>
     assert.ok(trend.includes(category), `missing category ${category}`);
     assert.match(trend, new RegExp(`<strong>${score}%<\\/strong>`));
   }
+});
+
+test('student and tutor Archer displays keep percentage/point peers and report views separate', async () => {
+  const tables = fixture();
+  tables.student_assessment_uploads = [];
+  tables.student_supplemental_practice_results = [];
+  const detail = {
+    result: 'PASS',
+    classic: { categories: { 'Management of Care': { score_percent: 71, peer_score_percent: 65, question_count: 7 } } },
+    ngn: { categories: { 'Management of Care': { score_percent: 83, peer_average_points: 144, question_count: 7 } } },
+    combined: { overall: { score: null }, categories: {} },
+    subject_lesson: { ngn: { subjects: { 'Adult Health': { score_percent: 83, peer_score: 2, peer_score_unit: 'percent', question_count: 37 } } } }
+  };
+  tables.external_assessments = [{
+    platform: 'Archer', assessment_name: 'Synthetic CAT', taken_at: '2026-10-24',
+    overall_score: null, category_scores: {}, archer_cat_data: detail
+  }];
+  const { context, $ } = harness(tables);
+  vm.runInContext(read('assessment-archer.js'), context);
+  context.ArcherCAT = context.window.ArcherCAT;
+  context.date = value => value;
+  vm.runInContext(tutorHtml.slice(tutorHtml.indexOf('    function archerValue('), tutorHtml.indexOf('    function renderRecentAssessments(')), context);
+  const before = JSON.stringify(detail);
+  await context.renderCatTrend(context.student);
+  context.renderTrend([{ ...tables.external_assessments[0], taken_on: '2026-10-24', fromHistory: true }], []);
+  for (const id of ['cat-trend-view', 'progress-trend']) {
+    const html = $(id).innerHTML;
+    assert.match(html, /peer 65%/);
+    assert.match(html, /peer 144 points/);
+    assert.match(html, /peer 2%/);
+    assert.match(html, /Subject\/Lesson/);
+    assert.match(html, /Client Need/);
+    assert.match(html, /Adult Health/);
+    assert.match(html, /Insufficient Data/);
+    assert.doesNotMatch(html, /null%|undefined%|NaN/);
+  }
+  assert.equal(JSON.stringify(detail), before);
 });
 
 test('unknown platforms remain distinct except for case/whitespace, including a platform called All', async () => {
