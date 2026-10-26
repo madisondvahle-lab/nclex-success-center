@@ -237,6 +237,7 @@ export function recordCredit(checkpoint, detail) {
 export function publicCheckpoint(checkpoint) {
   const result = { ...checkpoint };
   delete result.ngnState;
+  delete result.selectionHistory;
   return result;
 }
 

@@ -28,7 +28,7 @@ const state = { tables: {}, token: 'student-token', failCommit: false };
 class Query {
   constructor(table) { this.table = table; this.filters = []; this.start = 0; this.end = Infinity; }
   select(columns) {
-    assert.ok(!columns?.includes('in_house_assessment_attempts!inner'), 'Deferred cross-attempt history lookup must not run in this release');
+    if (columns?.includes('in_house_assessment_attempts!inner')) state.historyReads = (state.historyReads || 0) + 1;
     return this;
   }
   eq(key, value) { this.filters.push(row => {
@@ -97,6 +97,7 @@ const hostedHandler = await loadHandler('./fixtures/cat-hosted-baseline/diagnost
 function reset() {
   enableNewAttempts = 'true';
   state.failCommit = false;
+  state.historyReads = 0;
   state.tables = {
     students: [{ id: 'student', auth_user_id: 'user', portal_stage: 'active' }],
     questions: [clone(question)], question_import_reviews: [{ source_key: question.source_key, status: 'published' }],
@@ -235,7 +236,44 @@ test('combined SATA NGN snapshots preserve identities, canonical scoring, ration
       }
 });
 
-test('actual hosted legacy handler and revised candidate have identical selection, saved rows, adaptation, stopping and review', async t => {
+function withoutSelectionSnapshot(tables) {
+  const copy = clone(tables);
+  for (const attempt of copy.in_house_assessment_attempts) delete attempt.checkpoint.selectionHistory;
+  return copy;
+}
+
+test('v9 history snapshot is private, immutable to clients, and avoids per-answer historical scans', async t => {
+  reset();
+  enableNewAttempts = 'false';
+  t.mock.method(Math, 'random', () => 0);
+  const bank = Array.from({ length: 8 }, (_, i) => traditionalKey(`history-choice-${i}`));
+  state.tables.in_house_diagnostic_item_keys = bank;
+  state.tables.in_house_assessment_attempts.push({ id: 'prior', student_id: 'student', status: 'completed', checkpoint: {} });
+  state.tables.in_house_assessment_item_responses.push({
+    id: 'prior-response', attempt_id: 'prior', item_id: bank[0].item_id,
+  });
+  const started = await request({ action: 'start', mode: 'practice', profile: { qCount: 5 }, sessionKey: 'history' });
+  assert.equal(started.status, 200);
+  assert.equal(started.data.currentItemId, bank[1].item_id);
+  assert.equal(started.data.attempt.checkpoint.selectionHistory, undefined);
+  assert.equal(state.historyReads, 1);
+  const id = started.data.attempt.id;
+  const active = state.tables.in_house_assessment_attempts.find(a => a.id === id);
+  assert.deepEqual(active.checkpoint.selectionHistory.answeredIds, [bank[0].item_id]);
+  const paused = await request({ action: 'checkpoint', attemptId: id, expectedRevision: 0,
+    checkpoint: { selectionHistory: { version: 1, answeredIds: [] }, draft: { selected: [0] } } });
+  assert.equal(paused.status, 200);
+  assert.deepEqual(active.checkpoint.selectionHistory.answeredIds, [bank[0].item_id]);
+  const resumed = await request({ action: 'resume', assessmentKey: 'diagnostic-practice' });
+  assert.equal(resumed.data.currentItemId, started.data.currentItemId);
+  const answered = await request({ action: 'answer', attemptId: id, expectedRevision: 1,
+    itemId: started.data.currentItemId, answer: 0 });
+  assert.equal(answered.status, 200);
+  assert.equal(state.historyReads, 1);
+  assert.equal(answered.data.nextItemId, bank[2].item_id);
+});
+
+test('all-seen fallback preserves hosted scoring, saved answer rows, stopping and review', async t => {
   t.mock.method(Math, 'random', () => 0);
   t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-10-22T06:00:00Z').getTime() });
   for (const mode of ['nclex', 'mock', 'assessment', 'practice', 'remediation']) {
@@ -254,7 +292,7 @@ test('actual hosted legacy handler and revised candidate have identical selectio
         id: 'completed-history', student_id: 'student', assessment_key: 'diagnostic-mock',
         status: 'completed', assessment_version: 'in-house-core-v1', checkpoint: { original: 'preserved' },
       });
-      state.tables.in_house_assessment_item_responses = bank.slice(0, 155).map((key, i) => ({
+      state.tables.in_house_assessment_item_responses = bank.map((key, i) => ({
         id: `history-${i}`, attempt_id: 'completed-history', item_id: key.item_id,
         question_type: key.item_type, selected_answer: 0, is_correct: true,
       }));
@@ -305,7 +343,7 @@ test('actual hosted legacy handler and revised candidate have identical selectio
         const replayBefore = clone(state.tables);
         assert.equal((await send({ action: 'answer', attemptId, expectedRevision: revision, itemId: 'static-0', answer: 0 })).status, 409);
         assert.deepEqual(state.tables, replayBefore);
-        return { trace, tables: clone(state.tables) };
+        return { trace, tables: withoutSelectionSnapshot(state.tables) };
       }
       const expected = await run(hostedHandler, null);
       for (const protocol of [null, 'ngn-cat-v1']) {
@@ -354,7 +392,7 @@ test('actual hosted legacy grouped-case and abandon behavior matches candidate w
     const again = await send({ action: 'start', mode: 'mock', sessionKey: 'abandon-test' });
     await send({ action: 'abandon', attemptId: again.data.attempt.id });
     await send({ action: 'abandon', attemptId: again.data.attempt.id });
-    return { trace, tables: clone(state.tables) };
+    return { trace, tables: withoutSelectionSnapshot(state.tables) };
   }
   const actual = await run(handler);
   const expected = await run(hostedHandler);

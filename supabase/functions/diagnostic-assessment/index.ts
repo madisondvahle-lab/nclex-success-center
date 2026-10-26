@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { selectionPreferences, historySnapshot } from '../_shared/diagnostic-assessment-history.mjs';
 import { presentation, newPresentations, canonicalAnswer } from '../_shared/sata-presentation.mjs';
 import {
   pickNextQuestion,
@@ -354,7 +355,9 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
   if (ngnEnabled) Object.assign(profile, { scoringModel: MODEL });
 
   const requirements = await coreRequirements(context.service);
-  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions);
+  const preferences = scope === 'diagnostic'
+    ? await selectionPreferences(context.service, context.student.id, keys) : null;
+  const firstItem = pickNextQuestion(keys.filter(row => row.selectable), [], profile, 0.5, requirements, targetQuestions, preferences || {});
   if (!firstItem) throw new HttpError(503, 'No assessment items are available for this mode.');
   const now = new Date().toISOString();
   const examTimer = mode === 'mock'
@@ -385,6 +388,7 @@ async function startAttempt(context: Awaited<ReturnType<typeof createContext>>, 
     ...(body.optionProtocol === presentation.VERSION && body.mcqOptionProtocol !== 'mcq-order-v1' ? { presentations: newPresentations(keys) } : {}),
     mode,
     profile,
+    ...(preferences ? { selectionHistory: historySnapshot(preferences) } : {}),
     currentItemId: firstItem.item_id,
     ability: 0.5,
     answeredItemIds: [],
@@ -610,6 +614,8 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
   }
 
   const requirements = await coreRequirements(context.service);
+  const preferences = scope === 'diagnostic'
+    ? await selectionPreferences(context.service, context.student.id, keys, attempt) : null;
   let result: string | null = null;
   const continuingCase = ngnResult && !ngnResult.final;
   if (!continuingCase && versioned && (mode === 'nclex' || mode === 'mock')) result = shouldStopNGN(newHistory, ability, requirements, mode);
@@ -628,12 +634,14 @@ async function answerAttempt(context: Awaited<ReturnType<typeof createContext>>,
     ability,
     requirements,
     attempt.target_questions,
+    preferences || {},
   );
   const complete = reachedTarget || !next;
 
   const nextRevision = revision + 1;
   const checkpoint = {
     ...attempt.checkpoint,
+    ...(preferences ? { selectionHistory: historySnapshot(preferences) } : {}),
     currentItemId: next?.item_id || null,
     ability,
     answeredItemIds: newHistory.map(row => row.id),
