@@ -136,8 +136,15 @@ The owner approved this narrow completion-function extension on October 26,
 the unchanged weekly path. It retains admin/owner checks and authenticated-only
 execution, changes no RLS policies, and performs no data backfill. CAT selection,
 approval controls, admission settings and server functions are outside this
-release. Deployment remains GitHub Pages from `main` and repository root at
-`portal.studywithmadison.com`. Preparing this file does not mean it is applied.
+release. Applied to the linked production project on October 26, 2026, after
+PR #268 checks and direct review passed. Readback verified the function owner
+(`postgres`), fixed search path, security-definer setting, authenticated-only
+grant and both allowed completion branches. Aggregate counts and ordered row
+fingerprints for seven application tables (questions, students, resources,
+supplemental results, CAT attempts/responses and flags), plus their policy
+fingerprint, were identical before/after. No production test records were
+created. Deployment remains GitHub Pages from `main` and repository root at
+`portal.studywithmadison.com`.
 
 Author workflow:
 1. Question bank → **Intake & Legacy** → Create an interactive question. Choose **Unfolding
@@ -175,6 +182,12 @@ include explicit multi-assignment, six interaction types in one case,
 standalone record-backed MCQ and numeric NGN, staged charts, refresh resume,
 failed-save/completion retries, one result per submission, student saved
 history and admin saved review. No production students/questions were used.
+The final focused gate also includes shared UI, MCQ and SATA presentation
+regressions: 99 tests passed. The broader test glob has 22 pre-existing CAT
+endpoint-fixture failures also reproduced on clean `main` (`d77ebd8`); those
+fixtures do not recognize the existing `get_cat_approved_questions` RPC.
+They are outside this release and have not been suppressed or repaired here;
+the full repository suite must not be described as green.
 
 An internal question-bank management page must never be used as a student quiz.
 
