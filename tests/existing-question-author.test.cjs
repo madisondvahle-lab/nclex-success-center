@@ -24,6 +24,7 @@ function harness(question) {
     setAttribute() {}
     addEventListener(name, handler) { this.events[name] = handler; }
     before(child) { form.appendChild(child); }
+    after(child) { form.appendChild(child); }
     querySelector(selector) {
       if (selector === ':scope > .buttons') return buttons;
       if (selector.includes('submit')) return save;

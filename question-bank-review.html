@@ -1352,8 +1352,12 @@
       const editable=revision?{...question,...revision.proposed_content}:question;
       openEdit(question.id,editable);
       const form=$('ed-form'),type=editable.item_type||'mcq',intro=form.querySelector('.intro');
-      intro.textContent=revision?'You are editing the saved correction draft, not the original question. Saving changes requires fresh approval before application.':'This is an existing question. Your changes will be stored as a correction draft and will not affect students until a separate approval and application.';
-      form.querySelector('button[type="submit"]').textContent='Save correction draft';
+      intro.textContent='Save and apply correction updates the master question using your admin approval. Publication and CAT approval remain separate. Save draft only leaves the master unchanged and requires later approval and application.';
+      const applyButton=form.querySelector('button[type="submit"]');
+      applyButton.textContent='Save and apply correction';applyButton.value='apply';
+      const draftButton=document.createElement('button');
+      draftButton.type='submit';draftButton.value='draft';draftButton.className='button secondary';draftButton.textContent='Save draft only';
+      applyButton.after(draftButton);
       const fields=document.createElement('div');
       fields.innerHTML=`<label for="e-summary">Reason / audit finding reference</label><textarea id="e-summary" rows="2" required>${esc(revision?.change_summary||'')}</textarea><label for="e-cj">Clinical judgment skill</label><input type="text" id="e-cj" value="${esc(editable.clinical_judgment_skill||'')}"><label for="e-option-rationales">Option rationales (JSON object)</label><textarea id="e-option-rationales" rows="4" required>${esc(JSON.stringify(editable.option_rationales||{},null,2))}</textarea><label for="e-reference-list">References (JSON array)</label><textarea id="e-reference-list" rows="4" required>${esc(JSON.stringify(editable.reference_list||[],null,2))}</textarea>${type==='mcq'?'':`<label for="e-item-data">NGN interaction/scoring data (JSON object)</label><textarea id="e-item-data" rows="8" required>${esc(JSON.stringify(editable.item_data||{},null,2))}</textarea>`}`;
       if(globalThis.NGNAuthor){
@@ -1423,18 +1427,34 @@
         };
         const save=form.querySelector('button[type="submit"]');
         if(save.disabled)return;
-        save.disabled=true;save.textContent='Saving correction draft…';
+        const applyNow=event.submitter?.value==='apply';
+        save.disabled=true;draftButton.disabled=true;save.textContent=applyNow?'Saving and applying correction…':'Saving correction draft…';
+        let savedRevision=null,phase='save';
         try{
           const result=revision
             ?await db.rpc('update_question_revision_draft',{p_revision_id:revision.id,p_expected_proposed_at:revision.proposed_at,p_expected_status:revision.status,p_proposed_content:proposed,p_change_summary:summary})
             :await db.from('question_revision_drafts').insert({question_id:question.id,base_content:base,proposed_content:proposed,change_summary:summary,proposed_by:session.user.id,status:'pending_review'}).select('*').single();
           if(result.error)throw result.error;
           revisionDrafts=revisionDrafts.filter(item=>item.id!==result.data.id);
-          revisionDrafts.unshift(result.data);$('ed').classList.add('hidden');renderRevisionDrafts();render();
+          savedRevision=result.data;revision=savedRevision;
+          revisionDrafts.unshift(savedRevision);
+          if(applyNow){
+            phase='approve';
+            const approval=await db.rpc('approve_question_revision',{p_revision_id:savedRevision.id});
+            if(approval.error)throw approval.error;
+            savedRevision.status='approved';
+            phase='apply';
+            const application=await db.rpc('apply_question_revision',{p_revision_id:savedRevision.id});
+            if(application.error)throw application.error;
+            Object.assign(question,proposed);savedRevision.status='applied';
+            catApprovals.delete(question.id);
+          }
+          $('ed').classList.add('hidden');renderRevisionDrafts();render();renderManage();
         }catch(error){
           const message=error.code==='23505'?'Another open correction draft already exists. Copy your unsaved edits, then cancel and reopen to load the saved draft.':error.message||error;
-          alert(`Correction draft was not saved: ${message}. Your edits remain in this form. The original question remains unchanged.`);
-        }finally{save.disabled=false;save.textContent='Save correction draft'}
+          alert(phase==='save'?`Correction draft was not saved: ${message}. Your edits remain in this form. The original question remains unchanged.`:`Correction was saved but could not ${phase}: ${message}. The master question remains unchanged. Your correction is available in Review & Flags.`);
+          if(savedRevision)renderRevisionDrafts();
+        }finally{save.disabled=false;draftButton.disabled=false;save.textContent='Save and apply correction'}
       };
     }
     function loadDiagBank(){
