@@ -836,7 +836,7 @@
               <div class="panel-heading">
                 <div>
                   <h2>Import a reviewed batch</h2>
-                  <p>Load 25–50 questions as JSON. Importer validates structure, checks against the bank, and stages items as private inactive drafts.</p>
+                  <p>Load 1–50 questions as JSON. Importer validates structure, checks against the bank, and stages items as private inactive drafts. <a href="docs/question-bank-json-import.md" target="_blank" rel="noopener">JSON specification and example</a></p>
                 </div>
               </div>
               <div class="panel-content">
@@ -848,7 +848,7 @@
                 </div>
                 <label for="bulk-json" style="display:block;margin:12px 0 6px;font-size:.78rem;font-weight:750">Or paste a JSON batch</label>
                 <textarea id="bulk-json" rows="8" style="display:block;width:100%;padding:12px;border:1px solid var(--admin-line);background:#fff;font:.82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
-                <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 25–50 uniquely identified questions. Review overlaps individually; clear items can be marked reviewed together.</p>
+                <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 1–50 uniquely identified questions. Review overlaps individually; clear items can be marked reviewed together.</p>
                 <div class="quality-grid" id="bulk-preview-list"></div>
               </div>
             </section>
@@ -901,7 +901,7 @@
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
-  <script src="ngn-author-ngn.js?v=clinical-record-practice-v1"></script>
+  <script src="ngn-author-ngn.js?v=bulk-validation-v1"></script>
   <script src="diagnostic-question-bank.js"></script>
   <script src="cat-inventory.js"></script>
   <script>
@@ -1025,6 +1025,28 @@
       'Pharmacology & Medication Safety','Fundamentals, Safety & Infection Control',
       'Leadership & Professional Practice','Health Promotion & Maintenance'
     ]);
+    function validateBatchInteraction(item,type){
+      const hasData=item.item_data!==undefined&&item.item_data!==null;
+      let data=item.item_data;
+      if(type==='mcq'&&!hasData){
+        data={id:String(item.id||''),type:'mcq',stem:item.stem,rationale:item.rationale,options:item.options,correct:['abcd'.indexOf(String(item.correct_answer||'').toLowerCase())]};
+      }else{
+        if(!data||typeof data!=='object'||Array.isArray(data)||!Object.keys(data).length)throw new Error('item_data: provide the complete interaction object.');
+        if(data.schemaVersion!==1)throw new Error('item_data.schemaVersion: use 1 for authored practice delivery.');
+        if(type==='case'){
+          if(data.kind!=='case'||data.type!==undefined)throw new Error('item_data.kind: item_type "case" requires kind "case" and no type field.');
+          if(!Array.isArray(data.items)||data.items.length!==6)throw new Error('item_data.items: an imported unfolding case must contain exactly six ordered questions.');
+          data.items.forEach((child,index)=>{
+            if(child&&child.tabs!==undefined)throw new Error(`item_data.items[${index}].tabs: put shared clinical records on the parent case.`);
+          });
+        }else if(data.type!==type||data.kind!==undefined)throw new Error(`item_data.type: must match item_type "${type}" and must not declare a case kind.`);
+        if(type==='mcq'){
+          if(JSON.stringify(data.options)!==JSON.stringify(item.options))throw new Error('item_data.options: must match the top-level MCQ options in the same order.');
+          if(!Array.isArray(data.correct)||data.correct.length!==1||data.correct[0]!=='abcd'.indexOf(String(item.correct_answer||'').toLowerCase()))throw new Error('item_data.correct: must match the top-level MCQ correct_answer using its zero-based index.');
+        }
+      }
+      NGNAuthor.validate(data,undefined,1,'item_data');
+    }
     function validateBatchItems(items){
       if(!Array.isArray(items))throw new Error('The JSON file must contain an "items" array.');
       let warnings=$('bulk-position-warnings');
@@ -1054,8 +1076,12 @@
           if(!Array.isArray(item.options)||item.options.length!==4||item.options.some(option=>typeof option!=='string'||!option.trim()))errors.push('MCQ items need exactly four non-empty options.');
           if(!['a','b','c','d'].includes(String(item.correct_answer||'').toLowerCase()))errors.push('MCQ correct_answer must be a, b, c, or d.');
           if(optionRationales&&['a','b','c','d'].some(key=>typeof optionRationales[key]!=='string'||!optionRationales[key].trim()))errors.push('MCQ option_rationales must explain options a, b, c, and d.');
-        }else if(!item.item_data||typeof item.item_data!=='object'||Array.isArray(item.item_data)||!Object.keys(item.item_data).length)errors.push('NGN items need a non-empty item_data object containing their complete interaction and scoring structure.');
+        }
+        if(BULK_TYPES.has(type)){
+          try{validateBatchInteraction(item,type)}catch(error){errors.push(error.message)}
+        }
         if(!Array.isArray(item.references)||!item.references.length||item.references.some(ref=>!ref||typeof ref.title!=='string'||!ref.title.trim()||typeof ref.url!=='string'||!/^https?:\/\//i.test(ref.url)))errors.push('Add at least one reference with a title and http(s) URL.');
+        errors.forEach((message,i)=>{errors[i]=`Question ${number}${id?` (${id})`:''}: ${message}`});
         const entry={item,errors,match:stem?bulkMatch(item,previous):null,reviewed:false};
         previous.push(entry);
         return entry;
@@ -1072,7 +1098,7 @@
       previous.forEach(entry=>{const score=similarity(item.stem,entry.item.stem);if(score>bestScore){best={batchId:entry.item.id};bestScore=score}});
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
-    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=25&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=1&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
     function reviewClearBulkItems(){
       if(!bulkImportReady)return;
       stagedBatch.forEach(entry=>{if(!entry.errors.length&&!entry.match)entry.reviewed=true});
@@ -1092,7 +1118,7 @@
         const type=String(item.item_type||'').toLowerCase();
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
-        const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)}</a></li>`).join(''):'';
+        const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref?.url||'')}" target="_blank" rel="noopener noreferrer">${esc(ref?.title||'Invalid reference: add title and URL')}</a></li>`).join(''):'';
         return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I reviewed the match and confirmed this is a distinct item.':'I reviewed this item and its answer/rationales.'}</span></label></article>`;
       }).join('');
       document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
@@ -1104,7 +1130,7 @@
       if(!raw){$('bulk-status').textContent='Choose a JSON file or paste a batch first.';return}
       try{
         const parsed=JSON.parse(raw),items=Array.isArray(parsed)?parsed:parsed&&typeof parsed==='object'?parsed.items:null;
-        if(!Array.isArray(items)||items.length<25||items.length>50)throw new Error(`A batch must contain 25–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
+        if(!Array.isArray(items)||items.length<1||items.length>50)throw new Error(`A batch must contain 1–50 questions; found ${Array.isArray(items)?items.length:'no items array'}.`);
         stagedBatch=validateBatchItems(items);
         $('bulk-status').textContent=`Validated ${items.length} items. Review flagged overlaps individually; clear items can be marked reviewed together.`;
         renderBulkPreview();
@@ -1112,6 +1138,12 @@
     }
     async function saveBulkDrafts(){
       if(!pendingBulkTracking&&!stagedCanSave())return;
+      if(!pendingBulkTracking){
+        const checked=validateBatchItems(stagedBatch.map(entry=>entry.item));
+        if(checked.some(entry=>entry.errors.length)){
+          stagedBatch=checked;renderBulkPreview();return;
+        }
+      }
       const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
       try{
         if(!pendingBulkTracking){

@@ -223,57 +223,117 @@
       field(parent, 'Unit', item.unit, v => { item.unit = v; });
     }
   }
-  function validate(item, inheritedTabs, stage = 1) {
-    const fail = message => { throw new Error(message); };
+  function validate(item, inheritedTabs, stage = 1, path = 'item') {
+    const fail = (field, message) => { throw new Error(`${path}${field ? '.' + field : ''}: ${message}`); };
     const text = v => typeof v === 'string' && !!v.trim();
+    const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
     const positive = v => Number.isInteger(v) && v >= 1;
     const options = a => Array.isArray(a) && a.length > 0 && a.every(text);
     const indices = (a, length, count) => Array.isArray(a) && a.length > 0 && (count === undefined || a.length === count) && new Set(a).size === a.length && a.every(n => Number.isInteger(n) && n >= 0 && n < length);
-    if (!text(item.id)) fail('Every item needs its existing stable ID.');
-    const tabs = inheritedTabs || item.tabs || [];
-    const cellIds = tabs.flatMap(t => (t.entries || []).flatMap(e => e.cells.filter(c => c.id).map(c => c.id)));
-    if (new Set(cellIds).size !== cellIds.length) fail('Selectable chart cell IDs must be unique across timestamps and tabs.');
-    if (new Set(tabs.map(t => t.id)).size !== tabs.length) fail('Clinical tab IDs must be unique.');
-    tabs.forEach(tab => {
-      if (!text(tab.id) || !text(tab.label) || !positive(tab.fromItem ?? 1)) fail('Each clinical tab needs an ID, label, and positive item number.');
-      if (!tab.entries) return;
-      if (!options(tab.columns)) fail('Add clinical chart column headings.');
-      tab.entries.forEach(e => {
-        if (!text(e.at) || !Number.isFinite(Date.parse(e.at)) || !positive(e.fromItem ?? 1)) fail('Each chart entry needs a valid date/time and positive item number.');
-        if (e.cells.length !== tab.columns.length || e.cells.some(c => !text(typeof c === 'string' ? c : c.t))) fail('Every chart entry must have one nonempty cell per column.');
+    if (!object(item)) fail('', 'Question data must be an object.');
+    if (!text(item.id)) fail('id', 'Every item needs its existing stable ID.');
+    if (item.kind !== undefined && item.kind !== 'case') fail('kind', 'Use kind "case" only for an unfolding case.');
+    if (item.kind === 'case' && item.type !== undefined) fail('type', 'A case uses kind "case", not a question type.');
+    if (item.schemaVersion !== undefined && item.schemaVersion !== 1) fail('schemaVersion', 'Only schemaVersion 1 is supported.');
+    if (item.textFormat !== undefined && !['plain', 'html'].includes(item.textFormat)) fail('textFormat', 'Use plain or html.');
+    if (item.scoringVersion !== undefined && item.scoringVersion !== 'ngn-v1') fail('scoringVersion', 'Use ngn-v1 or omit for legacy scoring.');
+    const tabs = inheritedTabs || (item.tabs === undefined ? [] : item.tabs);
+    if (!Array.isArray(tabs)) fail('tabs', 'Clinical tabs must be an array.');
+    const tabIds = new Set(), cellIds = new Set();
+    tabs.forEach((tab, ti) => {
+      const field = `tabs[${ti}]`;
+      if (!object(tab)) fail(field, 'Each clinical tab must be an object.');
+      if (!text(tab.id)) fail(`${field}.id`, 'Each clinical tab needs an ID, label, and positive item number.');
+      if (!text(tab.label)) fail(`${field}.label`, 'Each clinical tab needs an ID, label, and positive item number.');
+      if (!positive(tab.fromItem === undefined ? 1 : tab.fromItem)) fail(`${field}.fromItem`, 'Each clinical tab needs an ID, label, and positive item number.');
+      if (tabIds.has(tab.id)) fail(`${field}.id`, 'Clinical tab IDs must be unique.');
+      tabIds.add(tab.id);
+      if (tab.entries === undefined) {
+        if (!text(tab.html)) fail(`${field}.entries`, 'Add structured chart entries or nonempty legacy html.');
+        return;
+      }
+      if (!options(tab.columns)) fail(`${field}.columns`, 'Add clinical chart column headings.');
+      if (!Array.isArray(tab.entries) || !tab.entries.length) fail(`${field}.entries`, 'Add at least one timestamped chart entry.');
+      tab.entries.forEach((e, ei) => {
+        const entryField = `${field}.entries[${ei}]`;
+        if (!object(e)) fail(entryField, 'Each chart entry must be an object.');
+        if (!text(e.at) || !Number.isFinite(Date.parse(e.at))) fail(`${entryField}.at`, 'Each chart entry needs a valid date/time.');
+        if (!positive(e.fromItem === undefined ? 1 : e.fromItem)) fail(`${entryField}.fromItem`, 'Each chart entry needs a positive item number.');
+        if (!Array.isArray(e.cells) || e.cells.length !== tab.columns.length) fail(`${entryField}.cells`, 'Every chart entry must have one nonempty cell per column.');
+        e.cells.forEach((c, ci) => {
+          const cellField = `${entryField}.cells[${ci}]`;
+          if (!text(typeof c === 'string' ? c : object(c) ? c.t : null)) fail(cellField, 'Every chart entry must have one nonempty cell per column.');
+          if (object(c) && c.id !== undefined) {
+            if (!text(c.id)) fail(`${cellField}.id`, 'Selectable chart cells need nonempty text IDs.');
+            if (cellIds.has(c.id)) fail(`${cellField}.id`, 'Selectable chart cell IDs must be unique across timestamps and tabs.');
+            cellIds.add(c.id);
+          }
+        });
       });
     });
     if (item.kind === 'case') {
-      if (!text(item.scenario) || !item.items.length) fail('A case needs a scenario and at least one question.');
-      if (new Set(item.items.map(it => it.id)).size !== item.items.length) fail('Case question IDs must be unique.');
-      if (tabs.some(t => (t.fromItem || 1) > item.items.length || t.entries?.some(e => (e.fromItem || 1) > item.items.length))) fail('Clinical information cannot be released after the last case question.');
-      item.items.forEach((it, i) => validate(it, tabs, i + 1));
+      if (inheritedTabs) fail('kind', 'Nested cases are not supported.');
+      if (!text(item.scenario)) fail('scenario', 'A case needs a scenario and at least one question.');
+      if (!Array.isArray(item.items) || !item.items.length) fail('items', 'A case needs a scenario and at least one question.');
+      if (item.items.some(it => !object(it))) fail('items', 'Each case question must be an object.');
+      if (new Set(item.items.map(it => it.id)).size !== item.items.length) fail('items', 'Case question IDs must be unique.');
+      tabs.forEach((tab, ti) => {
+        if ((tab.fromItem ?? 1) > item.items.length) fail(`tabs[${ti}].fromItem`, 'Clinical information cannot be released after the last case question.');
+        tab.entries?.forEach((entry, ei) => {
+          if ((entry.fromItem ?? 1) > item.items.length) fail(`tabs[${ti}].entries[${ei}].fromItem`, 'Clinical information cannot be released after the last case question.');
+        });
+      });
+      item.items.forEach((it, i) => validate(it, tabs, i + 1, `${path}.items[${i}]`));
       return item;
     }
-    if (!text(item.prompt || item.stem) || !text(item.rationale)) fail('Every question needs question text and a rationale.');
-    if (item.scoring && item.scoring !== 'zero-one') fail('Unsupported scoring rule; use existing partial credit or all-or-nothing.');
+    if (!text(item.prompt || item.stem)) fail('stem', 'Every question needs question text and a rationale.');
+    if (!text(item.rationale)) fail('rationale', 'Every question needs question text and a rationale.');
+    if (item.scoring && item.scoring !== 'zero-one') fail('scoring', 'Unsupported scoring rule; use existing partial credit or all-or-nothing.');
     if (item.type === 'mcq' || item.type === 'sata') {
-      if (!options(item.options) || !indices(item.correct, item.options.length, item.type === 'mcq' ? 1 : undefined)) fail('Enter answer choices and valid correct option numbers.');
+      if (!options(item.options)) fail('options', 'Enter nonempty answer choices.');
+      if (!indices(item.correct, item.options.length, item.type === 'mcq' ? 1 : undefined)) fail('correct', 'Enter answer choices and valid correct option numbers.');
     } else if (item.type === 'matrix') {
-      if (!options(item.rows) || !options(item.cols) || !item.correct.length || new Set(item.correct).size !== item.correct.length || item.correct.some(k => !/^\d+:\d+$/.test(k) || +k.split(':')[0] >= item.rows.length || +k.split(':')[1] >= item.cols.length)) fail('Enter matrix rows, columns, and valid correct cell coordinates.');
-      if (item.responseMode === 'single' && item.rows.some((_, i) => item.correct.filter(k => k.startsWith(`${i}:`)).length !== 1)) fail('A single-selection matrix needs exactly one correct cell in each row.');
-      if (item.scoringAxis && !['row', 'column'].includes(item.scoringAxis)) fail('Matrix scoring groups must be rows or columns.');
+      if (!options(item.rows)) fail('rows', 'Enter nonempty matrix rows.');
+      if (!options(item.cols)) fail('cols', 'Enter nonempty matrix columns.');
+      if (!Array.isArray(item.correct) || !item.correct.length || new Set(item.correct).size !== item.correct.length || item.correct.some(k => typeof k !== 'string' || !/^(0|[1-9]\d*):(0|[1-9]\d*)$/.test(k) || +k.split(':')[0] >= item.rows.length || +k.split(':')[1] >= item.cols.length)) fail('correct', 'Enter matrix rows, columns, and valid correct cell coordinates.');
+      if (item.responseMode !== undefined && !['single', 'multiple'].includes(item.responseMode)) fail('responseMode', 'Use single or multiple.');
+      if (item.responseMode === 'single' && item.rows.some((_, i) => item.correct.filter(k => k.startsWith(`${i}:`)).length !== 1)) fail('correct', 'A single-selection matrix needs exactly one correct cell in each row.');
+      if (item.scoringAxis && !['row', 'column'].includes(item.scoringAxis)) fail('scoringAxis', 'Matrix scoring groups must be rows or columns.');
     } else if (item.type === 'cloze') {
+      if (!text(item.template)) fail('template', 'Add a sentence with numbered drop-down markers such as {{0}}.');
+      if (!Array.isArray(item.dropdowns) || !item.dropdowns.length) fail('dropdowns', 'Add at least one drop-down.');
       const markers = [...item.template.matchAll(/\{\{(\d+)\}\}/g)].map(m => +m[1]);
-      if (!item.dropdowns.length || markers.length !== item.dropdowns.length || item.dropdowns.some((d, i) => !markers.includes(i) || !options(d.options) || !indices([d.correct], d.options.length))) fail('Each drop-down needs choices, a correct choice, and one matching sentence marker.');
+      if (markers.length !== item.dropdowns.length || new Set(markers).size !== markers.length || item.dropdowns.some((_, i) => !markers.includes(i))) fail('template', 'Each drop-down needs choices, a correct choice, and one matching sentence marker.');
+      item.dropdowns.forEach((d, i) => {
+        if (!object(d) || !options(d.options)) fail(`dropdowns[${i}].options`, 'Each drop-down needs nonempty choices.');
+        if (!indices([d.correct], d.options.length)) fail(`dropdowns[${i}].correct`, 'Use a zero-based correct choice index within this drop-down.');
+      });
     } else if (item.type === 'highlight') {
+      if (item.chartSelections !== undefined && typeof item.chartSelections !== 'boolean') fail('chartSelections', 'Use a boolean for chart selection mode.');
+      if (!Array.isArray(item.segments) || item.segments.some(s => !object(s) || !text(s.t) || (s.correct !== undefined && typeof s.correct !== 'boolean') || (s.correct && !text(s.id)))) fail('segments', 'Highlight segments need text and boolean correct flags; correct findings need IDs.');
       const selectable = item.segments.filter(s => s.id);
-      if (!selectable.length || !selectable.some(s => s.correct) || selectable.some(s => !text(s.id) || !text(s.t)) || new Set(selectable.map(s => s.id)).size !== selectable.length) fail('Highlight questions need unique finding IDs, text, and at least one correct finding.');
+      if (!selectable.length || !selectable.some(s => s.correct) || selectable.some(s => !text(s.id)) || new Set(selectable.map(s => s.id)).size !== selectable.length) fail('segments', 'Highlight questions need unique finding IDs, text, and at least one correct finding.');
       if (item.chartSelections) {
         const cells = tabs.filter(t => (t.fromItem || 1) <= stage).flatMap(t => (t.entries || []).filter(e => (e.fromItem || 1) <= stage).flatMap(e => e.cells));
-        if (selectable.some(s => !cells.some(c => c.id === s.id && c.t === s.t))) fail("Every selectable finding must match an available chart cell ID and text at this question's stage.");
+        if (selectable.some(s => !cells.some(c => c.id === s.id && c.t === s.t))) fail('segments', "Every selectable finding must match an available chart cell ID and text at this question's stage.");
       }
     } else if (item.type === 'bowtie') {
-      if (!['actions', 'conditions', 'complications'].every(k => options(item.bowtie[k])) || !indices(item.correct.actions, item.bowtie.actions.length, 2) || !indices([item.correct.condition], item.bowtie.conditions.length, 1) || !indices(item.correct.complications, item.bowtie.complications.length, 2)) fail('Bow-tie needs two correct actions, one condition, and two parameters, all matching valid choices.');
+      if (!object(item.bowtie)) fail('bowtie', 'Add actions, conditions, and complications choice arrays.');
+      for (const key of ['actions', 'conditions', 'complications']) if (!options(item.bowtie[key])) fail(`bowtie.${key}`, 'Enter nonempty answer choices.');
+      if (!object(item.correct)) fail('correct', 'Add actions, condition, and complications answer keys.');
+      for (const [key, choices, count] of [['actions', 'actions', 2], ['condition', 'conditions', 1], ['complications', 'complications', 2]]) {
+        if (!indices(key === 'condition' ? [item.correct[key]] : item.correct[key], item.bowtie[choices].length, count)) fail(`correct.${key}`, 'Bow-tie needs two correct actions, one condition, and two parameters, all matching valid choices.');
+      }
     } else if (item.type === 'fill') {
-      if (!Number.isFinite(item.correct) || !Number.isFinite(item.tolerance || 0) || (item.tolerance || 0) < 0) fail('Enter a numeric answer and a nonnegative tolerance.');
-    } else fail('Unsupported question type.');
-    if (!inheritedTabs && tabs.some(t => (t.fromItem || 1) > 1 || t.entries?.some(e => (e.fromItem || 1) > 1))) fail('Standalone records must be available from item 1.');
+      if (!Number.isFinite(item.correct)) fail('correct', 'Enter a numeric answer and a nonnegative tolerance.');
+      if (!Number.isFinite(item.tolerance ?? 0) || (item.tolerance ?? 0) < 0) fail('tolerance', 'Enter a numeric answer and a nonnegative tolerance.');
+    } else fail('type', 'Unsupported question type.');
+    if (!inheritedTabs) tabs.forEach((tab, ti) => {
+      if ((tab.fromItem ?? 1) > 1) fail(`tabs[${ti}].fromItem`, 'Standalone records must be available from item 1.');
+      tab.entries?.forEach((entry, ei) => {
+        if ((entry.fromItem ?? 1) > 1) fail(`tabs[${ti}].entries[${ei}].fromItem`, 'Standalone records must be available from item 1.');
+      });
+    });
     return item;
   }
   function metadata(root, source) {
