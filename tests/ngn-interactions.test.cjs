@@ -13,6 +13,16 @@ for (const file of ['exam-ui-ngn.js', 'ngn-author-ngn.js']) {
 }
 const { Exam, prepare, score, reviewHtml } = context.window.ExamUI;
 const { validate, blank } = context.window.NGNAuthor;
+test('split question typography matches prompts and options without restyling matrix controls', () => {
+  const css = readFileSync(join(__dirname, '..', 'exam-ui.css'), 'utf8');
+  assert.match(css, /\.ex-prompt\{[^}]*font-size:\.9em/);
+  assert.match(css, /\.ex-right \.ex-stem\{[^}]*font-size:\.9em/);
+  assert.match(css, /\.ex-right \.ex-opts\{[^}]*font-size:\.9em/);
+  assert.match(css, /\.ex-right \.ex-opts \.ex-opt\{[^}]*align-items:flex-start[^}]*min-height:44px/);
+  assert.match(css, /\.ex-right \.ex-opts \.ex-txt\{[^}]*min-width:0[^}]*line-height:1\.6/);
+  const page = readFileSync(join(__dirname, '..', 'question-bank-review.html'), 'utf8');
+  assert.match(page, /exam-ui\.css\?v=ngn-preview-typography-v1/);
+});
 const plain = value => JSON.parse(JSON.stringify(value));
 const item = (type, extra = {}) => ({ ...plain(blank(type)), scoringVersion: undefined, stem: 'Test prompt', rationale: 'Test explanation', ...extra });
 const tabs = [
