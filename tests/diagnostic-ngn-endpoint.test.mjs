@@ -103,6 +103,27 @@ function reset() {
     in_house_diagnostic_item_keys: [], in_house_assessment_attempts: [], in_house_assessment_item_responses: [],
   };
 }
+
+test('traditional inventory is admin-only, paginated, read-only and includes nonselectable case children', async () => {
+  reset();
+  state.tables.in_house_diagnostic_item_keys = Array.from({ length: 1003 }, (_, i) => ({
+    bank_scope: i === 1002 ? 'remediation' : 'diagnostic', item_id: `inventory-${i}`,
+    selectable: i % 2 === 0, parent_item_id: i % 2 ? `inventory-${i - 1}` : null,
+    correct_response: ['PRIVATE KEY'], rationale: 'PRIVATE RATIONALE',
+  }));
+  const before = clone(state.tables);
+  for (const token of ['student-token', 'invalid-token']) {
+    const result = await request({ action: 'traditional-inventory' }, token);
+    assert.equal(result.status, token === 'student-token' ? 403 : 401);
+    assert.ok(!JSON.stringify(result.data).includes('PRIVATE'));
+  }
+  const result = await request({ action: 'traditional-inventory' }, 'admin-token');
+  assert.equal(result.status, 200);
+  assert.equal(result.data.items.length, 1002);
+  assert.equal(result.data.summary.selectableEntries, 501);
+  assert.equal(result.data.summary.childRows, 501);
+  assert.deepEqual(state.tables, before);
+});
 async function request(body, token = 'student-token', clientProtocol = 'ngn-cat-v1', endpoint = handler) {
   const response = await endpoint.fetch(new Request('https://example.test/assessment', {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Origin: 'https://portal.studywithmadison.com' }, body: JSON.stringify({ ...body, clientProtocol }),

@@ -765,6 +765,27 @@ async function reviewAttempt(context: Awaited<ReturnType<typeof createContext>>,
   return { responses: historyFor(rows, keys, true, attempt.checkpoint), scoringModel: attempt.checkpoint?.scoringModel || 'in-house-core-v1' };
 }
 
+async function traditionalInventory(context: Awaited<ReturnType<typeof createContext>>) {
+  if (!context.isAdmin) throw new HttpError(403, 'Administrator access is required.');
+  const items = [];
+  for (let offset = 0; ; offset += 500) {
+    const { data, error } = await context.service.from('in_house_diagnostic_item_keys')
+      .select('bank_scope,item_id,item_source,parent_item_id,selectable,item_type,difficulty,blueprint,category,nclex_category,topic,cognitive_level,core_tags,correct_response,rationale,sequence_order,case_length')
+      .eq('bank_scope', 'diagnostic').order('item_id').range(offset, offset + 499);
+    if (error) throw error;
+    items.push(...(data || []));
+    if (!data || data.length < 500) break;
+  }
+  return {
+    items,
+    summary: {
+      registryRows: items.length,
+      selectableEntries: items.filter(item => item.selectable).length,
+      childRows: items.filter(item => item.parent_item_id).length,
+    },
+  };
+}
+
 export default {
   async fetch(request: Request) {
     if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders(request) });
@@ -784,6 +805,7 @@ export default {
         case 'answer': result = await answerAttempt(context, body); break;
         case 'abandon': result = await abandonAttempt(context, body); break;
         case 'review': result = await reviewAttempt(context, body); break;
+        case 'traditional-inventory': result = await traditionalInventory(context); break;
         default: throw new HttpError(400, 'Assessment action is not supported.');
       }
       return reply(request, result as object);
