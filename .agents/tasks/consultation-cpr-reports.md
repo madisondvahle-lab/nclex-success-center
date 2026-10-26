@@ -1,8 +1,10 @@
 # Consultation CPR reports
 
-Status: implementation and synthetic validation in progress on
-`feat/consultation-cpr-reports`. Migration preparation/testing approved by owner;
-production application requires separate explicit approval. Not deployed.
+Status: implementation and synthetic validation complete on
+`feat/consultation-cpr-reports`; release PR #273. After separately approving
+production application, the owner-approved migration was applied October 26,
+2026. GitHub Pages must serve the PR's merged main commit before the UI release
+is considered verified.
 
 ## Scope and architecture
 
@@ -27,18 +29,27 @@ production application requires separate explicit approval. Not deployed.
   is reported with its path for admin recovery. Partial multi-file failures
   report the saved count and instruct selecting only remaining files.
 
-## Migration approval gate
+## Approved migration and rollout
 
 `supabase-consult-cpr-files.sql` adds nullable `attempt_id` to
 `consult_intake_files`, a composite FK to the same intake's NCLEX attempt,
 and supporting indexes. Existing rows remain unchanged with null links.
 No policy, grant, bucket, clinical content, diagnostic, or student changes.
 
+Applied to linked project `pmjwwktwlsqpetwfvolb` after 21 focused tests,
+disposable PostgreSQL validation, and synthetic browser checks at 1280px and
+390px passed. Seven table fingerprints/counts (intakes, attempts, files, CPR
+ratings, consultations, diagnostics, students), public/storage policies, RLS
+flags, table grants, and bucket configuration matched before/after. Readback
+confirmed nullable UUID, the deferred same-intake FK, valid indexes, private
+bucket, and all three existing file links still null. No production report or
+student test records were created.
+
 The FK is deferred until transaction commit to preserve the existing atomic
 profile-merge sequence (attempts move before file metadata). Deleting an attempt
 clears only its attachment link, preserving the file and intake metadata.
 
-Before deploying:
+Release procedure:
 
 1. Run unit, consultation regression, disposable PostgreSQL, and isolated browser
    tests. Review the PR and required checks.
