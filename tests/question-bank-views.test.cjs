@@ -58,6 +58,6 @@ test('all three existing surfaces have filters and imported cards retain origina
   for (const id of ['manage-view-filters', 'import-view-filters', 'duplicate-view-filters']) assert.ok(html.includes(`id="${id}"`));
   assert.match(html, /shown\.map\(\(\{entry,index\}\)=>/);
   assert.match(html, /filteredBulkEntries\(\)\.map\(\(\{entry\}\)=>entry\)/);
-  assert.match(html, /QUESTION_COLUMNS='id,created_at,/);
+  assert.match(html, /QUESTION_COLUMNS='id,created_at,archived_at,/);
   assert.match(html, /if\(!filtered\.some\(q=>q\.id===id\)\)mSel\.delete\(id\)/);
 });

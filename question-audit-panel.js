@@ -28,6 +28,7 @@
     const skip = openDraftIds();
     const out = [];
     ctx.getLive().forEach(question => {
+      if (question.archived_at) return;
       if (!['mcq', 'sata'].includes(question.item_type || 'mcq') || skip.has(question.id)) return;
       const previous = latest.get(question.id);
       if (isQuarantined(previous)) return;
@@ -48,10 +49,11 @@
 
   function counts() {
     const by = {};
-    latest.forEach(audit => { by[audit.audit_status] = (by[audit.audit_status] || 0) + 1; });
+    const working = new Set(ctx.getLive().filter(q => !q.archived_at).map(q => q.id));
+    latest.forEach(audit => { if (working.has(audit.question_id)) by[audit.audit_status] = (by[audit.audit_status] || 0) + 1; });
     const spend = audits.reduce((sum, audit) => sum + Number(audit.est_cost_usd || 0), 0);
     const tokens = audits.reduce((sum, audit) => sum + (audit.input_tokens || 0) + (audit.output_tokens || 0), 0);
-    return { by, spend, tokens, audited: [...latest.values()].filter(audit => audit.audit_status !== 'error').length };
+    return { by, spend, tokens, audited: [...latest.values()].filter(audit => working.has(audit.question_id) && audit.audit_status !== 'error').length };
   }
 
   function renderSummary() {
@@ -59,10 +61,10 @@
     const cards = [
       ['Audited', audited], ['Passed', by.pass || 0], ['Auto-fix drafts', by.auto_fix || 0], ['Revised (drafts)', by.revised || 0],
       ['Quarantined', by.quarantine || 0], ['Errors (retryable)', by.error || 0], ['Est. AI cost', money(spend)],
-      ['Avg per audit', audited ? money(spend / audited) : '—'],
+      ['Avg per audit (lifetime)', audits.length ? money(spend / audits.length) : '—'],
     ];
     $('qa-summary').innerHTML = cards.map(([label, value]) => `<article class="stat"><strong>${esc(value)}</strong><span>${esc(label)}</span></article>`).join('');
-    $('qa-usage').textContent = `${tokens.toLocaleString()} tokens used across ${audits.length} audit record${audits.length === 1 ? '' : 's'}. Costs are estimates from published model prices.`;
+    $('qa-usage').textContent = `Status counts cover working questions only. Lifetime usage includes archived history: ${tokens.toLocaleString()} tokens across ${audits.length} audit record${audits.length === 1 ? '' : 's'}. Costs are estimates from published model prices.`;
   }
 
   function renderBatch() {
@@ -78,7 +80,7 @@
     }));
     updateRunButton();
   }
-  const pending = () => batch.filter(item => item.picked !== false && (!processed.has(item.question.id) || failedIds.has(item.question.id)));
+  const pending = () => batch.filter(item => !item.question.archived_at && item.picked !== false && (!processed.has(item.question.id) || failedIds.has(item.question.id)));
   function updateRunButton() {
     const n = pending().length;
     $('qa-run').disabled = running || !n;
@@ -157,6 +159,8 @@
   }
 
   async function refresh() {
+    if (!ctx || !root) return '';
+    batch = batch.filter(item => !item.question.archived_at);
     const errors = [];
     try { await reloadAudits(); } catch (error) { errors.push(`Could not reload audit results: ${error.message || error}`); }
     try { await ctx.reloadDrafts(); } catch (error) { errors.push(`Could not reload correction drafts: ${error.message || error}`); }
@@ -173,6 +177,7 @@
     const byId = new Map(ctx.getLive().map(question => [question.id, question]));
     return [...latest.values()].filter(audit => {
       const question = byId.get(audit.question_id); if (!question) return false;
+      if (Boolean(question.archived_at) !== ($('qa-f-archive').value === 'archived')) return false;
       if (f.status && audit.audit_status !== f.status) return false;
       if (f.risk && audit.clinical_risk !== f.risk) return false;
       if (f.active && String(question.active) !== f.active) return false;
@@ -225,7 +230,7 @@
     const blocked = openDraftIds();
     $('qa-results').innerHTML = rows.slice(0, limit).map(({ audit, question }) => {
       const draft = audit.revision_id ? drafts.get(audit.revision_id) : null;
-      const awaiting = draft && draft.status === 'pending_review';
+      const awaiting = !question.archived_at && draft && draft.status === 'pending_review';
       const issues = findingList(audit);
       const removed = isQuarantined(audit) && audit.quarantined_at;
       const actions = [];
@@ -236,6 +241,7 @@
         if (blocked.has(question.id)) actions.push('<span class="qa-detail">Re-audit blocked: a pending or approved correction draft already exists.</span>');
       }
       if (audit.audit_status === 'error') actions.push(`<button class="button secondary" type="button" data-qa-retry="${esc(question.id)}">Retry audit</button>`);
+      if (question.archived_at) actions.splice(0, actions.length, '<span class="qa-detail">Archived question: read-only audit history. Restore it in Master questions to resume review.</span>');
       return `<article class="candidate"><div class="qa-row">${awaiting ? `<input type="checkbox" data-qa-approve="${esc(draft.id)}" ${approveSel.has(draft.id) ? 'checked' : ''} aria-label="Select correction for batch approval">` : ''}<div style="flex:1"><div class="meta"><span class="tag ${STATUS_CLASS[audit.audit_status] || ''}">${esc(STATUS_LABEL[audit.audit_status] || audit.audit_status)}</span>${audit.screening_class ? `<span class="tag">${esc(audit.screening_class)}</span>` : ''}${audit.clinical_risk ? `<span class="tag ${audit.clinical_risk === 'high' ? 'bad' : audit.clinical_risk === 'medium' ? 'warn' : ''}">${esc(audit.clinical_risk)} risk</span>` : ''}<span class="tag">${esc(ctx.qlabel(question))}</span><span class="tag">${question.active ? 'Published' : 'Inactive'}</span>${draft ? `<span class="tag ${draft.status === 'approved' ? 'good' : 'warn'}">Draft: ${esc(draft.status.replace('_', ' '))}</span>` : ''}${removed ? '<span class="tag bad">Removed from assessments</span>' : ''}<span class="tag">${money(audit.est_cost_usd)}</span></div><h3>${esc(question.topic || 'Uncategorized')} · ${esc(question.difficulty || '')}</h3><p class="rationale">${esc(question.stem || '')}</p>${audit.note ? `<p class="qa-detail"><strong>Note:</strong> ${esc(audit.note)}</p>` : ''}${issues.length ? `<details><summary>Findings (${issues.length})</summary><ul class="qa-detail">${issues.map(issue => `<li>${esc(issue)}</li>`).join('')}</ul></details>` : ''}${verificationText(audit)}<div class="buttons">${actions.join('')}</div></div></div></article>`;
     }).join('');
     const sel = $('qa-results');
@@ -249,7 +255,8 @@
   }
 
   function updateApprove() {
-    const open = new Set(ctx.getDrafts().filter(draft => draft.status === 'pending_review').map(draft => draft.id));
+    const archived = new Set(ctx.getLive().filter(q => q.archived_at).map(q => q.id));
+    const open = new Set(ctx.getDrafts().filter(draft => draft.status === 'pending_review' && !archived.has(draft.question_id)).map(draft => draft.id));
     approveSel = new Set([...approveSel].filter(id => open.has(id)));
     $('qa-approve').disabled = !approveSel.size;
     $('qa-approve').textContent = approveSel.size ? `Approve ${approveSel.size} selected correction${approveSel.size === 1 ? '' : 's'}` : 'Approve selected corrections';
@@ -323,6 +330,7 @@
       <div class="buttons"><button class="button" type="button" id="qa-run" disabled>Run audit</button><button class="button secondary" type="button" id="qa-pause" disabled>Pause</button></div>
       <p class="count" id="qa-progress" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">Build a batch to begin. Each question costs roughly 1–5 cents; the spend cap stops the run.</p>
       <h3 style="margin:22px 0 6px">Audit results and exceptions</h3>
+      <label>Question workspace <select id="qa-f-archive"><option value="">Working questions</option><option value="archived">Archived question history (read-only)</option></select></label>
       <div class="toolbar"><input id="qa-f-text" type="search" placeholder="Q-number or topic" aria-label="Search by question number or topic"><select id="qa-f-status" aria-label="Audit status"><option value="">Any audit status</option><option value="revised">Revised</option><option value="auto_fix">Auto-fix</option><option value="quarantine">Quarantine</option><option value="pass">Pass</option><option value="released">Released</option><option value="error">Error</option></select><select id="qa-f-risk" aria-label="Clinical risk"><option value="">Any clinical risk</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select><select id="qa-f-active" aria-label="Published state"><option value="">Published or inactive</option><option value="true">Published</option><option value="false">Inactive</option></select><select id="qa-f-flagged" aria-label="Flagged"><option value="">Flagged or not</option><option value="true">Flagged</option><option value="false">Not flagged</option></select><select id="qa-f-diff" aria-label="Difficulty"><option value="">Any difficulty</option><option>easy</option><option>medium</option><option>hard</option></select><select id="qa-f-type" aria-label="Question type"><option value="">Any type</option><option value="mcq">Multiple choice</option><option value="sata">Select all</option></select><select id="qa-f-cat" aria-label="NCLEX category"><option value="">Any NCLEX category</option></select></div>
       <div class="buttons" style="margin-bottom:10px"><button class="button" type="button" id="qa-approve" disabled>Approve selected corrections</button></div>
       <p class="count" id="qa-results-status" style="margin:0 0 10px;font-size:.82rem;color:var(--admin-muted)"></p><div id="qa-results" class="quality-grid"></div></div></section>`;
@@ -332,6 +340,7 @@
     $('qa-run').addEventListener('click', runBatch);
     $('qa-pause').addEventListener('click', () => { pauseRequested = true; $('qa-progress').textContent = 'Pausing after the current question finishes…'; });
     $('qa-approve').addEventListener('click', approveSelected);
+    $('qa-f-archive').addEventListener('change', () => { approveSel.clear(); renderResults(); });
     ['qa-f-text', 'qa-f-status', 'qa-f-risk', 'qa-f-active', 'qa-f-flagged', 'qa-f-diff', 'qa-f-type', 'qa-f-cat'].forEach(id => $(id).addEventListener(id === 'qa-f-text' ? 'input' : 'change', renderResults));
   }
 

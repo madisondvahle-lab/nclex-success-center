@@ -8,7 +8,7 @@ const read = file => readFileSync(join(root, file), 'utf8');
 
 test('review page loads the audit panel inside Review & Flags', () => {
   const page = read('question-bank-review.html');
-  assert.match(page, /<script src="question-audit-panel\.js"><\/script>/);
+  assert.match(page, /<script src="question-audit-panel\.js\?v=archive-v1"><\/script>/);
   assert.match(page, /id="qa-audit-mount"/);
   assert.match(page, /globalThis\.QAAudit\?\.init\(/);
   assert.match(page, /QAAudit\.core\.validateContent\(proposed\)/);

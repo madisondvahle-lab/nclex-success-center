@@ -111,6 +111,21 @@ is tracked in PR #273. See [the rollout handoff](tasks/consultation-cpr-reports.
 
 ### Authored clinical-record and NGN supplemental practice
 
+Question-bank archive rollout (pending production approval): the additive
+`supabase-question-archive.sql` adds nullable `questions.archived_at` and a
+constraint requiring archived questions to remain inactive. It changes no
+policies, grants, or existing rows. Apply and verify this schema before releasing
+the archive UI; all bank column variants require the new field. Cleanup is a
+separate approved operation on explicit inactive IDs, not part of migration.
+Working bank/duplicate/audit/correction/flag queues exclude archived questions;
+Archive and review-history controls retain access. Restore keeps questions
+inactive and preserves outstanding findings. No assignment withdrawal, question
+content changes, correction-status changes, or student-history deletion.
+Read-only scope on October 27: 156 inactive, 56 published; 23 correction records
+(18 applied, 4 rejected, 1 approved) and 9 audit records attach to the inactive
+questions. All 28 correction records are retained; published-question reviews
+remain in their existing workflow. Recount before any cleanup.
+
 Clinical-record tabs are independent of interaction type. The existing Question
 Bank author supports tabs on single MCQ/SATA questions as well as standalone
 NGN items and unfolding cases. Supplemental practice preserves authored tabs

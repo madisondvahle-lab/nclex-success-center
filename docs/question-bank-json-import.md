@@ -75,6 +75,33 @@ These are screening suggestions, not proof of clinical duplication. Compare
 the answer key, rationales, and intended learning objective before deleting.
 No bank records are modified by filtering, sorting, or selecting.
 
+## Reversible archive
+
+After applying `supabase-question-archive.sql`, select inactive questions and
+choose **Archive inactive**. Archiving only sets `questions.archived_at`; it
+does not delete questions, remove assignment links, alter clinical content,
+resolve student flags, or approve/reject/apply corrections.
+
+Archived questions leave the working master bank, duplicate screen, imported
+batch actions, new audit batches, and current review queues. They remain
+inactive, so they cannot be published without restoration. Existing student
+results and assignments are retained; this is not assignment withdrawal.
+
+Use **Master questions > Archive / history** to find archived questions and
+**Restore (inactive)** to return one to the working bank. Changing between
+Archive and the working bank resets bank filters/search to avoid hiding items.
+Restoration does not publish or clear outstanding review findings.
+
+For retained records, use **Show archived-question correction and flag history**
+under Review, or **Question workspace > Archived question history** in the audit
+panel. Archived audit/correction records are read-only in these views. Audit
+status counts show working questions; lifetime usage still includes archived
+audit history. Applied corrections remain applied, and pending findings remain
+pending. No AI audit runs are needed to archive questions.
+
+The schema migration itself archives no questions. Any production cleanup is
+a separately approved, explicitly scoped operation on inactive question IDs.
+
 ## Required parent fields
 
 | Field | Rule |
