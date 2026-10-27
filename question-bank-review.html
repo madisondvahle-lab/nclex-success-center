@@ -426,6 +426,11 @@
       line-height:1.52;
     }
 
+    .qbank-view-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;padding:14px 18px}
+    .qbank-view-controls label{display:grid;gap:5px;font-size:.78rem;font-weight:700;min-width:0}
+    .qbank-view-controls input,.qbank-view-controls select{width:100%;min-height:40px;padding:8px;border:1px solid var(--admin-line);background:#fff;color:var(--admin-navy);font:inherit}
+    .qbank-view-controls :focus-visible{outline:3px solid var(--admin-navy);outline-offset:2px}
+    [data-view-count]{margin:0 18px 10px}
     /* Duplicate overlap card */
     .bank-overlap-list{display:grid;gap:14px;padding:18px}
     .bank-overlap-pair{
@@ -734,6 +739,8 @@
               </select>
             </div>
 
+ role="status" aria-live="polite" style="margin:0 18px 12px;color:var(--admin-muted)"></p>
+            <div id="manage-view-filters"></div>
             <p class="count" id="cat-approval-status" role="status" aria-live="polite" style="margin:0 18px 12px;color:var(--admin-muted)"></p>
             <div class="bulk" style="border-bottom:0">
               <button class="button secondary" id="import-diag" type="button">Add consult diagnostic questions to this bank (inactive)</button>
@@ -748,6 +755,7 @@
               <button class="button danger" data-mbulk="delete" type="button">Delete forever</button>
             </div>
 
+            <p class="count" style="margin:10px 18px">Selection actions apply only to selected questions. Named batch actions apply to the entire batch, regardless of filters.</p>
             <div id="bulk-batch-actions"></div>
             <div id="m-list" class="question-stream"></div>
             <div class="pagination-bar">
@@ -818,7 +826,10 @@
             <div style="padding:14px 18px;border-bottom:1px solid var(--admin-line);background:var(--admin-paper)">
               <p class="count" id="bank-overlap-status" role="status" aria-live="polite" style="margin:0;font-size:.82rem;color:var(--admin-muted)">Checking questions in the bank…</p>
             </div>
+            <div id="duplicate-view-filters"></div>
+            <div class="bulk"><span class="count" id="duplicate-selected-count">0 selected</span><button class="button danger" id="duplicate-delete-selected" type="button" disabled>Delete selected copies</button><span class="count">Choose the extra copy yourself. History-protection checks still apply.</span></div>
             <div class="bank-overlap-list" id="bank-overlap-list"></div>
+            <div class="pagination-bar"><button class="button secondary" id="duplicate-more" type="button" hidden>Load 100 more pairs</button></div>
           </section>
         </div>
 
@@ -849,6 +860,8 @@
                 <label for="bulk-json" style="display:block;margin:12px 0 6px;font-size:.78rem;font-weight:750">Or paste a JSON batch</label>
                 <textarea id="bulk-json" rows="8" style="display:block;width:100%;padding:12px;border:1px solid var(--admin-line);background:#fff;font:.82rem ui-monospace,monospace" placeholder='{"items":[{"id":"item-001","stem":"...","item_type":"mcq","options":["...","...","...","..."],"correct_answer":"a","rationale":"...","difficulty":"medium","nclex_category":"...","clinical_judgment_skill":"...","option_rationales":{"a":"..."},"references":[{"title":"...","url":"https://..."}]}]}'></textarea>
                 <p class="count" id="bulk-status" role="status" aria-live="polite" style="margin:10px 0;font-size:.82rem;color:var(--admin-muted)">The batch must contain 1–50 uniquely identified questions. Review overlaps individually; clear items can be marked reviewed together.</p>
+                <div id="import-view-filters"></div>
+                <div class="bulk"><label><input id="bulk-select-shown" type="checkbox"> Select shown import items</label><button class="button secondary" id="bulk-remove-selected" type="button" disabled>Remove selected from this import</button><span class="count" id="bulk-selection-count">0 selected</span></div>
                 <div class="quality-grid" id="bulk-preview-list"></div>
               </div>
             </section>
@@ -898,6 +911,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="question-audit-panel.js"></script>
+  <script src="question-bank-views.js?v=filter-sort-v1"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=ngn-record-format-v1"></script>
@@ -1011,12 +1025,51 @@
       if(signature!==bankOverlapSignature){bankOverlapSignature=signature;bankOverlapPairs=detectBankOverlaps()}
       $('tab-count-duplicates').textContent=bankOverlapPairs.length;
 
-      const list=$('bank-overlap-list'),limit=100,pairs=bankOverlapPairs.slice(0,limit);
-      $('bank-overlap-status').textContent=bankOverlapPairs.length?`${bankOverlapPairs.length} possible match${bankOverlapPairs.length===1?'':'es'} found${bankOverlapPairs.length>limit?`; showing the first ${limit}`:''}. These are review suggestions, not confirmed duplicates.`:'No exact or likely overlaps found. This automated check is a screening aid, not a guarantee that every conceptual overlap was found.';
+      const views=window.QBankViews;
+      const viewQuestions=live.map(q=>({...q,viewStatus:views?.statusOf(q,reviews)}));
+      const view=views?.mount('duplicate-view-filters',viewQuestions,()=>{duplicateVisible=100;duplicateSelection.clear();updateBankOverview()})||{};
+      const byId=new Map(viewQuestions.map(q=>[q.id,q]));
+      const matching=bankOverlapPairs.filter(pair=>!views||[pair.left,pair.right].some(q=>views.matches(byId.get(q.id),view)));
+      const sortQuestion=pair=>[byId.get(pair.left.id),byId.get(pair.right.id)].filter(q=>views.matches(q,view)).sort((a,b)=>views.compare(a,b,view.sort))[0];
+      if(views&&view.sort&&view.sort!=='original')matching.sort((a,b)=>views.compare(sortQuestion(a),sortQuestion(b),view.sort));
+      views?.count('duplicate-view-filters',matching.length,bankOverlapPairs.length,'possible pairs');
+      const list=$('bank-overlap-list'),limit=duplicateVisible,pairs=matching.slice(0,limit);
+      if($('duplicate-more'))$('duplicate-more').hidden=matching.length<=limit;
+      const visibleIds=new Set(pairs.flatMap(pair=>[pair.left.id,pair.right.id]));
+      [...duplicateSelection].forEach(id=>{if(!visibleIds.has(id))duplicateSelection.delete(id)});
+      $('bank-overlap-status').textContent=bankOverlapPairs.length?`${matching.length} of ${bankOverlapPairs.length} possible pairs match these filters; showing ${pairs.length}. Both questions remain visible when either matches. These are review suggestions, not confirmed duplicates.`:'No exact or likely overlaps found. This automated check is a screening aid, not a guarantee that every conceptual overlap was found.';
       list.innerHTML=pairs.map(pair=>{
         const signals=[pair.exact?'Exact normalized question wording':`${Math.round(pair.stemScore*100)}% wording overlap`,pair.sameTopic?`Shared topic: ${esc(pair.left.topic||pair.right.topic)}`:'',pair.sameCategory?'Shared NCLEX category':'',pair.sameSub?'Shared NCLEX subcategory':''].filter(Boolean).join(' · ');
-        return `<article class="bank-overlap-pair"><div class="meta"><span class="tag ${pair.exact?'warn':'good'}">${pair.exact?'Exact wording match':'Possible conceptual overlap'}</span><span class="tag">${esc(qlabel(pair.left)||'Question')}</span><span class="tag">${esc(qlabel(pair.right)||'Question')}</span></div><h3>${esc(qlabel(pair.left)||'Question')} · ${esc(pair.left.topic||'Uncategorized')}</h3><p>${esc(pair.left.stem||'')}</p><h3>${esc(qlabel(pair.right)||'Question')} · ${esc(pair.right.topic||'Uncategorized')}</h3><p>${esc(pair.right.stem||'')}</p><p class="rationale"><strong>Match signals:</strong> ${signals}</p></article>`;
+        const copy=q=>`<h3>${esc(qlabel(q)||'Question')} · ${esc(q.topic||'Uncategorized')}</h3><div class="meta"><span class="tag">${q.active?'Published':'Inactive'}</span><span class="tag">${esc(q.item_type||'mcq')}</span>${q.created_at?`<span class="tag">Added ${esc(q.created_at.slice(0,10))}</span>`:''}</div><p>${esc(q.stem||'')}</p><div class="buttons"><button class="button secondary" type="button" data-duplicate-edit="${esc(q.id)}">Review / edit ${esc(qlabel(q)||'question')}</button><button class="button danger" type="button" data-duplicate-delete="${esc(q.id)}">Delete this copy ${esc(qlabel(q))}</button><label><input type="checkbox" data-duplicate-pick="${esc(q.id)}" ${duplicateSelection.has(q.id)?'checked':''}> Select ${esc(qlabel(q)||q.id)} for bulk deletion</label></div>`;
+        return `<article class="bank-overlap-pair"><div class="meta"><span class="tag ${pair.exact?'warn':'good'}">${pair.exact?'Exact wording match':'Possible conceptual overlap'}</span></div>${copy(pair.left)}${copy(pair.right)}<p class="rationale"><strong>Match signals:</strong> ${signals}</p></article>`;
       }).join('');
+      if(!pairs.length)list.innerHTML='<p class="empty">No possible pairs match these filters.</p>';
+      document.querySelectorAll('[data-duplicate-delete]').forEach(button=>button.addEventListener('click',()=>deleteDuplicateCopies([button.dataset.duplicateDelete])));
+      document.querySelectorAll('[data-duplicate-edit]').forEach(button=>button.addEventListener('click',()=>openManagedEdit(button.dataset.duplicateEdit)));
+      document.querySelectorAll('[data-duplicate-pick]').forEach(input=>input.addEventListener('change',()=>{
+        input.checked?duplicateSelection.add(input.dataset.duplicatePick):duplicateSelection.delete(input.dataset.duplicatePick);
+        document.querySelectorAll('[data-duplicate-pick]').forEach(other=>{other.checked=duplicateSelection.has(other.dataset.duplicatePick)});
+        updateDuplicateSelection();
+      }));
+      updateDuplicateSelection();
+    }
+
+    const duplicateSelection=new Set();
+    let duplicateVisible=100;
+    let duplicateDeleting=false;
+    function updateDuplicateSelection(){
+      if($('duplicate-selected-count'))$('duplicate-selected-count').textContent=`${duplicateSelection.size} selected`;
+      if($('duplicate-delete-selected'))$('duplicate-delete-selected').disabled=duplicateDeleting||!duplicateSelection.size;
+      document.querySelectorAll('[data-duplicate-delete]').forEach(button=>{button.disabled=duplicateDeleting});
+    }
+    async function deleteDuplicateCopies(ids){
+      if(duplicateDeleting||!ids.length)return;
+      duplicateDeleting=true;updateDuplicateSelection();
+      try{
+        await mApply('delete',[...new Set(ids)]);
+        duplicateSelection.clear();
+        renderManage();updateBankOverview();
+      }finally{duplicateDeleting=false;updateDuplicateSelection()}
     }
 
     const BULK_TYPES=new Set(['mcq','sata','bowtie','matrix','cloze','highlight','case','fill']);
@@ -1099,14 +1152,20 @@
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
     let bulkSaving=false;
+    const bulkSelection=new Set();
     function stagedCanSave(){return !bulkSaving&&bulkImportReady&&stagedBatch.length>=1&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
     function removeBulkItem(index){
+      removeBulkItems([index]);
+    }
+    function removeBulkItems(indexes){
       if(bulkSaving||pendingBulkTracking){$('bulk-status').textContent='Finish saving and draft tracking before removing import items.';return}
-      const entry=stagedBatch[index];
+      const selected=new Set(indexes.filter(index=>Number.isInteger(index)&&stagedBatch[index]));
+      const index=Math.min(...selected),entry=stagedBatch[index];
       if(!entry)return;
-      if(!confirm(`Remove ${entry.item.id||`item ${index+1}`} from this import? This only removes the unsaved import item, not any matching question already in your bank. Your original downloaded file will not change.`))return;
+      const label=selected.size===1?(entry.item.id||`item ${index+1}`):`${selected.size} selected items`;
+      if(!confirm(`Remove ${label} from this import? This only removes unsaved import items, not any matching questions already in your bank. Your original downloaded file will not change.`))return;
       try{
-        const remaining=stagedBatch.filter((_,i)=>i!==index);
+        const remaining=stagedBatch.filter((_,i)=>!selected.has(i));
         const parsed=JSON.parse($('bulk-json').value);
         if(!Array.isArray(parsed))parsed.items=remaining.map(row=>row.item);
         const json=JSON.stringify(Array.isArray(parsed)?remaining.map(row=>row.item):parsed,null,2);
@@ -1116,18 +1175,26 @@
           row.reviewed=previous.reviewed&&JSON.stringify(row.errors)===JSON.stringify(previous.errors)&&JSON.stringify(row.match)===JSON.stringify(previous.match);
         });
         stagedBatch=checked;
+        bulkSelection.clear();
         $('bulk-json').value=json;
         $('bulk-file').value='';
         renderBulkPreview();
-        $('bulk-status').textContent=`Removed ${entry.item.id||`item ${index+1}`} from this import. No bank question was deleted. ${checked.length?`${$('bulk-status').textContent} Any changed validation or overlap checks require review again.`:'No items remain. Paste or choose another batch to continue.'}`;
+        $('bulk-status').textContent=`Removed ${label} from this import. No bank question was deleted. ${checked.length?`${$('bulk-status').textContent} Any changed validation or overlap checks require review again.`:'No items remain. Paste or choose another batch to continue.'}`;
         const buttons=document.querySelectorAll('[data-bulk-remove]');
         (buttons[Math.min(index,buttons.length-1)]||$('bulk-preview')).focus();
       }catch(error){$('bulk-status').textContent=`Could not remove this import item: ${error.message||error}`}
     }
     function reviewClearBulkItems(){
       if(!bulkImportReady)return;
-      stagedBatch.forEach(entry=>{if(!entry.errors.length&&!entry.match)entry.reviewed=true});
+      const shown=new Set(filteredBulkEntries().map(({entry})=>entry));
+      stagedBatch.forEach(entry=>{if(shown.has(entry)&&!entry.errors.length&&!entry.match)entry.reviewed=true});
       renderBulkPreview();
+    }
+    function filteredBulkEntries(){
+      const views=window.QBankViews;
+      const rows=stagedBatch.map((entry,index)=>({entry,index,question:{...entry.item,viewStatus:entry.errors.length?'Invalid':entry.reviewed?'Reviewed':'Needs review'}}));
+      const view=views?.mount('import-view-filters',rows.map(row=>row.question),renderBulkPreview,{staged:true})||{};
+      return rows.filter(row=>!views||views.matches(row.question,view)).sort((a,b)=>views?views.compare(a.question,b.question,view.sort):0);
     }
     function previewBulkItem(index){
       const entry=stagedBatch[index];
@@ -1163,26 +1230,46 @@
     }
     function renderBulkPreview(){
       const list=$('bulk-preview-list'),save=$('bulk-save'),reviewClear=$('bulk-review-clear');
+      const shown=filteredBulkEntries();
+      const visible=new Set(shown.map(row=>row.entry));
+      [...bulkSelection].forEach(entry=>{if(!visible.has(entry))bulkSelection.delete(entry)});
+      updateBulkSelection(shown);
+      window.QBankViews?.count('import-view-filters',shown.length,stagedBatch.length,'unsaved items');
       if(!stagedBatch.length){list.innerHTML='';save.disabled=true;reviewClear.disabled=true;reviewClear.textContent='Mark no-overlap items reviewed';return}
       const valid=stagedBatch.filter(entry=>!entry.errors.length).length,duplicates=stagedBatch.filter(entry=>entry.match).length;
-      const clearToReview=stagedBatch.filter(entry=>!entry.errors.length&&!entry.match&&!entry.reviewed).length;
+      const clearToReview=shown.filter(({entry})=>!entry.errors.length&&!entry.match&&!entry.reviewed).length;
       $('bulk-status').textContent=`${stagedBatch.length} items · ${valid} structurally valid · ${duplicates} possible/exact overlap${duplicates===1?'':'s'}. ${!bulkImportReady?'Run supabase-question-bulk-import.sql before importing.':stagedCanSave()?'All items reviewed; ready to save as inactive drafts.':clearToReview?`${clearToReview} clear items can be marked reviewed together. Review flagged overlaps individually.`:'Resolve validation issues and flagged overlaps before saving.'}`;
       reviewClear.disabled=!bulkImportReady||clearToReview===0;
       reviewClear.textContent=clearToReview?`Mark ${clearToReview} no-overlap items reviewed`:'No-overlap items reviewed';
-      list.innerHTML=stagedBatch.map((entry,index)=>{
+      list.innerHTML=shown.map(({entry,index})=>{
         const item=entry.item||{},match=entry.match;
         const matchText=match?(match.batchId?`Possible batch duplicate of ${esc(match.batchId)} (${Math.round(match.score*100)}% wording overlap).`:`${match.exact?'Exact':'Possible'} match in bank${match.question?.question_no?' Q-'+String(match.question.question_no).padStart(4,'0'):''}: ${esc(match.question?.stem||'')}`):'No likely stem match found.';
         const type=String(item.item_type||'').toLowerCase();
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
         const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref?.url||'')}" target="_blank" rel="noopener noreferrer">${esc(ref?.title||'Invalid reference: add title and URL')}</a></li>`).join(''):'';
-        const preview=`<div class="buttons">${entry.errors.length?'':`<button class="button secondary" type="button" data-bulk-preview="${index}">Preview as student</button>`}<button class="button secondary" type="button" data-bulk-remove="${index}" ${bulkSaving||pendingBulkTracking?'disabled':''}>Remove from this import</button></div><p class="rationale">Removing an item only excludes it from this unsaved import, not from your question bank.${entry.errors.length?'':' Test the tabs and responses, then use Check answer to review the key and rationale. Previewing does not save, approve, or publish this item.'}</p>`;
+        const preview=`<div class="buttons"><label><input type="checkbox" data-bulk-select="${index}" ${bulkSelection.has(entry)?'checked':''} ${bulkSaving||pendingBulkTracking?'disabled':''}> Select for removal</label>${entry.errors.length?'':`<button class="button secondary" type="button" data-bulk-preview="${index}">Preview as student</button>`}<button class="button secondary" type="button" data-bulk-remove="${index}" ${bulkSaving||pendingBulkTracking?'disabled':''}>Remove from this import</button></div><p class="rationale">Removing an item only excludes it from this unsaved import, not from your question bank.${entry.errors.length?'':' Test the tabs and responses, then use Check answer to review the key and rationale. Previewing does not save, approve, or publish this item.'}</p>`;
         return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${preview}${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I previewed this item, reviewed its answer/rationales and the match, and confirmed this is a distinct item.':'I previewed this item and reviewed its answer/rationales.'}</span></label></article>`;
-      }).join('');
+      }).join('')||'<p class="empty">No import items match these filters. Reset filters to see all retained items.</p>';
       document.querySelectorAll('[data-bulk-preview]').forEach(button=>button.addEventListener('click',()=>previewBulkItem(Number(button.dataset.bulkPreview))));
       document.querySelectorAll('[data-bulk-remove]').forEach(button=>button.addEventListener('click',()=>removeBulkItem(Number(button.dataset.bulkRemove))));
+      document.querySelectorAll('[data-bulk-select]').forEach(input=>input.addEventListener('change',()=>{
+        const entry=stagedBatch[Number(input.dataset.bulkSelect)];
+        input.checked?bulkSelection.add(entry):bulkSelection.delete(entry);
+        updateBulkSelection(filteredBulkEntries());
+      }));
       document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
       save.disabled=!stagedCanSave();
+    }
+    function updateBulkSelection(shown){
+      const selected=$('bulk-select-shown');
+      if(selected){
+        selected.checked=shown.length>0&&shown.every(row=>bulkSelection.has(row.entry));
+        selected.indeterminate=bulkSelection.size>0&&!selected.checked;
+        selected.disabled=bulkSaving||!!pendingBulkTracking||!shown.length;
+      }
+      if($('bulk-remove-selected'))$('bulk-remove-selected').disabled=bulkSaving||!!pendingBulkTracking||!bulkSelection.size;
+      if($('bulk-selection-count'))$('bulk-selection-count').textContent=`${bulkSelection.size} selected`;
     }
     async function previewBulk(){
       if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking with the retry button before loading another batch.';return}
@@ -1206,6 +1293,7 @@
         }
       }
       bulkSaving=true;
+      updateBulkSelection(filteredBulkEntries());
       document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=true});
       const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
       try{
@@ -1224,7 +1312,7 @@
             if(type==='mcq'){row.option_a=item.options[0].trim();row.option_b=item.options[1].trim();row.option_c=item.options[2].trim();row.option_d=item.options[3].trim();row.correct_answer=String(item.correct_answer).toLowerCase()}
             return row;
           });
-          const inserted=await db.from('questions').insert(rows).select('id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
+          const inserted=await db.from('questions').insert(rows).select('id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list');
           if(inserted.error)throw inserted.error;
           const now=new Date().toISOString(),records=inserted.data.map(question=>({source_key:question.source_key,source_name:'bulk-question-import',status:'draft',reviewed_by:session.user.id,reviewed_at:now,imported_question_id:question.id,updated_at:now}));
           pendingBulkTracking={questions:inserted.data,records};
@@ -1238,7 +1326,7 @@
         $('bulk-status').textContent=`Saved ${questions.length} inactive drafts. In Manage questions, approve the batch in one action; publishing remains a separate step.`;
         stagedBatch=[];$('bulk-json').value='';$('bulk-file').value='';renderBulkPreview();render();
       }catch(error){$('bulk-status').textContent=`Import did not finish: ${error.message||error}. If drafts were inserted, retry tracking; the current page will not insert them a second time.`}
-      finally{bulkSaving=false;document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=!!pendingBulkTracking});save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
+      finally{bulkSaving=false;document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=!!pendingBulkTracking});updateBulkSelection(filteredBulkEntries());save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
     }
     function renderQualityDrafts(){
       const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);
@@ -1632,7 +1720,11 @@
     const topicOf=q=>[q.topic,q.nclex_category].filter(Boolean).join(' · ');
     function mFiltered(){
       const query=normalize($('m-search').value),f=$('m-filter').value;
-      return live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q'))));
+      const views=window.QBankViews;
+      const view=views?.mount('manage-view-filters',live.map(q=>({...q,viewStatus:views.statusOf(q,reviews)})),()=>{mVisible=100;mSel.clear();renderManage()},{search:false})||{};
+      const filtered=live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q')))&&(!views||views.matches({...q,viewStatus:views.statusOf(q,reviews)},view)));
+      views?.count('manage-view-filters',filtered.length,live.filter(q=>f==='all'||(f==='active')===!!q.active).length);
+      return filtered.sort((a,b)=>views?views.compare(a,b,view.sort):0);
     }
     function mCount(){
       $('m-count').textContent=mSel.size+' selected';
@@ -1729,7 +1821,7 @@
     function renderManage(){
       const filtered=mFiltered();
       mShown=filtered.slice(0,mVisible);
-      [...mSel].forEach(id=>{if(!live.some(q=>q.id===id))mSel.delete(id)});
+      [...mSel].forEach(id=>{if(!filtered.some(q=>q.id===id))mSel.delete(id)});
       $('m-list').innerHTML=mShown.length?mShown.map(q=>{
         const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null,catApproval=catApprovals.get(q.id);
         const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
@@ -1860,9 +1952,9 @@
       live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'});
       render();renderManage();
     }
-    const QUESTION_COLUMNS='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
-    const QUESTION_COLUMNS_WITHOUT_BULK='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
-    const QUESTION_COLUMNS_LEGACY='id,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
+    const QUESTION_COLUMNS='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
+    const QUESTION_COLUMNS_WITHOUT_BULK='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
+    const QUESTION_COLUMNS_LEGACY='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
     async function loadAllQuestions(){
       const rows=[],pageSize=500;let columns=QUESTION_COLUMNS,metadata=true;
       for(let start=0;;start+=pageSize){
@@ -1910,6 +2002,7 @@
     }
 
     async function init(){
+      if(!window.QBankViews){$('loading').textContent='Question-management filters could not load. Refresh the page before managing questions.';return}
       const {data}=await db.auth.getSession();session=data.session;
       if(!session){location.replace('student-login.html');return}
       const admin=await db.from('app_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
@@ -1986,12 +2079,19 @@
       $('search').addEventListener('input',render);$('filter').addEventListener('change',()=>{legSel.clear();render()});
       $('import-diag').addEventListener('click',importDiag);$('m-search').addEventListener('input',()=>{mVisible=100;renderManage()});
       $('m-filter').addEventListener('change',()=>{mVisible=100;mSel.clear();renderManage()});
+      $('duplicate-delete-selected').addEventListener('click',()=>deleteDuplicateCopies([...duplicateSelection]));
+      $('duplicate-more').addEventListener('click',()=>{duplicateVisible+=100;updateBankOverview()});
       $('m-more').addEventListener('click',()=>{mVisible+=100;renderManage()});
       $('m-all').addEventListener('change',e=>{mShown.forEach(q=>e.target.checked?mSel.add(q.id):mSel.delete(q.id));renderManage()});
       $('l-all').addEventListener('change',e=>{legacyShown.filter(canPick).forEach(i=>e.target.checked?legSel.add(i.id):legSel.delete(i.id));render()});
       document.querySelectorAll('[data-mbulk]').forEach(b=>b.addEventListener('click',()=>mApply(b.dataset.mbulk,[...mSel])));
       document.querySelectorAll('[data-lbulk]').forEach(b=>b.addEventListener('click',()=>legBulk(b.dataset.lbulk)));
       $('bulk-preview').addEventListener('click',previewBulk);$('bulk-review-clear').addEventListener('click',reviewClearBulkItems);$('bulk-save').addEventListener('click',saveBulkDrafts);
+      $('bulk-select-shown').addEventListener('change',event=>{
+        filteredBulkEntries().forEach(({entry})=>{event.target.checked?bulkSelection.add(entry):bulkSelection.delete(entry)});
+        renderBulkPreview();
+      });
+      $('bulk-remove-selected').addEventListener('click',()=>removeBulkItems(stagedBatch.flatMap((entry,index)=>bulkSelection.has(entry)?[index]:[])));
       $('bulk-file').addEventListener('change',async event=>{
         if(pendingBulkTracking){$('bulk-status').textContent='Finish draft tracking before loading another batch.';event.target.value='';return}
         const file=event.target.files?.[0];if(!file)return;

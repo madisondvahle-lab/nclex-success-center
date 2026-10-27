@@ -167,6 +167,35 @@ test('removal and repeated save are blocked while an insert is in flight', async
   assert.equal(h.context.stagedBatch.length, 0);
 });
 
+test('filtered/sorted import actions retain original indexes and review only visible clear items', async () => {
+  const h = harness();
+  await stage(h, [question('mcq', 'hidden'), question('cloze', 'shown')]);
+  h.context.window.QBankViews = {
+    mount: () => ({}), count() {},
+    matches: item => item.item_type === 'cloze',
+    compare: () => 0
+  };
+  h.context.renderBulkPreview();
+  assert.match(h.$('bulk-preview-list').innerHTML, /data-bulk-remove="1"/);
+  assert.doesNotMatch(h.$('bulk-preview-list').innerHTML, /data-bulk-remove="0"/);
+  h.context.reviewClearBulkItems();
+  assert.equal(h.context.stagedBatch[0].reviewed, false);
+  assert.equal(h.context.stagedBatch[1].reviewed, true);
+  assert.equal(h.context.stagedCanSave(), false, 'hidden unreviewed questions must still block saving');
+  h.context.removeBulkItems([1, 1]);
+  assert.deepEqual(Array.from(h.context.stagedBatch, entry => entry.item.id), ['hidden']);
+  assert.equal(h.writes.length, 0);
+});
+
+test('bulk removal excludes only explicit indexes, preserving whole remaining cases', async () => {
+  const h = harness();
+  await stage(h, [question('mcq', 'a'), question('case', 'keep-case'), question('cloze', 'c')]);
+  h.context.removeBulkItems([0, 2]);
+  assert.deepEqual(JSON.parse(h.$('bulk-json').value).items.map(item => item.id), ['keep-case']);
+  assert.equal(h.context.stagedBatch[0].item.item_data.items.length, 6);
+  assert.equal(h.writes.length, 0);
+});
+
 test('all eight interaction types and record-backed MCQ/SATA validate without mutation', () => {
   const h = harness();
   for (const type of ['mcq', 'sata', 'cloze', 'matrix', 'highlight', 'bowtie', 'fill', 'case']) {
