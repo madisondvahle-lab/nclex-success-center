@@ -8,7 +8,7 @@ const test = require('node:test');
 const root = join(__dirname, '..');
 const source = readFileSync(join(root, 'question-audit-panel.js'), 'utf8');
 
-async function harness(invoke, { count = 10, reloadError = false, audits = [], drafts = [], confirmResult = true } = {}) {
+async function harness(invoke, { count = 10, reloadError = false, audits = [], drafts = [], confirmResult = true, archived = [] } = {}) {
   const elements = new Map();
   const buttons = new Map();
   class Element {
@@ -51,6 +51,7 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [], d
     correct_answer: 'a', rationale: 'Explanation', difficulty: 'easy',
   }));
   const calls = [];
+  archived.forEach(id => { const q = live.find(q => q.id === id); if (q) { q.archived_at = '2026-10-27T00:00:00Z'; q.active = false; } });
   let reloading = false;
   await sandbox.QAAudit.init({
     esc: value => String(value ?? ''), qlabel: q => q.id,
@@ -69,6 +70,22 @@ async function harness(invoke, { count = 10, reloadError = false, audits = [], d
   await get('qa-build').events.click();
   return { get, calls, buttons, live, api: sandbox.QAAudit, run: () => get('qa-run').events.click() };
 }
+
+test('archived questions leave new audit batches but retain read-only results', async () => {
+  const h = await harness(async () => ({ status: 'pass' }), {
+    count: 2, archived: ['q0'],
+    audits: [{ question_id: 'q0', id: 'old-audit', audit_status: 'error', note: 'Retained finding', est_cost_usd: 0.02 }]
+  });
+  assert.doesNotMatch(h.get('qa-batch-list').innerHTML, /data-qa-pick="q0"/);
+  assert.doesNotMatch(h.get('qa-results').innerHTML, /Retained finding/);
+  h.get('qa-f-archive').value = 'archived';
+  await h.get('qa-f-archive').events.change();
+  assert.match(h.get('qa-results').innerHTML, /Retained finding/);
+  assert.match(h.get('qa-results').innerHTML, /read-only audit history/);
+  assert.doesNotMatch(h.get('qa-results').innerHTML, /data-qa-retry=/);
+  assert.doesNotMatch(h.get('qa-results').innerHTML, /data-qa-approve=/);
+  assert.equal(h.calls.length, 0);
+});
 
 test('quarantined Q-0059 is manually queued alone with current criteria and no automatic request or release', async () => {
   const h = await harness(async () => ({ data: { status: 'pass', cost_usd: 0.01 } }), { audits: [{

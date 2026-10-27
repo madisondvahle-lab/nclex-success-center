@@ -730,12 +730,14 @@
                 <button type="button" class="filter-btn" data-mfilter="all" aria-pressed="false">All questions</button>
                 <button type="button" class="filter-btn" data-mfilter="active" aria-pressed="true">Published to students</button>
                 <button type="button" class="filter-btn" data-mfilter="inactive" aria-pressed="false">Inactive / drafts</button>
+                <button type="button" class="filter-btn" data-mfilter="archived" aria-pressed="false">Archive / history</button>
               </div>
               <!-- Hidden select for compatibility with existing event triggers -->
               <select id="m-filter" class="hidden" aria-hidden="true">
                 <option value="active" selected>Published to students</option>
                 <option value="inactive">Inactive / drafts</option>
                 <option value="all">All questions</option>
+                <option value="archived">Archive / history</option>
               </select>
             </div>
 
@@ -752,6 +754,8 @@
               <span class="count" id="m-count"></span>
               <button class="button" data-mbulk="publish" type="button">Publish</button>
               <button class="button secondary" data-mbulk="inactive" type="button">Make inactive</button>
+              <button class="button secondary" data-mbulk="archive" type="button">Archive inactive</button>
+              <button class="button secondary" data-mbulk="restore" type="button">Restore from archive</button>
               <button class="button danger" data-mbulk="delete" type="button">Delete forever</button>
             </div>
 
@@ -799,6 +803,7 @@
                 </div>
               </div>
               <p class="count" id="revision-status" role="status" aria-live="polite" style="padding:12px 18px;margin:0;font-size:.82rem;color:var(--admin-muted)">Loading correction drafts…</p>
+              <label style="display:block;padding:10px 18px"><input type="checkbox" id="review-archive-history"> Show archived-question correction and flag history (read-only)</label>
               <div class="quality-grid panel-content" id="revision-list"></div>
             </section>
 
@@ -910,8 +915,8 @@
   <iframe id="legacy-source" src="question-bank.html" style="display:none" aria-hidden="true"></iframe>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="question-audit-panel.js"></script>
-  <script src="question-bank-views.js?v=filter-sort-v1"></script>
+  <script src="question-audit-panel.js?v=archive-v1"></script>
+  <script src="question-bank-views.js?v=archive-v1"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=ngn-record-format-v1"></script>
@@ -933,6 +938,9 @@
     const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
     const words=value=>new Set(normalize(value).split(' ').filter(word=>word.length>3));
     const similarity=(a,b)=>{const aw=words(a),bw=words(b);let both=0;aw.forEach(word=>{if(bw.has(word))both++});return both/Math.max(1,new Set([...aw,...bw]).size)};
+    const workingQuestions=()=>live.filter(question=>!question.archived_at);
+    const archivedFlag=flag=>live.some(q=>q.archived_at&&(q.id===flag.question_id||(q.question_no!=null&&q.question_no===flag.question_no)));
+    const showArchiveHistory=()=>$('review-archive-history')?.checked===true;
     const difficulty=value=>value===1?'easy':value===3?'hard':'medium';
     function exactMatch(item){const stem=normalize(item.stem);return live.find(question=>normalize(question.stem)===stem)}
     function possibleMatch(item){let best=null,bestScore=0;live.forEach(question=>{const score=similarity(item.stem,question.stem);if(score>bestScore){best=question;bestScore=score}});return bestScore>=.55?{question:best,score:bestScore}:null}
@@ -959,6 +967,10 @@
 
     function setLiveFilter(filterVal){
       const select=$('m-filter');
+      if(filterVal==='archived'||select?.value==='archived'){
+        window.QBankViews?.reset('manage-view-filters');
+        $('m-search').value='';
+      }
       if(select){
         select.value=filterVal;
       }
@@ -971,7 +983,7 @@
     }
 
     function detectBankOverlaps(){
-      const indexed=live.map((question,index)=>({
+      const indexed=workingQuestions().map((question,index)=>({
         question,index,stem:normalize(question.stem),topic:normalize(question.topic),
         category:normalize(question.nclex_category),sub:normalize(question.nclex_sub),
         terms:new Set([...words(question.stem),...words(question.topic),...words(question.nclex_category),...words(question.nclex_sub)])
@@ -999,29 +1011,31 @@
     }
 
     function updateBankOverview(){
-      const pendingReviewIds=new Set(live.filter(question=>question.source_key&&reviews.get(question.source_key)?.status==='draft').map(question=>question.id));
-      const liveIds=new Set(live.map(question=>question.id));
+      const working=workingQuestions();
+      const pendingReviewIds=new Set(working.filter(question=>question.source_key&&reviews.get(question.source_key)?.status==='draft').map(question=>question.id));
+      const liveIds=new Set(working.map(question=>question.id));
       revisionDrafts.forEach(revision=>{if(revision.status==='pending_review'&&liveIds.has(revision.question_id))pendingReviewIds.add(revision.question_id)});
-      const openFlagsCount=flags.filter(f=>f.status==='open').length;
+      const archived=live.filter(q=>q.archived_at);
+      const openFlagsCount=flags.filter(f=>f.status==='open'&&!archived.some(q=>q.id===f.question_id||(q.question_no!=null&&q.question_no===f.question_no))).length;
       const totalReviewCount=pendingReviewIds.size+openFlagsCount;
 
-      $('bank-total-count').textContent=live.length;
+      $('bank-total-count').textContent=working.length;
       $('bank-published-count').textContent=live.filter(question=>question.active).length;
-      $('bank-draft-count').textContent=live.filter(question=>!question.active).length;
+      $('bank-draft-count').textContent=working.filter(question=>!question.active).length;
       $('bank-review-count').textContent=totalReviewCount;
       $('quick-review-count').textContent=totalReviewCount;
-      $('tab-count-live').textContent=live.length;
+      $('tab-count-live').textContent=working.length;
       $('tab-count-review').textContent=totalReviewCount;
       $('tab-count-legacy').textContent=legacy.length;
 
       const reviewEmpty=$('review-all-caught-up');
       if(reviewEmpty){
-        const openRevisions=revisionDrafts.filter(r=>['pending_review','approved'].includes(r.status)).length;
-        const qualityCount=live.filter(q=>q.source_key?.startsWith('quality-')&&!q.active).length;
+        const openRevisions=revisionDrafts.filter(r=>liveIds.has(r.question_id)&&['pending_review','approved'].includes(r.status)).length;
+        const qualityCount=working.filter(q=>q.source_key?.startsWith('quality-')&&!q.active).length;
         reviewEmpty.classList.toggle('hidden',totalReviewCount>0||openRevisions>0||qualityCount>0);
       }
 
-      const signature=JSON.stringify(live.map(question=>[question.id,question.stem,question.topic,question.nclex_category,question.nclex_sub]));
+      const signature=JSON.stringify(working.map(question=>[question.id,question.stem,question.topic,question.nclex_category,question.nclex_sub]));
       if(signature!==bankOverlapSignature){bankOverlapSignature=signature;bankOverlapPairs=detectBankOverlaps()}
       $('tab-count-duplicates').textContent=bankOverlapPairs.length;
 
@@ -1243,7 +1257,7 @@
       reviewClear.textContent=clearToReview?`Mark ${clearToReview} no-overlap items reviewed`:'No-overlap items reviewed';
       list.innerHTML=shown.map(({entry,index})=>{
         const item=entry.item||{},match=entry.match;
-        const matchText=match?(match.batchId?`Possible batch duplicate of ${esc(match.batchId)} (${Math.round(match.score*100)}% wording overlap).`:`${match.exact?'Exact':'Possible'} match in bank${match.question?.question_no?' Q-'+String(match.question.question_no).padStart(4,'0'):''}: ${esc(match.question?.stem||'')}`):'No likely stem match found.';
+        const matchText=match?(match.batchId?`Possible batch duplicate of ${esc(match.batchId)} (${Math.round(match.score*100)}% wording overlap).`:`${match.exact?'Exact':'Possible'} match in bank${match.question?.question_no?' Q-'+String(match.question.question_no).padStart(4,'0'):''} (${match.question?.archived_at?'archived history':match.question?.active?'published':'inactive draft'}): ${esc(match.question?.stem||'')}`):'No likely stem match found.';
         const type=String(item.item_type||'').toLowerCase();
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
@@ -1329,7 +1343,7 @@
       finally{bulkSaving=false;document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=!!pendingBulkTracking});updateBulkSelection(filteredBulkEntries());save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
     }
     function renderQualityDrafts(){
-      const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);
+      const drafts=workingQuestions().filter(question=>question.source_key?.startsWith('quality-')&&!question.active);
       $('quality-drafts').innerHTML=drafts.length?drafts.map(question=>`<article class="candidate"><div class="meta"><span class="tag good">Private draft</span><span class="tag">${esc(question.nclex_category||'NCLEX')}</span><span class="tag">${esc(question.topic||'Topic')}</span><span class="tag">${esc(question.difficulty||'medium')}</span></div><h2>${esc(question.stem)}</h2><p class="rationale"><strong>Rationale:</strong> ${esc(question.rationale||'')}</p><div class="buttons"><button class="button" data-publish="${esc(question.id)}" type="button">Publish to students</button></div></article>`).join(''):'<p class="empty">No quality drafts have been added yet.</p>';
       document.querySelectorAll('[data-publish]').forEach(button=>button.addEventListener('click',()=>publishQualityDraft(button.dataset.publish)));
     }
@@ -1517,6 +1531,7 @@
       return!!question.active||(!newDraft&&question.question_no!=null);
     }
     function openManagedEdit(id){
+      if(live.find(q=>q.id===id)?.archived_at){alert('Restore this archived question before editing it. History remains preserved.');return}
       const question=live.find(item=>item.id===id);if(!question)return;
       if(needsRevisionApproval(question))openCorrectionEditor(question);
       else{
@@ -1678,7 +1693,7 @@
     }
     const TYPE_NAME={sata:'Select all',bowtie:'Bowtie',matrix:'Matrix',cloze:'Drop-down',highlight:'Highlight',case:'Case study',fill:'Fill in'};
     function renderDiscuss(){
-      const open=flags.filter(f=>f.status==='open'&&f.kind==='discuss');
+      const open=flags.filter(f=>f.status==='open'&&f.kind==='discuss'&&(showArchiveHistory()||!archivedFlag(f)));
       $('discuss-sec').classList.toggle('hidden',!open.length);
       $('discuss-n').textContent=open.length?'('+open.length+')':'';
       $('discuss-list').innerHTML=open.map(f=>{
@@ -1687,6 +1702,7 @@
         return `<div class="qrow" style="grid-template-columns:1fr auto"><div><p>${esc(f.question_stem||q?.stem||'(question text unavailable)')}</p><div class="meta">${no?`<span class="tag" style="background:var(--admin-navy);color:#fff">${no}</span>`:''}<span class="tag good">${esc(names.get(f.student_id)||'Student')}</span><span class="tag">${esc(new Date(f.created_at).toLocaleDateString())}</span></div>${f.note?`<p class="rationale">“${esc(f.note)}”</p>`:''}</div><div class="buttons" style="margin:0"><button class="button secondary" data-dres="${esc(f.id)}" type="button">Discussed</button></div></div>`;
       }).join('');
       document.querySelectorAll('[data-dres]').forEach(b=>b.addEventListener('click',async()=>{
+        if(archivedFlag(flags.find(f=>f.id===b.dataset.dres))){alert('Archived discussion flags are retained as read-only history.');return}
         b.disabled=true;
         const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.dres);
         if(r.error){alert(r.error.message);b.disabled=false;return}
@@ -1697,7 +1713,7 @@
     }
     function renderFlags(){
       renderDiscuss();
-      const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss');
+      const open=flags.filter(f=>f.status==='open'&&f.kind!=='discuss'&&(showArchiveHistory()||!archivedFlag(f)));
       $('flags-sec').classList.toggle('hidden',!open.length);
       $('flag-n').textContent=open.length?'('+open.length+')':'';
       $('flag-list').innerHTML=open.map(f=>{
@@ -1707,6 +1723,7 @@
       }).join('');
       document.querySelectorAll('[data-fedit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.fedit)));
       document.querySelectorAll('[data-fres]').forEach(b=>b.addEventListener('click',async()=>{
+        if(archivedFlag(flags.find(f=>f.id===b.dataset.fres))){alert('Archived flags are read-only history. Restore the question before resolving a flag.');return}
         b.disabled=true;
         const r=await db.from('question_flags').update({status:'resolved',resolved_at:new Date().toISOString()}).eq('id',b.dataset.fres);
         if(r.error){alert(r.error.message);b.disabled=false;return}
@@ -1720,10 +1737,11 @@
     const topicOf=q=>[q.topic,q.nclex_category].filter(Boolean).join(' · ');
     function mFiltered(){
       const query=normalize($('m-search').value),f=$('m-filter').value;
+      const base=live.filter(q=>f==='archived'?!!q.archived_at:!q.archived_at&&(f==='all'||(f==='active')===!!q.active));
       const views=window.QBankViews;
       const view=views?.mount('manage-view-filters',live.map(q=>({...q,viewStatus:views.statusOf(q,reviews)})),()=>{mVisible=100;mSel.clear();renderManage()},{search:false})||{};
-      const filtered=live.filter(q=>(f==='all'||(f==='active')===!!q.active)&&(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q')))&&(!views||views.matches({...q,viewStatus:views.statusOf(q,reviews)},view)));
-      views?.count('manage-view-filters',filtered.length,live.filter(q=>f==='all'||(f==='active')===!!q.active).length);
+      const filtered=base.filter(q=>(!query||(normalize([q.stem,q.topic,q.nclex_category,q.module_key,qlabel(q),String(q.question_no||'')].join(' '))+' '+qlabel(q).toLowerCase().replace('-','')).includes(query.replace(/^q (?=\d)/,'q-').replace('q-','q')))&&(!views||views.matches({...q,viewStatus:views.statusOf(q,reviews)},view)));
+      views?.count('manage-view-filters',filtered.length,base.length);
       return filtered.sort((a,b)=>views?views.compare(a,b,view.sort):0);
     }
     function mCount(){
@@ -1745,18 +1763,19 @@
       return `<div><h3>${title}</h3><p><strong>${esc(content.stem||'')}</strong></p>${choices?`<ol>${choices}</ol>`:''}${content.item_data?`<details><summary>NGN data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(content.item_data,null,2))}</pre></details>`:''}<p class="rationale"><strong>Rationale:</strong> ${esc(content.rationale||'')}</p><p class="rationale">${esc(content.nclex_category||'')} · ${esc(content.topic||'')} · ${esc(content.difficulty||'')} · ${esc(content.clinical_judgment_skill||'')}</p><ul>${refs}</ul></div>`;
     }
     function renderRevisionDrafts(){
-      const open=revisionDrafts.filter(revision=>['pending_review','approved'].includes(revision.status));
-      $('revision-status').textContent=revisionWorkflowReady?`${open.length} correction${open.length===1?'':'s'} awaiting review or application. Existing bank content is unchanged until an approved draft is applied.`:'Run supabase-question-bulk-import.sql to enable safe clinical correction drafts.';
+      const open=revisionDrafts.filter(revision=>showArchiveHistory()?live.some(q=>q.id===revision.question_id&&q.archived_at):['pending_review','approved'].includes(revision.status)&&!live.some(q=>q.id===revision.question_id&&q.archived_at));
+      $('revision-status').textContent=revisionWorkflowReady?(showArchiveHistory()?`${open.length} archived-question correction records. Read-only history; no approval or review status has been changed.`:`${open.length} correction${open.length===1?'':'s'} awaiting review or application. Existing bank content is unchanged until an approved draft is applied.`):'Run supabase-question-bulk-import.sql to enable safe clinical correction drafts.';
       $('revision-list').innerHTML=open.length?open.map(revision=>{
         const question=live.find(item=>item.id===revision.question_id),status=revision.status;
-        const action=status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}" type="button">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}" type="button">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject approved correction</button>`;
-        return `<article class="candidate" id="rev-${esc(revision.id)}"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${status==='approved'?'Approved':'Pending clinical review'}</span>${globalThis.QAAudit?.badge?QAAudit.badge(revision.id):''}<span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${question?`<button class="button secondary" data-revision-edit="${esc(question.id)}" type="button">Edit correction draft</button>`:''}${action}</div></article>`;
+        const action=question?.archived_at?'<span class="count">Archived history: restore the question before reviewing or applying corrections.</span>':status==='pending_review'?`<button class="button" data-revision-action="approve" data-revision-id="${esc(revision.id)}" type="button">Approve correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject</button>`:`<button class="button" data-revision-action="apply" data-revision-id="${esc(revision.id)}" type="button">Apply approved correction</button><button class="button secondary" data-revision-action="reject" data-revision-id="${esc(revision.id)}" type="button">Reject approved correction</button>`;
+        return `<article class="candidate" id="rev-${esc(revision.id)}"><div class="meta"><span class="tag ${status==='approved'?'good':'warn'}">${question?.archived_at?`Archived history: ${esc(status)}`:status==='approved'?'Approved':'Pending clinical review'}</span>${globalThis.QAAudit?.badge?QAAudit.badge(revision.id):''}<span class="tag">${question?esc(qlabel(question)||'Existing question'):'Question not in current list'}</span></div><h3>${esc(revision.change_summary)}</h3><p class="rationale">${esc(question?.stem||'Question record unavailable')}</p><details><summary>Compare original and proposed versions</summary><div class="quality-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${renderRevisionVersion('Original question',revision.base_content)}${renderRevisionVersion('Proposed correction',revision.proposed_content)}</div></details><div class="buttons">${question&&!question.archived_at?`<button class="button secondary" data-revision-edit="${esc(question.id)}" type="button">Edit correction draft</button>`:''}${action}</div></article>`;
       }).join(''):'<p class="empty">No correction drafts are awaiting review. Existing question edits will appear here as proposals.</p>';
       document.querySelectorAll('[data-revision-action]').forEach(button=>button.addEventListener('click',()=>handleRevisionAction(button.dataset.revisionAction,button.dataset.revisionId)));
       document.querySelectorAll('[data-revision-edit]').forEach(button=>button.addEventListener('click',()=>openManagedEdit(button.dataset.revisionEdit)));
     }
     async function handleRevisionAction(action,id){
       const revision=revisionDrafts.find(item=>item.id===id);if(!revision)return;
+      if(live.find(q=>q.id===revision.question_id)?.archived_at){alert('Restore this archived question before changing correction history.');return}
       const prompts={approve:'Approve this proposed correction? The current student-facing question will not change yet.',reject:'Reject this correction draft? The current question will remain unchanged.',apply:'Apply this approved correction to the existing question? Its question ID, assignments, and student attempt history will be preserved.'};
       if(!confirm(prompts[action]))return;
       const procedures={approve:'approve_question_revision',reject:'reject_question_revision',apply:'apply_question_revision'};
@@ -1775,7 +1794,7 @@
     }
     function getBulkBatches(){
       const batches=new Map();
-      live.forEach(question=>{
+      workingQuestions().forEach(question=>{
         const match=question.source_key?.match(/^qbank-bulk-([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})-/i);
         if(!match)return;
         if(!batches.has(match[1]))batches.set(match[1],[]);
@@ -1824,7 +1843,7 @@
       [...mSel].forEach(id=>{if(!filtered.some(q=>q.id===id))mSel.delete(id)});
       $('m-list').innerHTML=mShown.length?mShown.map(q=>{
         const bulk=q.source_key?.startsWith('qbank-bulk-'),status=bulk?(reviews.get(q.source_key)?.status||'draft'):null,catApproval=catApprovals.get(q.id);
-        const action=bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
+        const action=q.archived_at?`<span class="tag">Archived history</span><button class="button secondary" data-restore="${esc(q.id)}" type="button">Restore (inactive)</button>`:bulk&&!q.active?`<button class="button secondary" data-bulk-stage="${esc(q.id)}" type="button">${status==='approved'?'Publish':status==='published'?'Republish':'Approve &amp; publish'}</button>`:`<button class="button secondary" data-mone="${esc(q.id)}" type="button">${q.active?'Make inactive':'Publish'}</button>`;
         const bulkStatus=status==='approved'?'Approved for publication':status==='published'?(q.active?'Published':'Previously published'):'Draft: review required';
         const traditional=['mcq','sata'].includes(q.item_type||'mcq')&&q.item_data?.schemaVersion==null;
         const openFlag=flags.some(flag=>flag.status==='open'&&(flag.question_id===q.id||(q.question_no!=null&&flag.question_no===q.question_no)));
@@ -1837,6 +1856,7 @@
       renderBulkBatchActions();
       document.querySelectorAll('[data-medit]').forEach(button=>{
         const question=live.find(item=>item.id===button.dataset.medit);
+        if(question?.archived_at){button.remove();return}
         if(question?.active&&['mcq','sata'].includes(question.item_type||'mcq')&&question.item_data?.schemaVersion==null){
           const review=document.createElement('button');
           review.className='button secondary';review.type='button';review.textContent='Review for CAT';
@@ -1846,6 +1866,7 @@
       });
       document.querySelectorAll('[data-mpick]').forEach(b=>b.addEventListener('change',()=>{b.checked?mSel.add(b.dataset.mpick):mSel.delete(b.dataset.mpick);b.closest('.qrow').classList.toggle('sel',b.checked);mCount()}));
       document.querySelectorAll('[data-mone]').forEach(b=>b.addEventListener('click',()=>{const q=live.find(x=>x.id===b.dataset.mone);mApply(q.active?'inactive':'publish',[q.id],true)}));
+      document.querySelectorAll('[data-restore]').forEach(button=>button.addEventListener('click',()=>changeQuestionArchive('restore',[button.dataset.restore])));
       document.querySelectorAll('[data-bulk-stage]').forEach(b=>b.addEventListener('click',()=>stageBulkQuestion(b.dataset.bulkStage)));
       document.querySelectorAll('[data-medit]').forEach(b=>b.addEventListener('click',()=>openManagedEdit(b.dataset.medit)));
       $('m-more').hidden=mShown.length>=filtered.length;
@@ -1855,6 +1876,7 @@
     async function stageBulkQuestion(id){
       const question=live.find(item=>item.id===id);
       if(!question||!question.source_key?.startsWith('qbank-bulk-'))return;
+      if(question.archived_at){alert('Restore the archived question before approving or publishing it.');return}
       let status=reviews.get(question.source_key)?.status||'draft';
       try{
         if(status==='published'){
@@ -1931,11 +1953,13 @@
     }
     async function mApply(action,ids,skipConfirm){
       if(!ids.length){alert('Select at least one question first.');return}
+      if(action==='archive'||action==='restore'){await changeQuestionArchive(action,ids);return}
       if(action==='delete'){
         try{await mDelete(ids)}catch(e){alert(deleteErrorMessage(e))}
         return;
       }
       const selected=live.filter(question=>ids.includes(question.id));
+      if(action==='publish'&&selected.some(q=>q.archived_at)){alert('Restore archived questions before publishing them. Restoration keeps them inactive.');return}
       if(action==='publish'&&selected.some(question=>question.source_key?.startsWith('qbank-bulk-')&&!['approved','published'].includes(reviews.get(question.source_key)?.status))){alert('Approve every bulk-import draft before publishing it.');return}
       const words={publish:'Publish to students',inactive:'Make inactive (hidden from students)'}[action];
       if(!skipConfirm&&!confirm(words+': '+ids.length+' question'+(ids.length===1?'':'s')+'?'))return;
@@ -1952,9 +1976,37 @@
       live.forEach(q=>{if(ids.includes(q.id))q.active=action==='publish'});
       render();renderManage();
     }
-    const QUESTION_COLUMNS='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
-    const QUESTION_COLUMNS_WITHOUT_BULK='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
-    const QUESTION_COLUMNS_LEGACY='id,created_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
+    let archiveBusy=false;
+    async function changeQuestionArchive(action,ids){
+      if(archiveBusy)return;
+      ids=[...new Set(ids)];
+      const selected=live.filter(q=>ids.includes(q.id));
+      if(selected.length!==new Set(ids).size){alert('Some selected questions are unavailable. Reload the bank before trying again.');return}
+      if(action==='archive'&&selected.some(q=>q.active)){alert('Only inactive questions can be archived. Published questions were not changed.');return}
+      if(!confirm(`${action==='archive'?'Archive':'Restore'} ${selected.length} questions? ${action==='archive'?'They and their review records will leave the working queues.':'They will return to the working queues, still inactive.'} No question content, student history, assignments, flags, or correction statuses will change.`))return;
+      archiveBusy=true;
+      const archivedAt=action==='archive'?new Date().toISOString():null;
+      let completed=0;
+      try{
+        for(let i=0;i<ids.length;i+=100){
+          const chunk=[...new Set(ids)].slice(i,i+100);
+          const result=await db.from('questions').update({archived_at:archivedAt}).in('id',chunk).eq('active',false).select('id,archived_at');
+          if(result.error)throw result.error;
+          (result.data||[]).forEach(row=>{const q=live.find(q=>q.id===row.id);if(q)q.archived_at=row.archived_at});
+          completed+=(result.data||[]).length;
+          if((result.data||[]).length!==chunk.length)throw new Error('Some questions changed or could not be updated. Reload and review the remaining questions.');
+        }
+        alert(`${completed} questions ${action==='archive'?'archived':'restored'}. Student and review history is preserved.`);
+      }catch(error){alert(`${completed} questions ${action==='archive'?'archived':'restored'} before the operation stopped: ${error.message||error}. Refresh to verify the remaining questions before retrying.`)}
+      finally{
+        archiveBusy=false;mSel.clear();
+        render();renderManage();renderFlags();renderRevisionDrafts();updateBankOverview();
+        await globalThis.QAAudit?.refresh();
+      }
+    }
+    const QUESTION_COLUMNS='id,created_at,archived_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no,clinical_judgment_skill,option_rationales,reference_list';
+    const QUESTION_COLUMNS_WITHOUT_BULK='id,created_at,archived_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,study_area,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,item_type,item_data,question_no';
+    const QUESTION_COLUMNS_LEGACY='id,created_at,archived_at,stem,active,source_key,rationale,topic,difficulty,nclex_category,nclex_sub,module_key,option_a,option_b,option_c,option_d,correct_answer,is_ngn,question_no';
     async function loadAllQuestions(){
       const rows=[],pageSize=500;let columns=QUESTION_COLUMNS,metadata=true;
       for(let start=0;;start+=pageSize){
@@ -2079,6 +2131,7 @@
       $('search').addEventListener('input',render);$('filter').addEventListener('change',()=>{legSel.clear();render()});
       $('import-diag').addEventListener('click',importDiag);$('m-search').addEventListener('input',()=>{mVisible=100;renderManage()});
       $('m-filter').addEventListener('change',()=>{mVisible=100;mSel.clear();renderManage()});
+      $('review-archive-history').addEventListener('change',()=>{renderRevisionDrafts();renderFlags()});
       $('duplicate-delete-selected').addEventListener('click',()=>deleteDuplicateCopies([...duplicateSelection]));
       $('duplicate-more').addEventListener('click',()=>{duplicateVisible+=100;updateBankOverview()});
       $('m-more').addEventListener('click',()=>{mVisible+=100;renderManage()});

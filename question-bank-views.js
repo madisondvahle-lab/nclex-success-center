@@ -4,7 +4,7 @@
   const text = value => String(value ?? '');
   const esc = value => text(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fields = [['category', 'Client Needs', 'nclex_category'], ['area', 'Study Area', 'study_area'], ['type', 'Question type', 'item_type'], ['status', 'Review status', 'viewStatus']];
-  const statusOf = (q, reviews) => q.active ? 'Published' : q.source_key?.startsWith('qbank-bulk-')
+  const statusOf = (q, reviews) => q.archived_at ? 'Archived' : q.active ? 'Published' : q.source_key?.startsWith('qbank-bulk-')
     ? ({ approved: 'Approved', published: 'Previously published' }[reviews.get(q.source_key)?.status] || 'Draft') : 'Inactive';
   function matches(q, state) {
     return fields.every(([key, , field]) => !state[key] || text(q[field] || (key === 'type' ? 'mcq' : '')) === state[key]) &&
@@ -58,9 +58,13 @@
     const root = document.getElementById(id);
     if (root) delete root.dataset.ready;
   }
+  function reset(id) {
+    states.set(id, { sort: 'original' });
+    refresh(id);
+  }
   function count(id, shown, total, noun = 'questions') {
     const node = document.getElementById(id)?.querySelector('[data-view-count]');
     if (node) node.textContent = `${shown} of ${total} ${noun} match this view.`;
   }
-  window.QBankViews = { matches, compare, mount, refresh, count, statusOf };
+  window.QBankViews = { matches, compare, mount, refresh, reset, count, statusOf };
 })();
