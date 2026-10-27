@@ -37,6 +37,13 @@ Do not include Markdown fences in the importer input.
    For an already saved inactive draft, use **Manage questions**, select the
    question, and choose **Delete forever**; existing history/link safety checks
    and confirmation still apply.
+   The import filters can narrow cards by Client Needs, Study Area, question
+   type, and review status. Sort unsaved cards by file order or question text;
+   they do not have saved creation dates or bank numbers yet. Filtering does
+   not exclude items from saving: every retained item must still be reviewed.
+   **Mark no-overlap items reviewed** applies only to matching visible cards.
+   Use **Select shown import items > Remove selected from this import** to
+   exclude several items together after confirmation.
 6. Independently perform clinical review before approval/publication. Approving
    a batch keeps it inactive; publishing is a separate action. Structural
    validation and an AI-generated answer are not clinical approval.
@@ -44,6 +51,29 @@ Do not include Markdown fences in the importer input.
 Importing creates new questions only. It does not update existing questions,
 drafts, approvals, assignments, or CAT admission controls. Every imported row is
 saved with `active: false`; supplying `active: true` cannot publish it.
+
+## Managing saved drafts and possible duplicates
+
+In **Master questions**, choose **Inactive / drafts**, then filter by Client
+Needs, Study Area, question type, or review status. Sort by newest/oldest,
+question number, or question text. Select shown questions and use the existing
+bulk actions. Filter changes drop selections hidden by the new filters; sorting
+does not select additional questions. Whole-batch approval/publication controls
+still apply to the entire named batch, not a filtered subset.
+
+**Possible duplicates** has the same filters and saved-question sorting.
+A pair is shown if either question matches every selected filter; both copies
+remain visible for comparison. Review/edit either question or use **Delete this
+copy** directly beside the unwanted one. You can also select explicit copies
+across pairs and choose **Delete selected copies**; repeated appearances of the
+same question are counted once. No original/duplicate is selected automatically.
+Deletion still requires the existing database safety checks and confirmation.
+Questions with protected history cannot be deleted. Published questions must
+first be made inactive through the existing guarded workflow.
+
+These are screening suggestions, not proof of clinical duplication. Compare
+the answer key, rationales, and intended learning objective before deleting.
+No bank records are modified by filtering, sorting, or selecting.
 
 ## Required parent fields
 
