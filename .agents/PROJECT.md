@@ -111,20 +111,28 @@ is tracked in PR #273. See [the rollout handoff](tasks/consultation-cpr-reports.
 
 ### Authored clinical-record and NGN supplemental practice
 
-Question-bank archive rollout (pending production approval): the additive
+Question-bank archive rollout (PR #278; UI deployment pending): the additive
 `supabase-question-archive.sql` adds nullable `questions.archived_at` and a
 constraint requiring archived questions to remain inactive. It changes no
-policies, grants, or existing rows. Apply and verify this schema before releasing
-the archive UI; all bank column variants require the new field. Cleanup is a
-separate approved operation on explicit inactive IDs, not part of migration.
+policies, grants, or existing rows. The owner separately approved production
+migration and cleanup on October 27, 2026. Both are applied and verified:
+156 explicit inactive IDs archived, 56 published questions unchanged (including
+Q-1146–Q-1151), zero working inactive questions at cleanup. All 15 original-data
+table fingerprints (excluding only new `archived_at`) and policy/grant/RLS
+signatures matched before/after. No deletion, assignment withdrawal, or
+question/correction/audit/flag-content/status changes. All bank column variants
+require the new field, so the schema must precede UI deployment.
 Working bank/duplicate/audit/correction/flag queues exclude archived questions;
 Archive and review-history controls retain access. Restore keeps questions
 inactive and preserves outstanding findings. No assignment withdrawal, question
 content changes, correction-status changes, or student-history deletion.
-Read-only scope on October 27: 156 inactive, 56 published; 23 correction records
+Verified scope on October 27: 156 archived inactive, 56 published; 23 correction records
 (18 applied, 4 rejected, 1 approved) and 9 audit records attach to the inactive
 questions. All 28 correction records are retained; published-question reviews
-remain in their existing workflow. Recount before any cleanup.
+remain in their existing workflow. A later cleanup needs its own approval and
+fresh scope. Validation: 121 focused tests including disposable PostgreSQL;
+synthetic 1440px/390px archive/history/restore checks. Cleanup snapshots and exact
+target IDs are retained in the originating session, not in the repository.
 
 Clinical-record tabs are independent of interaction type. The existing Question
 Bank author supports tabs on single MCQ/SATA questions as well as standalone
