@@ -20,6 +20,22 @@ function selection() {
   return context.window.PracticeQuestionSelection;
 }
 
+test('the practice builder shows Client Needs first and keeps optional filters accessible', () => {
+  const builder = page.slice(page.indexOf('function renderNclexLibrary()'), page.indexOf('const topicSearch=', page.indexOf('function renderNclexLibrary()')));
+  assert.ok(builder.indexOf('id="client-needs-tab"') < builder.indexOf('id="study-area-tab"'));
+  assert.match(builder, /id="client-needs-tab"[^>]*aria-selected="true"/);
+  assert.match(builder, /id="study-area-tab"[^>]*aria-selected="false"[^>]*tabindex="-1"/);
+  assert.match(builder, /id="study-area-panel"[^>]* hidden/);
+  assert.doesNotMatch(builder, /id="client-needs-panel"[^>]* hidden/);
+  assert.match(builder, /<details class="custom-topic-picker">/);
+  assert.match(page, /event\.key==='ArrowRight'/);
+  assert.match(page, /event\.key==='ArrowLeft'/);
+  assert.match(page, /event\.key==='Home'/);
+  assert.match(page, /event\.key==='End'/);
+  assert.match(page, /\.custom-topic-picker\{grid-column:1\/-1/);
+  assert.match(page, /\.builder-choice\{[^}]*min-height:44px/);
+});
+
 test('the custom builder does not expose a difficulty selector', () => {
   const api = selection();
   const questions = [

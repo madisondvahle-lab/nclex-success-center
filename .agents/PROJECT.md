@@ -123,6 +123,12 @@ NCLEX-style theme, without practice-specific exam overrides. Questions without
 records remain single-column; clinical-record questions retain the renderer's
 tabbed layout. The practice library and results-page styling is unchanged.
 
+The custom practice builder opens with Client Needs as its first/default focus
+tab. Study Areas remain available in the second tab, and optional topic filters
+remain collapsed below. Filters combine as before; switching tabs preserves
+selections. The compact layout retains labeled controls and keyboard tab
+navigation (arrow keys, Home, End).
+
 The Assignments page has a separate **Published NGN case studies and standalone
 clinical-record questions** picker. Only explicitly selected published,
 schema-versioned authored entries are assigned. A case must have exactly six

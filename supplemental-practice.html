@@ -101,31 +101,37 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .assignment-action{transition:background-color .16s ease,border-color .16s ease}
     .nclex-review .review-heading{align-items:center}
     .review-count{color:var(--muted);font-size:.78rem;font-weight:750}
-    .custom-builder{margin:20px 0 30px;padding:clamp(20px,3vw,30px);border:1px solid var(--line);background:var(--paper)}
-    .custom-builder h2{margin:0;font-size:1.45rem}
-    .custom-builder p{max-width:72ch;color:var(--muted);font-size:.88rem;line-height:1.55}
-    .custom-builder-controls{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:20px 28px;align-items:start;margin-top:20px}
-    .builder-section{grid-column:1/-1;padding-top:18px;border-top:1px solid var(--line)}
+    .custom-builder{margin:16px 0 24px;padding:clamp(16px,2.5vw,26px);border:1px solid var(--line);background:var(--paper)}
+    .custom-builder h2{margin:0;font-size:1.45rem;text-wrap:balance}
+    .custom-builder p{max-width:85ch;margin:8px 0;color:var(--muted);font-size:.84rem;line-height:1.5}
+    .custom-builder .builder-intro{font-size:.9rem;color:var(--ink)}
+    .custom-builder .builder-cat-link{font-size:.78rem}
+    .custom-builder-controls{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px 20px;align-items:start;margin-top:14px}
+    .builder-section{grid-column:1/-1;min-width:0;padding-top:12px;border-top:1px solid var(--line)}
     .builder-mode-section{grid-column:1}
-    .builder-section h3{margin:0;font:750 .8rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em}
-    .builder-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+    .builder-section h3{margin:0;font:800 .85rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em}
+    .builder-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px}
     .builder-section-head small{color:var(--muted);font-size:.72rem}
     .builder-tab:focus-visible,.builder-choice:focus-within{outline:3px solid var(--rose);outline-offset:2px}
-    .builder-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px 18px}
-    .builder-choice{display:flex;align-items:center;gap:9px;min-height:38px;padding:5px 8px;font-size:.82rem!important;font-weight:650!important}
-    .builder-choice input{accent-color:var(--ink)}
-    .builder-choice small{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums}
-    .builder-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px}
-    .builder-tab{min-height:38px;padding:0 13px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);font:700 .8rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    .builder-tab[aria-selected="true"]{border-color:var(--rose);color:var(--ink)}
+    .builder-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 12px}
+    .builder-choice{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 8px;border:1px solid transparent;border-radius:4px;font-size:.8rem!important;font-weight:650!important;line-height:1.35}
+    .builder-choice:hover{background:var(--soft)}
+    .builder-choice:has(input:checked){background:var(--soft);border-color:var(--line)}
+    .builder-choice input{flex:none;accent-color:var(--ink)}
+    .builder-choice span{min-width:0;overflow-wrap:break-word}
+    .builder-choice small{margin-left:auto;flex:none;color:var(--muted);font-size:.72rem;font-variant-numeric:tabular-nums}
+    .builder-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:8px}
+    .builder-tab{min-height:44px;padding:0 13px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:700 .82rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+    .builder-tab:hover{background:var(--soft)}
+    .builder-tab[aria-selected="true"]{border-color:var(--rose);color:var(--ink);background:var(--soft)}
     .builder-tabpanel[hidden]{display:none}
-    .builder-count{display:grid;gap:6px}
+    .builder-count{display:grid;gap:0;padding-top:12px;border-top:1px solid var(--line)}
     .builder-count label{font-size:.78rem;font-weight:800}
     .builder-count select{width:100%;min-height:42px;margin-top:6px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
     .builder-note{margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .custom-builder label,.custom-builder legend{font-size:.78rem;font-weight:800}
     .custom-builder select,.custom-topic-search{display:block;width:100%;min-height:42px;margin-top:7px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
-    .custom-topic-picker{min-width:0}
+    .custom-topic-picker{grid-column:1/-1;min-width:0;padding:10px 12px;border:1px solid var(--line);background:var(--soft)}
     .custom-topic-picker summary{cursor:pointer;font-size:.82rem;font-weight:800}
     .custom-topic-picker summary:focus-visible,.custom-builder button:focus-visible,.custom-topic-search:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
     .custom-topic-search{max-width:440px;margin:12px 0}
@@ -134,8 +140,16 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .custom-topic-option input{margin:2px 0 0;accent-color:var(--rose)}
     .custom-builder .custom-topic-note,.custom-builder-status{margin:8px 0 0;font-size:.78rem}
     .custom-builder .custom-topic-error{color:#8a3f31}
-    .custom-builder .assignment-action{margin-top:20px}
+    .custom-builder .assignment-action{margin-top:14px}
     .custom-builder .assignment-action:disabled{opacity:.48;cursor:not-allowed}
+    @media(max-width:760px){
+      .custom-builder-controls{grid-template-columns:1fr;gap:12px}
+      .builder-section,.builder-mode-section,.custom-topic-picker{grid-column:1}
+      .builder-count{max-width:none;padding-top:0;border-top:0}
+      .builder-choices{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+      .builder-choice small{flex-shrink:1}
+      .custom-topic-list{grid-template-columns:1fr}
+    }
     .question-count-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-top:24px}
     .question-count-choice{display:grid;gap:4px;min-height:80px;padding:13px;border:1px solid var(--line);background:var(--paper);color:var(--ink);text-align:left}
     .question-count-choice strong{font-size:1.1rem}
@@ -1904,8 +1918,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const categoryOptions=questionCategories.map(category=>`<label class="builder-choice"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)}</span><small>${category.count}</small></label>`).join('');
       target.innerHTML=`<section class="custom-builder" aria-labelledby="custom-builder-title">
         <h2 id="custom-builder-title">Build a practice set</h2>
-        <p>Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>. This builder creates regular question-bank practice sets.</p>
-        <p>Choose the question style, practice mode, and focus for this session. Study Areas and NCLEX Client Needs use the tags already in your question bank. Questions you have not practiced will be selected first; previously practiced questions fill the set only when needed.</p>
+        <p class="builder-intro">Choose your practice options, then focus on NCLEX Client Needs. Study Areas and topics are optional filters.</p>
+        <p class="builder-cat-link">Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>.</p>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Question filters could not load: ${escapeHtml(questionTopicsError)} If this is the first setup, apply the Study Area migration. Otherwise, retry or contact Madison. Mixed practice remains available.</p>`:''}
         ${questionHistoryError?`<p class="custom-topic-note custom-topic-error" role="status">Saved practice history could not be counted: ${escapeHtml(questionHistoryError)} It will be checked again before questions are selected.</p>`:''}
         <div class="custom-builder-controls">
@@ -1941,16 +1955,17 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           <section class="builder-section">
             <div class="builder-section-head"><h3>Question focus</h3><small>Optional · leave both blank for a mixed set</small></div>
             <div class="builder-tabs" role="tablist" aria-label="Question focus category">
-              <button class="builder-tab" id="study-area-tab" type="button" role="tab" aria-selected="true" aria-controls="study-area-panel" data-category-tab="study-areas">Study Areas</button>
-              <button class="builder-tab" id="client-needs-tab" type="button" role="tab" aria-selected="false" aria-controls="client-needs-panel" data-category-tab="client-needs">Client Needs</button>
+              <button class="builder-tab" id="client-needs-tab" type="button" role="tab" aria-selected="true" aria-controls="client-needs-panel" data-category-tab="client-needs">Client Needs</button>
+              <button class="builder-tab" id="study-area-tab" type="button" role="tab" aria-selected="false" aria-controls="study-area-panel" tabindex="-1" data-category-tab="study-areas">Study Areas</button>
             </div>
-            <div class="builder-tabpanel" id="study-area-panel" role="tabpanel" aria-labelledby="study-area-tab" data-category-panel="study-areas">
+            <div class="builder-tabpanel" id="study-area-panel" role="tabpanel" aria-labelledby="study-area-tab" data-category-panel="study-areas" hidden>
               ${studyAreaOptions?`<div class="builder-choices">${studyAreaOptions}</div>`:'<p class="custom-topic-note">No tagged Study Areas are available yet. Contact Madison if this continues.</p>'}
             </div>
-            <div class="builder-tabpanel" id="client-needs-panel" role="tabpanel" aria-labelledby="client-needs-tab" data-category-panel="client-needs" hidden>
+            <div class="builder-tabpanel" id="client-needs-panel" role="tabpanel" aria-labelledby="client-needs-tab" data-category-panel="client-needs">
               ${categoryOptions?`<div class="builder-choices">${categoryOptions}</div>`:'<p class="custom-topic-note">No active Client Needs categories are available.</p>'}
             </div>
             <p class="builder-note">Selections in both views can be combined. For example, choose a Study Area and a Client Need to narrow the set.</p>
+            <p class="builder-note">Questions you have not practiced will be selected first; previously practiced questions fill the set only when needed.</p>
           </section>
           <details class="custom-topic-picker">
             <summary>Optional: narrow by topic (${questionTopics.length} available)</summary>
@@ -1977,11 +1992,23 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       };
       target.querySelectorAll('#tutor-mode-choice,#timed-mode-choice').forEach(input=>input.addEventListener('change',updatePracticeOptions));
       updatePracticeOptions();
-      target.querySelectorAll('[data-category-tab]').forEach(button=>button.addEventListener('click',()=>{
-        const selected=button.dataset.categoryTab;
-        target.querySelectorAll('[data-category-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
-        target.querySelectorAll('[data-category-panel]').forEach(panel=>{panel.hidden=panel.dataset.categoryPanel!==selected});
-      }));
+      const categoryTabs=[...target.querySelectorAll('[data-category-tab]')];
+      categoryTabs.forEach((button,index)=>{
+        button.addEventListener('click',()=>{
+          const selected=button.dataset.categoryTab;
+          categoryTabs.forEach(tab=>{tab.setAttribute('aria-selected',String(tab===button));tab.tabIndex=tab===button?0:-1});
+          target.querySelectorAll('[data-category-panel]').forEach(panel=>{panel.hidden=panel.dataset.categoryPanel!==selected});
+        });
+        button.addEventListener('keydown',event=>{
+          const next=event.key==='Home'?0:event.key==='End'?categoryTabs.length-1:
+            event.key==='ArrowRight'?(index+1)%categoryTabs.length:
+            event.key==='ArrowLeft'?(index+categoryTabs.length-1)%categoryTabs.length:null;
+          if(next===null)return;
+          event.preventDefault();
+          categoryTabs[next].click();
+          categoryTabs[next].focus();
+        });
+      });
       const updateAvailability=()=>{
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
