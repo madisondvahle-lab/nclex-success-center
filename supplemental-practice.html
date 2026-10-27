@@ -73,24 +73,6 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     #quiz .option:focus-within{outline:3px solid #a94f67;outline-offset:2px}
     #quiz .primary{background:var(--ink);color:#fff}
     #quiz .secondary{background:var(--soft);color:var(--ink)}
-    #exam-host .ex-app{--ex-dark:#17344f;--ex-bar:#f5f3ed;--ex-line:#cbd5d1;--ex-ink:#1e2c36;--ex-blue:#a94f67;--ex-th:#eeeae1;--ex-stripe:#faf8f2;--ex-fs:19px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    #exam-host .ex-header{background:#17344f;border:0;padding:14px 24px;min-height:64px}
-    #exam-host .ex-header .ex-meta{font-size:.82em}
-    #exam-host .ex-toolbar{background:#f5f3ed;color:#17344f;border-bottom:1px solid #cbd5d1;padding:0 20px}
-    #exam-host .ex-tb{color:#17344f}
-    #exam-host .ex-tb:hover,#exam-host .ex-tb:focus-visible{background:#e8e4db}
-    #exam-host .ex-main{background:#fffefa}
-    #exam-host .ex-pane{max-width:1120px;margin:0 auto;padding:clamp(22px,5vw,58px)}
-    #exam-host .ex-item-no{color:#a94f67;font:800 .74em system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.09em;text-transform:uppercase}
-    #exam-host .ex-stem{max-width:76ch;margin:20px 0 26px;line-height:1.65;font-size:1.06em}
-    #exam-host .ex-opts{margin:0;max-width:76ch}
-    #exam-host .ex-opt{padding:13px 14px;margin:7px 0;border:1px solid #cbd5d1;background:#fffefa;line-height:1.5}
-    #exam-host .ex-opt:hover{border-color:#17344f;background:#f5f3ed}
-    #exam-host .ex-opt:focus-within{outline:3px solid #a94f67;outline-offset:2px}
-    #exam-host .ex-footer{background:#f5f3ed;color:#17344f;border-top:1px solid #cbd5d1}
-    #exam-host .ex-fb{color:#17344f;border-color:#d4dcd7;padding:14px 20px}
-    #exam-host .ex-fb:hover,#exam-host .ex-fb:focus-visible{background:#e8e4db}
-    #exam-host .ex-fb[disabled]{color:#73808a}
     @media(max-width:760px){
       .shell{width:min(100% - 28px,600px)}
       .workspace{grid-template-columns:1fr;gap:14px}
@@ -108,10 +90,6 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       .builder-section{grid-column:1}
       .builder-count{max-width:260px}
       .custom-topic-list{grid-template-columns:1fr}
-      #exam-host .ex-header{align-items:flex-start;padding:12px 14px}
-      #exam-host .ex-toolbar{overflow-x:auto;padding:0 8px}
-      #exam-host .ex-fb{padding:12px 10px}
-      #exam-host .ex-mark-l{display:none}
     }
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
     .workspace-empty{grid-column:1/-1}
@@ -220,7 +198,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
   </style>
   <link rel="stylesheet" href="student-nav.css">
-  <link rel="stylesheet" href="exam-ui.css">
+  <link rel="stylesheet" href="exam-ui.css?v=ngn-preview-typography-v1">
 </head>
 <body>
   <a href="#main-content" class="portal-skip-link">Skip to main content</a>

@@ -13,6 +13,15 @@ for (const file of ['exam-ui-ngn.js', 'ngn-author-ngn.js']) {
 }
 const { Exam, prepare, score, reviewHtml } = context.window.ExamUI;
 const { validate, blank } = context.window.NGNAuthor;
+test('student practice uses the same unmodified exam theme as the import preview', () => {
+  const practice = readFileSync(join(__dirname, '..', 'supplemental-practice.html'), 'utf8');
+  const preview = readFileSync(join(__dirname, '..', 'question-bank-review.html'), 'utf8');
+  const stylesheet = page => page.match(/href="(exam-ui\.css[^"]*)"/)?.[1];
+  assert.ok(stylesheet(preview));
+  assert.equal(stylesheet(practice), stylesheet(preview));
+  const styles = [...practice.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(match => match[1]).join('\n');
+  assert.doesNotMatch(styles, /\.ex-(?:app|header|toolbar|main|pane|stem|opts|opt|footer|fb|tb|item-no|mark-l)\b/);
+});
 test('split question typography matches prompts and options without restyling matrix controls', () => {
   const css = readFileSync(join(__dirname, '..', 'exam-ui.css'), 'utf8');
   assert.match(css, /\.ex-prompt\{[^}]*font-size:\.9em/);
