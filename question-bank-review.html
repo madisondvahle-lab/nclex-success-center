@@ -1098,7 +1098,32 @@
       previous.forEach(entry=>{const score=similarity(item.stem,entry.item.stem);if(score>bestScore){best={batchId:entry.item.id};bestScore=score}});
       return bestScore>=.55?{...best,score:bestScore,exact:false}:null;
     }
-    function stagedCanSave(){return bulkImportReady&&stagedBatch.length>=1&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    let bulkSaving=false;
+    function stagedCanSave(){return !bulkSaving&&bulkImportReady&&stagedBatch.length>=1&&stagedBatch.length<=50&&stagedBatch.every(entry=>!entry.errors.length&&entry.reviewed)}
+    function removeBulkItem(index){
+      if(bulkSaving||pendingBulkTracking){$('bulk-status').textContent='Finish saving and draft tracking before removing import items.';return}
+      const entry=stagedBatch[index];
+      if(!entry)return;
+      if(!confirm(`Remove ${entry.item.id||`item ${index+1}`} from this import? This only removes the unsaved import item, not any matching question already in your bank. Your original downloaded file will not change.`))return;
+      try{
+        const remaining=stagedBatch.filter((_,i)=>i!==index);
+        const parsed=JSON.parse($('bulk-json').value);
+        if(!Array.isArray(parsed))parsed.items=remaining.map(row=>row.item);
+        const json=JSON.stringify(Array.isArray(parsed)?remaining.map(row=>row.item):parsed,null,2);
+        const checked=validateBatchItems(remaining.map(row=>row.item));
+        checked.forEach((row,i)=>{
+          const previous=remaining[i];
+          row.reviewed=previous.reviewed&&JSON.stringify(row.errors)===JSON.stringify(previous.errors)&&JSON.stringify(row.match)===JSON.stringify(previous.match);
+        });
+        stagedBatch=checked;
+        $('bulk-json').value=json;
+        $('bulk-file').value='';
+        renderBulkPreview();
+        $('bulk-status').textContent=`Removed ${entry.item.id||`item ${index+1}`} from this import. No bank question was deleted. ${checked.length?`${$('bulk-status').textContent} Any changed validation or overlap checks require review again.`:'No items remain. Paste or choose another batch to continue.'}`;
+        const buttons=document.querySelectorAll('[data-bulk-remove]');
+        (buttons[Math.min(index,buttons.length-1)]||$('bulk-preview')).focus();
+      }catch(error){$('bulk-status').textContent=`Could not remove this import item: ${error.message||error}`}
+    }
     function reviewClearBulkItems(){
       if(!bulkImportReady)return;
       stagedBatch.forEach(entry=>{if(!entry.errors.length&&!entry.match)entry.reviewed=true});
@@ -1151,10 +1176,11 @@
         const choices=type==='mcq'&&Array.isArray(item.options)?item.options.map((option,i)=>`<li><strong>${'ABCD'[i]}${String(item.correct_answer||'').toLowerCase()==='abcd'[i]?' · Key':''}:</strong> ${esc(option)}<br><span>${esc(item.option_rationales?.['abcd'[i]]||'No option rationale')}</span></li>`).join(''):'';
         const ngnData=type!=='mcq'&&item.item_data?`<details><summary>NGN interaction and scoring data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.item_data,null,2))}</pre></details>`:'';
         const refs=Array.isArray(item.references)?item.references.map(ref=>`<li><a href="${esc(ref?.url||'')}" target="_blank" rel="noopener noreferrer">${esc(ref?.title||'Invalid reference: add title and URL')}</a></li>`).join(''):'';
-        const preview=entry.errors.length?'':`<div class="buttons"><button class="button secondary" type="button" data-bulk-preview="${index}">Preview as student</button></div><p class="rationale">Test the tabs and responses, then use Check answer to review the key and rationale. Previewing does not save, approve, or publish this item.</p>`;
+        const preview=`<div class="buttons">${entry.errors.length?'':`<button class="button secondary" type="button" data-bulk-preview="${index}">Preview as student</button>`}<button class="button secondary" type="button" data-bulk-remove="${index}" ${bulkSaving||pendingBulkTracking?'disabled':''}>Remove from this import</button></div><p class="rationale">Removing an item only excludes it from this unsaved import, not from your question bank.${entry.errors.length?'':' Test the tabs and responses, then use Check answer to review the key and rationale. Previewing does not save, approve, or publish this item.'}</p>`;
         return `<article class="candidate ${match?'duplicate':''}"><div class="meta"><span class="tag">${esc(item.id||`Item ${index+1}`)}</span><span class="tag">${esc(item.item_type||'Unknown type')}</span><span class="tag">${esc(item.nclex_category||'No category')}</span>${item.study_area?`<span class="tag">${esc(item.study_area)}</span>`:''}${match?'<span class="tag warn">Review overlap</span>':'<span class="tag good">No overlap found</span>'}</div><h3>${esc(item.stem||'Missing stem')}</h3><p class="rationale">${matchText}</p>${preview}${choices?`<ol>${choices}</ol>`:ngnData}<p class="rationale"><strong>Rationale:</strong> ${esc(item.rationale||'Missing rationale')}</p><p class="rationale"><strong>Clinical judgment skill:</strong> ${esc(item.clinical_judgment_skill||'Missing')} · <strong>Topic:</strong> ${esc(item.topic||'Missing')} · <strong>Difficulty:</strong> ${esc(item.difficulty||'Missing')}</p><details><summary>References</summary><ul>${refs}</ul></details>${entry.errors.length?`<p class="match"><strong>Validation errors:</strong> ${entry.errors.map(esc).join(' ')}</p>`:''}<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" data-bulk-reviewed="${index}" ${entry.reviewed?'checked':''} ${entry.errors.length?'disabled':''}><span>${match?'I previewed this item, reviewed its answer/rationales and the match, and confirmed this is a distinct item.':'I previewed this item and reviewed its answer/rationales.'}</span></label></article>`;
       }).join('');
       document.querySelectorAll('[data-bulk-preview]').forEach(button=>button.addEventListener('click',()=>previewBulkItem(Number(button.dataset.bulkPreview))));
+      document.querySelectorAll('[data-bulk-remove]').forEach(button=>button.addEventListener('click',()=>removeBulkItem(Number(button.dataset.bulkRemove))));
       document.querySelectorAll('[data-bulk-reviewed]').forEach(input=>input.addEventListener('change',()=>{stagedBatch[Number(input.dataset.bulkReviewed)].reviewed=input.checked;renderBulkPreview()}));
       save.disabled=!stagedCanSave();
     }
@@ -1171,6 +1197,7 @@
       }catch(error){stagedBatch=[];renderBulkPreview();$('bulk-status').textContent=error.message||'Could not read this JSON batch.'}
     }
     async function saveBulkDrafts(){
+      if(bulkSaving)return;
       if(!pendingBulkTracking&&!stagedCanSave())return;
       if(!pendingBulkTracking){
         const checked=validateBatchItems(stagedBatch.map(entry=>entry.item));
@@ -1178,6 +1205,8 @@
           stagedBatch=checked;renderBulkPreview();return;
         }
       }
+      bulkSaving=true;
+      document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=true});
       const save=$('bulk-save');save.disabled=true;save.textContent='Saving inactive drafts…';
       try{
         if(!pendingBulkTracking){
@@ -1209,7 +1238,7 @@
         $('bulk-status').textContent=`Saved ${questions.length} inactive drafts. In Manage questions, approve the batch in one action; publishing remains a separate step.`;
         stagedBatch=[];$('bulk-json').value='';$('bulk-file').value='';renderBulkPreview();render();
       }catch(error){$('bulk-status').textContent=`Import did not finish: ${error.message||error}. If drafts were inserted, retry tracking; the current page will not insert them a second time.`}
-      finally{save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
+      finally{bulkSaving=false;document.querySelectorAll('[data-bulk-remove]').forEach(button=>{button.disabled=!!pendingBulkTracking});save.textContent=pendingBulkTracking?'Retry draft tracking':'Save reviewed items as inactive drafts';save.disabled=!(pendingBulkTracking||stagedCanSave())}
     }
     function renderQualityDrafts(){
       const drafts=live.filter(question=>question.source_key?.startsWith('quality-')&&!question.active);

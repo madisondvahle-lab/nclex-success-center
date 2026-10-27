@@ -28,6 +28,15 @@ Do not include Markdown fences in the importer input.
    reviewed items, then **Save reviewed items as inactive drafts**. Previewing
    alone does not mark an item reviewed or enable saving. Saved drafts remain
    editable and can also be previewed through **Edit > Preview as student**.
+   To exclude a duplicate or unwanted item before saving, choose **Remove from
+   this import** on its card and confirm. This updates the pasted JSON and
+   rechecks the remaining items, including within-batch overlaps. Unchanged
+   review confirmations are retained; changed checks require review again.
+   It does not delete existing bank questions or modify your downloaded file.
+   A six-item case is removed as one complete entry, not individual case items.
+   For an already saved inactive draft, use **Manage questions**, select the
+   question, and choose **Delete forever**; existing history/link safety checks
+   and confirmation still apply.
 6. Independently perform clinical review before approval/publication. Approving
    a batch keeps it inactive; publishing is a separate action. Structural
    validation and an AI-generated answer are not clinical approval.

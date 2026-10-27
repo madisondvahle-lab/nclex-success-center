@@ -11,11 +11,11 @@ const plain = value => JSON.parse(JSON.stringify(value));
 function harness() {
   const nodes = new Map(), writes = [];
   const $ = id => {
-    if (!nodes.has(id)) nodes.set(id, { value: '', textContent: '', innerHTML: '', after() {} });
+    if (!nodes.has(id)) nodes.set(id, { value: '', textContent: '', innerHTML: '', after() {}, focus() {} });
     return nodes.get(id);
   };
   const context = {
-    window: {}, crypto: webcrypto, $, console,
+    window: {}, crypto: webcrypto, $, console, confirm: () => true,
     document: { querySelectorAll: () => [], querySelector: () => null },
     bulkImportReady: true, stagedBatch: [], pendingBulkTracking: null,
     live: [], reviews: new Map(), session: { user: { id: 'synthetic-admin' } },
@@ -35,7 +35,7 @@ function harness() {
   context.NGNAuthor = context.window.NGNAuthor;
   vm.runInNewContext(
     html.slice(html.indexOf('const BULK_TYPES='), html.indexOf('function bulkMatch(')) +
-    html.slice(html.indexOf('function stagedCanSave('), html.indexOf('function renderQualityDrafts(')),
+    html.slice(html.indexOf('let bulkSaving='), html.indexOf('function renderQualityDrafts(')),
     context
   );
   return { context, $, writes };
@@ -76,6 +76,96 @@ async function stage(h, items, wrapped = true) {
   h.$('bulk-json').value = JSON.stringify(wrapped ? { items } : items);
   await h.context.previewBulk();
 }
+
+test('removing an unsaved overlap updates JSON and saves only the retained reviewed item', async () => {
+  const h = harness();
+  await stage(h, [question('mcq', 'remove-me'), question('cloze', 'keep-me')]);
+  h.context.stagedBatch[0].match = { question: { id: 'existing-bank-question' }, exact: true };
+  h.context.stagedBatch[1].reviewed = true;
+  h.context.removeBulkItem(0);
+  assert.equal(h.context.stagedBatch.length, 1);
+  assert.equal(h.context.stagedBatch[0].item.id, 'keep-me');
+  assert.equal(h.context.stagedBatch[0].reviewed, true);
+  assert.deepEqual(JSON.parse(h.$('bulk-json').value).items.map(item => item.id), ['keep-me']);
+  assert.equal(h.writes.length, 0);
+  assert.match(h.$('bulk-status').textContent, /No bank question was deleted/);
+  await h.context.previewBulk();
+  assert.equal(h.context.stagedBatch.length, 1, 'revalidating cannot bring back the removed item');
+  h.context.stagedBatch[0].reviewed = true;
+  await h.context.saveBulkDrafts();
+  const inserted = h.writes.find(write => write.table === 'questions').rows;
+  assert.equal(inserted.length, 1);
+  assert.match(inserted[0].source_key, /keep-me$/);
+  assert.equal(inserted[0].active, false);
+});
+
+test('removal cancellation, whole-case removal, and an empty bare-array batch are safe', async () => {
+  const h = harness();
+  await stage(h, [question('case')], false);
+  const before = h.$('bulk-json').value;
+  h.context.confirm = () => false;
+  h.context.removeBulkItem(0);
+  assert.equal(h.$('bulk-json').value, before);
+  assert.equal(h.context.stagedBatch[0].item.item_data.items.length, 6);
+  h.context.confirm = () => true;
+  h.context.removeBulkItem(0);
+  assert.deepEqual(JSON.parse(h.$('bulk-json').value), []);
+  assert.equal(h.context.stagedCanSave(), false);
+  assert.equal(h.$('bulk-save').disabled, true);
+  assert.match(h.$('bulk-status').textContent, /No items remain/);
+  assert.equal(h.writes.length, 0);
+});
+
+test('removal rechecks batch matches and resets only affected review confirmations', async () => {
+  const h = harness();
+  h.context.bulkMatch = (item, previous) => previous.length ? { batchId: previous[0].item.id, exact: true } : null;
+  await stage(h, [question('mcq', 'first'), question('mcq', 'second'), question('mcq', 'third')]);
+  h.context.stagedBatch.forEach(entry => { entry.reviewed = true; });
+  h.context.removeBulkItem(0);
+  assert.equal(h.context.stagedBatch[0].match, null);
+  assert.equal(h.context.stagedBatch[0].reviewed, false);
+  assert.equal(h.context.stagedBatch[1].match.batchId, 'second');
+  assert.equal(h.context.stagedBatch[1].reviewed, false);
+  assert.equal(h.context.stagedCanSave(), false);
+});
+
+test('invalid items can be removed and pending tracking blocks removal without writes', async () => {
+  const h = harness(), invalid = question('cloze', 'invalid');
+  invalid.item_data.dropdowns[0].correct = 99;
+  await stage(h, [invalid, question('mcq', 'valid')]);
+  assert.match(h.$('bulk-preview-list').innerHTML, /data-bulk-remove="0"/);
+  const original = h.$('bulk-json').value;
+  h.context.pendingBulkTracking = { questions: [], records: [] };
+  h.context.removeBulkItem(0);
+  assert.equal(h.$('bulk-json').value, original);
+  assert.match(h.$('bulk-status').textContent, /Finish saving/);
+  h.context.pendingBulkTracking = null;
+  h.context.removeBulkItem(0);
+  assert.equal(h.context.stagedBatch[0].errors.length, 0);
+  assert.equal(h.writes.length, 0);
+});
+
+test('removal and repeated save are blocked while an insert is in flight', async () => {
+  const h = harness();
+  await stage(h, [question('mcq')]);
+  h.context.stagedBatch[0].reviewed = true;
+  const original = h.$('bulk-json').value;
+  let release, inserts = 0;
+  h.context.db = { from: () => ({ insert: () => {
+    inserts++;
+    return { select: () => new Promise(resolve => { release = resolve; }) };
+  } }) };
+  const saving = h.context.saveBulkDrafts();
+  h.context.removeBulkItem(0);
+  assert.equal(h.$('bulk-json').value, original);
+  assert.match(h.$('bulk-status').textContent, /Finish saving/);
+  await h.context.saveBulkDrafts();
+  assert.equal(inserts, 1);
+  release({ error: { message: 'Synthetic insert failure' } });
+  await saving;
+  h.context.removeBulkItem(0);
+  assert.equal(h.context.stagedBatch.length, 0);
+});
 
 test('all eight interaction types and record-backed MCQ/SATA validate without mutation', () => {
   const h = harness();
