@@ -118,6 +118,11 @@ when delivering MCQ/SATA through mixed, weekly, course, and bank-set routes;
 questions without records retain their normal display and scoring. This does
 not add case studies or standalone NGN types to traditional question selection.
 
+Student practice and the import preview use the same shared `exam-ui.css`
+NCLEX-style theme, without practice-specific exam overrides. Questions without
+records remain single-column; clinical-record questions retain the renderer's
+tabbed layout. The practice library and results-page styling is unchanged.
+
 The Assignments page has a separate **Published NGN case studies and standalone
 clinical-record questions** picker. Only explicitly selected published,
 schema-versioned authored entries are assigned. A case must have exactly six
