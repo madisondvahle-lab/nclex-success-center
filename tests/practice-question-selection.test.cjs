@@ -33,7 +33,7 @@ test('the practice builder shows Client Needs first and keeps optional filters a
   assert.match(page, /event\.key==='Home'/);
   assert.match(page, /event\.key==='End'/);
   assert.match(page, /\.custom-topic-picker\{grid-column:1\/-1/);
-  assert.match(page, /\.builder-choice\{[^}]*min-height:44px/);
+  assert.ok(Number(page.match(/\.builder-choice\{[^}]*min-height:(\d+)px/)?.[1]) >= 44);
 });
 
 test('the custom builder does not expose a difficulty selector', () => {
@@ -57,6 +57,20 @@ test('the custom builder does not expose a difficulty selector', () => {
   assert.match(page, /showTimer:activeSet\.timedMode/);
   assert.match(examUi, /this\.o\.showTimer === false \? null : setInterval/);
   assert.match(examUi, /this\.o\.showTimer === false \? '' : `.*Time Elapsed/);
+});
+
+test('builder offers scoped bulk selection without replacing practice filters', () => {
+  const builder = page.slice(page.indexOf('function renderNclexLibrary()'), page.indexOf('function renderLibrary()'));
+  for (const [group, label] of [['category', 'Client Needs'], ['study-area', 'Study Areas'], ['topic', 'topics'],
+    ['item-type', 'question types'], ['question-mode', 'question history']]) {
+    assert.ok(builder.includes(`bulkControls('${group}','${label}')`));
+  }
+  assert.match(builder, /data-selection-count="\$\{group\}" role="status"/);
+  assert.match(builder, /input\.checked=checked/);
+  assert.match(builder, /Select all and Clear all apply to all topics/);
+  assert.match(builder, /selected===inputs\.length/);
+  assert.match(builder, /selected===0/);
+  assert.match(builder, /buildMixedReview\(count,null,topics,categories,'all',studyAreas,itemTypes,modes,practiceOptions\)/);
 });
 
 test('UWorld-inspired filters use existing Study Areas and Client Needs with supported item types', () => {
