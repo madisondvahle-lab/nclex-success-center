@@ -171,11 +171,11 @@
       const isNursing = nursing && !nursing.classList.contains('hidden');
       const targets = isNursing ? {
         lectures: ['resources-nursing-card', 'class-schedule-card'],
-        'previous-tests': ['performance-nursing-card', 'class-schedule-card'],
+        'previous-tests': ['previous-tests-card', 'performance-nursing-card', 'class-schedule-card'],
         performance: ['performance-nursing-card', 'class-schedule-card']
       } : {
         lectures: ['modules-nclex-card'],
-        'previous-tests': ['cat-trend-card', 'log-cat-card'],
+        'previous-tests': ['previous-tests-card', 'cat-trend-card', 'log-cat-card'],
         performance: ['cat-results-card', 'cat-trend-card', 'log-cat-card']
       };
       return (targets[name] || []).map(id => document.getElementById(id))
