@@ -105,8 +105,12 @@ Keep these concepts separate:
 The dashboard's **Previous Tests** menu opens a separate workspace rather than
 scrolling to a dashboard card. `student-test-history.js` and its stylesheet
 provide a searchable, paginated test list, a summary/question table, and
-read-only question review with Previous/Next navigation. Practice detail queries
-use both the student ID and saved result ID; completed portal assessments use
+read-only question review with Previous/Next navigation.
+The history stylesheet scopes the blue NCLEX exam palette and Arial typography
+to the list, results summary, and question review; other dashboard sections
+retain their existing theme.
+Practice detail queries use both the student ID and saved result ID; completed
+portal assessments use
 the existing authenticated `diagnostic-assessment` review action. Shared
 `PracticeReviewData`, `ExamUI`, and option-presentation helpers preserve saved
 responses, clinical records, and option order. No new history tables or writes

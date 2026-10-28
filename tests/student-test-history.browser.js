@@ -26,6 +26,8 @@ async function runStudentTestHistoryBrowserChecks(page, origin) {
     await page.goto(origin + '/student-dashboard.html?history-test=' + width + '-' + Date.now() + '#previous-tests');
     const root = page.locator('#previous-tests-card');
     await root.getByRole('button', { name: 'Review test', exact: true }).first().waitFor();
+    check(await root.locator('.test-history-header').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(0, 103, 168)', 'Test list does not match the blue exam header');
+    check(await root.locator('h1').evaluate(el => getComputedStyle(el).fontFamily.startsWith('Arial')), 'Test list retains the old heading font');
     check(await page.locator('#main-content').evaluate(el => el.classList.contains('test-history-view')), 'History is not a separate view');
     check(!await page.locator('.hero').first().isVisible(), 'Dashboard content remains visible');
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Viewport overflow at ' + width);
@@ -34,10 +36,13 @@ async function runStudentTestHistoryBrowserChecks(page, origin) {
     await search(root, 'Synthetic practice test');
     await activate(root.getByRole('button', { name: 'Review test', exact: true }));
     await root.getByRole('button', { name: 'Review question 1', exact: true }).waitFor();
+    check(await root.locator('[data-focus]').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(0, 103, 168)', 'Results header does not match the blue exam theme');
     await root.getByLabel('Show responses').selectOption('partial');
     check(await root.getByRole('button', { name: /^Review question/ }).count() === 1, 'Partial response filter is incorrect');
     await activate(root.getByRole('button', { name: 'Review question 3', exact: true }));
     await root.getByText('Synthetic rationale q2', { exact: true }).waitFor();
+    check(await root.locator('.test-history-question-nav').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(125, 174, 232)', 'Question toolbar does not match the exam theme');
+    check(await root.locator('.test-history-rationale').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(230, 242, 252)', 'Rationale does not match the exam palette');
     check(await root.getByRole('button', { name: 'Next question', exact: true }).isDisabled(), 'Filtered navigation leaked questions');
     await activate(root.getByRole('button', { name: '← Test results', exact: true }));
     await root.getByLabel('Show responses').selectOption('all');
