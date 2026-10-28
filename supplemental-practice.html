@@ -101,23 +101,25 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .assignment-action{transition:background-color .16s ease,border-color .16s ease}
     .nclex-review .review-heading{align-items:center}
     .review-count{color:var(--muted);font-size:.78rem;font-weight:750}
-    .custom-builder{margin:16px 0 24px;padding:clamp(16px,2.5vw,26px);border:1px solid var(--line);background:var(--paper)}
-    .custom-builder h2{margin:0;font-size:1.45rem;text-wrap:balance}
+    .custom-builder{margin:16px 0 24px;padding:clamp(16px,3vw,32px);border:1px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:0 12px 36px #17344f0a}
+    .custom-builder h2{margin:0;font:750 clamp(1.45rem,3vw,1.9rem) system-ui,sans-serif;letter-spacing:-.03em;text-wrap:balance}
+    .builder-heading{padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .custom-builder .builder-kicker{color:var(--rose);font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px}
     .custom-builder p{max-width:85ch;margin:8px 0;color:var(--muted);font-size:.84rem;line-height:1.5}
     .custom-builder .builder-intro{font-size:.9rem;color:var(--ink)}
     .custom-builder .builder-cat-link{font-size:.78rem}
-    .custom-builder-controls{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px 20px;align-items:start;margin-top:14px}
-    .builder-section{grid-column:1/-1;min-width:0;padding-top:12px;border-top:1px solid var(--line)}
+    .custom-builder-controls{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:20px;align-items:start;margin-top:24px}
+    .builder-section{grid-column:1/-1;min-width:0;padding:20px;border:1px solid var(--line);border-radius:12px;background:#fff}
     .builder-mode-section{grid-column:1}
     .builder-section h3{margin:0;font:800 .85rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em}
-    .builder-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px}
+    .builder-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:14px}
     .builder-section-head small{color:var(--muted);font-size:.72rem}
     .builder-tab:focus-visible,.builder-choice:focus-within{outline:3px solid var(--rose);outline-offset:2px}
-    .builder-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 12px}
-    .builder-choice{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 8px;border:1px solid transparent;border-radius:4px;font-size:.8rem!important;font-weight:650!important;line-height:1.35}
+    .builder-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:10px}
+    .builder-choice{display:flex;align-items:center;gap:10px;min-height:54px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:.84rem!important;font-weight:650!important;line-height:1.4;cursor:pointer}
     .builder-choice:hover{background:var(--soft)}
-    .builder-choice:has(input:checked){background:var(--soft);border-color:var(--line)}
-    .builder-choice input{flex:none;accent-color:var(--ink)}
+    .builder-choice:has(input:checked){background:var(--soft);border-color:var(--rose)}
+    .builder-choice input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--rose)}
     .builder-choice span{min-width:0;overflow-wrap:break-word}
     .builder-choice small{margin-left:auto;flex:none;color:var(--muted);font-size:.72rem;font-variant-numeric:tabular-nums}
     .builder-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:8px}
@@ -125,19 +127,30 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .builder-tab:hover{background:var(--soft)}
     .builder-tab[aria-selected="true"]{border-color:var(--rose);color:var(--ink);background:var(--soft)}
     .builder-tabpanel[hidden]{display:none}
-    .builder-count{display:grid;gap:0;padding-top:12px;border-top:1px solid var(--line)}
+    .builder-count{display:grid;min-width:0;gap:4px;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
     .builder-count label{font-size:.78rem;font-weight:800}
     .builder-count select{width:100%;min-height:42px;margin-top:6px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
     .builder-note{margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .custom-builder label,.custom-builder legend{font-size:.78rem;font-weight:800}
-    .custom-builder select,.custom-topic-search{display:block;width:100%;min-height:42px;margin-top:7px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
-    .custom-topic-picker{grid-column:1/-1;min-width:0;padding:10px 12px;border:1px solid var(--line);background:var(--soft)}
-    .custom-topic-picker summary{cursor:pointer;font-size:.82rem;font-weight:800}
+    .custom-builder select,.custom-topic-search{display:block;width:100%;min-width:0;max-width:100%;min-height:44px;margin-top:7px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fffefa;color:var(--ink);font:inherit}
+    .custom-topic-picker{grid-column:1/-1;min-width:0;padding:16px 20px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+    .custom-topic-picker summary{cursor:pointer;font-size:.88rem;font-weight:800;min-height:44px;align-content:center}
     .custom-topic-picker summary:focus-visible,.custom-builder button:focus-visible,.custom-topic-search:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
     .custom-topic-search{max-width:440px;margin:12px 0}
-    .custom-topic-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px;max-height:250px;overflow:auto;padding:8px;border:1px solid var(--line);background:#fffefa}
-    .custom-topic-option{display:flex;align-items:flex-start;gap:8px;padding:8px;font-size:.78rem!important;font-weight:600!important;line-height:1.4}
-    .custom-topic-option input{margin:2px 0 0;accent-color:var(--rose)}
+    .custom-topic-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:8px;max-height:300px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fffefa}
+    .custom-topic-option{display:flex;align-items:flex-start;gap:10px;min-height:44px;padding:10px;border-radius:6px;font-size:.82rem!important;font-weight:600!important;line-height:1.4;overflow-wrap:anywhere;cursor:pointer}
+    .custom-topic-option[hidden]{display:none}
+    .custom-topic-option:has(input:checked){background:var(--soft)}
+    .custom-topic-option:focus-within{outline:2px solid var(--rose);outline-offset:-2px}
+    .custom-topic-option input{flex:none;width:17px;height:17px;margin:2px 0 0;accent-color:var(--rose)}
+    .builder-bulk{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
+    .builder-bulk button{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-weight:700}
+    .builder-bulk button:hover:not(:disabled){border-color:var(--rose);background:var(--soft)}
+    .builder-bulk button:disabled{opacity:.5;cursor:default}
+    .builder-bulk span{color:var(--muted);font-size:.76rem}
+    .builder-footer{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+    .custom-builder .builder-footer .assignment-action{margin:0;min-height:48px;border-radius:8px;padding:12px 24px}
+    .custom-builder .builder-footer .custom-builder-status{flex:1;min-width:min(100%,240px);margin:0}
     .custom-builder .custom-topic-note,.custom-builder-status{margin:8px 0 0;font-size:.78rem}
     .custom-builder .custom-topic-error{color:#8a3f31}
     .custom-builder .assignment-action{margin-top:14px}
@@ -145,8 +158,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     @media(max-width:760px){
       .custom-builder-controls{grid-template-columns:1fr;gap:12px}
       .builder-section,.builder-mode-section,.custom-topic-picker{grid-column:1}
-      .builder-count{max-width:none;padding-top:0;border-top:0}
-      .builder-choices{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+      .builder-count{max-width:none}
+      .builder-section,.custom-topic-picker{padding:14px}
+      .builder-choices{grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
       .builder-choice small{flex-shrink:1}
       .custom-topic-list{grid-template-columns:1fr}
     }
@@ -1916,10 +1930,17 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const studyAreaOptions=questionStudyAreas.map(area=>`<label class="builder-choice"><input type="checkbox" data-study-area-choice value="${escapeHtml(area.name)}"><span>${escapeHtml(area.name)}</span><small>${area.count}</small></label>`).join('');
       const topicOptions=questionTopics.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-choice value="${escapeHtml(topic.name)}"><span>${escapeHtml(topic.name)} <small>(${topic.count})</small></span></label>`).join('');
       const categoryOptions=questionCategories.map(category=>`<label class="builder-choice"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)}</span><small>${category.count}</small></label>`).join('');
+      const bulkControls=(group,label)=>`<div class="builder-bulk" role="group" aria-label="${label} selection">
+        <button type="button" data-select-all="${group}" aria-label="Select all ${label}">Select all</button>
+        <button type="button" data-clear-all="${group}" aria-label="Clear all ${label}">Clear all</button>
+        <span data-selection-count="${group}" role="status" aria-live="polite"></span>
+      </div>`;
       target.innerHTML=`<section class="custom-builder" aria-labelledby="custom-builder-title">
+        <header class="builder-heading"><p class="builder-kicker">Your personalized question bank</p>
         <h2 id="custom-builder-title">Build a practice set</h2>
         <p class="builder-intro">Choose your practice options, then focus on NCLEX Client Needs. Study Areas and topics are optional filters.</p>
         <p class="builder-cat-link">Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>.</p>
+        </header>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Question filters could not load: ${escapeHtml(questionTopicsError)} If this is the first setup, apply the Study Area migration. Otherwise, retry or contact Madison. Mixed practice remains available.</p>`:''}
         ${questionHistoryError?`<p class="custom-topic-note custom-topic-error" role="status">Saved practice history could not be counted: ${escapeHtml(questionHistoryError)} It will be checked again before questions are selected.</p>`:''}
         <div class="custom-builder-controls">
@@ -1937,6 +1958,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           </div>
           <section class="builder-section">
             <div class="builder-section-head"><h3>Question type</h3><small>Both are included by default</small></div>
+            ${bulkControls('item-type','question types')}
             <div class="builder-choices">
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="mcq" checked><span>Traditional</span><small data-type-count="mcq"></small></label>
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="sata" checked><span>Next Gen · Select all that apply</span><small data-type-count="sata"></small></label>
@@ -1944,6 +1966,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           </section>
           <section class="builder-section">
             <div class="builder-section-head"><h3>Question history</h3><small>Counts reflect the selected question type and focus</small></div>
+            ${bulkControls('question-mode','question history')}
             <div class="builder-choices">
               <label class="builder-choice"><input type="checkbox" data-question-mode-choice value="unused" checked><span>Unused</span><small data-mode-count="unused"></small></label>
               <label class="builder-choice"><input type="checkbox" data-question-mode-choice value="incorrect" checked><span>Incorrect</span><small data-mode-count="incorrect"></small></label>
@@ -1959,9 +1982,11 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
               <button class="builder-tab" id="study-area-tab" type="button" role="tab" aria-selected="false" aria-controls="study-area-panel" tabindex="-1" data-category-tab="study-areas">Study Areas</button>
             </div>
             <div class="builder-tabpanel" id="study-area-panel" role="tabpanel" aria-labelledby="study-area-tab" data-category-panel="study-areas" hidden>
+              ${bulkControls('study-area','Study Areas')}
               ${studyAreaOptions?`<div class="builder-choices">${studyAreaOptions}</div>`:'<p class="custom-topic-note">No tagged Study Areas are available yet. Contact Madison if this continues.</p>'}
             </div>
             <div class="builder-tabpanel" id="client-needs-panel" role="tabpanel" aria-labelledby="client-needs-tab" data-category-panel="client-needs">
+              ${bulkControls('category','Client Needs')}
               ${categoryOptions?`<div class="builder-choices">${categoryOptions}</div>`:'<p class="custom-topic-note">No active Client Needs categories are available.</p>'}
             </div>
             <p class="builder-note">Selections in both views can be combined. For example, choose a Study Area and a Client Need to narrow the set.</p>
@@ -1972,12 +1997,15 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             ${questionTopics.length?`
               <label for="custom-topic-search">Filter topics</label>
               <input class="custom-topic-search" id="custom-topic-search" type="search" placeholder="Search topics">
+              ${bulkControls('topic','topics')}
+              <p class="custom-topic-note">Select all and Clear all apply to all topics, including topics hidden by your search.</p>
               <div class="custom-topic-list" id="custom-topic-list">${topicOptions}</div>
             `:'<p class="custom-topic-note">No topic labels are available yet.</p>'}
           </details>
         </div>
-        <button class="assignment-action" id="start-custom-review" type="button">Start practice</button>
+        <footer class="builder-footer"><button class="assignment-action" id="start-custom-review" type="button">Start practice</button>
         <p class="custom-builder-status" id="custom-review-status" role="status" aria-live="polite"></p>
+        </footer>
       </section>`;
       const topicSearch=target.querySelector('#custom-topic-search');
       topicSearch?.addEventListener('input',()=>{
@@ -2010,6 +2038,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         });
       });
       const updateAvailability=()=>{
+        target.querySelectorAll('[data-selection-count]').forEach(label=>{
+          const group=label.dataset.selectionCount;
+          const inputs=[...target.querySelectorAll(`[data-${group}-choice]`)];
+          const selected=inputs.filter(input=>input.checked).length;
+          label.textContent=`${selected} of ${inputs.length} selected`;
+          target.querySelector(`[data-select-all="${group}"]`).disabled=selected===inputs.length;
+          target.querySelector(`[data-clear-all="${group}"]`).disabled=selected===0;
+        });
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
         const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
@@ -2034,6 +2070,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         target.querySelector('#start-custom-review').disabled=!matching.length||!itemTypes.length||!modes.length;
       };
       target.querySelectorAll('[data-study-area-choice],[data-category-choice],[data-topic-choice],[data-item-type-choice],[data-question-mode-choice],#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
+      target.querySelectorAll('[data-select-all],[data-clear-all]').forEach(button=>button.addEventListener('click',()=>{
+        const group=button.dataset.selectAll||button.dataset.clearAll;
+        const checked=button.hasAttribute('data-select-all');
+        target.querySelectorAll(`[data-${group}-choice]`).forEach(input=>{input.checked=checked});
+        updateAvailability();
+      }));
       updateAvailability();
       target.querySelector('#start-custom-review')?.addEventListener('click',()=>{
         const count=Number(target.querySelector('#custom-count')?.value);
