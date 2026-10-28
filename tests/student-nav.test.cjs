@@ -86,10 +86,20 @@ test('CAT menu visibility updates when switching between NCLEX and nursing stude
 });
 
 test('NCLEX sections resolve to visible cards, not the hidden nursing portal', () => {
-  const { nav } = navigation(false, ['modules-nclex-card', 'cat-trend-card', 'log-cat-card']);
+  const { nav } = navigation(false, ['previous-tests-card', 'modules-nclex-card', 'cat-trend-card', 'log-cat-card']);
   assert.equal(nav.sectionTarget('lectures').id, 'modules-nclex-card');
-  assert.equal(nav.sectionTarget('previous-tests').id, 'cat-trend-card');
+  assert.equal(nav.sectionTarget('previous-tests').id, 'previous-tests-card');
   assert.equal(nav.sectionTarget('performance').id, 'cat-trend-card');
+});
+
+test('Previous Tests shows saved practice reviews and completed CAT/readiness history', () => {
+  const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  assert.match(dashboard, /id="previous-tests-card"/);
+  assert.match(dashboard, /student_supplemental_practice_results[\s\S]*?answer_details/);
+  assert.match(dashboard, /in_house_assessment_attempts[\s\S]*?status', 'completed'/);
+  assert.match(dashboard, /external_assessments[\s\S]*?overall_score,readiness_level/);
+  assert.match(dashboard, /<strong>Rationale:<\/strong>/);
+  assert.match(dashboard, /eq\('student_id', student\.id\)/);
 });
 
 test('students without CAT results reach the existing log card', () => {
