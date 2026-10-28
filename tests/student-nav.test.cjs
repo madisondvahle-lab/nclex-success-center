@@ -94,12 +94,31 @@ test('NCLEX sections resolve to visible cards, not the hidden nursing portal', (
 
 test('Previous Tests shows saved practice reviews and completed CAT/readiness history', () => {
   const dashboard = readFileSync(join(root, 'student-dashboard.html'), 'utf8');
+  const history = readFileSync(join(root, 'student-test-history.js'), 'utf8');
   assert.match(dashboard, /id="previous-tests-card"/);
-  assert.match(dashboard, /student_supplemental_practice_results[\s\S]*?answer_details/);
-  assert.match(dashboard, /in_house_assessment_attempts[\s\S]*?status', 'completed'/);
-  assert.match(dashboard, /external_assessments[\s\S]*?overall_score,readiness_level/);
-  assert.match(dashboard, /<strong>Rationale:<\/strong>/);
-  assert.match(dashboard, /eq\('student_id', student\.id\)/);
+  assert.match(dashboard, /StudentTestHistory\.init/);
+  assert.match(history, /student_supplemental_practice_results/);
+  assert.match(history, /eq\('status', 'completed'\)/);
+  assert.match(history, /external_assessments/);
+  assert.match(history, /action: 'review'/);
+  assert.match(history, /eq\('student_id', studentId\)/);
+});
+
+test('Previous Tests is a separate workspace for both student types and restores other sections', () => {
+  for (const nursing of [false, true]) {
+    const { nav, elements } = navigation(nursing, ['previous-tests-card']);
+    const main = elements.get('main-content');
+    nav.handleInitialHash('#previous-tests');
+    assert.equal(main.classList.contains('test-history-view'), true);
+    assert.equal(main.classList.contains('library-view'), false);
+    for (const name of ['dashboard', 'lectures', 'performance']) {
+      nav.setSectionView(name);
+      assert.equal(main.classList.contains('test-history-view'), false);
+    }
+  }
+  const css = readFileSync(join(root, 'student-test-history.css'), 'utf8');
+  assert.match(css, /#main-content:not\(\.test-history-view\) > #previous-tests-card\{display:none\}/);
+  assert.match(css, /#main-content\.test-history-view > :not/);
 });
 
 test('students without CAT results reach the existing log card', () => {

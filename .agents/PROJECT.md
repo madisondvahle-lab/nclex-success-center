@@ -100,6 +100,22 @@ Keep these concepts separate:
 - **CAT/diagnostic:** adaptive readiness assessment.
 - **Question Bank Manager:** internal tutor/admin tooling for reviewing/managing questions.
 
+### Student Previous Tests workspace
+
+The dashboard's **Previous Tests** menu opens a separate workspace rather than
+scrolling to a dashboard card. `student-test-history.js` and its stylesheet
+provide a searchable, paginated test list, a summary/question table, and
+read-only question review with Previous/Next navigation. Practice detail queries
+use both the student ID and saved result ID; completed portal assessments use
+the existing authenticated `diagnostic-assessment` review action. Shared
+`PracticeReviewData`, `ExamUI`, and option-presentation helpers preserve saved
+responses, clinical records, and option order. No new history tables or writes
+are introduced. NGN points are distinct from fully correct item counts.
+Missing timing/settings/content are labelled not recorded, never reconstructed
+from current questions. Local validation: `tests/student-test-history.test.cjs`,
+`tests/student-nav.test.cjs`, and the synthetic browser checks in
+`tests/student-test-history.browser.js`. These local changes are not a deployment.
+
 ### Consultation CPR report attachments
 
 Paid Strategy Sessions retain the existing consultation and linked diagnostic
