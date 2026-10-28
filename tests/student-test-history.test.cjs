@@ -11,8 +11,53 @@ context.document = { querySelector: () => ({ content: 'sata-order-v1' }) };
 for (const file of ['option-presentation.js', 'ngn-scoring.js', 'exam-ui-ngn.js', 'practice-review-data.js', 'assessment-display.js', 'student-test-history.js']) {
   vm.runInNewContext(readFileSync(join(root, file), 'utf8'), context, { filename: file });
 }
-const { detailRows, summary, questionHtml } = context.StudentTestHistory;
+const { detailRows, summary, questionHtml, resolveBankNumbers, bankLabel, typeLabel } = context.StudentTestHistory;
 const plain = value => JSON.parse(JSON.stringify(value));
+
+test('bank labels use permanent numbers, never UUIDs or session positions', () => {
+  const rows = detailRows([{ question_no: 123 }, { qno: 42 }, { interaction: { qno: 456 } },
+    { question_no: 0 }, { question_no: -1 }, { question_no: 'bad' }, { question_no: 1.5 }]);
+  assert.deepEqual(plain(rows.map(bankLabel)), ['Q-0123', 'Q-0042', 'Q-0456',
+    'Bank number unavailable', 'Bank number unavailable', 'Bank number unavailable', 'Bank number unavailable']);
+  assert.equal(typeLabel('mcq'), 'Multiple Choice');
+  assert.equal(typeLabel('sata'), 'Select All That Apply');
+});
+
+test('historical UUID, CAT child and set-scoped legacy references resolve metadata only', async () => {
+  const id = '00000000-0000-4000-8000-000000000001';
+  const rows = detailRows([{ question_id: id }, { item_id: `qbank:${id}:child-1` },
+    { question_id: 'legacy-1' }, { question_id: 'missing' }, { question_no: 99 }]);
+  const before = JSON.stringify(rows), calls = [];
+  const db = { from(table) {
+    const call = { table };
+    calls.push(call);
+    return {
+      select(fields) { call.fields = fields; return this; },
+      eq(key, value) { call.eq = [key, value]; return this; },
+      in(key, values) {
+        call.in = [key, [...values]];
+        return Promise.resolve({ data: table === 'questions' ? [{ id, question_no: 123 }] :
+          [{ legacy_id: 'legacy-1', question: { question_no: 456 } }], error: null });
+      }
+    };
+  } };
+  const resolved = await resolveBankNumbers(db, rows, 'practice-set');
+  assert.deepEqual(plain(resolved.map(bankLabel)), ['Q-0123', 'Q-0123', 'Q-0456', 'Bank number unavailable', 'Q-0099']);
+  assert.equal(JSON.stringify(rows), before);
+  assert.deepEqual(calls, [
+    { table: 'questions', fields: 'id,question_no', in: ['id', [id]] },
+    { table: 'question_set_items', fields: 'legacy_id,question:questions!inner(question_no)',
+      eq: ['set_key', 'practice-set'], in: ['legacy_id', ['legacy-1', 'missing']] }
+  ]);
+});
+
+test('number lookup errors are explicit, not disguised as missing bank numbers', async () => {
+  const db = { from: () => ({ select() { return this; }, in: async () => ({ error: { message: 'Unavailable' } }) }) };
+  await assert.rejects(resolveBankNumbers(db, detailRows([{ question_id: '00000000-0000-4000-8000-000000000001' }])),
+    /Question bank numbers could not load: Unavailable/);
+  const rows = detailRows([{ question_id: 'standalone' }]);
+  assert.deepEqual(plain(await resolveBankNumbers({ from: () => { throw new Error('Unneeded lookup'); } }, rows)), plain(rows));
+});
 
 test('saved zero-index answers, SATA, omissions and legacy flags keep their meaning', () => {
   const rows = detailRows([

@@ -109,6 +109,11 @@ read-only question review with Previous/Next navigation.
 The history stylesheet scopes the blue NCLEX exam palette and Arial typography
 to the list, results summary, and question review; other dashboard sections
 retain their existing theme.
+History displays permanent bank numbers (for example `Q-0123`) and readable
+question types instead of internal UUIDs. Missing saved numbers are resolved
+with metadata-only, RLS-protected reads using bank UUIDs or set-scoped legacy
+references. Unmapped or inaccessible numbers are labelled unavailable; lookup
+errors show a retry without hiding saved answers or rationales.
 Practice detail queries use both the student ID and saved result ID; completed
 portal assessments use
 the existing authenticated `diagnostic-assessment` review action. Shared
