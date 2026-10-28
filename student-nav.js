@@ -163,7 +163,10 @@
 
     setSectionView: function(name) {
       const main = document.getElementById('main-content');
-      if (main) main.classList.toggle('library-view', name === 'lectures');
+      if (main) {
+        main.classList.toggle('library-view', name === 'lectures');
+        main.classList.toggle('test-history-view', name === 'previous-tests');
+      }
     },
 
     sectionTarget: function(name) {

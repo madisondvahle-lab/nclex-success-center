@@ -6,6 +6,9 @@
   <meta name="description" content="Private student dashboard · Study with Madison RN">
   <title>My Study Plan · NCLEX Success Center</title>
   <link rel="stylesheet" href="student-nav.css">
+  <meta name="nclex-option-protocol" content="sata-order-v1">
+  <link rel="stylesheet" href="exam-ui.css">
+  <link rel="stylesheet" href="student-test-history.css">
   <style>
     :root{--ink:#17344f;--navy:#10233d;--cream:#fcf8f2;--paper:#fffdf9;--rose:#bd6f7f;--plum:#382338;--sage:#dce6dc;--muted:#567087;--line:#d8e1db;--soft:#f5eee8;--teal:#2a7d6f;--teal-light:#e4f5f2;--teal-sage:#c8e8e3}
     *{box-sizing:border-box}
@@ -641,17 +644,7 @@
       </section>
     </div>
 
-    <section class="grid" aria-label="Previous test history">
-      <article class="card" id="previous-tests-card" style="grid-column:1/-1">
-        <div class="card-head">
-          <div><p class="eyebrow">Your saved results</p><h2>Previous Tests</h2></div>
-          <span class="label teal">Practice &amp; assessment history</span>
-        </div>
-        <p class="card-desc">Review completed practice answers and rationales, and see your completed portal CAT or readiness results.</p>
-        <p id="previous-tests-status" role="status" aria-live="polite">Loading your saved results…</p>
-        <div id="previous-tests-list" style="display:grid;gap:12px"></div>
-      </article>
-    </section>
+    <section class="test-history" id="previous-tests-card" aria-label="Previous Tests" tabindex="-1"></section>
 
     </main>
   </div>
@@ -666,6 +659,12 @@
   <script src="assessment-import.js"></script>
   <script src="student-nav.js"></script>
   <script src="nursing-class-modules.js"></script>
+  <script src="option-presentation.js?v=mcq-order-v1"></script>
+  <script src="ngn-scoring.js?v=mcq-order-v1"></script>
+  <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
+  <script src="practice-review-data.js"></script>
+  <script src="assessment-display.js"></script>
+  <script src="student-test-history.js"></script>
   <script>
     const db = supabase.createClient(
       'https://pmjwwktwlsqpetwfvolb.supabase.co',
@@ -676,90 +675,6 @@
     const asArray = v => Array.isArray(v) ? v : [];
     const text    = v => String(v ?? '').replace(/[&<>"']/g, c =>
       ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    async function renderPreviousTests(student) {
-      const status = document.getElementById('previous-tests-status');
-      const list = document.getElementById('previous-tests-list');
-      let requests;
-      try {
-        requests = await Promise.all([
-          db.from('student_supplemental_practice_results')
-            .select('practice_key,practice_title,score,total_questions,completed_at,answer_details')
-            .eq('student_id', student.id)
-            .order('completed_at', { ascending: false })
-            .limit(20),
-          db.from('in_house_assessment_attempts')
-            .select('assessment_key,assessment_title,mode,result,total_questions,correct_questions,completed_at')
-            .eq('student_id', student.id)
-            .eq('status', 'completed')
-            .order('completed_at', { ascending: false })
-            .limit(20),
-          db.from('external_assessments')
-            .select('platform,assessment_name,taken_at,created_at,overall_score,readiness_level')
-            .eq('student_id', student.id)
-            .order('taken_at', { ascending: false })
-            .limit(20)
-        ]);
-      } catch (error) {
-        status.textContent = `Your saved results could not load: ${error.message || 'Please refresh and try again.'}`;
-        return;
-      }
-      const errors = requests.filter(request => request.error).map(request => request.error.message || 'Could not load a history source.');
-      const [practice, portalAssessments, externalAssessments] = requests.map(request => request.data || []);
-      const dateLabel = value => {
-        if (!value) return 'Date not recorded';
-        const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? text(value) : date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-      };
-      const answerLabel = (detail, value) => {
-        if (value === undefined || value === null || value === '') return 'Not answered';
-        const options = detail.options || detail.interaction?.options;
-        const canMapOption = !detail.interaction || ['mcq', 'sata'].includes(detail.interaction.type);
-        if (Array.isArray(value)) {
-          return value.map(item => Number.isInteger(item) && canMapOption && options?.[item] !== undefined
-            ? options[item]
-            : typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)).join('; ') || 'Not answered';
-        }
-        if (Number.isInteger(value) && canMapOption && options?.[value] !== undefined) return options[value];
-        if (typeof value === 'object') return JSON.stringify(value);
-        return String(value);
-      };
-      const practiceMarkup = practice.map(row => {
-        const details = Array.isArray(row.answer_details) ? row.answer_details.filter(detail => detail && typeof detail === 'object') : [];
-        const score = Number(row.score), total = Number(row.total_questions);
-        const summary = `${Number.isFinite(score) && total > 0 ? `${score}/${total} correct · ${Math.round(score / total * 100)}%` : 'Score unavailable'} · ${dateLabel(row.completed_at)}`;
-        const review = details.length ? details.map((detail, index) => {
-          const label = detail.correct === true || detail.is_correct === true ? 'Correct' : detail.correct === false || detail.is_correct === false ? 'Review' : 'Response';
-          return `<details style="padding:8px 0;border-top:1px solid #e8edf0"><summary style="cursor:pointer;min-height:40px">${label} · Question ${index + 1}</summary><p>${text(detail.stem || detail.interaction?.prompt || detail.interaction?.stem || 'Question text unavailable.')}</p><p><strong>Your answer:</strong> ${text(answerLabel(detail, detail.selected_answer ?? detail.selected))}</p><p><strong>Correct answer:</strong> ${text(answerLabel(detail, detail.correct_answer ?? detail.correctAnswer))}</p><p><strong>Rationale:</strong> ${text(detail.rationale || 'No rationale was saved for this item.')}</p></details>`;
-        }).join('') : '<p>Answer-by-answer review is unavailable for this older session.</p>';
-        return `<details style="padding:12px 0;border-bottom:1px solid #e8edf0"><summary style="cursor:pointer;min-height:44px"><strong>${text(row.practice_title || row.practice_key || 'Practice session')}</strong><br><span style="font-size:.84rem;color:var(--muted)">${summary}</span></summary><div style="padding-left:12px">${review}</div></details>`;
-      });
-      const portalMarkup = portalAssessments.map(row => {
-        const score = Number(row.total_questions) > 0
-          ? `${Number(row.correct_questions)}/${Number(row.total_questions)} correct · ${Math.round(Number(row.correct_questions) / Number(row.total_questions) * 100)}%`
-          : 'Score unavailable';
-        const result = row.result ? ` · ${text(row.result)}` : '';
-        const mode = ({ assessment: 'Readiness', mock: 'Mock CAT', nclex: 'CAT', practice: 'Practice', remediation: 'Remediation' })[row.mode] || 'Assessment';
-        return `<article style="padding:12px 0;border-bottom:1px solid #e8edf0"><strong>${text(row.assessment_title || row.assessment_key || 'Portal assessment')}</strong><p style="margin:4px 0 0;font-size:.84rem;color:var(--muted)">${text(mode)} · ${text(score + result)} · ${dateLabel(row.completed_at)}</p></article>`;
-      });
-      const externalMarkup = externalAssessments.map(row => {
-        const score = row.overall_score !== null && row.overall_score !== ''
-          ? `${text(row.overall_score)}%`
-          : text(row.readiness_level || 'Score not recorded');
-        return `<article style="padding:12px 0;border-bottom:1px solid #e8edf0"><strong>${text(row.assessment_name || row.platform || 'CAT/readiness result')}</strong><p style="margin:4px 0 0;font-size:.84rem;color:var(--muted)">${text(row.platform || 'Assessment')} · ${score} · ${dateLabel(row.taken_at || row.created_at)}</p></article>`;
-      });
-      list.innerHTML = [
-        practiceMarkup.length ? `<section><h3>Practice sessions</h3>${practiceMarkup.join('')}</section>` : '',
-        portalMarkup.length ? `<section><h3>Portal assessments</h3>${portalMarkup.join('')}</section>` : '',
-        externalMarkup.length ? `<section><h3>Saved CAT/readiness history</h3>${externalMarkup.join('')}</section>` : ''
-      ].filter(Boolean).join('');
-      if (errors.length) {
-        status.textContent = `Some saved results could not be loaded: ${errors.join(' · ')}`;
-      } else if (!practice.length && !portalAssessments.length && !externalAssessments.length) {
-        status.textContent = 'No completed practice sessions or CAT/readiness results are saved yet.';
-      } else {
-        status.textContent = 'Showing up to 20 recent results from each history source.';
-      }
-    }
     function studentMaterialPath(value, studentId) {
       if (!value) return null;
       let path = value;
@@ -1963,7 +1878,7 @@
       }
       const activePortal = document.getElementById(isNursing ? 'portal-nursing' : 'portal-nclex');
       document.getElementById('main-content').insertBefore(activePortal.querySelector('.hero'), document.getElementById('study-calendar'));
-      void renderPreviousTests(student);
+      StudentTestHistory.init({ root: document.getElementById('previous-tests-card'), db, studentId: student.id });
       loadStudyCalendar(student, isNursing, plans.data?.[0], resources.data || [], schedules && !schedules.error ? schedules.data || [] : [], isPreview, resources.error);
       syncCalendarAssignments();
       if (resources.error && !isNursing) {
