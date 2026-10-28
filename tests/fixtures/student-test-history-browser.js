@@ -11,8 +11,8 @@
     correct: JSON.stringify(selected) === JSON.stringify(correct), rationale: 'Synthetic rationale ' + id,
     category: 'Management of Care', topic: 'Synthetic topic', ...extra });
   const details = [
-    detail('q0', 0, 0),
-    detail('q1', 0, 2, { presentation: { version: 'sata-order-v1', order: [2, 0, 1], ids: ['a', 'b', 'c'] } }),
+    detail('00000000-0000-4000-8000-000000000001', 0, 0),
+    detail('q1', 0, 2, { question_no: 42, presentation: { version: 'sata-order-v1', order: [2, 0, 1], ids: ['a', 'b', 'c'] } }),
     detail('q2', [0], [0, 1], { credit: { earned: 1, max: 2, score: 0.5 } }),
     detail('q3', [], [0]),
     detail('q4', '5', '5', { interaction: { type: 'fill', correct: 5, stem: 'Synthetic calculation',
@@ -22,8 +22,10 @@
   ];
   const tables = {
     students: [student], app_admins: [], student_resources: [], modules: [],
+    questions: [{ id: '00000000-0000-4000-8000-000000000001', question_no: 123 }],
+    question_set_items: [{ set_key: 'synthetic-set', legacy_id: 'q2', question: { question_no: 456 } }],
     student_supplemental_practice_results: [
-      ...Array.from({ length: 21 }, (_, i) => ({ id: 'p' + i, student_id: student.id, practice_title: i === 0 ? 'Synthetic practice test' : i === 1 ? 'Older score-only test' : 'Synthetic older test ' + i,
+      ...Array.from({ length: 21 }, (_, i) => ({ id: 'p' + i, student_id: student.id, practice_key: 'synthetic-set', practice_title: i === 0 ? 'Synthetic practice test' : i === 1 ? 'Older score-only test' : 'Synthetic older test ' + i,
         score: 2, total_questions: 5, completed_at: new Date(Date.UTC(2026, 9, 27 - i, 12)).toISOString(), answer_details: i === 0 ? details : [] })),
       { id: 'private-other', student_id: 'another-student', practice_title: 'Other student private test', completed_at: '2026-10-28', answer_details: [] }
     ],
@@ -40,7 +42,7 @@
     functions: { invoke: async (name, args) => {
       calls.push({ name, ...args });
       if (config.failReview) return { error: { message: 'Synthetic review failure' } };
-      return { data: { responses: [detail('cat-question', 0, 0)] } };
+      return { data: { responses: [detail('qbank:00000000-0000-4000-8000-000000000001', 0, 0)] } };
     } },
     from(table) {
       const filters = [], sorts = [];
@@ -64,7 +66,10 @@
             }
             return 0;
           }).slice(start, end === Infinity ? undefined : end + 1);
-          if (fields !== '*') rows = rows.map(row => Object.fromEntries(fields.split(',').map(key => [key, row[key]])));
+          if (fields !== '*') rows = rows.map(row => Object.fromEntries(fields.split(',').map(field => {
+            const key = field.startsWith('question:') ? 'question' : field;
+            return [key, row[key]];
+          })));
           return Promise.resolve({ data: single ? rows[0] || null : rows, error: null }).then(resolve, reject);
         }
       };

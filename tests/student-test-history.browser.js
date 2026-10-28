@@ -36,11 +36,17 @@ async function runStudentTestHistoryBrowserChecks(page, origin) {
     await search(root, 'Synthetic practice test');
     await activate(root.getByRole('button', { name: 'Review test', exact: true }));
     await root.getByRole('button', { name: 'Review question 1', exact: true }).waitFor();
+    check(await root.getByText('Q-0123', { exact: true }).count() === 1, 'Historical UUID did not resolve to the bank number');
+    check(await root.getByText('Q-0042', { exact: true }).count() === 1, 'Saved bank number is missing');
+    check(await root.getByText('Q-0456', { exact: true }).count() === 1, 'Legacy set reference did not resolve to the bank number');
+    check(!(await root.textContent()).includes('00000000-0000-4000-8000-000000000001'), 'Internal UUID is visible');
+    check(await root.getByText('Multiple Choice', { exact: true }).count() > 0, 'Question type is not readable');
     check(await root.locator('[data-focus]').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(0, 103, 168)', 'Results header does not match the blue exam theme');
     await root.getByLabel('Show responses').selectOption('partial');
     check(await root.getByRole('button', { name: /^Review question/ }).count() === 1, 'Partial response filter is incorrect');
     await activate(root.getByRole('button', { name: 'Review question 3', exact: true }));
     await root.getByText('Synthetic rationale q2', { exact: true }).waitFor();
+    check((await root.textContent()).includes('Q-0456 · Select All That Apply'), 'Question review lost its bank number or readable type');
     check(await root.locator('.test-history-question-nav').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(125, 174, 232)', 'Question toolbar does not match the exam theme');
     check(await root.locator('.test-history-rationale').evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(230, 242, 252)', 'Rationale does not match the exam palette');
     check(await root.getByRole('button', { name: 'Next question', exact: true }).isDisabled(), 'Filtered navigation leaked questions');
@@ -68,6 +74,7 @@ async function runStudentTestHistoryBrowserChecks(page, origin) {
     await search(root, 'Synthetic mock CAT');
     await activate(root.getByRole('button', { name: 'Review test', exact: true }));
     await root.getByRole('button', { name: 'Review question 1', exact: true }).waitFor();
+    check(await root.getByText('Q-0123', { exact: true }).count() === 1, 'CAT bank reference did not resolve');
     const api = await page.evaluate(() => window.__historyCalls.find(call => call.body?.action === 'review'));
     check(api.body.attemptId === 'cat' && api.body.mcqOptionProtocol === 'mcq-order-v1', 'CAT review contract is incorrect');
     check(await page.evaluate(() => window.__historyCalls.filter(call => call.fields === 'answer_details').every(call =>
@@ -92,6 +99,17 @@ async function runStudentTestHistoryBrowserChecks(page, origin) {
   await page.evaluate(() => { window.__HISTORY_TEST__.failReview = false; });
   await activate(root.getByRole('button', { name: 'Retry review', exact: true }));
   await root.getByRole('button', { name: 'Review question 1', exact: true }).waitFor();
+  await activate(root.getByRole('button', { name: '← All previous tests', exact: true }));
+  await page.evaluate(() => { window.__HISTORY_TEST__.failSource = 'questions'; });
+  await search(root, 'Synthetic practice test');
+  await activate(root.getByRole('button', { name: 'Review test', exact: true }));
+  await root.getByRole('alert').getByText(/Question bank numbers could not load/).waitFor();
+  await activate(root.getByRole('button', { name: 'Review question 1', exact: true }));
+  await root.getByText(/Synthetic rationale 00000000/).waitFor();
+  await page.evaluate(() => { window.__HISTORY_TEST__.failSource = ''; });
+  await activate(root.getByRole('button', { name: 'Retry bank numbers', exact: true }));
+  await root.getByText('Q-0123', { exact: true }).waitFor();
+  check(!await root.getByRole('alert').count(), 'Bank number retry did not clear the warning');
   check(!errors.length, 'Browser errors: ' + errors.join('; '));
   check(!remote.length, 'Unexpected Supabase network requests');
   return 'Passed desktop and 390px/320px checks for both account types, standalone views, search, pagination, status filters, question navigation, option order, clinical records, legacy content, ownership, CAT review, and no live requests.';
