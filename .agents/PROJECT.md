@@ -281,7 +281,7 @@ Do not assume one legacy admin page contains all current functionality. Current 
 
 Inspect the current implementation before adding a new admin workflow so existing functionality is not duplicated.
 
-### NCLEX Coaching Outcomes (implementation prepared; database rollout pending)
+### NCLEX Coaching Outcomes (database applied; UI publication pending)
 
 `madison-coaching-outcomes.html` adds an admin-only outcomes workspace linked from
 Admin home. It reuses existing students, intake links, actual NCLEX attempts,
@@ -311,12 +311,24 @@ JSON/CSV excludes identity and private free text, payment references and evidenc
 links. Exact dates mean exports are controlled/de-identified, not public reports.
 Follow-up preference/consent fields are reserved; no messaging is implemented.
 
-**Required release order:** separately approve a read-only live-schema/policy
-preflight and production migration application before merging/publishing this
-UI through main/GitHub Pages. Check all existing permissive storage policies
-leave the new bucket admin-only. Creating a PR does not apply the migration.
-No production data updates, automated messages or migration application were
-performed during local implementation.
+The owner separately approved the production migration on October 29, 2026.
+It is applied and verified against the linked NCLEX Success Center project.
+Migration SHA-256:
+`0ae54dfa748138a44f1ab768c2f805ce54fc4eaf535d6a2c8039f1d1dc7b9c84`.
+An atomic verification wrapper compared original row counts/fingerprints for
+students, intake profiles, consultations, actual attempts, CPR results, intake
+files, prep resources and session notes; all were unchanged. Existing policies
+and attempt grants were unchanged. Post-commit readback confirmed five empty
+RLS-protected tables, four nullable attempt columns without backfill, validation/
+audit/retention triggers, private storage with PDF/PNG/JPEG/WebP and 10 MiB limit,
+and read-only application-role audit access. No student, auth or evidence test
+records were created. Existing storage policies are bucket-specific and do not
+grant students access to the new bucket.
+
+The database prerequisite is complete; PR #284 remains unmerged and UI
+publication requires separate authorization. A signed-in production browser/
+Storage API check remains pending. Do not equate metadata/local synthetic
+verification with successful live admin or denied-student runtime checks.
 
 Validation: `node --test tests/nclex-coaching-outcomes.test.cjs` and
 `node --test tests/nclex-coaching-outcomes.integration.mjs` (disposable Docker
