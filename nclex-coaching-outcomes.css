@@ -1,0 +1,31 @@
+.outcomes{max-width:1440px}
+.outcomes .panel{padding:20px;margin:20px 0;background:var(--admin-paper);border:1px solid var(--admin-line)}
+.outcomes h1,.outcomes h2,.outcomes h3{font-family:Georgia,"Times New Roman",serif}
+.outcomes h3{margin-top:28px}
+.outcomes p,.outcomes li{line-height:1.55}
+.outcomes .meta{font-size:.84rem;color:var(--admin-muted)}
+.outcomes .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.outcomes label{display:grid;gap:6px;margin:12px 0;font-size:.85rem;font-weight:650}
+.outcomes input,.outcomes select,.outcomes textarea{width:100%;padding:10px;border:1px solid var(--admin-line);border-radius:3px;background:white;color:var(--admin-navy);font:inherit}
+.outcomes textarea{min-height:75px}
+.outcomes .check{display:flex;align-items:flex-start;gap:10px}
+.outcomes .check input{width:auto;margin-top:3px}
+.outcomes button{padding:10px 14px;border:1px solid var(--admin-navy);border-radius:3px;background:var(--admin-navy);color:white;font:inherit;cursor:pointer}
+.outcomes button.secondary{background:var(--admin-paper);color:var(--admin-navy)}
+.outcomes button:disabled{opacity:.55;cursor:not-allowed}
+.outcomes :focus-visible{outline:3px solid var(--admin-rose);outline-offset:3px}
+.outcomes .actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.outcomes .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.outcomes .metric{display:grid;gap:8px;padding:16px;background:var(--admin-paper);border:1px solid var(--admin-line)}
+.outcomes .metric strong{font-size:1.4rem}
+.outcomes .metric span{font-size:.82rem}
+.outcomes .table-wrap{overflow-x:auto;margin:16px 0}
+.outcomes table{border-collapse:collapse;width:100%;font-size:.85rem}
+.outcomes th,.outcomes td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--admin-line);vertical-align:top}
+.outcomes th{background:var(--admin-soft)}
+.outcomes form{padding:12px 0;border-bottom:1px solid var(--admin-line)}
+.outcomes .record{padding:14px;margin:10px 0;border:1px solid var(--admin-line);overflow-wrap:anywhere}
+.outcomes .notice{padding:12px;background:var(--admin-amber-bg);border-left:4px solid var(--admin-amber)}
+.outcomes .error{color:#9e2435;font-weight:700}
+.outcomes pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.75rem}
+@media(max-width:600px){.outcomes .panel{padding:12px}.outcomes .fields{grid-template-columns:1fr}}

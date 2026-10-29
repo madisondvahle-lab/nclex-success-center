@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>NCLEX Coaching Outcomes | Study With Madison</title>
+  <link rel="stylesheet" href="admin-shell.css">
+  <link rel="stylesheet" href="nclex-coaching-outcomes.css">
+</head>
+<body>
+  <div id="loading" class="loading" role="status">Opening private coaching outcomes...</div>
+  <div id="app" class="admin-app hidden">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">Study With Madison <small>RN &middot; ADMIN</small></div>
+      <nav class="sidebar-nav" aria-label="Admin navigation">
+        <a href="madison-admin.html">Dashboard</a>
+        <a href="madison-admin.html#directory">Students</a>
+        <a href="madison-consultations.html">Consultations</a>
+        <a href="madison-tutoring-sessions.html">Tutoring sessions</a>
+        <a href="madison-coaching-outcomes.html" aria-current="page">NCLEX Coaching Outcomes</a>
+        <a href="shared-progress.html">Student workspace</a>
+        <a href="madison-cpr.html">CPR tracker</a>
+        <a href="finance.html">Finance</a>
+      </nav>
+      <button id="sign-out" class="sidebar-sign-out" type="button">Sign out</button>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar"><span class="topbar-context">Private coaching outcomes</span><a href="madison-admin.html">Admin home</a></header>
+      <main class="dashboard outcomes">
+        <h1>NCLEX Coaching Outcomes</h1>
+        <p>Actual NCLEX outcomes after verified paid coaching. Student reports are included in the known-outcome rate, but are never labeled independently verified.</p>
+        <p id="page-status" role="status" aria-live="polite"></p>
+        <button id="reload" type="button" class="secondary">Reload records</button>
+        <section class="panel" aria-labelledby="filters-heading">
+          <h2 id="filters-heading">Report filters</h2>
+          <div class="fields">
+            <label>Primary exam date from<input id="filter-from" type="date"></label>
+            <label>Primary exam date through<input id="filter-to" type="date"></label>
+            <label>Coaching package<select id="filter-package"><option value="">All packages</option></select></label>
+            <label>NCLEX type<select id="filter-exam"><option value="">All types</option><option value="RN">NCLEX-RN</option><option value="PN">NCLEX-PN</option></select></label>
+            <label>Candidate<select id="filter-candidate"><option value="">All candidates</option><option value="first_time">First-time</option><option value="retaker">Retaker</option></select></label>
+          </div>
+          <p class="meta">Date filters use the first post-coaching examination, not purchase date. Untested students remain listed separately outside the date cohort. Filters never substitute a later attempt. Package cohorts can overlap; do not add them together.</p>
+          <div class="actions"><button id="export-json" type="button" disabled>Export reviewer report (JSON)</button><button id="export-csv" type="button" class="secondary" disabled>Export reviewer report (CSV)</button></div>
+          <p class="meta">Controlled de-identified reports, not public downloads: exact dates may permit identification. Names, private notes, document links, payment references, and raw student IDs are excluded.</p>
+        </section>
+        <section aria-labelledby="statistics-heading">
+          <h2 id="statistics-heading">Outcomes overview</h2>
+          <div id="metrics" class="metrics"></div>
+          <p class="meta">Known-outcome pass rate = known passes / (known passes + known failures), including explicit student reports. Unverified results and unresolved histories do not enter that denominator. Verification coverage = documentation-supported or independently checked known outcomes / all eligible tested students.</p>
+          <div id="breakdowns" class="table-wrap"></div>
+        </section>
+        <section class="panel" aria-labelledby="population-heading">
+          <h2 id="population-heading">Eligible students and examination status</h2>
+          <div id="population" class="table-wrap"></div>
+          <details><summary>Eligibility and reporting rules</summary><ul id="rules"></ul></details>
+        </section>
+        <section class="panel" aria-labelledby="student-heading">
+          <h2 id="student-heading">Manage an existing student</h2>
+          <label>Student<select id="student-picker"><option value="">Choose an existing student</option></select></label>
+          <p class="meta">Includes archived/completed students for historical reporting. Selecting a student does not create or change an account.</p>
+          <button id="add-tracking" type="button" class="hidden">Start outcomes record for this student</button>
+          <div id="student-editor" class="hidden">
+            <p id="student-identity" class="meta"></p>
+            <p><a id="student-workspace" href="shared-progress.html">Open existing student workspace</a></p>
+            <form id="tracking-form">
+              <h3>History review and private notes</h3>
+              <label class="check"><input name="history_reviewed" type="checkbox"> I reviewed examination history and confirmed there is no missing earlier post-coaching attempt.</label>
+              <div class="fields">
+                <label>Planned NCLEX type (for awaiting students)<select name="planned_exam_type"><option value="">Not recorded</option><option value="RN">NCLEX-RN</option><option value="PN">NCLEX-PN</option></select></label>
+                <label>Planned candidate type<select name="planned_candidate_type"><option value="">Not recorded</option><option value="first_time">First-time</option><option value="retaker">Retaker</option></select></label>
+              </div>
+              <label>Private administrative notes<textarea name="notes" maxlength="4000"></textarea></label>
+              <button type="submit">Save review and notes</button>
+            </form>
+            <p id="eligibility-status" class="notice"></p>
+            <h3>Paid NCLEX coaching purchases</h3>
+            <p class="meta">Record only NCLEX coaching/tutoring purchases. A standalone Strategy Session, free consultation, or academic tutoring does not qualify. Payment references are manually reviewed; a booking or package-purchased marker is not payment verification.</p>
+            <div id="purchases"></div>
+            <form id="purchase-form">
+              <input name="id" type="hidden">
+              <h4 id="purchase-form-title">Add purchase</h4>
+              <div class="fields">
+                <label>Package / service name<input name="package_name" required maxlength="160"></label>
+                <label>Purchase date<input name="purchased_on" type="date" required></label>
+                <label>Payment status<select name="payment_status"><option value="unverified">Unverified</option><option value="verified">Verified by administrator</option><option value="void">Void / excluded (including fully refunded)</option></select></label>
+                <label>Payment verification date<input name="payment_verified_on" type="date"></label>
+              </div>
+              <label>Private payment reference (receipt / transaction / historical record)<input name="payment_reference" maxlength="1000"></label>
+              <label>Private purchase notes<textarea name="notes" maxlength="4000"></textarea></label>
+              <div class="actions"><button type="submit">Save purchase</button><button type="button" data-reset="purchase-form" class="secondary">Clear purchase form</button></div>
+            </form>
+            <h3>Completed paid NCLEX coaching sessions</h3>
+            <div id="sessions"></div>
+            <form id="session-form">
+              <input name="id" type="hidden">
+              <div class="fields">
+                <label>Coaching purchase<select name="purchase_id" required></select></label>
+                <label>Completed date<input name="completed_on" type="date" required></label>
+                <label>Existing completed tutoring booking (optional)<select name="consultation_id"><option value="">Historical / manually documented session</option></select></label>
+                <label>Status<select name="status"><option value="completed">Completed</option><option value="void">Void / excluded</option></select></label>
+              </div>
+              <label>Completion evidence reference<input name="completion_reference" required maxlength="1000" placeholder="Attendance record, session notes, or historical documentation"></label>
+              <label>Private session documentation notes<textarea name="notes" maxlength="4000"></textarea></label>
+              <div class="actions"><button type="submit">Save completed session</button><button type="button" data-reset="session-form" class="secondary">Clear session form</button></div>
+            </form>
+            <h3>Actual NCLEX attempts</h3>
+            <p class="meta">Reuses existing examination records and preserves CPRs. Attempt number is the student's lifetime NCLEX attempt number, not session count. Unknown dates and same-day coaching/exams need review; no attempt is silently assumed to be the first.</p>
+            <div id="attempts"></div>
+            <form id="attempt-form">
+              <input name="id" type="hidden">
+              <label class="check"><input name="exam_taken" type="checkbox"> The student actually took this examination (not merely scheduled). Required before recording a result.</label>
+              <div class="fields">
+                <label>Lifetime attempt number<input name="attempt_number" type="number" min="1" step="1" required></label>
+                <label>Exam date (leave blank if unknown)<input name="test_date" type="date"></label>
+                <label>NCLEX type<select name="exam_type" required><option value="">Choose</option><option value="RN">NCLEX-RN</option><option value="PN">NCLEX-PN</option></select></label>
+                <label>Candidate type<select name="candidate_type" required><option value="">Choose</option><option value="first_time">First-time</option><option value="retaker">Retaker</option></select></label>
+                <label>Result<select name="result"><option value="">Pending</option><option value="pass">Passed</option><option value="fail">Failed</option><option value="unknown">Unknown</option></select></label>
+              </div>
+              <div class="actions"><button type="submit">Save attempt</button><button type="button" data-reset="attempt-form" class="secondary">Clear attempt form</button></div>
+            </form>
+            <h3>Verification and private evidence</h3>
+            <p class="notice">Nursys or a licensing-board finding supports licensure, but not necessarily a particular examination date or attempt. Only mark it as supporting this attempt after matching identity, RN/PN credential, and separate information establishing the attempt. No license found never means failure.</p>
+            <form id="evidence-form">
+              <div class="fields">
+                <label>Examination attempt<select name="attempt_id" required></select></label>
+                <label>Evidence category<select name="method">
+                  <option value="license">Public nursing license verification</option><option value="official">Official examination result documentation</option>
+                  <option value="quick_results">Pearson Quick Results (unofficial)</option><option value="student_report">Student-reported outcome</option><option value="none">No documentation available</option>
+                </select></label>
+                <label>Date checked / reported<input name="checked_on" type="date" required></label>
+                <label>Observed result<select name="observed_result"><option value="">Not established</option><option value="pass">Passed</option><option value="fail">Failed</option></select></label>
+                <label>Licensing board / state<input name="licensing_board" maxlength="160"></label>
+                <label>License type / credential<input name="license_type" maxlength="160"></label>
+              </div>
+              <label>Private source reference (Nursys / board URL, report, or student statement)<input name="source_reference" maxlength="2000"></label>
+              <label class="check"><input name="identity_checked" type="checkbox"> Identity and RN/PN credential matched (required for attempt-linked license verification).</label>
+              <label class="check"><input name="supports_attempt" type="checkbox"> This evidence establishes the selected attempt's result and exam date, not just eventual licensure.</label>
+              <label>Private evidence notes<textarea name="notes" maxlength="4000"></textarea></label>
+              <label>Optional private evidence file<input name="file" type="file" accept="application/pdf,image/png,image/jpeg,image/webp"></label>
+              <p class="meta">PDF, PNG, JPEG, WebP; up to 10 MB. Files and evidence metadata are versioned, not overwritten. Save a verification copy only where permitted. Student reports remain student-reported even when a file is attached.</p>
+              <button type="submit">Add evidence</button>
+            </form>
+            <div id="evidence"></div>
+            <h3>Audit history</h3>
+            <p class="meta">Includes changes through this page and existing NCLEX attempt editors. Audit details and original versions are private to administrators.</p>
+            <button id="load-audit" type="button" class="secondary">Load this student's audit history</button>
+            <div id="audit"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="nclex-coaching-outcomes-data.js"></script>
+  <script src="nclex-coaching-outcomes.js"></script>
+</body>
+</html>
