@@ -281,6 +281,56 @@ Do not assume one legacy admin page contains all current functionality. Current 
 
 Inspect the current implementation before adding a new admin workflow so existing functionality is not duplicated.
 
+### NCLEX Coaching Outcomes (implementation prepared; database rollout pending)
+
+`madison-coaching-outcomes.html` adds an admin-only outcomes workspace linked from
+Admin home. It reuses existing students, intake links, actual NCLEX attempts,
+authentication and `is_app_admin()`. Payment and historical coaching completion
+are manually verified; no Stripe synchronization or new paid services are added.
+Standalone Strategy Sessions, free consultations and academic tutoring do not
+qualify. At least one completed paid NCLEX coaching/tutoring session beyond a
+Strategy Session is required.
+
+`supabase-nclex-coaching-outcomes.sql` adds linked eligibility/completion records,
+private versioned evidence, admin-only storage, and database-generated audit
+history. It extends existing attempts without backfilling their content or
+duplicating students/intakes. Existing attempt editors remain compatible;
+tracked attempts must be corrected rather than deleted. Attached evidence,
+including revoked versions, cannot be overwritten/deleted.
+
+Primary reporting selects the earliest examination after qualifying coaching
+before applying filters, one student per cohort. The approved known-outcome
+rate includes explicit student reports, separately labeled from documented and
+independently checked results. Actual examination attendance requires explicit
+confirmation; scheduled dates do not automatically become tested outcomes.
+Undated, duplicate and ambiguous same-day histories require review. Nursys
+findings need identity/credential checks and separate attempt/date association;
+license absence never establishes failure. Zero denominators show insufficient
+data. Untested students remain outside examination-date cohorts. Reviewer
+JSON/CSV excludes identity and private free text, payment references and evidence
+links. Exact dates mean exports are controlled/de-identified, not public reports.
+Follow-up preference/consent fields are reserved; no messaging is implemented.
+
+**Required release order:** separately approve a read-only live-schema/policy
+preflight and production migration application before merging/publishing this
+UI through main/GitHub Pages. Check all existing permissive storage policies
+leave the new bucket admin-only. Creating a PR does not apply the migration.
+No production data updates, automated messages or migration application were
+performed during local implementation.
+
+Validation: `node --test tests/nclex-coaching-outcomes.test.cjs` and
+`node --test tests/nclex-coaching-outcomes.integration.mjs` (disposable Docker
+PostgreSQL 17). With Docker unavailable, the integration test accepts
+`COACHING_TEST_PGLITE_MODULE=/absolute/path/to/pglite/dist/index.js` for isolated
+embedded PostgreSQL; no repository dependency is added. Local validation passed
+44 focused tests including migration/RLS/audit/storage and existing admin/consult
+regressions. The synthetic browser fixture is
+`tests/fixtures/coaching-outcomes-browser.js`; intercept the Supabase CDN script
+and block all Supabase network requests. Browser checks covered historical entry
+without student writes, outcome corrections, evidence upload/hash/revocation,
+exports, source failures, attendance confirmation, and 390px/320px layouts.
+Live Supabase, Storage API and authenticated production behavior remain unverified.
+
 ## Historical recovery
 Git history contains useful earlier module content and UI implementations.
 
