@@ -6,7 +6,9 @@ const vm = require('node:vm');
 
 const root = join(__dirname, '..');
 const helper = readFileSync(join(root, 'question-bank-selection.js'), 'utf8');
+const topicGroups = readFileSync(join(root, 'practice-topic-groups.js'), 'utf8');
 const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
+const topicCatalog = require(join(root, 'tests/fixtures/practice-topic-catalog.json'));
 const examUi = readFileSync(join(root, 'exam-ui.js'), 'utf8');
 const assignmentsPage = readFileSync(join(root, 'madison-assignments.html'), 'utf8');
 const diagnostic = readFileSync(join(root, 'diagnostic.html'), 'utf8');
@@ -20,6 +22,12 @@ function selection() {
   return context.window.PracticeQuestionSelection;
 }
 
+function topicGrouping() {
+  const context = { window: {} };
+  vm.runInNewContext(topicGroups, context);
+  return context.window.PracticeTopicGroups;
+}
+
 test('the practice builder shows Client Needs first and keeps optional filters accessible', () => {
   const builder = page.slice(page.indexOf('function renderNclexLibrary()'), page.indexOf('const topicSearch=', page.indexOf('function renderNclexLibrary()')));
   assert.ok(builder.indexOf('id="client-needs-tab"') < builder.indexOf('id="study-area-tab"'));
@@ -28,6 +36,8 @@ test('the practice builder shows Client Needs first and keeps optional filters a
   assert.match(builder, /id="study-area-panel"[^>]* hidden/);
   assert.doesNotMatch(builder, /id="client-needs-panel"[^>]* hidden/);
   assert.match(builder, /<details class="custom-topic-picker">/);
+  assert.match(builder, /focus by broad topic/);
+  assert.match(builder, /data-topic-group-choice/);
   assert.match(page, /event\.key==='ArrowRight'/);
   assert.match(page, /event\.key==='ArrowLeft'/);
   assert.match(page, /event\.key==='Home'/);
@@ -61,16 +71,145 @@ test('the custom builder does not expose a difficulty selector', () => {
 
 test('builder offers scoped bulk selection without replacing practice filters', () => {
   const builder = page.slice(page.indexOf('function renderNclexLibrary()'), page.indexOf('function renderLibrary()'));
-  for (const [group, label] of [['category', 'Client Needs'], ['study-area', 'Study Areas'], ['topic', 'topics'],
+  for (const [group, label] of [['category', 'Client Needs'], ['study-area', 'Study Areas'], ['topic-group', 'topic groups'],
     ['item-type', 'question types'], ['question-mode', 'question history']]) {
     assert.ok(builder.includes(`bulkControls('${group}','${label}')`));
   }
   assert.match(builder, /data-selection-count="\$\{group\}" role="status"/);
   assert.match(builder, /input\.checked=checked/);
-  assert.match(builder, /Select all and Clear all apply to all topics/);
+  assert.match(builder, /Select all and Clear all apply to every broad topic/);
   assert.match(builder, /selected===inputs\.length/);
   assert.match(builder, /selected===0/);
-  assert.match(builder, /buildMixedReview\(count,null,topics,categories,'all',studyAreas,itemTypes,modes,practiceOptions\)/);
+  assert.match(builder, /buildMixedReview\(count,null,topicGroups,categories,'all',studyAreas,itemTypes,modes,practiceOptions\)/);
+});
+
+test('the 15 approved broad categories cover the live topic snapshot without hiding unresolved labels', () => {
+  const api = topicGrouping();
+  const rows = topicCatalog.map((topic, index) => ({
+    id: `snapshot-${index}`,
+    topic: topic.name,
+    questionCount: topic.count
+  }));
+  const summary = api.summarize(rows);
+  const expectedTopics = new Set(topicCatalog.map(topic => topic.name));
+  const configuredTopics = new Set([
+    ...Object.keys(api.GROUP_BY_TOPIC),
+    ...Object.keys(api.REVIEW_TOPICS)
+  ]);
+
+  assert.equal(api.GROUPS.length, 16);
+  assert.equal(new Set(api.GROUPS).size, 16);
+  assert.equal(topicCatalog.length, 148);
+  assert.equal(rows.reduce((sum, row) => sum + row.questionCount, 0), 164);
+  assert.deepEqual([...configuredTopics].sort(), [...expectedTopics].sort());
+  assert.equal(summary.totalQuestionCount, 164);
+  assert.equal(summary.mappedTopicCount, 125);
+  assert.equal(summary.configuredTopicCount, 148);
+  assert.equal(summary.unmappedTopics.length, 23);
+  assert.equal(summary.mappedQuestionCount, 141);
+  assert.equal(summary.fallbackQuestionCount, 23);
+  assert.equal(summary.unmappedQuestionCount, 0);
+  assert.deepEqual(
+    Array.from(summary.groups, group => [group.name, group.count]),
+    [
+      ['Cardiovascular', 11],
+      ['Respiratory', 6],
+      ['Neurological', 3],
+      ['Endocrine', 10],
+      ['Maternal–Newborn', 20],
+      ['Pediatrics', 6],
+      ['Mental Health', 9],
+      ['Safety, Infection Prevention & Fundamentals', 26],
+      ['Renal & Urinary', 7],
+      ['Gastrointestinal', 2],
+      ['Hematology & Oncology', 3],
+      ['Musculoskeletal & Mobility', 2],
+      ['Pharmacology & Medication Safety', 19],
+      ['Leadership & Professional Practice', 14],
+      ['Health Promotion & Screening', 3],
+      ['Other Topics', 23]
+    ]
+  );
+  assert.equal(summary.groups.reduce((sum, group) => sum + group.count, 0), summary.totalQuestionCount);
+  assert.equal(summary.mappedQuestionCount + summary.fallbackQuestionCount, summary.totalQuestionCount);
+  assert.equal(summary.unmappedTopics.reduce((sum, topic) => sum + topic.count, 0), summary.fallbackQuestionCount);
+  assert.deepEqual(
+    Array.from(summary.unmappedTopics, topic => topic.name),
+    Object.keys(api.REVIEW_TOPICS).sort((left, right) => left.localeCompare(right))
+  );
+  assert.ok(summary.unmappedTopics.every(topic => topic.reason.length > 0));
+});
+
+test('a broad topic filter includes all of its detailed topics and still intersects other filters', () => {
+  const api = selection();
+  const groups = topicGrouping();
+  const topics = groups.topicsForGroups(['Cardiovascular']);
+  const questions = [
+    { id: 'heart-failure', topic: 'Acute decompensated heart failure', nclexCategory: 'Physiological Integrity', studyArea: 'Adult Health / Medical-Surgical' },
+    { id: 'home-bp', topic: 'Home blood pressure measurement', nclexCategory: 'Health Promotion and Maintenance', studyArea: 'Adult Health / Medical-Surgical' },
+    { id: 'wrong-category', topic: 'Heart failure daily weight monitoring', nclexCategory: 'Management of Care', studyArea: 'Adult Health / Medical-Surgical' },
+    { id: 'wrong-area', topic: 'Heart failure daily weight monitoring', nclexCategory: 'Physiological Integrity', studyArea: 'Mental Health' }
+  ];
+
+  assert.ok(topics.includes('Acute decompensated heart failure'));
+  assert.ok(topics.includes('Heart failure daily weight monitoring'));
+  assert.ok(topics.includes('Home blood pressure measurement'));
+  assert.deepEqual(
+    api.filter(questions, {
+      topics,
+      categories: ['Physiological Integrity'],
+      studyAreas: ['Adult Health / Medical-Surgical']
+    }).map(question => question.id),
+    ['heart-failure']
+  );
+});
+
+test('Other Topics preserves every unverified and newly encountered detailed topic', () => {
+  const api = selection();
+  const groups = topicGrouping();
+  const questions = [
+    { id: 'review-topic', topic: 'Communication with hearing impairment', nclexCategory: 'Management of Care' },
+    { id: 'new-topic', topic: 'A newly added unreviewed label', nclexCategory: 'Management of Care' },
+    { id: 'mapped-topic', topic: 'Delegation', nclexCategory: 'Management of Care' }
+  ];
+  const topics = groups.topicsForGroups(['Other Topics'], questions.map(question => question.topic));
+  const summary = groups.summarize(questions);
+
+  assert.deepEqual(
+    api.filter(questions, { topics }).map(question => question.id),
+    ['review-topic', 'new-topic']
+  );
+  assert.equal(summary.groups.find(group => group.name === 'Other Topics').count, 2);
+  assert.equal(summary.unmappedQuestionCount, 0);
+  assert.equal(summary.unmappedTopics.length, 2);
+});
+
+test('broad topic counts deduplicate question IDs and keep an NGN case intact', () => {
+  const api = selection();
+  const groups = topicGrouping();
+  const caseQuestion = {
+    id: 'postpartum-case',
+    itemType: 'case',
+    childIds: ['case-1a', 'case-1b', 'case-1c', 'case-1d', 'case-1e', 'case-1f'],
+    questionCount: 6,
+    topic: 'Postpartum hemorrhage'
+  };
+  const summary = groups.summarize([
+    caseQuestion,
+    { ...caseQuestion },
+    { id: 'ordinary-item', topic: 'Postpartum warning symptoms', questionCount: 1 }
+  ]);
+  const topics = groups.topicsForGroups(['Maternal–Newborn']);
+  const selected = api.filter([caseQuestion], { topics });
+
+  assert.equal(summary.totalQuestionCount, 7);
+  assert.equal(summary.mappedQuestionCount, 7);
+  assert.equal(summary.fallbackQuestionCount, 0);
+  assert.equal(summary.groups.find(group => group.name === 'Maternal–Newborn').count, 7);
+  assert.deepEqual(Array.from(summary.duplicateQuestionIds), ['postpartum-case']);
+  assert.deepEqual(selected.map(question => question.id), ['postpartum-case']);
+  assert.equal(selected.reduce((sum, question) => sum + api.questionCount(question), 0), 6);
+  assert.equal(selected[0].childIds.length, 6);
 });
 
 test('UWorld-inspired filters use existing Study Areas and Client Needs with supported item types', () => {
@@ -311,6 +450,14 @@ test('student builder inventory and question query include active MCQ, SATA, and
   for (const script of assignmentsPage.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new vm.Script(script[1]);
   }
+});
+
+test('deployed custom count and Mixed type controls remain available for arbitrary counts', () => {
+  assert.match(page, /id="custom-count" type="number" min="1" max="100" step="1"/);
+  assert.match(page, /id="mixed-item-type-choice" checked/);
+  assert.match(page, /countValid=countInput\.value\.trim\(\)!==''&&Number\.isInteger\(count\)&&count>=1&&count<=100/);
+  const build = page.slice(page.indexOf('async function buildMixedReview('), page.indexOf('async function buildCourseExamPractice('));
+  assert.match(build, /if\(!Number\.isInteger\(count\)\|\|count<1\|\|count>100\)/);
 });
 
 test('assigned legacy practice sets load their questions from the master bank', () => {

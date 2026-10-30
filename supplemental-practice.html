@@ -146,6 +146,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .custom-topic-option:has(input:checked){background:var(--soft)}
     .custom-topic-option:focus-within{outline:2px solid var(--rose);outline-offset:-2px}
     .custom-topic-option input{flex:none;width:17px;height:17px;margin:2px 0 0;accent-color:var(--rose)}
+    .custom-topic-warning{padding:10px 12px;border:1px solid #d5bd85;border-radius:8px;background:#fff9e8;color:var(--ink)}
+    .custom-topic-warning summary{cursor:pointer;font-weight:700}
+    .custom-topic-warning ul{margin:8px 0 0;padding-left:22px}
+    .custom-topic-warning li{margin:5px 0}
     .builder-bulk{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
     .builder-bulk button{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-weight:700}
     .builder-bulk button:hover:not(:disabled){border-color:var(--rose);background:var(--soft)}
@@ -322,6 +326,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
   <script src="category-names.js"></script>
   <script src="study-area-names.js"></script>
   <script src="question-bank-selection.js?v=clinical-record-practice-v1"></script>
+  <script src="practice-topic-groups.js?v=15-broad-topic-groups-v1"></script>
   <script src="option-presentation.js?v=mcq-order-v1"></script>
   <script src="ngn-scoring.js?v=mcq-order-v1"></script>
   <script src="exam-ui-ngn.js?v=mcq-order-v1"></script>
@@ -1728,7 +1733,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     ]},
     ];
     sets.push({id:'nur215-foundations-practice',title:'NUR 215 Foundations Practice',tag:'NUR 215 · Foundations of Professional Practice',description:'60 mixed application and clinical-judgment questions on communication, ethics, law, consent, patient rights, leadership, conflict, change, and delegation.',questionCount:60,questionSource:'question-bank'});
-    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],availableModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopics=[],questionCategories=[],questionTopicsError='',questionCaseWarning='',questionHistoryError='',questionHistoryById=new Map();
+    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],availableModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopicGroups=[],questionTopicIssues=[],questionTopicCoverage={totalQuestionCount:0,mappedQuestionCount:0,fallbackQuestionCount:0,unmappedQuestionCount:0},questionCategories=[],questionTopicsError='',questionCaseWarning='',questionHistoryError='',questionHistoryById=new Map();
     const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ob-newborn-01':'core-lifespan-reproductive','ngn-acute-01':'core-acute-systems'};
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     function cleanPersonalLabel(value){
@@ -1781,14 +1786,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       questionCaseWarning=invalidCaseCount
         ?`${invalidCaseCount} active unfolding case${invalidCaseCount===1?' is':'s are'} unavailable in mixed practice because the published content did not pass validation. Contact Madison to review the case.`
         :'';
-      const studyAreas=new Map(),topics=new Map(),categories=new Map();
+      const studyAreas=new Map(),categories=new Map();
       catalogRows.forEach(row=>{
         const weight=PracticeQuestionSelection.questionCount(row);
         const studyArea=String(row.study_area||'').trim();
-        const topic=String(row.topic||'').trim();
         const category=String(row.nclex_category||'').trim();
         if(studyArea&&NCLEXStudyAreas.isKnown(studyArea))studyAreas.set(studyArea,(studyAreas.get(studyArea)||0)+weight);
-        if(topic)topics.set(topic,(topics.get(topic)||0)+weight);
         const key=category||'__uncategorized__';
         categories.set(key,(categories.get(key)||0)+weight);
       });
@@ -1801,9 +1804,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         topic:String(row.topic||'').trim(),
         nclexCategory:String(row.nclex_category||'').trim()
       }));
+      const topicGrouping=PracticeTopicGroups.summarize(questionCatalog);
       return {
         studyAreas:[...studyAreas].map(([name,count])=>({name,count})).sort((a,b)=>a.name.localeCompare(b.name)),
-        topics:[...topics].map(([name,count])=>({name,count})).sort((a,b)=>a.name.localeCompare(b.name)),
+        topicGrouping,
         categories:[...categories].map(([value,count])=>({
           value,
           label:value==='__uncategorized__'?'Uncategorized':value.replace(/[_-]+/g,' ').replace(/\b[a-z]/g,char=>char.toUpperCase()),
@@ -1948,7 +1952,11 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const target=$('sets');
       target.className='nclex-review';
       const studyAreaOptions=questionStudyAreas.map(area=>`<label class="builder-choice"><input type="checkbox" data-study-area-choice value="${escapeHtml(area.name)}"><span>${escapeHtml(area.name)}</span><small>${area.count}</small></label>`).join('');
-      const topicOptions=questionTopics.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-choice value="${escapeHtml(topic.name)}"><span>${escapeHtml(topic.name)} <small>(${topic.count})</small></span></label>`).join('');
+      const topicOptions=questionTopicGroups.map(topic=>`<label class="custom-topic-option"><input type="checkbox" data-topic-group-choice value="${escapeHtml(topic.name)}"><span>${escapeHtml(topic.name)} <small>(${topic.count})</small></span></label>`).join('');
+      const topicIssueCount=questionTopicIssues.reduce((sum,topic)=>sum+topic.count,0);
+      const topicIssueNote=questionTopicIssues.length
+        ?`<p class="custom-topic-note">All ${questionTopicCoverage.totalQuestionCount} active questions are represented: ${questionTopicCoverage.mappedQuestionCount} in approved categories and ${questionTopicCoverage.fallbackQuestionCount} in Other Topics.</p><details class="custom-topic-note custom-topic-warning"><summary>${topicIssueCount} question${topicIssueCount===1?'':'s'} across ${questionTopicIssues.length} detailed topic${questionTopicIssues.length===1?'':'s'} are in Other Topics pending question-content review.</summary><ul>${questionTopicIssues.map(topic=>`<li><strong>${escapeHtml(topic.name)} (${topic.count})</strong> — ${escapeHtml(topic.reason)}</li>`).join('')}</ul></details>`
+        :`<p class="custom-topic-note">All ${questionTopicCoverage.mappedQuestionCount} active questions are represented in the broad topic groups.</p>`;
       const categoryOptions=questionCategories.map(category=>`<label class="builder-choice"><input type="checkbox" data-category-choice value="${escapeHtml(category.value)}"><span>${escapeHtml(category.label)}</span><small>${category.count}</small></label>`).join('');
       const bulkControls=(group,label)=>`<div class="builder-bulk" role="group" aria-label="${label} selection">
         <button type="button" data-select-all="${group}" aria-label="Select all ${label}">Select all</button>
@@ -1958,7 +1966,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       target.innerHTML=`<section class="custom-builder" aria-labelledby="custom-builder-title">
         <header class="builder-heading"><p class="builder-kicker">Your personalized question bank</p>
         <h2 id="custom-builder-title">Build a practice set</h2>
-        <p class="builder-intro">Choose your practice options, then focus on NCLEX Client Needs. Study Areas and topics are optional filters.</p>
+        <p class="builder-intro">Choose your practice options, then focus on NCLEX Client Needs. Study Areas and broad topic groups are optional filters.</p>
         <p class="builder-cat-link">Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>.</p>
         </header>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Question filters could not load: ${escapeHtml(questionTopicsError)} If this is the first setup, apply the Study Area migration. Otherwise, retry or contact Madison. Mixed practice remains available.</p>`:''}
@@ -2017,14 +2025,15 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             <p class="builder-note">Questions you have not practiced will be selected first; previously practiced questions fill the set only when needed.</p>
           </section>
           <details class="custom-topic-picker">
-            <summary>Optional: narrow by topic (${questionTopics.length} available)</summary>
-            ${questionTopics.length?`
-              <label for="custom-topic-search">Filter topics</label>
-              <input class="custom-topic-search" id="custom-topic-search" type="search" placeholder="Search topics">
-              ${bulkControls('topic','topics')}
-              <p class="custom-topic-note">Select all and Clear all apply to all topics, including topics hidden by your search.</p>
+            <summary>Optional: focus by broad topic (${questionTopicGroups.length} categories)</summary>
+            ${questionTopicGroups.length?`
+              <label for="custom-topic-search">Filter broad topics</label>
+              <input class="custom-topic-search" id="custom-topic-search" type="search" placeholder="Search broad topics">
+              ${bulkControls('topic-group','topic groups')}
+              <p class="custom-topic-note">Each broad topic includes its mapped detailed labels. Select all and Clear all apply to every broad topic, including topics hidden by your search.</p>
+              ${topicIssueNote}
               <div class="custom-topic-list" id="custom-topic-list">${topicOptions}</div>
-            `:'<p class="custom-topic-note">No topic labels are available yet.</p>'}
+            `:`<p class="custom-topic-note">Broad topic groups could not be loaded. Mixed practice remains available.</p>`}
           </details>
         </div>
         <footer class="builder-footer"><button class="assignment-action" id="start-custom-review" type="button">Start practice</button>
@@ -2073,7 +2082,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         });
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
-        const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
+        const topicGroups=[...target.querySelectorAll('[data-topic-group-choice]:checked')].map(input=>input.value);
+        const topics=PracticeTopicGroups.topicsForGroups(topicGroups,questionCatalog.map(question=>question.topic));
         const itemTypes=target.querySelector('#mixed-item-type-choice').checked
           ?['mcq','sata','case']
           :[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
@@ -2104,7 +2114,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             :'No questions match these selections. Choose another question type, mode, or focus.';
         target.querySelector('#start-custom-review').disabled=!countValid||!matchingCount||!itemTypes.length||!modes.length;
       };
-      target.querySelectorAll('[data-study-area-choice],[data-category-choice],[data-topic-choice],[data-item-type-choice],[data-question-mode-choice],#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
+      target.querySelectorAll('[data-study-area-choice],[data-category-choice],[data-topic-group-choice],[data-item-type-choice],[data-question-mode-choice],#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
       target.querySelector('#custom-count').addEventListener('input',updateAvailability);
       target.querySelector('#mixed-item-type-choice').addEventListener('change',event=>{
         if(event.currentTarget.checked){
@@ -2128,7 +2138,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const count=Number(target.querySelector('#custom-count')?.value);
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
-        const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
+        const topicGroups=[...target.querySelectorAll('[data-topic-group-choice]:checked')].map(input=>input.value);
         const itemTypes=target.querySelector('#mixed-item-type-choice').checked
           ?['mcq','sata','case']
           :[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
@@ -2141,7 +2151,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           tutorMode:target.querySelector('#tutor-mode-choice').checked,
           timedMode:target.querySelector('#timed-mode-choice').checked
         };
-        buildMixedReview(count,null,topics,categories,'all',studyAreas,itemTypes,modes,practiceOptions);
+        buildMixedReview(count,null,topicGroups,categories,'all',studyAreas,itemTypes,modes,practiceOptions);
       });
     }
     function renderLibrary(){
@@ -2534,6 +2544,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
 
     async function buildMixedReview(count,focusCat,focusTopics,focusCategories,difficultyFilter,focusStudyAreas,requestedItemTypes,requestedModes,practiceOptions){
       const isCustom=Array.isArray(focusTopics);
+      const topicGroups=new Set((focusTopics||[]).map(topic=>String(topic||'').trim()).filter(topic=>PracticeTopicGroups.GROUPS.includes(topic)));
+      const topics=new Set(PracticeTopicGroups.topicsForGroups([...topicGroups],questionCatalog.map(question=>question.topic)));
       const requestedStudyAreas=Array.isArray(focusStudyAreas)?focusStudyAreas.map(area=>String(area||'').trim()):[];
       if(requestedStudyAreas.some(area=>!NCLEXStudyAreas.isKnown(area))){
         $('library-status').textContent='This practice assignment contains an unknown Study Area. Contact Madison to update the assignment.';
@@ -2545,8 +2557,8 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const categories=new Set((focusCategories||[]).map(category=>String(category||'').trim()));
       const itemTypes=Array.isArray(requestedItemTypes)&&requestedItemTypes.length?requestedItemTypes:['mcq','sata','case'];
       const modes=Array.isArray(requestedModes)?requestedModes:['unused','incorrect','marked','omitted','correct'];
-      if(![10,20,30,40,50,60,75,100].includes(count)){
-        $('library-status').textContent='Choose a question count from 10 to 100.';
+      if(!Number.isInteger(count)||count<1||count>100){
+        $('library-status').textContent='Choose a whole number from 1 to 100 questions.';
         $('library-status').classList.remove('hidden');
         return;
       }
@@ -2662,7 +2674,6 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       };
 
       const focus=focusCat&&window.NCLEXCats?NCLEXCats.canon(focusCat,''):'';
-      const topics=new Set((focusTopics||[]).map(topic=>String(topic||'').trim()).filter(Boolean));
       const filtered=PracticeQuestionSelection.filter(normalized,{studyAreas:[...studyAreas],categories:[...categories],topics:[...topics],itemTypes});
       const eligible=PracticeQuestionSelection.filterByModes(filtered,modes,latestAttempts);
 
@@ -2709,10 +2720,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const availableCount=selectedPool.reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0);
       activeSet={
         id:'mixed-review-'+Date.now(),
-        title:studyAreas.size?`${areaLabel} Practice`:isCustom?(topics.size?'Custom Topic Practice':categories.size?'Client Needs Practice':'Custom NCLEX Practice'):(focus?focus+' Practice':'Mixed NCLEX Review'),
+        title:studyAreas.size?`${areaLabel} Practice`:isCustom?(topicGroups.size?'Custom Topic Practice':categories.size?'Client Needs Practice':'Custom NCLEX Practice'):(focus?focus+' Practice':'Mixed NCLEX Review'),
         tag:isCustom?`Student-built practice${selectedCount<count?` · ${selectedCount} questions selected from ${availableCount} matching`:''}`:(studyAreas.size?'Assigned Study Area practice':focus?'Focused on your weak area':'Assigned mixed review'),
-        description:studyAreas.size?`Practice questions selected for ${areaLabel}${topics.size?`, narrowed to ${[...topics].join(', ')}`:''}.`:
-          topics.size||categories.size?'Practice questions selected from your chosen Client Needs and topics.':'Mixed NCLEX-style review across the active question bank.',
+        description:studyAreas.size?`Practice questions selected for ${areaLabel}${topicGroups.size?`, narrowed to ${[...topicGroups].join(', ')}`:''}.`:
+          topicGroups.size||categories.size?'Practice questions selected from your chosen Client Needs and broad topics.':'Mixed NCLEX-style review across the active question bank.',
         questions:selectedQuestions,
         reviewAfterFinish:isCustom,
         ...(isCustom?{
@@ -2838,7 +2849,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           try{
             const catalog=await loadQuestionCatalog();
             questionStudyAreas=catalog.studyAreas;
-            questionTopics=catalog.topics;
+            questionTopicGroups=catalog.topicGrouping.groups;
+            questionTopicIssues=catalog.topicGrouping.unmappedTopics;
+            questionTopicCoverage={
+              totalQuestionCount:catalog.topicGrouping.totalQuestionCount,
+              mappedQuestionCount:catalog.topicGrouping.mappedQuestionCount,
+              fallbackQuestionCount:catalog.topicGrouping.fallbackQuestionCount,
+              unmappedQuestionCount:catalog.topicGrouping.unmappedQuestionCount
+            };
             questionCategories=catalog.categories;
           }
           catch(error){questionTopicsError=error?.message||'Could not load the available Study Areas and question filters.'}

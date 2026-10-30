@@ -1,0 +1,594 @@
+[
+  {
+    "name": "24-hour urine collection",
+    "count": 1
+  },
+  {
+    "name": "Acute anxiety support",
+    "count": 1
+  },
+  {
+    "name": "Acute decompensated heart failure",
+    "count": 6
+  },
+  {
+    "name": "Acute-stroke aspiration prevention",
+    "count": 1
+  },
+  {
+    "name": "Anticoagulants — Warfarin vs. Heparin",
+    "count": 1
+  },
+  {
+    "name": "Aseptic multidose vial access",
+    "count": 1
+  },
+  {
+    "name": "Aspiration prevention during gastric tube feeding",
+    "count": 1
+  },
+  {
+    "name": "Assessing potentially harmful auditory hallucinations",
+    "count": 1
+  },
+  {
+    "name": "Autonomic dysreflexia",
+    "count": 1
+  },
+  {
+    "name": "Average-risk colorectal cancer screening age",
+    "count": 1
+  },
+  {
+    "name": "Bleeding precautions with apixaban",
+    "count": 1
+  },
+  {
+    "name": "Breast cancer screening and individualized risk",
+    "count": 1
+  },
+  {
+    "name": "C difficile transmission prevention",
+    "count": 1
+  },
+  {
+    "name": "Catheter urine culture collection",
+    "count": 1
+  },
+  {
+    "name": "Chest tube air leak troubleshooting",
+    "count": 1
+  },
+  {
+    "name": "CKD and Hyperkalemia",
+    "count": 1
+  },
+  {
+    "name": "Clean-catch urine collection",
+    "count": 1
+  },
+  {
+    "name": "Clinical deterioration in suspected sepsis",
+    "count": 1
+  },
+  {
+    "name": "Colostomy stoma assessment",
+    "count": 1
+  },
+  {
+    "name": "Communication with hearing impairment",
+    "count": 1
+  },
+  {
+    "name": "Concurrent acute priorities and resource allocation",
+    "count": 1
+  },
+  {
+    "name": "Confidentiality and information sharing",
+    "count": 1
+  },
+  {
+    "name": "COPD exacerbation with hypercapnic acidosis",
+    "count": 1
+  },
+  {
+    "name": "Delegation",
+    "count": 2
+  },
+  {
+    "name": "Delegation and monitoring diuretic response",
+    "count": 1
+  },
+  {
+    "name": "Delegation of routine personal care",
+    "count": 1
+  },
+  {
+    "name": "Digoxin administration and toxicity precautions",
+    "count": 1
+  },
+  {
+    "name": "Disinfecting reusable noncritical patient equipment",
+    "count": 1
+  },
+  {
+    "name": "DVT Prevention",
+    "count": 1
+  },
+  {
+    "name": "Elder Abuse and Neglect",
+    "count": 1
+  },
+  {
+    "name": "Escalation of unresolved deterioration",
+    "count": 1
+  },
+  {
+    "name": "Ethics and values",
+    "count": 1
+  },
+  {
+    "name": "Fall prevention during assisted transfer",
+    "count": 1
+  },
+  {
+    "name": "Febrile neutropenia",
+    "count": 1
+  },
+  {
+    "name": "Follow-up after a positive stool-based colorectal cancer screening test",
+    "count": 1
+  },
+  {
+    "name": "Haloperidol adverse effects",
+    "count": 1
+  },
+  {
+    "name": "Hand hygiene and glove use",
+    "count": 1
+  },
+  {
+    "name": "Hand hygiene during central line dressing change",
+    "count": 1
+  },
+  {
+    "name": "Heart failure daily weight monitoring",
+    "count": 1
+  },
+  {
+    "name": "Heel pressure prevention",
+    "count": 1
+  },
+  {
+    "name": "Hemodialysis fistula assessment",
+    "count": 1
+  },
+  {
+    "name": "Hemodynamic instability with gastrointestinal bleeding",
+    "count": 1
+  },
+  {
+    "name": "Heparin-induced thrombocytopenia risk",
+    "count": 1
+  },
+  {
+    "name": "Home blood pressure measurement",
+    "count": 1
+  },
+  {
+    "name": "Hydration during infant bronchiolitis",
+    "count": 1
+  },
+  {
+    "name": "Hyperglycemic crises and electrolyte management",
+    "count": 6
+  },
+  {
+    "name": "Immediate needlestick exposure response",
+    "count": 1
+  },
+  {
+    "name": "Incentive spirometry technique",
+    "count": 1
+  },
+  {
+    "name": "Individualized fall-risk reduction",
+    "count": 1
+  },
+  {
+    "name": "Infant formula hydration",
+    "count": 1
+  },
+  {
+    "name": "Infant safe sleep",
+    "count": 1
+  },
+  {
+    "name": "Influenza vaccination in pregnancy",
+    "count": 1
+  },
+  {
+    "name": "Informed consent and patient autonomy",
+    "count": 1
+  },
+  {
+    "name": "Inhaled corticosteroid administration teaching",
+    "count": 1
+  },
+  {
+    "name": "Intramuscular vaccine technique",
+    "count": 1
+  },
+  {
+    "name": "Least-restrictive verbal de-escalation while maintaining immediate safety",
+    "count": 1
+  },
+  {
+    "name": "Lithium medication safety during dehydration",
+    "count": 1
+  },
+  {
+    "name": "LPN/VN assignment",
+    "count": 1
+  },
+  {
+    "name": "Magnesium sulfate toxicity risk",
+    "count": 1
+  },
+  {
+    "name": "Maternal hypotension after epidural analgesia",
+    "count": 1
+  },
+  {
+    "name": "Medication & Procedure Safety",
+    "count": 1
+  },
+  {
+    "name": "Medication access and discharge coordination",
+    "count": 1
+  },
+  {
+    "name": "Medication error immediate response",
+    "count": 1
+  },
+  {
+    "name": "Medication identity verification",
+    "count": 1
+  },
+  {
+    "name": "Medication reconciliation and dose discrepancy",
+    "count": 1
+  },
+  {
+    "name": "Medication reconciliation and interaction prevention",
+    "count": 1
+  },
+  {
+    "name": "Metoprolol succinate extended-release administration",
+    "count": 1
+  },
+  {
+    "name": "Monitoring acute kidney injury and complications",
+    "count": 1
+  },
+  {
+    "name": "Monitoring and reporting heart-failure symptoms",
+    "count": 1
+  },
+  {
+    "name": "Monitoring and responding after naloxone",
+    "count": 1
+  },
+  {
+    "name": "Neurovascular compromise under a cast",
+    "count": 1
+  },
+  {
+    "name": "New confusion and safety assessment",
+    "count": 1
+  },
+  {
+    "name": "New deficit after subarachnoid hemorrhage",
+    "count": 1
+  },
+  {
+    "name": "Newborn",
+    "count": 1
+  },
+  {
+    "name": "Nurse assignment by changing clinical acuity",
+    "count": 1
+  },
+  {
+    "name": "Nutrition",
+    "count": 1
+  },
+  {
+    "name": "Nutrition and stimulation during mania",
+    "count": 1
+  },
+  {
+    "name": "OB",
+    "count": 1
+  },
+  {
+    "name": "Ophthalmic drop administration",
+    "count": 1
+  },
+  {
+    "name": "Oral iron supplementation",
+    "count": 1
+  },
+  {
+    "name": "Oxytocin-associated excessive uterine activity",
+    "count": 1
+  },
+  {
+    "name": "Pediatric upper-airway compromise",
+    "count": 1
+  },
+  {
+    "name": "Peripheral IV infiltration",
+    "count": 1
+  },
+  {
+    "name": "Positioning for gastric tube feeding",
+    "count": 1
+  },
+  {
+    "name": "Possible adrenal crisis after missed glucocorticoids",
+    "count": 1
+  },
+  {
+    "name": "Possible right ventricular infarction and nitrates",
+    "count": 1
+  },
+  {
+    "name": "Post-bolus reassessment of dehydration",
+    "count": 1
+  },
+  {
+    "name": "Post-thoracentesis respiratory deterioration",
+    "count": 1
+  },
+  {
+    "name": "Post-thyroidectomy airway compromise",
+    "count": 1
+  },
+  {
+    "name": "Post-Tonsillectomy Hemorrhage",
+    "count": 1
+  },
+  {
+    "name": "Postoperative opioid-related respiratory depression",
+    "count": 1
+  },
+  {
+    "name": "Postoperative pituitary water balance",
+    "count": 1
+  },
+  {
+    "name": "Postoperative urinary retention",
+    "count": 1
+  },
+  {
+    "name": "Postpartum hemorrhage",
+    "count": 6
+  },
+  {
+    "name": "Postpartum hemorrhage and uterine atony",
+    "count": 1
+  },
+  {
+    "name": "Postpartum warning symptoms",
+    "count": 1
+  },
+  {
+    "name": "Potassium-Sparing Diuretics",
+    "count": 1
+  },
+  {
+    "name": "Preconception folic acid",
+    "count": 1
+  },
+  {
+    "name": "Pressure injury prevention",
+    "count": 1
+  },
+  {
+    "name": "Prioritization of competing acute nursing assessment needs",
+    "count": 1
+  },
+  {
+    "name": "Qualified interpretation and privacy",
+    "count": 1
+  },
+  {
+    "name": "Radial-artery access-site bleeding",
+    "count": 1
+  },
+  {
+    "name": "Recognition of postpartum lochia rubra",
+    "count": 1
+  },
+  {
+    "name": "Recognizing an emergency COPD exacerbation",
+    "count": 1
+  },
+  {
+    "name": "Recognizing and responding to hypoglycemia",
+    "count": 1
+  },
+  {
+    "name": "Recognizing dehydration in a child",
+    "count": 1
+  },
+  {
+    "name": "Recognizing gastrointestinal bleeding",
+    "count": 1
+  },
+  {
+    "name": "Recognizing genital-tract laceration after birth",
+    "count": 1
+  },
+  {
+    "name": "Recognizing possible pulmonary embolism",
+    "count": 1
+  },
+  {
+    "name": "Recognizing postpartum maternal warning signs",
+    "count": 1
+  },
+  {
+    "name": "Recognizing postpartum psychosis as an emergency",
+    "count": 1
+  },
+  {
+    "name": "Recognizing severe RSV respiratory distress",
+    "count": 1
+  },
+  {
+    "name": "Recognizing symptoms that may indicate preterm labor",
+    "count": 1
+  },
+  {
+    "name": "Recognizing worsening tissue perfusion",
+    "count": 1
+  },
+  {
+    "name": "Rescue response to witnessed seizure",
+    "count": 1
+  },
+  {
+    "name": "Respecting trauma-related treatment preferences",
+    "count": 1
+  },
+  {
+    "name": "Responsive feeding in toddlerhood",
+    "count": 1
+  },
+  {
+    "name": "Safe administration of concentrated electrolytes",
+    "count": 1
+  },
+  {
+    "name": "Safe discharge transition and caregiver readiness",
+    "count": 1
+  },
+  {
+    "name": "Safety & Priority",
+    "count": 1
+  },
+  {
+    "name": "SBAR escalation of deteriorating perfusion",
+    "count": 1
+  },
+  {
+    "name": "Severe asthma deterioration during treatment",
+    "count": 1
+  },
+  {
+    "name": "Severe hyperkalemia with ECG changes",
+    "count": 1
+  },
+  {
+    "name": "Sickle cell acute pulmonary complication",
+    "count": 1
+  },
+  {
+    "name": "Single-dose vial handling",
+    "count": 1
+  },
+  {
+    "name": "Sterile-field moisture contamination",
+    "count": 1
+  },
+  {
+    "name": "Structured handoff and closed-loop communication",
+    "count": 1
+  },
+  {
+    "name": "Suicide risk screening",
+    "count": 1
+  },
+  {
+    "name": "Suspected C. difficile infection precautions",
+    "count": 1
+  },
+  {
+    "name": "Suspected measles precautions",
+    "count": 1
+  },
+  {
+    "name": "Suspected preterm prelabor rupture of membranes",
+    "count": 1
+  },
+  {
+    "name": "Suspected pulmonary TB precautions",
+    "count": 1
+  },
+  {
+    "name": "Suspected transfusion reaction",
+    "count": 1
+  },
+  {
+    "name": "Symptomatic bradycardia after beta-blocker",
+    "count": 1
+  },
+  {
+    "name": "Tdap during pregnancy",
+    "count": 1
+  },
+  {
+    "name": "Teach-back and return demonstration",
+    "count": 1
+  },
+  {
+    "name": "Therapeutic communication for anxiety",
+    "count": 1
+  },
+  {
+    "name": "Therapeutic response to persecutory belief and poor intake",
+    "count": 1
+  },
+  {
+    "name": "Thrombolytic therapy complication recognition",
+    "count": 1
+  },
+  {
+    "name": "Transmission precautions for disseminated zoster",
+    "count": 1
+  },
+  {
+    "name": "Transporting a client with suspected pulmonary tuberculosis",
+    "count": 1
+  },
+  {
+    "name": "Trauma-informed physical assessment",
+    "count": 1
+  },
+  {
+    "name": "Treatment of conscious hypoglycemia",
+    "count": 1
+  },
+  {
+    "name": "Treatment preference and adverse-effect communication",
+    "count": 1
+  },
+  {
+    "name": "Using an epinephrine auto-injector for anaphylaxis",
+    "count": 1
+  },
+  {
+    "name": "Verification of discharge self-injection skill",
+    "count": 1
+  },
+  {
+    "name": "Walker-assisted ambulation",
+    "count": 1
+  },
+  {
+    "name": "Warfarin and TMP-SMX interaction",
+    "count": 1
+  }
+]
