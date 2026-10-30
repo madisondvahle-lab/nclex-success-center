@@ -34,17 +34,50 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
   const check = (condition, message) => { if (!condition) throw new Error(message); };
   const click = selector => page.evaluate(selector => document.querySelector(selector).click(), selector);
   const count = selector => page.locator(selector).count();
-  for (const width of [1440, 390, 320]) {
+  for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(origin + '/__practice-builder-check');
     await page.locator('#start-custom-review').waitFor();
+    await page.locator('[data-type-count="case"]').evaluate(el => { el.textContent = '3 cases · 18 questions'; });
+    const layoutIssues = await page.locator('#mixed-item-type-choice').evaluate(input => {
+      const cards = input.closest('.builder-choices').querySelectorAll('.builder-choice');
+      const issues = [];
+      for (const card of cards) {
+        const bounds = card.getBoundingClientRect();
+        const title = card.querySelector('span');
+        const detail = card.querySelector('small');
+        for (const el of card.children) {
+          const rect = el.getBoundingClientRect();
+          if (rect.left < bounds.left || rect.right > bounds.right || rect.top < bounds.top || rect.bottom > bounds.bottom || el.scrollWidth > el.clientWidth) {
+            issues.push(title.textContent + ': content outside card');
+          }
+        }
+        const titleBounds = title.getBoundingClientRect(), detailBounds = detail.getBoundingClientRect();
+        if (detailBounds.top < titleBounds.bottom) issues.push(title.textContent + ': description overlaps title');
+        for (const match of title.textContent.matchAll(/\S+/g)) {
+          const range = document.createRange();
+          range.setStart(title.firstChild, match.index);
+          range.setEnd(title.firstChild, match.index + match[0].length);
+          if (range.getClientRects().length > 1) issues.push(title.textContent + ': word split across lines');
+        }
+      }
+      return issues;
+    });
+    check(!layoutIssues.length, 'Question-type layout at ' + width + ': ' + layoutIssues.join('; '));
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Builder overflow at ' + width);
     check(await page.locator('.custom-builder').evaluate(el => getComputedStyle(el).borderRadius) === '18px', 'Builder card styling missing');
     check(await page.locator('.builder-section').first().evaluate(el => getComputedStyle(el).backgroundColor) === 'rgb(255, 255, 255)', 'Section surfaces missing');
     check(await count('[data-category-choice]:checked') === 0, 'Initial focus changed');
     check(await page.locator('#tutor-mode-choice').isChecked(), 'Tutor default changed');
     check(!await page.locator('#timed-mode-choice').isChecked(), 'Timed default changed');
-    check(await page.locator('[data-item-type-choice="case"]').isChecked(), 'Published cases are not included by default');
+    check(await page.locator('#mixed-item-type-choice').isChecked(), 'Mixed question-type mode is not the default');
+    check(await count('[data-item-type-choice]:checked') === 0, 'Individual types are selected while Mixed is active');
+    await click('[data-item-type-choice][value="mcq"]');
+    check(!await page.locator('#mixed-item-type-choice').isChecked(), 'Selecting an individual type did not leave Mixed mode');
+    check(await count('[data-item-type-choice]:checked') === 1, 'Selecting an individual type selected extra types');
+    await click('#mixed-item-type-choice');
+    check(await page.locator('#mixed-item-type-choice').isChecked(), 'Mixed mode could not be restored');
+    check(await count('[data-item-type-choice]:checked') === 0, 'Mixed mode did not clear individual selections');
     await click('[data-select-all="category"]');
     check(await count('[data-category-choice]:checked') === 2, 'Client Needs select all failed');
     check(await page.locator('[data-select-all="category"]').isDisabled(), 'Select all state not updated');
@@ -68,13 +101,15 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
     await click('[data-clear-all="item-type"]');
     check(await page.locator('#start-custom-review').isDisabled(), 'Start allowed with no question type');
     await click('[data-select-all="item-type"]');
+    check(!await page.locator('#mixed-item-type-choice').isChecked(), 'Select all did not leave Mixed mode');
+    check(await count('[data-item-type-choice]:checked') === 3, 'Select all did not select all individual question types');
     await click('[data-clear-all="question-mode"]');
     check(await page.locator('#start-custom-review').isDisabled(), 'Start allowed with no question history mode');
     await click('[data-select-all="question-mode"]');
     await click('[data-category-choice]');
     check(await page.locator('[data-selection-count="category"]').textContent() === '1 of 2 selected', 'Manual checkbox selection count stale');
     await click('#timed-mode-choice');
-    await page.locator('#custom-count').selectOption('10');
+    await page.locator('#custom-count').fill('10');
     await click('#start-custom-review');
     const args = await page.evaluate(() => window.__buildArgs);
     check(args[0] === 10 && args[3][0] === 'Management of Care', 'Builder did not pass selected count/focus');
@@ -84,5 +119,5 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
   }
   check(!errors.length, 'Browser errors: ' + errors.join('; '));
   check(!remote.length, 'Unexpected live database requests');
-  return 'Passed builder layout and bulk-selection checks at 1440px, 390px, and 320px, topic search, tab persistence, counts, disabled states, and practice settings; no live data.';
+  return 'Passed builder layout and bulk-selection checks at 1440px, 1024px, 768px, 390px, and 320px, question-type text containment and wrapping, topic search, tab persistence, counts, disabled states, and practice settings; no live data.';
 }
