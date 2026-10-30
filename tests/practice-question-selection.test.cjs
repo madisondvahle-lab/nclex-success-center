@@ -87,9 +87,10 @@ test('UWorld-inspired filters use existing Study Areas and Client Needs with sup
   }).map(item => item.id), ['sata']);
   assert.match(page, /data-category-tab="study-areas">Study Areas/);
   assert.match(page, /data-category-tab="client-needs">Client Needs/);
-  assert.match(page, /value="mcq" checked><span>Traditional/);
-  assert.match(page, /value="sata" checked><span>Next Gen/);
-  assert.match(page, /value="case" checked><span>NGN unfolding cases/);
+  assert.match(page, /id="mixed-item-type-choice" checked/);
+  assert.match(page, /data-item-type-choice value="mcq"><span>Traditional/);
+  assert.match(page, /data-item-type-choice value="sata"><span>Next Gen/);
+  assert.match(page, /data-item-type-choice value="case"><span>NGN unfolding cases/);
   assert.doesNotMatch(page, /Systems\s*\(/);
   assert.match(page, /marked_for_review:\!\!activeSet\.sessionMarked/);
   assert.match(page, /Questions you have not practiced will be selected first/);

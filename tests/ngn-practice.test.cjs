@@ -170,6 +170,14 @@ test('explicit assignment revalidates publication, is repeat-safe, and never wri
   assert.equal(resources.length, 1);
 });
 
+test('mixed review loads publication status required by case validation', () => {
+  const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
+  const loadStart = page.indexOf('const loadBank=async()=>');
+  const loadEnd = page.indexOf("const [{data:history,error:historyError}", loadStart);
+  const mixedLoad = page.slice(loadStart, loadEnd);
+  assert.match(mixedLoad, /\.select\('[^']*\bactive\b[^']*'\)/);
+});
+
 test('changed page scripts parse and traditional selection stays separate from explicit NGN assignments', () => {
   for (const file of ['supplemental-practice.html', 'madison-assignments.html', 'question-bank-review.html', 'shared-progress.html']) {
     const page = readFileSync(join(root, file), 'utf8');
@@ -177,7 +185,8 @@ test('changed page scripts parse and traditional selection stays separate from e
   }
   const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
   assert.match(page, /\.in\('item_type',\['mcq','sata','case'\]\)/);
-  assert.match(page, /value="case" checked><span>NGN unfolding cases/);
+  assert.match(page, /id="mixed-item-type-choice" checked/);
+  assert.match(page, /data-item-type-choice value="case"><span>NGN unfolding cases/);
   assert.match(page, /eq\('student_id',student.id\)\.eq\('url',url\)/);
   assert.match(page, /resultSaved=true/);
   assert.match(page, /Retry saving/);
