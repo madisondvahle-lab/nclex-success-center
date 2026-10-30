@@ -207,6 +207,14 @@ Tab/entry `fromItem` values must be integers 1-6. A child cannot key a chart
 finding that is still hidden at its stage. Keep the entire case in one import
 entry; do not split its six children into independent parent entries.
 
+Published active six-item cases are also eligible for regular mixed practice
+and are included by default alongside traditional and SATA questions. A case
+counts as six questions; if it is selected, all six items stay together and in
+authored order, with the existing staged chart disclosure and NGN scoring.
+Question-history filters treat the case as one selection unit and use its six
+child question IDs for history. Mixed-set results keep the existing fully
+correct item count and also report NGN partial-credit points separately.
+
 ## Working standalone drop-down example
 
 Synthetic chart-reading example for technical validation, not a clinically

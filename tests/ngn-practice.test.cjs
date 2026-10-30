@@ -100,6 +100,41 @@ test('MCQ/SATA records pass through the existing practice adapter without changi
   }
 });
 
+test('mixed-practice adaptation keeps selected NGN cases whole, ordered, staged, and correctly scored', () => {
+  const entry = NGNPractice.fromRow(fixture());
+  const caseItems = ExamUI.prepare([entry], { shuffleOptions: false });
+  const details = NGNPractice.details({
+    items: caseItems,
+    ans: caseItems.map(item => context.NGNScoring.emptyAnswer(item)),
+    marked: []
+  });
+  const source = caseItems.map((interaction, index) => ({
+    id: details[index].question_id,
+    dbId: 'bank-case',
+    qno: 1,
+    stem: details[index].stem,
+    answer: details[index].correct_answer,
+    rationale: details[index].rationale,
+    options: interaction.options || [],
+    interaction
+  }));
+  const adapted = ExamAdapters.fromPracticeSet(source);
+  const delivered = ExamUI.prepare(adapted, { shuffleOptions: false });
+  assert.equal(delivered.length, 6);
+  assert.deepEqual(plain(delivered.map(item => item.qid)), plain(caseItems.map(item => item.qid)));
+  assert.deepEqual(plain(delivered.map(item => item.caseIndex)), [0, 1, 2, 3, 4, 5]);
+  assert.ok(delivered.every(item => item.dbId === 'bank-case'));
+  assert.deepEqual(plain(delivered[0].case.tabs), tabs);
+  const engineAtItemOne = engine(delivered[0], context.NGNScoring.emptyAnswer(delivered[0]));
+  assert.doesNotMatch(engineAtItemOne.leftPane(delivered[0]), /Future synthetic finding/);
+  const answers = details.map(detail => detail.correct_answer);
+  const response = { items: delivered, ans: answers, marked: [] };
+  assert.deepEqual(plain(ExamAdapters.toPracticeAnswers(source, response)), plain(answers));
+  const results = NGNPractice.details(response);
+  assert.ok(results.every(row => row.correct && row.credit.earned === row.credit.max));
+  assert.match(NGNPractice.reviewHtml(results), /6\/6 items fully correct/);
+});
+
 test('standalone NGN and record-backed MCQ remain single items, not artificial cases', () => {
   for (const type of ['mcq', 'sata', 'matrix', 'cloze', 'highlight', 'bowtie', 'fill']) {
     const source = type === 'mcq' ? item('mcq', { options: ['A', 'B'], correct: [0] }) : fixture().item_data.items.find(it => it.type === type);
@@ -141,7 +176,8 @@ test('changed page scripts parse and traditional selection stays separate from e
     for (const script of page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) new vm.Script(script[1], { filename: file });
   }
   const page = readFileSync(join(root, 'supplemental-practice.html'), 'utf8');
-  assert.match(page, /\.in\('item_type',\['mcq','sata'\]\)/);
+  assert.match(page, /\.in\('item_type',\['mcq','sata','case'\]\)/);
+  assert.match(page, /value="case" checked><span>NGN unfolding cases/);
   assert.match(page, /eq\('student_id',student.id\)\.eq\('url',url\)/);
   assert.match(page, /resultSaved=true/);
   assert.match(page, /Retry saving/);
