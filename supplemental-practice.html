@@ -129,7 +129,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .builder-tabpanel[hidden]{display:none}
     .builder-count{display:grid;min-width:0;gap:4px;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
     .builder-count label{font-size:.78rem;font-weight:800}
-    .builder-count select{width:100%;min-height:42px;margin-top:6px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
+    .builder-count input{width:100%;min-height:42px;margin-top:6px;padding:9px 11px;border:1px solid var(--line);background:#fffefa;color:var(--ink);font:inherit}
     .builder-note{margin:10px 0 0;color:var(--muted);font-size:.76rem}
     .custom-builder label,.custom-builder legend{font-size:.78rem;font-weight:800}
     .custom-builder select,.custom-topic-search{display:block;width:100%;min-width:0;max-width:100%;min-height:44px;margin-top:7px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:#fffefa;color:var(--ink);font:inherit}
@@ -1972,16 +1972,17 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           </section>
           <div class="builder-count">
             <label for="custom-count">Questions per set</label>
-            <select id="custom-count">${[10,20,30,40,50,60,75,100].map(count=>`<option value="${count}"${count===20?' selected':''}>${count} questions</option>`).join('')}</select>
-            <p class="builder-note">Each unfolding case stays intact and counts as six questions.</p>
+            <input id="custom-count" type="number" min="1" max="100" step="1" value="20" inputmode="numeric" aria-describedby="custom-count-note" required>
+            <p class="builder-note" id="custom-count-note">Enter 1 to 100 questions. Each unfolding case stays intact and counts as six questions.</p>
           </div>
           <section class="builder-section">
-            <div class="builder-section-head"><h3>Question type</h3><small>All types are included by default</small></div>
+            <div class="builder-section-head"><h3>Question type</h3><small>Choose a randomized mix or specific types</small></div>
             ${bulkControls('item-type','question types')}
             <div class="builder-choices">
-              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="mcq" checked><span>Traditional</span><small data-type-count="mcq"></small></label>
-              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="sata" checked><span>Next Gen · Select all that apply</span><small data-type-count="sata"></small></label>
-              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="case" checked><span>NGN unfolding cases</span><small data-type-count="case"></small></label>
+              <label class="builder-choice"><input type="checkbox" id="mixed-item-type-choice" checked><span>Mixed</span><small>Randomized from available MCQs, SATA, and NGN cases; a set may contain only one type.</small></label>
+              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="mcq"><span>Traditional</span><small data-type-count="mcq"></small></label>
+              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="sata"><span>Next Gen · Select all that apply</span><small data-type-count="sata"></small></label>
+              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="case"><span>NGN unfolding cases</span><small data-type-count="case"></small></label>
             </div>
           </section>
           <section class="builder-section">
@@ -2062,16 +2063,21 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           const group=label.dataset.selectionCount;
           const inputs=[...target.querySelectorAll(`[data-${group}-choice]`)];
           const selected=inputs.filter(input=>input.checked).length;
-          label.textContent=`${selected} of ${inputs.length} selected`;
-          target.querySelector(`[data-select-all="${group}"]`).disabled=selected===inputs.length;
-          target.querySelector(`[data-clear-all="${group}"]`).disabled=selected===0;
+          const mixed=group==='item-type'&&target.querySelector('#mixed-item-type-choice').checked;
+          label.textContent=mixed?`Mixed · all ${inputs.length} types`:`${selected} of ${inputs.length} selected`;
+          target.querySelector(`[data-select-all="${group}"]`).disabled=mixed||selected===inputs.length;
+          target.querySelector(`[data-clear-all="${group}"]`).disabled=!mixed&&selected===0;
         });
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
         const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
-        const itemTypes=[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
+        const itemTypes=target.querySelector('#mixed-item-type-choice').checked
+          ?['mcq','sata','case']
+          :[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
         const modes=[...target.querySelectorAll('[data-question-mode-choice]:checked')].map(input=>input.value);
-        const count=Number(target.querySelector('#custom-count')?.value);
+        const countInput=target.querySelector('#custom-count');
+        const count=Number(countInput.value);
+        const countValid=countInput.value.trim()!==''&&Number.isInteger(count)&&count>=1&&count<=100;
         const filtered=PracticeQuestionSelection.filter(questionCatalog,{studyAreas,categories,topics,itemTypes});
         const matching=questionHistoryError?filtered:PracticeQuestionSelection.filterByModes(filtered,modes,questionHistoryById);
         const matchingCount=matching.reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0);
@@ -2086,17 +2092,31 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           const mode=label.dataset.modeCount;
           label.textContent=modeCounts?modeCounts[mode]:'Unavailable';
         });
-        target.querySelector('#custom-review-status').textContent=matchingCount
-          ?questionHistoryError
-            ?`${matchingCount} active questions match your type and focus. Saved history will be checked again before selection.`
-            :`${matchingCount} questions across ${matching.length} bank entries match your selections. Whole cases count as six questions; a set may be shorter than requested when the remaining case does not fit. ${unused?`${Math.min(unused,count)} unused questions will be prioritized.`:''}`
-          :'No questions match these selections. Choose another question type, mode, or focus.';
-        target.querySelector('#start-custom-review').disabled=!matchingCount||!itemTypes.length||!modes.length;
+        target.querySelector('#custom-review-status').textContent=!countValid
+          ?'Enter a whole number from 1 to 100.'
+          :matchingCount
+            ?questionHistoryError
+              ?`${matchingCount} active questions match your type and focus. Saved history will be checked again before selection.`
+              :`${matchingCount} questions across ${matching.length} bank entries match your selections. Whole cases count as six questions; a set may be shorter than requested when the remaining case does not fit. ${unused?`${Math.min(unused,count)} unused questions will be prioritized.`:''}`
+            :'No questions match these selections. Choose another question type, mode, or focus.';
+        target.querySelector('#start-custom-review').disabled=!countValid||!matchingCount||!itemTypes.length||!modes.length;
       };
       target.querySelectorAll('[data-study-area-choice],[data-category-choice],[data-topic-choice],[data-item-type-choice],[data-question-mode-choice],#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
+      target.querySelector('#custom-count').addEventListener('input',updateAvailability);
+      target.querySelector('#mixed-item-type-choice').addEventListener('change',event=>{
+        if(event.currentTarget.checked){
+          target.querySelectorAll('[data-item-type-choice]').forEach(input=>{input.checked=false});
+        }
+        updateAvailability();
+      });
+      target.querySelectorAll('[data-item-type-choice]').forEach(input=>input.addEventListener('change',()=>{
+        target.querySelector('#mixed-item-type-choice').checked=false;
+        updateAvailability();
+      }));
       target.querySelectorAll('[data-select-all],[data-clear-all]').forEach(button=>button.addEventListener('click',()=>{
         const group=button.dataset.selectAll||button.dataset.clearAll;
         const checked=button.hasAttribute('data-select-all');
+        if(group==='item-type')target.querySelector('#mixed-item-type-choice').checked=false;
         target.querySelectorAll(`[data-${group}-choice]`).forEach(input=>{input.checked=checked});
         updateAvailability();
       }));
@@ -2106,10 +2126,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const studyAreas=[...target.querySelectorAll('[data-study-area-choice]:checked')].map(input=>input.value);
         const categories=[...target.querySelectorAll('[data-category-choice]:checked')].map(input=>input.value==='__uncategorized__'?'':input.value);
         const topics=[...target.querySelectorAll('[data-topic-choice]:checked')].map(input=>input.value);
-        const itemTypes=[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
+        const itemTypes=target.querySelector('#mixed-item-type-choice').checked
+          ?['mcq','sata','case']
+          :[...target.querySelectorAll('[data-item-type-choice]:checked')].map(input=>input.value);
         const modes=[...target.querySelectorAll('[data-question-mode-choice]:checked')].map(input=>input.value);
-        if(![10,20,30,40,50,60,75,100].includes(count)){
-          target.querySelector('#custom-review-status').textContent='Choose a question count from 10 to 100.';
+        if(!Number.isInteger(count)||count<1||count>100){
+          target.querySelector('#custom-review-status').textContent='Enter a whole number from 1 to 100.';
           return;
         }
         const practiceOptions={
