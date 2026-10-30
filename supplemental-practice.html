@@ -1725,7 +1725,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     ]},
     ];
     sets.push({id:'nur215-foundations-practice',title:'NUR 215 Foundations Practice',tag:'NUR 215 · Foundations of Professional Practice',description:'60 mixed application and clinical-judgment questions on communication, ethics, law, consent, patient rights, leadership, conflict, change, and delegation.',questionCount:60,questionSource:'question-bank'});
-    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],availableModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopics=[],questionCategories=[],questionTopicsError='',questionHistoryError='',questionHistoryById=new Map();
+    let activeSet=null,index=0,answers=[],revealed=false,student=null,assignedResources=[],classSchedules=[],availableModules=new Set(),questionCatalog=[],questionStudyAreas=[],questionTopics=[],questionCategories=[],questionTopicsError='',questionCaseWarning='',questionHistoryError='',questionHistoryById=new Map();
     const modulePracticeSets={'safety-priority-01':'core-safety-priority','med-procedure-01':'core-medication-calculations','ob-newborn-01':'core-lifespan-reproductive','ngn-acute-01':'core-acute-systems'};
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     function cleanPersonalLabel(value){
@@ -1759,24 +1759,41 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     async function loadQuestionCatalog(){
       const rows=[],pageSize=500;
       for(let start=0;;start+=pageSize){
-        const page=await db.from('questions').select('id,item_type,topic,nclex_category,study_area').eq('active',true).in('item_type',['mcq','sata']).order('id').range(start,start+pageSize-1);
+        const page=await db.from('questions').select('id,item_type,item_data,active,topic,nclex_category,study_area').eq('active',true).in('item_type',['mcq','sata','case']).order('id').range(start,start+pageSize-1);
         if(page.error)throw page.error;
         rows.push(...(page.data||[]));
         if((page.data||[]).length<pageSize)break;
       }
+      let invalidCaseCount=0;
+      const catalogRows=rows.flatMap(row=>{
+        if(row.item_type!=='case')return [{...row,questionCount:1}];
+        try{
+          const entry=NGNPractice.fromRow(row);
+          return [{...row,childIds:entry.items.map(item=>String(item.id)),questionCount:entry.items.length}];
+        }catch{
+          invalidCaseCount++;
+          return [];
+        }
+      });
+      questionCaseWarning=invalidCaseCount
+        ?`${invalidCaseCount} active unfolding case${invalidCaseCount===1?' is':'s are'} unavailable in mixed practice because the published content did not pass validation. Contact Madison to review the case.`
+        :'';
       const studyAreas=new Map(),topics=new Map(),categories=new Map();
-      rows.forEach(row=>{
+      catalogRows.forEach(row=>{
+        const weight=PracticeQuestionSelection.questionCount(row);
         const studyArea=String(row.study_area||'').trim();
         const topic=String(row.topic||'').trim();
         const category=String(row.nclex_category||'').trim();
-        if(studyArea&&NCLEXStudyAreas.isKnown(studyArea))studyAreas.set(studyArea,(studyAreas.get(studyArea)||0)+1);
-        if(topic)topics.set(topic,(topics.get(topic)||0)+1);
+        if(studyArea&&NCLEXStudyAreas.isKnown(studyArea))studyAreas.set(studyArea,(studyAreas.get(studyArea)||0)+weight);
+        if(topic)topics.set(topic,(topics.get(topic)||0)+weight);
         const key=category||'__uncategorized__';
-        categories.set(key,(categories.get(key)||0)+1);
+        categories.set(key,(categories.get(key)||0)+weight);
       });
-      questionCatalog=rows.map(row=>({
+      questionCatalog=catalogRows.map(row=>({
         id:String(row.id),
         itemType:row.item_type||'mcq',
+        childIds:row.childIds||[],
+        questionCount:row.questionCount,
         studyArea:String(row.study_area||'').trim(),
         topic:String(row.topic||'').trim(),
         nclexCategory:String(row.nclex_category||'').trim()
@@ -1942,6 +1959,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         <p class="builder-cat-link">Looking for the full-length adaptive test? <a href="diagnostic.html?mode=mock">Start adaptive CAT (85–150 questions)</a>.</p>
         </header>
         ${questionTopicsError?`<p class="custom-topic-note custom-topic-error" role="status">Question filters could not load: ${escapeHtml(questionTopicsError)} If this is the first setup, apply the Study Area migration. Otherwise, retry or contact Madison. Mixed practice remains available.</p>`:''}
+        ${questionCaseWarning?`<p class="custom-topic-note custom-topic-error" role="status">${escapeHtml(questionCaseWarning)}</p>`:''}
         ${questionHistoryError?`<p class="custom-topic-note custom-topic-error" role="status">Saved practice history could not be counted: ${escapeHtml(questionHistoryError)} It will be checked again before questions are selected.</p>`:''}
         <div class="custom-builder-controls">
           <section class="builder-section builder-mode-section">
@@ -1955,13 +1973,15 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           <div class="builder-count">
             <label for="custom-count">Questions per set</label>
             <select id="custom-count">${[10,20,30,40,50,60,75,100].map(count=>`<option value="${count}"${count===20?' selected':''}>${count} questions</option>`).join('')}</select>
+            <p class="builder-note">Each unfolding case stays intact and counts as six questions.</p>
           </div>
           <section class="builder-section">
-            <div class="builder-section-head"><h3>Question type</h3><small>Both are included by default</small></div>
+            <div class="builder-section-head"><h3>Question type</h3><small>All types are included by default</small></div>
             ${bulkControls('item-type','question types')}
             <div class="builder-choices">
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="mcq" checked><span>Traditional</span><small data-type-count="mcq"></small></label>
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="sata" checked><span>Next Gen · Select all that apply</span><small data-type-count="sata"></small></label>
+              <label class="builder-choice"><input type="checkbox" data-item-type-choice value="case" checked><span>NGN unfolding cases</span><small data-type-count="case"></small></label>
             </div>
           </section>
           <section class="builder-section">
@@ -2054,20 +2074,24 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         const count=Number(target.querySelector('#custom-count')?.value);
         const filtered=PracticeQuestionSelection.filter(questionCatalog,{studyAreas,categories,topics,itemTypes});
         const matching=questionHistoryError?filtered:PracticeQuestionSelection.filterByModes(filtered,modes,questionHistoryById);
-        const unused=questionHistoryError?0:matching.filter(question=>PracticeQuestionSelection.questionMode(question,questionHistoryById)==='unused').length;
+        const matchingCount=matching.reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0);
+        const unused=questionHistoryError?0:matching.filter(question=>PracticeQuestionSelection.questionMode(question,questionHistoryById)==='unused')
+          .reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0);
         const modeCounts=questionHistoryError?null:PracticeQuestionSelection.countByMode(filtered,questionHistoryById);
         target.querySelector('[data-type-count="mcq"]').textContent=questionCatalog.filter(question=>question.itemType==='mcq').length;
         target.querySelector('[data-type-count="sata"]').textContent=questionCatalog.filter(question=>question.itemType==='sata').length;
+        const cases=questionCatalog.filter(question=>question.itemType==='case');
+        target.querySelector('[data-type-count="case"]').textContent=`${cases.length} case${cases.length===1?'':'s'} · ${cases.reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0)} questions`;
         target.querySelectorAll('[data-mode-count]').forEach(label=>{
           const mode=label.dataset.modeCount;
           label.textContent=modeCounts?modeCounts[mode]:'Unavailable';
         });
-        target.querySelector('#custom-review-status').textContent=matching.length
+        target.querySelector('#custom-review-status').textContent=matchingCount
           ?questionHistoryError
-            ?`${matching.length} active questions match your type and focus. Saved history will be checked again before selection.`
-            :`${matching.length} questions match your selections. Up to ${Math.min(count,matching.length)} will be used${unused?`; ${Math.min(unused,count)} unused questions will be prioritized`:''}.`
+            ?`${matchingCount} active questions match your type and focus. Saved history will be checked again before selection.`
+            :`${matchingCount} questions across ${matching.length} bank entries match your selections. Whole cases count as six questions; a set may be shorter than requested when the remaining case does not fit. ${unused?`${Math.min(unused,count)} unused questions will be prioritized.`:''}`
           :'No questions match these selections. Choose another question type, mode, or focus.';
-        target.querySelector('#start-custom-review').disabled=!matching.length||!itemTypes.length||!modes.length;
+        target.querySelector('#start-custom-review').disabled=!matchingCount||!itemTypes.length||!modes.length;
       };
       target.querySelectorAll('[data-study-area-choice],[data-category-choice],[data-topic-choice],[data-item-type-choice],[data-question-mode-choice],#custom-count').forEach(input=>input.addEventListener('change',updateAvailability));
       target.querySelectorAll('[data-select-all],[data-clear-all]').forEach(button=>button.addEventListener('click',()=>{
@@ -2261,7 +2285,12 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         $('quiz').textContent='Your saved practice results could not load: '+error.message;
       }
     }
-    function answersMatch(question,selected){return Array.isArray(question.answer)?Array.isArray(selected)&&question.answer.length===selected.length&&question.answer.every(answer=>selected.includes(answer)):selected===question.answer}
+    function answersMatch(question,selected){
+      if(question.interaction?.scoringVersion==='ngn-v1'){
+        return ExamUI.isAnswered(question.interaction,selected)&&ExamUI.score(question.interaction,selected).full;
+      }
+      return Array.isArray(question.answer)?Array.isArray(selected)&&question.answer.length===selected.length&&question.answer.every(answer=>selected.includes(answer)):selected===question.answer;
+    }
     function renderQuestion(){
       $('quiz').classList.remove('hidden');
       const q=activeSet.questions[index];
@@ -2314,20 +2343,28 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     }
     async function saveResult(score){
       if(!student)return "Your score is shown here. Sign in through the Success Center to save it to your dashboard.";
-      const details=activeSet.questions.map((q,i)=>({
-        question_id:q.id,
-        category:q.category||categoryForQuestion(q.id),
-        selected_answer:answers[i],
-        correct_answer:q.answer,
-        options:q.options,
-        stem:q.stem,
-        presentation:q.presentation,
-        rationale:q.rationale,
-        ...(q.interaction?{interaction:q.interaction}:{}),
-        option_rationales:q.optionRationales || {},
-        correct:answersMatch(q, answers[i]),
-        marked_for_review:!!activeSet.sessionMarked?.[i]
-      }));
+      const details=activeSet.questions.map((q,i)=>{
+        const ngnDetail=q.interaction?NGNPractice.details({
+          items:[q.interaction],
+          ans:[answers[i]??NGNScoring.emptyAnswer(q.interaction)],
+          marked:[!!activeSet.sessionMarked?.[i]]
+        })[0]:null;
+        return {
+          question_id:q.id,
+          category:q.category||categoryForQuestion(q.id),
+          selected_answer:ngnDetail?.selected_answer??answers[i],
+          correct_answer:ngnDetail?.correct_answer??q.answer,
+          options:q.options,
+          stem:q.stem,
+          presentation:q.presentation,
+          rationale:q.rationale,
+          ...(q.interaction?{interaction:q.interaction}:{}),
+          ...(ngnDetail?{case_id:ngnDetail.case_id,case_index:ngnDetail.case_index,credit:ngnDetail.credit}:{}),
+          option_rationales:q.optionRationales || {},
+          correct:answersMatch(q, answers[i]),
+          marked_for_review:!!activeSet.sessionMarked?.[i]
+        };
+      });
       const categoryScores={};
       details.forEach(item=>{
         if(!categoryScores[item.category])categoryScores[item.category]={correct:0,total:0};
@@ -2367,6 +2404,14 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     async function showResults(){
       const score=answers.reduce((total,answer,questionIndex)=>total+(answersMatch(activeSet.questions[questionIndex],answer)?1:0),0);
       const percent=Math.round(score/activeSet.questions.length*100);
+      const ngnDetails=activeSet.questions.flatMap((question,questionIndex)=>question.interaction?.scoringVersion==='ngn-v1'
+        ?NGNPractice.details({
+          items:[question.interaction],
+          ans:[answers[questionIndex]??NGNScoring.emptyAnswer(question.interaction)],
+          marked:[!!activeSet.sessionMarked?.[questionIndex]]
+        })
+        :[]);
+      const ngnSummary=ngnDetails.length?NGNPractice.summary(ngnDetails):null;
       const canBuildAnother=!!activeSet.reviewAfterFinish;
       const modeLabels=[];
       if(activeSet.reviewAfterFinish){
@@ -2374,19 +2419,23 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         modeLabels.push(activeSet.tutorMode?'Tutor feedback':'Rationales at end');
       }
       const modeLabel=modeLabels.length?`${modeLabels.join(' · ')} · `:'';
-      $('quiz').innerHTML=`<section class="study-session study-results"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>${modeLabel}Session complete</span></div></header><div class="study-session-body"><p class="question-number">Set complete</p><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} correctly. ${percent>=80?'Nice work—keep building on this momentum.':percent>=60?'Review the rationales, then return to your practice.':'Review the rationales and related learning material before your next set.'}</p><p class="status" id="save-status" role="status" aria-live="polite">Saving your result…</p><div class="result-actions">${canBuildAnother?'<button class="secondary" id="new-set" type="button">Build another set</button>':'<button class="secondary" id="retry" type="button">Retake this set</button>'}<button class="primary" id="return" type="button">Back to assignments</button></div></div></section>`;
+      $('quiz').innerHTML=`<section class="study-session study-results"><header class="study-session-head"><div class="study-session-context"><strong>${escapeHtml(activeSet.title)}</strong><span>${modeLabel}Session complete</span></div></header><div class="study-session-body"><p class="question-number">Set complete</p><div class="score">${percent}%</div><p class="result-detail">You answered ${score} of ${activeSet.questions.length} items fully correctly. ${percent>=80?'Nice work—keep building on this momentum.':percent>=60?'Review the rationales, then return to your practice.':'Review the rationales and related learning material before your next set.'}</p>${ngnSummary?`<p class="result-detail">NGN partial credit: ${ngnSummary.earned}/${ngnSummary.max} points across ${ngnDetails.length} items (${ngnSummary.percent}%).</p>`:''}<p class="status" id="save-status" role="status" aria-live="polite">Saving your result…</p><div class="result-actions">${canBuildAnother?'<button class="secondary" id="new-set" type="button">Build another set</button>':'<button class="secondary" id="retry" type="button">Retake this set</button>'}<button class="primary" id="return" type="button">Back to assignments</button></div></div></section>`;
       const saveMessage=await saveResult(score);
       $('save-status').textContent=saveMessage;
       if(activeSet.reviewAfterFinish&&!saveMessage.startsWith('Saved to')){
         const buildAgain=$('new-set');
         if(buildAgain){buildAgain.disabled=true;buildAgain.title='Practice history must save before another set can avoid repeats.'}
       }
-      if(activeSet.assignmentId||activeSet.reviewAfterFinish){
+      if(activeSet.assignmentId||activeSet.reviewAfterFinish||activeSet.questions.some(question=>question.interaction?.case)){
         const review=document.createElement('div');
         review.className='study-session-body';
         const answerText=(q,value)=>{const indexes=Array.isArray(value)?value:[value];return indexes.filter(Number.isInteger).map(optionIndex=>q.options[optionIndex]).filter(Boolean).map(escapeHtml).join('; ')||'Not answered'};
         review.innerHTML='<h2>Review your rationales</h2>'+activeSet.questions.map((q,i)=>q.interaction
-          ?NGNPractice.reviewHtml([{interaction:q.interaction,selected_answer:answers[i]??NGNScoring.emptyAnswer(q.interaction),credit:{score:+answersMatch(q,answers[i])},correct:answersMatch(q,answers[i])}])
+          ?NGNPractice.reviewHtml(NGNPractice.details({
+            items:[q.interaction],
+            ans:[answers[i]??NGNScoring.emptyAnswer(q.interaction)],
+            marked:[!!activeSet.sessionMarked?.[i]]
+          }))
           :`<details><summary style="min-height:44px;padding:12px 0;cursor:pointer">Question ${i+1} · ${answersMatch(q,answers[i])?'Correct':'Incorrect'}${activeSet.sessionMarked?.[i]?' · Marked':''}</summary><p>${escapeHtml(q.stem)}</p><p>Your answer: ${answerText(q,answers[i])}</p><p>Correct answer: ${answerText(q,q.answer)}</p>${q.presentation?ExamUI.reviewHtml({type:'sata',options:q.options,correct:q.answer,presentation:q.presentation,optionRationales:q.optionRationales},answers[i]||[]):''}<p>${escapeHtml(q.rationale||'No rationale is available for this question.')}</p></details>`).join('');
         $('quiz').appendChild(review);
       }
@@ -2469,7 +2518,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       const studyAreas=new Set(requestedStudyAreas);
       const areaLabel=[...studyAreas].join(', ');
       const categories=new Set((focusCategories||[]).map(category=>String(category||'').trim()));
-      const itemTypes=Array.isArray(requestedItemTypes)&&requestedItemTypes.length?requestedItemTypes:['mcq','sata'];
+      const itemTypes=Array.isArray(requestedItemTypes)&&requestedItemTypes.length?requestedItemTypes:['mcq','sata','case'];
       const modes=Array.isArray(requestedModes)?requestedModes:['unused','incorrect','marked','omitted','correct'];
       if(![10,20,30,40,50,60,75,100].includes(count)){
         $('library-status').textContent='Choose a question count from 10 to 100.';
@@ -2499,7 +2548,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
             const page=await db.from('questions')
               .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,option_rationales,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,item_type,item_data')
               .eq('active',true)
-              .in('item_type',['mcq','sata'])
+              .in('item_type',['mcq','sata','case'])
               .order('created_at')
               .order('id')
               .range(start,start+pageSize-1);
@@ -2528,7 +2577,34 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
       questionHistoryById=latestAttempts;
       questionHistoryError='';
 
+      let invalidCaseError='';
       const normalized=(bank||[]).map(q=>{
+        if(q.item_type==='case'){
+          if(!itemTypes.includes('case'))return null;
+          try{
+            const entry=NGNPractice.fromRow(q);
+            return {
+              id:`case:${q.id}`,
+              dbId:q.id,
+              qno:q.question_no||null,
+              stem:q.stem,
+              itemType:'case',
+              caseEntry:entry,
+              childIds:entry.items.map(item=>String(item.id)),
+              questionCount:entry.items.length,
+              rationale:q.rationale||'Review the underlying nursing principle for this case.',
+              optionRationales:q.option_rationales||{},
+              category:mixedCategory(q),
+              studyArea:String(q.study_area||'').trim(),
+              nclexCategory:String(q.nclex_category||'').trim(),
+              topic:String(q.topic||'').trim(),
+              difficulty:q.difficulty||'medium'
+            };
+          }catch(error){
+            invalidCaseError=error?.message||'The case failed content validation.';
+            return null;
+          }
+        }
         const bankItem=PracticeQuestionSelection.fromBankRow(q);
         if(!bankItem)return null;
         return {
@@ -2545,6 +2621,10 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           difficulty:q.difficulty||'medium'
         };
       }).filter(Boolean);
+      if(invalidCaseError){
+        $('quiz').innerHTML=`<p class="status">Mixed Review could not include all selected NGN cases because a published case failed validation: ${escapeHtml(invalidCaseError)} No questions were selected. Contact Madison to review the case.</p>`;
+        return;
+      }
 
       const weights={
         'Priority & Clinical Judgment':.40,
@@ -2566,7 +2646,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         $('quiz').innerHTML='<p class="status">No questions match your selected question types, history, and focus. Adjust the choices and try again.</p>';
         return;
       }
-      const hasNarrowing=studyAreas.size||topics.size||categories.size||itemTypes.length<2||!!focus;
+      const hasNarrowing=studyAreas.size||topics.size||categories.size||itemTypes.length<3||!!focus;
       const chosen=PracticeQuestionSelection.selectByUsage(selectedPool,count,latestAttempts,hasNarrowing?null:weights);
 
       if(!chosen.length){
@@ -2574,13 +2654,41 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         return;
       }
 
+      const selectedQuestions=shuffled(chosen).flatMap(unit=>{
+        if(!unit.caseEntry)return [unit];
+        const interactions=ExamUI.prepare([unit.caseEntry],{shuffleOptions:false});
+        const details=NGNPractice.details({
+          items:interactions,
+          ans:interactions.map(interaction=>NGNScoring.emptyAnswer(interaction)),
+          marked:[]
+        });
+        return interactions.map((interaction,caseIndex)=>({
+          id:details[caseIndex].question_id,
+          dbId:unit.dbId,
+          qno:unit.qno,
+          stem:details[caseIndex].stem,
+          answer:details[caseIndex].correct_answer,
+          rationale:details[caseIndex].rationale,
+          options:interaction.options||[],
+          optionRationales:interaction.optionRationales||unit.optionRationales,
+          category:unit.category,
+          studyArea:unit.studyArea,
+          nclexCategory:unit.nclexCategory,
+          topic:unit.topic,
+          itemType:interaction.type,
+          difficulty:unit.difficulty,
+          interaction
+        }));
+      });
+      const selectedCount=selectedQuestions.length;
+      const availableCount=selectedPool.reduce((sum,question)=>sum+PracticeQuestionSelection.questionCount(question),0);
       activeSet={
         id:'mixed-review-'+Date.now(),
         title:studyAreas.size?`${areaLabel} Practice`:isCustom?(topics.size?'Custom Topic Practice':categories.size?'Client Needs Practice':'Custom NCLEX Practice'):(focus?focus+' Practice':'Mixed NCLEX Review'),
-        tag:isCustom?`Student-built practice${chosen.length<count?` · ${chosen.length} matching questions available`:''}`:(studyAreas.size?'Assigned Study Area practice':focus?'Focused on your weak area':'Assigned mixed review'),
+        tag:isCustom?`Student-built practice${selectedCount<count?` · ${selectedCount} questions selected from ${availableCount} matching`:''}`:(studyAreas.size?'Assigned Study Area practice':focus?'Focused on your weak area':'Assigned mixed review'),
         description:studyAreas.size?`Practice questions selected for ${areaLabel}${topics.size?`, narrowed to ${[...topics].join(', ')}`:''}.`:
           topics.size||categories.size?'Practice questions selected from your chosen Client Needs and topics.':'Mixed NCLEX-style review across the active question bank.',
-        questions:shuffled(chosen).slice(0,count),
+        questions:selectedQuestions,
         reviewAfterFinish:isCustom,
         ...(isCustom?{
           tutorMode:practiceOptions?.tutorMode!==false,

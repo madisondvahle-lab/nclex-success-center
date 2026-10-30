@@ -28,6 +28,11 @@
     return value===difficulty;
   }
 
+  function questionCount(question){
+    const count=Number(question?.questionCount);
+    return Number.isInteger(count)&&count>0?count:1;
+  }
+
   function filter(questions, filters){
     const studyAreas=new Set((filters.studyAreas||[]).map(value=>String(value||'').trim()));
     const categories=new Set((filters.categories||[]).map(value=>String(value||'').trim()));
@@ -46,8 +51,8 @@
     });
   }
 
-  function questionMode(question, latestAttempts){
-    const latest=latestAttempts&&latestAttempts.get(String(question.id));
+  function questionModeForId(id, latestAttempts){
+    const latest=latestAttempts&&latestAttempts.get(String(id));
     if(!latest)return 'unused';
     if(latest.marked_for_review)return 'marked';
     const selected=latest.selected_answer;
@@ -59,6 +64,18 @@
     return JSON.stringify(normalize(selected))===JSON.stringify(normalize(expected))?'correct':'incorrect';
   }
 
+  function questionMode(question, latestAttempts){
+    if(question.itemType!=='case'||!Array.isArray(question.childIds)||!question.childIds.length){
+      return questionModeForId(question.id,latestAttempts);
+    }
+    const modes=question.childIds.map(id=>questionModeForId(id,latestAttempts));
+    if(modes.every(mode=>mode==='unused'))return 'unused';
+    if(modes.includes('marked'))return 'marked';
+    if(modes.includes('omitted'))return 'omitted';
+    if(modes.includes('incorrect'))return 'incorrect';
+    return 'correct';
+  }
+
   function filterByModes(questions, modes, latestAttempts){
     const selected=new Set((modes||[]).map(value=>String(value||'').trim()));
     if(!selected.size)return [];
@@ -67,7 +84,7 @@
 
   function countByMode(questions, latestAttempts){
     const counts={unused:0,incorrect:0,marked:0,omitted:0,correct:0};
-    (questions||[]).forEach(question=>{counts[questionMode(question,latestAttempts)]++});
+    (questions||[]).forEach(question=>{counts[questionMode(question,latestAttempts)]+=questionCount(question)});
     return counts;
   }
 
@@ -82,18 +99,23 @@
   function selectByUsage(questions, count, latestAttempts, categoryWeights){
     const {unused,practiced}=splitByUsage(questions,latestAttempts);
     const chosen=[],chosenIds=new Set();
+    let remaining=count;
     const addFrom=(pool,amount)=>{
       const shuffled=pool.slice();
       for(let i=shuffled.length-1;i>0;i--){
         const j=Math.floor(Math.random()*(i+1));
         [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
       }
+      shuffled.sort((a,b)=>questionCount(b)-questionCount(a));
       for(const question of shuffled){
-        if(chosen.length>=count||amount<=0)return;
+        if(remaining<=0||amount<=0)return;
         if(chosenIds.has(String(question.id)))continue;
+        const weight=questionCount(question);
+        if(weight>remaining)continue;
         chosen.push(question);
         chosenIds.add(String(question.id));
-        amount--;
+        remaining-=weight;
+        amount-=weight;
       }
     };
     if(categoryWeights){
@@ -101,8 +123,8 @@
         addFrom(unused.filter(question=>question.category===category),Math.max(1,Math.round(count*weight)));
       });
     }
-    addFrom(unused,count-chosen.length);
-    addFrom(practiced,count-chosen.length);
+    addFrom(unused,remaining);
+    addFrom(practiced,remaining);
     return chosen;
   }
 
@@ -125,6 +147,7 @@
     countByMode:countByMode,
     matchesDifficulty:matchesDifficulty,
     questionMode:questionMode,
+    questionCount:questionCount,
     summarizeLatestAttempts:summarizeLatestAttempts,
     splitByUsage:splitByUsage,
     selectByUsage:selectByUsage,

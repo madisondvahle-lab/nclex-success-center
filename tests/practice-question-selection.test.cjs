@@ -89,6 +89,7 @@ test('UWorld-inspired filters use existing Study Areas and Client Needs with sup
   assert.match(page, /data-category-tab="client-needs">Client Needs/);
   assert.match(page, /value="mcq" checked><span>Traditional/);
   assert.match(page, /value="sata" checked><span>Next Gen/);
+  assert.match(page, /value="case" checked><span>NGN unfolding cases/);
   assert.doesNotMatch(page, /Systems\s*\(/);
   assert.match(page, /marked_for_review:\!\!activeSet\.sessionMarked/);
   assert.match(page, /Questions you have not practiced will be selected first/);
@@ -168,7 +169,38 @@ test('active bank SATA items map to array-based answers for ExamUI practice', ()
     item_type: 'sata',
     item_data: { options: ['A', 'B', 'C'], correct: [0] }
   }), null);
-  assert.match(page, /\.in\('item_type',\['mcq','sata'\]\)/);
+  assert.match(page, /\.in\('item_type',\['mcq','sata','case'\]\)/);
+});
+
+test('case history is grouped without splitting its six questions, and selection counts each case as six', () => {
+  const api = selection();
+  const caseQuestion = {
+    id: 'case-1',
+    itemType: 'case',
+    childIds: ['case-1a', 'case-1b', 'case-1c', 'case-1d', 'case-1e', 'case-1f'],
+    questionCount: 6
+  };
+  const history = new Map([
+    ['case-1a', { selected_answer: 0, correct: false }],
+    ['case-1b', { selected_answer: 1, correct: true }],
+    ['case-1c', { selected_answer: 0, correct: true }],
+    ['case-1d', { selected_answer: 1, correct: true }],
+    ['case-1e', { selected_answer: 0, correct: true }],
+    ['case-1f', { selected_answer: 1, correct: true }]
+  ]);
+  assert.equal(api.questionMode(caseQuestion, history), 'incorrect');
+  assert.deepEqual(api.filterByModes([caseQuestion], ['incorrect'], history).map(item => item.id), ['case-1']);
+  assert.deepEqual({ ...api.countByMode([caseQuestion], history) }, {
+    unused: 0, incorrect: 6, marked: 0, omitted: 0, correct: 0
+  });
+  assert.equal(api.questionCount(caseQuestion), 6);
+
+  const selected = api.selectByUsage([caseQuestion, { id: 'mcq-1' }], 7, new Map());
+  assert.deepEqual(Array.from(selected, item => item.id).sort(), ['case-1', 'mcq-1']);
+  assert.equal(selected.reduce((sum, item) => sum + api.questionCount(item), 0), 7);
+  const mixed = api.selectByUsage([caseQuestion, ...Array.from({ length: 5 }, (_, index) => ({ id: `mcq-${index}` }))], 10, new Map());
+  assert.equal(mixed.some(item => item.id === 'case-1'), true);
+  assert.equal(mixed.reduce((sum, item) => sum + api.questionCount(item), 0), 10);
 });
 
 test('category and topic filters intersect instead of widening the selected pool', () => {
@@ -269,9 +301,9 @@ test('Study Area migration validates and maps all 441 approved questions', () =>
   assert.doesNotMatch(studyAreaMigration, /SET\s+(?:nclex_category|topic|stem|rationale|correct_answer)\s*=/i);
 });
 
-test('student builder inventory and question query include active MCQ and SATA items', () => {
-  assert.match(page, /loadQuestionCatalog[\s\S]*?\.eq\('active',true\)\.in\('item_type',\['mcq','sata'\]\)/);
-  assert.match(page, /\.eq\('active',true\)\s*\.in\('item_type',\['mcq','sata'\]\)/);
+test('student builder inventory and question query include active MCQ, SATA, and case entries', () => {
+  assert.match(page, /loadQuestionCatalog[\s\S]*?\.eq\('active',true\)\.in\('item_type',\['mcq','sata','case'\]\)/);
+  assert.match(page, /\.eq\('active',true\)\s*\.in\('item_type',\['mcq','sata','case'\]\)/);
   for (const script of page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
     new vm.Script(script[1]);
   }

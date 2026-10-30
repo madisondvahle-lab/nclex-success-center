@@ -9,7 +9,7 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
   const fixture = `
     const $=id=>document.getElementById(id);
     const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const questionTopicsError='',questionHistoryError='',questionHistoryById=new Map();
+    const questionTopicsError='',questionCaseWarning='',questionHistoryError='',questionHistoryById=new Map();
     const questionCatalog=[
       {id:'one',itemType:'mcq',nclexCategory:'Management of Care',studyArea:'Leadership',topic:'Delegation'},
       {id:'two',itemType:'sata',nclexCategory:'Psychosocial Integrity',studyArea:'Mental Health',topic:'Communication'},
@@ -44,6 +44,7 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
     check(await count('[data-category-choice]:checked') === 0, 'Initial focus changed');
     check(await page.locator('#tutor-mode-choice').isChecked(), 'Tutor default changed');
     check(!await page.locator('#timed-mode-choice').isChecked(), 'Timed default changed');
+    check(await page.locator('[data-item-type-choice="case"]').isChecked(), 'Published cases are not included by default');
     await click('[data-select-all="category"]');
     check(await count('[data-category-choice]:checked') === 2, 'Client Needs select all failed');
     check(await page.locator('[data-select-all="category"]').isDisabled(), 'Select all state not updated');
@@ -55,7 +56,7 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
     await click('[data-category-tab="client-needs"]');
     await click('[data-clear-all="category"]');
     check(await count('[data-category-choice]:checked') === 0, 'Client Needs clear all failed');
-    check(await page.locator('#custom-review-status').textContent().then(text => text.includes('3 questions match')), 'Clearing optional filters no longer restores mixed practice');
+    check(await page.locator('#custom-review-status').textContent().then(text => text.includes('3 questions across')), 'Clearing optional filters no longer restores mixed practice');
     await page.locator('.custom-topic-picker').evaluate(el => { el.open = true; });
     await page.locator('#custom-topic-search').fill('Delegation');
     check(await page.locator('.custom-topic-option:visible').count() === 1, 'Topic search not applied');
@@ -77,7 +78,7 @@ async function runPracticeBuilderBrowserChecks(page, origin) {
     await click('#start-custom-review');
     const args = await page.evaluate(() => window.__buildArgs);
     check(args[0] === 10 && args[3][0] === 'Management of Care', 'Builder did not pass selected count/focus');
-    check(args[6].length === 2 && args[7].length === 5, 'Bulk types/history did not reach practice selection');
+    check(args[6].length === 3 && args[7].length === 5, 'Bulk types/history did not reach practice selection');
     check(args[8].tutorMode && args[8].timedMode, 'Mode settings changed');
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Expanded builder overflow at ' + width);
   }

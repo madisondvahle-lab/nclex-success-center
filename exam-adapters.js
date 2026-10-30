@@ -9,6 +9,17 @@
     let group = null;
     const flush = () => { if (group && group.items.length) entries.push(group.entry); group = null; };
     const item = (q, idx) => {
+      if (q.interaction?.case) {
+        return {
+          ...q.interaction,
+          id: String(q.id),
+          qid: String(q.id),
+          rationale: q.rationale || q.interaction.rationale || '',
+          dbId: q.dbId || q.interaction.dbId || null,
+          qno: q.qno || q.interaction.qno || null,
+          srcIndex: idx
+        };
+      }
       const sata = Array.isArray(q.answer);
       return { ...q.interaction, id: String(q.id), type: sata ? 'sata' : 'mcq', options: q.options.slice(), correct: sata ? q.answer.slice() : [q.answer], optionRationales: q.optionRationales || {}, rationale: q.rationale || '', rationaleHtml: true, qno: q.qno || null, dbId: q.dbId || null, srcIndex: idx };
     };
