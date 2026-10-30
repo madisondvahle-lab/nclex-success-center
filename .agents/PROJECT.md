@@ -172,14 +172,18 @@ records remain single-column; clinical-record questions retain the renderer's
 tabbed layout. The practice library and results-page styling is unchanged.
 
 The custom practice builder opens with Client Needs as its first/default focus
-tab. Study Areas remain available in the second tab, and optional topic filters
-remain collapsed below. Filters combine as before; switching tabs preserves
-selections. The card-based builder uses the existing navy, rose, and cream
-palette, labeled controls, and keyboard tab navigation (arrow keys, Home, End).
-Client Needs, Study Areas, Topics, question types, and history modes have
-Select all / Clear all controls with selection counts. Topic bulk actions
-include search-hidden topics, as explained beside the controls. Blank optional
-focus filters retain mixed practice; no types or history modes disables Start.
+tab. Study Areas remain available in the second tab, and optional broad topic
+filters remain collapsed below. Filters combine as before; switching tabs
+preserves selections. The card-based builder uses the existing navy, rose, and
+cream palette, labeled controls, and keyboard tab navigation (arrow keys, Home,
+End). Client Needs, Study Areas, 15 approved broad topic groups plus an
+Other Topics fallback, question types, and
+history modes have Select all / Clear all controls with selection counts. Broad
+groups preserve original topic labels; labels without a verified category are
+selectable under Other Topics and listed in an explicit review notice. New
+unrecognized labels also go to Other Topics instead of being excluded. Blank
+optional focus filters retain mixed practice; no types or history modes
+disables Start.
 Synthetic browser validation is in `tests/practice-builder.browser.js`.
 
 The Assignments page has a separate **Published NGN case studies and standalone
