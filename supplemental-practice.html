@@ -2571,7 +2571,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
         try{
           for(let start=0;;start+=pageSize){
             const page=await db.from('questions')
-              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,option_rationales,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,item_type,item_data')
+              .select('id,stem,option_a,option_b,option_c,option_d,correct_answer,rationale,option_rationales,module_key,nclex_category,nclex_sub,topic,difficulty,question_no,study_area,active,item_type,item_data')
               .eq('active',true)
               .in('item_type',['mcq','sata','case'])
               .order('created_at')
