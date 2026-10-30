@@ -1,0 +1,629 @@
+[
+  {
+    "draft_id": "NEW-20261012-026",
+    "stem": "A patient with suspected meningitis becomes difficult to arouse and develops unequal pupils. Which action takes priority?",
+    "option_a": "Elevate the head of bed and schedule routine neurologic checks",
+    "option_b": "Obtain a nonurgent serum electrolyte panel before contacting the provider",
+    "option_c": "Activate emergency evaluation for possible rising intracranial pressure",
+    "option_d": "Administer the next scheduled antipyretic and reassess pupils afterward",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Positioning may be supportive, but new unequal pupils and reduced consciousness require emergency escalation, not routine observation. B: Laboratory studies may help later but cannot precede emergency response to possible herniation. C: New anisocoria and declining consciousness suggest acute intracranial deterioration requiring immediate airway/neurologic assessment and help. D: Fever treatment does not address the neurologic emergency and delays definitive evaluation.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Positioning may be supportive, but new unequal pupils and reduced consciousness require emergency escalation, not routine observation.",
+      "b": "Laboratory studies may help later but cannot precede emergency response to possible herniation.",
+      "c": "New anisocoria and declining consciousness suggest acute intracranial deterioration requiring immediate airway/neurologic assessment and help.",
+      "d": "Fever treatment does not address the neurologic emergency and delays definitive evaluation."
+    },
+    "reference_urls": [
+      "https://www.nice.org.uk/guidance/ng240/chapter/recommendations"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-027",
+    "stem": "A patient with sodium 119 mEq/L has a generalized seizure. What should the nurse prioritize?",
+    "option_a": "Institute seizure precautions and repeat sodium after the seizure ends",
+    "option_b": "Give oral sodium chloride as soon as convulsive movements decrease",
+    "option_c": "Obtain a bedside glucose reading before summoning assistance",
+    "option_d": "Protect airway and safety, summon help, and prepare prescribed emergency sodium therapy",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Safety precautions are necessary but repeat testing alone does not treat severe symptomatic hyponatremia. B: Oral tablets are unsafe during reduced consciousness and insufficient for an acute hyponatremic seizure. C: Bedside glucose is useful in seizure evaluation but must not delay summoning help and supporting the airway. D: Manage active seizure safely, summon emergency support, and anticipate protocol-guided hypertonic saline with close monitoring.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Safety precautions are necessary but repeat testing alone does not treat severe symptomatic hyponatremia.",
+      "b": "Oral tablets are unsafe during reduced consciousness and insufficient for an acute hyponatremic seizure.",
+      "c": "Bedside glucose is useful in seizure evaluation but must not delay summoning help and supporting the airway.",
+      "d": "Manage active seizure safely, summon emergency support, and anticipate protocol-guided hypertonic saline with close monitoring."
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/professional/nephrology/electrolyte-disorders/hyponatremia"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-028",
+    "stem": "A patient with adrenal insufficiency who missed steroid doses is vomiting, confused, and hypotensive. Which order is most time sensitive?",
+    "option_a": "IV hydrocortisone with isotonic fluid resuscitation",
+    "option_b": "Draw cortisol and wait for its result before giving hydrocortisone",
+    "option_c": "Start isotonic saline but defer hydrocortisone until endocrine consultation",
+    "option_d": "Give oral hydrocortisone despite ongoing vomiting and hypotension",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Prompt IV hydrocortisone and isotonic fluids treat adrenal crisis. B: Diagnostic confirmation must not delay treatment. C: Fluids are necessary but insufficient without glucocorticoids. D: Oral therapy is unreliable in vomiting and shock.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Adrenal crisis requires immediate parenteral hydrocortisone and isotonic fluid resuscitation.",
+      "b": "A cortisol sample may be obtained without delay, but waiting for laboratory confirmation is unsafe.",
+      "c": "Fluids alone do not correct cortisol deficiency; specialist consultation must not delay steroids.",
+      "d": "Ongoing vomiting and hypotension make oral therapy unreliable; parenteral hydrocortisone is required."
+    },
+    "reference_urls": [
+      "https://www.endocrinology.org/clinical-practice/clinical-guidance/adrenal-crisis/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-029",
+    "stem": "A burn patient with circumferential full-thickness chest burns develops increasing peak airway pressures and poor chest expansion despite a patent endotracheal tube. Which complication best explains these findings?",
+    "option_a": "Progressive ventilator-associated pneumonia",
+    "option_b": "Restrictive chest-wall eschar limiting thoracic expansion",
+    "option_c": "Bronchospasm caused by an inhaled medication",
+    "option_d": "Pulmonary edema from fluid resuscitation",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Pneumonia can impair oxygenation but does not usually explain rigid mechanical chest restriction in this specific context. B: Circumferential inelastic eschar can restrict chest expansion and may require urgent burn-team assessment for escharotomy after other causes are excluded. C: Bronchospasm can increase airway pressures, but circumferential chest rigidity and poor expansion point to mechanical restriction. D: Pulmonary edema can impair gas exchange, but the restrictive chest wall findings specifically suggest tight eschar.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Pneumonia can impair oxygenation but does not usually explain rigid mechanical chest restriction in this specific context.",
+      "b": "Circumferential inelastic eschar can restrict chest expansion and may require urgent burn-team assessment for escharotomy after other causes are excluded.",
+      "c": "Bronchospasm can increase airway pressures, but circumferential chest rigidity and poor expansion point to mechanical restriction.",
+      "d": "Pulmonary edema can impair gas exchange, but the restrictive chest wall findings specifically suggest tight eschar."
+    },
+    "reference_urls": [
+      "https://ameriburn.org/wp-content/uploads/2019/08/2018-abls-providermanual.pdf"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-030",
+    "stem": "A postoperative patient is receiving patient-controlled analgesia. The patient is difficult to arouse, RR 6/min, and pupils are pinpoint. What is the priority?",
+    "option_a": "Encourage the patient to sleep",
+    "option_b": "Offer oral pain medication",
+    "option_c": "Stop opioid delivery, support ventilation, summon help and prepare prescribed naloxone",
+    "option_d": "Increase basal infusion",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Allowing continued opioid delivery risks respiratory arrest. B: Additional oral opioids can worsen ventilatory depression. C: Stop the opioid, support breathing, urgently summon help and prepare naloxone per protocol. D: Increasing opioid infusion can worsen severe respiratory depression.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Allowing continued opioid delivery risks respiratory arrest.",
+      "b": "Additional oral opioids can worsen ventilatory depression.",
+      "c": "Stop the opioid, support breathing, urgently summon help and prepare naloxone per protocol.",
+      "d": "Increasing opioid infusion can worsen severe respiratory depression."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-031",
+    "stem": "A person with diabetes has a foot wound with spreading erythema, fever, hypotension, and confusion. Which nursing action is most appropriate?",
+    "option_a": "Obtain a wound swab and await culture results before involving the clinician",
+    "option_b": "Administer scheduled subcutaneous insulin and reassess vitals in 60 minutes",
+    "option_c": "Request a routine wound-care consultation as the only intervention",
+    "option_d": "Escalate immediately for suspected sepsis and begin ordered resuscitation measures",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Cultures may be indicated, but awaiting results delays treatment of suspected septic shock. B: Glycemic management may be needed but does not take priority over shock and altered mentation. C: Wound-care input is useful after stabilization but cannot replace systemic sepsis management. D: Infected wound plus hypotension and confusion warrants immediate sepsis escalation and ordered therapy.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Cultures may be indicated, but awaiting results delays treatment of suspected septic shock.",
+      "b": "Glycemic management may be needed but does not take priority over shock and altered mentation.",
+      "c": "Wound-care input is useful after stabilization but cannot replace systemic sepsis management.",
+      "d": "Infected wound plus hypotension and confusion warrants immediate sepsis escalation and ordered therapy."
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-032",
+    "stem": "A patient has sudden severe headache described as the worst ever, vomiting, and neck stiffness. What is the priority?",
+    "option_a": "Activate emergency neurologic evaluation and monitor airway/neurologic status",
+    "option_b": "Administer the patient's prescribed migraine medication and reassess in one hour",
+    "option_c": "Position the patient quietly and schedule a nonurgent outpatient CT",
+    "option_d": "Obtain a routine pain score before deciding whether to notify the provider",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Thunderclap headache with vomiting and nuchal rigidity raises concern for subarachnoid hemorrhage, requiring emergency neurologic evaluation. B: Symptomatic medication must not delay evaluation of a possible intracranial hemorrhage. C: Quiet positioning is supportive, but outpatient imaging is inappropriate for this acute presentation. D: Pain scoring is secondary to urgent recognition and escalation of potential intracranial bleeding.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Thunderclap headache with vomiting and nuchal rigidity raises concern for subarachnoid hemorrhage, requiring emergency neurologic evaluation.",
+      "b": "Symptomatic medication must not delay evaluation of a possible intracranial hemorrhage.",
+      "c": "Quiet positioning is supportive, but outpatient imaging is inappropriate for this acute presentation.",
+      "d": "Pain scoring is secondary to urgent recognition and escalation of potential intracranial bleeding."
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK441958/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-033",
+    "stem": "An ICU client has a central venous catheter. While a line is being manipulated, the patient develops sudden dyspnea, chest pain, and hypotension. What should the nurse suspect and do?",
+    "option_a": "Obtain a portable chest radiograph before interrupting the catheter manipulation",
+    "option_b": "Possible venous air embolism; stop air entry, activate emergency response, provide high-flow oxygen, and follow the positioning protocol",
+    "option_c": "Flush the central line rapidly with saline to clear the suspected air",
+    "option_d": "Give an IV fluid bolus through the affected open lumen before securing its connection",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Imaging must not delay preventing additional air entry. B: Stop air entry, activate emergency response, administer high-flow oxygen and position according to protocol. C: Do not flush air through the catheter. D: Do not infuse through an unsecured open lumen.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Imaging may assist subsequent evaluation, but it must not delay stopping further air entry and resuscitation.",
+      "b": "Sudden cardiopulmonary collapse during line manipulation suggests venous air embolism. Immediately occlude or clamp the source, summon emergency assistance, provide high-concentration oxygen, and position per protocol when appropriate.",
+      "c": "Flushing can introduce additional air and must not substitute for securing the system.",
+      "d": "An unsecured affected lumen must be closed first; pushing fluid through it risks worsening air entry and delays emergency support."
+    },
+    "reference_urls": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC3665124/",
+      "https://pubmed.ncbi.nlm.nih.gov/28644058/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-034",
+    "stem": "A patient with cirrhosis starts vomiting bright red blood and becomes dizzy. BP is 80/44 mm Hg. Which action is priority?",
+    "option_a": "Obtain orthostatic blood pressure measurements before calling the clinician",
+    "option_b": "Prepare the next scheduled oral lactulose dose",
+    "option_c": "Activate emergency response and prepare airway and circulatory support",
+    "option_d": "Arrange a nonurgent abdominal ultrasound before starting IV access",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Orthostatic testing risks worsening instability and delays hemorrhage resuscitation. B: Lactulose does not treat active hematemesis with shock. C: Bright-red hematemesis in cirrhosis with severe hypotension warrants immediate hemorrhage and airway management. D: Nonurgent imaging must not delay resuscitation and urgent bleeding evaluation.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Orthostatic testing risks worsening instability and delays hemorrhage resuscitation.",
+      "b": "Lactulose does not treat active hematemesis with shock.",
+      "c": "Bright-red hematemesis in cirrhosis with severe hypotension warrants immediate hemorrhage and airway management.",
+      "d": "Nonurgent imaging must not delay resuscitation and urgent bleeding evaluation."
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/en-ca/professional/gastrointestinal-disorders/gastrointestinal-bleeding/overview-of-gastrointestinal-bleeding"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-035",
+    "stem": "A patient with suspected acute coronary syndrome reports new crushing chest pressure. BP is 78/50 mm Hg, HR 118/min. Which intervention is appropriate?",
+    "option_a": "Administer prescribed sublingual nitroglycerin before reassessing blood pressure",
+    "option_b": "Give the scheduled beta blocker before obtaining an ECG",
+    "option_c": "Obtain a repeat troponin in three hours before activating emergency assistance",
+    "option_d": "Rapidly assess, obtain ECG and urgent assistance; question nitroglycerin in severe hypotension",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Nitroglycerin may worsen marked hypotension and should be withheld pending urgent evaluation. B: A beta blocker can worsen hemodynamic instability and should not delay immediate assessment. C: Troponin evaluation is important but must not delay an immediate ECG and response to shock. D: An unstable patient with suspected ACS needs prompt ECG, monitoring, emergency help, and avoidance of reflex nitrate dosing.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Nitroglycerin may worsen marked hypotension and should be withheld pending urgent evaluation.",
+      "b": "A beta blocker can worsen hemodynamic instability and should not delay immediate assessment.",
+      "c": "Troponin evaluation is important but must not delay an immediate ECG and response to shock.",
+      "d": "An unstable patient with suspected ACS needs prompt ECG, monitoring, emergency help, and avoidance of reflex nitrate dosing."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-036",
+    "stem": "A patient with an indwelling urinary catheter suddenly develops chills, fever, and confusion. Which nurse action is best?",
+    "option_a": "Assess for sepsis and notify the clinician promptly",
+    "option_b": "Replace the catheter and wait for the next shift's routine vital signs",
+    "option_c": "Obtain a urine sample from the catheter's sampling port and await culture results before notifying",
+    "option_d": "Administer a prescribed antipyretic and reassess mental status in two hours",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: New fever, rigors and confusion with a catheter warrant immediate assessment for systemic infection and urgent clinical escalation. B: Catheter replacement may be appropriate by order/protocol but does not replace urgent assessment of sepsis. C: A correctly collected specimen helps diagnosis, but waiting for culture results delays care for possible sepsis. D: Treating fever alone does not address altered mentation and potential systemic deterioration.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "New fever, rigors and confusion with a catheter warrant immediate assessment for systemic infection and urgent clinical escalation.",
+      "b": "Catheter replacement may be appropriate by order/protocol but does not replace urgent assessment of sepsis.",
+      "c": "A correctly collected specimen helps diagnosis, but waiting for culture results delays care for possible sepsis.",
+      "d": "Treating fever alone does not address altered mentation and potential systemic deterioration."
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-037",
+    "stem": "A patient with a tunneled central venous catheter is due for IV antibiotic therapy. The nurse meets resistance when gently attempting to flush the lumen; there is no blood return. What is the safest initial action?",
+    "option_a": "Apply increased pressure to the syringe until the obstruction clears",
+    "option_b": "Stop using the lumen, assess for kinks or closed clamps, and follow the facility's occlusion protocol",
+    "option_c": "Infuse the antibiotic through the resistant lumen at a slower rate",
+    "option_d": "Withdraw the catheter several centimeters to restore flow",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Forceful flushing can damage the catheter or dislodge a thrombus and should be avoided. B: Assess correctable mechanical causes without force and use the institutional protocol for an occluded central line before administering medication. C: A resistant lumen with absent blood return should not be used for infusion until patency and safe catheter position are established. D: Repositioning or withdrawing a tunneled central catheter is not an independent bedside maneuver for occlusion.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Forceful flushing can damage the catheter or dislodge a thrombus and should be avoided.",
+      "b": "Assess correctable mechanical causes without force and use the institutional protocol for an occluded central line before administering medication.",
+      "c": "A resistant lumen with absent blood return should not be used for infusion until patency and safe catheter position are established.",
+      "d": "Repositioning or withdrawing a tunneled central catheter is not an independent bedside maneuver for occlusion."
+    },
+    "reference_urls": [
+      "https://www.northerncanceralliance.nhs.uk/wp-content/uploads/2018/11/NECN-Adult-Venous-Access-and-CVAD-Policy-v3-0.pdf"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-038",
+    "stem": "A client with suspected appendicitis has new generalized abdominal rigidity and a sudden change in pain pattern. Which response is best?",
+    "option_a": "Initiate ordered IV isotonic fluids and reassess abdominal findings before contacting the surgeon",
+    "option_b": "Administer the prescribed antiemetic and reassess pain in 20 minutes",
+    "option_c": "Keep NPO, assess urgently, and report possible perforation",
+    "option_d": "Obtain an ordered CT scan before escalating the new rigidity",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Fluids may support circulation, but new abdominal rigidity demands prompt escalation and surgical assessment rather than deferred notification. B: Symptom control does not address potential perforation or peritonitis. C: New rigidity with changing abdominal pain suggests peritoneal irritation and warrants urgent assessment and surgical consultation while maintaining NPO. D: Imaging may be warranted but should not delay reporting possible perforation or acute peritonitis.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Fluids may support circulation, but new abdominal rigidity demands prompt escalation and surgical assessment rather than deferred notification.",
+      "b": "Symptom control does not address potential perforation or peritonitis.",
+      "c": "New rigidity with changing abdominal pain suggests peritoneal irritation and warrants urgent assessment and surgical consultation while maintaining NPO.",
+      "d": "Imaging may be warranted but should not delay reporting possible perforation or acute peritonitis."
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/professional/gastrointestinal-disorders/acute-abdomen-and-surgical-gastroenterology/acute-abdominal-pain"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-039",
+    "stem": "A patient taking an ACE inhibitor develops lip and tongue swelling with a muffled voice. Which action is priority?",
+    "option_a": "Reassure that cough is common",
+    "option_b": "Give next ACE inhibitor dose",
+    "option_c": "Provide routine oral care",
+    "option_d": "Stop further exposure, assess airway immediately, and activate emergency assistance",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: ACE-inhibitor angioedema is not the benign cough adverse effect. B: Further dosing can worsen exposure to a drug causing airway swelling. C: Oral care does not address impending upper-airway obstruction. D: Stop the suspected medication and activate airway emergency support immediately.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "ACE-inhibitor angioedema is not the benign cough adverse effect.",
+      "b": "Further dosing can worsen exposure to a drug causing airway swelling.",
+      "c": "Oral care does not address impending upper-airway obstruction.",
+      "d": "Stop the suspected medication and activate airway emergency support immediately."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-040",
+    "stem": "A client with new atrial fibrillation and HR 170/min has chest pain, BP 74/40 mm Hg, and altered mentation. What should the nurse anticipate?",
+    "option_a": "Urgent synchronized cardioversion by the emergency team",
+    "option_b": "Start ordered IV rate-control therapy and reassess blood pressure before preparing for cardioversion",
+    "option_c": "Obtain a 12-lead ECG and troponin results before calling the emergency team",
+    "option_d": "Administer a fluid bolus and observe for spontaneous conversion before notifying the clinician",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Rapid AF with severe hypotension, chest pain and altered mentation represents hemodynamic instability; immediate synchronized cardioversion is indicated. B: AV-nodal blocking agents can worsen severe hypotension and must not delay immediate electrical cardioversion in unstable AF. C: ECG acquisition is useful when it does not delay resuscitation; laboratory testing must not defer emergency intervention. D: Fluid management may be individualized, but observation and waiting for spontaneous rhythm conversion are unsafe during shock.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Rapid AF with severe hypotension, chest pain and altered mentation represents hemodynamic instability; immediate synchronized cardioversion is indicated.",
+      "b": "AV-nodal blocking agents can worsen severe hypotension and must not delay immediate electrical cardioversion in unstable AF.",
+      "c": "ECG acquisition is useful when it does not delay resuscitation; laboratory testing must not defer emergency intervention.",
+      "d": "Fluid management may be individualized, but observation and waiting for spontaneous rhythm conversion are unsafe during shock."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-041",
+    "stem": "A patient with a suspected tension pneumothorax has severe dyspnea, absent breath sounds on one side, distended neck veins, and BP 68/38 mm Hg. What is the priority?",
+    "option_a": "Obtain a stat portable chest radiograph and wait for confirmation before decompression",
+    "option_b": "Activate emergency response and prepare for immediate decompression",
+    "option_c": "Increase supplemental oxygen and repeat auscultation before calling the response team",
+    "option_d": "Prepare for chest tube placement only after transport to radiology",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Tension pneumothorax with shock is a clinical emergency; diagnostic imaging must not delay decompression. B: Unilateral absent sounds with severe hypotension suggests tension physiology and obstructive shock requiring immediate emergency intervention. C: Oxygenation support is appropriate concurrently but is insufficient without urgent decompression. D: A chest drain may follow decompression, but transfer for imaging delays immediate treatment.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Tension pneumothorax with shock is a clinical emergency; diagnostic imaging must not delay decompression.",
+      "b": "Unilateral absent sounds with severe hypotension suggests tension physiology and obstructive shock requiring immediate emergency intervention.",
+      "c": "Oxygenation support is appropriate concurrently but is insufficient without urgent decompression.",
+      "d": "A chest drain may follow decompression, but transfer for imaging delays immediate treatment."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-042",
+    "stem": "A client with chemotherapy-induced neutropenia has temperature 38.5°C and ANC 300/mm³. What should the nurse do?",
+    "option_a": "Collect blood cultures, then observe for response to an antipyretic before requesting antibiotics",
+    "option_b": "Administer a prescribed antipyretic and reassess the temperature after one hour before calling",
+    "option_c": "Treat as possible febrile neutropenia, urgently notify the team, and prepare prescribed cultures and empiric antimicrobials",
+    "option_d": "Request a repeat ANC to confirm neutropenia before initiating the infection protocol",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Cultures are important but delaying empiric treatment for an antipyretic response is unsafe. B: Temperature reduction alone does not address possible life-threatening infection during severe neutropenia. C: ANC 300/mm³ and fever meet febrile-neutropenia criteria requiring urgent evaluation and prompt empiric antimicrobials. D: Repeat counts can clarify trends but must not delay management when severe neutropenia and fever are already documented.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Cultures are important but delaying empiric treatment for an antipyretic response is unsafe.",
+      "b": "Temperature reduction alone does not address possible life-threatening infection during severe neutropenia.",
+      "c": "ANC 300/mm³ and fever meet febrile-neutropenia criteria requiring urgent evaluation and prompt empiric antimicrobials.",
+      "d": "Repeat counts can clarify trends but must not delay management when severe neutropenia and fever are already documented."
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/cancer-preventing-infections/patients/fever.html"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-043",
+    "stem": "A patient with thrombocytopenia of 18,000/mm³ reports a new severe headache and blurred vision. What should the nurse prioritize?",
+    "option_a": "Perform a focused neurologic assessment and defer provider notification until scheduled laboratory results return",
+    "option_b": "Implement fall precautions and continue routine four-hour neurologic checks",
+    "option_c": "Request a repeat platelet count and wait for the result before notifying the team",
+    "option_d": "Urgently assess and report possible intracranial bleeding",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Neurologic assessment is indicated, but delaying escalation in severe thrombocytopenia with new headache/visual changes is unsafe. B: Precautions support safety but are inadequate for suspected intracranial hemorrhage. C: Repeat labs may be appropriate but cannot delay evaluation of new neurologic warning signs. D: Severe thrombocytopenia plus acute headache and vision change warrants urgent assessment and immediate escalation for possible intracranial bleeding.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Neurologic assessment is indicated, but delaying escalation in severe thrombocytopenia with new headache/visual changes is unsafe.",
+      "b": "Precautions support safety but are inadequate for suspected intracranial hemorrhage.",
+      "c": "Repeat labs may be appropriate but cannot delay evaluation of new neurologic warning signs.",
+      "d": "Severe thrombocytopenia plus acute headache and vision change warrants urgent assessment and immediate escalation for possible intracranial bleeding."
+    },
+    "reference_urls": [
+      "https://www.cancer.org/cancer/side-effects/low-blood-counts/bleeding.html"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-044",
+    "stem": "A client with sickle cell disease develops fever, chest pain, hypoxemia, and a new pulmonary infiltrate. Which complication should the nurse recognize?",
+    "option_a": "Acute chest syndrome",
+    "option_b": "Uncomplicated vaso-occlusive pain crisis",
+    "option_c": "Pulmonary embolism without further evaluation",
+    "option_d": "Isolated bacterial bronchitis",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: The combination of a new infiltrate and acute respiratory symptoms in sickle cell disease meets the clinical picture of acute chest syndrome and needs urgent evaluation. B: Pain crisis may coexist, but it does not account for the new infiltrate and hypoxemia. C: Pulmonary embolism is a differential diagnosis, but the described syndrome fulfills criteria for acute chest syndrome; further evaluation may still be indicated. D: Bronchitis typically does not explain a new pulmonary infiltrate with hypoxemia in this high-risk patient.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "The combination of a new infiltrate and acute respiratory symptoms in sickle cell disease meets the clinical picture of acute chest syndrome and needs urgent evaluation.",
+      "b": "Pain crisis may coexist, but it does not account for the new infiltrate and hypoxemia.",
+      "c": "Pulmonary embolism is a differential diagnosis, but the described syndrome fulfills criteria for acute chest syndrome; further evaluation may still be indicated.",
+      "d": "Bronchitis typically does not explain a new pulmonary infiltrate with hypoxemia in this high-risk patient."
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/sickle-cell/complications/acute-chest-syndrome.html"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-045",
+    "stem": "A monitored patient has recurrent, brief self-terminating episodes of polymorphic ventricular tachycardia. Between episodes, the QTc is 560 ms and the patient is alert with BP 124/76 mm Hg. Which prescribed medication may help prevent recurrence while the team corrects reversible causes?",
+    "option_a": "IV potassium-wasting diuretic alone",
+    "option_b": "IV magnesium sulfate",
+    "option_c": "Oral antacid",
+    "option_d": "Sodium restriction",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: A potassium-wasting diuretic can worsen electrolyte abnormalities and QT prolongation. B: IV magnesium may suppress recurrent torsades associated with prolonged QT; sustained polymorphic VT requires immediate unsynchronized defibrillation, not delayed shock for medication. C: An oral antacid does not treat torsades. D: Sodium restriction does not acutely prevent torsades.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Potassium-wasting treatment may worsen hypokalemia and QT prolongation.",
+      "b": "Magnesium may help suppress recurrent torsades de pointes associated with QT prolongation. If polymorphic VT becomes sustained, immediate unsynchronized defibrillation takes priority.",
+      "c": "An antacid does not treat polymorphic ventricular tachycardia.",
+      "d": "Sodium restriction is unrelated to the immediate rhythm emergency."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-advanced-life-support/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-046",
+    "stem": "An RN is assigning care for a newly admitted client with unstable vital signs and a stable client needing a routine dressing change. Which assignment is most appropriate?",
+    "option_a": "Assign the unstable admission to an experienced LPN/LVN for comprehensive initial assessment",
+    "option_b": "Have assistive personnel monitor the unstable patient independently while the RN completes routine care",
+    "option_c": "RN assesses unstable admission; delegate routine dressing care based on scope and facility policy",
+    "option_d": "Assign both clients to the RN and postpone all delegated tasks regardless of staff competency",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: LPN/LVN scope and competency do not replace the RN's initial comprehensive assessment of an unstable patient. B: Assistive personnel can report observations but cannot independently manage unstable changes. C: The RN manages initial instability; stable predictable procedures can be assigned appropriately under facility policy and state scope. D: Delegation of suitable stable care is appropriate and does not require withholding every task.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "LPN/LVN scope and competency do not replace the RN's initial comprehensive assessment of an unstable patient.",
+      "b": "Assistive personnel can report observations but cannot independently manage unstable changes.",
+      "c": "The RN manages initial instability; stable predictable procedures can be assigned appropriately under facility policy and state scope.",
+      "d": "Delegation of suitable stable care is appropriate and does not require withholding every task."
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-047",
+    "stem": "A nursing assistant reports a postoperative patient has new confusion and SpO2 87%. What should the RN do?",
+    "option_a": "Ask the assistant to make medication adjustments",
+    "option_b": "Tell the assistant to recheck tomorrow",
+    "option_c": "Document without seeing the patient",
+    "option_d": "Immediately assess the patient and initiate respiratory escalation as indicated",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Assistive staff do not independently adjust prescribed medications. B: Delaying evaluation risks worsening severe hypoxemia. C: Documentation without assessment does not treat respiratory compromise. D: The RN must promptly assess oxygenation and initiate/escalate appropriate clinical care.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Assistive staff do not independently adjust prescribed medications.",
+      "b": "Delaying evaluation risks worsening severe hypoxemia.",
+      "c": "Documentation without assessment does not treat respiratory compromise.",
+      "d": "The RN must promptly assess oxygenation and initiate/escalate appropriate clinical care."
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-048",
+    "stem": "An RN delegates measurement of intake and output to an assistive personnel member for a client with acute kidney injury. Which follow-up is essential?",
+    "option_a": "Review the documented output promptly and investigate a significant decrease",
+    "option_b": "Assume charting is complete and take no further action",
+    "option_c": "Delegate interpretation of renal laboratory trends",
+    "option_d": "Let the assistant independently change IV fluids",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Reviewing intake/output trends and responding to concerning changes remains the RN's accountability after delegation. B: Unreviewed documentation may conceal worsening acute kidney injury. C: Interpreting renal laboratory results is nursing clinical judgment, not an assistive task. D: Assistive staff cannot independently change prescribed IV fluids.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Reviewing intake/output trends and responding to concerning changes remains the RN's accountability after delegation.",
+      "b": "Unreviewed documentation may conceal worsening acute kidney injury.",
+      "c": "Interpreting renal laboratory results is nursing clinical judgment, not an assistive task.",
+      "d": "Assistive staff cannot independently change prescribed IV fluids."
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-049",
+    "stem": "A patient has a new tracheostomy placed 12 hours ago. The tube becomes dislodged and the patient develops respiratory distress. Which response is safest?",
+    "option_a": "Attempt blind bedside reinsertion immediately to restore airflow",
+    "option_b": "Call for emergency airway assistance, support oxygenation and follow fresh-tracheostomy rescue protocol",
+    "option_c": "Cover the neck stoma with an occlusive dressing and provide face-mask ventilation without checking tracheostomy type or airway anatomy",
+    "option_d": "Try to pass a suction catheter into the dislodged tracheostomy tube before activating the emergency airway team",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Blind reinsertion through an immature tract risks false passage and failure to ventilate. B: Immediately obtain expert airway help and oxygenate while following the emergency algorithm adapted to tracheostomy type and upper-airway patency. C: Occluding the stoma and relying exclusively on upper-airway ventilation may be unsafe without establishing whether the upper airway is patent; oxygenation strategy depends on the airway anatomy. D: The tube is displaced, so attempts to troubleshoot its lumen cannot replace immediate emergency escalation and oxygenation.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Blind reinsertion through an immature tract risks false passage and failure to ventilate.",
+      "b": "Immediately obtain expert airway help and oxygenate while following the emergency algorithm adapted to tracheostomy type and upper-airway patency.",
+      "c": "Occluding the stoma and relying exclusively on upper-airway ventilation may be unsafe without establishing whether the upper airway is patent; oxygenation strategy depends on the airway anatomy.",
+      "d": "The tube is displaced, so attempts to troubleshoot its lumen cannot replace immediate emergency escalation and oxygenation."
+    },
+    "reference_urls": [
+      "https://tracheostomy.org.uk/resources/papers/tracheostomy-adult-emergency-guidelines"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-050",
+    "stem": "A client receiving a blood transfusion develops itching, wheezing, and facial swelling. Which nursing action is priority?",
+    "option_a": "Stop the transfusion and use an antihistamine alone before considering resumption",
+    "option_b": "Slow the transfusion while observing whether wheezing resolves",
+    "option_c": "Stop the transfusion, activate emergency assistance, maintain IV access without flushing donor blood, and prepare IM epinephrine per protocol",
+    "option_d": "Stop the transfusion but delay treatment until imaging excludes circulatory overload",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Antihistamine-only treatment and possible restart are inappropriate when wheezing and facial swelling suggest anaphylaxis. B: Slowing the transfusion continues allergen exposure. C: Stop blood immediately, assess airway and circulation, call emergency help, preserve IV access without flushing donor blood, and prepare IM epinephrine. D: Imaging should not delay treatment of suspected anaphylaxis.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Bronchospasm and facial swelling indicate a severe reaction; antihistamines alone do not treat anaphylaxis and restarting blood would be unsafe.",
+      "b": "Reducing the rate continues exposure to the triggering blood product while respiratory compromise is developing.",
+      "c": "Immediately stop the blood, assess and support the airway and circulation, summon emergency assistance, maintain IV access without flushing donor blood, and prepare intramuscular epinephrine per protocol.",
+      "d": "Other causes of acute dyspnea can be investigated, but imaging must not delay emergency anaphylaxis treatment."
+    },
+    "reference_urls": [
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/severe-allergic-reactions",
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/management-of-suspected-reactions"
+    ]
+  }
+]

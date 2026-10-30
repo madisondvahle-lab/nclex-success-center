@@ -1,0 +1,627 @@
+[
+  {
+    "draft_id": "NEW-20261012-001",
+    "stem": "A patient 2 hours after thyroidectomy develops inspiratory stridor and increasing restlessness. SpO2 falls from 97% to 91%. What should the nurse do first?",
+    "option_a": "Activate emergency response and prepare to support the airway",
+    "option_b": "Position the patient upright, apply supplemental oxygen, and reassess stridor before summoning emergency help",
+    "option_c": "Ask the patient to cough while inspecting the neck incision for swelling",
+    "option_d": "Administer the prescribed postoperative analgesic and repeat the oxygen saturation in 10 minutes",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Stridor after thyroid surgery suggests impending upper-airway obstruction; activate emergency help and prepare airway support. B: Upright positioning and oxygen may help temporarily, but delaying activation of emergency airway assistance is unsafe with stridor. C: Checking for a neck hematoma is relevant, but should not delay emergency activation and airway support. D: Analgesia does not treat airway obstruction and delays rescue.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Stridor after thyroid surgery suggests impending upper-airway obstruction; activate emergency help and prepare airway support.",
+      "b": "Upright positioning and oxygen may help temporarily, but delaying activation of emergency airway assistance is unsafe with stridor.",
+      "c": "Checking for a neck hematoma is relevant, but should not delay emergency activation and airway support.",
+      "d": "Analgesia does not treat airway obstruction and delays rescue."
+    },
+    "reference_urls": [
+      "https://www.medlineplus.gov/ency/article/002933.htm"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-002",
+    "stem": "A patient has a chest tube following thoracic surgery. Drainage increases to 240 mL of bright-red blood in the past hour, and the patient becomes pale with BP 84/48 mm Hg. What should the nurse do first?",
+    "option_a": "Continue routine monitoring because blood-tinged chest-tube output is always expected after surgery",
+    "option_b": "Raise the chest drainage unit above the patient's chest to slow the bleeding",
+    "option_c": "Clamp the chest tube until the output becomes less bloody",
+    "option_d": "Immediately assess perfusion, summon urgent help, and notify the surgical team of possible hemorrhage",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Some postoperative drainage may be expected, but abrupt high-volume bright-red output with hypotension signals possible hemorrhage requiring urgent evaluation. B: Raising the unit interferes with drainage and does not treat bleeding or shock. C: Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding. D: Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Some postoperative drainage may be expected, but abrupt high-volume bright-red output with hypotension signals possible hemorrhage requiring urgent evaluation.",
+      "b": "Raising the unit interferes with drainage and does not treat bleeding or shock.",
+      "c": "Routine clamping can obstruct drainage and create pressure complications; it does not control the source of bleeding.",
+      "d": "Acute sanguineous drainage plus hypotension requires immediate assessment and escalation for possible surgical hemorrhage."
+    },
+    "reference_urls": [
+      "https://www.brit-thoracic.org.uk/quality-improvement/guidelines/pleural-disease/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-003",
+    "stem": "A septic patient is receiving fluid resuscitation. Which new finding most strongly indicates worsening tissue perfusion?",
+    "option_a": "Temperature decreases from 39.0°C to 38.2°C",
+    "option_b": "Heart rate decreases from 118 to 105/min",
+    "option_c": "Patient asks for a blanket",
+    "option_d": "Urine output decreases to 12 mL in the past hour",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: A falling temperature alone does not establish perfusion deterioration. B: A declining heart rate may represent improvement but requires context. C: Requesting a blanket is nonspecific. D: Very low urine output can signal impaired renal perfusion in shock and warrants urgent reassessment.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "A falling temperature alone does not establish perfusion deterioration.",
+      "b": "A declining heart rate may represent improvement but requires context.",
+      "c": "Requesting a blanket is nonspecific.",
+      "d": "Very low urine output can signal impaired renal perfusion in shock and warrants urgent reassessment."
+    },
+    "reference_urls": [
+      "https://sccm.org/clinical-resources/guidelines/guidelines/surviving-sepsis-guidelines-2021"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-004",
+    "stem": "A client with acute ischemic stroke develops new difficulty maintaining secretions and a wet, gurgling voice. Which action takes priority?",
+    "option_a": "Give sips of water to assess swallowing",
+    "option_b": "Keep the client NPO and assess airway and oxygenation",
+    "option_c": "Place an oral diet order with thickened liquids",
+    "option_d": "Assist the client to walk",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Offering water without a swallowing assessment risks aspiration. B: A wet voice and poor secretion control threaten airway protection; maintain NPO and assess/escalate. C: Thickened liquids require a swallowing evaluation and are not an immediate rescue measure. D: Walking is not the priority when airway protection is compromised.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Offering water without a swallowing assessment risks aspiration.",
+      "b": "A wet voice and poor secretion control threaten airway protection; maintain NPO and assess/escalate.",
+      "c": "Thickened liquids require a swallowing evaluation and are not an immediate rescue measure.",
+      "d": "Walking is not the priority when airway protection is compromised."
+    },
+    "reference_urls": [
+      "https://www.ahajournals.org/doi/10.1161/STR.0000000000000513"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-005",
+    "stem": "A patient receiving blood develops fever, chills, flank pain, and hypotension 15 minutes into the transfusion. What is the priority action?",
+    "option_a": "Stop transfusion and maintain IV access with normal saline using new tubing",
+    "option_b": "Slow the transfusion and give acetaminophen",
+    "option_c": "Flush remaining donor blood through the IV",
+    "option_d": "Discard the blood bag immediately before notifying anyone",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Immediately stop suspected transfusion reaction; preserve IV access with fresh saline tubing and activate reaction protocol. B: Slowing rather than stopping continues exposure to potentially incompatible blood. C: Flushing donor blood through the line worsens exposure. D: The bag/tubing may be needed for investigation; stabilize and notify the team first.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Immediately stop suspected transfusion reaction; preserve IV access with fresh saline tubing and activate reaction protocol.",
+      "b": "Slowing rather than stopping continues exposure to potentially incompatible blood.",
+      "c": "Flushing donor blood through the line worsens exposure.",
+      "d": "The bag/tubing may be needed for investigation; stabilize and notify the team first."
+    },
+    "reference_urls": [
+      "https://www.lifeblood.com.au/health-professionals/clinical-practice/adverse-events/management-of-suspected-reactions"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-006",
+    "stem": "A client with suspected upper gastrointestinal bleeding becomes pale and diaphoretic with BP 82/46 mm Hg and HR 134/min. Which prescription should the nurse implement first?",
+    "option_a": "Schedule an outpatient endoscopy",
+    "option_b": "Give a stool softener",
+    "option_c": "Start prescribed large-bore IV access and isotonic fluid resuscitation",
+    "option_d": "Provide a regular diet",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Outpatient testing is inappropriate during hemodynamic instability. B: A stool softener does not address shock from hemorrhage. C: Rapid IV access and ordered resuscitation address circulatory compromise while definitive bleeding management proceeds. D: Oral intake is inappropriate during unstable GI bleeding.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Outpatient testing is inappropriate during hemodynamic instability.",
+      "b": "A stool softener does not address shock from hemorrhage.",
+      "c": "Rapid IV access and ordered resuscitation address circulatory compromise while definitive bleeding management proceeds.",
+      "d": "Oral intake is inappropriate during unstable GI bleeding."
+    },
+    "reference_urls": [
+      "https://www.merckmanuals.com/en-ca/professional/gastrointestinal-disorders/gastrointestinal-bleeding/overview-of-gastrointestinal-bleeding"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-007",
+    "stem": "A patient with COPD who is usually alert becomes somnolent with respiratory rate 8/min after receiving an opioid. Which action is most appropriate?",
+    "option_a": "Let the patient sleep because COPD causes fatigue",
+    "option_b": "Increase opioid dosing to treat distress",
+    "option_c": "Only recheck oxygen saturation after 30 minutes",
+    "option_d": "Support ventilation and activate urgent clinical assistance",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Somnolence with bradypnea after an opioid is not normal sleep. B: Additional opioid can worsen respiratory depression. C: Delaying assessment is unsafe; oxygen saturation may not reliably detect early hypoventilation. D: Support breathing and urgently summon help; assess for opioid reversal per protocol.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Somnolence with bradypnea after an opioid is not normal sleep.",
+      "b": "Additional opioid can worsen respiratory depression.",
+      "c": "Delaying assessment is unsafe; oxygen saturation may not reliably detect early hypoventilation.",
+      "d": "Support breathing and urgently summon help; assess for opioid reversal per protocol."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-008",
+    "stem": "A client with pneumonia suddenly becomes confused. SpO2 is 83% on 2 L/min nasal cannula and RR 32/min. Which action should the nurse take first?",
+    "option_a": "Document altered mental status for rounds",
+    "option_b": "Immediately assess airway and breathing, escalate respiratory support, and call for help",
+    "option_c": "Encourage oral hydration before assessment",
+    "option_d": "Give a sedative to decrease agitation",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Documentation must not delay treating severe hypoxemia. B: Assess and support breathing immediately, escalate oxygen/ventilatory care per protocol, and summon help. C: Oral fluids may be unsafe in a confused hypoxemic patient. D: Sedation can worsen respiratory compromise.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Documentation must not delay treating severe hypoxemia.",
+      "b": "Assess and support breathing immediately, escalate oxygen/ventilatory care per protocol, and summon help.",
+      "c": "Oral fluids may be unsafe in a confused hypoxemic patient.",
+      "d": "Sedation can worsen respiratory compromise."
+    },
+    "reference_urls": [
+      "https://www.brit-thoracic.org.uk/clinical-resources/guidelines/emergency-oxygen/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-009",
+    "stem": "A person with a cervical spinal cord injury has BP 78/42 mm Hg, HR 48/min, warm dry skin, and no overt bleeding. What mechanism best explains the findings?",
+    "option_a": "Loss of sympathetic vascular tone and unopposed vagal effects",
+    "option_b": "Increased systemic vascular resistance",
+    "option_c": "Acute excess aldosterone secretion",
+    "option_d": "Severe pain-related catecholamine release",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Sympathetic disruption after high cord injury causes vasodilation, hypotension and relative bradycardia. B: Increased vascular resistance would not explain the warm hypotensive presentation. C: Aldosterone excess is not the mechanism of acute hypotension with bradycardia. D: Pain-related sympathetic activation usually raises heart rate rather than producing bradycardia.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Sympathetic disruption after high cord injury causes vasodilation, hypotension and relative bradycardia.",
+      "b": "Increased vascular resistance would not explain the warm hypotensive presentation.",
+      "c": "Aldosterone excess is not the mechanism of acute hypotension with bradycardia.",
+      "d": "Pain-related sympathetic activation usually raises heart rate rather than producing bradycardia."
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK459361/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-010",
+    "stem": "During hemodialysis, a patient becomes hypotensive and reports dizziness. What should the nurse do first?",
+    "option_a": "Increase the ultrafiltration rate",
+    "option_b": "Encourage the patient to stand",
+    "option_c": "Stop or reduce ultrafiltration per protocol and assess the patient",
+    "option_d": "Administer scheduled antihypertensive medication",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: More ultrafiltration can aggravate intradialytic volume depletion. B: Standing creates fall risk during hypotension. C: Reducing/stopping ultrafiltration per dialysis protocol and reassessing addresses likely intradialytic hypotension. D: An antihypertensive can further reduce blood pressure.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "More ultrafiltration can aggravate intradialytic volume depletion.",
+      "b": "Standing creates fall risk during hypotension.",
+      "c": "Reducing/stopping ultrafiltration per dialysis protocol and reassessing addresses likely intradialytic hypotension.",
+      "d": "An antihypertensive can further reduce blood pressure."
+    },
+    "reference_urls": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC6798406/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-011",
+    "stem": "A patient with a new ileostomy has large watery output, dry mucous membranes, HR 124/min, and BP 90/54 mm Hg. What should the nurse prioritize?",
+    "option_a": "Teach long-term pouch decoration options",
+    "option_b": "Recommend restricting all oral fluids",
+    "option_c": "Administer a routine laxative",
+    "option_d": "Assess fluid/electrolyte losses and urgently report possible dehydration",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Pouch education is important but not the immediate priority during instability. B: Total fluid restriction can worsen dehydration from high ileostomy output. C: Laxatives may worsen losses. D: Tachycardia, hypotension and watery output warrant urgent fluid/electrolyte assessment and escalation.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Pouch education is important but not the immediate priority during instability.",
+      "b": "Total fluid restriction can worsen dehydration from high ileostomy output.",
+      "c": "Laxatives may worsen losses.",
+      "d": "Tachycardia, hypotension and watery output warrant urgent fluid/electrolyte assessment and escalation."
+    },
+    "reference_urls": [
+      "https://www.ostomy.org/wp-content/uploads/2023/09/CE_Nursing_Care_for_Patients_After_Ostomy_Surgery.pdf"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-012",
+    "stem": "A postoperative patient reports sudden shortness of breath and pleuritic chest pain. HR 132/min, SpO2 86%, BP 88/52 mm Hg. Which nursing action has highest priority?",
+    "option_a": "Obtain a 12-lead ECG before contacting the response team",
+    "option_b": "Activate rapid response and support airway, oxygenation, and circulation",
+    "option_c": "Request a portable chest radiograph before escalating",
+    "option_d": "Administer prescribed analgesic and reassess chest pain",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: An ECG may be useful but must not delay resuscitation in shock and severe hypoxemia. B: Suspected massive PE or other acute cardiopulmonary emergency requires immediate stabilization and team activation. C: Imaging can follow or occur during stabilization; waiting risks deterioration. D: Analgesia alone does not address hypoxemia, hypotension, or an obstructive cause.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "An ECG may be useful but must not delay resuscitation in shock and severe hypoxemia.",
+      "b": "Suspected massive PE or other acute cardiopulmonary emergency requires immediate stabilization and team activation.",
+      "c": "Imaging can follow or occur during stabilization; waiting risks deterioration.",
+      "d": "Analgesia alone does not address hypoxemia, hypotension, or an obstructive cause."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-013",
+    "stem": "A client with type 1 diabetes is awake and able to swallow but has tremor, diaphoresis, and glucose 52 mg/dL. What should the nurse do first?",
+    "option_a": "Give rapid-acting oral carbohydrate per protocol and recheck glucose",
+    "option_b": "Administer the scheduled rapid-acting insulin",
+    "option_c": "Wait for the next meal",
+    "option_d": "Give glucagon even though the patient can swallow",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: For a conscious patient who can swallow, give fast-acting carbohydrate and promptly recheck glucose per protocol. B: Rapid-acting insulin would worsen hypoglycemia. C: Waiting for a meal delays treatment. D: Glucagon is an alternative when oral carbohydrate is unsafe or cannot be given, not first-line here.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "For a conscious patient who can swallow, give fast-acting carbohydrate and promptly recheck glucose per protocol.",
+      "b": "Rapid-acting insulin would worsen hypoglycemia.",
+      "c": "Waiting for a meal delays treatment.",
+      "d": "Glucagon is an alternative when oral carbohydrate is unsafe or cannot be given, not first-line here."
+    },
+    "reference_urls": [
+      "https://diabetes.org/living-with-diabetes/hypoglycemia-low-blood-glucose"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-014",
+    "stem": "A patient receiving an IV insulin infusion for diabetic ketoacidosis has potassium 2.9 mEq/L and frequent ventricular ectopy. What should the nurse do first?",
+    "option_a": "Increase the insulin infusion",
+    "option_b": "Give sodium polystyrene sulfonate",
+    "option_c": "Stop the insulin infusion per emergency protocol, promptly notify the clinician, and prepare prescribed potassium replacement",
+    "option_d": "Encourage exercise",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Increasing insulin can drive potassium into cells, worsening severe hypokalemia. B: Potassium-binding treatment would further lower potassium. C: Stop insulin per emergency protocol, urgently notify the team, and initiate prescribed potassium replacement; resume insulin only after potassium correction per protocol. D: Exercise is unsafe during ventricular ectopy and severe hypokalemia.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Continuing/increasing insulin can shift potassium intracellularly and worsen severe hypokalemia.",
+      "b": "Potassium-binding therapy would further lower already deficient potassium.",
+      "c": "Insulin drives potassium into cells and can worsen dysrhythmias at K 2.9 mEq/L. DKA guidance recommends delaying insulin until potassium is above 3.5 mmol/L while correcting potassium.",
+      "d": "Exercise is inappropriate during a symptomatic arrhythmia/electrolyte emergency."
+    },
+    "reference_urls": [
+      "https://doi.org/10.2337/dci24-0032"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-015",
+    "stem": "A client with chronic kidney disease has potassium 6.8 mEq/L and a widened QRS complex. Which prescribed medication should the nurse prioritize?",
+    "option_a": "IV regular insulin with dextrose",
+    "option_b": "Nebulized albuterol",
+    "option_c": "IV sodium bicarbonate",
+    "option_d": "IV calcium gluconate",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Insulin with dextrose shifts potassium but does not immediately stabilize the myocardium. B: Albuterol shifts potassium but does not stabilize the cardiac membrane. C: Bicarbonate is context dependent and not the first choice for ECG instability. D: IV calcium gluconate provides immediate cardiac membrane stabilization; potassium-lowering therapy must follow.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Insulin with dextrose shifts potassium into cells but does not provide immediate cardiac membrane stabilization.",
+      "b": "Albuterol shifts potassium intracellularly but is not the first membrane-stabilizing drug for widened QRS.",
+      "c": "Bicarbonate can be considered in selected acidotic cases but is not the initial membrane-stabilizing intervention.",
+      "d": "IV calcium gluconate stabilizes the myocardium during hyperkalemia with QRS widening; further therapies are needed to shift and eliminate potassium."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-016",
+    "stem": "A patient with acute pancreatitis develops new hypotension, tachycardia, and increasing abdominal distention. What is the nursing priority?",
+    "option_a": "Increase IV crystalloid infusion to a fixed high rate without reassessing response",
+    "option_b": "Initiate urgent assessment and notify the rapid response/clinical team",
+    "option_c": "Administer the next scheduled analgesic and reassess blood pressure in 30 minutes",
+    "option_d": "Obtain an abdominal CT before notifying the treating team",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Unmonitored aggressive fluid administration can cause harm in pancreatitis; assess perfusion and use goal-directed orders. B: New hypotension and tachycardia with distention suggest shock or serious complication and warrant immediate escalation. C: Analgesia may be appropriate but must not delay evaluating worsening perfusion. D: Imaging may help identify complications but cannot delay clinical response to instability.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Unmonitored aggressive fluid administration can cause harm in pancreatitis; assess perfusion and use goal-directed orders.",
+      "b": "New hypotension and tachycardia with distention suggest shock or serious complication and warrant immediate escalation.",
+      "c": "Analgesia may be appropriate but must not delay evaluating worsening perfusion.",
+      "d": "Imaging may help identify complications but cannot delay clinical response to instability."
+    },
+    "reference_urls": [
+      "https://pmc.ncbi.nlm.nih.gov/articles/PMC13221274/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-017",
+    "stem": "A patient with severe asthma is using accessory muscles. Previously loud wheezing becomes barely audible, and the patient is increasingly drowsy. How should the nurse interpret the change?",
+    "option_a": "Potential impending respiratory failure from severely reduced airflow",
+    "option_b": "Improving airflow due to medication",
+    "option_c": "Normal sleepiness after coughing",
+    "option_d": "A sign the patient is ready for discharge",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: New drowsiness and near-absent breath sounds in severe asthma suggest dangerously reduced airflow and possible respiratory failure. B: Quieter wheezing is not improvement when consciousness and respiratory effort deteriorate. C: Drowsiness is a warning sign rather than expected post-cough fatigue. D: This presentation requires emergency evaluation, not discharge.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "New drowsiness and near-absent breath sounds in severe asthma suggest dangerously reduced airflow and possible respiratory failure.",
+      "b": "Quieter wheezing is not improvement when consciousness and respiratory effort deteriorate.",
+      "c": "Drowsiness is a warning sign rather than expected post-cough fatigue.",
+      "d": "This presentation requires emergency evaluation, not discharge."
+    },
+    "reference_urls": [
+      "https://www.ncbi.nlm.nih.gov/books/NBK430901/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-018",
+    "stem": "A patient being treated for heart failure has new confusion, BP 86/50 mm Hg, cool extremities, and urine output 10 mL/hr. Which response is most appropriate?",
+    "option_a": "Administer the next scheduled IV diuretic before reassessing perfusion",
+    "option_b": "Start an empiric IV fluid bolus without assessing volume status",
+    "option_c": "Urgently assess perfusion and escalate possible low-output shock",
+    "option_d": "Obtain a routine standing weight before notifying the clinician",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Additional diuresis can worsen hypotension and is not a substitute for assessing shock. B: Unassessed fluids can worsen pulmonary congestion in a patient with heart failure. C: Hypotension, oliguria, confusion, and cool skin indicate hypoperfusion needing urgent clinical evaluation. D: Daily weight informs long-term management but cannot delay intervention for acute shock.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Additional diuresis can worsen hypotension and is not a substitute for assessing shock.",
+      "b": "Unassessed fluids can worsen pulmonary congestion in a patient with heart failure.",
+      "c": "Hypotension, oliguria, confusion, and cool skin indicate hypoperfusion needing urgent clinical evaluation.",
+      "d": "Daily weight informs long-term management but cannot delay intervention for acute shock."
+    },
+    "reference_urls": [
+      "https://professional.heart.org/-/media/832EA0F4E73948848612F228F7FA2D35.pdf"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-019",
+    "stem": "After a femoral cardiac catheterization, a patient reports back pain and becomes hypotensive despite an intact groin dressing. What is the priority concern?",
+    "option_a": "Acute vasovagal hypotension from the procedure",
+    "option_b": "A small superficial groin hematoma without ongoing bleeding",
+    "option_c": "Contrast-associated acute kidney injury",
+    "option_d": "Retroperitoneal hemorrhage",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Vasovagal episodes may cause hypotension but persistent back pain after femoral access raises concern for occult bleeding. B: Superficial bruising cannot adequately explain new hypotension and back pain. C: Contrast-related kidney injury does not typically produce immediate back pain and hemorrhagic shock. D: Retroperitoneal bleeding may present with flank or back pain and hypotension despite an unremarkable access-site dressing.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Vasovagal episodes may cause hypotension but persistent back pain after femoral access raises concern for occult bleeding.",
+      "b": "Superficial bruising cannot adequately explain new hypotension and back pain.",
+      "c": "Contrast-related kidney injury does not typically produce immediate back pain and hemorrhagic shock.",
+      "d": "Retroperitoneal bleeding may present with flank or back pain and hypotension despite an unremarkable access-site dressing."
+    },
+    "reference_urls": [
+      "https://pubmed.ncbi.nlm.nih.gov/7990185/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-020",
+    "stem": "A client with a bowel obstruction develops sudden severe abdominal pain, rigid abdomen, fever, and hypotension. What should the nurse do first?",
+    "option_a": "Increase nasogastric suction and recheck abdominal findings in 30 minutes before calling the surgeon",
+    "option_b": "Notify the surgical team urgently and assess for perforation and shock",
+    "option_c": "Administer the next prescribed antiemetic before reassessing blood pressure",
+    "option_d": "Obtain routine abdominal radiographs before notifying the surgical team",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: NG decompression may be supportive, but rigid abdomen and hypotension require urgent surgical evaluation. B: A rigid febrile abdomen with hypotension may indicate ischemia, perforation or peritonitis; assess and urgently escalate. C: Treating nausea cannot substitute for responding to suspected shock and peritonitis. D: Imaging can support diagnosis but must not delay emergency surgical assessment.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "NG decompression may be supportive, but rigid abdomen and hypotension require urgent surgical evaluation.",
+      "b": "A rigid febrile abdomen with hypotension may indicate ischemia, perforation or peritonitis; assess and urgently escalate.",
+      "c": "Treating nausea cannot substitute for responding to suspected shock and peritonitis.",
+      "d": "Imaging can support diagnosis but must not delay emergency surgical assessment."
+    },
+    "reference_urls": [
+      "https://www.east.org/education-resources/practice-management-guidelines/details/smallbowel-obstruction-evaluation-and-management-of"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-021",
+    "stem": "The RN has one stable client awaiting routine oral medications and one newly admitted client with sudden unilateral weakness. Which assignment is safest?",
+    "option_a": "Assign the new neurologic assessment to the RN and delegate permitted routine support tasks",
+    "option_b": "Have the LPN/LVN complete the initial assessment while the RN administers stable-client oral medications",
+    "option_c": "Have assistive personnel obtain a detailed neurologic examination while the RN finishes documentation",
+    "option_d": "Assign the RN to the stable client and reevaluate the new admission in 30 minutes",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: A new focal neurologic deficit needs immediate RN assessment and activation of the stroke pathway; other permissible tasks may be delegated. B: A new unstable neurologic assessment and nursing judgment are RN responsibilities; the LPN can assist with tasks within state scope. C: Assistive personnel may obtain and report basic observations but cannot perform a comprehensive neurologic assessment. D: Delaying assessment of a possible stroke loses time-sensitive treatment opportunities.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "A new focal neurologic deficit needs immediate RN assessment and activation of the stroke pathway; other permissible tasks may be delegated.",
+      "b": "A new unstable neurologic assessment and nursing judgment are RN responsibilities; the LPN can assist with tasks within state scope.",
+      "c": "Assistive personnel may obtain and report basic observations but cannot perform a comprehensive neurologic assessment.",
+      "d": "Delaying assessment of a possible stroke loses time-sensitive treatment opportunities."
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-022",
+    "stem": "A nurse delegates vital signs for a stable patient to an experienced assistive personnel member. Which instruction best supports safe delegation?",
+    "option_a": "Report only normal results",
+    "option_b": "Make independent changes to prescribed medications",
+    "option_c": "Report immediately if systolic BP is below 90 mm Hg or if the patient appears newly confused",
+    "option_d": "Document that the RN performed the measurements",
+    "correct_answer": "c",
+    "rationale": "Correct answer: C. A: Only reporting normal measurements conceals concerning changes. B: Assistive personnel do not independently change prescribed medications. C: Explicit reporting thresholds allow the RN to respond promptly to abnormal findings. D: Documentation must accurately reflect who performed the task.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Only reporting normal measurements conceals concerning changes.",
+      "b": "Assistive personnel do not independently change prescribed medications.",
+      "c": "Explicit reporting thresholds allow the RN to respond promptly to abnormal findings.",
+      "d": "Documentation must accurately reflect who performed the task."
+    },
+    "reference_urls": [
+      "https://ncsbn.org/delegation"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-023",
+    "stem": "A client scheduled for discharge says, 'The new inhaler makes me shaky, so I stopped using it.' Which RN action is most appropriate?",
+    "option_a": "Tell the client to use it regardless of symptoms",
+    "option_b": "Delegate medication counseling entirely to a nursing assistant",
+    "option_c": "Tell the client to double the next dose",
+    "option_d": "Assess which inhaler, dose, frequency, technique, and symptoms before providing individualized teaching",
+    "correct_answer": "d",
+    "rationale": "Correct answer: D. A: Telling the patient to continue without assessment ignores adverse effects and adherence barriers. B: An assistant cannot independently provide RN-level medication counseling. C: Doubling a dose risks toxicity. D: Assess the drug, technique, timing, and symptoms before individualized education and clinician follow-up.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Telling the patient to continue without assessment ignores adverse effects and adherence barriers.",
+      "b": "An assistant cannot independently provide RN-level medication counseling.",
+      "c": "Doubling a dose risks toxicity.",
+      "d": "Assess the drug, technique, timing, and symptoms before individualized education and clinician follow-up."
+    },
+    "reference_urls": [
+      "https://www.nhs.uk/medicines/salbutamol-inhaler/side-effects-of-salbutamol-inhalers/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-024",
+    "stem": "An RN supervising an LPN notices a patient receiving IV antibiotics has developed new wheezing and facial swelling. What should the RN do?",
+    "option_a": "Ask the LPN to finish the infusion first",
+    "option_b": "Immediately assess the patient, stop suspected medication exposure, summon emergency help, and prepare prescribed epinephrine",
+    "option_c": "Document symptoms for the next shift",
+    "option_d": "Offer oral fluids and continue antibiotics",
+    "correct_answer": "b",
+    "rationale": "Correct answer: B. A: Continuing a suspected triggering infusion prolongs exposure during possible anaphylaxis. B: Stop exposure, assess airway/breathing, summon emergency support, and prepare prompt IM epinephrine according to emergency protocol. C: Documentation for later does not address current airway compromise. D: Oral fluids do not treat anaphylaxis and may be unsafe.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Continuing a suspected triggering infusion prolongs exposure during possible anaphylaxis.",
+      "b": "Stop exposure, assess airway/breathing, summon emergency support, and prepare prompt IM epinephrine according to emergency protocol.",
+      "c": "Documentation for later does not address current airway compromise.",
+      "d": "Oral fluids do not treat anaphylaxis and may be unsafe."
+    },
+    "reference_urls": [
+      "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/adult-and-pediatric-special-circumstances-of-resuscitation/"
+    ]
+  },
+  {
+    "draft_id": "NEW-20261012-025",
+    "stem": "A nurse enters a room to find a patient actively seizing in bed. Which action is priority?",
+    "option_a": "Protect the patient from injury, note the time, and summon assistance",
+    "option_b": "Insert a padded tongue blade",
+    "option_c": "Restrain all extremities firmly",
+    "option_d": "Attempt to give oral medication during the seizure",
+    "correct_answer": "a",
+    "rationale": "Correct answer: A. A: Protect against trauma, time the seizure, and summon assistance while assessing airway as able. B: Objects in the mouth can damage teeth or soft tissues. C: Holding limbs forcibly can cause injury. D: Oral medication during an active seizure creates aspiration risk.",
+    "topic": "Adult Acute Care / Clinical Judgment",
+    "difficulty": "hard",
+    "active": false,
+    "course_key": null,
+    "exam_key": null,
+    "editorial_status": "draft_pending_clinical_signoff",
+    "option_rationales": {
+      "a": "Protect against trauma, time the seizure, and summon assistance while assessing airway as able.",
+      "b": "Objects in the mouth can damage teeth or soft tissues.",
+      "c": "Holding limbs forcibly can cause injury.",
+      "d": "Oral medication during an active seizure creates aspiration risk."
+    },
+    "reference_urls": [
+      "https://www.cdc.gov/epilepsy/first-aid-for-seizures/index.html"
+    ]
+  }
+]
