@@ -122,6 +122,9 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
     .builder-choice input{flex:none;width:17px;height:17px;margin:0;accent-color:var(--rose)}
     .builder-choice span{min-width:0;overflow-wrap:break-word}
     .builder-choice small{margin-left:auto;flex:none;color:var(--muted);font-size:.72rem;font-variant-numeric:tabular-nums}
+    .builder-type-choices .builder-choice{display:grid;grid-template-columns:17px minmax(0,1fr);gap:4px 10px;align-content:center}
+    .builder-type-choices input{grid-row:1/3}
+    .builder-type-choices small{grid-column:2;min-width:0;margin-left:0;overflow-wrap:break-word}
     .builder-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:8px}
     .builder-tab{min-height:44px;padding:0 13px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:700 .82rem system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
     .builder-tab:hover{background:var(--soft)}
@@ -1978,7 +1981,7 @@ FORM: Course-to-exam docket, assigned structure 6 of 7, staging keeps the select
           <section class="builder-section">
             <div class="builder-section-head"><h3>Question type</h3><small>Choose a randomized mix or specific types</small></div>
             ${bulkControls('item-type','question types')}
-            <div class="builder-choices">
+            <div class="builder-choices builder-type-choices">
               <label class="builder-choice"><input type="checkbox" id="mixed-item-type-choice" checked><span>Mixed</span><small>Randomized from available MCQs, SATA, and NGN cases; a set may contain only one type.</small></label>
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="mcq"><span>Traditional</span><small data-type-count="mcq"></small></label>
               <label class="builder-choice"><input type="checkbox" data-item-type-choice value="sata"><span>Next Gen · Select all that apply</span><small data-type-count="sata"></small></label>
